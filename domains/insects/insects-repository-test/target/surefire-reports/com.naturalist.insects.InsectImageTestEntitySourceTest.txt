@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.naturalist.insects.InsectImageTestEntitySourceTest
--------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.169 s -- in com.naturalist.insects.InsectImageTestEntitySourceTest
