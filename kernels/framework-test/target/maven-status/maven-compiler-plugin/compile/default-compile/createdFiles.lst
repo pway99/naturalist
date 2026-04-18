@@ -1,0 +1,8 @@
+com/naturalist/data/AbstractTestEntityRepository.class
+com/naturalist/data/UniqueConstraint.class
+com/naturalist/data/EntityRepositoryContractTest.class
+com/naturalist/data/NaturalistDatabase.class
+com/naturalist/data/TestEntitySourceTest.class
+com/naturalist/data/TestDataHelper.class
+com/naturalist/data/TestEntitySource.class
+com/naturalist/RandomValue.class

@@ -1,0 +1,7 @@
+com/naturalist/sensors/SensorName.class
+com/naturalist/sensors/SensorReadingId.class
+com/naturalist/sensors/SensorReading.class
+com/naturalist/sensors/SensorReadingName.class
+com/naturalist/sensors/Sensor.class
+com/naturalist/sensors/Sensor$SensorModel.class
+com/naturalist/sensors/SensorId.class

@@ -1,0 +1,54 @@
+  ---
+  We just completed the Metric/MetricRegistry implementation in ADR-017. Review the ADR and the current state of these files to refresh context:
+
+  - kernels/framework/src/main/java/com/naturalist/observability/Metric.java
+  - kernels/framework/src/main/java/com/naturalist/observability/MetricRegistry.java
+  - kernels/framework/src/main/java/com/naturalist/observability/Counter.java
+  - kernels/framework/src/main/java/com/naturalist/observability/Constraint.java
+  - kernels/framework/src/main/java/com/naturalist/observability/InvariantObservation.java
+  - kernels/framework-test/src/main/java/com/naturalist/observability/InMemoryMetricRegistry.java
+  - docs/adr/ADR-017-observability-monitoring-and-validation.md
+
+  The current metrics work covers invariant observation — constraint graph walks that emit naturalist.observation and naturalist.invariant.violation counters automatically.
+
+  The next step is a fluent conditional metric hook — domain code that fires a metric when a domain condition is met, outside the invariant observation framework. Example: a soil moisture reading crosses a threshold, a sensor value is out of range, a nutrient level exceeds safe limits. The pattern should be something like:
+
+  Metric.counter("naturalist.soil.moisture.out.of.range")
+      .tag("zone", zone.name().value())
+      .tag("sensor", sensorId.value())
+      .when(reading.percentVolumetric() > 45.0)
+      .incrementCounter();
+
+  The .when(boolean) (or whatever the right fluent verb is) should short-circuit — if the condition is false, incrementCounter() is a no-op. This keeps the metric declaration co-located with the domain logic without wrapping it in an if-block.
+
+  Design constraints: Metric is lightweight and mutable. The consumer never sees MetricRegistry or Counter. The observability framework must never throw.
+
+
+
+
+  Refactor remaining domains: name–display separation per ADR-005 Amendment 3
+
+  The chemistry domain has already been refactored. The pattern established:
+
+  - name() is the machine key — lower-kebab-case slug, validated by CatalogName (^[a-z0-9]+(-[a-z0-9]+)*$ + per-subclass maxLength())
+  - Human-readable values (titles, common names) are separate String fields on the entity record
+  - CompoundCommonName (an EntityName subclass) was deleted — Compound.commonName became @UniqueValue String because common names are display labels,
+  not cross-domain reference keys
+
+  What to do:
+
+  1. Audit every domain outside chemistry for catalog entities whose name field or JSON data contains human-readable values (spaces, mixed case,
+  special characters) instead of kebab slugs
+  2. For each violation: slugify the name, add a separate display field if the human-readable value carries domain meaning, update JSON catalog data,
+  update TestXxxIdentifiers constants
+  3. Verify all CatalogName subclasses already have maxLength() — they should (done in prior session), but confirm
+  4. Run mvn test after each domain to catch deserialization or invariant failures
+  5. Do NOT touch chemistry — it's done. Do NOT touch FactName subclasses — UUIDs need no changes.
+
+  Reference: Read docs/adr/ADR-005-entity-identity-model.md Amendment 3 (Draft) for the full rationale. The chemistry refactor is the template —
+  Element, ReactionProfile, and Compound changes are documented there as consequences.
+
+
+  TODO: Rewrite Module
+   - Concrete clases aside from TestEntitySources must not be public
+   - Observer always references the correct method name

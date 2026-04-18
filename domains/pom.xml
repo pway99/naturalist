@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>amateur-naturalist</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>domains</artifactId>
+    <packaging>pom</packaging>
+
+    <name>amateur-naturalist :: domains</name>
+
+    <modules>
+        <module>identifiers</module>
+        <module>identifiers-test</module>
+        <module>chemistry</module>
+        <module>climate</module>
+        <module>weather</module>
+        <module>zone</module>
+        <module>soil</module>
+        <module>sensors</module>
+        <module>plants</module>
+        <module>apiary</module>
+        <module>fungi</module>
+        <module>insects</module>
+        <module>arachnids</module>
+        <module>worms</module>
+        <module>molluscs</module>
+        <module>vertebrates</module>
+        <module>microbes</module>
+        <module>naturalists</module>
+    </modules>
+
+</project>

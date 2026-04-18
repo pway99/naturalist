@@ -1,0 +1,11 @@
+com/naturalist/plants/cultivar/Cultivar.class
+com/naturalist/plants/cultivar/FruitType.class
+com/naturalist/plants/PlantRepository.class
+com/naturalist/plants/PlantRepository$PlantEntityRepository.class
+com/naturalist/plants/heritage/Provenance.class
+com/naturalist/plants/PlantLifeForm.class
+com/naturalist/plants/cultivar/SeedSavingPolicy.class
+com/naturalist/plants/cultivar/VarietyType.class
+com/naturalist/plants/Plant.class
+com/naturalist/plants/PlantRole.class
+com/naturalist/plants/heritage/SeedLineage.class

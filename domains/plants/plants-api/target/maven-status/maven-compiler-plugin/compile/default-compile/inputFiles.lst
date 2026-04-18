@@ -1,0 +1,10 @@
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/Plant.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantLifeForm.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantRepository.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantRole.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/cultivar/Cultivar.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/cultivar/FruitType.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/cultivar/SeedSavingPolicy.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/cultivar/VarietyType.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/heritage/Provenance.java
+/Users/patrickway/dev/amateur-naturalist/domains/plants/plants-api/src/main/java/com/naturalist/plants/heritage/SeedLineage.java

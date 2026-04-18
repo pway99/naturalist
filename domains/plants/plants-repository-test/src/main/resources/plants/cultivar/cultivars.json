@@ -1,0 +1,70 @@
+[
+  {
+    "id": null,
+    "name": "amish-paste",
+    "plantName": "tomato",
+    "commonName": "Amish Paste",
+    "description": {
+      "preschool": "Amish Paste tomatoes are big, heart-shaped red tomatoes that are very thick and meaty inside. They have hardly any watery seeds, which makes them perfect for cooking into thick, delicious pasta sauce. We grow lots of them so we can make jars and jars of sauce to eat all year.",
+      "elementary": "Amish Paste is a large paste tomato variety originally grown by Amish farming communities. Its fruit is shaped like a big oxheart and weighs 6 to 8 ounces. Inside, the flesh is very dense with a tiny seed cavity and very little water — this means when you cook them into sauce, they thicken quickly without hours of simmering. At Oak Vista we grow 12 plants and aim to make about 90 quarts of Italian-style sauce each season.",
+      "secondary": "Amish Paste is a paste/processing cultivar of Solanum lycopersicum characterised by large oxheart-shaped fruit (170–230 g), exceptionally low water content, and a small locular cavity relative to fruit volume. The dry matter content is high compared to San Marzano and Roma types, yielding thick sauce with minimal reduction time. The variety shows good general vigour and disease tolerance in hot Mediterranean climates. Seed provenance for the Oak Vista 2026 planting is unconfirmed — sourced from The Plant Barn, Chico CA, and may be a commercial hybrid rather than the true open-pollinated Amish heirloom. Breeding status flagged UNKNOWN pending verification.",
+      "university": "Amish Paste — a large-fruited paste cultivar of Solanum lycopersicum, reportedly originating from Amish farming communities in Wisconsin. Fruit morphology: oxheart to elongated plum, 170–230 g, with high pericarp-to-locule ratio and low gel content. Brix values typically 5.0–5.5°, comparable to San Marzano but with superior sauce yield per unit fresh weight due to reduced aqueous fraction. Estimated production at Oak Vista: 15–20 lbs per plant under adequate calcium and consistent irrigation — critical given the very low soluble Ca (6.99 lbs/1000 sqft, FGL CH 2671853) and coco coir Ca²⁺ binding in the substrate. The 2026 planting (12 plants, ~300 sqft) targets 180–240 lbs total fresh weight yielding 72–96 quarts finished sauce at a 2.5 lb/quart conversion rate. Variety type requires verification from a certified seed source (Baker Creek Heirloom Seeds) before inclusion in any seed saving program."
+    },
+    "varietyType": "UNKNOWN",
+    "fruitType": "PASTE",
+    "seedSavingPolicy": "CONDITIONAL",
+    "seedSource": "The Plant Barn, Chico CA",
+    "gardenNotes": "12 plants in front raised beds, planted April 6, 2026. Evaluating as primary sauce variety for 90-quart annual production target. Confirm open-pollinated status before saving seed — source verified OP seeds from Baker Creek Heirloom Seeds (rareseeds.com) this fall if variety performs well."
+  },
+  {
+    "id": null,
+    "name": "italian-pear-nicks",
+    "plantName": "tomato",
+    "commonName": "Italian Pear (Nick's)",
+    "description": {
+      "preschool": "Nick's Italian Pear tomato is a very special tomato that has been grown by the same family for over fifty years. The original grower saved seeds from the very best tomatoes every single year. Now we are growing them here in Chico and saving the seeds every single year so this special tomato is never lost.",
+      "elementary": "Nick's Italian Pear is a true heirloom paste tomato that has been carefully grown and seed-saved for more than 50 years. Each year, the grower saved seeds from the best tomatoes — the ones that ripened earliest, produced the most fruit, and tasted the best. Over many decades this created a unique variety perfectly suited to California growing. The 2026 season at Oak Vista is the very first year these seeds are being grown in Chico, beginning a new chapter of adapting this irreplaceable family variety to Sacramento Valley conditions.",
+      "secondary": "Italian Pear (Nick's) is a true open-pollinated heirloom paste tomato maintained through continuous seed selection for over 50 years in California. The variety produces traditional Italian pear-shaped fruit of medium size with excellent flavour developed through decades of selection for both fresh eating and sauce quality. The 2026 season at Oak Vista represents Generation 1 of the Chico climate adaptation selection program — seeds will be saved from the earliest-ripening, most productive, and best-flavoured fruit under Sacramento Valley conditions (100–110°F summer peaks, USDA Zone 9b). This variety carries SAVE_ANNUALLY seed saving policy without exception — the genetic heritage is irreplaceable.",
+      "university": "Italian Pear (Nick's) — an open-pollinated paste cultivar of Solanum lycopersicum maintained through 50+ years of continuous phenotypic selection by a single cultivator in coastal California. The selection history represents a significant accumulation of locally adapted allele frequencies for Mediterranean climate performance — fruit quality, production timing, and disease tolerance traits shaped by half a century of directional selection pressure. The 2026 Oak Vista planting initiates a deliberate adaptation program to Sacramento Valley conditions: selection criteria target early ripening (critical under Chico's more extreme summer heat relative to coastal California's maritime moderation), high per-plant yield, and organoleptic quality for sauce production. This variety is modeled as a SeedLineage aggregate in the Naturalist application — the founding generation of Chico-adapted Italian Pear lineage. Seed saving protocol: fermentation extraction from the earliest-ripening, highest-yielding, best-flavoured fruit. Label with date, selection criteria, and generation number. Store in cool, dry conditions."
+    },
+    "varietyType": "OPEN_POLLINATED",
+    "fruitType": "PASTE",
+    "seedSavingPolicy": "SAVE_ANNUALLY",
+    "seedSource": "Family heirloom — direct transfer, 50+ year selection history",
+    "gardenNotes": "Front raised beds. Plant count TBD — update when final bed inventory completed. 2026 is first Chico season — monitor heat tolerance closely. HIGHEST PRIORITY seed lineage in the system. Save seeds from earliest ripening, highest production, best flavour fruit without exception."
+  },
+  {
+    "id": null,
+    "name": "sungold-cherry",
+    "plantName": "tomato",
+    "commonName": "Sungold Cherry Tomato",
+    "description": {
+      "preschool": "Sungold is a little orange cherry tomato that is one of the sweetest things you can eat straight from the garden. The tiny fruits are like little orange jewels hanging in clusters, and they taste like candy made from sunshine. We grow just one plant and it makes hundreds and hundreds of little tomatoes.",
+      "elementary": "Sungold is a cherry tomato variety that produces small, bright orange fruit with an incredibly sweet, complex flavour that many gardeners consider the best-tasting cherry tomato in the world. It is an F1 hybrid, which means its seeds will not grow true — each year you must buy new plants or seeds. The single plant at Oak Vista grows in the courtyard bed near the passion fruit vine, trained on a small trellis with companion zinnias and borage planted nearby for bee forage.",
+      "secondary": "Sungold is an indeterminate F1 hybrid cherry tomato (Solanum lycopersicum) producing small orange fruit with exceptionally high sugar content and complex flavour combining sweetness with tropical fruit notes. The hybrid vigour (heterosis) contributes to prolific production from June through October in Chico conditions, with very good heat tolerance. As an F1 hybrid, saved seed will segregate in the F2 generation — do not save seed. The single plant at Oak Vista is grown in the courtyard bed adjacent to the Passiflora edulis trellis area, in E.B. Stone Planting Compost (bat guano, alfalfa meal, kelp meal) over native soil. Companion planted with zinnias and borage for pollinator support.",
+      "university": "Sungold F1 — an indeterminate cherry cultivar of Solanum lycopersicum bred by Tokita Seed Company (Japan). Fruit: 15–20 g, orange (high β-carotene, lycopene present but masked by carotenoid profile), Brix 9–10° — among the highest sugar concentrations in commercially available tomato cultivars. The F1 heterosis provides vigorous vegetative growth, disease tolerance (Fusarium wilt races 1 and 2, Tobacco mosaic virus), and sustained production under high-temperature conditions. Training protocol: 1–2 main stems, regular lateral sucker removal; the indeterminate habit will outgrow small trellises and may require tip-pruning or cascade training. Companion planting with Borago officinalis (buzz pollination, nectar) and Zinnia elegans (generalist pollinator attraction) provides functional pollinator habitat adjacent to the Passiflora edulis trellis."
+    },
+    "varietyType": "HYBRID_F1",
+    "fruitType": "CHERRY",
+    "seedSavingPolicy": "DO_NOT_SAVE",
+    "seedSource": "Commercial nursery start",
+    "gardenNotes": "1 plant in courtyard bed adjacent to passiflora trellis area. E.B. Stone Planting Compost over native soil. Train to 1-2 main stems, pinch suckers regularly. Small portable trellis installed — expect to outgrow it. Companion planted with zinnias and borage for bee forage."
+  },
+  {
+    "id": null,
+    "name": "san-marzano-f2",
+    "plantName": "tomato",
+    "commonName": "San Marzano (Saved Seeds — F2)",
+    "description": {
+      "preschool": "These San Marzano tomato plants were grown from seeds we saved from last year's tomatoes. But those tomatoes were a special kind called a hybrid, so the babies might not look or taste like their parents — it is a surprise what they will do. Some of the plants are not feeling very well, so we are watching them carefully.",
+      "elementary": "These San Marzano plants were grown from seeds saved from what turned out to be F1 hybrid tomatoes. When you save seeds from a hybrid, the next generation (called F2) is unpredictable — the plants can be tall or short, productive or not, and the fruit may taste different from the parent. Four of the weakest plants were already removed, and the three remaining plants are being observed for 2026 performance. We will not save seeds from these plants.",
+      "secondary": "San Marzano F2 — plants grown from seed saved from probable F1 hybrid San Marzano-type fruit. F2 generation plants exhibit genetic segregation as the heterozygous F1 parental genotype recombines, producing variable phenotypes across the offspring population. The Oak Vista 2026 planting started with 7 plants; 4 were removed due to poor vigour (purple/anthocyanin colouring, leaf curl, etiolation stress consistent with genetic segregation or environmental stress during germination). The 3 remaining plants are being observed for production performance. Seed saving is not appropriate — these plants are genetically unpredictable and do not represent a stable variety.",
+      "university": "San Marzano F2 — second filial generation from probable F1 hybrid parentage. The F2 segregation ratio for polygenic traits (fruit size, shape, sugar content, disease resistance, growth habit) produces a wide phenotypic distribution; the observed variable vigour and stress symptoms (anthocyanin accumulation, epinasty, etiolation) across the original 7-plant cohort are consistent with segregation rather than uniform environmental stress. The 4 culled individuals likely represent recombinant genotypes with reduced fitness under the specific growing conditions. The 3 retained plants may produce adequate fruit for fresh use but should not be evaluated as representative of the San Marzano type. If the San Marzano cultivar is desired for future seasons, source verified DOP-type seed from a reputable supplier (e.g. Seeds from Italy, Baker Creek) to obtain the true indeterminate paste type."
+    },
+    "varietyType": "HYBRID_F2",
+    "fruitType": "PASTE",
+    "seedSavingPolicy": "DO_NOT_SAVE",
+    "seedSource": "Saved seed from prior season F1 hybrid fruit",
+    "gardenNotes": "3 remaining plants (4 weakest removed). Variable condition — some showing purple/anthocyanin colouring, leaf curl, etiolation stress. Observe 2026 performance. If poor producers, replace with verified heirloom seed source in 2027. Do not save seeds from these plants."
+  }
+]

@@ -1,0 +1,4 @@
+com/naturalist/plants/cultivar/CultivarTestEntitySourceTest.class
+com/naturalist/plants/PlantTestEntitySourceTest.class
+com/naturalist/plants/PlantEntityRepositoryMockTest.class
+com/naturalist/plants/heritage/SeedLineageTestEntitySourceTest.class

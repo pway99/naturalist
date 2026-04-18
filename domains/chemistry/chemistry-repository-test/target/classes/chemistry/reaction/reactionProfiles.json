@@ -1,0 +1,170 @@
+[
+  {
+    "id": null,
+    "name": "gypsum-dissolution-in-soil-water",
+    "title": "Gypsum Dissolution in Soil Water",
+    "equation": "CaSO4·2H2O → Ca2+ + SO4 2- + 2H2O",
+    "reactants": ["calcium-sulfate-dihydrate"],
+    "products": ["calcium-pectate"],
+    "type": "DISSOLUTION",
+    "conditions": {
+      "requiresMoisture": true,
+      "requiresAerobicConditions": false,
+      "requiresBiologicalCatalyst": false,
+      "biologicalCatalyst": null,
+      "minTempF": null,
+      "maxTempF": null,
+      "optimalTempF": null,
+      "minPh": null,
+      "maxPh": null
+    },
+    "significance": "Primary mechanism of Oak Vista soil rehabilitation. Dissolved Ca2+ enters soil solution and displaces K+ and Na+ from coco coir exchange sites via mass action. Prilled form dissolves over weeks providing sustained Ca2+ supply. Moist soil condition at April 1 application accelerated initial dissolution."
+  },
+  {
+    "id": null,
+    "name": "calcium-displacing-potassium-from-coir-exchange-sites",
+    "title": "Calcium Displacing Potassium from Coir Exchange Sites",
+    "equation": "Ca2+ (solution) + 2K+ (exchange) → Ca2+ (exchange) + 2K+ (solution)",
+    "reactants": ["calcium-sulfate-dihydrate", "potassium-sulfate"],
+    "products": ["potassium-sulfate"],
+    "type": "CATION_EXCHANGE",
+    "conditions": {
+      "requiresMoisture": true,
+      "requiresAerobicConditions": false,
+      "requiresBiologicalCatalyst": false,
+      "biologicalCatalyst": null,
+      "minTempF": null,
+      "maxTempF": null,
+      "optimalTempF": null,
+      "minPh": null,
+      "maxPh": null
+    },
+    "significance": "Core mechanism of the multi-year Oak Vista coir rehabilitation program. Coco coir preferentially binds divalent cations (Ca2+ > Mg2+ > K+ > Na+). Nine years of CalPhos without Ca displacement created Ca-deficient exchange sites. Gypsum floods soil solution with Ca2+, mass action drives K+ and Na+ displacement into leachable solution. Full rehabilitation projected 3-5 seasons."
+  },
+  {
+    "id": null,
+    "name": "bacterial-sulfur-oxidation-to-sulfate",
+    "title": "Bacterial Sulfur Oxidation to Sulfate",
+    "equation": "2S + 3O2 + 2H2O → 2H2SO4",
+    "reactants": ["elemental-sulfur"],
+    "products": ["calcium-sulfate-dihydrate"],
+    "type": "BIOLOGICAL",
+    "conditions": {
+      "requiresMoisture": true,
+      "requiresAerobicConditions": true,
+      "requiresBiologicalCatalyst": true,
+      "biologicalCatalyst": "Thiobacillus thiooxidans and Thiobacillus thioparus bacteria",
+      "minTempF": 55.0,
+      "maxTempF": null,
+      "optimalTempF": 86.0,
+      "minPh": 4.5,
+      "maxPh": 8.5
+    },
+    "significance": "Converts elemental sulfur applied to Oak Vista beds into plant-available sulfate. Rate accelerates significantly above 77°F Chico soil temperature — WH52 sensor temperature data will track conversion onset. In limestone-containing soil the produced H2SO4 reacts with CaCO3 producing in-situ gypsum rather than acidifying soil."
+  },
+  {
+    "id": null,
+    "name": "limestone-neutralization-of-sulfuric-acid",
+    "title": "Limestone Neutralization of Sulfuric Acid",
+    "equation": "H2SO4 + CaCO3 → CaSO4 + H2O + CO2",
+    "reactants": ["elemental-sulfur", "calcium-carbonate"],
+    "products": ["calcium-sulfate-dihydrate"],
+    "type": "ACID_BASE",
+    "conditions": {
+      "requiresMoisture": true,
+      "requiresAerobicConditions": false,
+      "requiresBiologicalCatalyst": false,
+      "biologicalCatalyst": null,
+      "minTempF": null,
+      "maxTempF": null,
+      "optimalTempF": null,
+      "minPh": null,
+      "maxPh": 7.5
+    },
+    "significance": "Accidental but beneficial in Oak Vista backyard bed (2.9% limestone). H2SO4 produced by sulfur oxidation is consumed by CaCO3 before it can lower pH. Products are CaSO4 (additional gypsum), H2O, and CO2 gas. Net effect: elemental sulfur + limestone = in-situ gypsum formation with zero pH change. Partially self-correcting system."
+  },
+  {
+    "id": null,
+    "name": "calcium-pectate-cell-wall-formation",
+    "title": "Calcium Pectate Cell Wall Formation",
+    "equation": "Ca2+ + pectin chains → calcium pectate (cell wall)",
+    "reactants": ["calcium-sulfate-dihydrate", "organic-acid-chelate", "calcium-chloride"],
+    "products": ["calcium-pectate"],
+    "type": "BIOLOGICAL",
+    "conditions": {
+      "requiresMoisture": true,
+      "requiresAerobicConditions": true,
+      "requiresBiologicalCatalyst": true,
+      "biologicalCatalyst": "Plant cell wall synthesis enzymes (pectin methylesterase)",
+      "minTempF": 50.0,
+      "maxTempF": null,
+      "optimalTempF": 75.0,
+      "minPh": 5.5,
+      "maxPh": 7.5
+    },
+    "significance": "The biological target of the entire Oak Vista BER prevention program. Ca2+ must be present at developing fruit cells at the exact moment of cell wall formation. Calcium is immobile in plant tissue once deposited — cannot be redistributed. Interruption of Ca2+ supply during rapid fruit cell division produces permanent BER lesions. Chico summer heat accelerates cell division beyond Ca2+ supply rate without foliar supplementation."
+  },
+  {
+    "id": null,
+    "name": "organic-acid-chelate-foliar-cuticular-absorption",
+    "title": "Organic Acid Chelate Foliar Cuticular Absorption",
+    "equation": "Ca-chelate (foliar) → Ca2+ (apoplast) → calcium pectate",
+    "reactants": ["organic-acid-chelate"],
+    "products": ["calcium-pectate"],
+    "type": "BIOLOGICAL",
+    "conditions": {
+      "requiresMoisture": false,
+      "requiresAerobicConditions": true,
+      "requiresBiologicalCatalyst": false,
+      "biologicalCatalyst": null,
+      "minTempF": 50.0,
+      "maxTempF": null,
+      "optimalTempF": 70.0,
+      "minPh": 5.0,
+      "maxPh": 7.0
+    },
+    "significance": "Mechanism advantage of TPS CalMag OAC over ionic CaCl2. Organic acid ligands allow Ca2+ to penetrate waxy leaf cuticle even when stomata are closed during Chico heat stress. Enables Ca delivery during peak afternoon temperatures when stomates close for water conservation. Alternating with Rot-Stop RTU provides complementary delivery pathways across the weekly BER prevention protocol."
+  },
+  {
+    "id": null,
+    "name": "thymol-volatilization-for-varroa-control",
+    "title": "Thymol Volatilization for Varroa Control",
+    "equation": "C10H14O (gel) → C10H14O (vapor) → Varroa mite mortality",
+    "reactants": ["thymol"],
+    "products": [],
+    "type": "VOLATILIZATION",
+    "conditions": {
+      "requiresMoisture": false,
+      "requiresAerobicConditions": false,
+      "requiresBiologicalCatalyst": false,
+      "biologicalCatalyst": null,
+      "minTempF": 59.0,
+      "maxTempF": 105.0,
+      "optimalTempF": 80.0,
+      "minPh": null,
+      "maxPh": null
+    },
+    "significance": "Preferred Varroa treatment for Oak Vista given Chico summer temperatures. Formic acid dangerous above 85°F — excluded from Chico summer protocol. Thymol effective and safe up to 105°F making late August/September application viable. Remove honey super before treatment — thymol taints honey. Year 1 Oak Vista protocol: honey super pulled late July, Apiguard applied late August."
+  },
+  {
+    "id": null,
+    "name": "formic-acid-vapor-varroa-fumigation",
+    "title": "Formic Acid Vapor Varroa Fumigation",
+    "equation": "HCOOH (liquid) → HCOOH (vapor) → Varroa mite mortality",
+    "reactants": ["formic-acid"],
+    "products": [],
+    "type": "VOLATILIZATION",
+    "conditions": {
+      "requiresMoisture": false,
+      "requiresAerobicConditions": false,
+      "requiresBiologicalCatalyst": false,
+      "biologicalCatalyst": null,
+      "minTempF": 50.0,
+      "maxTempF": 85.0,
+      "optimalTempF": 65.0,
+      "minPh": null,
+      "maxPh": null
+    },
+    "significance": "CONTRAINDICATED for Oak Vista summer treatment. Chico peak temperatures 95-105°F June through September exceed the 85°F safe maximum for formic acid application. Dangerous vapor concentration at high temperatures causes colony stress and beekeeper injury. Reserved for spring and fall treatment windows only if California CDPR approval confirmed. Thymol (Apiguard) is the preferred summer alternative."
+  }
+]

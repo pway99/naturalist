@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: naturalist-console
+
+gg:
+  jte:
+    development-mode: true
+    template-suffix: .jte

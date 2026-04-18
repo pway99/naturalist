@@ -1,0 +1,99 @@
+package com.naturalist.plants.cultivar;
+
+import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.fieldnotes.Description;
+import com.naturalist.observability.Constraints;
+import com.naturalist.plants.PlantName;
+import org.jspecify.annotations.Nullable;
+
+import java.util.function.Consumer;
+
+/**
+ * A named variety within a plant species, carrying the breeding status,
+ * fruit morphology, and seed saving policy specific to this selection.
+ * <p>
+ * {@code Cultivar} operates below the species level: the {@code Plant} catalog
+ * entry for {@code "tomato"} (Solanum lycopersicum) is the species; Amish Paste,
+ * Italian Pear (Nick's), Sungold Cherry, and San Marzano are cultivars within
+ * that species. Each cultivar has a stable slug name used for cross-domain
+ * references in planting events and harvest records.
+ * <p>
+ * {@link VarietyType} determines genetic behaviour under seed saving.
+ * {@link FruitType} determines culinary processing suitability.
+ * {@link SeedSavingPolicy} encodes the management decision derived from
+ * variety type and heritage significance.
+ * <p>
+ * The species cross-reference ({@code plantName}) is a soft FK into the
+ * {@code Plant} catalog via {@link PlantName} — no compile-time dependency
+ * on any other domain module.
+ * <p>
+ * <b>Oak Vista 2026 cultivars:</b>
+ * <ul>
+ *   <li>{@code "amish-paste"} — UNKNOWN variety type (The Plant Barn, Chico).
+ *       12 plants, paste type. Evaluating as primary sauce variety for 90-quart
+ *       annual target. Seed provenance unconfirmed.</li>
+ *   <li>{@code "italian-pear-nicks"} — OPEN_POLLINATED heirloom, 50+ year
+ *       family lineage. SAVE_ANNUALLY without exception.
+ *       Founding generation of Chico adaptation program.</li>
+ *   <li>{@code "sungold-cherry"} — HYBRID_F1 commercial variety. 1 plant,
+ *       cherry type, fresh eating. Do not save seed.</li>
+ *   <li>{@code "san-marzano-f2"} — HYBRID_F2 from saved F1 seed. 3 remaining
+ *       plants, struggling. Do not save seed.</li>
+ * </ul>
+ */
+public record Cultivar(
+        CultivarId id,
+        CultivarName name,
+        PlantName plantName,
+        String commonName,
+        Description description,
+        VarietyType varietyType,
+        FruitType fruitType,
+        SeedSavingPolicy seedSavingPolicy,
+        @Nullable String seedSource,
+        @Nullable String gardenNotes
+) implements CatalogEntity<CultivarId, CultivarName> {
+
+    @Override
+    public Cultivar withId(CultivarId id) {
+        return new Cultivar(id, name, plantName, commonName, description, varietyType,
+                fruitType, seedSavingPolicy, seedSource, gardenNotes);
+    }
+
+    /**
+     * Whether this cultivar is safe for seed saving based on its breeding status.
+     * Open-pollinated varieties breed true; F1 hybrids and unknowns do not.
+     */
+    public boolean breedsTrueFromSeed() {
+        return varietyType == VarietyType.OPEN_POLLINATED;
+    }
+
+    /**
+     * Whether this cultivar requires mandatory annual seed saving — reserved
+     * for irreplaceable heritage varieties with active lineage tracking.
+     */
+    public boolean requiresSeedSaving() {
+        return seedSavingPolicy == SeedSavingPolicy.SAVE_ANNUALLY;
+    }
+
+    /**
+     * Whether this cultivar is suitable for sauce production based on its
+     * fruit morphology.
+     */
+    public boolean isSauceVariety() {
+        return fruitType == FruitType.PASTE;
+    }
+
+    @Override
+    public Consumer<? extends Constraints> invariants() {
+        return i -> i
+                .entityId(id, "id")
+                .entityName(name, "name")
+                .notNull(this, Cultivar::plantName, "plantName")
+                .notBlank(commonName, "commonName")
+                .notNull(this, Cultivar::description, "description")
+                .notNull(this, Cultivar::varietyType, "varietyType")
+                .notNull(this, Cultivar::fruitType, "fruitType")
+                .notNull(this, Cultivar::seedSavingPolicy, "seedSavingPolicy");
+    }
+}

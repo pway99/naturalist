@@ -1,0 +1,96 @@
+{
+  "common_name": "Green Lacewing",
+  "family": "Chrysopidae",
+  "genus": "Chrysoperla",
+  "species": "Chrysoperla sp.",
+  "observation": {
+    "location": "Chico, California",
+    "habitat": "Residential garden — beneficial insect habitat",
+    "found_on": "White wall surface at night",
+    "garden_context": "Oak Vista apiary and integrated beneficial insect habitat"
+  },
+  "identification_features": [
+    "Brilliant lime green body",
+    "Extraordinarily long antennae — nearly body length",
+    "Large iridescent net-veined wings with intricate venation",
+    "Golden compound eyes characteristic of Chrysoperla",
+    "Delicate ethereal appearance",
+    "Wings held tent-like over body at rest"
+  ],
+  "life_stages": {
+    "egg": {
+      "description": "Laid on hair-thin silk stalks standing upright from leaf surfaces",
+      "color_progression": "Pale green turning grey as embryo develops",
+      "laying_pattern": "Usually in small groups",
+      "adaptive_significance": "Stalked design prevents newly hatched larvae from eating siblings before dispersing"
+    },
+    "larva": {
+      "common_name": "Aphid Lion",
+      "description": "Ferocious predatory larva — appearance completely unlike delicate adult",
+      "prey_consumption": "200+ aphids per week",
+      "prey_targets": [
+        "Aphids",
+        "Spider mites",
+        "Thrips",
+        "Whitefly",
+        "Small caterpillars",
+        "Leafhoppers",
+        "Insect eggs"
+      ],
+      "remarkable_behavior": "Carries debris and dead prey on back as camouflage — one of most unusual behaviors in beneficial insects"
+    },
+    "adult": {
+      "feeding": "Nectar, pollen, and honeydew",
+      "role": "Secondary pollinator and reproductive stage",
+      "attraction": "Attracted to lights at night — likely explains wall observation",
+      "supported_by": [
+        "Dill flowers",
+        "Alyssum",
+        "Clover",
+        "Fennel"
+      ]
+    }
+  },
+  "beneficial_classification": {
+    "guild": "Predator and Pollinator",
+    "significance": "Both adult and larval stages provide distinct ecological benefits — rare dual-stage beneficial",
+    "pest_management_value": "Commercially sold for release in IPM programs — this individual arrived naturally",
+    "ipm_notes": "Gardeners and farmers purchase lacewing eggs for controlled release. Natural arrival indicates high quality habitat."
+  },
+  "habitat_requirements": {
+    "nectar_sources": "Shallow open flowers — umbellifers especially valuable",
+    "shelter": "Dense plant structure for daytime resting",
+    "prey_availability": "Aphid colonies on plants provide both larval food and adult honeydew",
+    "lighting": "Attracted to artificial light at night — urban gardens with exterior lighting support adult dispersal"
+  },
+  "garden_connections": {
+    "supporting_plants": [
+      "Dill (Anethum graveolens) — primary nectar source",
+      "Sweet alyssum (Lobularia maritima) — nectar source",
+      "Crimson clover (Trifolium incarnatum) — nectar and pollen",
+      "Scented geranium (Pelargonium graveolens) — nectar source"
+    ],
+    "relationship_to_other_beneficials": "Shares aphid prey resource with ladybug larvae and hoverfly larvae — complementary rather than competitive due to microhabitat differences",
+    "natural_enemies": "Lacewing larvae themselves are preyed upon by larger predators — part of the food web"
+  },
+  "ecological_significance": {
+    "indicator_value": "Presence indicates diverse flowering plant community providing adult nectar resources",
+    "food_web_position": "Secondary predator — controls aphid populations that would otherwise explode on fruit trees and vegetables",
+    "chico_context": "Warm Central Valley climate supports multiple generations per season — continuous biological control through summer"
+  },
+  "census_record": {
+    "observation_number": 17,
+    "date_context": "Spring 2026 — Chico beneficial insect census",
+    "total_species_at_time_of_observation": 17,
+    "functional_guilds_represented": [
+      "Parasitoids",
+      "Active predators",
+      "Ambush predators",
+      "Pollinators",
+      "Decomposers",
+      "Soil engineers"
+    ],
+    "breeding_confirmed": "Pending — watch for stalked eggs on plant foliage",
+    "notes": "Arrived naturally to habitat garden — not purchased or introduced. Confirms habitat quality sufficient to attract commercially valuable beneficial insects without intervention."
+  }
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "id": null,
+    "name": "steinernema-carpocapsae",
+    "taxonomy": {
+      "order": "Rhabditida",
+      "family": "Steinernematidae",
+      "genus": "Steinernema",
+      "species": "carpocapsae"
+    },
+    "description": {
+      "preschool": "This tiny worm is too small to see, but it is one of the best tools for protecting the beehive. We put it in water and pour it on the soil near the hive at night. It hunts the beetle larvae that try to hurt the bees.",
+      "elementary": "Steinernema carpocapsae is a microscopic worm — a nematode — that lives in the soil and hunts insect larvae. It is the specific type used to control Small Hive Beetle larvae, which crawl into the soil near beehives to turn into adult beetles. We mix the nematodes in water and drench the soil around the hive after dark, because sunlight kills them. They find and infect the beetle larvae, killing them before they become adult beetles. Different nematode species target different pests — only S. carpocapsae works against Small Hive Beetle.",
+      "secondary": "Steinernema carpocapsae is an ambush-strategy entomopathogenic nematode (EPN) — infective juveniles (IJ, third larval stage) wait at the soil surface or on soil particles for a mobile host to pass, then attach and enter through natural body openings (mouth, anus, spiracles). Once inside the host haemocoele, they release their symbiotic bacteria Xenorhabdus nematophila, which proliferate rapidly, killing the host within 24–48 hours by septicaemia. The nematode then reproduces inside the cadaver, producing thousands of new IJs that emerge to seek new hosts. S. carpocapsae is the only commercially available EPN species with documented efficacy against Small Hive Beetle (Aethina tumida) larvae migrating to pupation in soil adjacent to hives. S. feltiae does not control SHB — species selection is critical.",
+      "university": "Steinernema carpocapsae (Weiser, 1955) Filipjev, 1934 — Nematoda: Rhabditida: Steinernematidae. Applied at Oak Vista for Small Hive Beetle (SHB, Aethina tumida) larval control in soil adjacent to the Saskatraz colony hive. Foraging strategy: ambush (type I) — IJs exhibit nictation behaviour (standing upright on substrate, waving anteriorly to contact passing hosts); effective against mobile hosts crossing the soil surface. Host specificity: broad within Insecta; particularly effective against SHB (Coleoptera: Nitidulidae) late-instar larvae migrating from hive to pupation sites in soil (3–10 cm depth). Application parameters: soil temperature 15–30°C (lethal above 38°C, immobile below 10°C); apply after 19:00 to avoid UV photodegradation; soil moisture >50% field capacity required for juvenile mobility; irrigate in after application. Commercial product: NemaSeek Hi (Beneficial Insectaries). Xenorhabdus nematophila symbiont produces carbapenem-class antibiotics suppressing competing soil bacteria. Note: S. feltiae (the Peaceful Valley Organic standard product) lacks efficacy against SHB — this substitution is a critical management error."
+    },
+    "primaryTargetPest": "Small Hive Beetle larvae (Aethina tumida) in soil adjacent to apiary",
+    "minApplicationTempF": 60,
+    "maxApplicationTempF": 86,
+    "applicationAfterSunset": true,
+    "foragingStrategy": "AMBUSH",
+    "applicationNotes": "NemaSeek Hi product. Apply at 50 million IJ per 1,000 sq ft. Drench soil within 1 metre of hive entrance and landing board area. Apply after 7 PM. Irrigate in with 0.5 inch water immediately after application. Refrigerate unused nematodes at 4°C; use within 2 weeks of receipt. Do not substitute with S. feltiae — only H. indica and S. carpocapsae are effective against SHB."
+  },
+  {
+    "id": null,
+    "name": "steinernema-feltiae",
+    "taxonomy": {
+      "order": "Rhabditida",
+      "family": "Steinernematidae",
+      "genus": "Steinernema",
+      "species": "feltiae"
+    },
+    "description": {
+      "preschool": "This invisible worm lives in the soil and eats the tiny larvae of fungus gnats — the little flies that buzz around potted plants. We put it in the water when we water the plants and it protects the roots.",
+      "elementary": "Steinernema feltiae is a microscopic nematode applied to the soil to control fungus gnats. Fungus gnats lay their eggs in moist soil, and the larvae eat plant roots, especially on young tomato seedlings. The nematode hunts these larvae underground — it enters the gnat larva and kills it with bacteria in about two days. You apply it by mixing with water and drenching the soil. It is safe for plants, people, and pets.",
+      "secondary": "Steinernema feltiae employs an intermediate foraging strategy between ambush (S. carpocapsae) and cruiser (H. bacteriophora), making it effective against both mobile surface-dwelling hosts and relatively sedentary shallow-soil hosts. Its primary application at Oak Vista is the suppression of fungus gnat (Bradysia spp.) larvae in tomato bed soil, where larvae feed on root hairs and fine roots causing stunting and wilting in young transplants. S. feltiae is distinguished from other Steinernema spp. by its efficacy at lower soil temperatures (10–27°C versus 15–30°C for S. carpocapsae) — a critical advantage for spring applications in Chico before soil temperatures exceed 20°C. The symbiotic bacterium is Xenorhabdus bovienii. S. feltiae does not control Small Hive Beetle — this species distinction must be maintained in application scheduling.",
+      "university": "Steinernema feltiae (Filipjev, 1934) Wouts et al., 1982 — Nematoda: Rhabditida: Steinernematidae. Primary application at Oak Vista: fungus gnat (Bradysia spp., Diptera: Sciaridae) larval suppression in tomato beds. Foraging strategy: intermediate — IJs exhibit both nictation (ambush) and active host-searching (cruiser) behaviour; effective host-finding range 5–15 cm laterally in irrigated soil. Target host biology: Bradysia spp. larvae (4 instars) inhabit the top 5 cm of soil; peak vulnerability is instars 2–3 (days 4–8 post-eclosion from soil-surface eggs); adult gnats are not controlled. Temperature performance: active at 10–27°C (superior cold tolerance versus S. carpocapsae); suppression of efficacy above 30°C due to reduced IJ mobility and increased bacterial heat stress. Application rate: 25 million IJ per 1,000 sq ft; repeat at 2-week intervals for 3 applications during active infestation. Symbiont: Xenorhabdus bovienii — produces indole derivatives and xenocoumacin class antibiotics; suppresses Bradysia immune response within 12 hours of nematode entry. SHB distinction: S. feltiae is contraindicated for SHB control regardless of availability — the target host (SHB larva) cuticle chemistry is not recognised by S. feltiae IJs as a feeding stimulus."
+    },
+    "primaryTargetPest": "Fungus gnat larvae (Bradysia spp.) in tomato bed soil",
+    "minApplicationTempF": 50,
+    "maxApplicationTempF": 82,
+    "applicationAfterSunset": true,
+    "foragingStrategy": "INTERMEDIATE",
+    "applicationNotes": "Apply at 25 million IJ per 1,000 sq ft in 1-2 gallons water per 100 sq ft. Drench soil to 5 cm depth where gnat larvae concentrate. Repeat every 2 weeks for persistent infestations. Effective at spring soil temperatures — good choice for April-May applications in Chico beds. Not effective against Small Hive Beetle."
+  },
+  {
+    "id": null,
+    "name": "heterorhabditis-bacteriophora",
+    "taxonomy": {
+      "order": "Rhabditida",
+      "family": "Heterorhabditidae",
+      "genus": "Heterorhabditis",
+      "species": "bacteriophora"
+    },
+    "description": {
+      "preschool": "This tiny soil worm is a helper that protects plant roots. It hunts grubs — the white C-shaped beetle babies — that live deep in the soil and eat plant roots. It is too small to see but works hard underground.",
+      "elementary": "Heterorhabditis bacteriophora is a microscopic worm that hunts white grubs and cutworms — insect larvae that live deep in the soil and eat plant roots. Unlike other nematodes that wait for insects to pass by, this species actively moves through the soil searching for its prey. It burrows down 20 to 30 centimetres to find grubs. It is especially useful against the larvae of scarab beetles (white grubs) and cutworm caterpillars that attack tomato plants near the soil surface.",
+      "secondary": "Heterorhabditis bacteriophora is a cruiser-strategy EPN — infective juveniles actively search through the soil matrix using chemosensory detection of host-emitted cues (CO2, host-specific volatiles, temperature gradients) rather than waiting passively for a mobile host. This active searching makes H. bacteriophora the most effective EPN species for sedentary deep-soil pests such as scarabaeid white grubs and large cutworm (Agrotis spp.) larvae in the root zone. When irrigated into the soil, IJs penetrate to 20–30 cm depth. The symbiotic bacterium is Photorhabdus luminescens, which produces bioluminescence detectable in infected cadavers as a soft blue-green glow (a historically puzzling agricultural observation now fully explained). H. bacteriophora differs from Steinernema spp. in its amphimictic reproduction (males and females) versus hermaphroditic reproduction in early Steinernema generations.",
+      "university": "Heterorhabditis bacteriophora Poinar, 1976 — Nematoda: Rhabditida: Heterorhabditidae. Applied at Oak Vista for cutworm (Agrotis spp.) and scarabaeid white grub suppression in root zone. Foraging strategy: cruiser (type III) — IJs use olfactory host detection via CO2 gradient, plant root volatile signature alteration induced by root-feeding host, and thermal gradient navigation; effective at host detection distances up to 30 cm in irrigated sandy loam. Deep soil penetration: cruiser strategy combined with anterior-to-posterior locomotion enables vertical migration to 30 cm in irrigated soils — qualitatively superior to S. carpocapsae (effective to ~5 cm). Symbiont biology: Photorhabdus luminescens (Enterobacteriaceae) — bioluminescent species; produces stilbene pigments (antibiotics), toxin complex proteins (TC proteins) targeting insect epithelial cells, and enzyme cocktail suppressing host encapsulation. Reproductive biology: heterosexual; 3rd-stage IJ arrested in development until host entry — hormonal host cues (octopamine and haemolymph factors) trigger resumption of development. Application parameters: soil temperature 16–30°C; soil moisture >60% field capacity; irrigate in to drive IJ to root zone depth; minimum 1 inch irrigation post-application."
+    },
+    "primaryTargetPest": "Cutworms (Agrotis spp.) and white grubs (Scarabaeidae larvae) in root zone",
+    "minApplicationTempF": 60,
+    "maxApplicationTempF": 90,
+    "applicationAfterSunset": true,
+    "foragingStrategy": "CRUISER",
+    "applicationNotes": "Apply at 25 million IJ per 1,000 sq ft. Irrigate in immediately with minimum 1 inch water to drive nematodes to root zone depth (15-30 cm). Apply after sunset. Most effective for cutworm suppression when applied at transplant time in spring. Do not apply during drought stress — soil moisture is critical for IJ mobility and host location."
+  }
+]
