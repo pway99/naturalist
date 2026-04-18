@@ -18,12 +18,19 @@ class SecurityConfiguration {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.permitAll())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .failureUrl("/login?error")
+                        .permitAll()
+                )
                 .httpBasic(Customizer.withDefaults())
-                .logout(logout -> logout.permitAll())
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                )
                 .build();
     }
 

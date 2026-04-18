@@ -17,15 +17,118 @@
     --pico-form-element-focus-color: var(--pico-primary);
     --pico-secondary: #6B4423;
     --pico-secondary-hover: #5A3719;
+    --bg-opacity: 0.3;
+
+    /* Text styling for high contrast */
+    --text-light-color: #FAF8F5;
+    --text-shadow-strong: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 12px rgba(0, 0, 0, 0.3);
+    --text-shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --content-background: rgba(59, 50, 40, 0.6);
+    --image-opacity: 1;
+    --bg-overlay-opacity: 0.3;
+
+    /* Card styling */
+    --card-background: #A0826D;
+    --card-header-background: #6B5D52;
+    --card-text-color: #FAF8F5;
+    --card-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 body {
+    position: relative;
     font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/background.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    opacity: var(--image-opacity);
+    z-index: -2;
+    pointer-events: none;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(237, 232, 223, var(--bg-overlay-opacity));
+    z-index: -1;
+    pointer-events: none;
+}
+
+h1, h2, h3 {
+    color: var(--text-light-color);
+    text-shadow: var(--text-shadow-strong);
+    font-weight: 700;
+}
+
+p, li, span:not(.badge), a {
+    color: var(--text-light-color);
+    text-shadow: var(--text-shadow-subtle);
+}
+
+main {
+    background: var(--content-background);
+    border-radius: 0.5rem;
+    padding: 2rem !important;
 }
 
 header nav strong {
     font-style: italic;
     letter-spacing: 0.05em;
+}
+
+.background-opacity-control {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(91, 117, 83, 0.95);
+    border-radius: 0.5rem;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 2px solid #5B7553;
+}
+
+.opacity-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #FAF8F5;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.opacity-slider {
+    width: 200px;
+    height: 6px;
+    cursor: pointer;
+}
+
+#opacity-display {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #FAF8F5;
+    min-width: 2.5rem;
+    text-align: right;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 footer {
@@ -43,15 +146,34 @@ footer {
 }
 .species-grid article {
     margin: 0;
+    background: var(--card-background) !important;
+    border: none;
+    color: var(--card-text-color);
 }
 .species-grid article header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    background: var(--card-header-background) !important;
+    padding: 0.75rem !important;
+    margin: -1rem -1rem 0.75rem -1rem !important;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+.species-grid article header strong {
+    color: var(--card-text-color);
+    text-shadow: var(--card-text-shadow);
+}
+.species-grid article p {
+    color: var(--card-text-color);
+    text-shadow: var(--card-text-shadow);
+}
+.species-grid article a {
+    color: var(--card-text-color);
 }
 
 .taxonomy {
-    color: var(--pico-muted-color);
+    color: var(--text-light-color);
+    text-shadow: var(--card-text-shadow);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
 }
@@ -59,6 +181,8 @@ footer {
 .description-preview {
     font-size: 0.9rem;
     line-height: 1.5;
+    color: var(--text-light-color);
+    text-shadow: var(--card-text-shadow);
 }
 
 /* Badges */
@@ -98,7 +222,7 @@ footer {
 .description-tabs nav {
     display: flex;
     gap: 0;
-    border-bottom: 2px solid var(--pico-card-border-color);
+    border-bottom: 2px solid rgba(250, 248, 245, 0.3);
     margin-bottom: 0;
 }
 .description-tabs .tab {
@@ -110,11 +234,13 @@ footer {
     cursor: pointer;
     font-family: inherit;
     font-size: 0.9rem;
-    color: var(--pico-muted-color);
+    color: var(--text-light-color);
+    text-shadow: var(--card-text-shadow);
 }
 .description-tabs .tab.active {
-    color: var(--pico-primary);
-    border-bottom-color: var(--pico-primary);
+    color: #FFFFFF;
+    border-bottom-color: rgba(250, 248, 245, 0.8);
+    font-weight: 600;
 }
 .tab-content {
     display: none;
@@ -123,6 +249,15 @@ footer {
 }
 .tab-content.active {
     display: block;
+}
+.tab-content p {
+    color: var(--text-light-color);
+    text-shadow: var(--card-text-shadow);
+}
+.tab-content a {
+    color: #FFFFFF;
+    text-shadow: var(--card-text-shadow);
+    font-weight: 600;
 }
 
 /* Image gallery */

@@ -27,5 +27,24 @@
     <footer class="container">
         <small>Management Console</small>
     </footer>
+    <div class="background-opacity-control">
+        <div class="opacity-label">Image Opacity</div>
+        <input type="range" id="bg-opacity-slider" min="0" max="100" value="100" class="opacity-slider">
+        <div id="opacity-display">100%</div>
+    </div>
+    <script>
+        const slider = document.getElementById('bg-opacity-slider');
+        const display = document.getElementById('opacity-display');
+
+        function updateOpacity() {
+            const value = slider.value;
+            const imageOpacity = value / 100;
+            document.documentElement.style.setProperty('--image-opacity', imageOpacity);
+            display.textContent = value + '%';
+        }
+
+        slider.addEventListener('input', updateOpacity);
+        updateOpacity();
+    </script>
 </body>
 </html>
