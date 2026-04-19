@@ -44,5 +44,9 @@ public interface InsectQuery {
             extends EntityQuery<InsectSpeciesId, InsectSpeciesName, InsectSpecies, SpeciesCollection> {}
 
     interface ImageQuery
-            extends EntityQuery<InsectImageId, InsectImageName, InsectImage, ImageCollection> {}
+            extends EntityQuery<InsectImageId, InsectImageName, InsectImage, ImageCollection> {
+
+        ImageCollection forSpeciesName(InsectSpeciesName speciesName);
+        ImageCollection forSpeciesId(InsectSpeciesId speciesId);
+    }
 }

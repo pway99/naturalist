@@ -1,11 +1,13 @@
 package com.naturalist.insects;
 
-import com.naturalist.Incubating;
 import com.naturalist.data.EntityRepository;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
- * Namespace repository for the insects bounded context — the single discoverable entry
- * point for write-side persistence of insect catalog data.
+ * Namespace for the insects bounded context's write-side repositories — the single
+ * discoverable entry point for persistence of insect catalog data.
  *
  * <p>Nested repositories scope to a single entity each:
  * <ul>
@@ -13,16 +15,31 @@ import com.naturalist.data.EntityRepository;
  *   <li>{@link ImageRepository} — {@link InsectImage} entities.</li>
  * </ul>
  *
- * <p>{@code InsectRepository} is a pure container — package-private, holding no behavior
- * of its own. Mirrors the {@link InsectQuery} pattern for write-side discoverability:
- * one file per namespace, nested types for everything inside.
+ * <p>This is a {@code class}, not an {@code interface}, so the nested repository
+ * contracts can carry their own access modifiers. Inside an interface, nested types
+ * would be implicitly {@code public static}; inside a class, {@code protected} keeps
+ * them hidden from foreign packages while permitting same-package adapter
+ * implementations and subclass-based composite implementations. The class is
+ * non-instantiable: it holds no state and no behavior, only the namespace.
+ *
+ * <p>See ADR-020.
  */
-@Incubating("Investigating a pattern where EntityRepositories are nested within a single interface")
-interface InsectRepository {
+class InsectRepository {
+    final protected SpeciesRepository speciesRepository;
+    final protected ImageRepository imageRepository;
 
-    interface SpeciesRepository
+    InsectRepository(SpeciesRepository speciesRepository, ImageRepository imageRepository) {
+        this.speciesRepository = speciesRepository;
+        this.imageRepository = imageRepository;
+    }
+
+    protected interface SpeciesRepository
             extends EntityRepository<InsectSpeciesId, InsectSpeciesName, InsectSpecies> {}
 
-    interface ImageRepository
-            extends EntityRepository<InsectImageId, InsectImageName, InsectImage> {}
+    protected interface ImageRepository
+            extends EntityRepository<InsectImageId, InsectImageName, InsectImage> {
+        List<InsectImage> getBySpeciesName(InsectSpeciesName speciesName);
+
+        List<InsectImage> getBySpeciesId(InsectSpeciesId speciesId);
+    }
 }

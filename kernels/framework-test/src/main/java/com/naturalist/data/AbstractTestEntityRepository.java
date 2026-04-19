@@ -20,7 +20,7 @@ public abstract class AbstractTestEntityRepository<ID extends PersistenceId<?>, 
         this.tes = tesClass();
     }
 
-    TestEntitySource<ID, NAME, ENTITY> testEntitySource() {
+    protected TestEntitySource<ID, NAME, ENTITY> testEntitySource() {
         return naturalistDatabase.get(tes);
     }
 

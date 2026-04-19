@@ -73,27 +73,6 @@ Quick-reference constraints:
 - Each repository manages its own secondary indexes. No cross-repository queries within a
   sub-context. No cross-sub-context repository access.
 
-### Repository Super-Interface Pattern
-
-Each package in a domain api module that contains entities declares a single package-private
-repository super-interface. Entity repository interfaces are nested within it. This reduces
-api surface noise and provides a single discoverable entry point per package namespace.
-
-```java
-@Incubating("Investigating a pattern where EntityRepositories are nested within a single interface")
-interface PlantRepository {
-    interface PlantEntityRepository extends EntityRepository<PlantId, PlantName, Plant> {}
-}
-```
-
-Rules:
-- **One repository super-interface per package** — groups all entity repositories for
-  entities in that package. Entities in different packages (sub-contexts) get their own
-  super-interface in their own package.
-- **Package-private** — the super-interface and all nested interfaces.
-- **Nested interfaces extend `EntityRepository<ID, NAME, ENTITY>`** — one per entity.
-- **`@Incubating`** — the pattern carries this annotation while under evaluation.
-
 ### Repository Behavioral Contract
 
 Every `EntityRepository` has a behavioral contract defined as a `@Test default` interface
@@ -135,6 +114,68 @@ entity, the referenced entity must exist in the test data. Equality is verified 
 recursive structural comparison; the Observer walks the full constraint graph.
 
 Use `/entity-repository <EntityClassName>` to scaffold the full repository stack.
+
+## API Surface: Namespace Patterns
+
+The driving concern behind these patterns is cognitive complexity. A naturalist
+navigates many domains; reducing noise in the object graph — both in the IDE tree
+and at the fluent, discoverable api surface — is what keeps the ecological nature
+of a given domain legible. Structural organization exists to serve that end. The
+specific shapes below (class for repositories, interface for queries, nested
+value-object graphs) are the mechanical consequences of honest visibility rules
+applied to that goal.
+
+See [ADR-020](../docs/adr/ADR-020-namespace-interface-pattern.md) for the full
+rationale.
+
+Three coordinated namespace types organize a domain api around discoverability and
+visibility:
+
+| Outer | Java type | Visibility | Nested types |
+|-------|-----------|------------|--------------|
+| `<DomainNoun>Repository` | `class` | package-private | `<EntitySubject>Repository` (`protected interface`) |
+| `<DomainNoun>Query` | `interface` | public | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
+| `<DomainNoun>EntityCollections` | `interface` | public | `<EntitySubject>Collection` (`final class`) |
+
+`EntitySubject` drops the domain prefix — `InsectSpecies` → `Species`, `InsectImage`
+→ `Image`. The outer namespace carries the prefix.
+
+Why repositories use a `class` and queries use an `interface`: nested types inside
+an `interface` are implicitly `public static` — visibility cannot be restricted. A
+`class` keeps repository contracts hidden (`protected` = package-private + subclass
+access) at both source and bytecode level. Queries and collections *want* their
+nested types public; they are the consumer surface.
+
+**N=1 collapse rule.** When a package contains exactly one entity, skip the
+namespace: declare a top-level package-private `<Entity>Repository` interface and
+a top-level public `<Entity>Query` interface. The namespace adds no value when
+there is nothing to group.
+
+**Aggregate value-object nesting.** A `ValueObject` exclusively reachable through
+a single `Entity` or `Aggregate` nests inside that entity's file as a `static
+record`. Promote it back to top-level the moment any of these becomes true: it
+acquires a standalone lifecycle, it is referenced cross-domain by name, or it
+appears in more than one entity's component graph.
+
+### Query Implementation
+
+See [ADR-010](../docs/adr/ADR-010-query-design-contract.md) for the full contract.
+Short version:
+
+- **Thin — observe, dispatch, delegate.** A query adapter validates arguments via
+  `observer().arguments(...)`, then forwards to the repository (or to an aggregate
+  factory). No logic, no multi-step composition.
+- **Aggregate queries delegate to a package-private factory** in `<domain>-core`.
+  The query never assembles an aggregate inline.
+- **Return types are `Optional<Entity>`, `Optional<Aggregate>`, or a
+  `BehavioralCollection` subclass.** Raw `List<T>` at the port boundary is a
+  review flag.
+
+**Reference implementation:** `domains/insects/insects-api/` — `InsectRepository`
+(namespace class), `InsectQuery` (namespace interface), `InsectEntityCollections`
+(collection namespace), `InsectSpecies` (nested value-object graph). Adapters
+live in `insects-core/`: `InsectQueryImpl`, `SpeciesQueryImpl`, `ImageQueryImpl`,
+`InsectAggregateQueryImpl`.
 
 ## Test Fixtures Use Real Data
 

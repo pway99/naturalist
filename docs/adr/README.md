@@ -25,3 +25,4 @@ Closed decisions are not revisited without a new ADR.
 | [ADR-017](ADR-017-observability-monitoring-and-validation.md) | Observability, Monitoring, and Validation | Draft |
 | [ADR-018](ADR-018-third-party-dependency-policy.md) | Third-Party Dependency Policy | Accepted |
 | [ADR-019](ADR-019-pull-request-size-and-review-fatigue.md) | Pull Request Size and Review Fatigue | Accepted |
+| [ADR-020](ADR-020-namespace-interface-pattern.md) | Namespace Pattern for API Surface | Accepted |

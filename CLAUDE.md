@@ -8,7 +8,8 @@ Detailed conventions are split by area and loaded only when working in that area
 - [`kernels/CLAUDE.md`](kernels/CLAUDE.md) — framework, observability, testing observables,
   BehavioralCollection
 - [`domains/CLAUDE.md`](domains/CLAUDE.md) — test identifiers, TestEntitySource, repository
-  architecture, new-module scaffolding, PR size discipline
+  architecture, **api surface namespace patterns**, query implementation rules,
+  new-module scaffolding, PR size discipline
 - [`domains/<domain>/CLAUDE.md`](domains/) — per-domain vocabulary and invariants
 - [`docs/open-questions.md`](docs/open-questions.md) — design questions in flight
 - [`docs/pending-implementation.md`](docs/pending-implementation.md) — priority-ordered TODO
@@ -123,6 +124,31 @@ Hard rules:
 
 Package-private visibility is the primary enforcement mechanism. ArchUnit tests may
 verify the DAG at build time.
+
+## API Surface
+
+Each `<domain>-api` package with two or more entities exposes three namespace entry
+points — one public read surface, one public return-type surface, and one
+package-private write surface:
+
+- `<DomainNoun>Query` (public `interface`) — read surface, nested entity queries
+  and aggregate queries
+- `<DomainNoun>EntityCollections` (public `interface`) — nested
+  `BehavioralCollection` return types
+- `<DomainNoun>Repository` (package-private `class`) — write surface, nested
+  `protected` repository contracts hidden from consumers
+
+ValueObjects exclusively reachable through a single entity or aggregate nest
+inside that entity's file as a `static record`. Promote them back to top-level
+when ownership becomes plural.
+
+Single-entity packages collapse the namespace — declare a top-level
+`<Entity>Repository` interface and `<Entity>Query` interface directly.
+
+The driving concern is cognitive complexity for the naturalist navigating
+multiple domains. See [ADR-020](docs/adr/ADR-020-namespace-interface-pattern.md)
+for the full rationale and [`domains/CLAUDE.md`](domains/CLAUDE.md) for the
+rules and reference implementation.
 
 ## Sub-Context Boundaries
 
