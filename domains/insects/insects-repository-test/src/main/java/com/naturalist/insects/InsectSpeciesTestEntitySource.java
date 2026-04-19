@@ -1,11 +1,10 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.TestEntitySource;
+import com.naturalist.data.NamedTestEntitySource;
 
-public class InsectSpeciesTestEntitySource extends TestEntitySource<InsectSpeciesId, InsectSpeciesName, InsectSpecies> {
+public class InsectSpeciesTestEntitySource extends NamedTestEntitySource<InsectSpeciesName, InsectSpecies> {
 
     public InsectSpeciesTestEntitySource() {
-        super(InsectSpeciesId::of);
         loadFile("insects/insects.json");
     }
 }

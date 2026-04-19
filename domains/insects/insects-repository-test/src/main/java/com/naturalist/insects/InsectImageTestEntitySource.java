@@ -1,11 +1,10 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.TestEntitySource;
+import com.naturalist.data.NamedTestEntitySource;
 
-public class InsectImageTestEntitySource extends TestEntitySource<InsectImageId, InsectImageName, InsectImage> {
+public class InsectImageTestEntitySource extends NamedTestEntitySource<InsectImageName, InsectImage> {
 
     public InsectImageTestEntitySource() {
-        super(InsectImageId::of);
         loadFile("insects/insect-images.json");
     }
 }

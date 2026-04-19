@@ -39,7 +39,6 @@ class InsectAggregateTest {
 
     private static InsectSpecies validSpecies() {
         return new InsectSpecies(
-                null,
                 InsectSpeciesName.of(RandomValue.string()),
                 new TaxonomicClassification(
                         TaxonomicOrder.of("Coleoptera"),

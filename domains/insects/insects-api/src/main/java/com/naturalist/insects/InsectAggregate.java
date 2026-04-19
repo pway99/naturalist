@@ -11,9 +11,9 @@ import java.util.function.Consumer;
  * photographic field record assembled into a single consistency boundary.
  *
  * <p>{@link InsectSpecies} is the aggregate root; the aggregate's identity is the
- * species's identity ({@link InsectSpeciesId} / {@link InsectSpeciesName}). Multiple
- * aggregates may share the same root in the future (e.g. a field-notes aggregate over
- * sightings); this one is the canonical catalog view.
+ * species's {@link InsectSpeciesName}. Multiple aggregates may share the same root in
+ * the future (e.g. a field-notes aggregate over sightings); this one is the canonical
+ * catalog view.
  *
  * <p>{@link ImageCollection} is non-null but may be empty — a species can be
  * catalogued without photographs. The aggregate enforces structural invariants on its
@@ -38,7 +38,7 @@ public record InsectAggregate(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entity(this, InsectAggregate::species, "species")
+                .namedEntity(this, InsectAggregate::species, "species")
                 .observable(this, InsectAggregate::images, "images");
     }
 }

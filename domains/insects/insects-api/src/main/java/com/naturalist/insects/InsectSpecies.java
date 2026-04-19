@@ -4,7 +4,7 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.habitat.HabitatProfile;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.ddd.AggregateRoot;
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
@@ -59,7 +59,6 @@ import java.util.function.Consumer;
  */
 @AggregateRoot
 public record InsectSpecies(
-        InsectSpeciesId id,
         InsectSpeciesName name,
         TaxonomicClassification taxonomy,
         Description description,
@@ -73,14 +72,7 @@ public record InsectSpecies(
         @Nullable GardenConnections gardenConnections,
         @Nullable BeneficialProfile beneficialProfile,
         @Nullable EcologicalSignificance ecologicalSignificance
-) implements CatalogEntity<InsectSpeciesId, InsectSpeciesName> {
-
-    @Override
-    public InsectSpecies withId(InsectSpeciesId id) {
-        return new InsectSpecies(id, name, taxonomy, description, guilds, beneficial, sightingNotes,
-                identificationFeatures, lifeStages, habitatProfile, habitatRequirements,
-                gardenConnections, beneficialProfile, ecologicalSignificance);
-    }
+) implements NamedEntity<InsectSpeciesName> {
 
     /**
      * Whether this species performs pollination services at Oak Vista.
@@ -114,7 +106,6 @@ public record InsectSpecies(
         // gardenConnections, beneficialProfile, and ecologicalSignificance are intentionally
         // nullable — catalog entries are populated incrementally as field data is documented.
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, InsectSpecies::taxonomy, "taxonomy")
                 .notNull(this, InsectSpecies::description, "description")

@@ -1,14 +1,16 @@
 package com.naturalist.insects;
 
 class InsectQueryImpl implements InsectQuery {
-    final SpeciesQuery speciesQuery;
-    final ImageQuery imageQuery;
-    final InsectAggregateQuery insectAggregateQuery;
+
+    private final SpeciesQuery speciesQuery;
+    private final ImageQuery imageQuery;
+    private final InsectAggregateQuery insectAggregateQuery;
 
     InsectQueryImpl(SpeciesQuery speciesQuery, ImageQuery imageQuery) {
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
-        this.insectAggregateQuery = new InsectAggregateQueryImpl(speciesQuery, imageQuery);
+        InsectAggregateFactory factory = new InsectAggregateFactoryImpl(speciesQuery, imageQuery);
+        this.insectAggregateQuery = new InsectAggregateQueryImpl(factory);
     }
 
     @Override

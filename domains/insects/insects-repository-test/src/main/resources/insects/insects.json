@@ -1,6 +1,5 @@
 [
   {
-    "id": null,
     "name": "tachinid-fly",
     "taxonomy": {
       "order": "Diptera",
@@ -19,7 +18,6 @@
     "sightingNotes": "Multiple individuals documented on sweep-net transect, April 2026 Oak Vista ecological assessment. Family-level identification only — multiple species likely present."
   },
   {
-    "id": null,
     "name": "braconid-wasp",
     "taxonomy": {
       "order": "Hymenoptera",
@@ -38,7 +36,6 @@
     "sightingNotes": "Aphid mummies observed on tomato aphid colony April 2026, confirming Aphidiinae activity. Adult braconids documented on dill border planting."
   },
   {
-    "id": null,
     "name": "hoverfly",
     "taxonomy": {
       "order": "Diptera",
@@ -57,7 +54,6 @@
     "sightingNotes": "Abundant in April 2026 assessment — multiple individuals observed hovering over tomato bed margins and feeding on dill flowers. Larvae expected in aphid colonies."
   },
   {
-    "id": null,
     "name": "convergent-ladybug",
     "taxonomy": {
       "order": "Coleoptera",
@@ -76,7 +72,6 @@
     "sightingNotes": "Adults and larvae confirmed at Oak Vista April 2026. Breeding population established — do not release purchased overwintered adults. Preserve aphid refugia on border plants to maintain prey base."
   },
   {
-    "id": null,
     "name": "ground-beetle",
     "taxonomy": {
       "order": "Coleoptera",
@@ -95,7 +90,6 @@
     "sightingNotes": "Confirmed resident species observed at Oak Vista April 2026. Found under stones at garden bed margins. Nocturnal; daytime refugia under flat rocks and coarse mulch."
   },
   {
-    "id": null,
     "name": "crane-fly",
     "taxonomy": {
       "order": "Diptera",
@@ -114,7 +108,6 @@
     "sightingNotes": "Adults observed at Oak Vista during evening hours, April 2026. Larvae present in soil — not at pest-level density. Beneficial decomposer function confirmed."
   },
   {
-    "id": null,
     "name": "field-roach",
     "taxonomy": {
       "order": "Blattodea",
@@ -133,7 +126,6 @@
     "sightingNotes": "Confirmed Oak Vista resident; found under flat stones and straw mulch. Strictly outdoor species — no indoor control warranted. Population supports garden lizard and toad activity."
   },
   {
-    "id": null,
     "name": "native-sweat-bee",
     "taxonomy": {
       "order": "Hymenoptera",
@@ -152,7 +144,6 @@
     "sightingNotes": "Multiple individuals documented visiting tomato flowers April 2026. Buzz pollination behaviour observed. Ground nests suspected in bare soil patch at east bed margin."
   },
   {
-    "id": null,
     "name": "grey-mining-bee",
     "taxonomy": {
       "order": "Hymenoptera",
@@ -171,7 +162,6 @@
     "sightingNotes": "Confirmed foraging at Oak Vista April 2026. Ground nesting burrows observed in bare soil patch adjacent to east bed. Treat as indicator species for soil surface habitat quality."
   },
   {
-    "id": null,
     "name": "valley-carpenter-bee",
     "taxonomy": {
       "order": "Hymenoptera",
@@ -190,7 +180,6 @@
     "sightingNotes": "Abundant at Oak Vista April 2026 — multiple males and females observed foraging on tomato, sage, and dill flowers. Nesting in old fence post at property edge confirmed. Key pollinator for tomato buzz pollination."
   },
   {
-    "id": null,
     "name": "skipper-butterfly",
     "taxonomy": {
       "order": "Lepidoptera",
@@ -209,7 +198,6 @@
     "sightingNotes": "Multiple individuals observed at Oak Vista April 2026 foraging on sage and Asteraceae border plantings. Family-level identification — species determination requires close specimen examination."
   },
   {
-    "id": null,
     "name": "painted-lady",
     "taxonomy": {
       "order": "Lepidoptera",
@@ -228,7 +216,6 @@
     "sightingNotes": "Observed Oak Vista April 2026 during exceptional Central Valley spring migration event. Adults feeding on dill, sage, and Asteraceae border flowers. Migratory population — not a breeding resident."
   },
   {
-    "id": null,
     "name": "green-lacewing",
     "taxonomy": {
       "order": "Neuroptera",
@@ -247,7 +234,6 @@
     "sightingNotes": "Single adult observed on white wall surface at night, Spring 2026 — attracted to exterior lighting. Natural arrival; not purchased or released. Observation #17 in Oak Vista beneficial insect census. Breeding unconfirmed — watch for stalked eggs on plant foliage. Supported by dill, sweet alyssum, crimson clover, and scented geranium plantings."
   },
   {
-    "id": null,
     "name": "pipevine-swallowtail",
     "taxonomy": {
       "order": "Lepidoptera",
@@ -266,7 +252,6 @@
     "sightingNotes": "CRITICAL — eggs confirmed on Aristolochia californica (California Pipevine) at Oak Vista, April 2026. Never apply pesticides to Pipevine plant or within 3 meters of it during the growing season. This is an irreversible ecological commitment. Breeding confirmed."
   },
   {
-    "id": null,
     "name": "potato-leafhopper",
     "taxonomy": {
       "order": "Hemiptera",
@@ -285,7 +270,6 @@
     "sightingNotes": "Two individuals photographed on crimson clover (Trifolium incarnatum) in active bloom at Oak Vista, April 2026. Photo identification — genus confirmed by wedge-shaped body profile and uniform lime-green coloration; species not confirmed without specimen. First pest species documented in Oak Vista insect census. Population expected to be regulated by Anagrus egg parasitoids supported by the cover crop system."
   },
   {
-    "id": null,
     "name": "orange-sulphur",
     "taxonomy": {
       "order": "Lepidoptera",

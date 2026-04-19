@@ -1,12 +1,13 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.AbstractTestNamedEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 
-class SpeciesRepositoryMock extends AbstractTestEntityRepository<InsectSpeciesId, InsectSpeciesName, InsectSpecies, InsectSpeciesTestEntitySource>
+class SpeciesRepositoryMock
+        extends AbstractTestNamedEntityRepository<InsectSpeciesName, InsectSpecies, InsectSpeciesTestEntitySource>
         implements InsectRepository.SpeciesRepository {
 
-    protected SpeciesRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    SpeciesRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 }

@@ -1,8 +1,7 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.EntityRepository;
+import com.naturalist.data.NamedEntityRepository;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,27 +18,19 @@ import java.util.List;
  * contracts can carry their own access modifiers. Inside an interface, nested types
  * would be implicitly {@code public static}; inside a class, {@code protected} keeps
  * them hidden from foreign packages while permitting same-package adapter
- * implementations and subclass-based composite implementations. The class is
- * non-instantiable: it holds no state and no behavior, only the namespace.
- *
- * <p>See ADR-020.
+ * implementations. The class is non-instantiable — it holds no state and no behavior,
+ * only the namespace (ADR-020).
  */
 class InsectRepository {
-    final protected SpeciesRepository speciesRepository;
-    final protected ImageRepository imageRepository;
 
-    InsectRepository(SpeciesRepository speciesRepository, ImageRepository imageRepository) {
-        this.speciesRepository = speciesRepository;
-        this.imageRepository = imageRepository;
-    }
+    private InsectRepository() {}
 
     protected interface SpeciesRepository
-            extends EntityRepository<InsectSpeciesId, InsectSpeciesName, InsectSpecies> {}
+            extends NamedEntityRepository<InsectSpeciesName, InsectSpecies> {}
 
     protected interface ImageRepository
-            extends EntityRepository<InsectImageId, InsectImageName, InsectImage> {
-        List<InsectImage> getBySpeciesName(InsectSpeciesName speciesName);
+            extends NamedEntityRepository<InsectImageName, InsectImage> {
 
-        List<InsectImage> getBySpeciesId(InsectSpeciesId speciesId);
+        List<InsectImage> getBySpeciesName(InsectSpeciesName speciesName);
     }
 }

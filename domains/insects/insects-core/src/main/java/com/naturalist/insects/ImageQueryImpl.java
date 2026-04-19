@@ -1,12 +1,15 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.data.AbstractNamedEntityQuery;
+import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
 import java.util.Set;
 
-// Claude just hacking things together to see how they work, needs updates
-class ImageQueryImpl extends AbstractEntityQuery<InsectImageId, InsectImageName, InsectImage, InsectEntityCollections.ImageCollection> implements InsectQuery.ImageQuery {
-    final InsectRepository.ImageRepository imageRepository;
+class ImageQueryImpl
+        extends AbstractNamedEntityQuery<InsectImageName, InsectImage, ImageCollection>
+        implements InsectQuery.ImageQuery {
+
+    private final InsectRepository.ImageRepository imageRepository;
 
     ImageQueryImpl(InsectRepository.ImageRepository imageRepository) {
         super(imageRepository);
@@ -14,22 +17,14 @@ class ImageQueryImpl extends AbstractEntityQuery<InsectImageId, InsectImageName,
     }
 
     @Override
-    public InsectEntityCollections.ImageCollection forSpeciesName(InsectSpeciesName speciesName) {
-        return new InsectEntityCollections.ImageCollection(imageRepository.getBySpeciesName(speciesName));
+    public ImageCollection findByNameSet(Set<InsectImageName> names) {
+        return ImageCollection.of(imageRepository.getByEntityNameSet(names));
     }
 
     @Override
-    public InsectEntityCollections.ImageCollection forSpeciesId(InsectSpeciesId speciesId) {
-        return new InsectEntityCollections.ImageCollection(imageRepository.getBySpeciesId(speciesId));
-    }
-
-    @Override
-    public InsectEntityCollections.ImageCollection findByNameSet(Set<InsectImageName> insectImageNames) {
-        return null;
-    }
-
-    @Override
-    public InsectEntityCollections.ImageCollection findByIdSet(Set<InsectImageId> insectImageIds) {
-        return null;
+    public ImageCollection forSpeciesName(InsectSpeciesName speciesName) {
+        observer().arguments("forSpeciesName", i -> i.entityName(speciesName, "speciesName"))
+                .throwWhenInvalid();
+        return ImageCollection.of(imageRepository.getBySpeciesName(speciesName));
     }
 }
