@@ -26,3 +26,4 @@ Closed decisions are not revisited without a new ADR.
 | [ADR-018](ADR-018-third-party-dependency-policy.md) | Third-Party Dependency Policy | Accepted |
 | [ADR-019](ADR-019-pull-request-size-and-review-fatigue.md) | Pull Request Size and Review Fatigue | Accepted |
 | [ADR-020](ADR-020-namespace-interface-pattern.md) | Namespace Pattern for API Surface | Accepted |
+| [ADR-021](ADR-021-persistenceid-is-adapter-internal.md) | PersistenceId is Adapter-Internal; Cross-Entity References Use EntityName | Draft (insects pilot) |
