@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.habitat.HabitatProfile;
 import com.naturalist.taxonomy.TaxonomicClassification;
+import com.naturalist.ddd.AggregateRoot;
 import com.naturalist.ddd.CatalogEntity;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
@@ -47,6 +48,7 @@ import java.util.function.Consumer;
  * incrementally as the catalog matures. {@code beneficialProfile} is additionally
  * constrained by intent: it should only be populated when {@code beneficial} is {@code true}.
  */
+@AggregateRoot
 public record InsectSpecies(
         InsectSpeciesId id,
         InsectSpeciesName name,
