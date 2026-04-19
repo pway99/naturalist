@@ -1,6 +1,7 @@
 package com.naturalist.observability;
 
 import com.naturalist.ddd.Entity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.NamedValue;
 import com.naturalist.ddd.PersistenceId;
 import com.naturalist.ddd.EntityName;
@@ -28,6 +29,14 @@ public class Constraints {
     }
 
     public <O, E extends Entity<?, ?>> Constraints entity(O o, Function<O, E> valueFunction, String name) {
+        return add(new ObservableConstraint<>(o, valueFunction, name, false));
+    }
+
+    public <E extends NamedEntity<?>> Constraints namedEntity(E entity, String name) {
+        return namedEntity(entity, Function.identity(), name);
+    }
+
+    public <O, E extends NamedEntity<?>> Constraints namedEntity(O o, Function<O, E> valueFunction, String name) {
         return add(new ObservableConstraint<>(o, valueFunction, name, false));
     }
 

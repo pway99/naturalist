@@ -1,6 +1,7 @@
 package com.naturalist.observability;
 
 import com.naturalist.ddd.Entity;
+import com.naturalist.ddd.NamedEntity;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -130,6 +131,15 @@ public class Observer {
      * }</pre>
      */
     public InvariantObservation entity(Entity<?, ?> entity, String label) {
+        return observable(entity, label);
+    }
+
+    /**
+     * Observe a named entity (ADR-021) within a method body. Walks the entity's full
+     * constraint graph. A {@code null} entity produces a single failing {@code notNull}
+     * constraint on {@code label}.
+     */
+    public InvariantObservation namedEntity(NamedEntity<?> entity, String label) {
         return observable(entity, label);
     }
 

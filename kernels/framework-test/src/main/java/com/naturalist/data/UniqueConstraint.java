@@ -1,10 +1,10 @@
 package com.naturalist.data;
 
-import com.naturalist.ddd.Entity;
+import com.naturalist.observability.Observable;
 
 import java.util.function.Function;
 
-public interface UniqueConstraint<ENTITY extends Entity<?, ?>> {
+public interface UniqueConstraint<ENTITY extends Observable> {
     String name();
 
     Function<ENTITY, ?> valueFunction();
