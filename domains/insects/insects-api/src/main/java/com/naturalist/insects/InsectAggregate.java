@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.ddd.Aggregate;
+import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.observability.Constraints;
 
 import java.util.function.Consumer;
@@ -14,7 +15,7 @@ import java.util.function.Consumer;
  * aggregates may share the same root in the future (e.g. a field-notes aggregate over
  * sightings); this one is the canonical catalog view.
  *
- * <p>{@link InsectImageCollection} is non-null but may be empty — a species can be
+ * <p>{@link ImageCollection} is non-null but may be empty — a species can be
  * catalogued without photographs. The aggregate enforces structural invariants on its
  * children (presence and validity); referential integrity between
  * {@link InsectImage#insectSpeciesName()} and {@link InsectSpecies#name()} is the
@@ -23,15 +24,15 @@ import java.util.function.Consumer;
  */
 public record InsectAggregate(
         InsectSpecies species,
-        InsectImageCollection images
+        ImageCollection images
 ) implements Aggregate {
 
-    public static InsectAggregate of(InsectSpecies species, InsectImageCollection images) {
+    public static InsectAggregate of(InsectSpecies species, ImageCollection images) {
         return new InsectAggregate(species, images);
     }
 
     public static InsectAggregate of(InsectSpecies species) {
-        return new InsectAggregate(species, InsectImageCollection.empty());
+        return new InsectAggregate(species, ImageCollection.empty());
     }
 
     @Override

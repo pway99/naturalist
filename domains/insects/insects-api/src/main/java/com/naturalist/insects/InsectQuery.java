@@ -2,6 +2,8 @@ package com.naturalist.insects;
 
 import com.naturalist.data.AggregateQuery;
 import com.naturalist.data.EntityQuery;
+import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 
 /**
  * Namespace query for the insects bounded context — the single discoverable entry point
@@ -39,8 +41,8 @@ public interface InsectQuery {
             extends AggregateQuery<InsectSpeciesId, InsectSpeciesName, InsectAggregate> {}
 
     interface SpeciesQuery
-            extends EntityQuery<InsectSpeciesId, InsectSpeciesName, InsectSpecies, InsectSpeciesCollection> {}
+            extends EntityQuery<InsectSpeciesId, InsectSpeciesName, InsectSpecies, SpeciesCollection> {}
 
     interface ImageQuery
-            extends EntityQuery<InsectImageId, InsectImageName, InsectImage, InsectImageCollection> {}
+            extends EntityQuery<InsectImageId, InsectImageName, InsectImage, ImageCollection> {}
 }

@@ -13,7 +13,7 @@ import java.util.Optional;
  * structural validity (presence of root, presence of collection); referential correctness
  * is tautological at the factory's construction point.
  */
-public interface InsectAggregateFactory {
+interface InsectAggregateFactory {
 
     Optional<InsectAggregate> buildById(InsectSpeciesId id);
 
