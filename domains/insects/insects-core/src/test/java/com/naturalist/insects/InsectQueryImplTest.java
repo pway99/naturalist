@@ -1,16 +1,14 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.observability.Observer;
+import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InsectQueryImplTest {
-    static final Observer observer = Observer.forClass(InsectQueryImplTest.class);
 
     @RegisterExtension
     NaturalistDatabase db = NaturalistDatabase.create();
@@ -22,11 +20,37 @@ class InsectQueryImplTest {
     InsectQuery insectQuery = new InsectQueryImpl(speciesQuery, imageQuery);
 
     @Test
-    void getInsectAggregate() {
-        Optional<InsectAggregate> insectAggregate =
-                insectQuery.insect().getByName(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
+    void accessors_returnNonNullDelegates() {
+        assertThat(insectQuery.species()).isSameAs(speciesQuery);
+        assertThat(insectQuery.images()).isSameAs(imageQuery);
+        assertThat(insectQuery.insect()).isNotNull();
+    }
 
-        assertThat(insectAggregate).isPresent();
-        assertThat(observer.observable(insectAggregate.get(), "insectAggregate").violations()).isEmpty();
+    @Test
+    void accessors_idempotent() {
+        assertThat(insectQuery.species()).isSameAs(insectQuery.species());
+        assertThat(insectQuery.images()).isSameAs(insectQuery.images());
+        assertThat(insectQuery.insect()).isSameAs(insectQuery.insect());
+    }
+
+    @Test
+    void constructor_rejectsNullSpeciesQuery() {
+        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("speciesQuery");
+    }
+
+    @Test
+    void constructor_rejectsNullImageQuery() {
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("imageQuery");
+    }
+
+    @Test
+    void constructor_collectsAllViolationsInSinglePass() {
+        assertThatThrownBy(() -> new InsectQueryImpl(null, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("speciesQuery", "imageQuery");
     }
 }

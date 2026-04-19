@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observability.Observer;
+
 class InsectQueryImpl implements InsectQuery {
 
     private final SpeciesQuery speciesQuery;
@@ -7,6 +9,10 @@ class InsectQueryImpl implements InsectQuery {
     private final InsectAggregateQuery insectAggregateQuery;
 
     InsectQueryImpl(SpeciesQuery speciesQuery, ImageQuery imageQuery) {
+        Observer.forClass(InsectQueryImpl.class).arguments("constructor", i -> i
+                        .notNull(speciesQuery, "speciesQuery")
+                        .notNull(imageQuery, "imageQuery"))
+                .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
         InsectAggregateFactory factory = new InsectAggregateFactoryImpl(speciesQuery, imageQuery);

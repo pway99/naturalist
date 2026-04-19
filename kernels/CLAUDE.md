@@ -79,7 +79,7 @@ All domain types implement `Observable`, which requires `Consumer<? extends Inva
 
 Do not use the by-function form when the direct-value form suffices — the functional indirection adds no value when `this` can never be null.
 
-`Observer` validates entities at insertion points (`TestEntitySource.insert()` calls `observer.throwWhenInvalid(entity)`). Use `@Nullable` from JSpecify (`org.jspecify`) for nullable field documentation.
+`Observer` validates entities at insertion points — `TestEntitySource.insert()` calls `observer.arguments("insert", i -> i.entity(entity, "entity")).throwWhenInvalid()`. Insertion is an argument-validation site: the producer refuses bad input at its boundary. For method-body observation of *produced* state, the producer uses `.observe()` (metrics only) and hands the value to the consumer, which chooses the terminal operation. See ADR-017's *Producer vs. consumer* section. Use `@Nullable` from JSpecify (`org.jspecify`) for nullable field documentation.
 
 ## Testing Observables
 

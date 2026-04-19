@@ -14,6 +14,8 @@ class SpeciesQueryImpl
 
     @Override
     public InsectEntityCollections.SpeciesCollection findByNameSet(Set<InsectSpeciesName> names) {
+        observer().arguments("findByNameSet", i -> i.entityNameCollection(names, "names"))
+                .throwWhenInvalid();
         return InsectEntityCollections.SpeciesCollection.of(repository().getByEntityNameSet(names));
     }
 }

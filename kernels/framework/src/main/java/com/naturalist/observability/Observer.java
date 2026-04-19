@@ -21,8 +21,12 @@ import java.util.function.Consumer;
  *   <li><b>Method-body observation.</b> {@link #entity(Entity, String)} and
  *       {@link #observable(Observable, String)} produce an {@link InvariantObservation} for
  *       state the method has constructed or received — the method's own results, not
- *       external input. The caller chooses {@link InvariantObservation#throwWhenInvalid()}
- *       or {@link InvariantObservation#observe()} (metrics only, no throw).</li>
+ *       external input. The terminal operation follows the producer/consumer rule
+ *       (ADR-017): a producer observing its own output emits metrics via
+ *       {@link InvariantObservation#observe()} and returns the value so the consumer
+ *       retains control over the data flow. Only a consumer observing a value it received
+ *       may choose {@link InvariantObservation#throwWhenInvalid()}. Argument validation
+ *       always throws — it is the producer's boundary contract.</li>
  *   <li><b>Realtime monitoring.</b> Constructing an observer with
  *       {@link MonitoringMode#ALWAYS} causes every observation to emit a metric for every
  *       constraint inspected, valid or invalid. With {@link MonitoringMode#ON_FAILURE} (the
@@ -122,12 +126,21 @@ public class Observer {
 
     /**
      * Observe a named entity within a method body. Walks the entity's full constraint
-     * graph. Returns an {@link InvariantObservation} the caller can inspect or throw from.
+     * graph. Returns an {@link InvariantObservation} the caller can inspect.
+     *
+     * <p>Terminal-operation choice follows the producer/consumer rule (ADR-017):
+     * producers emitting their own output call {@link InvariantObservation#observe()};
+     * only consumers acting on received state may call
+     * {@link InvariantObservation#throwWhenInvalid()}.
      *
      * <pre>{@code
-     * Entity created = ...;
-     * observer.entity(created, "created").throwWhenInvalid();
-     * observer.entity(created, "created").observe(); // metrics only
+     * // producer — metrics only, hand the value to the consumer
+     * InsectAggregate aggregate = ...;
+     * observer.entity(aggregate, "aggregate").observe();
+     * return aggregate;
+     *
+     * // consumer — fail-fast on invalid input
+     * observer.entity(received, "received").throwWhenInvalid();
      * }</pre>
      */
     public InvariantObservation entity(Entity<?, ?> entity, String label) {

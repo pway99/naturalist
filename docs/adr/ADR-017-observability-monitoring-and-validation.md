@@ -63,10 +63,11 @@ The `Observer` performs three roles over the same constraint-graph traversal:
    else.
 
 2. **State observation.** `observer.entity(e, "label")` or `observer.observable(o, "label")`
-   walks an object's full constraint graph. The caller chooses the terminal operation:
-   `throwWhenInvalid()` for hard enforcement, or `observe()` for metrics-only inspection.
-   `observe()` returns the `InvariantObservation` so the caller can inspect
-   `violations()` after metric emission.
+   walks an object's full constraint graph. The terminal operation is chosen by the
+   **consumer** of the value, not the producer — see *Producer vs. consumer* below.
+   `observe()` emits metrics only and returns the `InvariantObservation` so the caller
+   can inspect `violations()`. `throwWhenInvalid()` emits metrics and throws
+   `InvariantViolationException` if any constraint failed.
 
 3. **Realtime monitoring.** `Observer.forClass(SensorReadingProcessor.class, MonitoringMode.ALWAYS)`
    causes every observation to emit a metric for every constraint inspected — valid or
@@ -75,6 +76,33 @@ The `Observer` performs three roles over the same constraint-graph traversal:
    visibility into every state transition matters — temperature readings, moisture
    content events, sensor telemetry — where the interesting signal is the distribution
    of valid states, not just the exceptions.
+
+### Producer vs. consumer — who throws
+
+Argument validation and state observation look mechanically similar — both walk a
+constraint graph and both can terminate with `throwWhenInvalid()` or `observe()` — but
+the control-flow authority differs.
+
+- **Arguments are the producer's boundary contract.** A method receives input from
+  outside its control. Invalid input would compromise the producer's own invariants, so
+  the producer *must* refuse to proceed. Argument validation always terminates with
+  `throwWhenInvalid()`.
+
+- **Produced state is the consumer's concern.** When a method observes the state it is
+  *about to return* — a constructed aggregate, a query result, a mapped projection —
+  the producer emits metrics with `observe()` and returns the value. The consumer walks
+  the returned value and decides whether to reject, degrade, log, or continue. A
+  producer that throws on its own output preempts the consumer's control-flow decision
+  and couples every downstream path to a single fail-fast choice.
+
+- **Received state is the consumer's decision.** When a method observes a value *it
+  received* (a parameter that is itself an `Observable`, state loaded from a repository),
+  the method *is* the consumer at that point and chooses the terminal operation based on
+  what the data flow requires.
+
+The rule: **arguments throw; output observes; received state is caller's choice.** This
+keeps control flow in the consumer's hands and keeps producers composable across
+fail-fast and fail-soft consumers without forking the producer's code.
 
 ### Scoped observation points
 
