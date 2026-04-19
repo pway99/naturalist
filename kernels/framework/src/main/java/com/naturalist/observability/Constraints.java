@@ -43,6 +43,17 @@ public class Constraints {
         return add(new ObservableConstraint<>(o, valueFunction, name, true));
     }
 
+    /**
+     * Validate any {@link Observable} child and descend into its invariants. Use for
+     * Observable members that are neither {@link com.naturalist.ddd.Entity} nor
+     * {@link ValueObject} — most commonly a
+     * {@link com.naturalist.ddd.BehavioralCollection} held by an
+     * {@link com.naturalist.ddd.Aggregate}.
+     */
+    public <O, V extends Observable> Constraints observable(O o, Function<O, V> valueFunction, String name) {
+        return add(new ObservableConstraint<>(o, valueFunction, name, false));
+    }
+
     public Constraints entityId(PersistenceId<?> entityId, String name) {
         return add(new PersistenceIdConstraints.PersistenceIdConstraint<>(entityId, name));
     }

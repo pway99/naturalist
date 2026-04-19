@@ -115,7 +115,7 @@ public abstract class AbstractEntityQuery<
      *           .throwWhenInvalid();
      * }</pre>
      */
-    protected Observer observer() {
+    protected  Observer observer() {
         return observer;
     }
 
