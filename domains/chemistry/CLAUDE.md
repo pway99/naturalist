@@ -58,6 +58,33 @@ public Optional<SafetyProfile>         safetyOptional()         { ... }
 `bioavailability` and `solubility` are required (non-nullable) — access them directly
 via `compound.bioavailability()` and `compound.solubility()`.
 
+## Compound Properties
+
+`Compound` owns a `Map<String, String> properties` — an open-ended set of named attributes
+(e.g. `omriListed`, `safeRateLbsPer1000Sqft`, `biologicalCatalyst`). These are
+compound-scoped key-value pairs with no independent lifecycle and no cross-domain identity.
+Persisted via `@ElementCollection` at the RDBMS adapter layer.
+
+`CompoundProperty` was previously modeled as a standalone `CatalogEntity`. That model
+was wrong on two counts:
+
+1. `CatalogEntity` requires a globally unique `name()`. The property key (e.g. `"omriListed"`)
+   is unique only within a compound — not globally. Multiple compounds share the same key
+   names, which violated `TestEntitySource` uniqueness enforcement.
+2. A compound property has no independent lifecycle. It exists only as an attribute of its
+   parent compound, is never referenced cross-domain by identity, and has no repository of
+   its own. This is a value collection, not an entity.
+
+The correct analogy is `CompoundInfo#constituentElements` (`Set<PeriodicElement>`): both
+are aggregate-owned collections with no entity identity. The RDBMS adapter will persist
+`properties` as an `@ElementCollection` with `@MapKeyColumn` — the same structural pattern
+as the elements join table, with an extra value column. The domain model is not driven by
+the persistence concern.
+
+Do not re-introduce `CompoundProperty` as an entity. If a specific property needs typed
+behavior or cross-domain visibility, promote it to an explicit field on `Compound` or
+`CompoundInfo` with its own accessor.
+
 ## PeriodicElement Enum
 
 Uses IUPAC chemical symbols as enum constant names (`Ca`, `Mg`, `K`, not `CALCIUM`).
