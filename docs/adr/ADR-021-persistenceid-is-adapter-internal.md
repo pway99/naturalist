@@ -448,11 +448,29 @@ Both choices are easy. Neither requires an adapter to exist today to evaluate.
 
 ### A.7 — PersistenceId may never appear in Java at all
 
-An ORM such as MyBatis, where the SQL is author-written rather than generated
-from a Java entity metamodel by a third-party reference, opens a stronger
-possibility than this ADR's rule strictly requires. The Java entity and
-persistence model need have no concept of, or awareness for, `PersistenceId`
-whatsoever.
+MyBatis is the preferred mapper framework for this project, and the appendix
+is written with that choice load-bearing rather than incidental. The reason
+is not a performance claim — it is that author-written SQL is the right
+primitive for durable infrastructure, and that auto-generated SQL solves the
+wrong problem.
+
+Schema is not a derivative of a Java class. The Java class describes a domain
+concept; the schema describes a persistence contract that, once in production,
+is expensive to change (see *RDBMS adapter work is gated on api completeness*
+above). When those two are coupled by a code generator, every motion in the
+Java class proposes a motion in the schema, and the generator's convenience
+argues for accepting it. That pressure is exactly backwards: the schema
+should be the slower-moving, deliberately-governed artifact, and the api
+model should stabilize *first* precisely so the schema that serves it can
+stabilize *too*. MyBatis puts the SQL in the repository author's hands,
+where governance lives. Generated SQL — Hibernate's DDL export, JPA metamodel
+derivation, equivalent tooling — moves that governance into a tool that is
+optimizing for a different problem (mapping Java classes to tables) than the
+one we have (maintaining a durable schema under a stable api).
+
+With author-written SQL in hand, a stronger possibility than this ADR's rule
+strictly requires opens up: the Java entity and persistence model need have
+no concept of, or awareness for, `PersistenceId` whatsoever.
 
 Under that interpretation:
 
@@ -476,7 +494,7 @@ an `@Id` annotated field on the Java class. MyBatis, jOOQ, and raw JDBC can.
 The choice of mapper framework therefore constrains whether the stronger form
 of ADR-021 is available; the insects pilot's `NamedEntity<NAME>` kernel shape
 is the form compatible with that stronger stance, which is why MyBatis is
-the appendix's worked example.
+the project's chosen framework and this appendix's worked example.
 
 ### A.8 — What this appendix does not prove
 
@@ -488,9 +506,13 @@ It does not prove:
 - That every future query shape in the insects domain will admit a clean
   single-statement translation. Some may require a two-step sequence; those
   cases are adapter-local decisions that do not affect the port.
-- That MyBatis is the right choice of mapper framework. ADR-021 is agnostic
-  to the framework — the translation shape described holds for JDBC, jOOQ,
-  and JPA/Hibernate native queries equally.
+- That the rule in Decision §1 depends on MyBatis. It does not. The rule —
+  no cross-entity `PersistenceId` at the port — is framework-agnostic and
+  holds under JDBC, jOOQ, and JPA/Hibernate native queries equally. What
+  *does* depend on MyBatis is the stronger stance of A.7 (no `PersistenceId`
+  in Java at all) and the governance posture that author-written SQL
+  provides over durable schema. Those are the reasons MyBatis is the
+  project's chosen framework, not a claim that the rule itself requires it.
 
 These are implementation decisions for the adapter PR, not premises of this
 ADR.
