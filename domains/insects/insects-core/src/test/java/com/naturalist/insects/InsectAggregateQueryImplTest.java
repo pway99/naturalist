@@ -22,7 +22,7 @@ class InsectAggregateQueryImplTest {
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
     InsectQuery.InsectAggregateQuery aggregateQuery =
-            new InsectAggregateQueryImpl(new InsectAggregateFactoryImpl(speciesQuery, imageQuery));
+            new InsectAggregateQueryImpl(new InsectAggregateFactory(speciesQuery, imageQuery));
 
     @Test
     void getByName_known_returnsStructurallyValidAggregate() {

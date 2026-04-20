@@ -70,6 +70,15 @@ delegates that construction to a dedicated factory. The factory is package-priva
 within the `<domain>-core` module. The query adapter calls the factory; it does not
 assemble aggregates inline.
 
+The factory is a single concrete class. No factory interface is declared; no
+factory type — interface or class — appears in `<domain>-api`. An aggregate
+factory surfacing in the api module is a review blocker on two grounds:
+(1) it leaks an assembly concern into the consumer-facing port, and (2) it
+becomes a Spring-injectable type visible across module boundaries, so a
+consumer could bypass the query adapter and inject the factory directly. The
+factory exists solely to keep the aggregate-query adapter thin; it has no
+business being a port.
+
 This keeps query methods focused on retrieval and routing, and keeps assembly logic
 testable in isolation.
 

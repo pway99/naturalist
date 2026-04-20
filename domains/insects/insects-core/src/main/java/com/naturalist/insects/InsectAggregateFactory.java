@@ -16,13 +16,13 @@ import java.util.Optional;
  * Control over what to do with a structurally invalid aggregate belongs to the consumer,
  * not the producer.
  */
-class InsectAggregateFactoryImpl implements InsectAggregateFactory {
+class InsectAggregateFactory {
 
     private final Observer observer = Observer.forClass(getClass());
     private final InsectQuery.SpeciesQuery speciesQuery;
     private final InsectQuery.ImageQuery imageQuery;
 
-    InsectAggregateFactoryImpl(InsectQuery.SpeciesQuery speciesQuery, InsectQuery.ImageQuery imageQuery) {
+    InsectAggregateFactory(InsectQuery.SpeciesQuery speciesQuery, InsectQuery.ImageQuery imageQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery"))
@@ -31,8 +31,7 @@ class InsectAggregateFactoryImpl implements InsectAggregateFactory {
         this.imageQuery = imageQuery;
     }
 
-    @Override
-    public Optional<InsectAggregate> buildByName(InsectSpeciesName name) {
+    Optional<InsectAggregate> buildByName(InsectSpeciesName name) {
         observer.arguments("buildByName", i -> i.entityName(name, "name")).throwWhenInvalid();
         return speciesQuery.getByName(name)
                 .map(species -> {

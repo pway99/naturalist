@@ -11,8 +11,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class InsectAggregateFactoryImplTest {
-    static final Observer observer = Observer.forClass(InsectAggregateFactoryImplTest.class);
+class InsectAggregateFactoryTest {
+    static final Observer observer = Observer.forClass(InsectAggregateFactoryTest.class);
 
     @RegisterExtension
     NaturalistDatabase db = NaturalistDatabase.create();
@@ -21,7 +21,7 @@ class InsectAggregateFactoryImplTest {
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
-    InsectAggregateFactory factory = new InsectAggregateFactoryImpl(speciesQuery, imageQuery);
+    InsectAggregateFactory factory = new InsectAggregateFactory(speciesQuery, imageQuery);
 
     @Test
     void buildByName_speciesWithImages_attachesAllImagesAndPreservesReferentialIntegrity() {
@@ -75,21 +75,21 @@ class InsectAggregateFactoryImplTest {
 
     @Test
     void constructor_rejectsNullSpeciesQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactoryImpl(null, imageQuery))
+        assertThatThrownBy(() -> new InsectAggregateFactory(null, imageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery");
     }
 
     @Test
     void constructor_rejectsNullImageQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactoryImpl(speciesQuery, null))
+        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("imageQuery");
     }
 
     @Test
     void constructor_collectsAllViolationsInSinglePass() {
-        assertThatThrownBy(() -> new InsectAggregateFactoryImpl(null, null))
+        assertThatThrownBy(() -> new InsectAggregateFactory(null, null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery", "imageQuery");
     }

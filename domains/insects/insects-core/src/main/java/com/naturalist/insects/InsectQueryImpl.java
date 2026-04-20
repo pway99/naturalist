@@ -15,7 +15,7 @@ class InsectQueryImpl implements InsectQuery {
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
-        InsectAggregateFactory factory = new InsectAggregateFactoryImpl(speciesQuery, imageQuery);
+        InsectAggregateFactory factory = new InsectAggregateFactory(speciesQuery, imageQuery);
         this.insectAggregateQuery = new InsectAggregateQueryImpl(factory);
     }
 

@@ -166,7 +166,11 @@ Short version:
   `observer().arguments(...)`, then forwards to the repository (or to an aggregate
   factory). No logic, no multi-step composition.
 - **Aggregate queries delegate to a package-private factory** in `<domain>-core`.
-  The query never assembles an aggregate inline.
+  The query never assembles an aggregate inline. The factory is a single
+  package-private concrete class — no interface, no `Impl` suffix, and no
+  declaration in `<domain>-api` under any circumstance. A factory type surfacing
+  in the api module is a review blocker: it leaks assembly concerns to consumers
+  and makes the implementation detail Spring-injectable across module boundaries.
 - **Return types are `Optional<Entity>`, `Optional<Aggregate>`, or a
   `BehavioralCollection` subclass.** Raw `List<T>` at the port boundary is a
   review flag.
@@ -175,7 +179,8 @@ Short version:
 (namespace class), `InsectQuery` (namespace interface), `InsectEntityCollections`
 (collection namespace), `InsectSpecies` (nested value-object graph). Adapters
 live in `insects-core/`: `InsectQueryImpl`, `SpeciesQueryImpl`, `ImageQueryImpl`,
-`InsectAggregateQueryImpl`.
+`InsectAggregateQueryImpl`, and the aggregate factory `InsectAggregateFactory`
+(concrete, no interface — the template for factory placement).
 
 ## Test Fixtures Use Real Data
 
