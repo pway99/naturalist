@@ -171,9 +171,10 @@ declaration: `interface <Entity>Repository extends EntityRepository<...>`.
 
 ## Consequences
 
-- **Discoverability up.** `InsectQuery` is the read entry point; `InsectRepository`
-  is the write entry point; `InsectEntityCollections` holds return types. A consumer
-  finds the entire api surface at three names.
+- **Discoverability up.** `InsectQuery` is the read entry point and commands are
+  the entry point for persistence concerns; `InsectEntityCollections` holds
+  return types. `InsectRepository` is the package-private namespace for internal
+  write contracts and is never exposed to consumers.
 - **Visibility is structural and honest.** Repository contracts are package-private
   at both source and bytecode level. Queries and collections are public — the
   whole nested graph is intended as the consumer surface.

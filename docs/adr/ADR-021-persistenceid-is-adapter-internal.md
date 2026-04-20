@@ -419,7 +419,39 @@ The load-bearing decisions specific to ADR-021:
 
 Both choices are easy. Neither requires an adapter to exist today to evaluate.
 
-### A.7 — What this appendix does not prove
+### A.7 — PersistenceId may never appear in Java at all
+
+An ORM such as MyBatis, where the SQL is author-written rather than generated
+from a Java entity metamodel by a third-party reference, opens a stronger
+possibility than this ADR's rule strictly requires. The Java entity and
+persistence model need have no concept of, or awareness for, `PersistenceId`
+whatsoever.
+
+Under that interpretation:
+
+- The numeric primary key is a database-only concern. It exists in `BIGSERIAL`
+  columns and in FK constraints, but the Java model never names it.
+- The only place the numeric id can leak into source code is inside SQL
+  statements defined in XML mappers or annotations — where it is a storage
+  artifact in a storage artifact, not a domain concept crossing a boundary.
+- The api model is governed by `EntityName` alone. `NamedEntity<NAME>` is not
+  a pilot concession; it is the natural shape.
+- `TestEntitySource` is a reflection of the api model, not the persistence
+  model. It carries no `nextNumericId()` surface because no Java code
+  consumes one.
+- If `PersistenceId` ever needs to appear in Java — for auditing, for a
+  specific administrative tool, for a migration utility — it appears as a
+  DTO transformed to and from the `Entity` at the RDBMS adapter boundary,
+  never as a component on the domain record.
+
+JPA/Hibernate cannot accommodate this shape — its entity metamodel requires
+an `@Id` annotated field on the Java class. MyBatis, jOOQ, and raw JDBC can.
+The choice of mapper framework therefore constrains whether the stronger form
+of ADR-021 is available; the insects pilot's `NamedEntity<NAME>` kernel shape
+is the form compatible with that stronger stance, which is why MyBatis is
+the appendix's worked example.
+
+### A.8 — What this appendix does not prove
 
 It does not prove:
 
