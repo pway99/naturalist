@@ -1,18 +1,19 @@
 package com.naturalist.insects;
 
+import com.naturalist.data.NamedEntityQuery;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ImageQueryImplTest {
+class ImageQueryImplTest
+        implements NamedEntityQueryContractTest<InsectImageName, InsectImage, ImageCollection> {
 
     @RegisterExtension
     NaturalistDatabase db = NaturalistDatabase.create();
@@ -20,64 +21,21 @@ class ImageQueryImplTest {
     InsectImageRepositoryMock repository = new InsectImageRepositoryMock(db);
     InsectQuery.ImageQuery query = new ImageQueryImpl(repository);
 
-    @Test
-    void getByName_known() {
-        Optional<InsectImage> image =
-                query.getByName(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name);
-
-        assertThat(image).isPresent();
-        assertThat(image.get().name())
-                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name);
-        assertThat(image.get().insectSpeciesName())
-                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
+    @Override
+    public NamedEntityQuery<InsectImageName, InsectImage, ImageCollection> query() {
+        return query;
     }
 
-    @Test
-    void getByName_notFound() {
-        Optional<InsectImage> image =
-                query.getByName(TestInsectsIdentifiers.InsectSpecies.NotFound.imageName);
-
-        assertThat(image).isEmpty();
+    @Override
+    public InsectImageName notFoundName() {
+        return TestInsectsIdentifiers.InsectSpecies.NotFound.imageName;
     }
 
-    @Test
-    void getByName_rejectsNull() {
-        assertThatThrownBy(() -> query.getByName(null))
-                .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("name");
-    }
-
-    @Test
-    void findByNameSet_multiple() {
-        Set<InsectImageName> names = Set.of(
+    @Override
+    public List<InsectImageName> knownEntityNames() {
+        return List.of(
                 TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,
                 TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9048.name);
-
-        ImageCollection collection = query.findByNameSet(names);
-
-        assertThat(collection.size()).isEqualTo(2);
-        assertThat(collection.stream().map(InsectImage::name))
-                .containsExactlyInAnyOrderElementsOf(names);
-    }
-
-    @Test
-    void findByNameSet_partialMatch_returnsOnlyKnown() {
-        Set<InsectImageName> names = Set.of(
-                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,
-                TestInsectsIdentifiers.InsectSpecies.NotFound.imageName);
-
-        ImageCollection collection = query.findByNameSet(names);
-
-        assertThat(collection.size()).isEqualTo(1);
-        assertThat(collection.stream().findFirst().orElseThrow().name())
-                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name);
-    }
-
-    @Test
-    void findByNameSet_rejectsNullSet() {
-        assertThatThrownBy(() -> query.findByNameSet(null))
-                .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("names");
     }
 
     @Test
