@@ -131,6 +131,33 @@ Those questions are out of scope here. This ADR establishes the rule and
 pilots its full application on one domain; a later ADR decides how far to
 propagate it.
 
+### RDBMS adapter work is gated on api completeness
+
+An RDBMS is durable infrastructure. Once a schema is in production, every
+subsequent change — column rename, FK restructuring, table split — requires
+orchestration: migration scripts, read/write compatibility windows, rollback
+planning, coordination with anything reading the data out-of-band. That cost
+is structural; it does not go away with better tooling.
+
+The consequence for this ADR is a hard ordering rule:
+
+- No `<domain>-repository-rdms` module is written, and no schema is committed,
+  until the owning domain's api model is complete and approved for production
+  testing.
+- "Complete and approved" means the api surface (entities, queries,
+  repositories, collections) has stabilized under exercise by real application
+  code and is the shape the domain intends to carry into production. It is
+  not merely "compiles" or "tests pass on the in-memory adapter."
+- Until that gate, the in-memory `TestEntitySource` adapter is the only
+  implementation. Schema shape, SQL mapper choice, and adapter scaffolding
+  are all deferred.
+
+The gate exists because schema decisions inherit the shape of the api they
+serve. An api that is still moving produces a schema that will move with it,
+and RDBMS schema motion is the expensive motion. Delaying the adapter until
+the api is stable trades a recoverable delay (writing the adapter later) for
+an unrecoverable cost (migrating production data through an unstable model).
+
 ### What this ADR does not change
 
 - `Entity<ID, NAME>` remains the kernel entity interface for every non-pilot
