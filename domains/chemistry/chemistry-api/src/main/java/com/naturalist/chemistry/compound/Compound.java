@@ -153,8 +153,8 @@ public record Compound(
                 .valueObject(this, Compound::compoundInfo, "compoundInfo")
                 .valueObject(this, Compound::solubility, "solubility")
                 .valueObject(this, Compound::bioavailability, "bioavailability")
-                .valueObjectOptional(this, Compound::volatilization, "volatilization")
-                .valueObjectOptional(this, Compound::safety, "safety")
+                .valueObjectOrNull(this, Compound::volatilization, "volatilization")
+                .valueObjectOrNull(this, Compound::safety, "safety")
                 .notNull(this, Compound::properties, "properties");
     }
 }

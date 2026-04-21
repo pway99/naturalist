@@ -115,15 +115,25 @@ public record InsectSpecies(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        // identificationFeatures, lifeStages, chemicalDefense, voltinism, habitatProfile,
-        // habitatRequirements, gardenConnections, beneficialProfile, and
-        // ecologicalSignificance are intentionally nullable — catalog entries are
-        // populated incrementally as field data is documented.
+        // Nullable value-object children are registered via valueObjectOrNull so the
+        // graph walker descends into each child's own invariants when non-null.
+        // Meaningfulness of any present child is that child's responsibility — a
+        // vacuous-but-present value object must be rejected by its own invariants()
+        // rather than tolerated here.
         return i -> i
                 .entityName(name, "name")
                 .notNull(this, InsectSpecies::taxonomy, "taxonomy")
                 .notNull(this, InsectSpecies::description, "description")
-                .notNull(this, InsectSpecies::guilds, "guilds");
+                .notNull(this, InsectSpecies::guilds, "guilds")
+                .valueObjectOrNull(this, InsectSpecies::identificationFeatures, "identificationFeatures")
+                .valueObjectOrNull(this, InsectSpecies::lifeStages, "lifeStages")
+                .valueObjectOrNull(this, InsectSpecies::chemicalDefense, "chemicalDefense")
+                .valueObjectOrNull(this, InsectSpecies::voltinism, "voltinism")
+                .valueObjectOrNull(this, InsectSpecies::habitatProfile, "habitatProfile")
+                .valueObjectOrNull(this, InsectSpecies::habitatRequirements, "habitatRequirements")
+                .valueObjectOrNull(this, InsectSpecies::gardenConnections, "gardenConnections")
+                .valueObjectOrNull(this, InsectSpecies::beneficialProfile, "beneficialProfile")
+                .valueObjectOrNull(this, InsectSpecies::ecologicalSignificance, "ecologicalSignificance");
     }
 
     /**

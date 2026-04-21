@@ -12,6 +12,7 @@ import com.naturalist.observability.constraints.PersistenceIdConstraints;
 import com.naturalist.observability.constraints.EntityNameConstraints;
 import com.naturalist.observability.constraints.NotBlankConstraint;
 import com.naturalist.observability.constraints.NotNullConstraint;
+import com.naturalist.observability.constraints.ValueObjectOrNullConstraint;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +30,7 @@ public class Constraints {
     }
 
     public <O, E extends Entity<?, ?>> Constraints entity(O o, Function<O, E> valueFunction, String name) {
-        return add(new ObservableConstraint<>(o, valueFunction, name, false));
+        return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
     public <E extends NamedEntity<?>> Constraints namedEntity(E entity, String name) {
@@ -37,7 +38,7 @@ public class Constraints {
     }
 
     public <O, E extends NamedEntity<?>> Constraints namedEntity(O o, Function<O, E> valueFunction, String name) {
-        return add(new ObservableConstraint<>(o, valueFunction, name, false));
+        return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
     public <V extends ValueObject> Constraints valueObject(V valueObject, String name) {
@@ -45,11 +46,11 @@ public class Constraints {
     }
 
     public <O, V extends ValueObject> Constraints valueObject(O o, Function<O, V> valueFunction, String name) {
-        return add(new ObservableConstraint<>(o, valueFunction, name, false));
+        return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
-    public <O, V extends ValueObject> Constraints valueObjectOptional(O o, Function<O, V> valueFunction, String name) {
-        return add(new ObservableConstraint<>(o, valueFunction, name, true));
+    public <O, V extends ValueObject> Constraints valueObjectOrNull(O o, Function<O, V> valueFunction, String name) {
+        return add(new ValueObjectOrNullConstraint<>(o, valueFunction, name));
     }
 
     /**
@@ -60,7 +61,7 @@ public class Constraints {
      * {@link com.naturalist.ddd.Aggregate}.
      */
     public <O, V extends Observable> Constraints observable(O o, Function<O, V> valueFunction, String name) {
-        return add(new ObservableConstraint<>(o, valueFunction, name, false));
+        return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
     public Constraints entityId(PersistenceId<?> entityId, String name) {

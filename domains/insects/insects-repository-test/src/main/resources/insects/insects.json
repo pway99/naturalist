@@ -249,7 +249,95 @@
     },
     "guilds": ["KEYSTONE"],
     "beneficial": true,
-    "sightingNotes": "CRITICAL — eggs confirmed on Aristolochia californica (California Pipevine) at Oak Vista, April 2026. Never apply pesticides to Pipevine plant or within 3 meters of it during the growing season. This is an irreversible ecological commitment. Breeding confirmed."
+    "sightingNotes": "CRITICAL — eggs confirmed on Aristolochia californica (California Pipevine) at Oak Vista, April 2026. Never apply pesticides to Pipevine plant or within 3 meters of it during the growing season. This is an irreversible ecological commitment. Breeding confirmed.",
+    "identificationFeatures": {
+      "features": [
+        "Large butterfly with tailed hindwings",
+        "Dark overall coloration; iridescent blue and green sheen on hindwings",
+        "Unmistakeable and conspicuous in flight along riparian corridors",
+        "Egg clusters: brick-red, up to 20 per bunch, on young tender Aristolochia shoot tips",
+        "Larva: dark-bodied with fleshy reddish filaments; warningly coloured",
+        "Chrysalis: brown or green with delicate golden filigree — the only cryptic stage"
+      ]
+    },
+    "lifeStages": {
+      "egg": {
+        "description": "Brick-red; conspicuous; laid in clusters of up to 20 on young, tender, growing shoot tips of Aristolochia californica. Eggs are only placed on tender new growth, never on mature tissue.",
+        "colorProgression": null,
+        "layingPattern": "Clusters of up to 20 on young shoot tips only",
+        "adaptiveSignificance": "Eggs inherit aristolochic acid protection via maternal transfer — the female sequesters host-plant toxins and deposits them into the egg, so even the egg stage is chemically defended. Conspicuous brick-red colouration reinforces the aposematic signal."
+      },
+      "larva": {
+        "commonName": null,
+        "description": "Dark-bodied caterpillar ornamented with fleshy reddish filaments; warningly coloured and chemically unpalatable to vertebrate predators.",
+        "preyConsumption": null,
+        "preyTargets": [],
+        "hostPlants": ["aristolochia-californica"],
+        "remarkableBehavior": "Initially gregarious on young shoot tips; as larvae grow they scatter to feed on mature leaves and immature fruits (which resemble small banana shapes with fluted edges). Because damaged leaves become more toxic through induced defence, a larva feeds on any single leaf only briefly before moving on — the species damages most leaves lightly rather than few leaves severely. In heavy-population years, little or no seed is set on the host."
+      },
+      "pupa": {
+        "description": "Chrysalis suspended by a cremaster attachment and silk girdle from host or adjacent vegetation.",
+        "appearance": "Dimorphic — brown or green depending on pupation substrate; cryptic, ornamented with delicate golden filigree. The only stage of the life cycle that is cryptic rather than aposematic.",
+        "diapauseRegulation": "Unresponsive to day length — uniquely among California swallowtails. Pupal dormancy is instead related to the water content of the larval food, though the mechanism is not well understood.",
+        "adaptiveSignificance": "Split diapause strategy: every female's offspring include both direct-developers and diapausers, and some diapausing pupae eclose later the same year rather than overwintering. Site-level voltinism is consequently indeterminate — at any given site it may be two, three, four broods, or all of these overlapping at once."
+      },
+      "adult": {
+        "feeding": "Nectarivore — eager visitor to a wide range of flowers",
+        "role": "Pollinator; reproductive adult; long-distance disperser along riparian corridors",
+        "attraction": null,
+        "supportedBy": [
+          "wild-radish",
+          "california-buckeye",
+          "blue-dicks",
+          "ithuriels-spear",
+          "yerba-santa",
+          "yellow-star-thistle"
+        ],
+        "lifespan": "Approximately one month",
+        "flightPeriod": "Late winter (February–March) through October, occasionally into November. Much more numerous before the 4th of July; typically two large flights followed by stragglers the rest of the season, often with a late-summer 'blip' in August driven by diapause breakage. Off-season oviposition occurs only when local catastrophe (fire, weed-whacking) triggers host-plant regeneration outside the normal growth window."
+      }
+    },
+    "chemicalDefense": {
+      "mechanism": "Sequestration of aristolochic acids from the larval host plant (Aristolochia californica). Toxins are retained through pupation, carried by adults, and transferred maternally to the eggs — every stage of the life cycle is chemically defended.",
+      "sourceCompounds": "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
+      "aposematicSignal": "Iridescent blue hindwing coloration in adults; conspicuous brick-red egg clusters; warningly coloured dark larvae with reddish filaments. The pupa is the exception — cryptic rather than aposematic.",
+      "protectedStages": ["EGG", "LARVA", "PUPA", "ADULT"]
+    },
+    "voltinism": {
+      "pattern": "INDETERMINATE",
+      "notes": "Every female's offspring include both direct-developers and diapausers, and some diapausing pupae eclose later the same year rather than overwintering. Site-level voltinism cannot be reduced to a single integer — at any given site it may be two, three, four broods, or all of these overlapping at once. Uniquely among local swallowtails, the species is unresponsive to day length; pupal dormancy appears regulated by the water content of the larval food."
+    },
+    "habitatProfile": null,
+    "habitatRequirements": {
+      "nectarSources": "Native flowers including Wild Radish, California Buckeye, Blue Dicks, Ithuriel's Spear, and Yerba Santa. In summer, adults regularly nectar at Yellow Star Thistle when no native plants are in bloom.",
+      "shelter": null,
+      "preyAvailability": null,
+      "lighting": null,
+      "elevationRange": "Breeds in foothill canyons and on the Central Valley floor, wherever its obligate host Aristolochia californica occurs. Also occurs in coastal scrub (no transect sites). Strays to mid-elevation in river bottoms but is absent from the high country."
+    },
+    "gardenConnections": {
+      "supportingPlants": [
+        "aristolochia-californica",
+        "wild-radish",
+        "california-buckeye",
+        "blue-dicks",
+        "ithuriels-spear",
+        "yerba-santa",
+        "yellow-star-thistle"
+      ],
+      "relationshipToOtherBeneficials": null,
+      "naturalEnemies": "Chemical defence largely exempts this species from vertebrate predation across all life stages; no significant natural enemies documented at Oak Vista."
+    },
+    "beneficialProfile": {
+      "significance": "Keystone riparian butterfly of California's foothill canyons and Central Valley floor. Obligate on California Pipevine (Aristolochia californica) — the breeding population at Oak Vista confirmed in April 2026 is tied permanently to the garden's Pipevine planting. Loss of the host plant ends the local population; there is no alternative host and no relocation option.",
+      "pestManagementValue": null,
+      "ipmNotes": "Never apply pesticides to Aristolochia californica or within 3 metres of it at any season. The larvae are obligate on this host; any pesticide exposure to the host eliminates the local population. This is not an IPM-adjustable constraint — it is an ecological commitment made when the host plant was established."
+    },
+    "ecologicalSignificance": {
+      "indicatorValue": "A breeding population indicates intact Aristolochia californica with sufficient young, tender growing shoots for oviposition and an adequate adult nectar community carrying the species from late winter through summer.",
+      "foodWebPosition": "Primary consumer highly specialised to a single host-plant genus (Aristolochia); chemically defended at every life stage, occupying a near-predator-free position in the vertebrate food web. Functions as a Müllerian/Batesian model across much of its range, though no mimics have evolved in California.",
+      "regionalContext": "California populations are treated as subspecies hirsuta, isolated from the nearest populations in the desert Southwest and not currently exchanging genes with them. Molecular-genetic evidence refutes the hypothesis of ancient Tertiary relict status — Battus philenor arrived in California relatively recently (late Quaternary), probably from farther east. The absence of local mimics in the California range, despite its being the species' most abundant portion of range, is further evidence of recent arrival — there has not been time for mimics to evolve here. Resident and sedentary rather than migratory. Host plant typically stops growing in June and ceases providing oviposition sites thereafter; off-season breeding is triggered only by post-catastrophe host regeneration."
+    }
   },
   {
     "name": "potato-leafhopper",

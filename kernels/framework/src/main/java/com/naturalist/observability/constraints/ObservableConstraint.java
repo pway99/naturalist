@@ -11,23 +11,21 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Composite constraint for a member that is itself {@link Observable} — an {@code Entity},
+ * Composite constraint for a non-null {@link Observable} member — an {@code Entity},
  * {@code Aggregate}, or {@code ValueObject}. Acts as both:
  * <ul>
- *   <li>a leaf {@link Constraint} asserting the member reference is present (unless
- *       {@code optional}), and</li>
+ *   <li>a leaf {@link Constraint} asserting the member reference is present, and</li>
  *   <li>a {@link ConstraintCollection} exposing the referenced observable's own
  *       constraints so the graph walker can descend one level.</li>
  * </ul>
- * When {@code optional} is true, a {@code null} member is treated as valid and contributes
- * no children. When false, a {@code null} member fails {@link #isValid()} and contributes
- * no children.
+ * A {@code null} member fails {@link #isValid()} and contributes no children. The
+ * nullable counterpart is {@link ValueObjectOrNullConstraint}, which permits a null
+ * reference and descends only when the reference is present.
  */
 public record ObservableConstraint<O, V extends Observable>(
         O o,
         Function<O, V> valueFunction,
-        String name,
-        boolean optional
+        String name
 ) implements Constraint<V>, ConstraintCollection {
 
     @Override
@@ -40,8 +38,7 @@ public record ObservableConstraint<O, V extends Observable>(
         if (o == null) {
             return false;
         }
-        V v = valueFunction.apply(o);
-        return optional || v != null;
+        return valueFunction.apply(o) != null;
     }
 
     @Override
@@ -62,6 +59,6 @@ public record ObservableConstraint<O, V extends Observable>(
 
     @Override
     public ObservableConstraint<O, V> withName(String name) {
-        return new ObservableConstraint<>(o, valueFunction, name, optional);
+        return new ObservableConstraint<>(o, valueFunction, name);
     }
 }
