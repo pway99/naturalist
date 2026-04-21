@@ -43,6 +43,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
+
+        <!-- TEMPORARY -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>insects-test-context</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -58,6 +58,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- THIRD PARTY -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- KERNELS -->
             <dependency>
                 <groupId>com.naturalist</groupId>
@@ -198,6 +206,11 @@
             <dependency>
                 <groupId>com.naturalist</groupId>
                 <artifactId>insects-repository-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>insects-test-context</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- MICROBES -->
