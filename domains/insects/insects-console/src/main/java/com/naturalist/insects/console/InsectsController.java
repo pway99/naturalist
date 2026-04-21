@@ -1,5 +1,6 @@
 package com.naturalist.insects.console;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.insects.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
@@ -22,21 +23,19 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @RequestMapping("/insects")
 public class InsectsController {
-
-    private final InsectSpeciesTestEntitySource speciesSource;
-    private final InsectImageTestEntitySource imageSource;
+    private final InsectQuery insectQuery;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
-    InsectsController(InsectSpeciesTestEntitySource speciesSource,
-                      InsectImageTestEntitySource imageSource) {
-        this.speciesSource = speciesSource;
-        this.imageSource = imageSource;
+    InsectsController() {
+        //TODO:: This will eventually be a spring managed bean
+        InsectsTestContext context = InsectsTestContext.create(NaturalistDatabase.create());
+        this.insectQuery = context.insectQuery();
     }
 
     @GetMapping
     String list(Model model) {
-        var species = speciesSource.entityStream()
-                .sorted(Comparator.comparing(s -> s.name().value()))
+        var species = insectQuery.species().allSpecies().stream()
+                .sorted(Comparator.comparing(s -> s.value()))
                 .toList();
         model.addAttribute("species", species);
         return "insects/list";
@@ -45,15 +44,13 @@ public class InsectsController {
     @GetMapping("/{name}")
     String detail(@PathVariable String name, Model model) {
         var speciesName = InsectSpeciesName.of(name);
-        var species = speciesSource.getByName(speciesName);
+        var species = insectQuery.species().getByName(speciesName);
         if (species.isEmpty()) {
             return "redirect:/insects";
         }
-        var images = imageSource.entityStream()
-                .filter(img -> img.insectSpeciesName().equals(speciesName))
-                .toList();
+        InsectEntityCollections.ImageCollection images = insectQuery.images().forSpeciesName(speciesName);
         model.addAttribute("species", species.get());
-        model.addAttribute("images", images);
+        model.addAttribute("images", images.stream().toList());
         return "insects/detail";
     }
 
