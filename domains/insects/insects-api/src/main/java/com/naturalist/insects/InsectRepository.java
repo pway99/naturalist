@@ -22,11 +22,30 @@ import java.util.List;
  * only the namespace (ADR-020).
  */
 class InsectRepository {
+    final SpeciesRepository speciesRepository;
+    final ImageRepository imageRepository;
 
-    private InsectRepository() {}
+    private InsectRepository(SpeciesRepository speciesRepository, ImageRepository imageRepository) {
+        this.speciesRepository = speciesRepository;
+        this.imageRepository = imageRepository;
+    }
+
+    static InsectRepository create(SpeciesRepository speciesRepository, ImageRepository imageRepository) {
+        return new InsectRepository(speciesRepository, imageRepository);
+    }
+
+    SpeciesRepository speciesRepository() {
+        return speciesRepository;
+    }
+
+    ImageRepository imageRepository() {
+        return imageRepository;
+    }
 
     protected interface SpeciesRepository
-            extends NamedEntityRepository<InsectSpeciesName, InsectSpecies> {}
+            extends NamedEntityRepository<InsectSpeciesName, InsectSpecies> {
+        List<InsectSpeciesName> getAllSpeciesNames();
+    }
 
     protected interface ImageRepository
             extends NamedEntityRepository<InsectImageName, InsectImage> {

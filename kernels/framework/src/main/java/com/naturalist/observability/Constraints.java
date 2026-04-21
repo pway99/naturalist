@@ -5,6 +5,7 @@ import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.NamedValue;
 import com.naturalist.ddd.PersistenceId;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.constraints.NamedValueConstraints;
 import com.naturalist.observability.constraints.ObservableConstraint;
@@ -82,6 +83,14 @@ public class Constraints {
 
     public <E extends EntityName> Constraints entityNameCollection(Collection<E> entityNames, String name) {
         return add(new EntityNameConstraints.EntityNameCollectionConstraint<>(entityNames, name));
+    }
+
+    public <E extends EntityName<?>> Constraints entityNameSet(EntityNameSet<E> set, String name) {
+        return add(new EntityNameConstraints.EntityNameSetConstraint<>(set, name));
+    }
+
+    public <O, E extends EntityName<?>> Constraints entityNameSet(O o, Function<O, EntityNameSet<E>> valueFunction, String name) {
+        return add(new EntityNameConstraints.EntityNameSetConstraint<>(o == null ? null : valueFunction.apply(o), name));
     }
 
     public <O, V extends NamedValue<?>> Constraints namedValue(O o, Function<O, V> valueFunction, String name) {

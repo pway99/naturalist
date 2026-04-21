@@ -1,6 +1,7 @@
 package com.naturalist.observability.constraints;
 
 import com.naturalist.ddd.EntityName;
+import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.observability.Constraint;
 
 import java.util.Collection;
@@ -42,6 +43,24 @@ public interface EntityNameConstraints {
 
         public EntityNameCollectionConstraint<NAME> withName(String name) {
             return new EntityNameCollectionConstraint<>(value, name);
+        }
+    }
+
+    record EntityNameSetConstraint<NAME extends EntityName<?>>(
+            EntityNameSet<NAME> value,
+            String name
+    ) implements Constraint<EntityNameSet<NAME>> {
+
+        @Override
+        public boolean isValid() {
+            if (value == null) {
+                return false;
+            }
+            return value.stream().allMatch(n -> n != null && n.isValid());
+        }
+
+        public EntityNameSetConstraint<NAME> withName(String name) {
+            return new EntityNameSetConstraint<>(value, name);
         }
     }
 }

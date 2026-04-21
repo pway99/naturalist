@@ -17,19 +17,26 @@ import java.util.Optional;
  * wrapping repository results in the domain's concrete {@link BehavioralCollection}. The
  * type parameter makes the wrapping requirement structural (ADR-011).
  *
+ * <p><b>Repository type parameter.</b> The {@code R} parameter lets a subclass bind the
+ * concrete repository subtype it was constructed with, so {@link #repository()} returns
+ * the narrowed type directly. Domain-specific repository methods are reachable without
+ * a cast and without a duplicate field in the subclass.
+ *
  * @param <NAME> the entity's name type
  * @param <E>    the named entity type
  * @param <EC>   the behavioral collection type returned by multi-result methods
+ * @param <R>    the concrete repository subtype backing this query
  */
 public abstract class AbstractNamedEntityQuery<
         NAME extends EntityName<?>,
         E extends NamedEntity<NAME>,
-        EC extends BehavioralCollection<E>> implements NamedEntityQuery<NAME, E, EC> {
+        EC extends BehavioralCollection<E>,
+        R extends NamedEntityRepository<NAME, E>> implements NamedEntityQuery<NAME, E, EC> {
 
-    private final NamedEntityRepository<NAME, E> repository;
+    private final R repository;
     private final Observer observer;
 
-    protected AbstractNamedEntityQuery(NamedEntityRepository<NAME, E> repository) {
+    protected AbstractNamedEntityQuery(R repository) {
         this.repository = Objects.requireNonNull(repository, "repository must not be null");
         this.observer = Observer.forClass(getClass());
     }
@@ -38,7 +45,7 @@ public abstract class AbstractNamedEntityQuery<
         return observer;
     }
 
-    protected NamedEntityRepository<NAME, E> repository() {
+    protected R repository() {
         return repository;
     }
 

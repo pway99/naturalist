@@ -6,27 +6,28 @@ import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import java.util.Set;
 
 class ImageQueryImpl
-        extends AbstractNamedEntityQuery<InsectImageName, InsectImage, ImageCollection>
+        extends AbstractNamedEntityQuery<
+                InsectImageName,
+                InsectImage,
+                ImageCollection,
+                InsectRepository.ImageRepository>
         implements InsectQuery.ImageQuery {
 
-    private final InsectRepository.ImageRepository imageRepository;
-
-    ImageQueryImpl(InsectRepository.ImageRepository imageRepository) {
-        super(imageRepository);
-        this.imageRepository = imageRepository;
+    ImageQueryImpl(InsectRepository.ImageRepository repository) {
+        super(repository);
     }
 
     @Override
     public ImageCollection findByNameSet(Set<InsectImageName> names) {
         observer().arguments("findByNameSet", i -> i.entityNameCollection(names, "names"))
                 .throwWhenInvalid();
-        return ImageCollection.of(imageRepository.getByEntityNameSet(names));
+        return ImageCollection.of(repository().getByEntityNameSet(names));
     }
 
     @Override
     public ImageCollection forSpeciesName(InsectSpeciesName speciesName) {
         observer().arguments("forSpeciesName", i -> i.entityName(speciesName, "speciesName"))
                 .throwWhenInvalid();
-        return ImageCollection.of(imageRepository.getBySpeciesName(speciesName));
+        return ImageCollection.of(repository().getBySpeciesName(speciesName));
     }
 }
