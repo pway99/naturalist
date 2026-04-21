@@ -1,6 +1,7 @@
 package com.naturalist.insects.console;
 
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.ddd.CatalogName;
 import com.naturalist.insects.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +37,10 @@ public class InsectsController {
     @GetMapping
     String list(Model model) {
         var species = insectQuery.species().allSpeciesNames().stream()
-                .sorted(Comparator.comparing(s -> s.value()))
+                .sorted(Comparator.comparing(CatalogName::value))
+                .map(name -> insectQuery.species()
+                        .getByName(name)
+                        .get())
                 .toList();
         model.addAttribute("species", species);
         return "insects/list";
