@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InsectQueryImplTest {
 
     @RegisterExtension
-    NaturalistDatabase db = NaturalistDatabase.create();
+    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     SpeciesRepositoryMock speciesRepository = new SpeciesRepositoryMock(db);
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);

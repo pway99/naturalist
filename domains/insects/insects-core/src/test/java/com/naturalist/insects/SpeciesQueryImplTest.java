@@ -1,7 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NamedEntityQuery;
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -11,7 +11,7 @@ class SpeciesQueryImplTest
         implements NamedEntityQueryContractTest<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
 
     @RegisterExtension
-    NaturalistDatabase db = NaturalistDatabase.create();
+    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     SpeciesRepositoryMock repository = new SpeciesRepositoryMock(db);
     InsectQuery.SpeciesQuery query = new SpeciesQueryImpl(repository);

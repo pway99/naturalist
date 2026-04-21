@@ -1,7 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NamedEntityQuery;
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ class ImageQueryImplTest
         implements NamedEntityQueryContractTest<InsectImageName, InsectImage, ImageCollection> {
 
     @RegisterExtension
-    NaturalistDatabase db = NaturalistDatabase.create();
+    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     InsectImageRepositoryMock repository = new InsectImageRepositoryMock(db);
     InsectQuery.ImageQuery query = new ImageQueryImpl(repository);

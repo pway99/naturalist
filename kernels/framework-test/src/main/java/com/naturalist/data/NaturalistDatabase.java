@@ -1,20 +1,28 @@
 package com.naturalist.data;
 
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class NaturalistDatabase implements BeforeEachCallback {
+/**
+ * In-memory registry of {@link TestEntitySource} / {@link NamedTestEntitySource}
+ * instances keyed by class. Plays the role of the in-memory database shared across
+ * repository adapters during development and testing.
+ *
+ * <p>This class holds no JUnit lifecycle concern — it is a plain source registry
+ * usable from any context (main-wired controllers during pre-RDBMS development,
+ * tests, CLI tools). For the JUnit per-method reset behavior, use
+ * {@link NaturalistDatabaseExtension}.
+ */
+public class NaturalistDatabase {
     final Map<Class<?>, Object> sourceMap = new HashMap<>();
+
+    protected NaturalistDatabase() {}
 
     public static NaturalistDatabase create() {
         return new NaturalistDatabase();
     }
 
-    @Override
-    public void beforeEach(ExtensionContext context) {
+    public void clear() {
         sourceMap.clear();
     }
 

@@ -34,7 +34,7 @@ public class InsectsController {
 
     @GetMapping
     String list(Model model) {
-        var species = insectQuery.species().allSpecies().stream()
+        var species = insectQuery.species().allSpeciesNames().stream()
                 .sorted(Comparator.comparing(s -> s.value()))
                 .toList();
         model.addAttribute("species", species);

@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ class InsectAggregateFactoryTest {
     static final Observer observer = Observer.forClass(InsectAggregateFactoryTest.class);
 
     @RegisterExtension
-    NaturalistDatabase db = NaturalistDatabase.create();
+    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     SpeciesRepositoryMock speciesRepository = new SpeciesRepositoryMock(db);
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);

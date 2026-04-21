@@ -39,7 +39,7 @@ public interface NamedEntityRepositoryContractTest<
     Observer observer = Observer.forClass(NamedEntityRepositoryContractTest.class);
 
     @RegisterExtension
-    NaturalistDatabase db = NaturalistDatabase.create();
+    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     NamedEntityRepository<NAME, ENTITY> repository();
 

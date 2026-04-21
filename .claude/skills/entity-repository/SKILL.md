@@ -189,7 +189,7 @@ The interface must cover all six `EntityRepository` methods with the following t
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.exception.UniqueConstraintException;
@@ -217,7 +217,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 interface <Entity>EntityRepositoryTest {
 
     @RegisterExtension
-    NaturalistDatabase db = NaturalistDatabase.create();
+    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     <Package>Repository.<Entity>EntityRepository repository();
 
