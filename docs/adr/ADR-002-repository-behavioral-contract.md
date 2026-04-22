@@ -1,62 +1,42 @@
 # ADR-002: Repository Behavioral Contract via Test Interface
+> [rationale](rationale/ADR-002-repository-behavioral-contract.md)
 
-**Status:** Accepted (Amended)
-**Full rationale:** [rationale/ADR-002-repository-behavioral-contract.md](rationale/ADR-002-repository-behavioral-contract.md)
+- Module name is `<domain>-repository-test` (named for purpose).
+- Contract interface `FooRepositoryTest` with `@Test default` methods lives in
+  `src/main/java` of that module; compiled into the jar and reused by adapter tests.
+- In-memory adapter test `FooRepositoryMockTest implements FooRepositoryTest` lives in
+  `src/main/java` of the same module.
+- RDBMS adapter test lives in `<domain>-repository-rdms/src/test/java`, implements the
+  same interface, supplies its own `repository()`.
+- Module DAG: `<domain>-repository-rdms → <domain>-repository-test (test scope) → <domain>-api`.
 
-## Decision
+## Per-method test cases
 
-- **Module naming:** `<domain>-repository-test` — named for purpose (tests repositories),
-  not implementation. In-memory `TestEntitySource` is the mechanism, not the name.
-- **Contract as distributable interface:** `FooRepositoryTest` interface with
-  `@Test default` methods in `src/main/java` of `<domain>-repository-test`. Compiled into
-  the jar, pulled by adapters, same tests run against all implementations.
-- **In-memory adapter test** lives in `src/main/java` of the same module (part of the
-  distributed artifact) as `FooRepositoryMockTest implements FooRepositoryTest`.
-- **RDBMS adapter test** lives in `<domain>-repository-rdms/src/test/java` — also implements
-  the same interface, provides its own `repository()` instance.
-- **Module DAG:** `<domain>-repository-rdms → <domain>-repository-test (test scope) → <domain>-api`.
+Each select method has three: argument validation (null/invalid → `InvariantViolationException`
+via `observer().arguments(...)`), empty result (unknown name/id → `Optional.empty()` or
+empty collection), expected result (structural equality ignoring `"id"`, expected sourced
+from `TestEntitySource`).
 
-### Three test cases per select method
-1. **Argument validation** — reject null/invalid args via
-   `InvariantViolationException` (delegated to `observer().arguments(...)`).
-2. **Empty result** — unknown name/id returns `Optional.empty()` or empty collection.
-3. **Expected result** — structural equality ignoring `"id"`, using `TestEntitySource`
-   as the expected-value source.
+Set-based select methods require **≥ 2 known + 1 not-found** in the input to distinguish
+partial-match from single-entity lookup.
 
-### Set-based select methods
-- Partial-match test requires **≥ 2 known values + 1 not-found** in the input set. A single
-  known + not-found cannot distinguish partial-match from single-entity lookup.
-
-### Three test cases per write method (`insert`, `update`)
-- `insert`: argument validation, constraint violation (duplicate id →
-  `PrimaryKeyConstraintException`, duplicate unique → `UniqueConstraintException`),
-  expected result (retrievable by id and name, observed via Observer).
-- `update`: argument validation, no-match case (throws), expected result (every mutable
+Each write method (`insert`, `update`) has three:
+- `insert`: arg validation, constraint violation (dup id → `PrimaryKeyConstraintException`,
+  dup unique → `UniqueConstraintException`), expected result (retrievable by id and name,
+  observed via Observer).
+- `update`: arg validation, no-match (silent — see ADR-006), expected result (every mutable
   field changed via `RandomValue`; `PersistenceId`/`EntityName` carried forward and asserted
   unchanged; persisted entity observed).
 
-## Amendment 1 — EntityRepositoryContractTest
+## EntityRepositoryContractTest (Amendment 1)
 
-- All 22 standard `EntityRepository` test cases live once in
-  `EntityRepositoryContractTest<ID, NAME, ENTITY>` in `kernels/framework-test`. Domain
-  contract interfaces extend it; concrete tests supply hooks only.
-- **Hooks:** `repository()`, `source()`, `notFoundName()`, `knownEntityNames()`,
-  `notFoundId()`, `newEntity()`, `ghostEntity()`, `modifiedEntity(original)`.
-- `assertEntityEquals` defaults to recursive comparison ignoring `"id"`; override for
-  custom equality.
-- `entityWithDuplicateName` hook eliminated — derived via `existing.withId(null)`.
-- **Persistence verification via Observer:** insert/update expected-result tests observe
-  the persisted entity (`mo.entity(persisted, "persisted").violations()`). Walks the full
-  constraint graph. Replaces hand-written field-by-field assertions.
-- `assertFieldsUpdated` hook removed; update verification is: (1) id/name unchanged,
-  (2) recursive structural equality, (3) Observer constraint-graph walk.
-
-## Consequences
-
-- Single contract guarantees in-memory and RDBMS adapter equivalence by construction
-- In-memory adapter sufficient for all development; RDBMS deferrable
-- No test-containers or DB connections during development
-- Every select/write method has 3 minimum documented test cases, enforced structurally
-- `EntityRepositoryContractTest` eliminates ~250 lines boilerplate per entity repository
-- New entity repository = ~8 hook implementations + 4-line mock test class; 22 cases inherited
-- `TestEntitySourceTest` requires ≥ 4 entities per source
+- 22 standard cases live in `EntityRepositoryContractTest<ID, NAME, ENTITY>` in
+  `kernels/framework-test`. Domain contract interfaces extend it; concrete tests supply hooks.
+- Hooks: `repository()`, `source()`, `notFoundName()`, `knownEntityNames()`, `notFoundId()`,
+  `newEntity()`, `ghostEntity()`, `modifiedEntity(original)`.
+- `assertEntityEquals` defaults to recursive compare ignoring `"id"`; override for custom equality.
+- `entityWithDuplicateName` derived via `existing.withId(null)`.
+- Insert/update verification observes the persisted entity:
+  `mo.entity(persisted, "persisted").violations()`. Replaces field-by-field assertions.
+- No `assertFieldsUpdated`; update check = id/name unchanged + structural equality + Observer walk.
+- `TestEntitySourceTest` requires ≥ 4 entities per source.
