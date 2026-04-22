@@ -13,25 +13,37 @@ Area-specific conventions (load when working in that area):
 
 ## Identity
 
-Every domain class implements exactly one of `NamedEntity`, `Aggregate`, `ValueObject`,
-`BehavioralCollection` (all from `kernels/framework`; all extend `Observable` and declare
-`invariants()`). Signatures and rules in [`domains/CLAUDE.md`](domains/CLAUDE.md).
+Every domain class implements exactly one of `NamedEntity`, `Entity`, `Aggregate`,
+`ValueObject`, `BehavioralCollection` (all from `kernels/framework`; all extend
+`Observable` and declare `invariants()`). Signatures and rules in
+[`domains/CLAUDE.md`](domains/CLAUDE.md).
 
-Domain identity is `EntityName` — never null, the stable natural key.
-`EntityName` subclasses live in `domains/identifiers/`. `PersistenceId<Long>` is an
-adapter-internal concern (ADR-021) — no domain record carries an `id()` component.
+Two identity branches share a common `Named<KEY>` data-layer port (ADR-022):
+
+- **`NamedEntity<NAME extends EntityName>`** — natural-key slug identity.
+  `EntityName` is never null, kebab-case, and the stable cross-domain reference
+  (ADR-001). `EntityName` subclasses live in `domains/identifiers/`.
+- **`Entity<ID extends EntityId>`** — surrogate UUIDv7 identity. `EntityId` is
+  generated at record construction, validated `version() == 7` at the boundary,
+  and never crosses a domain boundary by value. `EntityId` subclasses live in
+  `domains/identifiers/`. Use a kernel-provided generator; `UUID.randomUUID()`
+  is forbidden.
+
+No domain record carries a `PersistenceId` component — it does not exist in
+Java (ADR-022, superseding ADR-021).
 
 ## Module layout
 
 ```
 kernels/
-  framework/          — NamedEntity, EntityName, Aggregate, ValueObject,
-                        Observable, Observer, BehavioralCollection
+  framework/          — NamedEntity, Entity, EntityName, EntityId, Aggregate,
+                        ValueObject, Observable, Observer, BehavioralCollection
   framework-test/     — NamedTestEntitySource, NamedTestEntitySourceTest, TestDataHelper
   field-notes/        — Description (four-level Durrell description)
   taxonomy/           — TaxonomicClassification (organism domains only)
 domains/
-  identifiers/        — typed IDs and names only
+  identifiers/        — typed names (EntityName subclasses) and typed ids
+                        (EntityId subclasses) only
   <domain>/<domain>-api, <domain>-core, <domain>-repository-test
 ```
 
@@ -73,11 +85,17 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
 
 ## Non-negotiables
 
-- **Typed identifiers.** Never raw `String`/`Long` as an entity reference across any
-  boundary. Every entity has a concrete `EntityName` subclass; cross-entity references
-  are by `EntityName` only (ADR-021).
-- **Records for Entity/Aggregate/ValueObject.** `BehavioralCollection` is a `final class`
-  (see [ADR-011](docs/adr/ADR-011-behavioral-collections.md)). Record rules in
-  [`domains/CLAUDE.md`](domains/CLAUDE.md).
+- **Typed identifiers.** Never raw `String`, `Long`, or `UUID` as an entity reference
+  across any boundary. `NamedEntity` records carry a concrete `EntityName` subclass;
+  `Entity` records carry a concrete `EntityId` subclass. Cross-`NamedEntity` references
+  are by `EntityName`; `Entity` records are never referenced cross-domain by value
+  (ADR-022).
+- **UUIDv7 only.** `EntityId.isValid()` enforces version 7. Do not call
+  `UUID.randomUUID()` in domain or adapter code — use the kernel's generator.
+- **Records for NamedEntity/Entity/Aggregate/ValueObject.** `BehavioralCollection` is
+  a `final class` (see [ADR-011](docs/adr/ADR-011-behavioral-collections.md)). Record
+  rules in [`domains/CLAUDE.md`](domains/CLAUDE.md).
 - **Observations and Events are immutable** — records or final fields, no setters,
-  equality by value.
+  equality by value. This is a domain invariant for `Entity` records and is documented
+  in each event/observation domain's own `CLAUDE.md`; it is no longer encoded in a
+  separate kernel subtype.

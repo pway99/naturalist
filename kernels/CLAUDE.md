@@ -6,9 +6,15 @@ the entire codebase — treat them as stable contracts, not convenient places to
 ## Four Kernels
 
 ### framework
-DDD building blocks. `NamedEntity`, `FactEntity`, `Aggregate`, `ValueObject`,
-`BehavioralCollection`, `Observable`, `Constraints`, `EntityName`, `FactName`, `Observer`.
+DDD building blocks. `NamedEntity`, `Entity`, `Aggregate`, `ValueObject`,
+`BehavioralCollection`, `Observable`, `Constraints`, `EntityName`, `EntityId`, `Observer`.
 No domain knowledge — pure structural vocabulary. Everything else depends on this.
+
+Two entity branches sharing a `Named<KEY>` supertype (ADR-022):
+- `NamedEntity<NAME extends EntityName>` — natural-key slug identity.
+- `Entity<ID extends EntityId>` — surrogate UUIDv7 identity, generated at record
+  construction. `EntityId` validates `UUID.version() == 7` and qualifies equality by
+  concrete class.
 
 ### framework-test
 Test infrastructure. `NamedTestEntitySource`, `NamedTestEntitySourceTest`,
@@ -51,10 +57,14 @@ taxonomy     →  framework
 
 ## Hard Rules
 
-- `identifiers` contains typed names only — `EntityName` subclasses (slug) and `FactName`
-  subclasses (UUID). No value objects. No behavior. If it is not an identifier, it does
-  not belong there.
-- Domain records carry no persistence identifier — identity is the `EntityName` (ADR-021).
+- `identifiers` contains typed identifiers only — `EntityName` subclasses (slug) and
+  `EntityId` subclasses (UUIDv7). No value objects. No behavior. If it is not an
+  identifier, it does not belong there.
+- `PersistenceId` does not exist in Java. Domain records carry either an `EntityName`
+  (via `NamedEntity`) or an `EntityId` (via `Entity`), and nothing else identity-shaped
+  (ADR-022, superseding ADR-021).
+- Do not call `UUID.randomUUID()` from domain or kernel code. The kernel's UUIDv7
+  generator is the only source of `EntityId` values.
 - `field-notes` and `taxonomy` contain shared value objects only.
   No entity definitions. No domain-specific logic.
 - Do not add a new class to any kernel without considering whether it is truly
@@ -85,8 +95,8 @@ Do not use the by-function form when the direct-value form suffices — the func
 
 ## Testing Observables
 
-Every domain type (`NamedEntity`, `Aggregate`, `ValueObject`, `BehavioralCollection`)
-implements `Observable` and declares `invariants()`. Unit tests verify invariants via
+Every domain type (`NamedEntity`, `Entity`, `Aggregate`, `ValueObject`,
+`BehavioralCollection`) implements `Observable` and declares `invariants()`. Unit tests verify invariants via
 `Observer` → `MethodObserver` → `InvariantObservation` — never by calling `isValid()` on
 individual `Constraint` objects. The `InvariantObservation` gives the full set of failing
 invariant names in a single assertion, eliminating the need to debug which constraint broke.

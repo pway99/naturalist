@@ -1,6 +1,14 @@
 # ADR-005: Entity Identity Model — CatalogEntity and FactEntity
 
-**Status:** Accepted (Amended ×2, Amendment 3 Draft)
+**Status:** Superseded by [ADR-022](ADR-022-entity-identity-unified.md) (2026-04-22).
+Previously: Accepted (Amended ×2, Amendment 3 Draft).
+
+The two-branch model in this ADR (`CatalogEntity` + `FactEntity`, both carrying
+`PersistenceId`) and its Amendment 2 unification via `Entity<ID, NAME>` have been
+replaced by `NamedEntity<NAME extends EntityName>` and `Entity<ID extends EntityId>`
+over a shared `Named<KEY>` port. `FactName` is retired in favour of `EntityId`
+(UUIDv7). The body below is retained as historical narrative; do not implement
+against it.
 
 ## Context
 
