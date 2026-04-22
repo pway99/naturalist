@@ -1,7 +1,7 @@
 package com.naturalist.plants;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
 /**
  * Strongly typed natural key for {@code Plant} entities.
@@ -13,7 +13,7 @@ import com.naturalist.ddd.CatalogName;
  * Cross-domain references (e.g. zone sub-context noting which plants are present)
  * use {@code PlantName} rather than importing plants-api, preserving DAG integrity.
  */
-public final class PlantName extends CatalogName {
+public final class PlantName extends EntityName {
 
     private PlantName(String value) {
         super(value);

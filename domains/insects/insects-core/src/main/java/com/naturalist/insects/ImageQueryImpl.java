@@ -7,7 +7,7 @@ import java.util.Set;
 
 class ImageQueryImpl
         extends AbstractNamedEntityQuery<
-                InsectImageName,
+                InsectImageId,
                 InsectImage,
                 ImageCollection,
                 InsectRepository.ImageRepository>
@@ -18,8 +18,8 @@ class ImageQueryImpl
     }
 
     @Override
-    public ImageCollection findByNameSet(Set<InsectImageName> names) {
-        observer().arguments("findByNameSet", i -> i.entityNameCollection(names, "names"))
+    public ImageCollection findByNameSet(Set<InsectImageId> names) {
+        observer().arguments("findByNameSet", i -> i.notNull(names, "names"))
                 .throwWhenInvalid();
         return ImageCollection.of(repository().getByEntityNameSet(names));
     }

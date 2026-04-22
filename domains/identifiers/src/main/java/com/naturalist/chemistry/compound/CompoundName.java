@@ -1,7 +1,7 @@
 package com.naturalist.chemistry.compound;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
 /**
  * Natural key for {@code Compound} — a human-readable slug stable across deployments.
@@ -12,7 +12,7 @@ import com.naturalist.ddd.CatalogName;
  * <p>
  * Example: {@code CompoundName.of("calcium-sulfate-dihydrate")}
  */
-public final class CompoundName extends CatalogName {
+public final class CompoundName extends EntityName {
 
     private CompoundName(String value) {
         super(value);

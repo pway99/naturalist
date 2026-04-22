@@ -167,7 +167,6 @@ Append one record per image to `insect-images.json`. See the schema in
 `references/domain-model.md`. Key points:
 
 - `name` → the generated UUID string
-- `insectSpeciesId` → always `null` (resolved at runtime by the repository)
 - `insectSpeciesName` → must exactly match the `name` field of the `InsectSpecies` entry
 - `dateAdded` → ISO-8601 instant in UTC (`"2026-04-17T22:39:00Z"`). The Java type is
   `java.time.Instant` — never use date-only format (`"2026-04-17"`) as it will fail

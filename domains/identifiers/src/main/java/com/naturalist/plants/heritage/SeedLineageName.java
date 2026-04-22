@@ -1,9 +1,9 @@
 package com.naturalist.plants.heritage;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class SeedLineageName extends CatalogName {
+public final class SeedLineageName extends EntityName {
 
     private SeedLineageName(String value) {
         super(value);

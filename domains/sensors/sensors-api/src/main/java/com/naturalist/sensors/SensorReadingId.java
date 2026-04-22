@@ -1,7 +1,7 @@
 package com.naturalist.sensors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.FactName;
+import com.naturalist.ddd.EntityId;
 
 import java.util.UUID;
 
@@ -13,14 +13,14 @@ import java.util.UUID;
  * offline sync) carries the same UUID and will be de-duplicated by the unique
  * constraint in {@code TestEntitySource} and the RDBMS unique index.
  */
-public final class SensorReadingName extends FactName {
+public final class SensorReadingId extends EntityId {
 
-    private SensorReadingName(UUID value) {
+    private SensorReadingId(UUID value) {
         super(value);
     }
 
     @JsonCreator
-    public static SensorReadingName of(UUID value) {
-        return new SensorReadingName(value);
+    public static SensorReadingId of(UUID value) {
+        return new SensorReadingId(value);
     }
 }

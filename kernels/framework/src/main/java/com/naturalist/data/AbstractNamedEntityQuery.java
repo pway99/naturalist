@@ -1,17 +1,15 @@
 package com.naturalist.data;
 
 import com.naturalist.ddd.BehavioralCollection;
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 import com.naturalist.observability.Observer;
 
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Framework base class for name-only query adapter implementations in
- * {@code <domain>-core}. Parallel to {@link AbstractEntityQuery}, minus every member
- * parameterised by {@link com.naturalist.ddd.PersistenceId}.
+ * Framework base class for query adapter implementations in {@code <domain>-core}.
+ * Identity at the port is the entity's name (ADR-021).
  *
  * <p>Subclasses implement {@link NamedEntityQuery#findByNameSet(java.util.Set)} directly,
  * wrapping repository results in the domain's concrete {@link BehavioralCollection}. The
@@ -28,8 +26,8 @@ import java.util.Optional;
  * @param <R>    the concrete repository subtype backing this query
  */
 public abstract class AbstractNamedEntityQuery<
-        NAME extends EntityName<?>,
-        E extends NamedEntity<NAME>,
+        NAME,
+        E extends Named<NAME>,
         EC extends BehavioralCollection<E>,
         R extends NamedEntityRepository<NAME, E>> implements NamedEntityQuery<NAME, E, EC> {
 
@@ -51,7 +49,7 @@ public abstract class AbstractNamedEntityQuery<
 
     @Override
     public Optional<E> getByName(NAME name) {
-        observer.arguments("getByName", i -> i.entityName(name, "name"))
+        observer.arguments("getByName", i -> i.notNull(name, "name"))
                 .throwWhenInvalid();
         return repository.getByName(name);
     }

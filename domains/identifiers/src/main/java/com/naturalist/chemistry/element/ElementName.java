@@ -1,8 +1,8 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class ElementName extends CatalogName {
+public final class ElementName extends EntityName {
 
     private ElementName(String value) {
         super(value);

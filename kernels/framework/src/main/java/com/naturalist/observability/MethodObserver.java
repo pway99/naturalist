@@ -1,7 +1,6 @@
 package com.naturalist.observability;
 
-import com.naturalist.ddd.Entity;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -45,17 +44,11 @@ public class MethodObserver {
     public String observationPoint() {
         return referenceClass.getSimpleName() + "." + methodName;
     }
+
     /**
      * Observe a named entity within this method scope.
      */
-    public InvariantObservation entity(Entity<?, ?> entity, String label) {
-        return observable(entity, label);
-    }
-
-    /**
-     * Observe a named entity (ADR-021) within this method scope.
-     */
-    public InvariantObservation namedEntity(NamedEntity<?> entity, String label) {
+    public InvariantObservation namedEntity(Named<?> entity, String label) {
         return observable(entity, label);
     }
 

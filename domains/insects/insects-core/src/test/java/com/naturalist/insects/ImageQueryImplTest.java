@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ImageQueryImplTest
-        implements NamedEntityQueryContractTest<InsectImageName, InsectImage, ImageCollection> {
+        implements NamedEntityQueryContractTest<InsectImageId, InsectImage, ImageCollection> {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
@@ -22,17 +22,17 @@ class ImageQueryImplTest
     InsectQuery.ImageQuery query = new ImageQueryImpl(repository);
 
     @Override
-    public NamedEntityQuery<InsectImageName, InsectImage, ImageCollection> query() {
+    public NamedEntityQuery<InsectImageId, InsectImage, ImageCollection> query() {
         return query;
     }
 
     @Override
-    public InsectImageName notFoundName() {
+    public InsectImageId notFoundName() {
         return TestInsectsIdentifiers.InsectSpecies.NotFound.imageName;
     }
 
     @Override
-    public List<InsectImageName> knownEntityNames() {
+    public List<InsectImageId> knownEntityNames() {
         return List.of(
                 TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,
                 TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9048.name);

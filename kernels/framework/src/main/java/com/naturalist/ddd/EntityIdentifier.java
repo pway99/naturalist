@@ -9,16 +9,15 @@ import java.lang.annotation.Target;
  * Marks a <em>secondary</em> {@link EntityName} component as a unique identifier
  * within its data source.
  * <p>
- * The canonical {@code name()} of any {@link Entity} is automatically enforced as
- * unique by {@code TestEntitySource} — do not annotate it here.
- * Use {@code @EntityIdentifier} only on additional {@code EntityName} fields on the
- * same entity that must also be unique. Cross-domain FK {@code EntityName} references
- * carry no annotation. For plain value fields ({@code String}, {@code int}, enums) that
- * must be unique but are not {@code EntityName} subclasses, use {@link UniqueValue} instead.
+ * The canonical {@code name()} of a {@link NamedEntity} is automatically enforced as
+ * unique by {@code NamedTestEntitySource} — do not annotate it here. Use
+ * {@code @EntityIdentifier} only on additional {@code EntityName} fields on the same
+ * entity that must also be unique. Cross-domain FK {@code EntityName} references carry
+ * no annotation. For plain value fields ({@code String}, {@code int}, enums) that must
+ * be unique but are not {@code EntityName} subclasses, use {@link UniqueValue} instead.
  * <p>
  * Secondary fields annotated with {@code @EntityIdentifier} must still be declared
- * explicitly in the subclass {@code uniqueConstraints()} method. For plain value fields
- * ({@code String}, {@code int}, enums) that must be unique, use {@link UniqueValue} instead.
+ * explicitly in the subclass {@code uniqueConstraints()} method.
  *
  * @see UniqueValue
  */

@@ -1,6 +1,6 @@
 package com.naturalist.sensors;
 
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
 /**
  * The natural key (slug) of a {@link Sensor} catalog entity.
@@ -19,7 +19,7 @@ import com.naturalist.ddd.CatalogName;
  *   <li>{@code "backyard-deep"} — WH51L (pending), backyard, 10–12 inch depth</li>
  * </ul>
  */
-public final class SensorName extends CatalogName {
+public final class SensorName extends EntityName {
 
     private SensorName(String value) {
         super(value);

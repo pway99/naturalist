@@ -2,7 +2,7 @@
 
 Decisions in flight. Not loaded into conversation context — reference explicitly when working on the relevant question.
 
-**Q0: Aggregate and the CatalogEntity/FactEntity model** — `Aggregate` sits orthogonal to the CatalogEntity/FactEntity identity classification. A `Colony` (Apiary) or `NaturalistJournal` is an Aggregate (consistency boundary) but may also be a `CatalogEntity` (stable, named, referenced). These concerns should compose cleanly, but the relationship between `Aggregate`, `CatalogEntity`, and `FactEntity` needs an explicit ADR before Aggregate roots are implemented. Defer until CatalogEntity/FactEntity implementation is complete.
+**Q0: Aggregate and the CatalogEntity/Entity model** — `Aggregate` sits orthogonal to the CatalogEntity/Entity identity classification. A `Colony` (Apiary) or `NaturalistJournal` is an Aggregate (consistency boundary) but may also be a `CatalogEntity` (stable, named, referenced). These concerns should compose cleanly, but the relationship between `Aggregate`, `CatalogEntity`, and `Entity` needs an explicit ADR before Aggregate roots are implemented. Defer until CatalogEntity/Entity implementation is complete.
 
 **Q1: IrrigationEvent repository adapter** — PostgreSQL: standard table, TimescaleDB hypertable, or separate time-series store. Current decision: deferred; in-memory adapter sufficient.
 

@@ -46,7 +46,7 @@ public interface EntityNameConstraints {
         }
     }
 
-    record EntityNameSetConstraint<NAME extends EntityName<?>>(
+    record EntityNameSetConstraint<NAME extends EntityName>(
             EntityNameSet<NAME> value,
             String name
     ) implements Constraint<EntityNameSet<NAME>> {

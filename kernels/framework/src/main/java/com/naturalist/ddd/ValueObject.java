@@ -17,7 +17,7 @@ import com.naturalist.observability.Observable;
  *   <li><b>Domain laws and constants</b> — scientific laws, physical constants, and
  *       agronomic rules codified in pure Java. These are generalisations derived from
  *       observation and held as true until the model is corrected. They are not
- *       {@link FactEntity} instances — the measurement that produced a constant is a
+ *       {@link Entity} instances — the measurement that produced a constant is a
  *       fact; the constant itself is domain knowledge. Examples: a gravitational field
  *       value, an optimal nutrient range, a chemical binding constant.</li>
  * </ul>
@@ -26,8 +26,8 @@ import com.naturalist.observability.Observable;
  * {@code ValueObject} records — the choice is a readability concern, not an identity one.
  * Neither form requires an RDBMS table.
  *
- * @see FactEntity
- * @see CatalogEntity
+ * @see Entity
+ * @see NamedEntity
  */
 public interface ValueObject extends Observable {
 }

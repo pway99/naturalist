@@ -4,11 +4,7 @@ import com.naturalist.RandomValue;
 import com.naturalist.data.NamedEntityRepositoryContractTest;
 import com.naturalist.data.NamedTestEntitySource;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
-import com.naturalist.taxonomy.TaxonomicSpecies;
+import com.naturalist.taxonomy.*;
 
 import java.util.List;
 import java.util.Set;

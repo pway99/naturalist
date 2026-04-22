@@ -1,9 +1,9 @@
 package com.naturalist.arachnids;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class ArachnidName extends CatalogName {
+public final class ArachnidName extends EntityName {
     private ArachnidName(String value) { super(value); }
 
     @JsonCreator

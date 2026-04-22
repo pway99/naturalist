@@ -1,6 +1,14 @@
 # ADR-021: PersistenceId is Adapter-Internal; Cross-Entity References Use EntityName
 
-**Status:** Draft — piloted in the `insects` domain
+**Status:** Superseded by [ADR-022](ADR-022-entity-identity-unified.md) (2026-04-22).
+Previously: Draft — piloted in the `insects` domain.
+
+The `insects` pilot rolled out to every domain. `PersistenceId` has been deleted from
+the kernel outright (Appendix A.7's stronger stance is now the rule), and the pilot's
+`NamedEntity<NAME>` shape is the kernel's only shape for slug-keyed entities. Appendix
+A's SQL-translation sketch remains the canonical worked example — substitute
+`uuid` (UUIDv7) for `BIGSERIAL` where this ADR used numeric surrogate keys. The body
+below is retained as historical narrative; do not implement against it.
 
 ## Context
 

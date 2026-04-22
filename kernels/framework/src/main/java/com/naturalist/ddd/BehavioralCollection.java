@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * across call sites.
  * <p>
  * The type bound {@code T extends Observable} is not incidental. Every domain type —
- * {@link com.naturalist.ddd.Entity}, {@link Aggregate}, {@link ValueObject} — implements
+ * {@link NamedEntity}, {@link Aggregate}, {@link ValueObject} — implements
  * {@link Observable}, so a {@code BehavioralCollection} can hold any of them while
  * retaining access to {@code invariants()} on each member.
  * <p>

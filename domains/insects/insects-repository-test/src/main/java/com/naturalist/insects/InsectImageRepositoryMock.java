@@ -6,7 +6,7 @@ import com.naturalist.data.NaturalistDatabase;
 import java.util.List;
 
 class InsectImageRepositoryMock
-        extends AbstractTestNamedEntityRepository<InsectImageName, InsectImage, InsectImageTestEntitySource>
+        extends AbstractTestNamedEntityRepository<InsectImageId, InsectImage, InsectImageTestEntitySource>
         implements InsectRepository.ImageRepository {
 
     InsectImageRepositoryMock(NaturalistDatabase naturalistDatabase) {

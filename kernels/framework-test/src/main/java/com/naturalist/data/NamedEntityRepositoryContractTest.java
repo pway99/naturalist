@@ -1,7 +1,6 @@
 package com.naturalist.data;
 
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.exception.UniqueConstraintException;
@@ -18,9 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Abstract behavioral contract for {@link NamedEntityRepository}. Parallel to
- * {@link EntityRepositoryContractTest}, minus every case covering
- * {@link com.naturalist.ddd.PersistenceId}.
+ * Abstract behavioral contract for {@link NamedEntityRepository}. Identity is the
+ * entity's name (ADR-021) — either an {@code EntityName} (slug) or a {@code EntityId}
+ * (UUID); both are {@link Named}.
  *
  * <p>Every method is covered by three cases per ADR-002:
  * <ol>
@@ -33,8 +32,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @param <ENTITY> the named entity type
  */
 public interface NamedEntityRepositoryContractTest<
-        NAME extends EntityName<?>,
-        ENTITY extends NamedEntity<NAME>> {
+        NAME,
+        ENTITY extends Named<NAME>> {
 
     Observer observer = Observer.forClass(NamedEntityRepositoryContractTest.class);
 

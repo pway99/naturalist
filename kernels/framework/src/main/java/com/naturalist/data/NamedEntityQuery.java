@@ -1,16 +1,15 @@
 package com.naturalist.data;
 
 import com.naturalist.ddd.BehavioralCollection;
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Query port for a {@link NamedEntity}. The name-only analogue of {@link EntityQuery} —
- * there is no {@code getById} and no {@code findByIdSet}, because a {@link NamedEntity}
- * carries no {@link com.naturalist.ddd.PersistenceId} on its domain record (ADR-021).
+ * Query port for a {@link Named} entity — any domain record carrying a typed name.
+ * Identity at the port is the entity's name (ADR-021) — there is no id-based lookup
+ * because domain records carry no persistence identifier.
  *
  * <p>Single-result lookup returns {@link Optional} per ADR-010. Multi-result lookup
  * returns the domain-specific {@link BehavioralCollection} per ADR-011 — returning a
@@ -20,7 +19,7 @@ import java.util.Set;
  * @param <E>    the named entity type
  * @param <EC>   the behavioral collection type returned by multi-result methods
  */
-public interface NamedEntityQuery<NAME extends EntityName<?>, E extends NamedEntity<NAME>, EC extends BehavioralCollection<E>> {
+public interface NamedEntityQuery<NAME, E extends Named<NAME>, EC extends BehavioralCollection<E>> {
 
     Optional<E> getByName(NAME name);
 

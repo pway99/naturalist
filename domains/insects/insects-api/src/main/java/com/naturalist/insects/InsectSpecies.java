@@ -1,12 +1,12 @@
 package com.naturalist.insects;
 
-import com.naturalist.fieldnotes.Description;
-import com.naturalist.habitat.HabitatProfile;
-import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.ddd.AggregateRoot;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.ValueObject;
+import com.naturalist.fieldnotes.Description;
+import com.naturalist.habitat.HabitatProfile;
 import com.naturalist.observability.Constraints;
+import com.naturalist.taxonomy.TaxonomicClassification;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;

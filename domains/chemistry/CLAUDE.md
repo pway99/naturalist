@@ -2,16 +2,16 @@
 
 ## Domain Vocabulary
 
-**Element** — Entity. An atomic building block with symbol, atomic weight, and ionic form.
-Exists independently; referenced by Compounds. Instances in `elements.json`.
-Uses identity-based `equals`/`hashCode` (on `id` only) — see `Element.java` for custom overrides.
+**Element** — `NamedEntity<ElementName>`. An atomic building block with symbol, atomic
+weight, and ionic form. Exists independently; referenced by Compounds. Instances in
+`elements.json`. Equality is by `ElementName` (ADR-022); no `id` component.
 
 **CompoundInfo** — `ValueObject` owned by `Compound`. Chemical classification facts:
 formula, molecular weight, type, pH character, constituent elements. No identity of its
 own — exists only as an attribute of its parent compound.
 
-**Compound** — `CatalogEntity<CompoundId, CompoundName>` + `@AggregateRoot`. The single
-identity and consistency boundary for compound data. Carries `id`, `name` (slug),
+**Compound** — `NamedEntity<CompoundName>` + `@AggregateRoot`. The single identity
+and consistency boundary for compound data. Carries `name` (slug),
 `@UniqueValue String commonName`, and owns `CompoundInfo` (ValueObject)
 plus all profile value objects (`SolubilityProfile`, `BioavailabilityProfile`,
 `VolatilizationProfile`, `SafetyProfile`) and the `Map<String, String> properties`.
@@ -65,12 +65,12 @@ via `compound.bioavailability()` and `compound.solubility()`.
 compound-scoped key-value pairs with no independent lifecycle and no cross-domain identity.
 Persisted via `@ElementCollection` at the RDBMS adapter layer.
 
-`CompoundProperty` was previously modeled as a standalone `CatalogEntity`. That model
+`CompoundProperty` was previously modeled as a standalone `NamedEntity`. That model
 was wrong on two counts:
 
-1. `CatalogEntity` requires a globally unique `name()`. The property key (e.g. `"omriListed"`)
-   is unique only within a compound — not globally. Multiple compounds share the same key
-   names, which violated `TestEntitySource` uniqueness enforcement.
+1. `NamedEntity` requires a globally unique `EntityName`. The property key (e.g.
+   `"omriListed"`) is unique only within a compound — not globally. Multiple compounds
+   share the same key names, which violated `TestEntitySource` uniqueness enforcement.
 2. A compound property has no independent lifecycle. It exists only as an attribute of its
    parent compound, is never referenced cross-domain by identity, and has no repository of
    its own. This is a value collection, not an entity.
@@ -98,8 +98,7 @@ current authoritative catalog is `chemistry-repository-test/src/main/resources/c
 which is loaded by `CompoundTestEntitySource` at test time.
 
 Each entry in `compounds.json` must include:
-- `"id": null` — persistence-assigned by `CompoundTestEntitySource`
-- `"name": "<compound-slug>"` — the `CompoundName` natural key
+- `"name": "<compound-slug>"` — the `CompoundName` natural key (no `id` field; ADR-022)
 - `"commonName": "<display name>"` — the human-readable common name (`@UniqueValue String`)
 - `"compoundInfo": { ... }` — nested `CompoundInfo` ValueObject (formula, molecularWeight, type, phCharacter, constituentElements)
 - `"solubility": { ... }` — `SolubilityProfile` ValueObject

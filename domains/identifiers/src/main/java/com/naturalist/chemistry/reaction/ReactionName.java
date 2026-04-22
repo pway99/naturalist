@@ -1,8 +1,8 @@
 package com.naturalist.chemistry.reaction;
 
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class ReactionName extends CatalogName {
+public final class ReactionName extends EntityName {
 
     private ReactionName(String value) {
         super(value);

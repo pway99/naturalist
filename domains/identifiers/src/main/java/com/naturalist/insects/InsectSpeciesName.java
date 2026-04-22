@@ -1,9 +1,9 @@
 package com.naturalist.insects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class InsectSpeciesName extends CatalogName {
+public final class InsectSpeciesName extends EntityName {
     private InsectSpeciesName(String value) { super(value); }
 
     @JsonCreator
