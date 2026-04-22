@@ -1,11 +1,11 @@
 ---
 name: entity-repository
 description: >
-  Create the full entity repository stack for an existing Entity: the repository
+  Create the full repository stack for an existing NamedEntity: the repository
   super-interface (or add to an existing one), the in-memory mock, the behavioral
   contract test interface, and the mock test class. Use when adding a repository for
-  a domain entity that already has a TestEntitySource and TestIdentifiers. Triggers on
-  phrases like "create a repository for Foo", "add repository for the Bar entity", or
+  a domain entity that already has a NamedTestEntitySource and TestIdentifiers. Triggers
+  on phrases like "create a repository for Foo", "add repository for the Bar entity", or
   explicit invocations like "/entity-repository <EntityClassName>".
 allowed-tools: Read Write Edit Glob Grep Bash
 argument-hint: <EntityClassName>
@@ -29,9 +29,10 @@ Given an entity class name in $ARGUMENTS, scaffold the complete repository stack
 
 Before starting, verify the following exist. If any are missing, stop and report to the user.
 
-- The entity class implementing `Entity<ID, NAME>` (or `CatalogEntity` / `FactEntity`)
-- `<Entity>Id` and `<Entity>Name` in `domains/identifiers/`
-- `<Entity>TestEntitySource` in `<domain>-repository-test/src/main/java/`
+- The entity class implementing `NamedEntity<<Entity>Name>`
+- `<Entity>Name` in `domains/identifiers/` (domain records carry no persistence id per ADR-021)
+- `<Entity>TestEntitySource` extending `NamedTestEntitySource` in
+  `<domain>-repository-test/src/main/java/`
 - `Test<Domain>Identifiers` in `domains/identifiers-test/src/main/java/` with at least
   two known `EntityName` constants and a `NotFound` inner class for this entity type
 
@@ -41,18 +42,19 @@ Before starting, verify the following exist. If any are missing, stop and report
 
 Find the entity class. Read it to determine:
 
-- The entity's `PersistenceId` type (e.g. `PlantId`)
 - The entity's `EntityName` type (e.g. `PlantName`)
 - The entity's package (e.g. `com.naturalist.plants`)
 - The domain module name (e.g. `plants`)
 - All record components — classify each as:
-  - **Immutable**: `PersistenceId` (`id`) and canonical `EntityName` (`name`) — never modified in update tests
-  - **FK EntityName**: an `EntityName` referencing another entity (e.g. `PlantName plantName` on `Cultivar`) — the referenced entity must exist in test data when constructing update/insert test instances
+  - **Immutable**: canonical `EntityName` (`name`) — never modified in update tests
+  - **FK EntityName**: an `EntityName` referencing another entity (e.g. `PlantName plantName`
+    on `Cultivar`) — the referenced entity must exist in test data when constructing
+    update/insert test instances
   - **Mutable**: all other components — must be modified in the update expected-result test
 
 Also locate:
 
-- The `TestEntitySource` class for this entity
+- The `NamedTestEntitySource` subclass for this entity
 - The `Test<Domain>Identifiers` class and its constants for this entity
 - The `<domain>-repository-test/pom.xml`
 
@@ -70,7 +72,7 @@ Read it and add the new nested entity repository interface:
 ```java
 interface <Existing>Repository {
     // ... existing nested interfaces ...
-    interface <Entity>EntityRepository extends EntityRepository<<Entity>Id, <Entity>Name, <Entity>> {}
+    interface <Entity>EntityRepository extends NamedEntityRepository<<Entity>Name, <Entity>> {}
 }
 ```
 
@@ -84,11 +86,11 @@ Create a new one. The name is the package-level domain noun + `Repository` (e.g.
 package com.naturalist.<domain>.<subpackage>;
 
 import com.naturalist.Incubating;
-import com.naturalist.data.EntityRepository;
+import com.naturalist.data.NamedEntityRepository;
 
-@Incubating("Investigating a pattern where EntityRepositories are nested within a single interface")
+@Incubating("Investigating a pattern where repositories are nested within a single interface")
 interface <Package>Repository {
-    interface <Entity>EntityRepository extends EntityRepository<<Entity>Id, <Entity>Name, <Entity>> {}
+    interface <Entity>EntityRepository extends NamedEntityRepository<<Entity>Name, <Entity>> {}
 }
 ```
 
@@ -106,26 +108,21 @@ Create in `<domain>-repository-test/src/main/java/` in the entity's package:
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.AbstractTestNamedEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.observability.Observer;
 
 public class <Entity>EntityRepositoryMock
-        extends AbstractTestEntityRepository<<Entity>Id, <Entity>Name, <Entity>, <Entity>TestEntitySource>
+        extends AbstractTestNamedEntityRepository<<Entity>Name, <Entity>, <Entity>TestEntitySource>
         implements <Package>Repository.<Entity>EntityRepository {
-
-    private static final Observer observer = Observer.forClass(<Entity>EntityRepositoryMock.class);
 
     protected <Entity>EntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
-
-    @Override
-    public Observer observer() {
-        return observer;
-    }
 }
 ```
+
+`AbstractNamedEntityRepository` already holds a class-scoped `Observer` and exposes it
+via `observer()`. Do not redeclare one on the mock.
 
 ---
 
@@ -135,97 +132,81 @@ Create in `<domain>-repository-test/src/main/java/` in the entity's package. Thi
 most complex artifact — read the entity's record components carefully to construct correct
 test instances.
 
-The interface must cover all six `EntityRepository` methods with the following test cases:
+The contract reuses `NamedEntityRepositoryContractTest` from `framework-test`, which
+supplies the full test suite for the four repository methods (`getByName`,
+`getByEntityNameSet`, `insert`, `update`). The per-domain interface supplies identity
+hooks and entity-construction helpers.
 
-### getByName (3 tests)
-- `getByName_nullArgument` — throws `InvariantViolationException`, message contains `"name"`
-- `getByName_unknownName_returnsEmpty` — uses `NotFound.name`
-- `getByName_knownName_returns<Entity>` — recursive comparison ignoring `"id"`
+### Identity hooks (required)
 
-### getByEntityNameSet (5 tests)
-- `getByEntityNameSet_nullArgument` — throws `InvariantViolationException`, message contains `"nameSet"`
-- `getByEntityNameSet_emptySet_returnsEmptyList`
-- `getByEntityNameSet_noMatchingNames_returnsEmptyList` — uses `NotFound.name`
-- `getByEntityNameSet_partialMatch_returnsOnlyMatching<Entity>s` — **two known names + NotFound.name**, asserts `hasSize(2)`
-- `getByEntityNameSet_allKnownNames_returnsAllMatching<Entity>s` — two known names, asserts `hasSize(2)`
+- `notFoundName()` — a fictitious `<Entity>Name` guaranteed absent from the catalog
+  (use `Test<Domain>Identifiers.NotFound.<entity>`)
+- `knownEntityNames()` — at least two known names present in the test data
 
-### getById (3 tests)
-- `getById_nullArgument_throwsInvariantViolationException`
-- `getById_unknownId_returnsEmpty` — uses `<Entity>Id.of(Long.MAX_VALUE)`
-- `getById_knownId_returns<Entity>` — recursive comparison ignoring `"id"`
+### Write-side hooks (required)
 
-### getByIdSet (5 tests)
-- `getByIdSet_nullArgument_throwsInvariantViolationException`
-- `getByIdSet_emptySet_returnsEmptyList`
-- `getByIdSet_noMatchingIds_returnsEmptyList` — uses `<Entity>Id.of(Long.MAX_VALUE)`
-- `getByIdSet_partialMatch_returnsOnlyMatching<Entity>s` — **two known ids + `<Entity>Id.of(Long.MAX_VALUE)`**, asserts `hasSize(2)`
-- `getByIdSet_allKnownIds_returnsAllMatching<Entity>s` — two known ids, asserts `hasSize(2)`
-
-### insert (3 tests)
-- `insert_nullArgument_throwsInvariantViolationException`
-- `insert_duplicateName_throwsUniqueConstraintException` — construct with `null` id, duplicate name from an existing entity, all other fields valid but distinct
-- `insert_new<Entity>_isRetrievableByNameAndById` — construct with `null` id, synthetic name (e.g. `"test-<entity>-xx"`), assert id is non-null after insert, recursive comparison ignoring `"id"`
-
-### update (3 tests)
-- `update_nullArgument_throwsInvariantViolationException`
-- `update_unknownId_throwsEntityNotFoundException` — construct with `<Entity>Id.of(Long.MAX_VALUE)`, synthetic name
-- `update_existing<Entity>_isRetrievableWithNewValues` — **modify every mutable field** to a distinct value, assert each field individually:
-  - `id` and `name` are immutable — assert equal to original
-  - ValueObject components (Description, TaxonomicClassification, etc.) — use `usingRecursiveComparison()`
-  - Enums, primitives, Strings — use direct equality
-  - FK `EntityName` fields — the referenced entity must exist in the test data
+- `newEntity()` — a new valid entity with a unique name not in the catalog
+  (synthetic name, e.g. `"test-<entity>-xx"`)
+- `ghostEntity()` — an entity whose name does not exist in the catalog (used for the
+  `update_unknownName_throwsEntityNotFoundException` test)
+- `modifiedEntity(ENTITY original)` — the original entity with every mutable field
+  changed to a distinct value; `name` is carried forward unchanged
 
 ### Test instance construction rules
 
-- `id` is always `null` for insert tests (persistence-assigned)
-- `id` is `<Entity>Id.of(Long.MAX_VALUE)` for update-unknown-id tests
+- Domain records carry no persistence id (ADR-021) — do not pass or assert on one
 - Use the entity's record constructor directly — no factory methods needed in tests
 - For ValueObject components, construct inline with minimal but valid values
-- For FK `EntityName` fields, reference a name that exists in the test data (from `Test<Domain>Identifiers`)
-- For `@Nullable` fields, use `null` in insert/update-ghost tests; use non-null distinct values in the update expected-result test
+- For FK `EntityName` fields, reference a name that exists in the test data (from
+  `Test<Domain>Identifiers`)
+- For `@Nullable` fields, use `null` in insert/ghost tests; use non-null distinct values in
+  the update expected-result test
 
 ### Template structure
 
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.InvariantViolationException;
-import com.naturalist.exception.UniqueConstraintException;
+import com.naturalist.data.NamedEntityRepositoryContractTest;
 // ... entity-specific imports ...
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link <Package>Repository}.
+ * Behavioral contract for {@link <Package>Repository.<Entity>EntityRepository}.
  * <p>
- * Every method is covered by three cases per ADR-002:
- * <ol>
- *   <li>Argument validation — null or invalid input is rejected before any query executes</li>
- *   <li>No-match — the method returns empty when no entities satisfy the query</li>
- *   <li>Expected result — the method returns the correct entities</li>
- * </ol>
+ * Inherits the full test suite from {@link NamedEntityRepositoryContractTest}; supplies
+ * only the identity hooks and entity-construction helpers specific to {@link <Entity>}.
  */
-interface <Entity>EntityRepositoryTest {
+interface <Entity>EntityRepositoryTest
+        extends NamedEntityRepositoryContractTest<<Entity>Name, <Entity>> {
 
-    @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
-
-    <Package>Repository.<Entity>EntityRepository repository();
-
-    default <Entity>TestEntitySource source() {
-        return db.get(<Entity>TestEntitySource.class);
+    @Override
+    default <Entity>Name notFoundName() {
+        return Test<Domain>Identifiers.NotFound.<entity>;
     }
 
-    // ... 22 test methods as described above ...
+    @Override
+    default List<<Entity>Name> knownEntityNames() {
+        return List.of(
+                Test<Domain>Identifiers.<entity>A,
+                Test<Domain>Identifiers.<entity>B);
+    }
+
+    @Override
+    default <Entity> newEntity() {
+        return new <Entity>(<Entity>Name.of("test-<entity>-xx"), /* remaining valid fields */);
+    }
+
+    @Override
+    default <Entity> ghostEntity() {
+        return new <Entity>(<Entity>Name.of("test-<entity>-ghost"), /* remaining valid fields */);
+    }
+
+    @Override
+    default <Entity> modifiedEntity(<Entity> original) {
+        return new <Entity>(original.name(), /* every mutable field changed */);
+    }
 }
 ```
 
@@ -243,8 +224,16 @@ class <Entity>EntityRepositoryMockTest implements <Entity>EntityRepositoryTest {
     public <Package>Repository.<Entity>EntityRepository repository() {
         return new <Entity>EntityRepositoryMock(db);
     }
+
+    @Override
+    public <Entity>TestEntitySource source() {
+        return db.getNamed(<Entity>TestEntitySource.class);
+    }
 }
 ```
+
+`db` is the `NaturalistDatabaseExtension` field contributed by
+`NamedEntityRepositoryContractTest`; no extra `@RegisterExtension` is needed here.
 
 ---
 
@@ -270,7 +259,7 @@ Run the tests:
 mvn test -pl domains/<domain>/<domain>-repository-test -am
 ```
 
-All 22 contract tests (plus any existing tests in the module) must pass. Report the
+The full inherited contract (plus any existing tests in the module) must pass. Report the
 results to the user.
 
 ---

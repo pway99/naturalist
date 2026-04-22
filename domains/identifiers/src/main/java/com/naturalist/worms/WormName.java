@@ -1,9 +1,9 @@
 package com.naturalist.worms;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class WormName extends CatalogName {
+public final class WormName extends EntityName {
     private WormName(String value) { super(value); }
 
     @JsonCreator

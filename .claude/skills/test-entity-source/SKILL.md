@@ -1,50 +1,59 @@
 ---
 name: test-entity-source
-description: Create a TestEntitySource, its test class, and JSON catalog file for an existing Entity. Use when adding a new test data source for a domain entity.
+description: Create a NamedTestEntitySource, its test class, and JSON catalog file for an existing NamedEntity. Use when adding a new test data source for a domain entity.
 allowed-tools: Read Write Edit Glob Grep Bash
 argument-hint: <EntityClassName> in <domain> module
 ---
 
-Create a TestEntitySource for the entity specified in $ARGUMENTS.
+Create a `NamedTestEntitySource` for the entity specified in $ARGUMENTS.
 
 ## Step 1 — Locate the Entity
 
 Find the entity class. Read it to determine:
 
-- The entity's `EntityId` type (e.g. `CompoundId`)
-- The entity's `EntityName` type — the `NAME` parameter of `Entity<ID, NAME>` (e.g. `CompoundName`)
+- The entity's `EntityName` type — the `NAME` parameter of `NamedEntity<NAME>` (e.g. `CompoundName`)
 - The entity's package (e.g. `com.naturalist.chemistry.compound`)
 - The domain module name (e.g. `chemistry`)
-- All constructor fields — these become the JSON keys
+- All record components — these become the JSON keys
 - Which fields need **secondary** unique constraints beyond the canonical `name()`:
   - `@EntityIdentifier` on a field means it is a secondary unique `EntityName` field
     (not a foreign key reference — those carry no annotation)
   - `@UniqueValue` on a field means it is a unique plain-value field (`String`, `int`, enum)
   - The canonical `name` component is **never** annotated `@EntityIdentifier`; its
-    uniqueness is enforced automatically by `TestEntitySource`
+    uniqueness is enforced automatically by `NamedTestEntitySource`
 
-## Step 2 — Verify Identifier Classes Exist
+## Step 2 — Verify EntityName Class Exists
 
-Check `domains/identifiers/` for the entity's `EntityId` and `EntityName` subclasses.
-Both must have `@JsonCreator` factory methods. If missing, create them:
+Check `domains/identifiers/` for the entity's `EntityName` subclass. It must have a
+`@JsonCreator` factory method. If missing, create it:
 
 ```java
-package com.naturalist.<domain>.<subpackage>;
+package com.naturalist.identifiers.<domain>;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.EntityId;
+import com.naturalist.ddd.EntityName;
 
-public final class <Entity>Id extends EntityId<Long> {
-    private <Entity>Id(Long value) {
+public final class <Entity>Name extends EntityName {
+    private static final int MAX_LENGTH = 64;
+
+    private <Entity>Name(String value) {
         super(value);
     }
 
     @JsonCreator
-    public static <Entity>Id of(Long value) {
-        return new <Entity>Id(value);
+    public static <Entity>Name of(String value) {
+        return new <Entity>Name(value);
+    }
+
+    @Override
+    protected int maxLength() {
+        return MAX_LENGTH;
     }
 }
 ```
+
+Domain records carry no persistence id (ADR-021) — there is no `EntityId` subclass to
+create or reference.
 
 ## Step 3 — Create the JSON Catalog File
 
@@ -54,32 +63,23 @@ Create `domains/<domain>/<domain>-repository-test/src/main/resources/<domain>/<s
 
 Rules:
 
-- `"id": null` — persistence ID is always null in catalog data
-- `"name": "<slug>"` — the EntityName natural key value
+- `"name": "<slug>"` — the `EntityName` natural key value (lowercase kebab-case)
+- There is no `"id"` field — domain records carry no persistence id (ADR-021)
 - Remaining fields match the entity's constructor parameter names exactly
 - Enum values use constant names: `"ROOT_MASS_FLOW"`, `"INORGANIC_SALT"`
 - `PeriodicElement` enum uses chemical symbols: `"Ca"`, `"Mg"`, `"K"`
 - Nullable fields use JSON `null`
 - Boolean fields use JSON `true`/`false`
-- When the entity is a child profile extracted from `chemical-science/catalog/compounds.json`,
+- When the entity is a child profile extracted from a parent compound catalog,
   include a `compoundName` field with the parent compound's slug
 
-If extracting from `chemical-science/catalog/compounds.json`:
-
-1. Read compounds.json
-2. For each compound that has a non-null value for the relevant nested object, extract it
-3. Add `"id": null` and `"compoundName": "<compound-id-slug>"` to each extracted object
-4. Copy field values verbatim — do not rename or restructure
-
-## Step 4 — Create the TestEntitySource Class
+## Step 4 — Create the NamedTestEntitySource Class
 
 Create in `domains/<domain>/<domain>-repository-test/src/main/java/` in the entity's package.
 
-`TestEntitySource<ID, NAME, ENTITY>` enforces:
+`NamedTestEntitySource<NAME, ENTITY>` enforces:
 
-- **Primary key constraint** — duplicate `EntityId` on insert throws `PrimaryKeyConstraintException`
-- **Name uniqueness** — the canonical `name()` is automatically checked on every insert; no
-  subclass declaration is required or expected
+- **Primary-key constraint** — duplicate `EntityName` on insert throws `PrimaryKeyConstraintException`
 - **Secondary unique constraints** — declared via `uniqueConstraints()`, which defaults to
   `List.of()`. Override only when the entity has constraints beyond the canonical name.
 
@@ -92,21 +92,16 @@ Determine secondary constraints from entity field annotations:
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.TestEntitySource;
+import com.naturalist.data.NamedTestEntitySource;
 import com.naturalist.data.UniqueConstraint;
 
 import java.util.List;
 import java.util.function.Function;
 
-public class <Entity>TestEntitySource extends TestEntitySource<<Entity>Id, <Entity>Name, <Entity>> {
+public class <Entity>TestEntitySource extends NamedTestEntitySource<<Entity>Name, <Entity>> {
 
     public <Entity>TestEntitySource() {
         loadFile("<domain>/<subpackage>/<entityPlural>.json");
-    }
-
-    @Override
-    protected <Entity>Id nextId() {
-        return <Entity>Id.of(nextNumericId());
     }
 
     // Only override uniqueConstraints() if the entity has secondary unique fields
@@ -137,10 +132,10 @@ Create in `domains/<domain>/<domain>-repository-test/src/test/java/` in the enti
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.TestEntitySourceTest;
+import com.naturalist.data.NamedTestEntitySourceTest;
 
 class <Entity>TestEntitySourceTest
-        extends TestEntitySourceTest<<Entity>Id, <Entity>Name, <Entity>, <Entity>TestEntitySource> {
+        extends NamedTestEntitySourceTest<<Entity>Name, <Entity>, <Entity>TestEntitySource> {
 }
 ```
 
@@ -148,14 +143,13 @@ class <Entity>TestEntitySourceTest
 
 Before finishing, confirm:
 
-- [ ] Entity class implements `Entity<SomeId, SomeName>` (or `CatalogEntity` / `FactEntity`)
+- [ ] Entity class implements `NamedEntity<<Entity>Name>` (or `FactEntity<<Entity>Name>` for fact records)
 - [ ] The canonical `name` component is NOT annotated `@EntityIdentifier`
 - [ ] Secondary unique `EntityName` fields carry `@EntityIdentifier`; secondary unique plain
       fields carry `@UniqueValue`; cross-domain FK `EntityName` fields carry neither
-- [ ] EntityId class exists in `domains/identifiers/` with `@JsonCreator`
 - [ ] EntityName class exists in `domains/identifiers/` with `@JsonCreator`
 - [ ] JSON file field names match entity constructor parameter names exactly
-- [ ] JSON `"id"` is `null` for every entry
-- [ ] `TestEntitySource` type parameters are `<EntityId, EntityName, Entity>` (three args)
+- [ ] JSON contains no `"id"` field
+- [ ] `NamedTestEntitySource` type parameters are `<EntityName, Entity>` (two args)
 - [ ] `uniqueConstraints()` is overridden only for secondary constraints; canonical name is absent
-- [ ] Test class extends `TestEntitySourceTest` with four type parameters
+- [ ] Test class extends `NamedTestEntitySourceTest` with three type parameters

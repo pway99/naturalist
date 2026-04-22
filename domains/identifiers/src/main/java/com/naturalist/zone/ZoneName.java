@@ -1,9 +1,9 @@
 package com.naturalist.zone;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class ZoneName extends CatalogName {
+public final class ZoneName extends EntityName {
 
     private ZoneName(String value) {
         super(value);

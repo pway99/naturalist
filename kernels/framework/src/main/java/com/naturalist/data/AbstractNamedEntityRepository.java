@@ -1,10 +1,8 @@
 package com.naturalist.data;
 
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 import com.naturalist.observability.Observer;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -15,12 +13,17 @@ import java.util.Set;
  * implement four protected template hooks; the public methods are {@code final}, so
  * validation cannot be accidentally skipped.
  *
+ * <p>The {@code NAME} bound is open so this adapter serves both slug-keyed and
+ * UUID-keyed entity flavors with one implementation. Name-key validity (slug format
+ * or UUID presence) is enforced by the name type's own constructor; the boundary
+ * check here is null-only.
+ *
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
  */
 public abstract class AbstractNamedEntityRepository<
-        NAME extends EntityName<?>,
-        ENTITY extends NamedEntity<NAME>> implements NamedEntityRepository<NAME, ENTITY> {
+        NAME,
+        ENTITY extends Named<NAME>> implements NamedEntityRepository<NAME, ENTITY> {
 
     private final Observer observer = Observer.forClass(getClass());
 
@@ -46,16 +49,13 @@ public abstract class AbstractNamedEntityRepository<
 
     @Override
     public final Optional<ENTITY> getByName(NAME name) {
-        observer.arguments("getByName", i -> i.entityName(name, "name")).throwWhenInvalid();
+        observer.arguments("getByName", i -> i.notNull(name, "name")).throwWhenInvalid();
         return doGetByName(name);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public final List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
-        observer.arguments("getByEntityNameSet",
-                        i -> i.entityNameCollection((Collection<NAME>) nameSet, "nameSet"))
-                .throwWhenInvalid();
+        observer.arguments("getByEntityNameSet", i -> i.notNull(nameSet, "nameSet")).throwWhenInvalid();
         return doGetByNameSet(nameSet);
     }
 

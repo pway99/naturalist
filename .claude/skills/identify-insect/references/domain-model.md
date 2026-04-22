@@ -4,7 +4,6 @@
 
 ```json
 {
-  "id": null,
   "name": "<kebab-case-common-name>",
   "taxonomy": {
     "order": "<Order — capitalised>",
@@ -26,7 +25,7 @@
 
 ### Field rules
 
-- `id` — always `null` in catalog JSON; assigned by `TestEntitySource` at load time
+- Domain records carry no persistence id (ADR-021) — there is no `id` field in catalog JSON
 - `name` — kebab-case slug; this is the stable natural key used cross-entity.
   Examples: `"tachinid-fly"`, `"convergent-ladybug"`, `"potato-leafhopper"`
 - `taxonomy.genus` and `taxonomy.species` — `null` when not determinable from a photo;
@@ -43,9 +42,7 @@
 
 ```json
 {
-  "id": null,
   "name": "<UUID string — e.g. dfc3f072-0ee1-4a30-b81b-a4b8f4a9221b>",
-  "insectSpeciesId": null,
   "insectSpeciesName": "<slug matching InsectSpecies.name exactly>",
   "dateAdded": "<ISO-8601 instant in UTC — e.g. 2026-04-17T22:39:00Z>",
   "resourceName": "<original filename including extension — e.g. IMG_9047.HEIC>"
@@ -54,10 +51,8 @@
 
 ### Field rules
 
-- `id` — always `null`; assigned at runtime
+- Domain records carry no persistence id (ADR-021) — there is no `id` or `insectSpeciesId` field
 - `name` — UUID v4 string; each image record gets its own UUID; never reuse
-- `insectSpeciesId` — always `null` in catalog JSON; resolved by repository via
-  `insectSpeciesName` slug after both sources are loaded
 - `insectSpeciesName` — must match `InsectSpecies.name` byte-for-byte; any mismatch
   will cause a runtime resolution failure
 - `dateAdded` — ISO-8601 instant in UTC (`"2026-04-17T22:39:00Z"`); Jackson deserialises

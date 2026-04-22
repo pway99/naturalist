@@ -1,18 +1,17 @@
 package com.naturalist.observability;
 
-import com.naturalist.ddd.Entity;
-import com.naturalist.ddd.NamedEntity;
-import com.naturalist.ddd.NamedValue;
-import com.naturalist.ddd.PersistenceId;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.ddd.EntityNameSet;
+import com.naturalist.ddd.FactName;
+import com.naturalist.ddd.Named;
+import com.naturalist.ddd.NamedValue;
 import com.naturalist.ddd.ValueObject;
-import com.naturalist.observability.constraints.NamedValueConstraints;
-import com.naturalist.observability.constraints.ObservableConstraint;
-import com.naturalist.observability.constraints.PersistenceIdConstraints;
 import com.naturalist.observability.constraints.EntityNameConstraints;
+import com.naturalist.observability.constraints.FactNameConstraints;
+import com.naturalist.observability.constraints.NamedValueConstraints;
 import com.naturalist.observability.constraints.NotBlankConstraint;
 import com.naturalist.observability.constraints.NotNullConstraint;
+import com.naturalist.observability.constraints.ObservableConstraint;
 import com.naturalist.observability.constraints.ValueObjectOrNullConstraint;
 
 import java.util.ArrayList;
@@ -26,19 +25,11 @@ public class Constraints {
 
     final List<Constraint<?>> constraints = new ArrayList<>();
 
-    public <E extends Entity<?, ?>> Constraints entity(E entity, String name) {
-        return entity(entity, Function.identity(), name);
-    }
-
-    public <O, E extends Entity<?, ?>> Constraints entity(O o, Function<O, E> valueFunction, String name) {
-        return add(new ObservableConstraint<>(o, valueFunction, name));
-    }
-
-    public <E extends NamedEntity<?>> Constraints namedEntity(E entity, String name) {
+    public <E extends Named<?>> Constraints namedEntity(E entity, String name) {
         return namedEntity(entity, Function.identity(), name);
     }
 
-    public <O, E extends NamedEntity<?>> Constraints namedEntity(O o, Function<O, E> valueFunction, String name) {
+    public <O, E extends Named<?>> Constraints namedEntity(O o, Function<O, E> valueFunction, String name) {
         return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
@@ -56,40 +47,31 @@ public class Constraints {
 
     /**
      * Validate any {@link Observable} child and descend into its invariants. Use for
-     * Observable members that are neither {@link com.naturalist.ddd.Entity} nor
-     * {@link ValueObject} — most commonly a
-     * {@link com.naturalist.ddd.BehavioralCollection} held by an
+     * Observable members that are neither {@link NamedEntity} nor {@link ValueObject} —
+     * most commonly a {@link com.naturalist.ddd.BehavioralCollection} held by an
      * {@link com.naturalist.ddd.Aggregate}.
      */
     public <O, V extends Observable> Constraints observable(O o, Function<O, V> valueFunction, String name) {
         return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
-    public Constraints entityId(PersistenceId<?> entityId, String name) {
-        return add(new PersistenceIdConstraints.PersistenceIdConstraint<>(entityId, name));
-    }
-
-    public Constraints entityIdCollection(Collection<PersistenceId<?>> entityIds, String name) {
-        return add(new PersistenceIdConstraints.PersistenceIdCollectionConstraint<>(entityIds, name));
-    }
-
-    public <O, E extends PersistenceId<?>> Constraints entityId(O o, Function<O, E> valueFunction, String name) {
-        return add(new PersistenceIdConstraints.PersistenceIdByFunctionConstraint<>(o, valueFunction, name));
-    }
-
     public <E extends EntityName> Constraints entityName(E e, String name) {
         return add(new EntityNameConstraints.EntityNameConstraint<>(e, name));
+    }
+
+    public <F extends FactName> Constraints factName(F f, String name) {
+        return add(new FactNameConstraints.FactNameConstraint<>(f, name));
     }
 
     public <E extends EntityName> Constraints entityNameCollection(Collection<E> entityNames, String name) {
         return add(new EntityNameConstraints.EntityNameCollectionConstraint<>(entityNames, name));
     }
 
-    public <E extends EntityName<?>> Constraints entityNameSet(EntityNameSet<E> set, String name) {
+    public <E extends EntityName> Constraints entityNameSet(EntityNameSet<E> set, String name) {
         return add(new EntityNameConstraints.EntityNameSetConstraint<>(set, name));
     }
 
-    public <O, E extends EntityName<?>> Constraints entityNameSet(O o, Function<O, EntityNameSet<E>> valueFunction, String name) {
+    public <O, E extends EntityName> Constraints entityNameSet(O o, Function<O, EntityNameSet<E>> valueFunction, String name) {
         return add(new EntityNameConstraints.EntityNameSetConstraint<>(o == null ? null : valueFunction.apply(o), name));
     }
 

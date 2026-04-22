@@ -17,7 +17,7 @@ package com.naturalist.ddd;
  *   <li>{@link #isValid()} is the sole validation predicate. A {@code NamedValue<T>} may
  *       exist in an invalid state — no constructor should throw to prevent it. Invalidity is
  *       surfaced at domain boundaries by {@code Constraints#namedValue(...)}, consistent with
- *       how {@link EntityName} and {@link PersistenceId} fields are validated.</li>
+ *       how {@link EntityName} fields are validated.</li>
  *   <li>{@link #isNotValid()} is the negation convenience; do not override it.</li>
  * </ul>
  *

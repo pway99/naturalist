@@ -1,7 +1,7 @@
 package com.naturalist.naturalist;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
 /**
  * Strongly typed natural key for {@code Naturalist} entities.
@@ -12,7 +12,7 @@ import com.naturalist.ddd.CatalogName;
  * The slug is the primary reference used in JSON catalogs and in cross-domain
  * soft references. It is never null in catalog data.
  */
-public final class NaturalistName extends CatalogName {
+public final class NaturalistName extends EntityName {
 
     private NaturalistName(String value) {
         super(value);

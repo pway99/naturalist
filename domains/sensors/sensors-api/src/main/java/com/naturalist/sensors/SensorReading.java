@@ -1,5 +1,6 @@
 package com.naturalist.sensors;
 
+import com.naturalist.ddd.FactEntity;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.ElectricalConductivity;
 import com.naturalist.measurements.MoisturePercent;
@@ -64,7 +65,7 @@ public record SensorReading(
         @Nullable ElectricalConductivity ecDsPerMeter,
         @Nullable BigDecimal temperatureCelsius,
         @Nullable String notes
-) implements NamedEntity<SensorReadingName> {
+) implements FactEntity<SensorReadingName> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 
@@ -149,7 +150,7 @@ public record SensorReading(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityName(name, "name")
+                .factName(name, "name")
                 .entityName(sensorName, "sensorName")
                 .notNull(this, SensorReading::zoneName, "zoneName")
                 .notNull(this, SensorReading::recordedAt, "recordedAt")

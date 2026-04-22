@@ -1,9 +1,9 @@
 package com.naturalist.plants.cultivar;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class CultivarName extends CatalogName {
+public final class CultivarName extends EntityName {
 
     private CultivarName(String value) {
         super(value);

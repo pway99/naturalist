@@ -1,7 +1,6 @@
 package com.naturalist.data;
 
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
@@ -9,8 +8,8 @@ import java.lang.reflect.ParameterizedType;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class NamedTestEntitySourceTest<
-        NAME extends EntityName<?>,
-        ENTITY extends NamedEntity<NAME>,
+        NAME,
+        ENTITY extends Named<NAME>,
         DS extends NamedTestEntitySource<NAME, ENTITY>> {
 
     @Test

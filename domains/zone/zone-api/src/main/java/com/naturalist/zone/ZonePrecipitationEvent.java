@@ -1,5 +1,6 @@
 package com.naturalist.zone;
 
+import com.naturalist.ddd.FactEntity;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.PrecipitationInches;
 import com.naturalist.observability.Constraints;
@@ -48,7 +49,7 @@ public record ZonePrecipitationEvent(
         BigDecimal peakIntensityInchesPerHour,
         @Nullable PrecipitationEventName weatherEventName,
         @Nullable String notes
-) implements NamedEntity<ZonePrecipitationEventName> {
+) implements FactEntity<ZonePrecipitationEventName> {
 
     /**
      * Whether this event constitutes a significant surface habitat disruption event
@@ -79,7 +80,7 @@ public record ZonePrecipitationEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityName(name, "name")
+                .factName(name, "name")
                 .notNull(this, ZonePrecipitationEvent::zoneName, "zoneName")
                 .notNull(this, ZonePrecipitationEvent::startDate, "startDate")
                 .notNull(this, ZonePrecipitationEvent::endDate, "endDate")

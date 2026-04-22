@@ -1,7 +1,6 @@
 package com.naturalist.data;
 
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.exception.UniqueConstraintException;
@@ -17,10 +16,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * In-memory data source for a {@link NamedEntity} — the name-only analogue of
- * {@link TestEntitySource}. Keyed entirely on the entity's {@link EntityName}; no
- * numeric id is generated or tracked, because a {@code NamedEntity} carries no
- * {@link com.naturalist.ddd.PersistenceId} at the domain layer (ADR-021).
+ * In-memory data source for a {@link NamedEntity}. Keyed entirely on the entity's
+ * {@link EntityName}; no numeric id is generated or tracked (ADR-021).
  *
  * <p>JSON fixtures for a {@code NamedEntity} have no id field. Insertion is
  * name-keyed; the primary-key collision check is a name collision check. Any
@@ -30,7 +27,7 @@ import java.util.stream.Stream;
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
  */
-public abstract class NamedTestEntitySource<NAME extends EntityName<?>, ENTITY extends NamedEntity<NAME>> {
+public abstract class NamedTestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     private static final Observer observer = Observer.forClass(NamedTestEntitySource.class);
     private final Map<NAME, ENTITY> entityMap = new HashMap<>();

@@ -1,7 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.FileName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.FactEntity;
 import com.naturalist.observability.Constraints;
 
 import java.time.Instant;
@@ -30,12 +30,12 @@ public record InsectImage(
         InsectSpeciesName insectSpeciesName,
         Instant dateAdded,
         FileName resourceName
-) implements NamedEntity<InsectImageName> {
+) implements FactEntity<InsectImageName> {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityName(name(), "name")
+                .notNull(this, InsectImage::name, "name")
                 .entityName(insectSpeciesName(), "insectSpeciesName")
                 .notNull(this, InsectImage::dateAdded, "dateAdded")
                 .namedValue(this, InsectImage::resourceName, "resourceName");

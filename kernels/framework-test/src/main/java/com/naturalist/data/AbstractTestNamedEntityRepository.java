@@ -1,7 +1,6 @@
 package com.naturalist.data;
 
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * In-memory repository adapter base for a {@link NamedEntity}. Delegates every hook
+ * In-memory repository adapter base for a {@link Named} entity. Delegates every hook
  * to the domain's {@link NamedTestEntitySource} resolved from the shared
  * {@link NaturalistDatabase}. Inherits validation and the observer from
  * {@link AbstractNamedEntityRepository}.
@@ -19,8 +18,8 @@ import java.util.Set;
  * @param <NTS>    the concrete {@link NamedTestEntitySource} type backing this repository
  */
 public abstract class AbstractTestNamedEntityRepository<
-        NAME extends EntityName<?>,
-        ENTITY extends NamedEntity<NAME>,
+        NAME,
+        ENTITY extends Named<NAME>,
         NTS extends NamedTestEntitySource<NAME, ENTITY>>
         extends AbstractNamedEntityRepository<NAME, ENTITY> {
 

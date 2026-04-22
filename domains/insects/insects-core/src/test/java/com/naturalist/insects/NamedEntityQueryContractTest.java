@@ -2,8 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.NamedEntityQuery;
 import com.naturalist.ddd.BehavioralCollection;
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +31,8 @@ import java.util.Set;import static org.assertj.core.api.Assertions.assertThat;im
  * @param <EC>   the behavioral collection returned by {@code findByNameSet}
  */
 interface NamedEntityQueryContractTest<
-        NAME extends EntityName<?>,
-        E extends NamedEntity<NAME>,
+        NAME,
+        E extends Named<NAME>,
         EC extends BehavioralCollection<E>> {
 
     NamedEntityQuery<NAME, E, EC> query();

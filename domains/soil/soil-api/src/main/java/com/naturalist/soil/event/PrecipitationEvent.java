@@ -1,5 +1,6 @@
 package com.naturalist.soil.event;
 
+import com.naturalist.ddd.FactEntity;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.PrecipitationInches;
 import com.naturalist.observability.Constraints;
@@ -57,7 +58,7 @@ public record PrecipitationEvent(
         BigDecimal peakIntensityInchesPerHour,
         @Nullable PrecipitationEventName weatherEventName,
         @Nullable String notes
-) implements NamedEntity<SoilPrecipitationEventName> {
+) implements FactEntity<SoilPrecipitationEventName> {
 
     /** 1 inch of rain over 1 square foot ≈ 0.623 US gallons. */
     private static final BigDecimal GALLONS_PER_INCH_PER_SQFT = new BigDecimal("0.623");
@@ -121,7 +122,7 @@ public record PrecipitationEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityName(name, "name")
+                .factName(name, "name")
                 .notNull(this, PrecipitationEvent::zoneName, "zoneName")
                 .notNull(this, PrecipitationEvent::startDate, "startDate")
                 .notNull(this, PrecipitationEvent::endDate, "endDate")

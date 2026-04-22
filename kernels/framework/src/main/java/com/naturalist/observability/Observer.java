@@ -1,7 +1,6 @@
 package com.naturalist.observability;
 
-import com.naturalist.ddd.Entity;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Named;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -18,7 +17,7 @@ import java.util.function.Consumer;
  *       {@link InvariantObservation#throwWhenInvalid()} throws
  *       {@link com.naturalist.exception.InvariantViolationException} carrying every violation
  *       in a single pass.</li>
- *   <li><b>Method-body observation.</b> {@link #entity(Entity, String)} and
+ *   <li><b>Method-body observation.</b> {@link #namedEntity(Named, String)} and
  *       {@link #observable(Observable, String)} produce an {@link InvariantObservation} for
  *       state the method has constructed or received — the method's own results, not
  *       external input. The terminal operation follows the producer/consumer rule
@@ -132,27 +131,8 @@ public class Observer {
      * producers emitting their own output call {@link InvariantObservation#observe()};
      * only consumers acting on received state may call
      * {@link InvariantObservation#throwWhenInvalid()}.
-     *
-     * <pre>{@code
-     * // producer — metrics only, hand the value to the consumer
-     * InsectAggregate aggregate = ...;
-     * observer.entity(aggregate, "aggregate").observe();
-     * return aggregate;
-     *
-     * // consumer — fail-fast on invalid input
-     * observer.entity(received, "received").throwWhenInvalid();
-     * }</pre>
      */
-    public InvariantObservation entity(Entity<?, ?> entity, String label) {
-        return observable(entity, label);
-    }
-
-    /**
-     * Observe a named entity (ADR-021) within a method body. Walks the entity's full
-     * constraint graph. A {@code null} entity produces a single failing {@code notNull}
-     * constraint on {@code label}.
-     */
-    public InvariantObservation namedEntity(NamedEntity<?> entity, String label) {
+    public InvariantObservation namedEntity(Named<?> entity, String label) {
         return observable(entity, label);
     }
 

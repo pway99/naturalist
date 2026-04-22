@@ -27,7 +27,7 @@ import com.naturalist.observability.Observable;
  * Neither form requires an RDBMS table.
  *
  * @see FactEntity
- * @see CatalogEntity
+ * @see NamedEntity
  */
 public interface ValueObject extends Observable {
 }

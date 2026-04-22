@@ -9,9 +9,9 @@ import java.util.function.Function;
  * Observability constraint for {@link NamedValue} fields.
  * <p>
  * Delegates validity to {@link NamedValue#isValid()}, consistent with how
- * {@link EntityNameConstraints} and {@link PersistenceIdConstraints} handle their
- * respective field types. The container that owns the field declares the constraint
- * via {@code Constraints#namedValue(...)}; the named value itself is not {@code Observable}.
+ * {@link EntityNameConstraints} handles its field type. The container that owns the
+ * field declares the constraint via {@code Constraints#namedValue(...)}; the named
+ * value itself is not {@code Observable}.
  */
 public interface NamedValueConstraints {
 

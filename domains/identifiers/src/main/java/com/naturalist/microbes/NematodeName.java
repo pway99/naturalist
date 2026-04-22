@@ -1,9 +1,9 @@
 package com.naturalist.microbes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.naturalist.ddd.CatalogName;
+import com.naturalist.ddd.EntityName;
 
-public final class NematodeName extends CatalogName {
+public final class NematodeName extends EntityName {
     private NematodeName(String value) { super(value); }
 
     @JsonCreator

@@ -35,7 +35,7 @@ import java.util.stream.Stream;
  *
  * @param <NAME> the concrete {@link EntityName} subtype held by this set
  */
-public final class EntityNameSet<NAME extends EntityName<?>> implements Observable {
+public final class EntityNameSet<NAME extends EntityName> implements Observable {
 
     private final Set<NAME> names;
 
@@ -43,11 +43,11 @@ public final class EntityNameSet<NAME extends EntityName<?>> implements Observab
         this.names = Set.copyOf(names);
     }
 
-    public static <NAME extends EntityName<?>> EntityNameSet<NAME> of(Collection<NAME> names) {
+    public static <NAME extends EntityName> EntityNameSet<NAME> of(Collection<NAME> names) {
         return new EntityNameSet<>(names);
     }
 
-    public static <NAME extends EntityName<?>> EntityNameSet<NAME> empty() {
+    public static <NAME extends EntityName> EntityNameSet<NAME> empty() {
         return new EntityNameSet<>(Set.of());
     }
 

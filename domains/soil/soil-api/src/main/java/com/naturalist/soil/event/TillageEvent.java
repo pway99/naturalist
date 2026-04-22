@@ -1,5 +1,6 @@
 package com.naturalist.soil.event;
 
+import com.naturalist.ddd.FactEntity;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.DepthInches;
 import com.naturalist.observability.Constraints;
@@ -47,7 +48,7 @@ public record TillageEvent(
         DepthInches depthInches,
         TillageType tillageType,
         @Nullable String notes
-) implements NamedEntity<TillageEventName> {
+) implements FactEntity<TillageEventName> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 
@@ -80,7 +81,7 @@ public record TillageEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityName(name, "name")
+                .factName(name, "name")
                 .notNull(this, TillageEvent::zoneName, "zoneName")
                 .notNull(this, TillageEvent::tillageDate, "tillageDate")
                 .namedValue(this, TillageEvent::depthInches, "depthInches")
