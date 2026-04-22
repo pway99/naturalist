@@ -2,7 +2,64 @@
 
 Per-domain CLAUDE.md files under each domain directory cover domain-specific vocabulary
 (chemistry, soil, plants, apiary, etc.). This file covers conventions shared across all
-domains: test fixtures, repositories, and new-module scaffolding.
+domains: identity model, record conventions, field annotations, test fixtures,
+repositories, and new-module scaffolding.
+
+## Identity Model
+
+Every domain class implements one of three interfaces from `kernels/framework`:
+
+- **Entity\<ID extends PersistenceId\<?\>, NAME extends EntityName\<?\>\>** — stable
+  identity, `id()`, non-nullable `name()`, `withId(ID)`, `invariants()`
+- **Aggregate** — consistency boundary, owns child entities and value objects. No
+  `withId()`; declare explicit `with*` methods per field
+- **ValueObject** — immutable, no identity, equality by value. Must satisfy all four
+  ADR-013 constraints: no Entity/Aggregate members, does not uniquely identify an entity,
+  cohesive ubiquitous-language concept, members have collective meaning (not a projection
+  of an entity's fields)
+- **BehavioralCollection\<T extends Observable\>** — abstract base class in
+  `kernels/framework` for multi-result query return types. Extended by `final class` per
+  domain (e.g. `CompoundCollection`). Not a record. See ADR-011.
+
+All four extend `Observable` and require `invariants()`.
+
+## Field Annotations
+
+- `@EntityIdentifier` — marks a *secondary* `EntityName` component as unique within its
+  data source. The canonical `name()` component is automatically enforced — do not
+  annotate it. Cross-domain FK `EntityName` references carry no annotation.
+- `@UniqueValue` — marks plain value components (`String`, `int`, enums) that must be
+  unique. Both annotations require explicit declaration in `uniqueConstraints()`.
+
+## Java Record Conventions
+
+Entity, Aggregate, and ValueObject are Java records. No Lombok. `BehavioralCollection` is
+the single exception — `final class` to enable package-private construction (see ADR-011).
+
+Reference implementations: `Compound` (Entity), `PotatoLeafhopper` (Entity),
+`CompoundInfo` (ValueObject), `CompoundCollection` (BehavioralCollection). Reading the
+source is faster than a spec.
+
+Rules:
+- Accessor names match component names exactly: `id()`, `name()`, `someField()` — never
+  `getId()`, `getName()`
+- Boolean components use plain names: `active`, `beneficial`. Predicate methods use `is*`
+  prefix only when they are behavior methods, not component accessors
+- `withId(ID id)` is the only with-method on Entity — all others are explicit on the
+  concrete record
+- Jackson 2.19.x natively deserializes records. No `@JsonCreator` on entity/aggregate/
+  value object records. JSON field names must match component names exactly
+- `@JsonCreator` **is** required on the `public static of(...)` factory of any non-record
+  Jackson must deserialize: `PersistenceId<Long>` subclasses, `EntityName` subclasses,
+  `NamedValue<T>` implementations. Without it, deserialization fails silently or with a
+  misleading error
+- `@EntityIdentifier` placed before the type: `@EntityIdentifier FooName name`
+- Optional-returning query methods must not share a name with any component: a component
+  `String biologicalCatalyst` needs accessor `biologicalCatalystOptional()`, not
+  `biologicalCatalyst()`
+- Static factory methods (`of(...)`, `empty()`, `from(...)`) are the public instantiation
+  API for all domain types. `new Foo(...)` at a call site outside the type's own class is
+  a review flag. See ADR-012
 
 ## Test Identifiers
 
