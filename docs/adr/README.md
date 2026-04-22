@@ -23,7 +23,7 @@ Closed decisions are not revisited without a new ADR.
 | [ADR-017](ADR-017-observability-monitoring-and-validation.md) | Observability, Monitoring, and Validation | Draft |
 | [ADR-019](ADR-019-pull-request-size-and-review-fatigue.md) | Pull Request Size and Review Fatigue | Accepted |
 | [ADR-020](ADR-020-namespace-interface-pattern.md) | Namespace Pattern for API Surface | Accepted |
-| [ADR-021](ADR-021-persistenceid-is-adapter-internal.md) | PersistenceId is Adapter-Internal; Cross-Entity References Use EntityName | Draft (insects pilot) |
+| [ADR-021](ADR-021-persistenceid-is-adapter-internal.md) | PersistenceId is Adapter-Internal; Cross-Entity References Use EntityName | Accepted |
 
 ## Archived (rationale only, not in active read path)
 

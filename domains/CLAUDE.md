@@ -7,16 +7,16 @@ repositories, and new-module scaffolding.
 
 ## Identity Model
 
-Every domain class implements one of three interfaces from `kernels/framework`:
+Every domain class implements one of four interfaces from `kernels/framework`:
 
-- **Entity\<ID extends PersistenceId\<?\>, NAME extends EntityName\<?\>\>** — stable
-  identity, `id()`, non-nullable `name()`, `withId(ID)`, `invariants()`
-- **Aggregate** — consistency boundary, owns child entities and value objects. No
-  `withId()`; declare explicit `with*` methods per field
+- **NamedEntity\<NAME extends EntityName\<?\>\>** — stable identity by `name()` alone.
+  No `id()`, no `withId(...)`. Adapter keys live inside the adapter (ADR-021).
+- **Aggregate** — consistency boundary, owns child entities and value objects.
+  Declares explicit `with*` methods per field.
 - **ValueObject** — immutable, no identity, equality by value. Must satisfy all four
   ADR-013 constraints: no Entity/Aggregate members, does not uniquely identify an entity,
   cohesive ubiquitous-language concept, members have collective meaning (not a projection
-  of an entity's fields)
+  of an entity's fields).
 - **BehavioralCollection\<T extends Observable\>** — abstract base class in
   `kernels/framework` for multi-result query return types. Extended by `final class` per
   domain (e.g. `CompoundCollection`). Not a record. See ADR-011.
@@ -36,23 +36,22 @@ All four extend `Observable` and require `invariants()`.
 Entity, Aggregate, and ValueObject are Java records. No Lombok. `BehavioralCollection` is
 the single exception — `final class` to enable package-private construction (see ADR-011).
 
-Reference implementations: `Compound` (Entity), `PotatoLeafhopper` (Entity),
+Reference implementations: `Compound` (NamedEntity), `InsectSpecies` (NamedEntity),
 `CompoundInfo` (ValueObject), `CompoundCollection` (BehavioralCollection). Reading the
 source is faster than a spec.
 
 Rules:
-- Accessor names match component names exactly: `id()`, `name()`, `someField()` — never
-  `getId()`, `getName()`
+- Accessor names match component names exactly: `name()`, `someField()` — never
+  `getName()`
 - Boolean components use plain names: `active`, `beneficial`. Predicate methods use `is*`
   prefix only when they are behavior methods, not component accessors
-- `withId(ID id)` is the only with-method on Entity — all others are explicit on the
-  concrete record
+- Every mutable field on a `NamedEntity` needs an explicit `with*` method on the concrete
+  record; `name()` is immutable
 - Jackson 2.19.x natively deserializes records. No `@JsonCreator` on entity/aggregate/
   value object records. JSON field names must match component names exactly
 - `@JsonCreator` **is** required on the `public static of(...)` factory of any non-record
-  Jackson must deserialize: `PersistenceId<Long>` subclasses, `EntityName` subclasses,
-  `NamedValue<T>` implementations. Without it, deserialization fails silently or with a
-  misleading error
+  Jackson must deserialize: `EntityName` subclasses, `NamedValue<T>` implementations.
+  Without it, deserialization fails silently or with a misleading error
 - `@EntityIdentifier` placed before the type: `@EntityIdentifier FooName name`
 - Optional-returning query methods must not share a name with any component: a component
   `String biologicalCatalyst` needs accessor `biologicalCatalystOptional()`, not
@@ -63,7 +62,7 @@ Rules:
 
 ## Test Identifiers
 
-`domains/test-identifiers` contains one `Test<Domain>Identifiers` class per domain —
+`domains/identifiers-test` contains one `Test<Domain>Identifiers` class per domain —
 the single source of truth for `EntityName` constants used in repository contract tests.
 Never inline these into test classes.
 
@@ -77,8 +76,8 @@ Structure rules:
   `InsectSpecies`. A flat sibling class implies peer status in the domain graph, which is wrong.
 - Every entity type must define **at least two** known `EntityName` constants, enabling both
   single-entity and set-based lookup tests. Partial-match tests for `getByEntityNameSet`
-  and `getByIdSet` must include at least two known values plus the `NotFound` value — a
-  single known value does not distinguish partial-match behavior from single-entity lookup.
+  must include at least two known values plus the `NotFound` value — a single known value
+  does not distinguish partial-match behavior from single-entity lookup.
 - Each parent scope defines a **single** `NotFound` inner class with one fictitious
   `EntityName` constant per entity type within that scope. Child scopes do not define their
   own `NotFound` — the parent's covers them all.
@@ -95,9 +94,8 @@ Test data follows model/data separation: Java defines schema, JSON defines insta
 
 Use `/test-entity-source <EntityClassName> in <domain> module` to scaffold all three files.
 
-`TestEntitySource<ID, NAME, ENTITY>` enforces:
+`NamedTestEntitySource<NAME, ENTITY>` enforces:
 
-- **Primary key constraint** — duplicate `PersistenceId` on insert throws `PrimaryKeyConstraintException`
 - **Name uniqueness** — the canonical `name()` is automatically checked on every insert;
   no subclass declaration required
 - **Secondary unique constraints** — declared per entity via `uniqueConstraints()`, which
@@ -105,8 +103,8 @@ Use `/test-entity-source <EntityClassName> in <domain> module` to scaffold all t
   unique `EntityName` fields) or `@UniqueValue` (plain value fields).
 
 Conventions for JSON catalog files:
-- `"id": null` — persistence ID is always null in catalog data
 - `"name": "<slug>"` — the `EntityName` natural key (e.g. `"calcium-sulfate-dihydrate"`)
+- No `id` field — domain records carry no `PersistenceId` (ADR-021)
 - Remaining fields match the record component names exactly
 - Enum values serialize by constant name (`"ROOT_MASS_FLOW"`, `"INORGANIC_SALT"`)
 - `PeriodicElement` uses chemical symbols (`"Ca"`, `"Mg"`, `"K"`)
@@ -124,25 +122,24 @@ Quick-reference constraints:
 - Repository interfaces are **package-private** in `<domain>-api`
 - A repository has exactly four responsibilities: entity cache, referential integrity,
   unique constraints, transactional consistency — no logic
-- `NaturalistDatabase` is the only object permitted to instantiate `TestEntitySource` instances
-- Cross-domain references use `EntityName` slug — never `PersistenceId<Long>`
+- `NaturalistDatabase` is the only object permitted to instantiate `NamedTestEntitySource` instances
+- Cross-domain references use `EntityName` slug — never `PersistenceId<Long>` (ADR-021)
 - Cross-domain joins are prohibited; cross-domain FK enforcement is deferred to the RDBMS layer
 - Each repository manages its own secondary indexes. No cross-repository queries within a
   sub-context. No cross-sub-context repository access.
 
 ### Repository Behavioral Contract
 
-Every `EntityRepository` has a behavioral contract defined as a `@Test default` interface
-in `<domain>-repository-test/src/main/java/`. Domain-specific contract interfaces extend
-`EntityRepositoryContractTest<ID, NAME, ENTITY>` from `kernels/framework-test`, which
-provides all 22 standard test cases. The concrete interface supplies only identity
-constants and entity construction hooks — no test logic.
+Every `NamedEntityRepository` has a behavioral contract defined as a `@Test default`
+interface in `<domain>-repository-test/src/main/java/`. Domain-specific contract
+interfaces extend `NamedEntityRepositoryContractTest<NAME, ENTITY>` from
+`kernels/framework-test`. The concrete interface supplies only identity constants and
+entity construction hooks — no test logic.
 
-The contract covers all six `EntityRepository` methods. Each select method requires three
-test cases per ADR-002: argument validation (null rejection via `InvariantViolationException`),
-empty result (not-found), and expected result. Write methods (`insert`, `update`) follow
-the same three-case pattern with constraint violations and entity-not-found replacing
-empty result.
+Each select method requires three test cases per ADR-002: argument validation (null
+rejection via `InvariantViolationException`), empty result (not-found), and expected
+result. Write methods (`insert`, `update`) follow the same three-case pattern with
+constraint violations and entity-not-found replacing empty result.
 
 Insert and update expected-result tests observe the persisted entity via the Observer
 framework (ADR-017), walking its full constraint graph to catch adapter serialization drift.
@@ -152,23 +149,22 @@ Concrete test interface hooks:
 | Hook | Purpose |
 |------|---------|
 | `repository()` | The repository under test |
-| `source()` | The `TestEntitySource` backing the test data |
+| `source()` | The `NamedTestEntitySource` backing the test data |
 | `notFoundName()` | A fictitious `NAME` guaranteed absent from the catalog |
 | `knownEntityNames()` | At least two known `NAME` constants from the test data |
-| `notFoundId()` | An `ID` guaranteed absent (typically `XxxId.of(Long.MAX_VALUE)`) |
-| `newEntity()` | A valid entity with null id and unique name, using `RandomValue` where field constraints permit |
-| `ghostEntity()` | An entity with a non-existent id, using `RandomValue` where field constraints permit |
+| `newEntity()` | A valid entity with a unique name, using `RandomValue` where field constraints permit |
+| `ghostEntity()` | An entity with a name absent from the catalog, using `RandomValue` where field constraints permit |
 | `modifiedEntity(original)` | The original with every mutable field changed via `RandomValue` |
 
-`assertEntityEquals` defaults to recursive comparison ignoring `"id"` — override for
-entities with custom equality semantics.
+`assertEntityEquals` defaults to recursive comparison — override for entities with custom
+equality semantics. There is no `id` field to ignore (ADR-021).
 
 **Update expected-result convention:** modify **every mutable field** to a value distinct
-from the original using `RandomValue` helpers where field constraints permit.
-`PersistenceId` and `EntityName` are immutable — carried forward from the original and
-asserted unchanged. If the entity carries a foreign key `EntityName` referencing another
-entity, the referenced entity must exist in the test data. Equality is verified via
-recursive structural comparison; the Observer walks the full constraint graph.
+from the original using `RandomValue` helpers where field constraints permit. `EntityName`
+is immutable — carried forward from the original and asserted unchanged. If the entity
+carries a foreign key `EntityName` referencing another entity, the referenced entity must
+exist in the test data. Equality is verified via recursive structural comparison; the
+Observer walks the full constraint graph.
 
 Use `/entity-repository <EntityClassName>` to scaffold the full repository stack.
 

@@ -1,12 +1,12 @@
 # ADR-021: PersistenceId is Adapter-Internal; Cross-Entity Refs Use EntityName
-> [rationale](rationale/ADR-021-persistenceid-is-adapter-internal.md) — piloted in `insects`
+> [rationale](rationale/ADR-021-persistenceid-is-adapter-internal.md)
 
 ### Rule 1 — `PersistenceId` is adapter-internal
 `PersistenceId<Long>` addresses a specific row in a specific adapter.
 - A domain record MUST NOT carry another entity's `PersistenceId` as a component.
-- A domain record MAY carry its own `PersistenceId` on `id()` (kernel unchanged in this ADR).
-- A repository/query method MUST NOT accept or return another domain's `PersistenceId`
-  across a sub-context or domain boundary.
+- A domain record MUST NOT carry its own `PersistenceId` — no `id()` at the domain layer.
+- A repository/query method MUST NOT accept or return a `PersistenceId` across a
+  sub-context or domain boundary.
 - RDBMS adapters MAY (and SHOULD for performance) use numeric surrogate keys for FK
   columns — adapter-internal only, resolved from `EntityName` at insert, joined internally
   for reads. Materialized domain record carries only `EntityName`.
@@ -28,33 +28,20 @@ ImageCollection images = imageQuery.forSpeciesName(species.get().name());
 ImageCollection images = imageQuery.forSpeciesId(species.get().id());
 ```
 
-### Pilot scope — `insects` only
-- `PersistenceId` removed from `insects-api` and `insects-core` entirely.
-- `InsectSpecies` / `InsectImage` drop `id()` at the domain layer.
-- RDBMS schema still carries the numeric PK (invisible across the port).
-- Kernel adds parallel `NamedEntity<NAME>`, `NamedEntityRepository<NAME, ENTITY>`,
-  `NamedTestEntitySource<NAME, ENTITY>`, `NamedEntityQuery<NAME, ENTITY, COLLECTION>`
-  alongside existing `Entity<ID, NAME>` — other domains remain source- and byte-compatible.
-- Broader roll-out deferred to a post-pilot ADR: whether `NamedEntity` replaces
-  `Entity<ID, NAME>` kernel-wide; whether to delete `<Domain>XxxId` classes.
+### Scope
+Every domain. All domain records implement `NamedEntity<NAME>`; the `domains/identifiers`
+module holds `EntityName` subclasses only.
 
 ### RDBMS adapter gate
 No `<domain>-repository-rdms` module until the owning api is "complete and approved for
 production testing" (not merely "tests pass on in-memory adapter"). Until then, in-memory
-`TestEntitySource` is the only implementation. Schema is the expensive motion — stabilize
-api first.
-
-### What this ADR does NOT change
-- `Entity<ID, NAME>` unchanged for every non-pilot domain.
-- `TestEntitySource.nextNumericId()` still assigns ids for `Entity<ID, NAME>` impls.
-- `EntityRepository.getById(ID)` stays on the repository contract (never called with an
-  id sourced from a cross-entity reference, because no such reference exists).
-- RDBMS schemas remain free to carry numeric FK columns (invisible across the port).
+`NamedTestEntitySource` is the only implementation. Schema is the expensive motion —
+stabilize api first.
 
 ### Review flags (applicability signals)
-- Domain record has a component of type `<OtherEntity>Id`
-- Query/repository/factory accepts or returns another entity's `PersistenceId`
-- JSON fixture declares a non-null id for a foreign-key reference
+- Domain record has an `id()` component or a component of type `<OtherEntity>Id`
+- Query/repository/factory accepts or returns a `PersistenceId`
+- JSON fixture declares an `id` field on any record
 - Aggregate factory threads `id()` between two repository calls
 - `forXxxId(...)` where `forXxxName(...)` exists or would serve equally
 - Cross-domain `*Id` import across a sub-context boundary
@@ -62,7 +49,6 @@ api first.
 ### Notes
 - MyBatis is the project's mapper. JPA/Hibernate requires `@Id` on the Java entity —
   incompatible with the stronger form (rationale Appendix A.7).
-- Reference implementation (post-pilot): `InsectSpecies` / `InsectImage` implement
-  `NamedEntity<NAME>`; `InsectSpeciesId` / `InsectImageId` deleted; `InsectImage` carries
-  only `InsectSpeciesName`; `InsectQuery.ImageQuery` exposes `forSpeciesName(...)` only;
-  `insects.json` / `insect-images.json` omit all id fields.
+- Reference implementation: `InsectSpecies` / `InsectImage` implement `NamedEntity<NAME>`;
+  `InsectImage` carries only `InsectSpeciesName`; `InsectQuery.ImageQuery` exposes
+  `forSpeciesName(...)` only; `insects.json` / `insect-images.json` omit all id fields.

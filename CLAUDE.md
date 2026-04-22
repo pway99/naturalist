@@ -13,21 +13,21 @@ Area-specific conventions (load when working in that area):
 
 ## Identity
 
-Every domain class implements exactly one of `Entity`, `Aggregate`, `ValueObject`,
+Every domain class implements exactly one of `NamedEntity`, `Aggregate`, `ValueObject`,
 `BehavioralCollection` (all from `kernels/framework`; all extend `Observable` and declare
 `invariants()`). Signatures and rules in [`domains/CLAUDE.md`](domains/CLAUDE.md).
 
-`PersistenceId<Long>` is null in JSON — assigned by `TestEntitySource.nextId()` or RDBMS.
-Concrete `PersistenceId` and `EntityName` subclasses live in `domains/identifiers/`.
-`EntityName` is never null.
+Domain identity is `EntityName` — never null, the stable natural key.
+`EntityName` subclasses live in `domains/identifiers/`. `PersistenceId<Long>` is an
+adapter-internal concern (ADR-021) — no domain record carries an `id()` component.
 
 ## Module layout
 
 ```
 kernels/
-  framework/          — Entity, PersistenceId, EntityName, Aggregate, ValueObject,
+  framework/          — NamedEntity, EntityName, Aggregate, ValueObject,
                         Observable, Observer, BehavioralCollection
-  framework-test/     — TestEntitySource, TestEntitySourceTest, TestDataHelper
+  framework-test/     — NamedTestEntitySource, NamedTestEntitySourceTest, TestDataHelper
   field-notes/        — Description (four-level Durrell description)
   taxonomy/           — TaxonomicClassification (organism domains only)
 domains/
@@ -74,7 +74,8 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
 ## Non-negotiables
 
 - **Typed identifiers.** Never raw `String`/`Long` as an entity reference across any
-  boundary. Every entity has a concrete `PersistenceId<Long>` subclass.
+  boundary. Every entity has a concrete `EntityName` subclass; cross-entity references
+  are by `EntityName` only (ADR-021).
 - **Records for Entity/Aggregate/ValueObject.** `BehavioralCollection` is a `final class`
   (see [ADR-011](docs/adr/ADR-011-behavioral-collections.md)). Record rules in
   [`domains/CLAUDE.md`](domains/CLAUDE.md).
