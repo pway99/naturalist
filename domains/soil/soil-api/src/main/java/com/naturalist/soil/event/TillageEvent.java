@@ -1,6 +1,6 @@
 package com.naturalist.soil.event;
 
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.DepthInches;
 import com.naturalist.observability.Constraints;
 import com.naturalist.zone.ZoneName;
@@ -40,7 +40,6 @@ import java.util.function.Consumer;
  * clay sublayer restricts downward flow independently of biological structure.
  */
 public record TillageEvent(
-        TillageEventId id,
         TillageEventName name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -48,13 +47,7 @@ public record TillageEvent(
         DepthInches depthInches,
         TillageType tillageType,
         @Nullable String notes
-) implements FactEntity<TillageEventId, TillageEventName> {
-
-    @Override
-    public TillageEvent withId(TillageEventId id) {
-        return new TillageEvent(id, name, zoneName, subZoneName, tillageDate, depthInches,
-                tillageType, notes);
-    }
+) implements NamedEntity<TillageEventName> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 
@@ -87,7 +80,6 @@ public record TillageEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, TillageEvent::zoneName, "zoneName")
                 .notNull(this, TillageEvent::tillageDate, "tillageDate")

@@ -1,9 +1,9 @@
 package com.naturalist.plants;
 
 import com.naturalist.Incubating;
-import com.naturalist.data.EntityRepository;
+import com.naturalist.data.NamedEntityRepository;
 
 @Incubating("Investigating a pattern where EntityRepositories are nested within a single interface")
 interface PlantRepository {
-    interface PlantEntityRepository extends EntityRepository<PlantId, PlantName, Plant> {}
+    interface PlantEntityRepository extends NamedEntityRepository<PlantName, Plant> {}
 }

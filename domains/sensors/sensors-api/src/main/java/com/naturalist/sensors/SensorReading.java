@@ -1,6 +1,6 @@
 package com.naturalist.sensors;
 
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.ElectricalConductivity;
 import com.naturalist.measurements.MoisturePercent;
 import com.naturalist.observability.Constraints;
@@ -54,9 +54,8 @@ import java.util.function.Consumer;
  * re-establishment in progress.
  */
 public record SensorReading(
-        SensorReadingId id,
         SensorReadingName name,
-        SensorId sensorId,
+        SensorName sensorName,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         Instant recordedAt,
@@ -65,13 +64,7 @@ public record SensorReading(
         @Nullable ElectricalConductivity ecDsPerMeter,
         @Nullable BigDecimal temperatureCelsius,
         @Nullable String notes
-) implements FactEntity<SensorReadingId, SensorReadingName> {
-
-    @Override
-    public SensorReading withId(SensorReadingId id) {
-        return new SensorReading(id, name, sensorId, zoneName, subZoneName, recordedAt,
-                adValue, moisturePercent, ecDsPerMeter, temperatureCelsius, notes);
-    }
+) implements NamedEntity<SensorReadingName> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 
@@ -156,9 +149,8 @@ public record SensorReading(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
-                .notNull(this, SensorReading::sensorId, "sensorId")
+                .entityName(sensorName, "sensorName")
                 .notNull(this, SensorReading::zoneName, "zoneName")
                 .notNull(this, SensorReading::recordedAt, "recordedAt")
                 .namedValue(this, SensorReading::moisturePercent, "moisturePercent");

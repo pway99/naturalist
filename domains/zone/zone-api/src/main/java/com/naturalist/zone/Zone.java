@@ -18,8 +18,8 @@ import java.util.stream.Stream;
  * A Zone is a named physical space on the Oak Vista property with permanent geographic,
  * solar, and substrate characteristics. Zones exist independently of their occupants —
  * the plants, soil amendments, and pest treatments that operate within a Zone are managed
- * by other domain modules, which reference zones by {@link ZoneId} or {@link ZoneName}
- * from the shared identifiers module.
+ * by other domain modules, which reference zones by {@link ZoneName} from the shared
+ * identifiers module.
  * <p>
  * <b>Aggregate boundary:</b> Zone owns its {@link ZoneInfo} root entity, all characteristic
  * value objects ({@link SunExposure}, {@link Aspect}, {@link GeographicBoundary},
@@ -187,16 +187,16 @@ public record Zone(
      * Returns a new Zone with the given SubZone replacing the existing SubZone of the
      * same identity, or appended if no matching SubZone currently exists.
      *
-     * @param updated the SubZone to insert or replace; matched by {@link SubZone#id()}
+     * @param updated the SubZone to insert or replace; matched by {@link SubZone#name()}
      * @return a new Zone containing the updated SubZone list
      */
     public Zone withUpdatedSubZone(SubZone updated) {
         boolean replaced = subZones.stream()
-                .anyMatch(s -> s.id() != null && s.id().equals(updated.id()));
+                .anyMatch(s -> s.name().equals(updated.name()));
 
         List<SubZone> newSubZones = replaced
                 ? subZones.stream()
-                        .map(s -> s.id() != null && s.id().equals(updated.id()) ? updated : s)
+                        .map(s -> s.name().equals(updated.name()) ? updated : s)
                         .toList()
                 : Stream.concat(subZones.stream(), Stream.of(updated)).toList();
 
@@ -221,7 +221,7 @@ public record Zone(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entity(this, Zone::zoneInfo, "zoneInfo")
+                .namedEntity(this, Zone::zoneInfo, "zoneInfo")
                 .notNull(this, Zone::sunExposure, "sunExposure")
                 .notNull(this, Zone::aspect, "aspect")
                 .notNull(this, Zone::boundary, "boundary")

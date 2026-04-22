@@ -1,7 +1,7 @@
 package com.naturalist.soil.event;
 
 import com.naturalist.chemistry.compound.CompoundName;
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
@@ -44,7 +44,6 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record AmendmentEvent(
-        AmendmentEventId id,
         AmendmentEventName name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -53,18 +52,11 @@ public record AmendmentEvent(
         AmendmentUnit unit,
         LocalDate appliedDate,
         @Nullable String notes
-) implements FactEntity<AmendmentEventId, AmendmentEventName> {
-
-    @Override
-    public AmendmentEvent withId(AmendmentEventId id) {
-        return new AmendmentEvent(id, name, zoneName, subZoneName, compoundName, amount, unit,
-                appliedDate, notes);
-    }
+) implements NamedEntity<AmendmentEventName> {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, AmendmentEvent::zoneName, "zoneName")
                 .notNull(this, AmendmentEvent::compoundName, "compoundName")

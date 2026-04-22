@@ -1,9 +1,9 @@
 package com.naturalist.zone;
 
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.PrecipitationInches;
 import com.naturalist.observability.Constraints;
-import com.naturalist.weather.PrecipitationEventId;
+import com.naturalist.weather.PrecipitationEventName;
 import com.naturalist.zone.subzone.SubZoneName;
 import org.jspecify.annotations.Nullable;
 
@@ -28,8 +28,8 @@ import java.util.function.Consumer;
  * changes, or noting irrigation triggering conditions — rather than applying a single
  * property-wide response.
  * <p>
- * <b>Correlation:</b> {@code weatherEventId} references the originating
- * {@code com.naturalist.weather.PrecipitationEvent} by its persistence ID.
+ * <b>Correlation:</b> {@code weatherEventName} references the originating
+ * {@code com.naturalist.weather.PrecipitationEvent} by its slug.
  * It is {@code null} for events recorded before the event bus is operational.
  * <p>
  * <b>Zone aggregate wiring:</b> This type exists in anticipation of the event handler
@@ -38,7 +38,6 @@ import java.util.function.Consumer;
  * operational and the zone handler's full domain logic is defined.
  */
 public record ZonePrecipitationEvent(
-        ZonePrecipitationEventId id,
         ZonePrecipitationEventName name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -47,16 +46,9 @@ public record ZonePrecipitationEvent(
         PrecipitationInches totalInches,
         Duration totalDuration,
         BigDecimal peakIntensityInchesPerHour,
-        @Nullable PrecipitationEventId weatherEventId,
+        @Nullable PrecipitationEventName weatherEventName,
         @Nullable String notes
-) implements FactEntity<ZonePrecipitationEventId, ZonePrecipitationEventName> {
-
-    @Override
-    public ZonePrecipitationEvent withId(ZonePrecipitationEventId id) {
-        return new ZonePrecipitationEvent(id, name, zoneName, subZoneName, startDate, endDate,
-                totalInches, totalDuration, peakIntensityInchesPerHour,
-                weatherEventId, notes);
-    }
+) implements NamedEntity<ZonePrecipitationEventName> {
 
     /**
      * Whether this event constitutes a significant surface habitat disruption event
@@ -78,16 +70,15 @@ public record ZonePrecipitationEvent(
     /**
      * Whether this record is correlated to a canonical weather domain event.
      *
-     * @return {@code true} if {@code weatherEventId} is set
+     * @return {@code true} if {@code weatherEventName} is set
      */
     public boolean isCorrelated() {
-        return weatherEventId != null;
+        return weatherEventName != null;
     }
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, ZonePrecipitationEvent::zoneName, "zoneName")
                 .notNull(this, ZonePrecipitationEvent::startDate, "startDate")

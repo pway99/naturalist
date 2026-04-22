@@ -122,8 +122,8 @@ public record InsectSpecies(
         // rather than tolerated here.
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, InsectSpecies::taxonomy, "taxonomy")
-                .notNull(this, InsectSpecies::description, "description")
+                .valueObject(taxonomy, "taxonomy")
+                .valueObject(description, "description")
                 .notNull(this, InsectSpecies::guilds, "guilds")
                 .valueObjectOrNull(this, InsectSpecies::identificationFeatures, "identificationFeatures")
                 .valueObjectOrNull(this, InsectSpecies::lifeStages, "lifeStages")

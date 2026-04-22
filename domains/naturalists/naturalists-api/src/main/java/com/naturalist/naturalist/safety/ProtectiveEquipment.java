@@ -1,6 +1,6 @@
 package com.naturalist.naturalist.safety;
 
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 
 import java.util.function.Consumer;
@@ -26,19 +26,12 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record ProtectiveEquipment(
-        ProtectiveEquipmentId id,
         ProtectiveEquipmentName name
-) implements CatalogEntity<ProtectiveEquipmentId, ProtectiveEquipmentName> {
-
-    @Override
-    public ProtectiveEquipment withId(ProtectiveEquipmentId id) {
-        return new ProtectiveEquipment(id, name);
-    }
+) implements NamedEntity<ProtectiveEquipmentName> {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name");
     }
 }

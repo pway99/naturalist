@@ -1,6 +1,6 @@
 package com.naturalist.plants.heritage;
 
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
 import com.naturalist.plants.cultivar.CultivarName;
@@ -33,7 +33,6 @@ import java.util.function.Consumer;
  * program encoded as domain knowledge.
  */
 public record SeedLineage(
-        SeedLineageId id,
         SeedLineageName name,
         CultivarName cultivarName,
         Provenance provenance,
@@ -41,13 +40,7 @@ public record SeedLineage(
         int adaptationStartYear,
         @Nullable String selectionCriteria,
         @Nullable String notes
-) implements CatalogEntity<SeedLineageId, SeedLineageName> {
-
-    @Override
-    public SeedLineage withId(SeedLineageId id) {
-        return new SeedLineage(id, name, cultivarName, provenance, description,
-                adaptationStartYear, selectionCriteria, notes);
-    }
+) implements NamedEntity<SeedLineageName> {
 
     /**
      * Whether this lineage has an active local adaptation program — selecting
@@ -60,7 +53,6 @@ public record SeedLineage(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, SeedLineage::cultivarName, "cultivarName")
                 .valueObject(this, SeedLineage::provenance, "provenance")

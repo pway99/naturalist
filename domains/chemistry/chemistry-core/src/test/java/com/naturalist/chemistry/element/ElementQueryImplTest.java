@@ -36,18 +36,4 @@ class ElementQueryImplTest {
         assertThat(ec.stream().toList())
                 .containsExactlyElementsOf(expected);
     }
-
-    @Test
-    void findByIdSet_happyPath() {
-        Element carbon = repository.getByName(TestChemistryIdentifiers.Elements.C).orElseThrow();
-        Element hydrogen = repository.getByName(TestChemistryIdentifiers.Elements.H).orElseThrow();
-        Set<ElementId> elementIds = Set.of(carbon.id(), hydrogen.id());
-
-        ElementCollection ec = elementQuery.findByIdSet(elementIds);
-
-        assertThat(ec).isNotNull();
-        assertThat(ec.size()).isEqualTo(2);
-        assertThat(ec.stream().toList())
-                .containsExactlyInAnyOrder(carbon, hydrogen);
-    }
 }

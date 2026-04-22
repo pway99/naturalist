@@ -1,6 +1,5 @@
 [
   {
-    "id": null,
     "name": "wolf-spider",
     "taxonomy": {
       "order": "Araneae",
@@ -18,7 +17,6 @@
     "sightingNotes": "Abundant at Oak Vista — multiple adults observed during ground search at dusk, April 2026. Female with egg sac observed under flat stone at north bed margin. Nocturnal hunter; daytime refugia under stones and coarse mulch."
   },
   {
-    "id": null,
     "name": "crab-spider",
     "taxonomy": {
       "order": "Araneae",
@@ -36,7 +34,6 @@
     "sightingNotes": "Observed on Asteraceae flowers and dill umbels, April 2026. Colour-change individual (cream-yellow) documented on dill flower head. Natural ambush predator — no intervention warranted."
   },
   {
-    "id": null,
     "name": "orb-weaver",
     "taxonomy": {
       "order": "Araneae",

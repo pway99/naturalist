@@ -1,6 +1,6 @@
 package com.naturalist.soil.event;
 
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
@@ -30,7 +30,6 @@ import java.util.function.Consumer;
  * interpreting these drainage recovery trajectories from sensor data.
  */
 public record IrrigationEvent(
-        IrrigationEventId id,
         IrrigationEventName name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -38,18 +37,11 @@ public record IrrigationEvent(
         LocalDate appliedDate,
         boolean leachingIrrigation,
         @Nullable String notes
-) implements FactEntity<IrrigationEventId, IrrigationEventName> {
-
-    @Override
-    public IrrigationEvent withId(IrrigationEventId id) {
-        return new IrrigationEvent(id, name, zoneName, subZoneName, volumeGallons, appliedDate,
-                leachingIrrigation, notes);
-    }
+) implements NamedEntity<IrrigationEventName> {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, IrrigationEvent::zoneName, "zoneName")
                 .notNull(this, IrrigationEvent::volumeGallons, "volumeGallons")

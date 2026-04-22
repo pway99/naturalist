@@ -7,8 +7,8 @@ import com.naturalist.ddd.CatalogName;
  * <p>
  * Stable identifier used for cross-domain references to sensor catalog entries —
  * for example, from the sensor analysis domain mapping XLSX channel names to
- * soil domain sensors. The sensor analysis domain holds a {@code SensorName} slug;
- * it never imports {@link SensorId}.
+ * soil domain sensors. Per ADR-021, cross-entity references use {@code SensorName};
+ * the numeric persistence id is adapter-internal.
  * <p>
  * <b>Oak Vista sensor slugs (April 2026):</b>
  * <ul>

@@ -1,6 +1,6 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.data.TestEntitySourceTest;
+import com.naturalist.data.NamedTestEntitySourceTest;
 
-public class ElementTestEntitySourceTest extends TestEntitySourceTest<ElementId, ElementName, Element, ElementTestEntitySource> {
+public class ElementTestEntitySourceTest extends NamedTestEntitySourceTest<ElementName, Element, ElementTestEntitySource> {
 }

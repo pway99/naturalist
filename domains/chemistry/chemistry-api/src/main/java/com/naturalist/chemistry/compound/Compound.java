@@ -2,7 +2,7 @@ package com.naturalist.chemistry.compound;
 
 import com.naturalist.chemistry.TemperatureFahrenheit;
 import com.naturalist.ddd.AggregateRoot;
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.UniqueValue;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
@@ -15,8 +15,8 @@ import java.util.function.Consumer;
 /**
  * A chemical compound — the aggregate root for compound data.
  * <p>
- * {@code Compound} is both the {@link CatalogEntity} (carrying stable slug identity) and
- * the consistency boundary. It owns {@link CompoundInfo} (chemical classification), all
+ * {@code Compound} carries stable slug identity via {@link CompoundName} and is the
+ * consistency boundary. It owns {@link CompoundInfo} (chemical classification), all
  * profile value objects, and {@code properties}.
  * <p>
  * {@link CompoundInfo} groups the physical-chemical classification fields.
@@ -30,7 +30,6 @@ import java.util.function.Consumer;
  */
 @AggregateRoot
 public record Compound(
-        CompoundId id,
         CompoundName name,
         @UniqueValue String commonName,
         CompoundInfo compoundInfo,
@@ -39,16 +38,10 @@ public record Compound(
         @Nullable VolatilizationProfile volatilization,
         @Nullable SafetyProfile safety,
         Map<String, String> properties
-) implements CatalogEntity<CompoundId, CompoundName> {
-
-    @Override
-    public Compound withId(CompoundId id) {
-        return new Compound(id, name, commonName, compoundInfo, solubility, bioavailability,
-                volatilization, safety, properties);
-    }
+) implements NamedEntity<CompoundName> {
 
     public Compound withSafety(@Nullable SafetyProfile safety) {
-        return new Compound(id, name, commonName, compoundInfo, solubility, bioavailability,
+        return new Compound(name, commonName, compoundInfo, solubility, bioavailability,
                 volatilization, safety, properties);
     }
 
@@ -147,7 +140,6 @@ public record Compound(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notBlank(commonName, "commonName")
                 .valueObject(this, Compound::compoundInfo, "compoundInfo")

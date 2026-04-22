@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.TestEntitySourceTest;
+import com.naturalist.data.NamedTestEntitySourceTest;
 
-class PlantTestEntitySourceTest extends TestEntitySourceTest<PlantId, PlantName, Plant, PlantTestEntitySource> {
+class PlantTestEntitySourceTest
+        extends NamedTestEntitySourceTest<PlantName, Plant, PlantTestEntitySource> {
 }

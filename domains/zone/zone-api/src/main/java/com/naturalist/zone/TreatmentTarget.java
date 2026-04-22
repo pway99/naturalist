@@ -1,6 +1,6 @@
 package com.naturalist.zone;
 
-import com.naturalist.zone.subzone.SubZoneId;
+import com.naturalist.zone.subzone.SubZoneName;
 
 import java.util.Objects;
 
@@ -20,16 +20,16 @@ import java.util.Objects;
  * <pre>{@code
  * switch (event.target()) {
  *     case TreatmentTarget.ZoneTreatmentTarget z ->
- *         applyToWholeZone(z.zoneId());
+ *         applyToWholeZone(z.zoneName());
  *     case TreatmentTarget.SubZoneTreatmentTarget s ->
- *         applyToSubZone(s.zoneId(), s.subZoneId());
+ *         applyToSubZone(s.zoneName(), s.subZoneName());
  * }
  * }</pre>
  * <p>
  * Factory methods are provided for convenience:
  * <pre>{@code
- * TreatmentTarget.zone(zoneId)
- * TreatmentTarget.subZone(zoneId, subZoneId)
+ * TreatmentTarget.zone(zoneName)
+ * TreatmentTarget.subZone(zoneName, subZoneName)
  * }</pre>
  */
 public sealed interface TreatmentTarget
@@ -40,12 +40,12 @@ public sealed interface TreatmentTarget
      * The Zone that this target belongs to.
      * <p>
      * Always present regardless of whether the target is a whole Zone or a SubZone.
-     * SubZone targets carry the parent ZoneId so that callers can resolve zone context
+     * SubZone targets carry the parent ZoneName so that callers can resolve zone context
      * without a separate lookup.
      *
-     * @return the ZoneId of the targeted Zone or the SubZone's parent Zone
+     * @return the ZoneName of the targeted Zone or the SubZone's parent Zone
      */
-    ZoneId zoneId();
+    ZoneName zoneName();
 
     /**
      * A treatment that targets an entire Zone — all sub-zones receive the treatment uniformly.
@@ -55,9 +55,9 @@ public sealed interface TreatmentTarget
      * {@link SubZoneTreatmentTarget} and results in a zone-level (not sub-zone-level)
      * entry in the treatment history.
      */
-    record ZoneTreatmentTarget(ZoneId zoneId) implements TreatmentTarget {
+    record ZoneTreatmentTarget(ZoneName zoneName) implements TreatmentTarget {
         public ZoneTreatmentTarget {
-            Objects.requireNonNull(zoneId, "zoneId must not be null");
+            Objects.requireNonNull(zoneName, "zoneName must not be null");
         }
     }
 
@@ -70,34 +70,34 @@ public sealed interface TreatmentTarget
      * this decision is only possible if treatment and pest pressure records are
      * scoped to the sub-zone, not the whole bed.
      * <p>
-     * Both {@code zoneId} and {@code subZoneId} are required because a SubZoneId is
+     * Both {@code zoneName} and {@code subZoneName} are required because a SubZoneName is
      * always interpreted relative to its parent Zone.
      */
-    record SubZoneTreatmentTarget(ZoneId zoneId, SubZoneId subZoneId) implements TreatmentTarget {
+    record SubZoneTreatmentTarget(ZoneName zoneName, SubZoneName subZoneName) implements TreatmentTarget {
         public SubZoneTreatmentTarget {
-            Objects.requireNonNull(zoneId, "zoneId must not be null");
-            Objects.requireNonNull(subZoneId, "subZoneId must not be null");
+            Objects.requireNonNull(zoneName, "zoneName must not be null");
+            Objects.requireNonNull(subZoneName, "subZoneName must not be null");
         }
     }
 
     /**
      * Creates a target scoped to an entire Zone.
      *
-     * @param zoneId the Zone receiving the treatment; must not be null
+     * @param zoneName the Zone receiving the treatment; must not be null
      * @return a {@link ZoneTreatmentTarget}
      */
-    static TreatmentTarget zone(ZoneId zoneId) {
-        return new ZoneTreatmentTarget(zoneId);
+    static TreatmentTarget zone(ZoneName zoneName) {
+        return new ZoneTreatmentTarget(zoneName);
     }
 
     /**
      * Creates a target scoped to a specific SubZone within a Zone.
      *
-     * @param zoneId    the parent Zone; must not be null
-     * @param subZoneId the specific SubZone receiving the treatment; must not be null
+     * @param zoneName    the parent Zone; must not be null
+     * @param subZoneName the specific SubZone receiving the treatment; must not be null
      * @return a {@link SubZoneTreatmentTarget}
      */
-    static TreatmentTarget subZone(ZoneId zoneId, SubZoneId subZoneId) {
-        return new SubZoneTreatmentTarget(zoneId, subZoneId);
+    static TreatmentTarget subZone(ZoneName zoneName, SubZoneName subZoneName) {
+        return new SubZoneTreatmentTarget(zoneName, subZoneName);
     }
 }

@@ -1,11 +1,10 @@
 package com.naturalist.plants.cultivar;
 
-import com.naturalist.data.TestEntitySource;
+import com.naturalist.data.NamedTestEntitySource;
 
-public class CultivarTestEntitySource extends TestEntitySource<CultivarId, CultivarName, Cultivar> {
+public class CultivarTestEntitySource extends NamedTestEntitySource<CultivarName, Cultivar> {
 
     public CultivarTestEntitySource() {
-        super(CultivarId::of);
         loadFile("plants/cultivar/cultivars.json");
     }
 }

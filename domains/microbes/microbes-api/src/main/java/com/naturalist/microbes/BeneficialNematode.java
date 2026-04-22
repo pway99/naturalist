@@ -2,7 +2,7 @@ package com.naturalist.microbes;
 
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
@@ -38,7 +38,6 @@ import java.util.function.Consumer;
  * 7 PM to avoid UV-induced mortality — relevant to operational scheduling.
  */
 public record BeneficialNematode(
-        NematodeId id,
         NematodeName name,
         TaxonomicClassification taxonomy,
         Description description,
@@ -48,14 +47,7 @@ public record BeneficialNematode(
         boolean applicationAfterSunset,
         ForagingStrategy foragingStrategy,
         @Nullable String applicationNotes
-) implements CatalogEntity<NematodeId, NematodeName> {
-
-    @Override
-    public BeneficialNematode withId(NematodeId id) {
-        return new BeneficialNematode(id, name, taxonomy, description, primaryTargetPest,
-                minApplicationTempF, maxApplicationTempF, applicationAfterSunset,
-                foragingStrategy, applicationNotes);
-    }
+) implements NamedEntity<NematodeName> {
 
     /**
      * Whether the given soil temperature is within the effective application range.
@@ -70,7 +62,6 @@ public record BeneficialNematode(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, BeneficialNematode::taxonomy, "taxonomy")
                 .notNull(this, BeneficialNematode::description, "description")

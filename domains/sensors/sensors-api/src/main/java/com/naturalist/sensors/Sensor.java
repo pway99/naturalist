@@ -1,6 +1,6 @@
 package com.naturalist.sensors;
 
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.DepthInches;
 import com.naturalist.observability.Constraints;
 import com.naturalist.zone.ZoneName;
@@ -14,11 +14,10 @@ import java.util.function.Consumer;
  * A catalog entry for a soil monitoring sensor installed at a specific location
  * and depth within a managed spatial unit.
  * <p>
- * {@code Sensor} is a {@link CatalogEntity} — it is a stable named classification
- * that exists independently of any particular reading. It carries the physical
- * installation context needed to interpret readings correctly: which spatial unit
- * it monitors, at what depth, using what hardware model, and whether it has been
- * relocated since installation.
+ * {@code Sensor} is a stable named classification that exists independently of any
+ * particular reading. It carries the physical installation context needed to interpret
+ * readings correctly: which spatial unit it monitors, at what depth, using what
+ * hardware model, and whether it has been relocated since installation.
  * <p>
  * <b>Calibration note:</b> The Ecowitt WH51 and WH51L sensors are factory-calibrated
  * for mineral soil. The Oak Vista worm casting / coco coir blend reads 3–5% high
@@ -49,7 +48,6 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record Sensor(
-        SensorId id,
         SensorName name,
         SensorModel model,
         ZoneName zoneName,
@@ -61,14 +59,7 @@ public record Sensor(
         @Nullable Integer adValueAtZeroMoisture,
         @Nullable Integer adValueAtSaturation,
         @Nullable String notes
-) implements CatalogEntity<SensorId, SensorName> {
-
-    @Override
-    public Sensor withId(SensorId id) {
-        return new Sensor(id, name, model, zoneName, subZoneName, depthInches, installedDate,
-                lastRelocatedDate, customCalibrationMode, adValueAtZeroMoisture,
-                adValueAtSaturation, notes);
-    }
+) implements NamedEntity<SensorName> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 
@@ -114,7 +105,6 @@ public record Sensor(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, Sensor::model, "model")
                 .notNull(this, Sensor::zoneName, "zoneName")

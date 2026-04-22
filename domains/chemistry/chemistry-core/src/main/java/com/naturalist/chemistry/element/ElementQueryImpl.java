@@ -1,15 +1,16 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.data.EntityRepository;
+import com.naturalist.data.AbstractNamedEntityQuery;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.Set;
 
 @DomainService
-class ElementQueryImpl extends AbstractEntityQuery<ElementId, ElementName, Element, ElementCollection> implements ElementQuery {
+class ElementQueryImpl
+        extends AbstractNamedEntityQuery<ElementName, Element, ElementCollection, ElementRepository.ElementEntityRepository>
+        implements ElementQuery {
 
-    ElementQueryImpl(EntityRepository<ElementId, ElementName, Element> repository) {
+    ElementQueryImpl(ElementRepository.ElementEntityRepository repository) {
         super(repository);
     }
 
@@ -20,14 +21,5 @@ class ElementQueryImpl extends AbstractEntityQuery<ElementId, ElementName, Eleme
                 .throwWhenInvalid();
 
         return new ElementCollection(repository().getByEntityNameSet(elementNames));
-    }
-
-    @Override
-    public ElementCollection findByIdSet(Set<ElementId> elementIds) {
-        observer().arguments("findByIdSet", i -> i
-                .notNull(elementIds, "elementIds"))
-                .throwWhenInvalid();
-
-        return new ElementCollection(repository().getByIdSet(elementIds));
     }
 }

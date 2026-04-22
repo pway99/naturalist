@@ -16,10 +16,8 @@ class CompoundTest {
 
     @Test
     void compoundIsValid() {
-        // Arrange
         var mo = observer.forMethod("compoundIsValid");
         Compound c = new Compound(
-                null,
                 CompoundName.of(RandomValue.string()),
                 RandomValue.string(),
                 new CompoundInfo(RandomValue.string(), null, CompoundType.CHELATE, PhCharacter.STRONGLY_ACIDIC, Set.of(PeriodicElement.P, PeriodicElement.Be)),
@@ -35,22 +33,18 @@ class CompoundTest {
                 Map.of()
         );
 
-        // Act
         InvariantObservation result = mo.observable(c, "c");
 
-        // Assert
         assertThat(result.violations())
                 .isEmpty();
     }
 
     @Test
     void compoundIsNotValid() {
-        // Arrange
         var mo = observer.forMethod("compoundIsNotValid");
-        Compound c = new Compound(null, null, null, null, null, null, null, null, null);
+        Compound c = new Compound(null, null, null, null, null, null, null, null);
 
-        // Act
-        InvariantObservation observation = mo.entity(c, "c");
+        InvariantObservation observation = mo.namedEntity(c, "c");
 
         assertThat(observation.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(".c.bioavailability",

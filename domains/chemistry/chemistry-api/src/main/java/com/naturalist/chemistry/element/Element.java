@@ -1,6 +1,6 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 
 import java.util.Objects;
@@ -15,18 +15,12 @@ import java.util.function.Consumer;
  * No specific elements (Ca, Mg, K etc) are hardcoded here.
  */
 public record Element(
-        ElementId id,
         ElementName name,
         String symbol,
         AtomicWeight atomicWeight,
         String ionicForm,
         int ionicCharge
-) implements CatalogEntity<ElementId, ElementName> {
-
-    @Override
-    public Element withId(ElementId id) {
-        return new Element(id, name, symbol, atomicWeight, ionicForm, ionicCharge);
-    }
+) implements NamedEntity<ElementName> {
 
     public boolean isCation() {
         return ionicCharge > 0;
@@ -43,12 +37,12 @@ public record Element(
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Element e)) return false;
-        return id.equals(e.id);
+        return name.equals(e.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(name);
     }
 
     @Override
@@ -59,7 +53,6 @@ public record Element(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .namedValue(this, Element::atomicWeight, "atomicWeight");
     }

@@ -1,7 +1,7 @@
 package com.naturalist.plants.heritage;
 
-import com.naturalist.data.TestEntitySourceTest;
+import com.naturalist.data.NamedTestEntitySourceTest;
 
 class SeedLineageTestEntitySourceTest
-        extends TestEntitySourceTest<SeedLineageId, SeedLineageName, SeedLineage, SeedLineageTestEntitySource> {
+        extends NamedTestEntitySourceTest<SeedLineageName, SeedLineage, SeedLineageTestEntitySource> {
 }

@@ -1,6 +1,6 @@
 package com.naturalist.soil.observation;
 
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
@@ -32,19 +32,13 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record LabAnalysis(
-        LabAnalysisId id,
         LabAnalysisName name,
         LocalDate sampleDate,
         String labId,
         String labSampleId,
         @Nullable String notes,
         NutrientPanel nutrients
-) implements FactEntity<LabAnalysisId, LabAnalysisName> {
-
-    @Override
-    public LabAnalysis withId(LabAnalysisId id) {
-        return new LabAnalysis(id, name, sampleDate, labId, labSampleId, notes, nutrients);
-    }
+) implements NamedEntity<LabAnalysisName> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 
@@ -87,7 +81,6 @@ public record LabAnalysis(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, LabAnalysis::sampleDate, "sampleDate")
                 .notNull(this, LabAnalysis::labId, "labId")

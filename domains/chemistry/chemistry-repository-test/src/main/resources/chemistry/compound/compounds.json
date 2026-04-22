@@ -1,6 +1,5 @@
 [
   {
-    "id": null,
     "name": "calcium-sulfate-dihydrate",
     "commonName": "Calcium Sulfate Dihydrate",
     "compoundInfo": {
@@ -36,7 +35,6 @@
     }
   },
   {
-    "id": null,
     "name": "calcium-chloride",
     "commonName": "Calcium Chloride",
     "compoundInfo": {
@@ -72,7 +70,6 @@
     }
   },
   {
-    "id": null,
     "name": "potassium-sulfate",
     "commonName": "Potassium Sulfate",
     "compoundInfo": {
@@ -109,7 +106,6 @@
     }
   },
   {
-    "id": null,
     "name": "elemental-sulfur",
     "commonName": "Elemental Sulfur",
     "compoundInfo": {
@@ -145,7 +141,6 @@
     }
   },
   {
-    "id": null,
     "name": "magnesium-sulfate",
     "commonName": "Magnesium Sulfate Heptahydrate",
     "compoundInfo": {
@@ -180,7 +175,6 @@
     }
   },
   {
-    "id": null,
     "name": "calcium-carbonate",
     "commonName": "Calcium Carbonate",
     "compoundInfo": {
@@ -216,7 +210,6 @@
     }
   },
   {
-    "id": null,
     "name": "calcium-pectate",
     "commonName": "Calcium Pectate",
     "compoundInfo": {
@@ -250,7 +243,6 @@
     }
   },
   {
-    "id": null,
     "name": "organic-acid-chelate",
     "commonName": "Organic Acid Chelated Calcium-Magnesium",
     "compoundInfo": {
@@ -291,7 +283,6 @@
     }
   },
   {
-    "id": null,
     "name": "formic-acid",
     "commonName": "Formic Acid",
     "compoundInfo": {
@@ -341,7 +332,6 @@
     }
   },
   {
-    "id": null,
     "name": "oxalic-acid",
     "commonName": "Oxalic Acid",
     "compoundInfo": {
@@ -391,7 +381,6 @@
     }
   },
   {
-    "id": null,
     "name": "thymol",
     "commonName": "Thymol",
     "compoundInfo": {
@@ -443,7 +432,6 @@
     }
   },
   {
-    "id": null,
     "name": "azadirachtin",
     "commonName": "Azadirachtin",
     "compoundInfo": {
@@ -488,7 +476,6 @@
     }
   },
   {
-    "id": null,
     "name": "potassium-fatty-acids",
     "commonName": "Potassium Salts of Fatty Acids",
     "compoundInfo": {

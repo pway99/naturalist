@@ -1,6 +1,6 @@
 package com.naturalist.zone.subzone;
 
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.AreaSquareFeet;
 import com.naturalist.observability.Constraints;
 import com.naturalist.soil.SoilProfileName;
@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * A named spatial subdivision within a Zone, representing a section of a bed or plot that
  * has distinct management characteristics, pest history, or current occupants.
  * <p>
- * SubZone is an {@link Entity} within the Zone aggregate — it does not exist independently
- * of its parent Zone. A {@link SubZoneId} is always interpreted relative to the parent
+ * SubZone is an entity within the Zone aggregate — it does not exist independently of
+ * its parent Zone. A {@link SubZoneName} is always interpreted relative to the parent
  * {@link com.naturalist.zone.ZoneName}. Zone is the aggregate root.
  * <p>
  * <b>Origin of this concept:</b> SubZone emerged as a first-class domain object from a real
@@ -54,7 +54,6 @@ import java.util.function.Consumer;
  * module identifier is registered in {@code domains/identifiers/}.
  */
 public record SubZone(
-        SubZoneId id,
         SubZoneName name,
         ZoneName parentZoneName,
         RelativePosition position,
@@ -62,26 +61,20 @@ public record SubZone(
         ThripsHabitatRisk surfaceHabitatRisk,
         @Nullable SoilProfileName soilProfileName,
         List<PestPressureRecord> pestPressureHistory
-) implements CatalogEntity<SubZoneId, SubZoneName> {
-
-    @Override
-    public SubZone withId(SubZoneId id) {
-        return new SubZone(id, name, parentZoneName, position, areaSqft, surfaceHabitatRisk,
-                soilProfileName, pestPressureHistory);
-    }
+) implements NamedEntity<SubZoneName> {
 
     public SubZone withSoilProfileName(@Nullable SoilProfileName soilProfileName) {
-        return new SubZone(id, name, parentZoneName, position, areaSqft, surfaceHabitatRisk,
+        return new SubZone(name, parentZoneName, position, areaSqft, surfaceHabitatRisk,
                 soilProfileName, pestPressureHistory);
     }
 
     public SubZone withSurfaceHabitatRisk(ThripsHabitatRisk surfaceHabitatRisk) {
-        return new SubZone(id, name, parentZoneName, position, areaSqft, surfaceHabitatRisk,
+        return new SubZone(name, parentZoneName, position, areaSqft, surfaceHabitatRisk,
                 soilProfileName, pestPressureHistory);
     }
 
     public SubZone withPestPressureHistory(List<PestPressureRecord> pestPressureHistory) {
-        return new SubZone(id, name, parentZoneName, position, areaSqft, surfaceHabitatRisk,
+        return new SubZone(name, parentZoneName, position, areaSqft, surfaceHabitatRisk,
                 soilProfileName, pestPressureHistory);
     }
 
@@ -126,7 +119,6 @@ public record SubZone(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, SubZone::parentZoneName, "parentZoneName")
                 .notNull(this, SubZone::position, "position")

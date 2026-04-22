@@ -1,6 +1,5 @@
 [
   {
-    "id": null,
     "name": "california-pipevine",
     "taxonomy": {
       "order": "Piperales",
@@ -21,7 +20,6 @@
     "gardenNotes": "Established on back fence trellis. First adult Pipevine Swallowtails typically appear March; larval cohorts present through October. Eggs are rust-orange spheres laid in clusters on the underside of young leaves and on new stems. Larvae are dark with orange tubercles. Check plant weekly from March before any garden treatment is planned."
   },
   {
-    "id": null,
     "name": "scented-geranium",
     "taxonomy": {
       "order": "Geraniales",
@@ -42,7 +40,6 @@
     "gardenNotes": "Eastern border hedge, 6–8 feet wide at maturity. Hard prune in late winter (February) to maintain shape and encourage new flowering growth. Drought tolerant once established — do not overwater. Rose-scented cultivar confirmed."
   },
   {
-    "id": null,
     "name": "crimson-clover",
     "taxonomy": {
       "order": "Fabales",
@@ -63,7 +60,6 @@
     "gardenNotes": "Sown in autumn or early spring as cover crop in vegetable beds and orchard understory. Incorporate before seed set to maximise nitrogen return to soil. Allow some plants to flower fully for bee forage before turning in."
   },
   {
-    "id": null,
     "name": "white-clover",
     "taxonomy": {
       "order": "Fabales",
@@ -84,7 +80,6 @@
     "gardenNotes": "Established in orchard understory and mixed into lawn margins. Tolerates moderate foot traffic. Mow high (4 inches minimum) when co-planted with tall fescue to prevent shading out the fescue."
   },
   {
-    "id": null,
     "name": "sweet-alyssum",
     "taxonomy": {
       "order": "Brassicales",
@@ -105,7 +100,6 @@
     "gardenNotes": "Direct sow or transplant in spring; self-seeds abundantly thereafter. Interplant within vegetable beds and along borders adjacent to tomatoes and brassicas. Shear back by one-third if it becomes leggy to encourage fresh bloom flush. White and purple varieties present at Oak Vista."
   },
   {
-    "id": null,
     "name": "dill",
     "taxonomy": {
       "order": "Apiales",
@@ -126,7 +120,6 @@
     "gardenNotes": "Allow to bolt and flower — the umbels are the primary functional value at Oak Vista. Self-seeds prolifically once established; expect volunteer plants throughout the season. Anise Swallowtail caterpillars (green-yellow-black banded) are residents and should not be removed. Confirmed as tachinid fly and braconid wasp foraging plant in April 2026 assessment."
   },
   {
-    "id": null,
     "name": "borage",
     "taxonomy": {
       "order": "Boraginales",
@@ -147,7 +140,6 @@
     "gardenNotes": "Self-seeds prolifically — allow seedheads to mature and drop for next season's volunteers. Pull excess volunteers to prevent overcrowding. Blue flowers edible; used as garnish. Bumblebee foraging on borage is one of the most visible indicators of Oak Vista pollinator community health."
   },
   {
-    "id": null,
     "name": "wild-violet",
     "taxonomy": {
       "order": "Malpighiales",
@@ -168,7 +160,6 @@
     "gardenNotes": "Naturalised in shadier garden margins and orchard understory. Spreads by stolons — allow it to colonise naturally. Early spring bloom provides critical nectar for newly emerged queen bumblebees. Do not remove — larval host for fritillary butterflies."
   },
   {
-    "id": null,
     "name": "creeping-thyme",
     "taxonomy": {
       "order": "Lamiales",
@@ -189,7 +180,6 @@
     "gardenNotes": "Planted in sunny, well-drained areas including path margins and orchard understory. Shear lightly after flowering to maintain dense mat. Genus-level identification only — species confirmed by flower and leaf morphology pending."
   },
   {
-    "id": null,
     "name": "sweet-pea",
     "taxonomy": {
       "order": "Fabales",
@@ -210,7 +200,6 @@
     "gardenNotes": "Sow in autumn or late winter for spring bloom. Provide fence or trellis support. Deadhead regularly to prolong flowering — seed set triggers senescence. Plant dislikes Sacramento summer heat; will decline by June. Mixed colour varieties planted at Oak Vista."
   },
   {
-    "id": null,
     "name": "tall-fescue",
     "taxonomy": {
       "order": "Poales",
@@ -231,7 +220,6 @@
     "gardenNotes": "Main lawn area. Mow at 4–6 inches minimum. Deep-water infrequently rather than shallow-water frequently to maintain deep root system. Skipper larvae (small, green, found in folded grass blade shelters) are residents — do not disturb."
   },
   {
-    "id": null,
     "name": "tomato",
     "taxonomy": {
       "order": "Solanales",
@@ -252,7 +240,6 @@
     "gardenNotes": "Primary food crop. Multiple varieties grown annually. Aphid monitoring weekly from transplant through fruit set. Beneficial insect activity (braconid mummies on aphid colonies, tachinid adults on dill) is the primary pest suppression mechanism — avoid broad-spectrum pesticides that would disrupt it. Bumblebee buzz pollination audible in early morning."
   },
   {
-    "id": null,
     "name": "passiflora-edulis",
     "taxonomy": {
       "order": "Malpighiales",
@@ -273,7 +260,6 @@
     "gardenNotes": "Steel trellis, full sun. Large carpenter bees (Xylocopa varipuncta — the female is all black, the male is golden) are the primary pollinators — their early-morning foraging visits are audible. Self-incompatibility may limit fruit set if only one clone is present; consider adding a second vine. Gulf Fritillary larvae (orange with black spines) may be present on foliage — they are residents."
   },
   {
-    "id": null,
     "name": "ornamental-passiflora",
     "taxonomy": {
       "order": "Malpighiales",
@@ -294,7 +280,6 @@
     "gardenNotes": "Species/cultivar TBD — confirm at next bloom. Gulf Fritillary larvae (orange with black spines) are residents on this vine and Passiflora edulis. Combined, both vines support a stable breeding Gulf Fritillary population at Oak Vista."
   },
   {
-    "id": null,
     "name": "dianthus",
     "taxonomy": {
       "order": "Caryophyllales",
@@ -315,7 +300,6 @@
     "gardenNotes": "Ornamental border planting. Species/cultivar TBD — confirm single vs. double flower form. Single-flowered varieties preferred for pollinator accessibility. Deadhead to extend bloom period."
   },
   {
-    "id": null,
     "name": "sage",
     "taxonomy": {
       "order": "Lamiales",
@@ -336,7 +320,6 @@
     "gardenNotes": "Herb garden planting. Genus-level identification — species/cultivar TBD. Prune back by one-third after spring flowering to maintain compact shape. Drought tolerant once established. Bumblebee and carpenter bee foraging activity visible through the day during bloom."
   },
   {
-    "id": null,
     "name": "oh-henry-peach",
     "taxonomy": {
       "order": "Rosales",
@@ -357,7 +340,6 @@
     "gardenNotes": "Oh Henry cultivar — large, late-season freestone peach. Annual dormant pruning required (open-vase form). Peach leaf curl managed with dormant copper application. One of the earliest-blooming trees at Oak Vista — critical early-season bee forage. Front yard orchard."
   },
   {
-    "id": null,
     "name": "citrus",
     "taxonomy": {
       "order": "Sapindales",
@@ -378,7 +360,6 @@
     "gardenNotes": "Multiple varieties — species/cultivar TBD per individual tree. Evergreen; structural backbone of front yard orchard alongside peach and other stone fruit. Citrus bloom (March–April) is a peak pollinator activity event at Oak Vista — avoid any pesticide applications during bloom. Scale insects monitored and managed through beneficial insect pressure."
   },
   {
-    "id": null,
     "name": "wild-radish",
     "taxonomy": {
       "order": "Brassicales",

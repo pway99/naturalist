@@ -1,11 +1,10 @@
 package com.naturalist.plants.heritage;
 
-import com.naturalist.data.TestEntitySource;
+import com.naturalist.data.NamedTestEntitySource;
 
-public class SeedLineageTestEntitySource extends TestEntitySource<SeedLineageId, SeedLineageName, SeedLineage> {
+public class SeedLineageTestEntitySource extends NamedTestEntitySource<SeedLineageName, SeedLineage> {
 
     public SeedLineageTestEntitySource() {
-        super(SeedLineageId::of);
         loadFile("plants/heritage/seed-lineages.json");
     }
 }

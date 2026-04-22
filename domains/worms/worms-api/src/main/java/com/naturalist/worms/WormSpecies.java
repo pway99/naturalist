@@ -2,7 +2,7 @@ package com.naturalist.worms;
 
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
@@ -27,20 +27,13 @@ import java.util.function.Consumer;
  * application module.
  */
 public record WormSpecies(
-        WormId id,
         WormName name,
         TaxonomicClassification taxonomy,
         Description description,
         int preferredDepthCm,
         @Nullable Double castingRateGPerDayPerWorm,
         @Nullable String sightingNotes
-) implements CatalogEntity<WormId, WormName> {
-
-    @Override
-    public WormSpecies withId(WormId id) {
-        return new WormSpecies(id, name, taxonomy, description, preferredDepthCm,
-                castingRateGPerDayPerWorm, sightingNotes);
-    }
+) implements NamedEntity<WormName> {
 
     /**
      * Whether this species is a deep burrower (>10 cm), creating vertical macropores
@@ -54,7 +47,6 @@ public record WormSpecies(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, WormSpecies::taxonomy, "taxonomy")
                 .notNull(this, WormSpecies::description, "description");

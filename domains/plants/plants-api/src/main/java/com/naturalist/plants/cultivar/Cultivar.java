@@ -1,6 +1,6 @@
 package com.naturalist.plants.cultivar;
 
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
 import com.naturalist.plants.PlantName;
@@ -42,7 +42,6 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record Cultivar(
-        CultivarId id,
         CultivarName name,
         PlantName plantName,
         String commonName,
@@ -52,13 +51,7 @@ public record Cultivar(
         SeedSavingPolicy seedSavingPolicy,
         @Nullable String seedSource,
         @Nullable String gardenNotes
-) implements CatalogEntity<CultivarId, CultivarName> {
-
-    @Override
-    public Cultivar withId(CultivarId id) {
-        return new Cultivar(id, name, plantName, commonName, description, varietyType,
-                fruitType, seedSavingPolicy, seedSource, gardenNotes);
-    }
+) implements NamedEntity<CultivarName> {
 
     /**
      * Whether this cultivar is safe for seed saving based on its breeding status.
@@ -87,7 +80,6 @@ public record Cultivar(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, Cultivar::plantName, "plantName")
                 .notBlank(commonName, "commonName")

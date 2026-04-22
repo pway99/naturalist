@@ -1,9 +1,9 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.data.TestEntitySource;
-public class ElementTestEntitySource extends TestEntitySource<ElementId, ElementName, Element> {
+import com.naturalist.data.NamedTestEntitySource;
+
+public class ElementTestEntitySource extends NamedTestEntitySource<ElementName, Element> {
     public ElementTestEntitySource() {
-        super(ElementId::of);
         loadFile("chemistry/element/elements.json");
     }
 }

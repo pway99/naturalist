@@ -1,6 +1,6 @@
 package com.naturalist.naturalist;
 
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
@@ -25,19 +25,13 @@ import java.util.function.Consumer;
  * references and JSON catalogs.
  */
 public record Naturalist(
-        NaturalistId id,
         NaturalistName name,
         String givenName,
         @Nullable String familyName,
         NaturalistRole role,
         EcologicalStage stage,
         @Nullable String notes
-) implements CatalogEntity<NaturalistId, NaturalistName> {
-
-    @Override
-    public Naturalist withId(NaturalistId id) {
-        return new Naturalist(id, name, givenName, familyName, role, stage, notes);
-    }
+) implements NamedEntity<NaturalistName> {
 
     /**
      * Whether this naturalist can lead others in ecological observation.
@@ -76,7 +70,6 @@ public record Naturalist(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, Naturalist::givenName, "givenName")
                 .notNull(this, Naturalist::role, "role")

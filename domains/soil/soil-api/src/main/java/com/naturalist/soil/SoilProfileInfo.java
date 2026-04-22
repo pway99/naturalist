@@ -1,7 +1,7 @@
 package com.naturalist.soil;
 
 import com.naturalist.ddd.AggregateRoot;
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
@@ -48,16 +48,10 @@ import java.util.function.Consumer;
  */
 @AggregateRoot
 public record SoilProfileInfo(
-        SoilProfileId id,
         SoilProfileName name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName
-) implements CatalogEntity<SoilProfileId, SoilProfileName> {
-
-    @Override
-    public SoilProfileInfo withId(SoilProfileId id) {
-        return new SoilProfileInfo(id, name, zoneName, subZoneName);
-    }
+) implements NamedEntity<SoilProfileName> {
 
     /**
      * Whether this soil profile covers a sub-zone subdivision rather than an entire Zone.
@@ -71,7 +65,6 @@ public record SoilProfileInfo(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, SoilProfileInfo::zoneName, "zoneName");
     }

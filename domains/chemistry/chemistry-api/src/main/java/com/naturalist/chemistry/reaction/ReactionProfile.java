@@ -1,7 +1,7 @@
 package com.naturalist.chemistry.reaction;
 
 import com.naturalist.chemistry.compound.CompoundName;
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 
 import java.util.List;
@@ -18,7 +18,6 @@ import java.util.function.Consumer;
  * are hardcoded here.
  */
 public record ReactionProfile(
-        ReactionId id,
         ReactionName name,
         String title,
         String equation,
@@ -27,12 +26,7 @@ public record ReactionProfile(
         ReactionType type,
         ReactionConditions conditions,
         String significance
-) implements CatalogEntity<ReactionId, ReactionName> {
-
-    @Override
-    public ReactionProfile withId(ReactionId id) {
-        return new ReactionProfile(id, name, title, equation, reactants, products, type, conditions, significance);
-    }
+) implements NamedEntity<ReactionName> {
 
     public boolean involves(CompoundName compoundName) {
         return reactants.contains(compoundName) || products.contains(compoundName);
@@ -49,7 +43,6 @@ public record ReactionProfile(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notBlank(title, "title");
     }

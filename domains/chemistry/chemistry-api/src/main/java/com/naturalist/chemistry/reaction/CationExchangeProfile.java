@@ -1,6 +1,6 @@
 package com.naturalist.chemistry.reaction;
 
-import com.naturalist.chemistry.element.ElementId;
+import com.naturalist.chemistry.element.ElementName;
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
 
@@ -18,8 +18,8 @@ import java.util.function.Consumer;
  * Agnostic to specific cations — values from reactions.json.
  */
 public record CationExchangeProfile(
-        ElementId displacingCation,
-        ElementId displacedCation,
+        ElementName displacingCation,
+        ElementName displacedCation,
         BigDecimal selectivityCoefficient,
         BigDecimal exchangeCapacityCmolKg,
         String exchangeMaterial,
@@ -38,8 +38,8 @@ public record CationExchangeProfile(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(this, CationExchangeProfile::displacingCation, "displacingCation")
-                .entityId(this, CationExchangeProfile::displacedCation, "displacedCation")
+                .entityName(displacingCation, "displacingCation")
+                .entityName(displacedCation, "displacedCation")
                 .notNull(this, CationExchangeProfile::selectivityCoefficient, "selectivityCoefficient")
                 .notNull(this, CationExchangeProfile::exchangeCapacityCmolKg, "exchangeCapacityCmolKg");
     }

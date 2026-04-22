@@ -1,6 +1,6 @@
 package com.naturalist.chemistry.compound;
 
-import com.naturalist.data.TestEntitySourceTest;
+import com.naturalist.data.NamedTestEntitySourceTest;
 
-class CompoundTestEntitySourceTest extends TestEntitySourceTest<CompoundId, CompoundName, Compound, CompoundTestEntitySource> {
+class CompoundTestEntitySourceTest extends NamedTestEntitySourceTest<CompoundName, Compound, CompoundTestEntitySource> {
 }

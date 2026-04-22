@@ -1,9 +1,9 @@
 package com.naturalist.soil.event;
 
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.PrecipitationInches;
 import com.naturalist.observability.Constraints;
-import com.naturalist.weather.PrecipitationEventId;
+import com.naturalist.weather.PrecipitationEventName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
 import org.jspecify.annotations.Nullable;
@@ -24,11 +24,10 @@ import java.util.function.Consumer;
  * nutrient displacement, and Thiobacillus activity; the zone domain relates it to pest
  * pressure and microclimate conditions.
  * <p>
- * <b>Correlation:</b> {@code weatherEventId} is the cross-domain correlation key — the
- * persistence ID of the originating {@code com.naturalist.weather.PrecipitationEvent}.
- * It is {@code null} for events recorded before the weather event bus is operational, and
- * non-null once the handler infrastructure is in place. The GUID-based {@code FactName}
- * (per ADR-005 amendment) will provide deduplication once implemented.
+ * <b>Correlation:</b> {@code weatherEventName} is the cross-domain correlation key — the
+ * {@link PrecipitationEventName} slug of the originating weather-domain event. It is
+ * {@code null} for events recorded before the weather event bus is operational, and
+ * non-null once the handler infrastructure is in place.
  * <p>
  * <b>Leaching significance:</b> Precipitation with total accumulation ≥ 0.5 inches
  * delivered at intensity below 0.3 inches/hour constitutes a significant leaching
@@ -48,7 +47,6 @@ import java.util.function.Consumer;
  * be distinguished from an irrigation event.
  */
 public record PrecipitationEvent(
-        SoilPrecipitationEventId id,
         SoilPrecipitationEventName name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -57,21 +55,14 @@ public record PrecipitationEvent(
         PrecipitationInches totalInches,
         Duration totalDuration,
         BigDecimal peakIntensityInchesPerHour,
-        @Nullable PrecipitationEventId weatherEventId,
+        @Nullable PrecipitationEventName weatherEventName,
         @Nullable String notes
-) implements FactEntity<SoilPrecipitationEventId, SoilPrecipitationEventName> {
+) implements NamedEntity<SoilPrecipitationEventName> {
 
     /** 1 inch of rain over 1 square foot ≈ 0.623 US gallons. */
     private static final BigDecimal GALLONS_PER_INCH_PER_SQFT = new BigDecimal("0.623");
     private static final BigDecimal LEACHING_THRESHOLD_INCHES = new BigDecimal("0.5");
     private static final BigDecimal LEACHING_MAX_INTENSITY = new BigDecimal("0.3");
-
-    @Override
-    public PrecipitationEvent withId(SoilPrecipitationEventId id) {
-        return new PrecipitationEvent(id, name, zoneName, subZoneName, startDate, endDate,
-                totalInches, totalDuration, peakIntensityInchesPerHour,
-                weatherEventId, notes);
-    }
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 
@@ -121,16 +112,15 @@ public record PrecipitationEvent(
     /**
      * Whether this record is correlated to a canonical weather domain event.
      *
-     * @return {@code true} if {@code weatherEventId} is set
+     * @return {@code true} if {@code weatherEventName} is set
      */
     public boolean isCorrelated() {
-        return weatherEventId != null;
+        return weatherEventName != null;
     }
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, PrecipitationEvent::zoneName, "zoneName")
                 .notNull(this, PrecipitationEvent::startDate, "startDate")

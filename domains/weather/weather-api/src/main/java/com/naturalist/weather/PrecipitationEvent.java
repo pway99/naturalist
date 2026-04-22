@@ -1,6 +1,6 @@
 package com.naturalist.weather;
 
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.measurements.PrecipitationInches;
 import com.naturalist.observability.Constraints;
 import com.naturalist.zone.ZoneName;
@@ -53,7 +53,6 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record PrecipitationEvent(
-        PrecipitationEventId id,
         PrecipitationEventName name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -63,13 +62,7 @@ public record PrecipitationEvent(
         Duration totalDuration,
         BigDecimal peakIntensityInchesPerHour,
         @Nullable String notes
-) implements FactEntity<PrecipitationEventId, PrecipitationEventName> {
-
-    @Override
-    public PrecipitationEvent withId(PrecipitationEventId id) {
-        return new PrecipitationEvent(id, name, zoneName, subZoneName, startDate, endDate,
-                totalInches, totalDuration, peakIntensityInchesPerHour, notes);
-    }
+) implements NamedEntity<PrecipitationEventName> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 
@@ -122,7 +115,6 @@ public record PrecipitationEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, PrecipitationEvent::zoneName, "zoneName")
                 .notNull(this, PrecipitationEvent::startDate, "startDate")

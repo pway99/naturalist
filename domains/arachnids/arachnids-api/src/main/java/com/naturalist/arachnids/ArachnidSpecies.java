@@ -2,7 +2,7 @@ package com.naturalist.arachnids;
 
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
@@ -26,18 +26,12 @@ import java.util.function.Consumer;
  * a generic guild enum would for this class.
  */
 public record ArachnidSpecies(
-        ArachnidId id,
         ArachnidName name,
         TaxonomicClassification taxonomy,
         Description description,
         HuntingStrategy huntingStrategy,
         @Nullable String sightingNotes
-) implements CatalogEntity<ArachnidId, ArachnidName> {
-
-    @Override
-    public ArachnidSpecies withId(ArachnidId id) {
-        return new ArachnidSpecies(id, name, taxonomy, description, huntingStrategy, sightingNotes);
-    }
+) implements NamedEntity<ArachnidName> {
 
     /**
      * Whether this species constructs a web to intercept prey passively.
@@ -57,7 +51,6 @@ public record ArachnidSpecies(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, ArachnidSpecies::taxonomy, "taxonomy")
                 .notNull(this, ArachnidSpecies::description, "description")

@@ -2,7 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.ddd.CatalogEntity;
+import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
@@ -35,7 +35,6 @@ import java.util.function.Consumer;
  * PestManagement application module whenever a treatment is proposed near the plant.
  */
 public record Plant(
-        PlantId id,
         PlantName name,
         TaxonomicClassification taxonomy,
         Description description,
@@ -44,13 +43,7 @@ public record Plant(
         boolean nativeToSacramentoValley,
         @Nullable String managementConstraint,
         @Nullable String gardenNotes
-) implements CatalogEntity<PlantId, PlantName> {
-
-    @Override
-    public Plant withId(PlantId id) {
-        return new Plant(id, name, taxonomy, description, roles, lifeForm,
-                nativeToSacramentoValley, managementConstraint, gardenNotes);
-    }
+) implements NamedEntity<PlantName> {
 
     /**
      * Whether this plant is a confirmed keystone host — an obligate larval
@@ -90,7 +83,6 @@ public record Plant(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(id, "id")
                 .entityName(name, "name")
                 .notNull(this, Plant::taxonomy, "taxonomy")
                 .notNull(this, Plant::description, "description")

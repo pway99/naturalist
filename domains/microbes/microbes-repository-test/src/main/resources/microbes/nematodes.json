@@ -1,6 +1,5 @@
 [
   {
-    "id": null,
     "name": "steinernema-carpocapsae",
     "taxonomy": {
       "order": "Rhabditida",
@@ -22,7 +21,6 @@
     "applicationNotes": "NemaSeek Hi product. Apply at 50 million IJ per 1,000 sq ft. Drench soil within 1 metre of hive entrance and landing board area. Apply after 7 PM. Irrigate in with 0.5 inch water immediately after application. Refrigerate unused nematodes at 4°C; use within 2 weeks of receipt. Do not substitute with S. feltiae — only H. indica and S. carpocapsae are effective against SHB."
   },
   {
-    "id": null,
     "name": "steinernema-feltiae",
     "taxonomy": {
       "order": "Rhabditida",
@@ -44,7 +42,6 @@
     "applicationNotes": "Apply at 25 million IJ per 1,000 sq ft in 1-2 gallons water per 100 sq ft. Drench soil to 5 cm depth where gnat larvae concentrate. Repeat every 2 weeks for persistent infestations. Effective at spring soil temperatures — good choice for April-May applications in Chico beds. Not effective against Small Hive Beetle."
   },
   {
-    "id": null,
     "name": "heterorhabditis-bacteriophora",
     "taxonomy": {
       "order": "Rhabditida",
