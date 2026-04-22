@@ -1,7 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.FileName;
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.Entity;
 import com.naturalist.observability.Constraints;
 
 import java.time.Instant;
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * <p>
  * {@code InsectImage} is an immutable observation tied to a specific point in time. It
  * does not describe a species; it records that a species was seen and photographed. Its
- * identity is its UUID-based {@link InsectImageName}.
+ * identity is its UUID-based {@link InsectImageId}.
  * <p>
  * {@code insectSpeciesName} is the stable slug of the parent {@link InsectSpecies} — the
  * authoritative cross-entity reference per ADR-021. The RDBMS adapter is free to carry a
@@ -26,11 +26,11 @@ import java.util.function.Consumer;
  * branch on format (e.g. {@code "HEIC"} vs {@code "JPG"}) when conversion is required.
  */
 public record InsectImage(
-        InsectImageName name,
+        InsectImageId name,
         InsectSpeciesName insectSpeciesName,
         Instant dateAdded,
         FileName resourceName
-) implements FactEntity<InsectImageName> {
+) implements Entity<InsectImageId> {
 
     @Override
     public Consumer<? extends Constraints> invariants() {

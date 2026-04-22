@@ -1,10 +1,9 @@
 package com.naturalist.zone;
 
-import com.naturalist.ddd.FactEntity;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Entity;
 import com.naturalist.measurements.PrecipitationInches;
 import com.naturalist.observability.Constraints;
-import com.naturalist.weather.PrecipitationEventName;
+import com.naturalist.weather.PrecipitationEventId;
 import com.naturalist.zone.subzone.SubZoneName;
 import org.jspecify.annotations.Nullable;
 
@@ -39,7 +38,7 @@ import java.util.function.Consumer;
  * operational and the zone handler's full domain logic is defined.
  */
 public record ZonePrecipitationEvent(
-        ZonePrecipitationEventName name,
+        ZonePrecipitationEventId name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         LocalDate startDate,
@@ -47,9 +46,9 @@ public record ZonePrecipitationEvent(
         PrecipitationInches totalInches,
         Duration totalDuration,
         BigDecimal peakIntensityInchesPerHour,
-        @Nullable PrecipitationEventName weatherEventName,
+        @Nullable PrecipitationEventId weatherEventName,
         @Nullable String notes
-) implements FactEntity<ZonePrecipitationEventName> {
+) implements Entity<ZonePrecipitationEventId> {
 
     /**
      * Whether this event constitutes a significant surface habitat disruption event

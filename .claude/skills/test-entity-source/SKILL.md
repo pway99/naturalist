@@ -143,7 +143,7 @@ class <Entity>TestEntitySourceTest
 
 Before finishing, confirm:
 
-- [ ] Entity class implements `NamedEntity<<Entity>Name>` (or `FactEntity<<Entity>Name>` for fact records)
+- [ ] Entity class implements `NamedEntity<<Entity>Name>` (or `Entity<<Entity>Name>` for fact records)
 - [ ] The canonical `name` component is NOT annotated `@EntityIdentifier`
 - [ ] Secondary unique `EntityName` fields carry `@EntityIdentifier`; secondary unique plain
       fields carry `@UniqueValue`; cross-domain FK `EntityName` fields carry neither

@@ -1,11 +1,11 @@
 package com.naturalist.observability.constraints;
 
-import com.naturalist.ddd.FactName;
+import com.naturalist.ddd.EntityId;
 import com.naturalist.observability.Constraint;
 
 public interface FactNameConstraints {
 
-    record FactNameConstraint<NAME extends FactName>(
+    record FactNameConstraint<NAME extends EntityId>(
             NAME value,
             String name
     ) implements Constraint<NAME> {

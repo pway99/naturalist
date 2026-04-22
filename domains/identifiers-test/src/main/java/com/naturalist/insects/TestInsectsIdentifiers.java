@@ -26,7 +26,7 @@ public class TestInsectsIdentifiers {
         /** Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog. */
         public static class NotFound {
             public static final InsectSpeciesName name = InsectSpeciesName.of("unobtainium-beetle");
-            public static final InsectImageName imageName = InsectImageName.of(
+            public static final InsectImageId imageName = InsectImageId.of(
                     UUID.fromString("00000000-0000-0000-0000-000000000000"));
         }
 
@@ -46,12 +46,12 @@ public class TestInsectsIdentifiers {
                 private Images() {}
 
                 public static class Img9047 {
-                    public static final InsectImageName name = InsectImageName.of(
+                    public static final InsectImageId name = InsectImageId.of(
                             UUID.fromString("0066fe0f-a3e0-40d8-b557-c42f13e67067"));
                 }
 
                 public static class Img9048 {
-                    public static final InsectImageName name = InsectImageName.of(
+                    public static final InsectImageId name = InsectImageId.of(
                             UUID.fromString("6091691e-7900-4ed3-a35b-88c46e47b866"));
                 }
             }

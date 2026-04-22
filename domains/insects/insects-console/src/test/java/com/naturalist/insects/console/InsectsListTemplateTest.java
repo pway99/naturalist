@@ -1,6 +1,5 @@
 package com.naturalist.insects.console;
 
-import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.InsectSpeciesTestEntitySource;
 import gg.jte.CodeResolver;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Template-only regression tests for {@code insects/list.jte}.

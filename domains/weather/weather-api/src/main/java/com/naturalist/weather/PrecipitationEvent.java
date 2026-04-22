@@ -1,6 +1,6 @@
 package com.naturalist.weather;
 
-import com.naturalist.ddd.FactEntity;
+import com.naturalist.ddd.Entity;
 import com.naturalist.measurements.PrecipitationInches;
 import com.naturalist.observability.Constraints;
 import com.naturalist.zone.ZoneName;
@@ -53,7 +53,7 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record PrecipitationEvent(
-        PrecipitationEventName name,
+        PrecipitationEventId name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         LocalDate startDate,
@@ -62,7 +62,7 @@ public record PrecipitationEvent(
         Duration totalDuration,
         BigDecimal peakIntensityInchesPerHour,
         @Nullable String notes
-) implements FactEntity<PrecipitationEventName> {
+) implements Entity<PrecipitationEventId> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 

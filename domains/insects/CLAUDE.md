@@ -9,7 +9,7 @@ Reference implementation for [ADR-021](../../docs/adr/ADR-021-persistenceid-is-a
 recognised by the naturalist. Four-level Durrell `Description`. No `id()` at the domain
 layer; the RDBMS adapter carries a numeric primary key privately.
 
-**InsectImage** — `NamedEntity<InsectImageName>`. A photograph of an observed individual.
+**InsectImage** — `NamedEntity<InsectImageId>`. A photograph of an observed individual.
 Carries `InsectSpeciesName` (slug) as its parent reference — no `insectSpeciesId`, no
 `withId`, no nullable id-shaped FK column.
 

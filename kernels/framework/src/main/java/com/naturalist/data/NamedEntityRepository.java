@@ -12,7 +12,7 @@ import java.util.Set;
  * whose identity at the port is their name.
  *
  * <p>The bound on {@code ENTITY} is {@link Named} so this port serves both slug-keyed
- * {@link com.naturalist.ddd.NamedEntity} and UUID-keyed {@link com.naturalist.ddd.FactEntity}
+ * {@link com.naturalist.ddd.NamedEntity} and UUID-keyed {@link com.naturalist.ddd.Entity}
  * flavors with one implementation.
  *
  * <p>This interface is pure vocabulary. Template-method hooks and observer plumbing

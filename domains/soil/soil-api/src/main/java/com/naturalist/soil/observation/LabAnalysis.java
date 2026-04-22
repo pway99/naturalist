@@ -1,7 +1,6 @@
 package com.naturalist.soil.observation;
 
-import com.naturalist.ddd.FactEntity;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Entity;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
@@ -33,13 +32,13 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record LabAnalysis(
-        LabAnalysisName name,
+        LabAnalysisId name,
         LocalDate sampleDate,
         String labId,
         String labSampleId,
         @Nullable String notes,
         NutrientPanel nutrients
-) implements FactEntity<LabAnalysisName> {
+) implements Entity<LabAnalysisId> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 

@@ -43,7 +43,7 @@ public interface InsectQuery {
     }
 
     interface ImageQuery
-            extends NamedEntityQuery<InsectImageName, InsectImage, ImageCollection> {
+            extends NamedEntityQuery<InsectImageId, InsectImage, ImageCollection> {
 
         ImageCollection forSpeciesName(InsectSpeciesName speciesName);
     }

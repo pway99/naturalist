@@ -1,10 +1,9 @@
 package com.naturalist.soil.event;
 
-import com.naturalist.ddd.FactEntity;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Entity;
 import com.naturalist.measurements.PrecipitationInches;
 import com.naturalist.observability.Constraints;
-import com.naturalist.weather.PrecipitationEventName;
+import com.naturalist.weather.PrecipitationEventId;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
 import org.jspecify.annotations.Nullable;
@@ -26,7 +25,7 @@ import java.util.function.Consumer;
  * pressure and microclimate conditions.
  * <p>
  * <b>Correlation:</b> {@code weatherEventName} is the cross-domain correlation key — the
- * {@link PrecipitationEventName} slug of the originating weather-domain event. It is
+ * {@link PrecipitationEventId} slug of the originating weather-domain event. It is
  * {@code null} for events recorded before the weather event bus is operational, and
  * non-null once the handler infrastructure is in place.
  * <p>
@@ -48,7 +47,7 @@ import java.util.function.Consumer;
  * be distinguished from an irrigation event.
  */
 public record PrecipitationEvent(
-        SoilPrecipitationEventName name,
+        SoilPrecipitationEventId name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         LocalDate startDate,
@@ -56,9 +55,9 @@ public record PrecipitationEvent(
         PrecipitationInches totalInches,
         Duration totalDuration,
         BigDecimal peakIntensityInchesPerHour,
-        @Nullable PrecipitationEventName weatherEventName,
+        @Nullable PrecipitationEventId weatherEventName,
         @Nullable String notes
-) implements FactEntity<SoilPrecipitationEventName> {
+) implements Entity<SoilPrecipitationEventId> {
 
     /** 1 inch of rain over 1 square foot ≈ 0.623 US gallons. */
     private static final BigDecimal GALLONS_PER_INCH_PER_SQFT = new BigDecimal("0.623");

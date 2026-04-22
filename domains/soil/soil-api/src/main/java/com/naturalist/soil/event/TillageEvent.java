@@ -1,7 +1,6 @@
 package com.naturalist.soil.event;
 
-import com.naturalist.ddd.FactEntity;
-import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.Entity;
 import com.naturalist.measurements.DepthInches;
 import com.naturalist.observability.Constraints;
 import com.naturalist.zone.ZoneName;
@@ -41,14 +40,14 @@ import java.util.function.Consumer;
  * clay sublayer restricts downward flow independently of biological structure.
  */
 public record TillageEvent(
-        TillageEventName name,
+        TillageEventId name,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         LocalDate tillageDate,
         DepthInches depthInches,
         TillageType tillageType,
         @Nullable String notes
-) implements FactEntity<TillageEventName> {
+) implements Entity<TillageEventId> {
 
     // ── Domain queries ─────────────────────────────────────────────────────────
 

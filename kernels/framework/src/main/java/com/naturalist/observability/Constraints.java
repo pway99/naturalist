@@ -1,18 +1,7 @@
 package com.naturalist.observability;
 
-import com.naturalist.ddd.EntityName;
-import com.naturalist.ddd.EntityNameSet;
-import com.naturalist.ddd.FactName;
-import com.naturalist.ddd.Named;
-import com.naturalist.ddd.NamedValue;
-import com.naturalist.ddd.ValueObject;
-import com.naturalist.observability.constraints.EntityNameConstraints;
-import com.naturalist.observability.constraints.FactNameConstraints;
-import com.naturalist.observability.constraints.NamedValueConstraints;
-import com.naturalist.observability.constraints.NotBlankConstraint;
-import com.naturalist.observability.constraints.NotNullConstraint;
-import com.naturalist.observability.constraints.ObservableConstraint;
-import com.naturalist.observability.constraints.ValueObjectOrNullConstraint;
+import com.naturalist.ddd.*;
+import com.naturalist.observability.constraints.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +36,7 @@ public class Constraints {
 
     /**
      * Validate any {@link Observable} child and descend into its invariants. Use for
-     * Observable members that are neither {@link NamedEntity} nor {@link ValueObject} —
+     * Observable members that are neither {@link Entity} nor {@link ValueObject} —
      * most commonly a {@link com.naturalist.ddd.BehavioralCollection} held by an
      * {@link com.naturalist.ddd.Aggregate}.
      */
@@ -59,7 +48,7 @@ public class Constraints {
         return add(new EntityNameConstraints.EntityNameConstraint<>(e, name));
     }
 
-    public <F extends FactName> Constraints factName(F f, String name) {
+    public <F extends EntityId> Constraints factName(F f, String name) {
         return add(new FactNameConstraints.FactNameConstraint<>(f, name));
     }
 

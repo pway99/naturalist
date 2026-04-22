@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Abstract behavioral contract for {@link NamedEntityRepository}. Identity is the
- * entity's name (ADR-021) — either an {@code EntityName} (slug) or a {@code FactName}
+ * entity's name (ADR-021) — either an {@code EntityName} (slug) or a {@code EntityId}
  * (UUID); both are {@link Named}.
  *
  * <p>Every method is covered by three cases per ADR-002:
