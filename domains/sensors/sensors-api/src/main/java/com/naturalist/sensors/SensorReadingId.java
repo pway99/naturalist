@@ -23,4 +23,8 @@ public final class SensorReadingId extends EntityId {
     public static SensorReadingId of(UUID value) {
         return new SensorReadingId(value);
     }
+
+    public static SensorReadingId create() {
+        return new SensorReadingId(EntityId.newUUID());
+    }
 }

@@ -10,4 +10,8 @@ public final class InsectImageId extends EntityId {
 
     @JsonCreator
     public static InsectImageId of(UUID value) { return new InsectImageId(value); }
+
+    public static InsectImageId create() {
+        return new InsectImageId(EntityId.newUUID());
+    }
 }

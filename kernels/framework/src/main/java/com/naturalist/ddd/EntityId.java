@@ -1,5 +1,7 @@
 package com.naturalist.ddd;
 
+import com.github.f4b6a3.uuid.UuidCreator;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -27,6 +29,19 @@ public abstract class EntityId {
 
     public UUID value() {
         return value;
+    }
+
+    /**
+     * The single kernel entry point for generating {@link EntityId} values.
+     * Returns a monotonic-within-ms UUIDv7 (RFC 9562) from
+     * {@code com.github.f4b6a3:uuid-creator}.
+     *
+     * <p>Concrete subclasses call this from their {@code create()} factory —
+     * {@code UUID.randomUUID()} and hand-rolled v7 generators are forbidden
+     * in domain and adapter code (ADR-022).
+     */
+    public static UUID newUUID() {
+        return UuidCreator.getTimeOrderedEpoch();
     }
 
     /**

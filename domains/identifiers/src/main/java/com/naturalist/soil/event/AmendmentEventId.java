@@ -15,4 +15,8 @@ public final class AmendmentEventId extends EntityId {
     public static AmendmentEventId of(UUID value) {
         return new AmendmentEventId(value);
     }
+
+    public static AmendmentEventId create() {
+        return new AmendmentEventId(EntityId.newUUID());
+    }
 }

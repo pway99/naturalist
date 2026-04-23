@@ -15,4 +15,8 @@ public final class PrecipitationEventId extends EntityId {
     public static PrecipitationEventId of(UUID value) {
         return new PrecipitationEventId(value);
     }
+
+    public static PrecipitationEventId create() {
+        return new PrecipitationEventId(EntityId.newUUID());
+    }
 }

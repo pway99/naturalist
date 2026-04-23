@@ -20,6 +20,7 @@
         <micrometer-version>1.14.6</micrometer-version>
         <junit-version>6.0.3</junit-version>
         <assertj-version>3.26.0</assertj-version>
+        <uuid-creator-version>6.0.0</uuid-creator-version>
     </properties>
 
     <modules>

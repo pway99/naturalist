@@ -15,4 +15,8 @@ public final class ZonePrecipitationEventId extends EntityId {
     public static ZonePrecipitationEventId of(UUID value) {
         return new ZonePrecipitationEventId(value);
     }
+
+    public static ZonePrecipitationEventId create() {
+        return new ZonePrecipitationEventId(EntityId.newUUID());
+    }
 }

@@ -15,4 +15,8 @@ public final class LabAnalysisId extends EntityId {
     public static LabAnalysisId of(UUID value) {
         return new LabAnalysisId(value);
     }
+
+    public static LabAnalysisId create() {
+        return new LabAnalysisId(EntityId.newUUID());
+    }
 }

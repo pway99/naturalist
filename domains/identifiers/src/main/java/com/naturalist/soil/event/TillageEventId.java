@@ -15,4 +15,8 @@ public final class TillageEventId extends EntityId {
     public static TillageEventId of(UUID value) {
         return new TillageEventId(value);
     }
+
+    public static TillageEventId create() {
+        return new TillageEventId(EntityId.newUUID());
+    }
 }
