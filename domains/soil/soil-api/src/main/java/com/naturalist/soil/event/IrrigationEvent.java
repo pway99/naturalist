@@ -42,7 +42,7 @@ public record IrrigationEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .factName(name, "name")
+                .entityId(name, "name")
                 .notNull(this, IrrigationEvent::zoneName, "zoneName")
                 .notNull(this, IrrigationEvent::volumeGallons, "volumeGallons")
                 .notNull(this, IrrigationEvent::appliedDate, "appliedDate");

@@ -48,8 +48,8 @@ public class Constraints {
         return add(new EntityNameConstraints.EntityNameConstraint<>(e, name));
     }
 
-    public <F extends EntityId> Constraints factName(F f, String name) {
-        return add(new FactNameConstraints.FactNameConstraint<>(f, name));
+    public <F extends EntityId> Constraints entityId(F f, String name) {
+        return add(new EntityIdConstraints.EntityIdConstraint<>(f, name));
     }
 
     public <E extends EntityName> Constraints entityNameCollection(Collection<E> entityNames, String name) {

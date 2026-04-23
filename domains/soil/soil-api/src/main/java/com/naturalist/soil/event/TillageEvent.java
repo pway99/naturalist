@@ -80,7 +80,7 @@ public record TillageEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .factName(name, "name")
+                .entityId(name, "name")
                 .notNull(this, TillageEvent::zoneName, "zoneName")
                 .notNull(this, TillageEvent::tillageDate, "tillageDate")
                 .namedValue(this, TillageEvent::depthInches, "depthInches")

@@ -149,7 +149,7 @@ public record SensorReading(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .factName(name, "name")
+                .entityId(name, "name")
                 .entityName(sensorName, "sensorName")
                 .notNull(this, SensorReading::zoneName, "zoneName")
                 .notNull(this, SensorReading::recordedAt, "recordedAt")

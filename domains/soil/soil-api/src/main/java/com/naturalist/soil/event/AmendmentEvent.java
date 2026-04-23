@@ -57,7 +57,7 @@ public record AmendmentEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .factName(name, "name")
+                .entityId(name, "name")
                 .notNull(this, AmendmentEvent::zoneName, "zoneName")
                 .notNull(this, AmendmentEvent::compoundName, "compoundName")
                 .namedValue(this, AmendmentEvent::amount, "amount")

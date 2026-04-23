@@ -121,7 +121,7 @@ public record PrecipitationEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .factName(name, "name")
+                .entityId(name, "name")
                 .notNull(this, PrecipitationEvent::zoneName, "zoneName")
                 .notNull(this, PrecipitationEvent::startDate, "startDate")
                 .notNull(this, PrecipitationEvent::endDate, "endDate")

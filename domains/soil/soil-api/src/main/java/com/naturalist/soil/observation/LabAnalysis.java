@@ -81,7 +81,7 @@ public record LabAnalysis(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .factName(name, "name")
+                .entityId(name, "name")
                 .notNull(this, LabAnalysis::sampleDate, "sampleDate")
                 .notNull(this, LabAnalysis::labId, "labId")
                 .notNull(this, LabAnalysis::labSampleId, "labSampleId")

@@ -3,9 +3,9 @@ package com.naturalist.observability.constraints;
 import com.naturalist.ddd.EntityId;
 import com.naturalist.observability.Constraint;
 
-public interface FactNameConstraints {
+public interface EntityIdConstraints {
 
-    record FactNameConstraint<NAME extends EntityId>(
+    record EntityIdConstraint<NAME extends EntityId>(
             NAME value,
             String name
     ) implements Constraint<NAME> {
@@ -15,8 +15,8 @@ public interface FactNameConstraints {
             return value != null && value.isValid();
         }
 
-        public FactNameConstraint<NAME> withName(String name) {
-            return new FactNameConstraint<>(value, name);
+        public EntityIdConstraint<NAME> withName(String name) {
+            return new EntityIdConstraint<>(value, name);
         }
     }
 }
