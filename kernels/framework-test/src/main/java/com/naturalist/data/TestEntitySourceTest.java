@@ -7,22 +7,22 @@ import java.lang.reflect.ParameterizedType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class NamedTestEntitySourceTest<
+public abstract class TestEntitySourceTest<
         NAME,
         ENTITY extends Named<NAME>,
-        DS extends NamedTestEntitySource<NAME, ENTITY>> {
+        DS extends TestEntitySource<NAME, ENTITY>> {
 
     @Test
     void dataLoads() throws InstantiationException, IllegalAccessException {
-        NamedTestEntitySource<NAME, ENTITY> testSource = entityClass().newInstance();
+        TestEntitySource<NAME, ENTITY> testSource = entityClass().newInstance();
         assertThat(testSource.isEmpty()).isFalse();
     }
 
     @Test
     void hasAtLeastFourEntities() throws InstantiationException, IllegalAccessException {
-        NamedTestEntitySource<NAME, ENTITY> testSource = entityClass().newInstance();
+        TestEntitySource<NAME, ENTITY> testSource = entityClass().newInstance();
         assertThat(testSource.entityStream().count())
-                .as("NamedTestEntitySource must contain at least 4 entities for meaningful repository contract coverage")
+                .as("TestEntitySource must contain at least 4 entities for meaningful repository contract coverage")
                 .isGreaterThanOrEqualTo(4);
     }
 

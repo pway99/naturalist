@@ -16,16 +16,16 @@ import java.util.Set;
  * flavors with one implementation.
  *
  * <p>This interface is pure vocabulary. Template-method hooks and observer plumbing
- * belong to the adapter and live on {@link AbstractNamedEntityRepository}. A caller
+ * belong to the adapter and live on {@link AbstractEntityRepository}. A caller
  * holding a reference to this port sees the four methods that define the contract;
  * nothing else.
  *
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
- * @see AbstractNamedEntityRepository
+ * @see AbstractEntityRepository
  * @see com.naturalist.ddd.Named
  */
-public interface NamedEntityRepository<NAME, ENTITY extends Named<NAME>> {
+public interface EntityRepository<NAME, ENTITY extends Named<NAME>> {
 
     Optional<ENTITY> getByName(NAME name);
 

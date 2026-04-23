@@ -1,8 +1,8 @@
 package com.naturalist.plants;
 
 import com.naturalist.RandomValue;
-import com.naturalist.data.NamedEntityRepositoryContractTest;
-import com.naturalist.data.NamedTestEntitySource;
+import com.naturalist.data.EntityRepositoryTest;
+import com.naturalist.data.TestEntitySource;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.*;
 
@@ -12,17 +12,17 @@ import java.util.Set;
 /**
  * Behavioral contract for {@link PlantRepository.PlantEntityRepository}.
  * <p>
- * Inherits the {@link NamedEntityRepositoryContractTest} cases (ADR-002).
+ * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies Plant-specific identity constants and entity construction.
  */
 interface PlantEntityRepositoryTest
-        extends NamedEntityRepositoryContractTest<PlantName, Plant> {
+        extends EntityRepositoryTest<PlantName, Plant> {
 
     @Override
     PlantRepository.PlantEntityRepository repository();
 
     @Override
-    default NamedTestEntitySource<PlantName, Plant> source() {
+    default TestEntitySource<PlantName, Plant> source() {
         return db.getNamed(PlantTestEntitySource.class);
     }
 

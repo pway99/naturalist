@@ -11,7 +11,7 @@ import java.util.Optional;
  * Framework base class for query adapter implementations in {@code <domain>-core}.
  * Identity at the port is the entity's name (ADR-021).
  *
- * <p>Subclasses implement {@link NamedEntityQuery#findByNameSet(java.util.Set)} directly,
+ * <p>Subclasses implement {@link EntityQuery#findByNameSet(java.util.Set)} directly,
  * wrapping repository results in the domain's concrete {@link BehavioralCollection}. The
  * type parameter makes the wrapping requirement structural (ADR-011).
  *
@@ -25,16 +25,16 @@ import java.util.Optional;
  * @param <EC>   the behavioral collection type returned by multi-result methods
  * @param <R>    the concrete repository subtype backing this query
  */
-public abstract class AbstractNamedEntityQuery<
+public abstract class AbstractEntityQuery<
         NAME,
         E extends Named<NAME>,
         EC extends BehavioralCollection<E>,
-        R extends NamedEntityRepository<NAME, E>> implements NamedEntityQuery<NAME, E, EC> {
+        R extends EntityRepository<NAME, E>> implements EntityQuery<NAME, E, EC> {
 
     private final R repository;
     private final Observer observer;
 
-    protected AbstractNamedEntityQuery(R repository) {
+    protected AbstractEntityQuery(R repository) {
         this.repository = Objects.requireNonNull(repository, "repository must not be null");
         this.observer = Observer.forClass(getClass());
     }

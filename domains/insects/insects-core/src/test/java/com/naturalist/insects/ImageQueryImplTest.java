@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NamedEntityQuery;
+import com.naturalist.data.EntityQuery;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ImageQueryImplTest
-        implements NamedEntityQueryContractTest<InsectImageId, InsectImage, ImageCollection> {
+        implements EntityQueryContractTest<InsectImageId, InsectImage, ImageCollection> {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
@@ -22,7 +22,7 @@ class ImageQueryImplTest
     InsectQuery.ImageQuery query = new ImageQueryImpl(repository);
 
     @Override
-    public NamedEntityQuery<InsectImageId, InsectImage, ImageCollection> query() {
+    public EntityQuery<InsectImageId, InsectImage, ImageCollection> query() {
         return query;
     }
 

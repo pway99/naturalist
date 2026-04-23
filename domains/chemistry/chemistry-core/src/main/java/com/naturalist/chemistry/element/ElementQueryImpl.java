@@ -1,13 +1,13 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.data.AbstractNamedEntityQuery;
+import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.Set;
 
 @DomainService
 class ElementQueryImpl
-        extends AbstractNamedEntityQuery<ElementName, Element, ElementCollection, ElementRepository.ElementEntityRepository>
+        extends AbstractEntityQuery<ElementName, Element, ElementCollection, ElementRepository.ElementEntityRepository>
         implements ElementQuery {
 
     ElementQueryImpl(ElementRepository.ElementEntityRepository repository) {

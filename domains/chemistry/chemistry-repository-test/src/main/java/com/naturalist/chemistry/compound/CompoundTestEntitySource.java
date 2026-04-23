@@ -1,12 +1,12 @@
 package com.naturalist.chemistry.compound;
 
-import com.naturalist.data.NamedTestEntitySource;
+import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
 
 import java.util.List;
 import java.util.function.Function;
 
-public class CompoundTestEntitySource extends NamedTestEntitySource<CompoundName, Compound> {
+public class CompoundTestEntitySource extends TestEntitySource<CompoundName, Compound> {
     public CompoundTestEntitySource() {
         loadFile("chemistry/compound/compounds.json");
     }

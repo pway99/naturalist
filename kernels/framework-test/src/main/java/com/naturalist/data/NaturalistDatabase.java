@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * In-memory registry of {@link NamedTestEntitySource} instances keyed by class. Plays
+ * In-memory registry of {@link TestEntitySource} instances keyed by class. Plays
  * the role of the in-memory database shared across repository adapters during
  * development and testing.
  *
@@ -27,7 +27,7 @@ public class NaturalistDatabase {
     }
 
     @SuppressWarnings("unchecked")
-    public <NTS extends NamedTestEntitySource<?,?>> NTS getNamed(Class<? extends NamedTestEntitySource<?,?>> namedTestEntitySourceClass) {
+    public <NTS extends TestEntitySource<?,?>> NTS getNamed(Class<? extends TestEntitySource<?,?>> namedTestEntitySourceClass) {
         NTS nts = (NTS) sourceMap.get(namedTestEntitySourceClass);
         if (nts == null) {
             try {

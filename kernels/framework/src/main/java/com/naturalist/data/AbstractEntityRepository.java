@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Adapter base class for {@link NamedEntityRepository}. Owns the validation layer
+ * Adapter base class for {@link EntityRepository}. Owns the validation layer
  * and the {@link Observer} scoped to the concrete adapter class. Concrete adapters
  * implement four protected template hooks; the public methods are {@code final}, so
  * validation cannot be accidentally skipped.
@@ -21,9 +21,9 @@ import java.util.Set;
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
  */
-public abstract class AbstractNamedEntityRepository<
+public abstract class AbstractEntityRepository<
         NAME,
-        ENTITY extends Named<NAME>> implements NamedEntityRepository<NAME, ENTITY> {
+        ENTITY extends Named<NAME>> implements EntityRepository<NAME, ENTITY> {
 
     private final Observer observer = Observer.forClass(getClass());
 

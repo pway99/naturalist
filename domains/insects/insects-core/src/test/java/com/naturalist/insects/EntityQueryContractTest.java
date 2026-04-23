@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NamedEntityQuery;
+import com.naturalist.data.EntityRepositoryTest;
+import com.naturalist.data.EntityQuery;
 import com.naturalist.ddd.BehavioralCollection;
 import com.naturalist.ddd.Named;
 import com.naturalist.exception.InvariantViolationException;
@@ -12,8 +13,8 @@ import java.util.Optional;
 import java.util.Set;import static org.assertj.core.api.Assertions.assertThat;import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Abstract behavioral contract for a {@link NamedEntityQuery} adapter — the query-side
- * analogue of {@link com.naturalist.data.NamedEntityRepositoryContractTest}.
+ * Abstract behavioral contract for a {@link EntityQuery} adapter — the query-side
+ * analogue of {@link EntityRepositoryTest}.
  *
  * <p>ADR-021 pilot scope: this contract lives with the insects pilot. When a second
  * domain migrates and a second adapter test would implement the same shape, it is a
@@ -30,12 +31,12 @@ import java.util.Set;import static org.assertj.core.api.Assertions.assertThat;im
  * @param <E>    the named entity type
  * @param <EC>   the behavioral collection returned by {@code findByNameSet}
  */
-interface NamedEntityQueryContractTest<
+interface EntityQueryContractTest<
         NAME,
         E extends Named<NAME>,
         EC extends BehavioralCollection<E>> {
 
-    NamedEntityQuery<NAME, E, EC> query();
+    EntityQuery<NAME, E, EC> query();
 
     /** A fictitious name guaranteed absent from the catalog. */
     NAME notFoundName();

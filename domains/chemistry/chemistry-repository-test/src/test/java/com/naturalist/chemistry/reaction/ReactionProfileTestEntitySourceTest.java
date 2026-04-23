@@ -1,6 +1,6 @@
 package com.naturalist.chemistry.reaction;
 
-import com.naturalist.data.NamedTestEntitySourceTest;
+import com.naturalist.data.TestEntitySourceTest;
 
-class ReactionProfileTestEntitySourceTest extends NamedTestEntitySourceTest<ReactionName, ReactionProfile, ReactionProfileTestEntitySource> {
+class ReactionProfileTestEntitySourceTest extends TestEntitySourceTest<ReactionName, ReactionProfile, ReactionProfileTestEntitySource> {
 }

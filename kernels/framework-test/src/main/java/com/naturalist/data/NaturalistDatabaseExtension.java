@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * registry before each test so methods start from a pristine catalog.
  *
  * <p>Register as a field-level extension on any test class that composes
- * {@link NamedTestEntitySource}-backed repository mocks:
+ * {@link TestEntitySource}-backed repository mocks:
  *
  * <pre>{@code
  * @RegisterExtension

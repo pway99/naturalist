@@ -1,7 +1,7 @@
 package com.naturalist.chemistry.element;
 
 import com.naturalist.Incubating;
-import com.naturalist.data.NamedEntityRepository;
+import com.naturalist.data.EntityRepository;
 
 /**
  * Note: This is an experiment in api organization with the intent being a clean discoverable api not
@@ -9,5 +9,5 @@ import com.naturalist.data.NamedEntityRepository;
  */
 @Incubating("Investigating a pattern where EntityRepositories are nested within a single interface")
 interface ElementRepository {
-    interface ElementEntityRepository extends NamedEntityRepository<ElementName, Element> {}
+    interface ElementEntityRepository extends EntityRepository<ElementName, Element> {}
 }

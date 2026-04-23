@@ -1,6 +1,6 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.data.NamedEntityQuery;
+import com.naturalist.data.EntityQuery;
 
-public interface ElementQuery extends NamedEntityQuery<ElementName, Element, ElementCollection> {
+public interface ElementQuery extends EntityQuery<ElementName, Element, ElementCollection> {
 }

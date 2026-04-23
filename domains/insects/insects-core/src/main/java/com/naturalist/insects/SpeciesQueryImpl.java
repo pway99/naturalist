@@ -1,16 +1,16 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.AbstractNamedEntityQuery;
+import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.ddd.EntityNameSet;
 
 import java.util.Set;
 
 class SpeciesQueryImpl
-        extends AbstractNamedEntityQuery<
-                InsectSpeciesName,
-                InsectSpecies,
-                InsectEntityCollections.SpeciesCollection,
-                InsectRepository.SpeciesRepository>
+        extends AbstractEntityQuery<
+                        InsectSpeciesName,
+                        InsectSpecies,
+                        InsectEntityCollections.SpeciesCollection,
+                        InsectRepository.SpeciesRepository>
         implements InsectQuery.SpeciesQuery {
 
     SpeciesQueryImpl(InsectRepository.SpeciesRepository repository) {

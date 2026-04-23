@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NamedEntityQuery;
+import com.naturalist.data.EntityQuery;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.List;
 
 class SpeciesQueryImplTest
-        implements NamedEntityQueryContractTest<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
+        implements EntityQueryContractTest<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
@@ -17,7 +17,7 @@ class SpeciesQueryImplTest
     InsectQuery.SpeciesQuery query = new SpeciesQueryImpl(repository);
 
     @Override
-    public NamedEntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> query() {
+    public EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> query() {
         return query;
     }
 

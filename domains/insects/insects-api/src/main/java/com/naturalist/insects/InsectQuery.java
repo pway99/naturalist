@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NamedEntityQuery;
+import com.naturalist.data.EntityQuery;
 import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
@@ -38,12 +38,12 @@ public interface InsectQuery {
         Optional<InsectAggregate> getByName(InsectSpeciesName name);
     }
 
-    interface SpeciesQuery extends NamedEntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
+    interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
         EntityNameSet<InsectSpeciesName> allSpeciesNames();
     }
 
     interface ImageQuery
-            extends NamedEntityQuery<InsectImageId, InsectImage, ImageCollection> {
+            extends EntityQuery<InsectImageId, InsectImage, ImageCollection> {
 
         ImageCollection forSpeciesName(InsectSpeciesName speciesName);
     }

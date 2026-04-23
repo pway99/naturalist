@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Abstract behavioral contract for {@link NamedEntityRepository}. Identity is the
+ * Abstract behavioral contract for {@link EntityRepository}. Identity is the
  * entity's name (ADR-021) — either an {@code EntityName} (slug) or a {@code EntityId}
  * (UUID); both are {@link Named}.
  *
@@ -31,18 +31,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
  */
-public interface NamedEntityRepositoryContractTest<
+public interface EntityRepositoryTest<
         NAME,
         ENTITY extends Named<NAME>> {
 
-    Observer observer = Observer.forClass(NamedEntityRepositoryContractTest.class);
+    Observer observer = Observer.forClass(EntityRepositoryTest.class);
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    NamedEntityRepository<NAME, ENTITY> repository();
+    EntityRepository<NAME, ENTITY> repository();
 
-    NamedTestEntitySource<NAME, ENTITY> source();
+    TestEntitySource<NAME, ENTITY> source();
 
     // =========================================================================
     // Identity hooks — concrete tests supply these

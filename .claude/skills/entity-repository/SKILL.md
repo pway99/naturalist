@@ -86,7 +86,7 @@ Create a new one. The name is the package-level domain noun + `Repository` (e.g.
 package com.naturalist.<domain>.<subpackage>;
 
 import com.naturalist.Incubating;
-import com.naturalist.data.NamedEntityRepository;
+import com.naturalist.data.EntityRepository;
 
 @Incubating("Investigating a pattern where repositories are nested within a single interface")
 interface <Package>Repository {
@@ -108,7 +108,7 @@ Create in `<domain>-repository-test/src/main/java/` in the entity's package:
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.AbstractTestNamedEntityRepository;
+import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 
 public class <Entity>EntityRepositoryMock
@@ -167,7 +167,7 @@ hooks and entity-construction helpers.
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.NamedEntityRepositoryContractTest;
+import com.naturalist.data.EntityRepositoryTest;
 // ... entity-specific imports ...
 
 import java.util.List;

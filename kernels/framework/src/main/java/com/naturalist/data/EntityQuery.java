@@ -19,7 +19,7 @@ import java.util.Set;
  * @param <E>    the named entity type
  * @param <EC>   the behavioral collection type returned by multi-result methods
  */
-public interface NamedEntityQuery<NAME, E extends Named<NAME>, EC extends BehavioralCollection<E>> {
+public interface EntityQuery<NAME, E extends Named<NAME>, EC extends BehavioralCollection<E>> {
 
     Optional<E> getByName(NAME name);
 

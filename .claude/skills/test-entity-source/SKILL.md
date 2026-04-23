@@ -92,7 +92,7 @@ Determine secondary constraints from entity field annotations:
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.NamedTestEntitySource;
+import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
 
 import java.util.List;
@@ -132,7 +132,7 @@ Create in `domains/<domain>/<domain>-repository-test/src/test/java/` in the enti
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.NamedTestEntitySourceTest;
+import com.naturalist.data.TestEntitySourceTest;
 
 class <Entity>TestEntitySourceTest
         extends NamedTestEntitySourceTest<<Entity>Name, <Entity>, <Entity>TestEntitySource> {

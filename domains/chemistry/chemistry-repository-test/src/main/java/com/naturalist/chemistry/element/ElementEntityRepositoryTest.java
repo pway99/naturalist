@@ -2,8 +2,8 @@ package com.naturalist.chemistry.element;
 
 import com.naturalist.RandomValue;
 import com.naturalist.chemistry.TestChemistryIdentifiers;
-import com.naturalist.data.NamedEntityRepositoryContractTest;
-import com.naturalist.data.NamedTestEntitySource;
+import com.naturalist.data.EntityRepositoryTest;
+import com.naturalist.data.TestEntitySource;
 
 import java.util.List;
 
@@ -11,17 +11,17 @@ import java.util.List;
 /**
  * Behavioral contract for {@link ElementRepository.ElementEntityRepository}.
  * <p>
- * Inherits the {@link NamedEntityRepositoryContractTest} cases (ADR-002).
+ * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies Element-specific identity constants and entity construction.
  */
 interface ElementEntityRepositoryTest
-        extends NamedEntityRepositoryContractTest<ElementName, Element> {
+        extends EntityRepositoryTest<ElementName, Element> {
 
     @Override
     ElementRepository.ElementEntityRepository repository();
 
     @Override
-    default NamedTestEntitySource<ElementName, Element> source() {
+    default TestEntitySource<ElementName, Element> source() {
         return db.getNamed(ElementTestEntitySource.class);
     }
 

@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NamedTestEntitySourceTest;
+import com.naturalist.data.TestEntitySourceTest;
 
-class InsectSpeciesTestEntitySourceTest extends NamedTestEntitySourceTest<InsectSpeciesName, InsectSpecies, InsectSpeciesTestEntitySource> {
+class InsectSpeciesTestEntitySourceTest extends TestEntitySourceTest<InsectSpeciesName, InsectSpecies, InsectSpeciesTestEntitySource> {
 }

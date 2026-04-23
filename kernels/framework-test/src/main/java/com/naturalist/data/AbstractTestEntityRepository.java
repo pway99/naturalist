@@ -9,29 +9,29 @@ import java.util.Set;
 
 /**
  * In-memory repository adapter base for a {@link Named} entity. Delegates every hook
- * to the domain's {@link NamedTestEntitySource} resolved from the shared
+ * to the domain's {@link TestEntitySource} resolved from the shared
  * {@link NaturalistDatabase}. Inherits validation and the observer from
- * {@link AbstractNamedEntityRepository}.
+ * {@link AbstractEntityRepository}.
  *
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
- * @param <NTS>    the concrete {@link NamedTestEntitySource} type backing this repository
+ * @param <NTS>    the concrete {@link TestEntitySource} type backing this repository
  */
-public abstract class AbstractTestNamedEntityRepository<
+public abstract class AbstractTestEntityRepository<
         NAME,
         ENTITY extends Named<NAME>,
-        NTS extends NamedTestEntitySource<NAME, ENTITY>>
-        extends AbstractNamedEntityRepository<NAME, ENTITY> {
+        NTS extends TestEntitySource<NAME, ENTITY>>
+        extends AbstractEntityRepository<NAME, ENTITY> {
 
     final NaturalistDatabase naturalistDatabase;
     final Class<NTS> nts;
 
-    protected AbstractTestNamedEntityRepository(NaturalistDatabase naturalistDatabase) {
+    protected AbstractTestEntityRepository(NaturalistDatabase naturalistDatabase) {
         this.naturalistDatabase = naturalistDatabase;
         this.nts = ntsClass();
     }
 
-    protected NamedTestEntitySource<NAME, ENTITY> testEntitySource() {
+    protected TestEntitySource<NAME, ENTITY> testEntitySource() {
         return naturalistDatabase.getNamed(nts);
     }
 

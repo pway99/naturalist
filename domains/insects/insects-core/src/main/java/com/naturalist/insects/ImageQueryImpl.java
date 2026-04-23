@@ -1,16 +1,16 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.AbstractNamedEntityQuery;
+import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
 import java.util.Set;
 
 class ImageQueryImpl
-        extends AbstractNamedEntityQuery<
-                InsectImageId,
-                InsectImage,
-                ImageCollection,
-                InsectRepository.ImageRepository>
+        extends AbstractEntityQuery<
+                        InsectImageId,
+                        InsectImage,
+                        ImageCollection,
+                        InsectRepository.ImageRepository>
         implements InsectQuery.ImageQuery {
 
     ImageQueryImpl(InsectRepository.ImageRepository repository) {

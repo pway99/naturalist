@@ -23,9 +23,9 @@ import java.util.stream.Stream;
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
  */
-public abstract class NamedTestEntitySource<NAME, ENTITY extends Named<NAME>> {
+public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
-    private static final Observer observer = Observer.forClass(NamedTestEntitySource.class);
+    private static final Observer observer = Observer.forClass(TestEntitySource.class);
     private final Map<NAME, ENTITY> entityMap = new HashMap<>();
 
     protected List<UniqueConstraint<ENTITY>> uniqueConstraints() {
