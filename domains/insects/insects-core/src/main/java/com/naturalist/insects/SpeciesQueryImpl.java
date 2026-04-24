@@ -28,4 +28,12 @@ class SpeciesQueryImpl
     public EntityNameSet<InsectSpeciesName> allSpeciesNames() {
         return EntityNameSet.of(repository().getAllSpeciesNames());
     }
+
+    @Override
+    public InsectEntityCollections.SpeciesCollection getByFunctionalGuild(FunctionalGuild functionalGuild) {
+        observer().arguments("getByFunctionalGuild", i -> i
+                .notNull(functionalGuild, "functionalGuild"))
+                .throwWhenInvalid();
+        return InsectEntityCollections.SpeciesCollection.of(repository().getByFunctionalGuild(functionalGuild));
+    }
 }

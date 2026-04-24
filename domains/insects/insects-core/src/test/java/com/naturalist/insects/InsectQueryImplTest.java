@@ -2,13 +2,14 @@ package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class InsectQueryImplTest {
+    private static final Observer observer = Observer.forClass(InsectQueryImplTest.class);
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
@@ -18,6 +19,27 @@ class InsectQueryImplTest {
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
     InsectQuery insectQuery = new InsectQueryImpl(speciesQuery, imageQuery);
+
+    @Test
+    void getByFunctionalGuild_validaton() {
+        // Act & Assert
+        assertThatThrownBy(() -> insectQuery.species().getByFunctionalGuild(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("functionalGuild");
+    }
+        @Test
+    void getByFunctionalGuild() {
+        InsectEntityCollections.SpeciesCollection predatorCollection = insectQuery.species().getByFunctionalGuild(FunctionalGuild.PREDATOR);
+
+        assertThat(observer.forMethod("getByFunctionalGuild")
+                .observable(predatorCollection, "predatorColloction")
+                .violationNames()).isEmpty();
+
+        assertThat(predatorCollection.isEmpty()).isFalse();
+        assertThat(predatorCollection.stream()
+                .allMatch(s -> s.guilds().contains(FunctionalGuild.PREDATOR)))
+                .isTrue();
+    }
 
     @Test
     void accessors_returnNonNullDelegates() {

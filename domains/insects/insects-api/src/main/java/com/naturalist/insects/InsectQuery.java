@@ -40,6 +40,7 @@ public interface InsectQuery {
 
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
         EntityNameSet<InsectSpeciesName> allSpeciesNames();
+        SpeciesCollection getByFunctionalGuild(FunctionalGuild functionalGuild);
     }
 
     interface ImageQuery
