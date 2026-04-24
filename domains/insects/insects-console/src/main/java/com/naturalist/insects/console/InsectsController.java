@@ -2,6 +2,7 @@ package com.naturalist.insects.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.insects.FunctionalGuild;
 import com.naturalist.insects.InsectEntityCollections;
 import com.naturalist.insects.InsectQuery;
 import com.naturalist.insects.InsectSpeciesName;
@@ -46,6 +47,23 @@ public class InsectsController {
                 .toList();
         model.addAttribute("species", species);
         return "insects/list";
+    }
+
+    @GetMapping("/guild/{guild}")
+    String guild(@PathVariable String guild, Model model) {
+        FunctionalGuild selected;
+        try {
+            selected = FunctionalGuild.valueOf(guild.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return "redirect:/insects";
+        }
+        var species = insectQuery.species().getByFunctionalGuild(selected).stream()
+                .sorted(Comparator.comparing(s -> s.name().value()))
+                .toList();
+        model.addAttribute("selectedGuild", selected);
+        model.addAttribute("guilds", FunctionalGuild.values());
+        model.addAttribute("species", species);
+        return "insects/guild";
     }
 
     @GetMapping("/{name}")

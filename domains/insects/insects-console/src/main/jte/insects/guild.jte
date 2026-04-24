@@ -2,11 +2,30 @@
 @import com.naturalist.insects.FunctionalGuild
 @import java.util.List
 
+@param FunctionalGuild selectedGuild
+@param FunctionalGuild[] guilds
 @param List<InsectSpecies> species
 
-@template.layout.page(title = "Insect Catalog", content = @`
-    <h1>Insect Catalog</h1>
-    <p>${species.size()} species documented at Oak Vista.</p>
+@template.layout.page(title = "Guild: " + selectedGuild.name(), content = @`
+    <a href="/insects">&larr; Back to catalog</a>
+
+    <h1>Functional Guild: ${selectedGuild.name()}</h1>
+
+    <form>
+        <label for="guild-select">Select guild</label>
+        <select id="guild-select"
+                onchange="window.location.href='/insects/guild/' + this.value">
+            @for(var g : guilds)
+                @if(g == selectedGuild)
+                    <option value="${g.name()}" selected>${g.name()}</option>
+                @else
+                    <option value="${g.name()}">${g.name()}</option>
+                @endif
+            @endfor
+        </select>
+    </form>
+
+    <p>${species.size()} species in this guild.</p>
 
     <div class="species-grid">
         @for(var s : species)

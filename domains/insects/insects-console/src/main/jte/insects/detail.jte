@@ -14,7 +14,8 @@
 
     <div class="guilds">
         @for(var guild : species.guilds())
-            <span class="badge guild-${guild.name().toLowerCase()}">${guild.name()}</span>
+            <a href="/insects/guild/${guild.name()}"
+               class="badge guild-${guild.name().toLowerCase()}">${guild.name()}</a>
         @endfor
         @if(species.beneficial())
             <span class="badge beneficial">beneficial</span>
