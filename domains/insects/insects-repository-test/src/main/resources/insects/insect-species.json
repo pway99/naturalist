@@ -260,43 +260,10 @@
         "Chrysalis: brown or green with delicate golden filigree — the only cryptic stage"
       ]
     },
-    "lifeStages": {
-      "egg": {
-        "description": "Brick-red; conspicuous; laid in clusters of up to 20 on young, tender, growing shoot tips of Aristolochia californica. Eggs are only placed on tender new growth, never on mature tissue.",
-        "colorProgression": null,
-        "layingPattern": "Clusters of up to 20 on young shoot tips only",
-        "adaptiveSignificance": "Eggs inherit aristolochic acid protection via maternal transfer — the female sequesters host-plant toxins and deposits them into the egg, so even the egg stage is chemically defended. Conspicuous brick-red colouration reinforces the aposematic signal."
-      },
-      "larva": {
-        "commonName": null,
-        "description": "Dark-bodied caterpillar ornamented with fleshy reddish filaments; warningly coloured and chemically unpalatable to vertebrate predators.",
-        "preyConsumption": null,
-        "preyTargets": [],
-        "hostPlants": ["aristolochia-californica"],
-        "remarkableBehavior": "Initially gregarious on young shoot tips; as larvae grow they scatter to feed on mature leaves and immature fruits (which resemble small banana shapes with fluted edges). Because damaged leaves become more toxic through induced defence, a larva feeds on any single leaf only briefly before moving on — the species damages most leaves lightly rather than few leaves severely. In heavy-population years, little or no seed is set on the host."
-      },
-      "pupa": {
-        "description": "Chrysalis suspended by a cremaster attachment and silk girdle from host or adjacent vegetation.",
-        "appearance": "Dimorphic — brown or green depending on pupation substrate; cryptic, ornamented with delicate golden filigree. The only stage of the life cycle that is cryptic rather than aposematic.",
-        "diapauseRegulation": "Unresponsive to day length — uniquely among California swallowtails. Pupal dormancy is instead related to the water content of the larval food, though the mechanism is not well understood.",
-        "adaptiveSignificance": "Split diapause strategy: every female's offspring include both direct-developers and diapausers, and some diapausing pupae eclose later the same year rather than overwintering. Site-level voltinism is consequently indeterminate — at any given site it may be two, three, four broods, or all of these overlapping at once."
-      },
-      "adult": {
-        "feeding": "Nectarivore — eager visitor to a wide range of flowers",
-        "role": "Pollinator; reproductive adult; long-distance disperser along riparian corridors",
-        "attraction": null,
-        "supportedBy": [
-          "wild-radish",
-          "california-buckeye",
-          "blue-dicks",
-          "ithuriels-spear",
-          "yerba-santa",
-          "yellow-star-thistle"
-        ],
-        "lifespan": "Approximately one month",
-        "flightPeriod": "Late winter (February–March) through October, occasionally into November. Much more numerous before the 4th of July; typically two large flights followed by stragglers the rest of the season, often with a late-summer 'blip' in August driven by diapause breakage. Off-season oviposition occurs only when local catastrophe (fire, weed-whacking) triggers host-plant regeneration outside the normal growth window."
-      }
-    },
+    "egg": null,
+    "larva": null,
+    "pupa": null,
+    "adult": null,
     "chemicalDefense": {
       "mechanism": "Sequestration of aristolochic acids from the larval host plant (Aristolochia californica). Toxins are retained through pupation, carried by adults, and transferred maternally to the eggs — every stage of the life cycle is chemically defended.",
       "sourceCompounds": "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",

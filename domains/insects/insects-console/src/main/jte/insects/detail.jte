@@ -57,69 +57,81 @@
         </section>
     @endif
 
-    @if(species.lifeStages() != null)
+    @if(species.egg() != null || species.larva() != null || species.pupa() != null || species.adult() != null)
         <section>
             <h2>Life Stages</h2>
-            @if(species.lifeStages().egg() != null)
+            @if(species.egg() != null)
                 <h3>Egg</h3>
-                <p>${species.lifeStages().egg().description()}</p>
-                @if(species.lifeStages().egg().layingPattern() != null)
-                    <p><strong>Laying pattern:</strong> ${species.lifeStages().egg().layingPattern()}</p>
+                <p>${species.egg().description().secondary()}</p>
+                @if(species.egg().layingPattern() != null)
+                    <p><strong>Laying pattern:</strong> ${species.egg().layingPattern()}</p>
                 @endif
-                @if(species.lifeStages().egg().colorProgression() != null)
-                    <p><strong>Colour progression:</strong> ${species.lifeStages().egg().colorProgression()}</p>
+                @if(species.egg().colorProgression() != null)
+                    <p><strong>Colour progression:</strong> ${species.egg().colorProgression()}</p>
                 @endif
-                @if(species.lifeStages().egg().adaptiveSignificance() != null)
-                    <p><strong>Adaptive significance:</strong> ${species.lifeStages().egg().adaptiveSignificance()}</p>
-                @endif
-            @endif
-            @if(species.lifeStages().larva() != null)
-                <h3>Larva
-                    @if(species.lifeStages().larva().commonName() != null)
-                        — ${species.lifeStages().larva().commonName()}
-                    @endif
-                </h3>
-                <p>${species.lifeStages().larva().description()}</p>
-                @if(!species.lifeStages().larva().hostPlants().isEmpty())
-                    <p><strong>Host plants:</strong> ${String.join(", ", species.lifeStages().larva().hostPlants())}</p>
-                @endif
-                @if(!species.lifeStages().larva().preyTargets().isEmpty())
-                    <p><strong>Prey:</strong> ${String.join(", ", species.lifeStages().larva().preyTargets())}</p>
-                @endif
-                @if(species.lifeStages().larva().preyConsumption() != null)
-                    <p><strong>Prey consumption:</strong> ${species.lifeStages().larva().preyConsumption()}</p>
-                @endif
-                @if(species.lifeStages().larva().remarkableBehavior() != null)
-                    <p><strong>Remarkable behaviour:</strong> ${species.lifeStages().larva().remarkableBehavior()}</p>
+                @if(species.egg().adaptiveSignificance() != null)
+                    <p><strong>Adaptive significance:</strong> ${species.egg().adaptiveSignificance()}</p>
                 @endif
             @endif
-            @if(species.lifeStages().pupa() != null)
+            @if(species.larva() != null)
+                <h3>Larva</h3>
+                <p>${species.larva().description().secondary()}</p>
+                @if(species.larva().feedingStrategy() != null)
+                    <p><strong>Feeding strategy:</strong> ${species.larva().feedingStrategy().name()}</p>
+                @endif
+                @if(!species.larva().hostPlants().isEmpty())
+                    <p><strong>Host plants:</strong>
+                        @for(var host : species.larva().hostPlants())
+                            <span>${host.value()}</span>
+                        @endfor
+                    </p>
+                @endif
+                @if(!species.larva().parasitoidHosts().isEmpty())
+                    <p><strong>Parasitoid hosts:</strong>
+                        @for(var host : species.larva().parasitoidHosts())
+                            <span>${host.value()}</span>
+                        @endfor
+                    </p>
+                @endif
+                @if(species.larva().instarProgression() != null)
+                    <p><strong>Instar progression:</strong> ${species.larva().instarProgression()}</p>
+                @endif
+                @if(species.larva().remarkableBehavior() != null)
+                    <p><strong>Remarkable behaviour:</strong> ${species.larva().remarkableBehavior()}</p>
+                @endif
+            @endif
+            @if(species.pupa() != null)
                 <h3>Pupa</h3>
-                <p>${species.lifeStages().pupa().description()}</p>
-                @if(species.lifeStages().pupa().appearance() != null)
-                    <p><strong>Appearance:</strong> ${species.lifeStages().pupa().appearance()}</p>
+                <p>${species.pupa().description().secondary()}</p>
+                @if(species.pupa().appearance() != null)
+                    <p><strong>Appearance:</strong> ${species.pupa().appearance()}</p>
                 @endif
-                @if(species.lifeStages().pupa().diapauseRegulation() != null)
-                    <p><strong>Diapause regulation:</strong> ${species.lifeStages().pupa().diapauseRegulation()}</p>
+                @if(species.pupa().diapauseRegulation() != null)
+                    <p><strong>Diapause regulation:</strong> ${species.pupa().diapauseRegulation().getClass().getSimpleName()}</p>
                 @endif
-                @if(species.lifeStages().pupa().adaptiveSignificance() != null)
-                    <p><strong>Adaptive significance:</strong> ${species.lifeStages().pupa().adaptiveSignificance()}</p>
+                @if(species.pupa().adaptiveSignificance() != null)
+                    <p><strong>Adaptive significance:</strong> ${species.pupa().adaptiveSignificance()}</p>
                 @endif
             @endif
-            <h3>Adult</h3>
-            <p><strong>Feeding:</strong> ${species.lifeStages().adult().feeding()}</p>
-            <p><strong>Role:</strong> ${species.lifeStages().adult().role()}</p>
-            @if(species.lifeStages().adult().flightPeriod() != null)
-                <p><strong>Flight period:</strong> ${species.lifeStages().adult().flightPeriod()}</p>
-            @endif
-            @if(species.lifeStages().adult().lifespan() != null)
-                <p><strong>Lifespan:</strong> ${species.lifeStages().adult().lifespan()}</p>
-            @endif
-            @if(species.lifeStages().adult().attraction() != null)
-                <p><strong>Attraction:</strong> ${species.lifeStages().adult().attraction()}</p>
-            @endif
-            @if(!species.lifeStages().adult().supportedBy().isEmpty())
-                <p><strong>Supported by:</strong> ${String.join(", ", species.lifeStages().adult().supportedBy())}</p>
+            @if(species.adult() != null)
+                <h3>Adult</h3>
+                <p>${species.adult().description().secondary()}</p>
+                @if(species.adult().feedingHabit() != null)
+                    <p><strong>Feeding habit:</strong> ${species.adult().feedingHabit().name()}</p>
+                @endif
+                @if(species.adult().ecologicalRole() != null)
+                    <p><strong>Role:</strong> ${species.adult().ecologicalRole()}</p>
+                @endif
+                @if(species.adult().lifespan() != null)
+                    <p><strong>Lifespan:</strong> ${species.adult().lifespan()}</p>
+                @endif
+                @if(!species.adult().nectarSources().isEmpty())
+                    <p><strong>Nectar sources:</strong>
+                        @for(var source : species.adult().nectarSources())
+                            <span>${source.value()}</span>
+                        @endfor
+                    </p>
+                @endif
             @endif
         </section>
     @endif

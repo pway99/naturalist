@@ -5,6 +5,6 @@ import com.naturalist.data.TestEntitySource;
 public class InsectSpeciesTestEntitySource extends TestEntitySource<InsectSpeciesName, InsectSpecies> {
 
     public InsectSpeciesTestEntitySource() {
-        loadFile("insects/insects.json");
+        loadFile("insects/insect-species.json");
     }
 }

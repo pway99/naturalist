@@ -5,6 +5,11 @@ import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.habitat.HabitatProfile;
+import com.naturalist.insects.lifestage.AdultStage;
+import com.naturalist.insects.lifestage.EggStage;
+import com.naturalist.insects.lifestage.LarvaStage;
+import com.naturalist.insects.lifestage.LifeStageKind;
+import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import org.jspecify.annotations.Nullable;
@@ -44,10 +49,34 @@ import java.util.function.Consumer;
  * narrative: nectar sources, shelter substrate, prey density, and phototactic behaviour
  * expressed as ecological field notes rather than structured classification.
  * <p>
- * All nullable fields — {@link #identificationFeatures}, {@link #lifeStages},
- * {@link #chemicalDefense}, {@link #voltinism}, {@link #habitatProfile},
- * {@link #habitatRequirements}, {@link #gardenConnections}, {@link #beneficialProfile},
- * and {@link #ecologicalSignificance} — are populated incrementally as the catalog
+ * The four life-cycle stage fields — {@link #egg}, {@link #larva}, {@link #pupa},
+ * and {@link #adult} — hold the species's stage entities from
+ * {@link com.naturalist.insects.lifestage}. Each stage is a {@link NamedEntity} with
+ * its own composite-slug identity ({@code {species-slug}-{stage-kind-slug}}); the
+ * species composes them directly rather than referencing them by name because each
+ * stage is biologically inseparable from its species.
+ * <p>
+ * All four stage fields are nullable for two distinct reasons, applied per stage:
+ * <ul>
+ *   <li>{@link #egg} — egg-stage data may simply not be documented for the species
+ *       at catalog level, even if the species is holometabolous.</li>
+ *   <li>{@link #larva} — hemimetabolous orders (Blattodea, Orthoptera, Hemiptera)
+ *       produce nymphs rather than morphologically distinct larvae; their immature
+ *       stages are not modelled here. A null {@code larva} on a holometabolous
+ *       species means the larval stage has not yet been catalogued, not that it
+ *       does not exist.</li>
+ *   <li>{@link #pupa} — hemimetabolous orders do not pupate; on those species
+ *       {@code pupa} is semantically absent. On holometabolous species a null
+ *       {@code pupa} means the stage has not yet been catalogued.</li>
+ *   <li>{@link #adult} — catalogued incrementally like the others. Cross-stage
+ *       invariants (e.g. chemistry-story coherence across larva / pupa / adult)
+ *       are enforced on this aggregate root rather than on any single stage.</li>
+ * </ul>
+ * <p>
+ * All other nullable fields — {@link #identificationFeatures}, {@link #chemicalDefense},
+ * {@link #voltinism}, {@link #habitatProfile}, {@link #habitatRequirements},
+ * {@link #gardenConnections}, {@link #beneficialProfile}, and
+ * {@link #ecologicalSignificance} — are populated incrementally as the catalog
  * matures. {@code beneficialProfile} is additionally constrained by intent: it should
  * only be populated when {@code beneficial} is {@code true}. {@code chemicalDefense} is
  * populated only for species that sequester, synthesise, or otherwise deploy defensive
@@ -58,14 +87,13 @@ import java.util.function.Consumer;
  * {@link Voltinism.VoltinismPattern#INDETERMINATE} case for species whose voltinism
  * varies within a site due to split diapause strategies.
  * <p>
- * The species's value-object graph — {@link IdentificationFeatures}, {@link LifeStages}
- * (with nested {@link LifeStages.EggStage}, {@link LifeStages.LarvaStage},
- * {@link LifeStages.PupaStage}, {@link LifeStages.AdultStage}), {@link ChemicalDefense},
- * {@link Voltinism}, {@link HabitatRequirements}, {@link GardenConnections},
- * {@link BeneficialProfile}, {@link EcologicalSignificance} — is nested here. Each
- * value object is exclusively owned by {@code InsectSpecies}; nesting expresses that
- * ownership structurally and collapses the consumer's import surface to this single type.
- * {@link LifeStageKind} is the shared vocabulary used by value objects that need to
+ * The species's value-object graph — {@link IdentificationFeatures},
+ * {@link ChemicalDefense}, {@link Voltinism}, {@link HabitatRequirements},
+ * {@link GardenConnections}, {@link BeneficialProfile}, {@link EcologicalSignificance}
+ * — is nested here. Each value object is exclusively owned by {@code InsectSpecies};
+ * nesting expresses that ownership structurally and collapses the consumer's import
+ * surface to this single type. {@link LifeStageKind} — now the shared vocabulary in
+ * {@link com.naturalist.insects.lifestage} — is used by {@link ChemicalDefense} to
  * name one or more stages of the life cycle.
  */
 @AggregateRoot
@@ -77,7 +105,10 @@ public record InsectSpecies(
         boolean beneficial,
         @Nullable String sightingNotes,
         @Nullable IdentificationFeatures identificationFeatures,
-        @Nullable LifeStages lifeStages,
+        @Nullable EggStage egg,
+        @Nullable LarvaStage larva,
+        @Nullable PupaStage pupa,
+        @Nullable AdultStage adult,
         @Nullable ChemicalDefense chemicalDefense,
         @Nullable Voltinism voltinism,
         @Nullable HabitatProfile habitatProfile,
@@ -115,43 +146,28 @@ public record InsectSpecies(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        // Nullable value-object children are registered via valueObjectOrNull so the
-        // graph walker descends into each child's own invariants when non-null.
-        // Meaningfulness of any present child is that child's responsibility — a
-        // vacuous-but-present value object must be rejected by its own invariants()
-        // rather than tolerated here.
-        return i -> i
-                .entityName(name, "name")
-                .valueObject(taxonomy, "taxonomy")
-                .valueObject(description, "description")
-                .notNull(this, InsectSpecies::guilds, "guilds")
-                .valueObjectOrNull(this, InsectSpecies::identificationFeatures, "identificationFeatures")
-                .valueObjectOrNull(this, InsectSpecies::lifeStages, "lifeStages")
-                .valueObjectOrNull(this, InsectSpecies::chemicalDefense, "chemicalDefense")
-                .valueObjectOrNull(this, InsectSpecies::voltinism, "voltinism")
-                .valueObjectOrNull(this, InsectSpecies::habitatProfile, "habitatProfile")
-                .valueObjectOrNull(this, InsectSpecies::habitatRequirements, "habitatRequirements")
-                .valueObjectOrNull(this, InsectSpecies::gardenConnections, "gardenConnections")
-                .valueObjectOrNull(this, InsectSpecies::beneficialProfile, "beneficialProfile")
-                .valueObjectOrNull(this, InsectSpecies::ecologicalSignificance, "ecologicalSignificance");
-    }
-
-    /**
-     * The stages of an insect's life cycle, as a discrete vocabulary. Used by value
-     * objects that need to name one or more stages — most notably
-     * {@link ChemicalDefense#protectedStages()}, which records exactly which stages
-     * inherit a species' chemical defences.
-     * <p>
-     * {@link #PUPA} is semantically absent on hemimetabolous species (Blattodea,
-     * Orthoptera, Hemiptera), which produce nymphs rather than pupae. Consumers
-     * interpreting {@link LifeStageKind} sets on those species should treat the pupal
-     * slot as "does not exist" rather than "unknown".
-     */
-    public enum LifeStageKind {
-        EGG,
-        LARVA,
-        PUPA,
-        ADULT
+        // Stage children are NamedEntity subtypes; Constraints has no nullable
+        // descent helper for them, so each non-null stage is descended conditionally.
+        // Nullable value-object children continue to use valueObjectOrNull.
+        Consumer<Constraints> body = i -> {
+            i.entityName(name, "name")
+                    .valueObject(taxonomy, "taxonomy")
+                    .valueObject(description, "description")
+                    .notNull(this, InsectSpecies::guilds, "guilds")
+                    .valueObjectOrNull(this, InsectSpecies::identificationFeatures, "identificationFeatures")
+                    .valueObjectOrNull(this, InsectSpecies::chemicalDefense, "chemicalDefense")
+                    .valueObjectOrNull(this, InsectSpecies::voltinism, "voltinism")
+                    .valueObjectOrNull(this, InsectSpecies::habitatProfile, "habitatProfile")
+                    .valueObjectOrNull(this, InsectSpecies::habitatRequirements, "habitatRequirements")
+                    .valueObjectOrNull(this, InsectSpecies::gardenConnections, "gardenConnections")
+                    .valueObjectOrNull(this, InsectSpecies::beneficialProfile, "beneficialProfile")
+                    .valueObjectOrNull(this, InsectSpecies::ecologicalSignificance, "ecologicalSignificance");
+            if (egg != null) i.namedEntity(this, InsectSpecies::egg, "egg");
+            if (larva != null) i.namedEntity(this, InsectSpecies::larva, "larva");
+            if (pupa != null) i.namedEntity(this, InsectSpecies::pupa, "pupa");
+            if (adult != null) i.namedEntity(this, InsectSpecies::adult, "adult");
+        };
+        return body;
     }
 
     /**
@@ -162,7 +178,8 @@ public record InsectSpecies(
      * is a discrete, observable trait: colour, proportion, posture, structural feature.
      * <p>
      * These are morphological and postural facts, not behavioural ones. Behaviour belongs
-     * in {@link LifeStages} or {@link InsectSpecies#sightingNotes()}.
+     * in the stage entities ({@link EggStage}, {@link LarvaStage}, {@link PupaStage},
+     * {@link AdultStage}) or {@link InsectSpecies#sightingNotes()}.
      */
     public record IdentificationFeatures(
             List<String> features
@@ -201,7 +218,11 @@ public record InsectSpecies(
      *       four stages: aristolochic acids are sequestered by the larva, retained
      *       through pupation, carried by the adult, and passed maternally to the
      *       conspicuous brick-red egg clusters. An empty set is invalid — a species
-     *       with no protected stage should carry {@code null} at the parent field.</li>
+     *       with no protected stage should carry {@code null} at the parent field.
+     *       This field is redundant with each stage's own
+     *       {@link com.naturalist.insects.lifestage.StageChemistryRole} and is a
+     *       candidate for removal once every stage carrying a chemistry role is
+     *       populated in the catalog.</li>
      * </ul>
      */
     public record ChemicalDefense(
@@ -261,209 +282,6 @@ public record InsectSpecies(
              * climate-dependent extra broods. See {@link Voltinism#notes()}.
              */
             INDETERMINATE
-        }
-    }
-
-    /**
-     * The documented life cycle stages of an insect species.
-     * <p>
-     * {@code adult} is always present — it is the stage at which field identification
-     * occurs and the stage that defines the species' ecological guild at Oak Vista.
-     * <p>
-     * {@code egg}, {@code larva}, and {@code pupa} are nullable for two distinct reasons,
-     * applied per stage:
-     * <ul>
-     *   <li>{@code egg} — egg-stage data may simply not be documented for the species
-     *       at catalog level, even if the species is holometabolous.</li>
-     *   <li>{@code larva} — hemimetabolous orders (Blattodea, Orthoptera, Hemiptera)
-     *       produce nymphs rather than morphologically distinct larvae; their immature
-     *       stages are not modelled here. A null {@code larva} on a holometabolous
-     *       species means the larval stage has not yet been catalogued, not that it
-     *       does not exist.</li>
-     *   <li>{@code pupa} — hemimetabolous orders do not pupate; on those species
-     *       {@code pupa} is semantically absent. On holometabolous species a null
-     *       {@code pupa} means the stage has not yet been catalogued. Modelled because
-     *       pupal biology carries species-level ecological facts — chrysalis crypsis,
-     *       diapause regulation, and voltinism variability — that no other stage captures.
-     *       The <i>Battus philenor</i> chrysalis (brown/green polymorphism, non-photoperiodic
-     *       diapause regulated by larval-food water content) is the motivating case.</li>
-     * </ul>
-     */
-    public record LifeStages(
-            @Nullable EggStage egg,
-            @Nullable LarvaStage larva,
-            @Nullable PupaStage pupa,
-            AdultStage adult
-    ) implements ValueObject {
-
-        @Override
-        public Consumer<? extends Constraints> invariants() {
-            return i -> i.notNull(this, LifeStages::adult, "adult");
-        }
-
-        /**
-         * The egg stage of an insect's life cycle.
-         * <p>
-         * {@code description} covers morphology and oviposition site — the minimum field
-         * record. All remaining fields are nullable: not every taxon exhibits a documented
-         * colour progression, a distinctive laying pattern, or an adaptive significance
-         * worth recording at catalog level.
-         * <p>
-         * Notable example: Chrysoperla (green lacewing) eggs are laid on individual silk
-         * stalks 10–15 mm tall — a structural adaptation that prevents newly hatched
-         * predatory larvae from consuming unhatched siblings before they disperse.
-         * The {@code adaptiveSignificance} field captures exactly this class of domain knowledge.
-         */
-        public record EggStage(
-                String description,
-                @Nullable String colorProgression,
-                @Nullable String layingPattern,
-                @Nullable String adaptiveSignificance
-        ) implements ValueObject {
-
-            @Override
-            public Consumer<? extends Constraints> invariants() {
-                return i -> i.notNull(this, EggStage::description, "description");
-            }
-        }
-
-        /**
-         * The larval stage of a holometabolous insect's life cycle.
-         * <p>
-         * Only present on species undergoing complete metamorphosis (Holometabola):
-         * Neuroptera, Coleoptera, Diptera, Hymenoptera, Lepidoptera. Hemimetabolous
-         * orders (Orthoptera, Hemiptera, Blattodea) produce nymphs, not larvae — their
-         * immature stages are not modelled here.
-         * <p>
-         * {@code preyTargets} and {@code hostPlants} carry the two mutually characteristic
-         * modes of larval feeding, and are kept as separate lists rather than collapsed
-         * into a single "food sources" field because they describe ecologically distinct
-         * relationships:
-         * <ul>
-         *   <li>{@code preyTargets} — prey species consumed by predatory or parasitoid
-         *       larvae. Empty for phytophagous larvae. {@code preyConsumption} gives a
-         *       quantitative rate where documented — for example, <i>Chrysoperla</i>
-         *       larvae consume 200+ aphids per week.</li>
-         *   <li>{@code hostPlants} — plant species whose tissue sustains phytophagous
-         *       larvae (caterpillars, leaf beetle grubs, gall-forming larvae). Empty
-         *       for predatory and parasitoid larvae. The distinction between monophagy
-         *       (one host, e.g. <i>Battus philenor</i> on <i>Aristolochia californica</i>),
-         *       oligophagy (a few related hosts), and polyphagy (many unrelated hosts)
-         *       is expressed by the list's size and composition. Entries are currently
-         *       descriptive strings pending the plants catalog, after which they become
-         *       typed cross-domain {@code PlantName} references.</li>
-         * </ul>
-         * <p>
-         * {@code remarkableBehavior} captures field-notable behaviour not covered by
-         * description or food data (e.g. the debris-carrying camouflage of lacewing
-         * larvae, or the induced-defence avoidance behaviour of <i>Battus philenor</i>
-         * caterpillars, which rotate between leaves as each feeding site becomes
-         * more toxic).
-         */
-        public record LarvaStage(
-                @Nullable String commonName,
-                String description,
-                @Nullable String preyConsumption,
-                List<String> preyTargets,
-                List<String> hostPlants,
-                @Nullable String remarkableBehavior
-        ) implements ValueObject {
-
-            @Override
-            public Consumer<? extends Constraints> invariants() {
-                return i -> i
-                        .notNull(this, LarvaStage::description, "description")
-                        .notNull(this, LarvaStage::preyTargets, "preyTargets")
-                        .notNull(this, LarvaStage::hostPlants, "hostPlants");
-            }
-        }
-
-        /**
-         * The pupal stage of a holometabolous insect's life cycle — the immobile
-         * transformative stage between larva and adult.
-         * <p>
-         * Only present on species undergoing complete metamorphosis (Holometabola):
-         * Neuroptera, Coleoptera, Diptera, Hymenoptera, Lepidoptera. Hemimetabolous
-         * orders do not pupate.
-         * <p>
-         * {@code description} covers form, substrate, and attachment — the minimum field
-         * record (e.g. "chrysalis suspended by cremaster and silk girdle from host
-         * vegetation" for Lepidoptera). {@code appearance} captures colour, pattern,
-         * and any polymorphism — <i>Battus philenor</i> pupae are dimorphic, brown or
-         * green, with a golden filigree.
-         * <p>
-         * {@code diapauseRegulation} records what governs the pupa's entry into and
-         * exit from dormancy: photoperiod (the default across temperate Lepidoptera),
-         * temperature, humidity, or — in the <i>Battus philenor</i> case — the water
-         * content of the larval food, uniquely decoupling diapause from day length
-         * and producing mixed direct-developer / diapauser cohorts within a single clutch.
-         * <p>
-         * {@code adaptiveSignificance} mirrors the field on {@link EggStage}: species-
-         * level pupal adaptations worth recording at catalog level, such as split
-         * diapause strategies that make site-level voltinism indeterminate.
-         */
-        public record PupaStage(
-                String description,
-                @Nullable String appearance,
-                @Nullable String diapauseRegulation,
-                @Nullable String adaptiveSignificance
-        ) implements ValueObject {
-
-            @Override
-            public Consumer<? extends Constraints> invariants() {
-                return i -> i.notNull(this, PupaStage::description, "description");
-            }
-        }
-
-        /**
-         * The adult stage of an insect's life cycle — the reproductive and (in many
-         * species) the dispersal stage.
-         * <p>
-         * {@code feeding} describes the adult diet: nectarivore, predator, non-feeding
-         * (many adult Ephemeroptera and some Lepidoptera are essentially non-feeding).
-         * {@code role} is the adult's primary ecological function at Oak Vista —
-         * pollinator, dispersal agent, reproductive stage only.
-         * <p>
-         * {@code attraction} captures stimuli that draw adults to specific microhabitats
-         * or structures — artificial lighting (lacewings, crane flies), floral volatiles
-         * (bees), or pheromone plumes. Relevant to siting habitat plantings and
-         * managing light pollution effects on beneficial populations.
-         * <p>
-         * {@code supportedBy} lists the plant species or resource types that sustain
-         * adult populations at Oak Vista. These will become typed cross-domain
-         * {@code PlantName} references once the plants catalog is established.
-         * <p>
-         * {@code lifespan} records the typical duration of the adult stage — "a few
-         * days" for mayflies, "a month or so" for <i>Battus philenor</i>, "several
-         * months" for overwintering Vanessa. Nullable where undocumented; it is not
-         * a strict invariant of the species but a field-relevant ecological fact that
-         * shapes expectations for repeat observation of a marked individual.
-         * <p>
-         * {@code flightPeriod} is the seasonal phenology of adult activity at Oak Vista:
-         * onset, peak(s), and end-of-season tail. Captured as narrative rather than a
-         * structured month range because many species have multi-peak flights with
-         * species-specific shape — <i>Battus philenor</i>, for example, flies February
-         * through October with two dominant flights before July, a mid-summer lull,
-         * and an August "blip" driven by diapause breakage. Distinct from
-         * {@link EcologicalSignificance#regionalContext()}, which carries landscape-
-         * scale dynamics rather than stage-specific phenology.
-         */
-        public record AdultStage(
-                String feeding,
-                String role,
-                @Nullable String attraction,
-                List<String> supportedBy,
-                @Nullable String lifespan,
-                @Nullable String flightPeriod
-        ) implements ValueObject {
-
-            @Override
-            public Consumer<? extends Constraints> invariants() {
-                return i -> i
-                        .notBlank(feeding, "feeding")
-                        .notBlank(role, "role")
-                        .notNull(supportedBy, "supportedBy");
-            }
         }
     }
 

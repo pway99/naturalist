@@ -36,6 +36,16 @@ public class Constraints {
     }
 
     /**
+     * Validate a non-null {@link Collection} of {@link ValueObject} elements and
+     * descend into each element's own {@link ValueObject#invariants()}. Null
+     * collection fails; empty collection passes — pair with {@link #notEmpty}
+     * when empty is also illegal.
+     */
+    public <O, V extends ValueObject> Constraints valueObjectCollection(O o, Function<O, Collection<V>> valueFunction, String name) {
+        return add(new ValueObjectCollectionConstraint<>(o, valueFunction, name));
+    }
+
+    /**
      * Validate any {@link Observable} child and descend into its invariants. Use for
      * Observable members that are neither {@link Entity} nor {@link ValueObject} —
      * most commonly a {@link com.naturalist.ddd.BehavioralCollection} held by an
@@ -102,6 +112,16 @@ public class Constraints {
 
     public <T, R> Constraints notNull(T t, Function<T, R> valueFunction, String name) {
         return add(new NotNullConstraint<>(t, valueFunction, name));
+    }
+
+    /**
+     * Rejects null, empty {@link Collection}, empty {@link java.util.Map}, and
+     * empty {@link CharSequence}. Non-collection, non-null values pass. Pair with
+     * a descent constraint (e.g. {@link #valueObjectCollection}) to assert both
+     * "has elements" and "each element is valid".
+     */
+    public <T, R> Constraints notEmpty(T t, Function<T, R> valueFunction, String name) {
+        return add(new NotEmptyConstraint<>(t, valueFunction, name));
     }
 
     public List<Constraint<?>> collected() {

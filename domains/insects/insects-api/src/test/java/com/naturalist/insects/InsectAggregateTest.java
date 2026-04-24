@@ -52,7 +52,9 @@ class InsectAggregateTest {
                         RandomValue.string()),
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
-                null, null, null, null, null, null, null, null, null, null
+                null, null,
+                null, null, null, null,
+                null, null, null, null, null, null, null
         );
     }
 }
