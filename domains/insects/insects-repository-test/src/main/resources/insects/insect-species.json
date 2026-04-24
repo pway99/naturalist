@@ -58,7 +58,8 @@
       },
       "colorProgression": null,
       "layingPattern": "Pale whitish eggs deposited singly or in small numbers directly on or near host caterpillars.",
-      "adaptiveSignificance": "Multiple oviposition strategies across Tachinidae match different host ecologies — a family-level adaptive radiation of parasitoid deployment."
+      "adaptiveSignificance": "Multiple oviposition strategies across Tachinidae match different host ecologies — a family-level adaptive radiation of parasitoid deployment.",
+      "kind": "EGG"
     },
     "larva": {
       "name": "tachinid-fly-larva",
@@ -101,7 +102,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Koinobiont endoparasitism — the host continues to move and feed during early larval development, only succumbing as the final instar consumes essential tissues.",
-      "instarProgression": "Typically three instars; final instar egress from host for pupariation in soil or leaf litter."
+      "instarProgression": "Typically three instars; final instar egress from host for pupariation in soil or leaf litter.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "tachinid-fly-pupa",
@@ -143,7 +145,8 @@
       },
       "appearance": "Oval, dark reddish-brown puparium — hardened cast larval skin.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": "Overwintering life-stage in temperate populations; soil puparium matches the family's generalist ground-surface strategy."
+      "adaptiveSignificance": "Overwintering life-stage in temperate populations; soil puparium matches the family's generalist ground-surface strategy.",
+      "kind": "PUPA"
     },
     "adult": {
       "name": "tachinid-fly-adult",
@@ -192,7 +195,8 @@
         "achillea-millefolium"
       ],
       "ecologicalRole": "Lepidopteran parasitoid; garden biological pest-control agent.",
-      "lifespan": "Approximately two to four weeks."
+      "lifespan": "Approximately two to four weeks.",
+      "kind": "ADULT"
     }
   },
   {
@@ -253,7 +257,8 @@
       },
       "colorProgression": null,
       "layingPattern": "Internal — endoparasitic deposition via ovipositor. Not externally visible before host mummification or cocoon emergence.",
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "EGG"
     },
     "larva": {
       "name": "braconid-wasp-larva",
@@ -296,7 +301,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Aphidiinae produce mummified-aphid pupal capsules; Microgastrinae spin conspicuous white cocoon clusters on host dorsum after synchronous egress.",
-      "instarProgression": "Three to five instars depending on subfamily; egress synchronised in gregarious species."
+      "instarProgression": "Three to five instars depending on subfamily; egress synchronised in gregarious species.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "braconid-wasp-pupa",
@@ -337,7 +343,8 @@
       },
       "appearance": "Aphidiinae: bronze to tan aphid mummy. Microgastrinae: small yellowish-white silken cocoons clustered on the host caterpillar's dorsum.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "PUPA"
     },
     "adult": {
       "name": "braconid-wasp-adult",
@@ -385,7 +392,8 @@
         "fagopyrum-esculentum"
       ],
       "ecologicalRole": "Aphid and caterpillar parasitoid; keystone biological-control group.",
-      "lifespan": "Adults typically one to three weeks."
+      "lifespan": "Adults typically one to three weeks.",
+      "kind": "ADULT"
     }
   },
   {
@@ -447,7 +455,8 @@
       },
       "colorProgression": null,
       "layingPattern": "Single chalky-white eggs placed near aphid colonies.",
-      "adaptiveSignificance": "Female visual recognition of aphid colonies matches larval crawl range — the egg is deposited where a first-instar larva can immediately find food."
+      "adaptiveSignificance": "Female visual recognition of aphid colonies matches larval crawl range — the egg is deposited where a first-instar larva can immediately find food.",
+      "kind": "EGG"
     },
     "larva": {
       "name": "hoverfly-larva",
@@ -490,7 +499,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Legless slug-like crawl across foliage; aphid-hunting with mandibular hooks; cryptic coloration matching substrate.",
-      "instarProgression": "Three instars over 8–15 days; escalating aphid consumption rate through development."
+      "instarProgression": "Three instars over 8–15 days; escalating aphid consumption rate through development.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "hoverfly-pupa",
@@ -532,7 +542,8 @@
       },
       "appearance": "Hardened teardrop-shaped puparium, tan to brown.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "PUPA"
     },
     "adult": {
       "name": "hoverfly-adult",
@@ -583,7 +594,8 @@
         "calendula-officinalis"
       ],
       "ecologicalRole": "Pollinator (adult) and aphid-predator (larva) — dual-guild keystone.",
-      "lifespan": "Two to four weeks."
+      "lifespan": "Two to four weeks.",
+      "kind": "ADULT"
     }
   },
   {
@@ -643,7 +655,8 @@
       },
       "colorProgression": "Bright yellow-orange at laying; darkens toward hatching to show dark larva through chorion.",
       "layingPattern": "Cluster of 10–30 upright spindle eggs on leaf underside near aphid colony.",
-      "adaptiveSignificance": "Cluster placement tuned by female visual assessment of local aphid density; sibling cannibalism provides fallback provisioning when prey density is marginal."
+      "adaptiveSignificance": "Cluster placement tuned by female visual assessment of local aphid density; sibling cannibalism provides fallback provisioning when prey density is marginal.",
+      "kind": "EGG"
     },
     "larva": {
       "name": "convergent-ladybug-larva",
@@ -685,7 +698,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Spiny 'alligator' morphology frequently misidentified as a plant pest. Reflex bleeding (exuding yellowish hemolymph from leg joints when disturbed) is shared with adults.",
-      "instarProgression": "Four instars over 10–15 days; escalating consumption rate."
+      "instarProgression": "Four instars over 10–15 days; escalating consumption rate.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "convergent-ladybug-pupa",
@@ -725,7 +739,8 @@
       },
       "appearance": "Orange with black markings — exposed on foliage, attached by cremaster. Shortshelled larval cuticle remnants often visible at the attachment point.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "PUPA"
     },
     "adult": {
       "name": "convergent-ladybug-adult",
@@ -773,7 +788,8 @@
         "lobularia-maritima"
       ],
       "ecologicalRole": "Aphid predator; keystone garden biological-control species.",
-      "lifespan": "Approximately 4–8 weeks active; overwintering adults live 6–9 months total."
+      "lifespan": "Approximately 4–8 weeks active; overwintering adults live 6–9 months total.",
+      "kind": "ADULT"
     }
   },
   {
@@ -835,7 +851,8 @@
       },
       "colorProgression": null,
       "layingPattern": "Singly or in small clusters in soil chambers.",
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "EGG"
     },
     "larva": {
       "name": "ground-beetle-larva",
@@ -879,7 +896,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Cursorial predators — fast runners on the soil surface. Strongly negatively phototactic.",
-      "instarProgression": "Typically three instars."
+      "instarProgression": "Typically three instars.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "ground-beetle-pupa",
@@ -920,7 +938,8 @@
       },
       "appearance": "Pale, soft, exarate pupa in earthen chamber.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": "Subterranean pupation exempts the stage from surface-active predators at the cost of tillage vulnerability."
+      "adaptiveSignificance": "Subterranean pupation exempts the stage from surface-active predators at the cost of tillage vulnerability.",
+      "kind": "PUPA"
     },
     "adult": {
       "name": "ground-beetle-adult",
@@ -963,7 +982,8 @@
       "feedingHabit": "PREDATORY",
       "nectarSources": [],
       "ecologicalRole": "Ground-surface generalist predator; in some genera also a weed-seed consumer. Keystone soil-surface invertebrate community member.",
-      "lifespan": "Many species 1–3 years; unusually long for beetles."
+      "lifespan": "Many species 1–3 years; unusually long for beetles.",
+      "kind": "ADULT"
     }
   },
   {
@@ -1026,7 +1046,8 @@
       },
       "colorProgression": null,
       "layingPattern": "Small dark eggs deposited in moist soil or organic matter during low rapid flight.",
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "EGG"
     },
     "larva": {
       "name": "crane-fly-larva",
@@ -1071,7 +1092,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Tough integument (the 'leatherjacket' name); migrates vertically in the soil column with moisture.",
-      "instarProgression": "Four instars; duration variable by species and moisture."
+      "instarProgression": "Four instars; duration variable by species and moisture.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "crane-fly-pupa",
@@ -1113,7 +1135,8 @@
       },
       "appearance": "Obtect pupa with prominent thoracic respiratory horns.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "PUPA"
     },
     "adult": {
       "name": "crane-fly-adult",
@@ -1158,7 +1181,8 @@
       "feedingHabit": "NON_FEEDING",
       "nectarSources": [],
       "ecologicalRole": "Adult is primarily reproductive stage; substantial prey base for bats, birds, and predatory invertebrates.",
-      "lifespan": "Typically 3–10 days."
+      "lifespan": "Typically 3–10 days.",
+      "kind": "ADULT"
     }
   },
   {
@@ -1221,7 +1245,8 @@
       },
       "colorProgression": "Ootheca starts pale, tans to dark brown as chitin hardens.",
       "layingPattern": "Single ootheca carried by female or deposited in protected debris.",
-      "adaptiveSignificance": "Maternal carrying of the ootheca in many species extends parental protection beyond egg deposition."
+      "adaptiveSignificance": "Maternal carrying of the ootheca in many species extends parental protection beyond egg deposition.",
+      "kind": "EGG"
     },
     "larva": null,
     "pupa": null,
@@ -1266,7 +1291,8 @@
       "feedingHabit": "OMNIVOROUS",
       "nectarSources": [],
       "ecologicalRole": "Ground-surface detritivore; nutrient cycling; invertebrate-community prey base for Carabidae and spiders.",
-      "lifespan": "Adults typically 2–6 months; some overwintering adults up to a year."
+      "lifespan": "Adults typically 2–6 months; some overwintering adults up to a year.",
+      "kind": "ADULT"
     }
   },
   {
@@ -1327,7 +1353,8 @@
       },
       "colorProgression": null,
       "layingPattern": "One egg per cell, placed on a mass-provisioned pollen-nectar ball.",
-      "adaptiveSignificance": "Complete larval provisioning at egg-lay eliminates parent-larva interaction; each cell is a self-contained development unit."
+      "adaptiveSignificance": "Complete larval provisioning at egg-lay eliminates parent-larva interaction; each cell is a self-contained development unit.",
+      "kind": "EGG"
     },
     "larva": {
       "name": "native-sweat-bee-larva",
@@ -1370,7 +1397,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "No adult-larva contact post-egg-laying — strictly mass-provisioned development.",
-      "instarProgression": "Typically five instars; final-instar meconium elimination precedes pupation."
+      "instarProgression": "Typically five instars; final-instar meconium elimination precedes pupation.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "native-sweat-bee-pupa",
@@ -1411,7 +1439,8 @@
       },
       "appearance": "Pale exarate pupa in sealed earthen cell.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "PUPA"
     },
     "adult": {
       "name": "native-sweat-bee-adult",
@@ -1461,7 +1490,8 @@
         "eschscholzia-californica"
       ],
       "ecologicalRole": "Native generalist pollinator; cool-weather and small-flower specialist complement to Apis.",
-      "lifespan": "Foundress adults overwinter (8–10 months including diapause); worker caste adults 4–8 weeks."
+      "lifespan": "Foundress adults overwinter (8–10 months including diapause); worker caste adults 4–8 weeks.",
+      "kind": "ADULT"
     }
   },
   {
@@ -1522,7 +1552,8 @@
       },
       "colorProgression": null,
       "layingPattern": "One egg per cell on mass-provisioned pollen loaf.",
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "EGG"
     },
     "larva": {
       "name": "grey-mining-bee-larva",
@@ -1565,7 +1596,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Post-defecating larval diapause — a nine-month below-ground quiescence through summer, autumn, and winter.",
-      "instarProgression": "Five instars of rapid development, then extended post-defecating quiescence."
+      "instarProgression": "Five instars of rapid development, then extended post-defecating quiescence.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "grey-mining-bee-pupa",
@@ -1606,7 +1638,8 @@
       },
       "appearance": "Pale exarate pupa in sealed earthen cell.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "PUPA"
     },
     "adult": {
       "name": "grey-mining-bee-adult",
@@ -1655,7 +1688,8 @@
         "prunus-armeniaca"
       ],
       "ecologicalRole": "Early-spring pollinator specialist; critical for early-flowering wild and orchard plants before Apis activity peaks.",
-      "lifespan": "Adult females 4–6 weeks; males shorter."
+      "lifespan": "Adult females 4–6 weeks; males shorter.",
+      "kind": "ADULT"
     }
   },
   {
@@ -1717,7 +1751,8 @@
       },
       "colorProgression": null,
       "layingPattern": "Linear gallery of 5–10 cells, each mass-provisioned and separately sealed.",
-      "adaptiveSignificance": "Multi-year gallery reuse is a distinctive Xylocopa adaptation — substantial female investment in gallery construction amortizes across generations."
+      "adaptiveSignificance": "Multi-year gallery reuse is a distinctive Xylocopa adaptation — substantial female investment in gallery construction amortizes across generations.",
+      "kind": "EGG"
     },
     "larva": {
       "name": "valley-carpenter-bee-larva",
@@ -1761,7 +1796,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Low-fecundity, high-investment strategy balanced by long adult lifespan and gallery reuse.",
-      "instarProgression": "Typically five instars; final instar pupates within the cell."
+      "instarProgression": "Typically five instars; final instar pupates within the cell.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "valley-carpenter-bee-pupa",
@@ -1803,7 +1839,8 @@
       },
       "appearance": "Large exarate pupa in wood cell.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "PUPA"
     },
     "adult": {
       "name": "valley-carpenter-bee-adult",
@@ -1854,7 +1891,8 @@
         "wisteria-floribunda"
       ],
       "ecologicalRole": "Large-bodied pollinator specialist — deep-corolla flowers, heat-tolerant foraging when smaller bees are thermally limited.",
-      "lifespan": "Adults long-lived: 3–10 months including overwintering."
+      "lifespan": "Adults long-lived: 3–10 months including overwintering.",
+      "kind": "ADULT"
     }
   },
   {
@@ -1915,7 +1953,8 @@
       },
       "colorProgression": null,
       "layingPattern": "Single eggs on grass leaf undersides.",
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "EGG"
     },
     "larva": {
       "name": "skipper-butterfly-larva",
@@ -1958,7 +1997,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Silk-tied leaf shelter — a family-level signature behavior. Distinctive narrow 'neck' between head and body.",
-      "instarProgression": "Typically five instars over 4–8 weeks."
+      "instarProgression": "Typically five instars over 4–8 weeks.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "skipper-butterfly-pupa",
@@ -2000,7 +2040,8 @@
       },
       "appearance": "Plain, elongate, cryptic pupa within silk-tied grass shelter.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": "Multi-use of the silk leaf shelter across larval and pupal stages is an efficient investment."
+      "adaptiveSignificance": "Multi-use of the silk leaf shelter across larval and pupal stages is an efficient investment.",
+      "kind": "PUPA"
     },
     "adult": {
       "name": "skipper-butterfly-adult",
@@ -2049,7 +2090,8 @@
         "origanum-vulgare"
       ],
       "ecologicalRole": "Grassland pollinator; keystone lepidopteran indicator of intact grassland ecology.",
-      "lifespan": "Typically 2–4 weeks."
+      "lifespan": "Typically 2–4 weeks.",
+      "kind": "ADULT"
     }
   },
   {
@@ -2112,7 +2154,8 @@
       },
       "colorProgression": null,
       "layingPattern": "Single small green eggs on host leaf undersides; extreme host-plant polyphagy.",
-      "adaptiveSignificance": "Polyphagy tied to migratory life cycle — reproductive success depends on finding host plants wherever the migration lands."
+      "adaptiveSignificance": "Polyphagy tied to migratory life cycle — reproductive success depends on finding host plants wherever the migration lands.",
+      "kind": "EGG"
     },
     "larva": {
       "name": "painted-lady-larva",
@@ -2162,7 +2205,8 @@
       ],
       "parasitoidHosts": [],
       "remarkableBehavior": "Silk-leaf shelter construction; extreme host-plant polyphagy across Asteraceae, Malvaceae, Boraginaceae, Urticaceae, and more.",
-      "instarProgression": "Five instars over 2–4 weeks."
+      "instarProgression": "Five instars over 2–4 weeks.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "painted-lady-pupa",
@@ -2204,7 +2248,8 @@
       },
       "appearance": "Brown with metallic gold or silver markings; suspended by cremaster.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": "Rapid development without diapause — matched to continuous warm-climate migratory life cycle."
+      "adaptiveSignificance": "Rapid development without diapause — matched to continuous warm-climate migratory life cycle.",
+      "kind": "PUPA"
     },
     "adult": {
       "name": "painted-lady-adult",
@@ -2256,7 +2301,8 @@
         "lantana-camara"
       ],
       "ecologicalRole": "Migratory pollinator and keystone migrational-lepidopteran ecosystem-connector across continents.",
-      "lifespan": "Migratory adults 4–6 weeks; summer-generation adults 2–4 weeks."
+      "lifespan": "Migratory adults 4–6 weeks; summer-generation adults 2–4 weeks.",
+      "kind": "ADULT"
     }
   },
   {
@@ -2319,7 +2365,8 @@
       },
       "colorProgression": "Pale green-white at laying; darkens through development; dark spot visible through chorion immediately before hatch.",
       "layingPattern": "Single egg on silk pedicel; occasionally grouped but stalks keep eggs spatially separated.",
-      "adaptiveSignificance": "Silk-stalked oviposition is among the most distinctive insect reproductive behaviors — simultaneously defending against ants and enforcing sibling spacing to prevent cannibalism."
+      "adaptiveSignificance": "Silk-stalked oviposition is among the most distinctive insect reproductive behaviors — simultaneously defending against ants and enforcing sibling spacing to prevent cannibalism.",
+      "kind": "EGG"
     },
     "larva": {
       "name": "green-lacewing-larva",
@@ -2363,7 +2410,8 @@
       "hostPlants": [],
       "parasitoidHosts": [],
       "remarkableBehavior": "Grooved falcate mandibles for extra-oral digestion; voracious generalist predation on small soft-bodied prey. Some species debris-carry dead prey as camouflage.",
-      "instarProgression": "Three instars over 2–3 weeks; escalating per-day consumption."
+      "instarProgression": "Three instars over 2–3 weeks; escalating per-day consumption.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "green-lacewing-pupa",
@@ -2406,7 +2454,8 @@
       },
       "appearance": "Small white spherical silk cocoon.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": "Circular-operculum emergence is mechanically elegant — a clean circular cut by the enclosed pharate adult, minimal structural damage to the cocoon."
+      "adaptiveSignificance": "Circular-operculum emergence is mechanically elegant — a clean circular cut by the enclosed pharate adult, minimal structural damage to the cocoon.",
+      "kind": "PUPA"
     },
     "adult": {
       "name": "green-lacewing-adult",
@@ -2455,7 +2504,8 @@
         "fagopyrum-esculentum"
       ],
       "ecologicalRole": "Adult pollinator and pollen-feeder; reproductive stage of a keystone predatory family.",
-      "lifespan": "Typically 4–6 weeks; overwintering adults longer."
+      "lifespan": "Typically 4–6 weeks; overwintering adults longer.",
+      "kind": "ADULT"
     }
   },
   {
@@ -2529,7 +2579,8 @@
       },
       "colorProgression": "Bright brick-red at laying; darkens and loses sheen toward hatching, finally showing the dark larva visible through the chorion.",
       "layingPattern": "Clusters of 5–20 eggs on young Aristolochia shoot tips. One female may deposit several clusters across an afternoon of host searching.",
-      "adaptiveSignificance": "Brick-red aposematic coloration enables pre-hatch chemical defense — the cluster is defended from the moment of laying by maternal transfer of aristolochic acids."
+      "adaptiveSignificance": "Brick-red aposematic coloration enables pre-hatch chemical defense — the cluster is defended from the moment of laying by maternal transfer of aristolochic acids.",
+      "kind": "EGG"
     },
     "larva": {
       "name": "pipevine-swallowtail-larva",
@@ -2577,7 +2628,8 @@
       ],
       "parasitoidHosts": [],
       "remarkableBehavior": "Early instars gregarious (feeding cohort of the clutch); later instars disperse along the host plant. No leaf-rolling or tent-building — direct exposed feeding with chemical defense as the only protection.",
-      "instarProgression": "Five instars over four to six weeks. Warning coloration present from first instar — dark body with reddish scoli — intensifying with each molt as toxin load accumulates."
+      "instarProgression": "Five instars over four to six weeks. Warning coloration present from first instar — dark body with reddish scoli — intensifying with each molt as toxin load accumulates.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "pipevine-swallowtail-pupa",
@@ -2628,7 +2680,8 @@
       },
       "appearance": "Dimorphic — either green or brown — with delicate golden filigree patterning. Cremaster-and-girdle attachment. The only cryptic stage in an otherwise aposematic life cycle.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": "Split diapause: direct-developer and diapauser cohorts from a single clutch, regulated by larval food water content. Mechanism decouples the species from photoperiodic cues and produces indeterminate voltinism — a bet-hedging strategy against host-plant failure in any single season."
+      "adaptiveSignificance": "Split diapause: direct-developer and diapauser cohorts from a single clutch, regulated by larval food water content. Mechanism decouples the species from photoperiodic cues and produces indeterminate voltinism — a bet-hedging strategy against host-plant failure in any single season.",
+      "kind": "PUPA"
     },
     "adult": {
       "name": "pipevine-swallowtail-adult",
@@ -2689,7 +2742,8 @@
         "centaurea-solstitialis"
       ],
       "ecologicalRole": "Keystone pollinator of riparian wildflowers along the Central Valley foothills; reproductive stage of an obligate Aristolochia-specialist lineage; model species in the Battus mimicry complex.",
-      "lifespan": "Typically 2–4 weeks; spring brood emerging from overwintered pupae may persist longer given cooler thermal regime."
+      "lifespan": "Typically 2–4 weeks; spring brood emerging from overwintered pupae may persist longer given cooler thermal regime.",
+      "kind": "ADULT"
     },
     "chemicalDefense": {
       "mechanism": "Sequestration of aristolochic acids from the larval host plant (Aristolochia californica). Toxins are retained through pupation, carried by adults, and transferred maternally to the eggs — every stage of the life cycle is chemically defended.",
@@ -2795,7 +2849,8 @@
       },
       "colorProgression": "Pale translucent at laying; little colour change through development.",
       "layingPattern": "Individually inserted into host-plant vascular tissue by ovipositor — concealed, not externally visible.",
-      "adaptiveSignificance": "Endophytic oviposition protects eggs from parasitoids and surface-dwelling predators while mechanically initiating host-plant vascular damage."
+      "adaptiveSignificance": "Endophytic oviposition protects eggs from parasitoids and surface-dwelling predators while mechanically initiating host-plant vascular damage.",
+      "kind": "EGG"
     },
     "larva": null,
     "pupa": null,
@@ -2838,7 +2893,8 @@
       "feedingHabit": "SAP",
       "nectarSources": [],
       "ecologicalRole": "Herbaceous phloem-feeding hemipteran; agronomically significant pest on alfalfa, beans, potato, and many garden vegetables.",
-      "lifespan": "Adults 2–4 weeks."
+      "lifespan": "Adults 2–4 weeks.",
+      "kind": "ADULT"
     }
   },
   {
@@ -2898,7 +2954,8 @@
       },
       "colorProgression": "Pale green-yellow at laying; pinks through development; deepens to red-orange; grays immediately before hatch.",
       "layingPattern": "Single eggs on host leaves.",
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "EGG"
     },
     "larva": {
       "name": "orange-sulphur-larva",
@@ -2945,7 +3002,8 @@
       ],
       "parasitoidHosts": [],
       "remarkableBehavior": "Strong crypsis on Fabaceae foliage — green body, white lateral stripe, yellow underline.",
-      "instarProgression": "Five instars over 3–4 weeks."
+      "instarProgression": "Five instars over 3–4 weeks.",
+      "kind": "LARVA"
     },
     "pupa": {
       "name": "orange-sulphur-pupa",
@@ -2985,7 +3043,8 @@
       },
       "appearance": "Green, cryptic, upright cremaster-and-girdle attachment.",
       "diapauseRegulation": null,
-      "adaptiveSignificance": null
+      "adaptiveSignificance": null,
+      "kind": "PUPA"
     },
     "adult": {
       "name": "orange-sulphur-adult",
@@ -3034,7 +3093,8 @@
         "eriogonum-fasciculatum"
       ],
       "ecologicalRole": "Fabaceae-dependent pollinator; abundant generalist herbaceous visitor.",
-      "lifespan": "Adults 2–4 weeks."
+      "lifespan": "Adults 2–4 weeks.",
+      "kind": "ADULT"
     }
   }
 ]
