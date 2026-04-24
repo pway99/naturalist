@@ -1,7 +1,5 @@
-package com.naturalist.insects;
+package com.naturalist.data;
 
-import com.naturalist.data.EntityRepositoryTest;
-import com.naturalist.data.EntityQuery;
 import com.naturalist.ddd.BehavioralCollection;
 import com.naturalist.ddd.Named;
 import com.naturalist.exception.InvariantViolationException;
@@ -10,15 +8,14 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;import static org.assertj.core.api.Assertions.assertThat;import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Abstract behavioral contract for a {@link EntityQuery} adapter — the query-side
+ * Abstract behavioral contract for an {@link EntityQuery} adapter — the query-side
  * analogue of {@link EntityRepositoryTest}.
- *
- * <p>ADR-021 pilot scope: this contract lives with the insects pilot. When a second
- * domain migrates and a second adapter test would implement the same shape, it is a
- * candidate for promotion to {@code kernels/framework-test}.
  *
  * <p>Every method is covered by three cases per ADR-002:
  * <ol>
@@ -31,7 +28,7 @@ import java.util.Set;import static org.assertj.core.api.Assertions.assertThat;im
  * @param <E>    the named entity type
  * @param <EC>   the behavioral collection returned by {@code findByNameSet}
  */
-interface EntityQueryContractTest<
+public interface EntityQueryContractTest<
         NAME,
         E extends Named<NAME>,
         EC extends BehavioralCollection<E>> {

@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.EntityQuery;
+import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 import org.junit.jupiter.api.extension.RegisterExtension;
