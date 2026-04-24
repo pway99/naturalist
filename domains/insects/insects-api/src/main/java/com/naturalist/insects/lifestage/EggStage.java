@@ -1,6 +1,8 @@
 package com.naturalist.insects.lifestage;
 
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.insects.LifeStageKind;
+import com.naturalist.insects.LifeStageName;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 

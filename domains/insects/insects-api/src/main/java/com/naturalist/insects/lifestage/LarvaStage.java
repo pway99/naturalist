@@ -2,6 +2,8 @@ package com.naturalist.insects.lifestage;
 
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.insects.InsectSpeciesName;
+import com.naturalist.insects.LifeStageKind;
+import com.naturalist.insects.LifeStageName;
 import com.naturalist.observability.Constraints;
 import com.naturalist.plants.PlantName;
 import org.jspecify.annotations.Nullable;

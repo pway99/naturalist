@@ -1,4 +1,4 @@
-package com.naturalist.insects.lifestage;
+package com.naturalist.insects;
 
 /**
  * The stages of an insect's life cycle. Component of {@link LifeStageName}.

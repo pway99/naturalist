@@ -8,7 +8,6 @@ import com.naturalist.habitat.HabitatProfile;
 import com.naturalist.insects.lifestage.AdultStage;
 import com.naturalist.insects.lifestage.EggStage;
 import com.naturalist.insects.lifestage.LarvaStage;
-import com.naturalist.insects.lifestage.LifeStageKind;
 import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.TaxonomicClassification;

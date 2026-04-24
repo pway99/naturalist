@@ -1,8 +1,7 @@
-package com.naturalist.insects.lifestage;
+package com.naturalist.insects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
-import com.naturalist.insects.InsectSpeciesName;
 
 import java.util.Objects;
 

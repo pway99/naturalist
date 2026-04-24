@@ -28,14 +28,32 @@ public class TestInsectsIdentifiers {
             public static final InsectSpeciesName name = InsectSpeciesName.of("unobtainium-beetle");
             public static final InsectImageId imageName = InsectImageId.of(
                     UUID.fromString("019dbdb7-a4a2-7eac-a875-3ce641904649"));
+            public static final LifeStageName lifeStageName =
+                    LifeStageName.of(name, LifeStageKind.EGG);
         }
 
         public static class TachinidFly {
             public static final InsectSpeciesName name = InsectSpeciesName.of("tachinid-fly");
+
+            public static class LifeStages {
+                private LifeStages() {}
+                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
+                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
+                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
+                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
+            }
         }
 
         public static class BraconidWasp {
             public static final InsectSpeciesName name = InsectSpeciesName.of("braconid-wasp");
+
+            public static class LifeStages {
+                private LifeStages() {}
+                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
+                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
+                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
+                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
+            }
         }
 
         public static class PotatoLeafhopper {

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.insects.LifeStageKind;
+import com.naturalist.insects.LifeStageName;
 import org.jspecify.annotations.Nullable;
 
 /**
