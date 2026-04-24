@@ -19,7 +19,8 @@ class ImageQueryImpl
 
     @Override
     public ImageCollection findByNameSet(Set<InsectImageId> names) {
-        observer().arguments("findByNameSet", i -> i.notNull(names, "names"))
+        observer().arguments("findByNameSet", i -> i
+                        .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return ImageCollection.of(repository().getByEntityNameSet(names));
     }

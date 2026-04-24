@@ -27,7 +27,7 @@ public class TestInsectsIdentifiers {
         public static class NotFound {
             public static final InsectSpeciesName name = InsectSpeciesName.of("unobtainium-beetle");
             public static final InsectImageId imageName = InsectImageId.of(
-                    UUID.fromString("00000000-0000-0000-0000-000000000000"));
+                    UUID.fromString("019dbdb7-a4a2-7eac-a875-3ce641904649"));
         }
 
         public static class TachinidFly {
@@ -47,12 +47,12 @@ public class TestInsectsIdentifiers {
 
                 public static class Img9047 {
                     public static final InsectImageId name = InsectImageId.of(
-                            UUID.fromString("0066fe0f-a3e0-40d8-b557-c42f13e67067"));
+                            UUID.fromString("0066fe0f-a3e0-70d8-b557-c42f13e67067"));
                 }
 
                 public static class Img9048 {
                     public static final InsectImageId name = InsectImageId.of(
-                            UUID.fromString("6091691e-7900-4ed3-a35b-88c46e47b866"));
+                            UUID.fromString("6091691e-7900-7ed3-a35b-88c46e47b866"));
                 }
             }
         }

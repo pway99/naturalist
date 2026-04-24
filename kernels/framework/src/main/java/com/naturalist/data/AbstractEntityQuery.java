@@ -49,7 +49,8 @@ public abstract class AbstractEntityQuery<
 
     @Override
     public Optional<E> getByName(NAME name) {
-        observer.arguments("getByName", i -> i.notNull(name, "name"))
+        observer.arguments("getByName", i -> i
+                        .identifier(name, "name"))
                 .throwWhenInvalid();
         return repository.getByName(name);
     }

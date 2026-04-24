@@ -49,13 +49,13 @@ public abstract class AbstractEntityRepository<
 
     @Override
     public final Optional<ENTITY> getByName(NAME name) {
-        observer.arguments("getByName", i -> i.notNull(name, "name")).throwWhenInvalid();
+        observer.arguments("getByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return doGetByName(name);
     }
 
     @Override
     public final List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
-        observer.arguments("getByEntityNameSet", i -> i.notNull(nameSet, "nameSet")).throwWhenInvalid();
+        observer.arguments("getByEntityNameSet", i -> i.identifierSet(nameSet, "nameSet")).throwWhenInvalid();
         return doGetByNameSet(nameSet);
     }
 

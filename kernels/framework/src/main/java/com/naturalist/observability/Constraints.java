@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 
@@ -50,6 +51,25 @@ public class Constraints {
 
     public <F extends EntityId> Constraints entityId(F f, String name) {
         return add(new EntityIdConstraints.EntityIdConstraint<>(f, name));
+    }
+
+    /**
+     * Polymorphic identifier check — dispatches at runtime to
+     * {@link #entityName}- or {@link #entityId}-equivalent validation based on the
+     * concrete type of {@code value}. Use at boundaries where the identifier branch
+     * is not fixed at compile time (for example, the {@code NAME} generic on
+     * {@link com.naturalist.data.AbstractEntityQuery}).
+     */
+    public <V> Constraints identifier(V value, String name) {
+        return add(new IdentifierConstraints.IdentifierConstraint<>(value, name));
+    }
+
+    /**
+     * Polymorphic identifier-set check — null set is invalid; every element is
+     * validated by runtime type (see {@link #identifier}).
+     */
+    public <V> Constraints identifierSet(Set<V> value, String name) {
+        return add(new IdentifierConstraints.IdentifierSetConstraint<>(value, name));
     }
 
     public <E extends EntityName> Constraints entityNameCollection(Collection<E> entityNames, String name) {
