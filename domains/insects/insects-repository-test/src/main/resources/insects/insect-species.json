@@ -13,9 +13,187 @@
       "secondary": "Tachinidae is the largest family of parasitoid flies (Diptera). Most species are koinobiont parasitoids — the host continues feeding and growing while the endoparasitic larva develops inside it. The female deposits eggs directly on the host cuticle, in host tissue via ovipositor, or on foliage as microtype eggs consumed by feeding hosts. The larva pupates inside the host or in the soil after killing it. Tachinids collectively parasitise lepidopteran, coleopteran, hemipteran, and orthopteran pests; several species are important biocontrol agents for tobacco hornworm, armyworm, and imported cabbageworm.",
       "university": "Family Tachinidae (Diptera) — over 10,000 described species worldwide; the dominant parasitoid family at Oak Vista based on April 2026 sweep-net transects. Primary host guilds at Oak Vista: Lepidoptera larvae (Noctuidae, Sphingidae), with secondary records on Hemiptera and Coleoptera. Most are koinobiont endoparasitoids; the larva undergoes three instars inside the living host, emerging to pupate in soil following host death. Adults are nectarivores requiring open-structured flowers for mandibular access — Apiaceae, Asteraceae, and Lamiaceae support adult foraging at Oak Vista. No pesticide treatment of flowering Apiaceae border plantings during tachinid flight periods (April–October)."
     },
-    "guilds": ["PARASITOID"],
+    "guilds": [
+      "PARASITOID"
+    ],
     "beneficial": true,
-    "sightingNotes": "Multiple individuals documented on sweep-net transect, April 2026 Oak Vista ecological assessment. Family-level identification only — multiple species likely present."
+    "sightingNotes": "Multiple individuals documented on sweep-net transect, April 2026 Oak Vista ecological assessment. Family-level identification only — multiple species likely present.",
+    "egg": {
+      "name": "tachinid-fly-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-01",
+            "peak": "--06-15",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Egg deposition tracks host caterpillar availability across the season."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": "Deposited on or near lepidopteran host larvae — directly on the host's cuticle, on foliage the host is feeding on, or (in some genera) the host is induced to ingest the egg with its leaf.",
+        "microclimate": "Wherever hosts are active — follows host thermal preferences.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The fly lays tiny eggs on caterpillars. The eggs hatch into little helpers that stop the caterpillars from eating the plants.",
+        "elementary": "Tachinid flies find caterpillars and lay their eggs on them. A tiny tachinid grub hatches and burrows into the caterpillar, slowly eating it from the inside. This helps gardens because many of the caterpillars they control would otherwise damage our plants.",
+        "secondary": "Tachinidae deposit eggs by one of several strategies — directly on the host cuticle, on foliage near active hosts, or induced ingestion. Eggs are small, hardshelled, and visible on host caterpillars as pale raised dots. Hatching is rapid; the first-instar maggot bores through the cuticle into the host hemocoel to begin endoparasitic development.",
+        "university": "Tachinidae oviposition modes: direct dermal deposition (microtype eggs on host cuticle), foliar deposition (macrotype eggs laid on host-associated substrate), and ingestion-deposition (host swallows egg with leaf). Strategy varies by genus and host ecology. Egg development is rapid — typically days rather than weeks — matched to host-caterpillar availability windows across the season."
+      },
+      "colorProgression": null,
+      "layingPattern": "Pale whitish eggs deposited singly or in small numbers directly on or near host caterpillars.",
+      "adaptiveSignificance": "Multiple oviposition strategies across Tachinidae match different host ecologies — a family-level adaptive radiation of parasitoid deployment."
+    },
+    "larva": {
+      "name": "tachinid-fly-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--07-15",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Endoparasitoid larval development inside host; timing tracks host phenology."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Internal — the host caterpillar's hemocoel. The larva is only exposed when it emerges to pupate, which typically destroys the host.",
+        "microclimate": "Host body cavity; temperature regulated by host activity.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The baby tachinid fly grows inside a caterpillar until it is ready to become a fly.",
+        "elementary": "The tachinid larva lives inside a caterpillar and eats it slowly from the inside. The caterpillar keeps moving and eating for a while as the larva grows. Then the larva crawls out and turns into a pupa, and the caterpillar dies.",
+        "secondary": "First-instar tachinid larvae bore into the host hemocoel and develop through several instars as endoparasitoids, feeding initially on hemolymph and non-essential tissues. Final-instar larvae consume essential organs, kill the host, and emerge to pupariate — typically in soil or leaf litter beneath the host's final resting place.",
+        "university": "Endoparasitoid development: koinobiont strategy allows continued host activity during early larval instars. Final instar consumption of host central nervous system and musculature produces host death and larval egress for pupariation. Most Tachinidae are solitary parasitoids; some taxa support superparasitism. Family hosts include Lepidoptera (dominant), Coleoptera, Heteroptera, Orthoptera, and sawfly Hymenoptera."
+      },
+      "feedingStrategy": "PARASITOID",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Koinobiont endoparasitism — the host continues to move and feed during early larval development, only succumbing as the final instar consumes essential tissues.",
+      "instarProgression": "Typically three instars; final instar egress from host for pupariation in soil or leaf litter."
+    },
+    "pupa": {
+      "name": "tachinid-fly-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--05-01",
+            "peak": "--08-01",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Puparium in soil or leaf litter beneath the host's final location."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "GROUND_SURFACE",
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Soil, leaf litter, or surface duff — the puparium is a hardened cast larval skin enclosing the pupa.",
+        "microclimate": "Cool, humid, dark; protected from desiccation.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The little tachinid fly rests quietly in the ground before it is a grown-up fly.",
+        "elementary": "The tachinid larva crawls into the soil, hardens its skin into a little brown case, and becomes a pupa inside. After a while, an adult fly climbs out.",
+        "secondary": "Tachinidae pupariate inside a hardened cuticular puparium — the cast final-instar skin — in soil or leaf litter. The puparium protects against desiccation and predation. Emergence timing varies with generation and regional climate; late-season generations in temperate climates typically overwinter as puparia.",
+        "university": "Puparium formation (cyclorraphous pupal enclosure in cast larval integument) characteristic of higher Diptera. Pupal duration approximately two to three weeks at Central Valley summer temperatures; overwintering puparia extend through diapause. Soil microclimate is a critical population-level factor; surface disturbance (tillage, drying) affects puparium survival."
+      },
+      "appearance": "Oval, dark reddish-brown puparium — hardened cast larval skin.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": "Overwintering life-stage in temperate populations; soil puparium matches the family's generalist ground-surface strategy."
+    },
+    "adult": {
+      "name": "tachinid-fly-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-01",
+            "peak": "--07-01",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Central Valley flight season; typically two to three overlapping generations per year."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW",
+            "WOODLAND_EDGE"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny microsites; active at flower umbels and compound inflorescences.",
+        "spatialNotes": "Oak Vista: frequent on Apiaceae flowers in the dill border and adjacent herbaceous plantings; adults are key nectar-visitors at the garden scale."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Fuzzy gray flies visit the tiny dill flowers in the garden. They help the garden by finding caterpillars to lay eggs on.",
+        "elementary": "Adult tachinid flies look a lot like bristly houseflies. They drink nectar from flat flower clusters like dill and Queen Anne's lace. While they feed, females search for caterpillars to lay eggs on — doing biological pest control for the garden.",
+        "secondary": "Tachinidae adults are bristle-bearing calyptrate flies, generally gray or dark-brown, and nectar-feed preferentially at Apiaceae umbels (dill, fennel, Queen Anne's lace) and other open inflorescence forms accessible to short tongues. Females require nectar energy for oviposition behavior; providing consistent Apiaceae bloom across the season amplifies tachinid populations.",
+        "university": "Calyptrate Diptera: Oestroidea: Tachinidae — globally a major lepidopteran parasitoid family with approximately 10,000 described species. Adults nectar-feed at open-access floral forms; the family's short mouthparts constrain flower choice to Apiaceae umbels, Asteraceae disc florets, and other shallow corollas. At Oak Vista the dill border provides phenologically critical mid-season nectar supporting ovipositional behaviour during peak host availability."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "anethum-graveolens",
+        "foeniculum-vulgare",
+        "daucus-carota",
+        "achillea-millefolium"
+      ],
+      "ecologicalRole": "Lepidopteran parasitoid; garden biological pest-control agent.",
+      "lifespan": "Approximately two to four weeks."
+    }
   },
   {
     "name": "braconid-wasp",
@@ -31,9 +209,184 @@
       "secondary": "Braconidae is the second-largest family of parasitoid Hymenoptera. Oak Vista species are primarily endoparasitoids of lepidopteran and aphid hosts. The Aphidiinae subfamily (formerly a separate family) are primary parasitoids of aphids — a single female can parasitise hundreds of aphids per day, and mummified aphids (round, papery, and darker than live aphids) are the visible field indicator of Aphidiinae activity. Microgastrinae are specialist caterpillar parasitoids; eggs are laid inside the host larva and the gregarious larvae emerge to spin white silk cocoons externally before pupation. Adults require nectar sources; Apiaceae and Asteraceae floral resources are critical for braconid retention in the garden system.",
       "university": "Family Braconidae (Hymenoptera: Ichneumonoidea). Approximately 17,000 described species. Primary functional role at Oak Vista: suppression of aphid populations (Aphidiinae) and lepidopteran larvae (Microgastrinae). Aphidiinae females detect host-infested plants via volatile semiochemicals (E-β-farnesene and host-plant VOCs induced by aphid feeding). The parasitoid egg is laid into the aphid haemocoele; the larva develops through 4 instars consuming host tissues progressively, with the host dying as the final instar larva spins its cocoon within the aphid cuticle (mummification). Ichnoviruses in Microgastrinae venom suppress host immune encapsulation response. Retention strategy: maintain Apiaceae (dill, fennel, coriander) and Asteraceae flowering border adjacent to tomato beds throughout the season."
     },
-    "guilds": ["PARASITOID"],
+    "guilds": [
+      "PARASITOID"
+    ],
     "beneficial": true,
-    "sightingNotes": "Aphid mummies observed on tomato aphid colony April 2026, confirming Aphidiinae activity. Adult braconids documented on dill border planting."
+    "sightingNotes": "Aphid mummies observed on tomato aphid colony April 2026, confirming Aphidiinae activity. Adult braconids documented on dill border planting.",
+    "egg": {
+      "name": "braconid-wasp-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--06-01",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Egg deposition tracks host aphid / caterpillar populations across the season."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Deposited inside host body cavity by ovipositor (Aphidiinae — single egg per aphid) or clutch-deposited inside lepidopteran host (Microgastrinae).",
+        "microclimate": "Inside host — regulated by host thermal biology.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "A tiny wasp pushes her eggs inside an aphid or caterpillar. The eggs hatch into little helpers.",
+        "elementary": "Braconid wasps find aphids or caterpillars and lay an egg — or a few eggs — right inside them using a sharp tube. The egg hatches into a larva that eats the host from the inside.",
+        "secondary": "Braconidae oviposit endoparasitically using a piercing ovipositor. Aphidiinae deposit a single egg into the host aphid; Microgastrinae deposit clutches of dozens into lepidopteran caterpillars. Wasp venom and polydnaviruses delivered with the egg suppress host immunity.",
+        "university": "Braconidae: approximately 20,000 described species across subfamilies spanning solitary and gregarious endoparasitism. Oviposition apparatus delivers egg, venom, and (in many lineages) symbiotic polydnaviruses that suppress host encapsulation response. Aphidiinae (aphid parasitoids) are solitary; Microgastrinae (lepidopteran parasitoids) are commonly gregarious with cohort emergence."
+      },
+      "colorProgression": null,
+      "layingPattern": "Internal — endoparasitic deposition via ovipositor. Not externally visible before host mummification or cocoon emergence.",
+      "adaptiveSignificance": null
+    },
+    "larva": {
+      "name": "braconid-wasp-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-01",
+            "peak": "--07-01",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Internal development timed to host life cycle; gregarious larvae develop synchronously."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Host hemocoel — aphid body cavity (Aphidiinae) or lepidopteran caterpillar hemocoel (Microgastrinae).",
+        "microclimate": "Within host.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The baby wasp grows inside a bug. When it is ready, it comes out to become a wasp.",
+        "elementary": "Braconid larvae develop inside their host. Aphid parasitoids stay inside a single aphid; caterpillar parasitoids may have many siblings inside one caterpillar. When grown, they chew out and spin small white cocoons — often seen in clusters on caterpillar bodies.",
+        "secondary": "Aphidiinae develop solitarily inside a single aphid host, eventually transforming the aphid into a hardened bronze or tan 'mummy' shell from which the adult emerges. Microgastrinae develop gregariously — dozens of siblings inside one caterpillar — then emerge synchronously and spin the characteristic white cocoon cluster on the host's back (a familiar sight on tomato hornworms and similar).",
+        "university": "Endoparasitoid larval development through three to five instars varies by subfamily. Aphidiinae host-mummification — the parasitized aphid's cuticle hardens into a protective pupal capsule, an unusual exploitation of host integument. Microgastrinae emergence-cocoon aggregates are ecologically and visually conspicuous, providing both biological-control signal and frequent misidentification as 'eggs on the caterpillar' in garden contexts."
+      },
+      "feedingStrategy": "PARASITOID",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Aphidiinae produce mummified-aphid pupal capsules; Microgastrinae spin conspicuous white cocoon clusters on host dorsum after synchronous egress.",
+      "instarProgression": "Three to five instars depending on subfamily; egress synchronised in gregarious species."
+    },
+    "pupa": {
+      "name": "braconid-wasp-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--07-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupal stage inside host mummy (Aphidiinae) or within external silken cocoon (Microgastrinae)."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Aphid mummy shell (Aphidiinae) or silken cocoon cluster on host (Microgastrinae).",
+        "microclimate": "Exposed on foliage or stem; short pupal duration.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The little wasp is in a tiny case before it flies away.",
+        "elementary": "Aphid mummies and the small white cocoons on caterpillars are braconid pupae. Inside each one, a young wasp is finishing its transformation into an adult.",
+        "secondary": "Pupal phase typically one to two weeks at Central Valley summer temperatures. Aphid mummies remain attached to the host plant; Microgastrinae cocoons remain attached to the now-moribund host caterpillar.",
+        "university": "Pupal exposure is substantial — both mummies and external cocoon clusters are predated by generalist invertebrates and hyperparasitised by Chalcidoidea. Overwintering in temperate populations typically at this pupal stage inside a robust mummy or cocoon."
+      },
+      "appearance": "Aphidiinae: bronze to tan aphid mummy. Microgastrinae: small yellowish-white silken cocoons clustered on the host caterpillar's dorsum.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": null
+    },
+    "adult": {
+      "name": "braconid-wasp-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--06-15",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Multiple overlapping generations at Central Valley temperatures."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; active on flowers with short-corolla access.",
+        "spatialNotes": "Oak Vista: adults active throughout the dill border and mixed herbaceous plantings; key biological-control agents for aphid and caterpillar populations."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The little wasp drinks from flowers and looks for aphids and caterpillars to lay eggs on.",
+        "elementary": "Adult braconid wasps are small — often no bigger than a grain of rice — and look for aphids or caterpillars to parasitize. They also drink nectar from small flowers, which gives them energy to keep hunting.",
+        "secondary": "Braconidae adults are small (2–15 mm) parasitic wasps. Adults feed on nectar and honeydew; female fertility and searching behavior are strongly dependent on adult nutrition. Oak Vista's Apiaceae and small-flower Asteraceae plantings provide critical adult nectar access.",
+        "university": "Adult nectar-feeding is a central life-history trait — protein and carbohydrate intake supports ovarian development and searching endurance. Floral access constrained by short mouthparts to shallow corollas. Parasitoid-to-host population dynamics at the garden scale depend critically on adult floral resource continuity."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "anethum-graveolens",
+        "foeniculum-vulgare",
+        "daucus-carota",
+        "lobularia-maritima",
+        "fagopyrum-esculentum"
+      ],
+      "ecologicalRole": "Aphid and caterpillar parasitoid; keystone biological-control group.",
+      "lifespan": "Adults typically one to three weeks."
+    }
   },
   {
     "name": "hoverfly",
@@ -49,9 +402,189 @@
       "secondary": "Syrphidae (hoverflies) exhibit Batesian mimicry of stinging Hymenoptera, deterring avian predators through visual warning coloration. Adults are important pollinators of Apiaceae and Asteraceae; many species require pollen as a protein source for egg development. Most Oak Vista species are aphidophagous at the larval stage — larvae are eyeless, legless maggots that hunt aphids by chemosensory detection and consume them by piercing and ingesting haemolymph. The degree of aphid suppression per larva varies by species: Episyrphus balteatus (not yet confirmed at Oak Vista) can consume 400+ aphids per larval instar. Adults frequent open flowers and are a reliable indicator of garden ecological health.",
       "university": "Family Syrphidae (Diptera) — approximately 6,000 species in 200 genera. At Oak Vista, adults documented as abundant floral visitors on Apiaceae (dill, fennel) and Asteraceae in April 2026. Larval ecology: aphidophagous species (subfamilies Syrphinae) oviposit directly into aphid colonies; eggs are translucent white, elongate, laid singly on or near aphid aggregations. Larvae are obligate predators — chemoreceptors on the mouthparts detect aphid cuticular hydrocarbons. Larval-stage aphid consumption rate: 30–50 aphids per day (species-dependent). Pupal stage occurs in soil or plant litter. Adult feeding biology: pollen protein drives ovarian development; floral constancy documented in foraging bouts. Management: Apiaceae border plantings are essential for adult retention and egg-laying site selection."
     },
-    "guilds": ["PREDATOR", "POLLINATOR"],
+    "guilds": [
+      "PREDATOR",
+      "POLLINATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Abundant in April 2026 assessment — multiple individuals observed hovering over tomato bed margins and feeding on dill flowers. Larvae expected in aphid colonies."
+    "sightingNotes": "Abundant in April 2026 assessment — multiple individuals observed hovering over tomato bed margins and feeding on dill flowers. Larvae expected in aphid colonies.",
+    "egg": {
+      "name": "hoverfly-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-15",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Oviposition tracks aphid-colony establishment across the season."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Deposited singly near aphid colonies — on leaves, stems, or directly among aphids. Females visually locate aphid aggregations before laying.",
+        "microclimate": "Wherever aphids are active; exposed to temperature variation.",
+        "spatialNotes": "Oak Vista: deposited on aphid-infested plants across the garden."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The hoverfly lays a tiny white egg right next to the aphids.",
+        "elementary": "Hoverfly females look for aphid colonies on plants and lay single white eggs near them. When the egg hatches, the hoverfly larva will be surrounded by food.",
+        "secondary": "Syrphidae aphidophagous species oviposit singly near aphid aggregations. Eggs are chalk-white, elongate, and deposited on leaves or stems within a few centimeters of feeding aphids. Female host-finding is strongly visual — aphid-colony recognition cues are well studied in this family.",
+        "university": "Syrphidae oviposition behavior in the aphidophagous subfamilies (Syrphinae) involves visual aphid-colony recognition and deposition within short larval-crawl distance of food. Egg coloration (chalk-white, matte) is species-variable but generally non-aposematic. Eggs hatch in 2–4 days at Central Valley summer temperatures."
+      },
+      "colorProgression": null,
+      "layingPattern": "Single chalky-white eggs placed near aphid colonies.",
+      "adaptiveSignificance": "Female visual recognition of aphid colonies matches larval crawl range — the egg is deposited where a first-instar larva can immediately find food."
+    },
+    "larva": {
+      "name": "hoverfly-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-25",
+            "peak": "--05-25",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Aphidophagous larval development — approximately two to three weeks."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Aphid-infested foliage and stems; larvae are translucent green to brown legless maggots that crawl slug-like across surfaces hunting aphids.",
+        "microclimate": "Exposed foliar — subject to full temperature and humidity variation.",
+        "spatialNotes": "Oak Vista: hunts aphids in the mixed herbaceous plantings and brassicas."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "A little green-brown larva crawls around eating aphids. It looks like a tiny slug but it is a helper.",
+        "elementary": "Hoverfly larvae are legless green or brown maggots that hunt aphids. They crawl across leaves, grab an aphid with their mouth hooks, and suck it dry. One larva can eat hundreds of aphids before it is ready to pupate.",
+        "secondary": "Syrphinae larvae are apodous, semi-translucent, and crawl slug-like over foliage, locating aphids by contact and grasping with paired mandibular hooks. Per-larva aphid consumption typically ranges from 400 to 1000 aphids through the three larval instars. This is among the highest aphid-suppression rates of any garden-relevant invertebrate.",
+        "university": "Syrphinae larvae are among the most significant aphidophagous arthropods in temperate agroecosystems — comparable to Coccinellidae and Chrysopidae in population-level suppression. Cryptic coloration (translucent green matching leaf tissue or brown matching stems) reduces bird predation. Developmental threshold approximately 10 °C; three larval instars over 8–15 days at Central Valley summer temperatures. Per-instar aphid consumption escalates; final-instar consumption dominates the total."
+      },
+      "feedingStrategy": "PREDATORY",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Legless slug-like crawl across foliage; aphid-hunting with mandibular hooks; cryptic coloration matching substrate.",
+      "instarProgression": "Three instars over 8–15 days; escalating aphid consumption rate through development."
+    },
+    "pupa": {
+      "name": "hoverfly-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-10",
+            "peak": "--06-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Puparium typically on foliage or in leaf litter; pupation duration 7–14 days."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "GROUND_SURFACE"
+          ]
+        },
+        "substrate": "Teardrop-shaped puparium attached to leaves, stems, or in surface leaf litter.",
+        "microclimate": "Somewhat sheltered but exposed to ambient conditions.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The larva turns into a little teardrop-shaped case before becoming a hoverfly.",
+        "elementary": "When a hoverfly larva has eaten enough aphids, it attaches to a leaf or falls to the ground and forms a teardrop-shaped pupa case. Inside, the larva transforms into an adult hoverfly.",
+        "secondary": "Syrphidae puparium is a hardened teardrop-shaped capsule formed from the cast larval cuticle (cyclorraphous Diptera). Pupation on foliage, leaf axils, or in litter. Duration typically one to two weeks at summer temperatures.",
+        "university": "Cyclorraphous puparium development; adult eclosion through anterior ptilinal rupture. Pupal vulnerability to generalist predators and hyperparasitoids is substantial — population losses at this stage are ecologically important. Overwintering in temperate populations commonly at prepupal or pupal stage in sheltered microsites."
+      },
+      "appearance": "Hardened teardrop-shaped puparium, tan to brown.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": null
+    },
+    "adult": {
+      "name": "hoverfly-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-15",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Multiple overlapping generations across the season."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW",
+            "WOODLAND_EDGE"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; hovering flight is a signature field behavior.",
+        "spatialNotes": "Oak Vista: pollination behavior across all flowering zones; conspicuous hovering adults near the herbaceous plantings."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The hoverfly is a bee-striped fly that hovers like a little helicopter in front of flowers.",
+        "elementary": "Adult hoverflies are black-and-yellow flies that look like small bees or wasps — but they can't sting. This is a disguise: predators avoid them because they think they are wasps. Adults drink nectar and eat pollen, and they pollinate many flowers.",
+        "secondary": "Syrphidae adults are distinguished by hovering flight and Batesian mimicry of Hymenoptera — yellow-and-black banding conveys apparent stinging capability to visual predators. They are significant pollinators, second only to bees in many temperate systems. Adults consume nectar for energy and pollen for protein (required for ovarian development).",
+        "university": "Syrphidae global pollinator importance: the family contributes substantially to pollination services in temperate agroecosystems, with foraging complementing rather than duplicating bee activity (different flower morphologies, different weather tolerances). Batesian mimicry of Hymenoptera is a widespread family-level defense; specific mimicry accuracy varies among genera. Dual-guild ecosystem role — aphid-predator larvae plus adult pollinators — makes Syrphidae a keystone garden-ecology family."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "anethum-graveolens",
+        "foeniculum-vulgare",
+        "daucus-carota",
+        "lobularia-maritima",
+        "eschscholzia-californica",
+        "calendula-officinalis"
+      ],
+      "ecologicalRole": "Pollinator (adult) and aphid-predator (larva) — dual-guild keystone.",
+      "lifespan": "Two to four weeks."
+    }
   },
   {
     "name": "convergent-ladybug",
@@ -67,9 +600,181 @@
       "secondary": "Hippodamia convergens (convergent ladybug) is the most abundant aphidophagous coccinellid in California's Central Valley. Adults and larvae are generalist aphid predators, capable of consuming 200–400 aphids per day at high prey density. Breeding at Oak Vista was confirmed in April 2026 with larval observations. Overwintered adults aestivate in montane sites and return to valley agricultural landscapes in spring, forming dense aggregations on aphid-infested plants. Unlike some coccinellids, H. convergens does not engage in suicidal dispersal away from high-quality habitat if prey density is sufficient. The species is native to California — do not purchase and release overwintered adults (aggregation-collected adults disperse immediately on release, providing no pest control value).",
       "university": "Hippodamia convergens (Guérin-Méneville, 1842) — Coleoptera: Coccinellidae. Confirmed breeding resident at Oak Vista, April 2026. Life history: 4 larval instars, each progressively more active; pupal stage on plant surface 3–7 days; adult lifespan up to 2 years with diapause. Functional response: Type II (inversely density-dependent above threshold); mean attack rate 11.4 aphids/hour in laboratory; field rate constrained by aphid alarm pheromone dispersal (E-β-farnesene). Overwintering ecology: adults migrate to Sierra Nevada foothill aggregation sites (>90,000 individuals/m²) following the first autumn cold front; return triggered by photoperiod and temperature cues in early March. Purchased overwintered adults are collected from aggregation sites — they are hormonally primed to disperse, rendering commercial release ecologically ineffective. Captive rearing from on-site stock is the only efficacious augmentation strategy."
     },
-    "guilds": ["PREDATOR"],
+    "guilds": [
+      "PREDATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Adults and larvae confirmed at Oak Vista April 2026. Breeding population established — do not release purchased overwintered adults. Preserve aphid refugia on border plants to maintain prey base."
+    "sightingNotes": "Adults and larvae confirmed at Oak Vista April 2026. Breeding population established — do not release purchased overwintered adults. Preserve aphid refugia on border plants to maintain prey base.",
+    "egg": {
+      "name": "convergent-ladybug-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-01",
+            "tail": "--09-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Oak Vista breeding confirmed April 2026. Egg clusters track aphid colony development."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Leaf undersides near aphid colonies — upright yellow-orange spindle-shaped eggs in tight clusters of 10–30.",
+        "microclimate": "Warm foliar microclimate; eggs hatch in 3–5 days at summer temperatures.",
+        "spatialNotes": "Oak Vista: April 2026 egg clusters observed on aphid-infested brassicas and in the herbaceous plantings."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The ladybug lays bright yellow eggs in tidy rows under leaves.",
+        "elementary": "Convergent ladybug females lay clusters of bright yellow-orange eggs on the undersides of leaves near aphid colonies. Each cluster may have 10 to 30 eggs standing up like tiny candles. The larvae that hatch will eat many aphids.",
+        "secondary": "Hippodamia convergens deposits clusters of upright spindle-shaped yellow-to-orange eggs on leaf undersides within foraging range of aphid colonies. Cluster sizes 10–30 are typical; cluster placement is cued by female visual assessment of prey density. Eggs hatch in 3–5 days under Central Valley conditions.",
+        "university": "Coccinellidae: Coccinellinae. Oviposition behavior shows strong density-dependence — female Hippodamia adjust cluster size and placement frequency based on aphid colony size. Sibling larvae exit a cluster together and initially forage as a group; sibling cannibalism of unhatched eggs by newly-emerged larvae is a documented within-clutch provisioning mechanism when aphid supply is inadequate. Confirmed breeding at Oak Vista April 2026."
+      },
+      "colorProgression": "Bright yellow-orange at laying; darkens toward hatching to show dark larva through chorion.",
+      "layingPattern": "Cluster of 10–30 upright spindle eggs on leaf underside near aphid colony.",
+      "adaptiveSignificance": "Cluster placement tuned by female visual assessment of local aphid density; sibling cannibalism provides fallback provisioning when prey density is marginal."
+    },
+    "larva": {
+      "name": "convergent-ladybug-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-25",
+            "peak": "--05-15",
+            "tail": "--09-30",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development 10–15 days across four instars at Central Valley summer temperatures."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Aphid-infested plants across the garden. Larvae are mobile predators, crawling between plants as local aphid supply is exhausted.",
+        "microclimate": "Foliar; full temperature exposure.",
+        "spatialNotes": "Oak Vista: active on brassicas, fava, and mixed herbaceous plantings."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "A tiny black-and-orange alligator-shaped bug hunts aphids on leaves.",
+        "elementary": "Ladybug larvae look like little spiny alligators — dark with orange markings. They hunt aphids all day, eating dozens per hour when they can find them. Most people don't realize they are baby ladybugs, but they are some of the best aphid-eaters in the garden.",
+        "secondary": "Hippodamia convergens larvae are mobile, elongate, dark with orange segmental markings — morphologically distinct from the adults and often misidentified. They pass through four instars over 10–15 days, consuming an estimated 200–400 aphids per larva. Final-instar consumption rate is the largest contribution to total aphid-kill.",
+        "university": "Coccinellidae larval morphology — elongate, sclerotized, strong mandibular apparatus — is a derived character distinguishing active predatory larvae from many other Cucujiformia. Four instars with geometric escalation in daily aphid consumption. Per-larva aphid consumption in Hippodamia is documented in the range 200–400 depending on aphid species and availability; final-instar consumption dominates total. Aposematic orange markings reinforce the family-level defensive reflex bleeding."
+      },
+      "feedingStrategy": "PREDATORY",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Spiny 'alligator' morphology frequently misidentified as a plant pest. Reflex bleeding (exuding yellowish hemolymph from leg joints when disturbed) is shared with adults.",
+      "instarProgression": "Four instars over 10–15 days; escalating consumption rate."
+    },
+    "pupa": {
+      "name": "convergent-ladybug-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--06-01",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupal stage 4–7 days at summer temperatures."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Attached by terminal abdominal cremaster to leaves or stems — exposed, not concealed.",
+        "microclimate": "Foliar; short pupal duration limits exposure.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The ladybug larva turns upside-down and becomes a spotted little cocoon before it is a ladybug.",
+        "elementary": "After eating enough aphids, a ladybug larva attaches itself to a leaf by its tail and becomes a pupa. It looks like a spotted orange-and-black bump for about a week, and then an adult ladybug climbs out — still soft and pale at first.",
+        "secondary": "Coccinellidae pupation is exposed — attachment by abdominal cremaster, no silken cocoon. Pupa is immobile but can twitch defensively when disturbed. Duration 4–7 days at Central Valley summer temperatures. Newly-eclosed adults are pale and softshelled; full coloration develops over 24–48 hours.",
+        "university": "Coccinellidae exposed pupation is unusual among Cucujiformia and relies on sclerotized pupal integument, aposematic coloration, and reflex-bleeding defense rather than substrate concealment. Ecdysis and initial adult expansion occur within minutes of cremaster attachment; elytral sclerotization and final pigmentation require 24–48 hours."
+      },
+      "appearance": "Orange with black markings — exposed on foliage, attached by cremaster. Shortshelled larval cuticle remnants often visible at the attachment point.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": null
+    },
+    "adult": {
+      "name": "convergent-ladybug-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--02-15",
+            "peak": "--04-15",
+            "tail": "--11-30",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Adults overwinter in aggregations; spring emergence February–March. Multiple generations through the summer. Some long-lived adults persist through late autumn."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW",
+            "CHAPARRAL"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny microsites for foraging; overwintering aggregations in sheltered leaf litter, chaparral slopes, and structural cavities.",
+        "spatialNotes": "Oak Vista: active across the whole garden; spring breeding confirmed April 2026."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Ladybugs are small red beetles with black dots. They eat aphids and help the garden.",
+        "elementary": "Hippodamia convergens is the orange-red ladybug with black spots and two white stripes where its head meets its wings — the 'converging' marks that give the species its name. Adults eat aphids, lay eggs near aphid colonies, and spend winter sleeping in big groups in sheltered places.",
+        "secondary": "Hippodamia convergens is identified by the converging white elytral markings on the pronotum — the namesake feature. Adults are aphidophagous across multiple aphid genera and supplement with pollen and nectar when aphid supply is scarce. The species is famous for migratory overwintering aggregations — California foothill and mountain slopes host dense aggregations of millions of individuals.",
+        "university": "Hippodamia convergens is a native western North American lady beetle with a documented seasonal migration behavior — adults aggregate in mountain chaparral and foothill sites for summer aestivation and winter diapause, then disperse to valley and foothill sites for spring breeding. Commercial collection of aggregating adults for biological control is widespread but ecologically dubious (released adults typically disperse rather than remaining at the garden). Conservation of native breeding at Oak Vista (confirmed April 2026) is preferable to purchased releases. Reflex bleeding — exudation of bitter isoquinoline alkaloid-containing hemolymph from leg joints — is shared with larvae."
+      },
+      "feedingHabit": "OMNIVOROUS",
+      "nectarSources": [
+        "eschscholzia-californica",
+        "calendula-officinalis",
+        "lobularia-maritima"
+      ],
+      "ecologicalRole": "Aphid predator; keystone garden biological-control species.",
+      "lifespan": "Approximately 4–8 weeks active; overwintering adults live 6–9 months total."
+    }
   },
   {
     "name": "ground-beetle",
@@ -85,9 +790,181 @@
       "secondary": "Carabidae is one of the most species-rich beetle families, with over 40,000 described species globally. Oak Vista representatives are in the subfamily Carabinae — large, fast, flightless (or flight-reduced) cursorial predators that occupy the apex of the soil-surface invertebrate food web. Diet is opportunistic: lepidopteran larvae (cutworms), dipteran pupae, slug eggs, weed seeds (many carabids are omnivores with granivorous behaviour supplementing predation). Nocturnal activity reduces overlap with diurnal parasitoid wasps. Confirmed resident at Oak Vista — ground beetles require undisturbed soil refugia and will abandon heavily tilled beds. The 21-day macropore recovery period post-rototilling applies equally to carabid population displacement.",
       "university": "Family Carabidae (Coleoptera) — confirmed resident apex invertebrate predator at Oak Vista, April 2026 ecological assessment. Functional role: top-down regulation of soil-surface prey including lepidopteran larvae, dipteran pupae, and slug populations. Foraging mode: olfactory detection of prey cuticle and movement vibration; stridulatory communication documented in some species. Habitat requirements: coarse soil refugia or surface debris for diurnal concealment; absence of broad-spectrum soil insecticide. Key management interaction: soil rototilling disrupts carabid refugia and eliminates pupal chambers — tillage event documentation in the soil domain enables recovery-period modelling. Granivory supplements predation: Carabidae consume weed seeds at rates up to 1,200 seeds/individual/day, providing measurable weed suppression where populations are maintained at high density."
     },
-    "guilds": ["APEX_PREDATOR"],
+    "guilds": [
+      "APEX_PREDATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Confirmed resident species observed at Oak Vista April 2026. Found under stones at garden bed margins. Nocturnal; daytime refugia under flat rocks and coarse mulch."
+    "sightingNotes": "Confirmed resident species observed at Oak Vista April 2026. Found under stones at garden bed margins. Nocturnal; daytime refugia under flat rocks and coarse mulch.",
+    "egg": {
+      "name": "ground-beetle-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-15",
+            "tail": "--09-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Soil-deposited; typical for family."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "GROUND_SURFACE",
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Moist soil or leaf litter; eggs deposited singly or in small clusters in protected chambers scraped by the female.",
+        "microclimate": "Cool, humid soil microclimate; protected from desiccation.",
+        "spatialNotes": "Oak Vista: expect in mulched bed margins and hedgerow leaf litter."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The beetle lays little eggs in soft soil under leaves.",
+        "elementary": "Ground beetle mothers dig small chambers in moist soil and lay their eggs there. The soil and leaves keep the eggs damp and safe.",
+        "secondary": "Carabidae oviposition is typically subterranean or in deep leaf litter; eggs require high humidity and protection from desiccation. Family-level egg morphology varies but white, soft-cuticled, moisture-dependent eggs are common.",
+        "university": "Carabidae reproductive ecology is diverse at family level — overwintering strategy (adult vs larva vs egg) varies by tribe. Soil-deposition is the family-level ancestral state; egg survival depends on sustained soil moisture and intact surface structure (mulch, litter, un-tilled soil)."
+      },
+      "colorProgression": null,
+      "layingPattern": "Singly or in small clusters in soil chambers.",
+      "adaptiveSignificance": null
+    },
+    "larva": {
+      "name": "ground-beetle-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-01",
+            "peak": "--06-15",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development spans weeks to months depending on species and generation."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "GROUND_SURFACE",
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Soil, leaf litter, and ground-surface debris — predatory foraging in the top few centimeters.",
+        "microclimate": "Cool, humid; strongly negatively phototactic.",
+        "spatialNotes": "Oak Vista: mulched bed margins and hedgerow litter are the primary carabid larval habitat."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "A little dark beetle baby hunts small bugs in the soil.",
+        "elementary": "Ground beetle larvae are long, dark, and fast-moving. They hunt through the soil and leaf litter, eating slugs, caterpillars, fly maggots, and other small invertebrates. They are garden heroes that almost nobody sees.",
+        "secondary": "Carabidae larvae are elongate, sclerotized, active predators with prominent mandibles. They forage at the soil surface and in surface litter, preying on slug eggs, dipteran maggots, lepidopteran pupae, and other soil-dwelling invertebrates. Three larval instars is typical; total larval duration varies from weeks (small species) to months (larger species).",
+        "university": "Carabidae larvae are among the most significant ground-surface invertebrate predators in temperate agroecosystems. Consumption preferences span slug and snail eggs, dipteran larvae, lepidopteran pupae, annelid worms, and conspecifics under high density. Negative phototaxis and substrate preference restrict adults and larvae to microhabitats with maintained surface cover — tillage, bare-soil practices, and mulch removal all degrade carabid populations substantially. Family-level overwintering strategies vary: some overwinter as larva, some as pupa, some as adult."
+      },
+      "feedingStrategy": "PREDATORY",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Cursorial predators — fast runners on the soil surface. Strongly negatively phototactic.",
+      "instarProgression": "Typically three instars."
+    },
+    "pupa": {
+      "name": "ground-beetle-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--05-15",
+            "peak": "--07-01",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupation in soil chamber; duration 1–3 weeks typical."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Earthen pupal chamber excavated by the prepupal larva; no silken cocoon.",
+        "microclimate": "Cool, humid, dark.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The ground beetle rests in a little soil room before it is a grown-up beetle.",
+        "elementary": "Ground beetle larvae dig a small chamber in the soil and become pupae there. The chamber keeps them safe while they transform.",
+        "secondary": "Carabidae pupate in earthen chambers excavated by the final-instar larva. Pupae are soft, pale, and highly vulnerable — the chamber's protection is essential. Duration typically 1–3 weeks.",
+        "university": "Subterranean pupation is family-level; vulnerability to tillage is a chronic Carabidae conservation concern. No-till systems and permanent mulched-bed margins preserve pupal survival and are directly correlated with elevated adult carabid populations."
+      },
+      "appearance": "Pale, soft, exarate pupa in earthen chamber.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": "Subterranean pupation exempts the stage from surface-active predators at the cost of tillage vulnerability."
+    },
+    "adult": {
+      "name": "ground-beetle-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-01",
+            "peak": "--05-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Adults are long-lived; many species active much of the year at Central Valley temperatures."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW",
+            "WOODLAND_EDGE"
+          ],
+          "moisture": "MESIC",
+          "light": "DAPPLED",
+          "layers": [
+            "GROUND_SURFACE"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Ground-surface; nocturnal in most species, cryptic by day under stones, boards, mulch, and dense litter.",
+        "spatialNotes": "Oak Vista: hedgerow and mulched bed margins are the primary refugia."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Shiny dark beetles run across the soil at night. They eat slugs and other bugs.",
+        "elementary": "Adult ground beetles are shiny, fast-running beetles that hunt at night. They eat slugs, caterpillars, and many garden pests. During the day they hide under rocks, boards, or thick mulch.",
+        "secondary": "Carabidae adults are cursorial, mostly nocturnal predators. Family-level morphology — long legs, large eyes, powerful mandibles — is a diagnostic predatory-beetle configuration. Adults eat invertebrate prey across a broad range; some genera are weed-seed consumers. Typical adult lifespan one to three years — unusually long for beetles.",
+        "university": "Carabidae adult ecology is central to temperate-zone biological control of ground-active pests. Many genera are obligate carnivores; others (Harpalini, some Amarini) are significant weed-seed predators — a less-known ecosystem service with measurable agronomic impact. Multi-year adult lifespan supports phenologically uncoupled predator-prey relationships across generations. Conservation depends on ground cover, reduced tillage, and beetle-bank habitat configurations."
+      },
+      "feedingHabit": "PREDATORY",
+      "nectarSources": [],
+      "ecologicalRole": "Ground-surface generalist predator; in some genera also a weed-seed consumer. Keystone soil-surface invertebrate community member.",
+      "lifespan": "Many species 1–3 years; unusually long for beetles."
+    }
   },
   {
     "name": "crane-fly",
@@ -103,9 +980,186 @@
       "secondary": "Tipulidae larvae (leatherjackets) are saprophagous decomposers — they feed primarily on decomposing organic matter in the soil, shredding dead roots, leaf litter, and compost into smaller fragments and inoculating material with gut bacteria that accelerate decomposition. In agricultural contexts with monocultures, leatherjacket density can occasionally exceed levels at which root feeding damage occurs, but in diverse garden settings with adequate organic matter the species occupies a benign decomposer niche. Adults are short-lived (3–5 days), feeding minimally if at all; their ecological service is to transfer soil organic matter nutrients into the aerial food web as prey for birds (especially robins and thrushes) and arachnids.",
       "university": "Family Tipulidae (Diptera) — one of the largest dipteran families. At Oak Vista, larvae function as saprophagous decomposers in the soil food web, contributing to litter comminution and nutrient cycling. Larval ecology: Tipula spp. leatherjackets are univoltine or bivoltine; larvae overwinter in soil, pupate in spring, and adults emerge April–June in California. The larval gut microbiome (Enterobacteriaceae, Bacteroidetes) degrades lignocellulosic material via enzymatic pathways — each larva represents a concentrated microbial bioreactor for cellulose degradation. Population density at Oak Vista is consistent with decomposer function (not pest-level root feeding). Adult phenology aligns with spring emergence of avian insectivore breeding season, making crane flies a significant food web transfer node from soil organic matter to vertebrate biomass."
     },
-    "guilds": ["DECOMPOSER"],
+    "guilds": [
+      "DECOMPOSER"
+    ],
     "beneficial": true,
-    "sightingNotes": "Adults observed at Oak Vista during evening hours, April 2026. Larvae present in soil — not at pest-level density. Beneficial decomposer function confirmed."
+    "sightingNotes": "Adults observed at Oak Vista during evening hours, April 2026. Larvae present in soil — not at pest-level density. Beneficial decomposer function confirmed.",
+    "egg": {
+      "name": "crane-fly-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--04-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Multiple generations; peaks vary by species and moisture regime."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "RIPARIAN",
+            "WETLAND"
+          ],
+          "moisture": "HYDRIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "GROUND_SURFACE",
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Moist soil, wet organic matter, or shallow water — depending on species.",
+        "microclimate": "High humidity essential; eggs are vulnerable to desiccation.",
+        "spatialNotes": "Oak Vista: irrigated beds, compost margins, and any permanent moist soil."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The crane fly lays tiny black eggs in wet soil.",
+        "elementary": "Crane fly mothers flutter low over damp soil and lawns, laying small dark eggs as they touch down. The eggs need wet conditions to survive.",
+        "secondary": "Tipulidae eggs are small, dark, smooth, and deposited by the female during rapid low-level flight or brief substrate contact. Species vary widely in microhabitat: aquatic, semi-aquatic, or moist-terrestrial. Desiccation tolerance is low across the family.",
+        "university": "Tipulidae oviposition is family-level conserved in substrate-contact flight mode but diverse in specific site selection — aquatic-sediment species, bog-pool species, moist-soil species, organic-matter specialists. Egg survival directly tracks sustained moisture; this is an important garden-level limiting factor."
+      },
+      "colorProgression": null,
+      "layingPattern": "Small dark eggs deposited in moist soil or organic matter during low rapid flight.",
+      "adaptiveSignificance": null
+    },
+    "larva": {
+      "name": "crane-fly-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-01",
+            "peak": "--10-15",
+            "tail": "--03-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Leatherjacket larvae may overwinter; some populations complete development in one season, others span two."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "RIPARIAN",
+            "WETLAND"
+          ],
+          "moisture": "HYDRIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "SUBTERRANEAN",
+            "GROUND_SURFACE"
+          ]
+        },
+        "substrate": "Saturated soil, decaying organic matter, thatch in lawns. Larvae feed on decomposing plant material, fine roots, and fungal hyphae.",
+        "microclimate": "Saturated or near-saturated soil moisture essential.",
+        "spatialNotes": "Oak Vista: compost heap margins, irrigated bed soil, and any permanent wet ground."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "A fat grey-brown worm lives in wet soil — it's a baby crane fly.",
+        "elementary": "Crane fly larvae are called 'leatherjackets' because of their tough grey-brown skin. They live in wet soil and eat rotting plant material, roots, and fungi. They are mostly decomposers that help turn dead plant matter back into soil, though sometimes they nibble lawn roots.",
+        "secondary": "Tipulidae larvae (leatherjackets) are apodous, grayish-brown, tough-integumented maggots ranging from a few millimeters to over 4 cm. Feeding habits are principally saprophagous — decaying organic matter — with fine-root grazing secondary. Moisture requirement is high; larvae migrate to depth during dry spells and resurface with irrigation or rainfall.",
+        "university": "Tipulidae larval ecology is dominantly saprophagous-decomposer, with root grazing representing the secondary and more nuisance-visible behavior (turf damage in British and maritime lawns; minor in Central Valley irrigated systems). Ecosystem role is substantial in nutrient cycling in moist soil systems. Overwintering at leatherjacket stage is common; adult emergence in spring tracks accumulated soil warmth."
+      },
+      "feedingStrategy": "DETRITIVORE",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Tough integument (the 'leatherjacket' name); migrates vertically in the soil column with moisture.",
+      "instarProgression": "Four instars; duration variable by species and moisture."
+    },
+    "pupa": {
+      "name": "crane-fly-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--02-15",
+            "peak": "--04-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupation near soil surface; duration short (days to two weeks)."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "RIPARIAN",
+            "WETLAND"
+          ],
+          "moisture": "HYDRIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "GROUND_SURFACE"
+          ]
+        },
+        "substrate": "Soil surface or shallow subsurface; pupa extends its respiratory horns above surface in many species.",
+        "microclimate": "Moist, sheltered.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The crane fly's pupa sits right under the soil before a new crane fly pokes out.",
+        "elementary": "When a leatherjacket is ready to become an adult crane fly, it forms a pupa near the soil surface with little breathing horns poking up. After a few days, the pupa cracks open and a long-legged crane fly climbs out.",
+        "secondary": "Tipulidae pupae are active — capable of wriggling vertically — and bear prominent thoracic respiratory horns projecting above the soil surface. Pupal duration is short (typically under two weeks); adults eclose by pushing the anterior of the pupa above the soil surface before wing expansion.",
+        "university": "Obtect pupae with thoracic respiratory horns — a feature shared with several ancestral Diptera lineages. Emergence mechanism relies on the pupa's ability to rise partially above the soil surface before adult eclosion, which strongly couples emergence success to surface moisture and substrate integrity."
+      },
+      "appearance": "Obtect pupa with prominent thoracic respiratory horns.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": null
+    },
+    "adult": {
+      "name": "crane-fly-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--02-15",
+            "peak": "--04-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Adults seasonally abundant at Central Valley temperatures; peak emergence tracks post-rain soil moisture."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "RIPARIAN",
+            "WETLAND",
+            "WOODLAND_EDGE"
+          ],
+          "moisture": "MESIC",
+          "light": "DAPPLED",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Cool, humid, often crepuscular; adults gather in sheltered moist areas during the day.",
+        "spatialNotes": "Oak Vista: frequent at porch lights on warm spring evenings and along riparian edges."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Big long-legged flies that look like giant mosquitoes — but they don't bite.",
+        "elementary": "Adult crane flies are sometimes called 'daddy long-legs' (though that name really belongs to spiders). They have long thin legs that break off easily and weak fluttering flight. They don't bite anything — many adults don't even eat. They live only a few days and their job is to find a mate.",
+        "secondary": "Tipulidae adults have a characteristic long-legged, long-bodied form frequently mistaken for large mosquitoes. Most species have vestigial or non-functional mouthparts and do not feed as adults — adult lifespan is short (days to a week or two), focused on reproduction. Legs are easily autotomized as a predator-escape response.",
+        "university": "Adult Tipulidae non-feeding strategy is a derived family-level trait — larval feeding is the sole acquisition stage, and adult survival is resource-limited by larval-accumulated reserves. This places the family in the rare NON_FEEDING adult category (with adult mayflies and a few other taxa). Leg autotomy is a predator-escape adaptation — a leg left in a spider web is a cheap price for escape."
+      },
+      "feedingHabit": "NON_FEEDING",
+      "nectarSources": [],
+      "ecologicalRole": "Adult is primarily reproductive stage; substantial prey base for bats, birds, and predatory invertebrates.",
+      "lifespan": "Typically 3–10 days."
+    }
   },
   {
     "name": "field-roach",
@@ -121,9 +1175,99 @@
       "secondary": "Blattella vaga is a native outdoor cockroach species widespread in California gardens and scrubland. Unlike the synanthropic German and American cockroaches, B. vaga is strictly outdoor-dwelling and feeds primarily on decomposing plant material and detritus. It occupies a dual ecological role: saprophagous decomposer in the detrital food web, and basal prey item for insectivorous vertebrates (lizards, toads, songbirds). The species is oothecal — females carry the egg case externally until near hatching, giving it high reproductive resilience to microhabitat disturbance. Ground-level surface refugia (coarse mulch, rocks, boards) support population persistence. Its presence is a reliable indicator of structural habitat heterogeneity supporting invertebrate biodiversity.",
       "university": "Blattella vaga (Hebard, 1917) — Blattodea: Ectobiidae. A phytosaprophagous, peridomestic outdoor species with no synanthropic tendency. Ecological function: detritivore-decomposer processing leaf litter and dead root material in the garden soil surface layer; simultaneously transfers stored energy into the vertebrate food web as prey. Oothecal biology: the egg case is carried externally by the female for approximately 28 days, protecting eggs from soil-borne fungi and predation until near-term. Oak Vista management note: coarse mulch layers provide optimal B. vaga microhabitat — their decomposer function complements the mulch decomposition pathway, and their presence maintains vertebrate insectivore populations that in turn suppress flying pest insects."
     },
-    "guilds": ["DECOMPOSER", "FOOD_WEB"],
+    "guilds": [
+      "DECOMPOSER",
+      "FOOD_WEB"
+    ],
     "beneficial": true,
-    "sightingNotes": "Confirmed Oak Vista resident; found under flat stones and straw mulch. Strictly outdoor species — no indoor control warranted. Population supports garden lizard and toad activity."
+    "sightingNotes": "Confirmed Oak Vista resident; found under flat stones and straw mulch. Strictly outdoor species — no indoor control warranted. Population supports garden lizard and toad activity.",
+    "egg": {
+      "name": "field-roach-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--06-15",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Ootheca production tracks adult female activity across the season."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "HEDGEROW",
+            "BARE_GROUND",
+            "COMPOST_HEAP"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "GROUND_SURFACE"
+          ]
+        },
+        "substrate": "Ootheca (purse-like egg case) deposited or carried by the female in protected surface microsites — leaf litter, stone margins, mulch, surface debris.",
+        "microclimate": "Humid, sheltered ground surface; avoids direct sun and extreme dry.",
+        "spatialNotes": "Oak Vista: expect oothecae in hedgerow leaf litter, compost margins, and mulched bed edges."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The field roach mother carries her babies in a little brown purse until they are ready to hatch.",
+        "elementary": "Field roaches are wild cockroaches that live in leaf litter and hedgerows — not house pests. The female makes a small brown purse-shaped egg case called an ootheca. She may carry it attached to her abdomen or hide it in protected debris. Many young roaches hatch from one case.",
+        "secondary": "Blattodea reproductive strategy — ootheca production — is a family-level character. The ootheca is a hardened purse-like egg case produced by the female and either carried externally attached to the abdomen (many species) or deposited in protected microsites. Egg numbers per ootheca range from several to several dozen depending on species.",
+        "university": "Ootheca construction involves secretion of protein-based sheath material by the female colleterial glands; a hardened capsule protects eggs against desiccation and predation. Maternal carrying of the ootheca (an ancestral Blattodea character retained in many wild taxa) provides additional protection against environmental fluctuation. Field-roach species occupy wild-edge and detrital habitats distinct from the small subset of synanthropic pest Blattodea — most species never enter human structures."
+      },
+      "colorProgression": "Ootheca starts pale, tans to dark brown as chitin hardens.",
+      "layingPattern": "Single ootheca carried by female or deposited in protected debris.",
+      "adaptiveSignificance": "Maternal carrying of the ootheca in many species extends parental protection beyond egg deposition."
+    },
+    "larva": null,
+    "pupa": null,
+    "adult": {
+      "name": "field-roach-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--06-15",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Adults active across the growing season; overwintering by late-instar nymphs or adults in sheltered microsites."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "HEDGEROW",
+            "BARE_GROUND",
+            "COMPOST_HEAP"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "GROUND_SURFACE"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Cool, humid, sheltered; nocturnal and cryptic.",
+        "spatialNotes": "Oak Vista: detrital microhabitats — hedgerow leaf litter, compost margins, mulch piles, stone walls."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Little brown roaches live under leaves and logs. They are not house roaches — they live outside and eat old leaves.",
+        "elementary": "Field roaches are outdoor cockroaches that stay in wild places, not houses. They hide under leaves, logs, or rocks and come out at night to eat rotting plants, fungi, and small bits of organic matter. They help break down dead leaves and recycle nutrients into soil.",
+        "secondary": "Wild Blattodea are important detritivores in temperate ground-surface communities. Field roach adults (Ectobius, Parcoblatta, or regional equivalents) are small, dark, nocturnal, and non-synanthropic — ecologically distinct from the few commensal pest species (Blattella germanica, Periplaneta americana) that dominate public perception of the order. Adult feeding is saprophagous-omnivorous across decaying vegetation, fungi, and small invertebrate material.",
+        "university": "Blattodea ecology is dominated by wild detritivorous species with crucial roles in nutrient cycling; the synanthropic pest subset is a small tail of the order. Field-roach populations are sensitive to intact leaf-litter structure and are reliable indicators of undisturbed ground-surface microhabitat. Central Valley species are typically univoltine or bivoltine with nymphal or adult overwintering."
+      },
+      "feedingHabit": "OMNIVOROUS",
+      "nectarSources": [],
+      "ecologicalRole": "Ground-surface detritivore; nutrient cycling; invertebrate-community prey base for Carabidae and spiders.",
+      "lifespan": "Adults typically 2–6 months; some overwintering adults up to a year."
+    }
   },
   {
     "name": "native-sweat-bee",
@@ -139,9 +1283,186 @@
       "secondary": "Halictus spp. (sweat bees) are primitively eusocial bees — colonies consist of a mated queen and a small number of female workers, persisting only through one season. They are ground-nesting, excavating burrows in bare or sparsely vegetated soil. As pollinators, Halictus are polylectic (broad flower generalists) and effective cross-pollinators of Solanaceae, Asteraceae, and Cucurbitaceae. They carry pollen in scopae on the hind legs rather than in corbiculae (as honey bees do), releasing more pollen during foraging, which improves cross-pollination efficiency. In tomato cultivation, buzz pollination (sonication) — vibrational pollen release — is performed by native bees including Halictus, but not by honey bees, making native bee communities essential for tomato yield.",
       "university": "Genus Halictus (Hymenoptera: Halictidae) — primitively eusocial, ground-nesting pollinators. At Oak Vista, confirmed floral visitor to tomato, dill, and Asteraceae flowers, April 2026. Pollination ecology: Halictus performs buzz pollination (sonication) on tomato flowers — thoracic muscles decouple from wings and vibrate at 200–400 Hz, releasing pollen from poricidal anthers; honey bees are incapable of this behaviour. Nesting habitat: bare mineral soil or sparsely vegetated areas adjacent to flower sources — management implication: retain unvegetated soil patches at bed margins. Pesticide sensitivity: ground nests concentrate topically applied systemic insecticides; imidacloprid soil drenches are contraindicated in sweat bee habitat. Population density tracks floral resource availability — diversity of bloom periods across the season sustains populations."
     },
-    "guilds": ["POLLINATOR"],
+    "guilds": [
+      "POLLINATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Multiple individuals documented visiting tomato flowers April 2026. Buzz pollination behaviour observed. Ground nests suspected in bare soil patch at east bed margin."
+    "sightingNotes": "Multiple individuals documented visiting tomato flowers April 2026. Buzz pollination behaviour observed. Ground nests suspected in bare soil patch at east bed margin.",
+    "egg": {
+      "name": "native-sweat-bee-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-01",
+            "tail": "--09-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Egg-laying inside ground nest cells; tracks female provisioning cycle."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Ground nest — a single egg deposited on a provisioned pollen-nectar ball inside an earthen cell at the terminus of a short burrow.",
+        "microclimate": "Stable below-ground microclimate; insulated from surface temperature variation.",
+        "spatialNotes": "Oak Vista: exposed friable bare ground patches and pathway edges support native halictid nesting."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The bee mother lays one egg on a little ball of pollen inside her underground nest.",
+        "elementary": "Sweat bees dig small tunnels in bare soil and make cells at the end. They fill each cell with a ball of pollen and nectar, lay one egg on it, and seal it up. The larva eats the ball as it grows.",
+        "secondary": "Halictidae mass-provision individual cells — each cell receives a pollen-nectar ball sufficient for a single larva's complete development, and one egg is deposited on the provisioned mass before the cell is sealed. Cells are arranged radially or linearly from the main burrow at the female's chosen nesting site.",
+        "university": "Halictidae exhibit wide social-behavior variation: solitary, communal, semi-social, primitively eusocial. Halictus spp. at the Oak Vista latitude are typically primitively eusocial — a foundress-produced first brood of worker-caste females assists subsequent provisioning. Mass-provisioning reproductive strategy — one cell, one egg, one pollen mass — is family-level."
+      },
+      "colorProgression": null,
+      "layingPattern": "One egg per cell, placed on a mass-provisioned pollen-nectar ball.",
+      "adaptiveSignificance": "Complete larval provisioning at egg-lay eliminates parent-larva interaction; each cell is a self-contained development unit."
+    },
+    "larva": {
+      "name": "native-sweat-bee-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-25",
+            "peak": "--05-15",
+            "tail": "--09-30",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development in sealed cell, consuming the pollen-nectar provision."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Inside sealed earthen cell; consumes pre-provisioned pollen-nectar ball.",
+        "microclimate": "Stable below-ground; insulated.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The tiny bee larva eats its pollen ball until it is ready to change.",
+        "elementary": "Sweat bee larvae are pale, grub-like, and legless. They stay in their sealed cell and eat the whole pollen-nectar ball their mother provided, growing bigger as they eat. When they finish, they are ready to transform into the next stage.",
+        "secondary": "Halictidae larvae are apodous, pale, and develop entirely on the mass-provisioned resource in a sealed earthen cell. No adult-larva interaction occurs post-laying. Development through several instars; final instar eliminates meconium before pupation.",
+        "university": "Mass-provisioning development constrains larval fitness entirely to provision quality and cell integrity — two axes where nest-site selection and foraging success by the foundress determine brood success. No nursing, no behavioral adjustment during development."
+      },
+      "feedingStrategy": "PHYTOPHAGOUS",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "No adult-larva contact post-egg-laying — strictly mass-provisioned development.",
+      "instarProgression": "Typically five instars; final-instar meconium elimination precedes pupation."
+    },
+    "pupa": {
+      "name": "native-sweat-bee-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--06-01",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupal stage in sealed cell; many individuals overwinter as prepupae or pupae."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Sealed earthen cell; no cocoon.",
+        "microclimate": "Stable below-ground; insulated.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The bee rests quietly in her little soil room before she is grown up.",
+        "elementary": "After eating all its pollen ball, the sweat bee larva becomes a pupa inside the sealed cell. Its body changes into the adult bee shape. Some species wait through the winter as pupae before coming out the next spring.",
+        "secondary": "Halictidae pupation occurs within the natal cell — no external cocoon. Pupal duration is weeks in summer generations or extends through diapause as prepupa or pupa in overwintering generations. Adult emergence is by upward digging through the nest's shared burrow.",
+        "university": "Cell-internal exarate pupation; emergence by burrow-shared egress. Overwintering strategy is species-specific — Halictus spp. generally overwinter as mated foundresses, but prepupal or pupal diapause occurs in some congeners. Nest-site stability across years is important for population persistence."
+      },
+      "appearance": "Pale exarate pupa in sealed earthen cell.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": null
+    },
+    "adult": {
+      "name": "native-sweat-bee-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-01",
+            "peak": "--04-15",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Foundress emergence in early spring; worker-brood emergence summer; reproductive-brood emergence late summer. Mated foundresses overwinter."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "BARE_GROUND",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; active at temperatures cooler than honey-bee threshold (forages earlier in the day and earlier in the season).",
+        "spatialNotes": "Oak Vista: regular visitors to cosmos, dill umbels, mixed herbaceous plantings, and native wildflowers."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Small shiny green bees visit the flowers — they sometimes land on people to drink sweat!",
+        "elementary": "Native sweat bees are small — smaller than a honeybee — and many shine metallic green or bronze. They visit many kinds of flowers and are important native pollinators. On hot days they sometimes land on people to drink sweat, which is where the name comes from.",
+        "secondary": "Halictidae (sweat bees) are broadly polylectic pollinators with body sizes smaller than most Apis; metallic green or bronze coloration is common. They are often cooler-temperature tolerant than Apis and forage earlier/later in the day and earlier/later in the season — important for pollination of early-spring and late-autumn blooming species. Facultative halic­tid sweat-drinking (sodium-seeking) is the behavioral source of the common name.",
+        "university": "Halictidae global pollinator importance: the family is the second or third most important temperate-zone pollinator after Apidae. Broad polylecty — generalized floral visitation across many plant families — complements specialist bee service. Metallic coloration is family-level in Halictinae (often structural green/blue); dull coloration in Rophitinae. Native halictid populations are significantly supported by maintained bare-ground nesting microhabitat — a resource often inadvertently eliminated by heavy mulching."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "cosmos-bipinnatus",
+        "anethum-graveolens",
+        "foeniculum-vulgare",
+        "lobularia-maritima",
+        "calendula-officinalis",
+        "eschscholzia-californica"
+      ],
+      "ecologicalRole": "Native generalist pollinator; cool-weather and small-flower specialist complement to Apis.",
+      "lifespan": "Foundress adults overwinter (8–10 months including diapause); worker caste adults 4–8 weeks."
+    }
   },
   {
     "name": "grey-mining-bee",
@@ -157,9 +1478,185 @@
       "secondary": "Andrena spp. (mining bees) are solitary ground-nesting bees with one of the earliest spring flight periods of any California bee genus, making them critical pollinators for early-season crops and flowering plants when colony-founding queens of social species are not yet active. Females excavate vertical burrows 10–30 cm deep with lateral cells provisioned with pollen-nectar masses (bee bread). Andrena are oligolectic — some species are highly specialised on particular plant families, though many Oak Vista residents are generalist pollinators of Rosaceae, Solanaceae, and Asteraceae. The male emergence (often 1–2 weeks before females) and nuptial flight create a brief but visible spring emergence spectacle.",
       "university": "Genus Andrena (Hymenoptera: Andrenidae) — solitary ground-nesting bees; >300 California species. At Oak Vista, documented in April 2026 foraging on early-season flowers and tomato blooms. Nesting biology: females excavate individual burrows in compacted bare soil; nest provisions consist of pollen-nectar masses (bee bread) oviposited directly and sealed per cell — no progressive provisioning. Pollen-host specialisation varies: some Andrena spp. are strictly oligolectic on Apiaceae or Asteraceae; generalist species forage across multiple plant families. Management relevance: bare soil patches are obligate nesting habitat — mulch coverage over the entire garden surface would eliminate nesting substrate and drive local population collapse. Andrena are strongly temperature-sensitive: flight activity ceases below 10°C; optimal foraging temperature 18–25°C."
     },
-    "guilds": ["POLLINATOR"],
+    "guilds": [
+      "POLLINATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Confirmed foraging at Oak Vista April 2026. Ground nesting burrows observed in bare soil patch adjacent to east bed. Treat as indicator species for soil surface habitat quality."
+    "sightingNotes": "Confirmed foraging at Oak Vista April 2026. Ground nesting burrows observed in bare soil patch adjacent to east bed. Treat as indicator species for soil surface habitat quality.",
+    "egg": {
+      "name": "grey-mining-bee-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--02-15",
+            "peak": "--03-15",
+            "tail": "--05-01",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Egg-laying concentrated in the brief early-spring flight season."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Solitary ground nest; single cell with mass-provisioned pollen-nectar loaf and one egg.",
+        "microclimate": "Below-ground; stable temperature buffered from surface variation.",
+        "spatialNotes": "Oak Vista: bare-ground patches and path edges are prime Andrena nest habitat."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Mining bee mothers lay one egg on a pollen ball in a little underground room.",
+        "elementary": "Andrena mining bees are solitary — each female digs her own nest tunnel, makes cells, and provisions each cell with a pollen loaf before laying a single egg. There is no queen and no workers; every female is a mother.",
+        "secondary": "Andrenidae are solitary, mass-provisioning ground-nesters. Females excavate a short tunnel with one or more terminal cells, each provisioned with a pollen-nectar loaf and sealed after egg-laying. Species are typically early-spring univoltine — foundresses emerge, provision, die, and the brood overwinters in cells.",
+        "university": "Andrenidae reproductive biology: solitary with frequent nest-site aggregation (multiple unrelated females nesting in shared optimal soil patches — 'communal' in the loose sense without cooperative brood care). Mass-provisioning reproductive strategy. Univoltinism is common in the genus; brood overwintering as post-defecating larvae or prepupae is typical. Pollen diet varies from oligolectic specialists (restricted to one or a few host-plant genera) to broad polylectic generalists."
+      },
+      "colorProgression": null,
+      "layingPattern": "One egg per cell on mass-provisioned pollen loaf.",
+      "adaptiveSignificance": null
+    },
+    "larva": {
+      "name": "grey-mining-bee-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-01",
+            "peak": "--04-01",
+            "tail": "--06-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Rapid larval development on provisioned loaf; larva remains in cell through summer as post-defecating larva."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Sealed earthen cell.",
+        "microclimate": "Stable below-ground.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The little bee larva eats its pollen loaf in its underground room.",
+        "elementary": "The mining bee larva eats the pollen loaf its mother provided, growing quickly into a pale grub. When it finishes the food, it stops eating and waits inside the sealed cell — sometimes for many months — until spring.",
+        "secondary": "Andrenidae larvae are apodous grubs developing on the single provisioned loaf. Post-feeding (post-defecation) larvae enter a prolonged dormant state in the sealed cell, spanning summer and autumn before pupation and spring emergence.",
+        "university": "Post-defecating larva is a distinct physiological state — feeding completed, meconium eliminated, larva entering diapause within the cell. This is the common Andrena overwintering morphotype and a critical vulnerability point: soil disturbance during this long quiescence — nearly nine months of the year — destroys populations irreversibly for the season."
+      },
+      "feedingStrategy": "PHYTOPHAGOUS",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Post-defecating larval diapause — a nine-month below-ground quiescence through summer, autumn, and winter.",
+      "instarProgression": "Five instars of rapid development, then extended post-defecating quiescence."
+    },
+    "pupa": {
+      "name": "grey-mining-bee-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--01-15",
+            "peak": "--02-01",
+            "tail": "--03-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Late-winter pupation precedes early-spring adult emergence."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "SUBTERRANEAN"
+          ]
+        },
+        "substrate": "Sealed earthen cell.",
+        "microclimate": "Stable below-ground.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The bee transforms in her little soil room just before spring.",
+        "elementary": "Late in winter, the mining bee pupa transforms inside its cell. Adults climb out in early spring — sometimes before many flowers are blooming, which is why they depend on early-flowering plants.",
+        "secondary": "Andrenidae pupation occurs in the natal cell in late winter; adult emergence by upward digging timed to accumulated soil warmth and local host-plant bloom onset.",
+        "university": "Andrena overwintering phenology couples adult emergence tightly to early-spring bloom — a critical mutualism with early Fabaceae, Brassicaceae, and Rosaceae. Mismatches due to climate variability are a documented pollination-limitation source. Emergence synchrony within nest aggregations is driven by shared soil thermal regime."
+      },
+      "appearance": "Pale exarate pupa in sealed earthen cell.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": null
+    },
+    "adult": {
+      "name": "grey-mining-bee-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--02-01",
+            "peak": "--03-01",
+            "tail": "--05-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Brief early-spring flight season. Females active for approximately 4–6 weeks during peak bloom of early-flowering host plants."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "BARE_GROUND",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; cool-weather tolerant — active in conditions too cool for honey bees.",
+        "spatialNotes": "Oak Vista: early-spring visitors to Salix catkins, early-flowering Brassicaceae, and wild mustards."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Fuzzy grey bees visit early spring flowers. They live only a short time.",
+        "elementary": "Grey mining bees are furry grey bees that fly in late winter and early spring. Each female digs her own nest in the ground. They are short-lived but very important pollinators for early-flowering plants — they are out when most other bees are still waiting for warmer weather.",
+        "secondary": "Andrena spp. are early-spring solitary pollinators with adult flight seasons of approximately 4–6 weeks. Females show a fuzzy grey or brown pubescence and collect pollen on hind-leg scopae. Cool-weather tolerance extends foraging earlier in the day and earlier in the season than Apis — making the genus critical for early-flowering plant pollination.",
+        "university": "Andrena is the largest bee genus — over 1500 species globally — and collectively the single most important early-spring native pollinator clade in temperate zones. Foraging efficiency at low temperatures depends on dense pilosity (insulation) and thoracic heating; these enable activity at air temperatures below Apis thresholds. Bare-ground nesting habitat is the primary population-limiting factor in managed landscapes — mulched, hard-packed, or heavily compacted soil eliminates nesting potential."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "salix-lasiolepis",
+        "brassica-rapa",
+        "eschscholzia-californica",
+        "prunus-armeniaca"
+      ],
+      "ecologicalRole": "Early-spring pollinator specialist; critical for early-flowering wild and orchard plants before Apis activity peaks.",
+      "lifespan": "Adult females 4–6 weeks; males shorter."
+    }
   },
   {
     "name": "valley-carpenter-bee",
@@ -175,9 +1672,190 @@
       "secondary": "Xylocopa varipuncta is one of California's largest bees and the dominant native pollinator at Oak Vista based on April 2026 observations. Sexual dimorphism is extreme: females are solid metallic black; males are golden-tan. Females nest in dry dead wood, excavating galleries with jaws and vibrating mandibles. As large-bodied bees with powerful thoracic musculature, X. varipuncta are among the most effective buzz pollinators of poricidal-anthered crops (tomatoes, peppers, eggplants). They are robustness specialists — their size and vibration frequency (300–400 Hz) efficiently releases pollen from Solanum-type anthers where smaller bees struggle. Xylocopa are solitary with minimal social structure: a single female provisions each cell independently.",
       "university": "Xylocopa varipuncta (Patton, 1879) — Hymenoptera: Apidae: Xylocopinae. The most visually prominent native bee at Oak Vista; abundant throughout April 2026 assessment. Buzz pollination physiology: thoracic indirect flight muscles decouple from wing movement and contract isometrically at frequencies of 280–420 Hz, generating vibrations transmitted to the flower via contact; this releases pollen from poricidal anthers of Solanaceae (tomato, pepper) at rates 2–5× higher than wind dispersal alone. Nesting biology: females excavate galleries 15–30 cm deep in dry seasoned wood; each gallery contains 6–10 cells provisioned with pollen-nectar paste; multivoltine in Chico with emergence peaks April and August. Longevity: adult females live up to 3 years — among the longest-lived North American bees. Management: retain dead wood snags and unpainted fence posts as nesting substrate."
     },
-    "guilds": ["POLLINATOR"],
+    "guilds": [
+      "POLLINATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Abundant at Oak Vista April 2026 — multiple males and females observed foraging on tomato, sage, and dill flowers. Nesting in old fence post at property edge confirmed. Key pollinator for tomato buzz pollination."
+    "sightingNotes": "Abundant at Oak Vista April 2026 — multiple males and females observed foraging on tomato, sage, and dill flowers. Nesting in old fence post at property edge confirmed. Key pollinator for tomato buzz pollination.",
+    "egg": {
+      "name": "valley-carpenter-bee-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-01",
+            "peak": "--05-15",
+            "tail": "--08-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Egg-laying in wood galleries follows gallery excavation in mid-to-late spring."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "WOODLAND_EDGE",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "SHRUB_LAYER",
+            "UNDERSTORY"
+          ]
+        },
+        "substrate": "Dead or decaying wood galleries — female excavates a tunnel system with linearly-arranged cells partitioned by chewed-wood septa.",
+        "microclimate": "Insulated gallery microclimate; temperature-buffered vs. ambient.",
+        "spatialNotes": "Oak Vista: dead limbs, old fence posts, weathered structural lumber — especially soft woods like oak and eucalyptus snags."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The big black carpenter bee drills a tunnel in dead wood and lays one egg on a pollen ball in each little room.",
+        "elementary": "Xylocopa varipuncta females chew round tunnels into dead wood, then make cells inside. Each cell gets a pollen-nectar ball and one egg. The mother partitions cells with walls made of chewed-up wood.",
+        "secondary": "Xylocopa cells are arranged linearly in a bored gallery; each cell receives a single mass-provisioned pollen-nectar loaf and one egg. Cells are separated by partitions of chewed-wood fragments cemented with saliva. Egg-laying follows individual gallery completion.",
+        "university": "Xylocopa large-bee solitary biology: females invest substantial time in gallery excavation, which represents a multi-generational resource — galleries are reused across years by mother and daughters with some modification. Mass-provisioning is standard. Clutch size per gallery is small — typically 5–10 cells."
+      },
+      "colorProgression": null,
+      "layingPattern": "Linear gallery of 5–10 cells, each mass-provisioned and separately sealed.",
+      "adaptiveSignificance": "Multi-year gallery reuse is a distinctive Xylocopa adaptation — substantial female investment in gallery construction amortizes across generations."
+    },
+    "larva": {
+      "name": "valley-carpenter-bee-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--06-15",
+            "tail": "--09-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development 4–6 weeks on provisioned loaf."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "WOODLAND_EDGE",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "SHRUB_LAYER",
+            "UNDERSTORY"
+          ]
+        },
+        "substrate": "Sealed wood cell.",
+        "microclimate": "Buffered gallery microclimate.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The carpenter bee baby grows in its little wood room, eating its pollen ball.",
+        "elementary": "Carpenter bee larvae eat their pollen-nectar ball inside the sealed wood cell. They grow rapidly — these are large bees, so their larvae are correspondingly large. After a few weeks they are ready to pupate.",
+        "secondary": "Xylocopa larvae develop on a substantial mass-provisioned loaf matched to the large adult body size. Gallery microclimate buffers summer heat and winter cold. Larvae are apodous grubs; development proceeds through several instars over 4–6 weeks.",
+        "university": "Large-bodied Xylocopa development requires substantially larger cell provisions than small solitary bees — a constraint that limits individual female output to 5–10 offspring per season. This low-fecundity strategy is balanced by extended adult lifespan and frequent nest reuse."
+      },
+      "feedingStrategy": "PHYTOPHAGOUS",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Low-fecundity, high-investment strategy balanced by long adult lifespan and gallery reuse.",
+      "instarProgression": "Typically five instars; final instar pupates within the cell."
+    },
+    "pupa": {
+      "name": "valley-carpenter-bee-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--06-15",
+            "peak": "--08-01",
+            "tail": "--09-30",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupation in sealed wood cell; adult emergence late summer to early autumn."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "WOODLAND_EDGE",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SHADE",
+          "layers": [
+            "SHRUB_LAYER",
+            "UNDERSTORY"
+          ]
+        },
+        "substrate": "Sealed wood cell.",
+        "microclimate": "Buffered gallery microclimate.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The pupa rests in the wood until it is a big grown-up bee.",
+        "elementary": "The carpenter bee pupa transforms inside its wood cell. When it is ready, the new adult chews out through the gallery entrance.",
+        "secondary": "Xylocopa pupation occurs in the natal cell; newly-emerged adults chew through cell partitions and exit via the main gallery entrance.",
+        "university": "Gallery exit order typically proceeds distal-to-proximal — innermost cells eclose first, and emerging adults traverse emptied sibling cells to reach the gallery entrance. This imposes a within-gallery phenological ordering of emergence."
+      },
+      "appearance": "Large exarate pupa in wood cell.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": null
+    },
+    "adult": {
+      "name": "valley-carpenter-bee-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-15",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Adults active from early spring through autumn; overwintering by adults (both sexes) in galleries."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "WOODLAND_EDGE",
+            "HEDGEROW",
+            "RIPARIAN"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER",
+            "CANOPY"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; strong fliers tolerant of high summer temperatures.",
+        "spatialNotes": "Oak Vista: conspicuous large bees across flowering plantings; golden-buff males hover territorially around oak snags and fence posts."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Big fuzzy black bees — and bright golden ones — buzz loudly around flowers. They don't sting people.",
+        "elementary": "Valley carpenter bees are one of the largest native California bees — about the size of a bumblebee. Females are black and shiny, males are bright golden-buff. The females can sting (rarely) but the golden males can't — they just look impressive. Adults visit many flowers and are important pollinators for deep-throated blooms other bees can't reach.",
+        "secondary": "Xylocopa varipuncta is sexually dimorphic: females are large, black, and glossy; males are bright golden-buff with greenish eyes. Adults are among California's largest native bees and pollinate deep-corolla flowers inaccessible to smaller species. 'Nectar robbing' — perforating the corolla base to access nectar without entering the floral throat — is a documented behavior on some deep-throated flowers.",
+        "university": "Xylocopa varipuncta is the large carpenter bee of California and the desert southwest; sexual dimorphism is extreme (glossy black females, golden males). Males hold territories at prominent visual landmarks and hover in characteristic display flight. Nectar robbing on deep corollas — particularly Salvia, Diplacus, and cultivated Lavandula — is documented but typically a minor component of foraging. Long adult lifespan (months) and both-sex overwintering distinguishes the species from most solitary bees; functionally subsocial behavior (tolerance of relatives in reused galleries) has been documented in some Xylocopa lineages."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "salvia-clevelandii",
+        "salvia-apiana",
+        "lavandula-angustifolia",
+        "diplacus-aurantiacus",
+        "wisteria-floribunda"
+      ],
+      "ecologicalRole": "Large-bodied pollinator specialist — deep-corolla flowers, heat-tolerant foraging when smaller bees are thermally limited.",
+      "lifespan": "Adults long-lived: 3–10 months including overwintering."
+    }
   },
   {
     "name": "skipper-butterfly",
@@ -193,9 +1871,186 @@
       "secondary": "Hesperiidae (skippers) are a basal lineage of Lepidoptera intermediate between true butterflies and moths — their robust, hairy thorax and hooked antennae reflect this transitional position. Adults are nectarivores and incidental pollinators of a wide range of garden flowers; their rapid, dart-and-hover flight makes them effective at visiting many flower types. Caterpillars feed on grasses and select forb species but are not recorded as vegetable crop pests. Several California species are partial to Asteraceae and Lamiaceae nectar sources. Skipper presence reflects broad-based nectar resource availability and low pesticide loading in the garden landscape.",
       "university": "Family Hesperiidae (Lepidoptera) — approximately 3,500 species in 8 subfamilies. At Oak Vista, multiple species documented as floral visitors, April 2026. Taxonomic position: phylogenetically sister to Papilionoidea but traditionally treated separately; adult morphology (hooked antennal clubs, crochet-bearing tornal region on hindwing) distinguishes them from 'true' butterflies. Pollination ecology: adults exhibit legitimate floral visitation (proboscis insertion into nectary) across Asteraceae, Lamiaceae, and Boraginaceae; incidental pollen transfer efficiency is lower than specialist bee pollinators but contributes to cross-pollination of border plantings. Larval host plants at Oak Vista: grasses (Poaceae) and some Fabaceae — no threat to Solanaceae crops. Indicator function: skipper diversity is a reliable proxy for floral resource diversity and low-pesticide management history in landscape context."
     },
-    "guilds": ["POLLINATOR"],
+    "guilds": [
+      "POLLINATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Multiple individuals observed at Oak Vista April 2026 foraging on sage and Asteraceae border plantings. Family-level identification — species determination requires close specimen examination."
+    "sightingNotes": "Multiple individuals observed at Oak Vista April 2026 foraging on sage and Asteraceae border plantings. Family-level identification — species determination requires close specimen examination.",
+    "egg": {
+      "name": "skipper-butterfly-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-15",
+            "tail": "--09-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Multi-generation; egg deposition tracks grass (Poaceae) growth through the season."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "CULTIVATED",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Grass blade (Poaceae) surfaces — typically the underside of native or naturalized grass leaves.",
+        "microclimate": "Exposed grassland microclimate.",
+        "spatialNotes": "Oak Vista: native bunchgrass patches and wild-edge grass areas."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The skipper butterfly lays one tiny dome-shaped egg under a grass leaf.",
+        "elementary": "Skipper butterflies lay single dome-shaped eggs under grass leaves. The caterpillars that hatch eat grass — these butterflies are important for healthy grassland ecosystems.",
+        "secondary": "Hesperiidae oviposit singly on graminoid host-plant leaves. Eggs are typically small, rounded-domed, pale green to yellowish, darkening toward hatching. Host specificity varies — some skippers are Poaceae-obligate, others use Cyperaceae or specific graminoid genera.",
+        "university": "Hesperiidae are largely Poaceae-specialist in larval host use, making the family a keystone component of grassland lepidopteran diversity. Host specificity at species level varies from strict monophagy to broad polyphagy across grass subfamilies. Oak Vista skipper community not yet resolved to species; identification requires adult capture and genitalic examination in many cases."
+      },
+      "colorProgression": null,
+      "layingPattern": "Single eggs on grass leaf undersides.",
+      "adaptiveSignificance": null
+    },
+    "larva": {
+      "name": "skipper-butterfly-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-25",
+            "peak": "--06-01",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development 4–8 weeks; late-season larvae overwinter as final-instar in constructed grass-leaf shelters."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "CULTIVATED",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Living grass blades; larva constructs folded-leaf shelter tied with silk.",
+        "microclimate": "Exposed grassland — the leaf shelter buffers ambient variation.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The skipper caterpillar lives in a little silk-tied grass leaf tent and eats grass.",
+        "elementary": "Skipper caterpillars are smooth and green with a distinct 'neck' where the head meets the body. They fold and tie grass leaves with silk into little shelters, then come out to feed. The shelter hides them from birds.",
+        "secondary": "Hesperiidae larvae are distinctively narrow-necked — a constricted first thoracic segment between the enlarged head capsule and the body. They are leaf-shelter builders, folding or rolling grass blades and binding them with silk to form a tube the larva rests in between feeding bouts. Shelter construction is the family's signature behavior.",
+        "university": "Hesperiidae leaf-shelter construction is a family-level synapomorphy and a significant predator-avoidance adaptation — larvae are cryptic within the grass canopy and actively concealed within the shelter. Shelter reconstruction at each instar matches body-size scaling. Overwintering is typically as final-instar larvae in the constructed shelter or at grass-base litter level."
+      },
+      "feedingStrategy": "PHYTOPHAGOUS",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Silk-tied leaf shelter — a family-level signature behavior. Distinctive narrow 'neck' between head and body.",
+      "instarProgression": "Typically five instars over 4–8 weeks."
+    },
+    "pupa": {
+      "name": "skipper-butterfly-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--07-01",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupation in leaf shelter or at grass base. Duration one to several weeks."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "CULTIVATED",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "GROUND_SURFACE"
+          ]
+        },
+        "substrate": "Silken chamber within folded grass leaves or in basal litter.",
+        "microclimate": "Sheltered within grass canopy structure.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The skipper caterpillar makes a little wrapped-up bed to become a butterfly.",
+        "elementary": "When the skipper caterpillar is ready, it pupates inside its leaf shelter — or near the base of the grass. The pupa is plain-colored and hidden.",
+        "secondary": "Hesperiidae pupation occurs within a silken chamber formed in the final larval shelter or at grass-base litter. Pupae are typically elongate, cryptically colored, and concealed. Emergence by shelter wall rupture.",
+        "university": "Within-shelter pupation leverages the same structure used through larval development — an efficient use of silk investment. Pupal crypsis is strong; family-level pupation is rarely observed without deliberate shelter dissection."
+      },
+      "appearance": "Plain, elongate, cryptic pupa within silk-tied grass shelter.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": "Multi-use of the silk leaf shelter across larval and pupal stages is an efficient investment."
+    },
+    "adult": {
+      "name": "skipper-butterfly-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--06-01",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Multiple generations; adult flight seasons overlap through summer and early autumn."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "CULTIVATED",
+            "HEDGEROW",
+            "WOODLAND_EDGE"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; active during mid-day heat.",
+        "spatialNotes": "Oak Vista: small orange-brown butterflies darting among flowers in the herbaceous plantings."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Little orange-brown butterflies zoom quickly between flowers. Their wings rest in an odd slanted way.",
+        "elementary": "Skippers are small, fast butterflies with a darting flight. Most are orange-brown with dark markings. They rest with their forewings and hindwings held at different angles — a distinctive posture that helps identify them. They visit many kinds of flowers and are good pollinators.",
+        "secondary": "Hesperiidae adults are small, fast-flying, and morphologically distinct from other Lepidoptera — stout bodies, large eyes, hooked antennal tips. The characteristic forewing/hindwing asymmetric resting posture is a family-level diagnostic. Nectar feeding is broad-flower-form across temperate meadow and garden flora.",
+        "university": "Hesperiidae phylogenetic position between Papilionoidea and the rest of Lepidoptera was long debated; molecular evidence now places them within the butterfly clade (Papilionoidea sensu lato). The family is globally diverse — approximately 3,500 species — and grassland-restricted in host use. Grassland conservation is directly coupled to skipper community persistence."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "cosmos-bipinnatus",
+        "asclepias-speciosa",
+        "centaurea-solstitialis",
+        "monardella-villosa",
+        "origanum-vulgare"
+      ],
+      "ecologicalRole": "Grassland pollinator; keystone lepidopteran indicator of intact grassland ecology.",
+      "lifespan": "Typically 2–4 weeks."
+    }
   },
   {
     "name": "painted-lady",
@@ -211,9 +2066,198 @@
       "secondary": "Vanessa cardui is the most widely distributed butterfly in the world, found on every continent except Antarctica and Australia. In California, it undertakes a multi-generational migratory circuit: spring migration northward from the Sonoran Desert follows the Pacific Coast and Central Valley, with populations peaking in the Bay Area and Sacramento Valley in March–April. Adults are polylectic nectarivores visiting hundreds of flower species; their large body size and active foraging make them effective pollen vectors for garden Asteraceae, Boraginaceae, and Lamiaceae. Caterpillars feed on Asteraceae (especially thistles) and Malvaceae — no Solanaceae feeding recorded. The spring 2026 Painted Lady emergence was reported as an exceptional year for Central Valley populations following wet winter conditions producing abundant larval host plant growth.",
       "university": "Vanessa cardui (Linnaeus, 1758) — Lepidoptera: Nymphalidae: Nymphalinae. Cosmopolitan. At Oak Vista, documented as spring migrant foraging on Asteraceae and sage, April 2026. Migration ecology: multigenerational circuit (2–6 generations depending on year) spanning 9,000–15,000 km round-trip from overwintering grounds in sub-Saharan Africa (or, for California populations, the Sonoran Desert); migration orientation governed by a circadian-linked sun compass and polarized light detection. Population irruptions correlated with El Niño Southern Oscillation events producing wet winters that drive Cirsium (thistle) and Malva larval host plant abundance in the Mojave and Sonoran Deserts. Pollination role: adults carry viable pollen on ventral wing scales and proboscis; floral visitation rates at Oak Vista suggest meaningful contribution to Asteraceae cross-pollination during migration peaks. Conservation note: no pesticide treatment warranted — population regulated by landscape-scale processes."
     },
-    "guilds": ["POLLINATOR", "MIGRATORY"],
+    "guilds": [
+      "POLLINATOR",
+      "MIGRATORY"
+    ],
     "beneficial": true,
-    "sightingNotes": "Observed Oak Vista April 2026 during exceptional Central Valley spring migration event. Adults feeding on dill, sage, and Asteraceae border flowers. Migratory population — not a breeding resident."
+    "sightingNotes": "Observed Oak Vista April 2026 during exceptional Central Valley spring migration event. Adults feeding on dill, sage, and Asteraceae border flowers. Migratory population — not a breeding resident.",
+    "egg": {
+      "name": "painted-lady-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--04-15",
+            "tail": "--06-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Egg deposition concentrated during spring migratory influx. Secondary breeding by summer-generation adults may extend into early autumn."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "CULTIVATED",
+            "HEDGEROW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Thistle (Asteraceae: Cirsium, Centaurea), mallow (Malva), borage, and many other broad-host plants — Vanessa cardui is one of the most polyphagous of all butterflies.",
+        "microclimate": "Sunny, warm.",
+        "spatialNotes": "Oak Vista: wild thistle, mallow, and borage; the garden supports breeding during migratory influx."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The painted lady butterfly flies far from warm places and lays green eggs on thistles and mallows.",
+        "elementary": "Painted ladies are famous migrators — they fly thousands of kilometers across continents each year. Females lay single green eggs on a huge variety of host plants — more than 100 different kinds — which lets them breed wherever they land.",
+        "secondary": "Vanessa cardui is among the most polyphagous Lepidoptera globally, with over 100 documented larval host-plant species spanning many plant families — a characteristic tied to its migratory life cycle (must reproduce on whatever is locally available). Eggs are small, pale green, and deposited singly on host leaf undersides.",
+        "university": "Vanessa cardui executes trans-continental annual migrations — African-Palearctic migration is the best-documented (exceeding 12,000 km round-trip across multiple generations). In North America the migration is from Mexican and desert-Southwest breeding grounds northward through California, Arizona, and across the continent in spring, with uneven return migration in autumn. Oak Vista populations are spring migrants breeding in-place rather than resident — egg laying concentrated during the March-April influx. Polyphagy supports breeding success across every latitude the migration crosses."
+      },
+      "colorProgression": null,
+      "layingPattern": "Single small green eggs on host leaf undersides; extreme host-plant polyphagy.",
+      "adaptiveSignificance": "Polyphagy tied to migratory life cycle — reproductive success depends on finding host plants wherever the migration lands."
+    },
+    "larva": {
+      "name": "painted-lady-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-25",
+            "peak": "--05-01",
+            "tail": "--08-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development 2–4 weeks; larvae build silk shelters on host plants."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "CULTIVATED",
+            "HEDGEROW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Host plant leaves — thistle, mallow, borage; larva ties leaves with silk to form a rough tent shelter.",
+        "microclimate": "Exposed foliar.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The little spiky caterpillar lives in a messy silk tent on a thistle.",
+        "elementary": "Painted lady caterpillars are spiky and dark with yellowish markings. They make loose silk-tent shelters on their host plants, feeding inside and venturing out to find new leaves. They develop quickly — from egg to pupa in less than a month in warm weather.",
+        "secondary": "Vanessa cardui larvae are spine-bearing, dark, with variable yellow lateral markings; they construct loose silk-leaf shelters on the host plant and feed from within. Rapid development (2–4 weeks from hatch) supports the multiple-generation migration cycle.",
+        "university": "Vanessa larval shelter-construction is nymphaline — loose silk aggregations rather than the tight leaf-rolls of Hesperiidae. Spinose larval morphology and rapid development are both adaptations to the migratory ecological niche — predator avoidance by deterrence rather than concealment, and development speed matched to the generational turnover of the migration."
+      },
+      "feedingStrategy": "PHYTOPHAGOUS",
+      "hostPlants": [
+        "cirsium-vulgare",
+        "centaurea-solstitialis",
+        "malva-parviflora",
+        "borago-officinalis",
+        "urtica-dioica"
+      ],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Silk-leaf shelter construction; extreme host-plant polyphagy across Asteraceae, Malvaceae, Boraginaceae, Urticaceae, and more.",
+      "instarProgression": "Five instars over 2–4 weeks."
+    },
+    "pupa": {
+      "name": "painted-lady-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--05-15",
+            "tail": "--09-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupation on host plant or nearby structure. Duration 7–10 days at warm temperatures."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "CULTIVATED",
+            "HEDGEROW",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Suspended pupa — attached by cremaster to host plant or nearby structure.",
+        "microclimate": "Exposed; short pupal duration limits vulnerability window.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The caterpillar hangs upside-down and turns into a pretty gold-speckled pupa.",
+        "elementary": "Painted lady pupae hang upside-down from a silk pad, attached by their tail-end. They are patterned with gold or silvery markings. A new adult emerges in about a week at warm temperatures.",
+        "secondary": "Vanessa cardui pupation is chrysalid (suspended by cremaster). Pupa is brownish with metallic gold or silver speckling — not fully cryptic. Duration is short (7–10 days at summer temperatures) matching the rapid larval development.",
+        "university": "Rapid pupal development supports the migratory multi-generational annual cycle — the species completes one generation in as little as four to six weeks. No diapause at any life stage in continuously warm conditions; diapause absence is consistent with tropical ancestral biogeography and inconsistent with Central Valley overwintering."
+      },
+      "appearance": "Brown with metallic gold or silver markings; suspended by cremaster.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": "Rapid development without diapause — matched to continuous warm-climate migratory life cycle."
+    },
+    "adult": {
+      "name": "painted-lady-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Spring migratory influx from southern breeding grounds, March-April. Locally-bred summer and autumn generations extend the flight season. Oak Vista populations are NOT resident — they are seasonal visitors."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "MEADOW",
+            "CULTIVATED",
+            "HEDGEROW",
+            "WOODLAND_EDGE",
+            "BARE_GROUND"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; adults are powerful long-distance fliers.",
+        "spatialNotes": "Oak Vista: widespread across the garden during spring influx and during summer generation adulthood."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Orange butterflies with white spots and dark tips fly fast through the garden. They come from very far away.",
+        "elementary": "Painted ladies are orange, black, and white butterflies about the size of a monarch. They are world travelers — some individuals fly thousands of kilometers. The ones at Oak Vista in spring came from Mexico and the desert southwest. They drink nectar from many flowers and often gather at wet soil to drink minerals.",
+        "secondary": "Vanessa cardui adults are medium-sized (5–9 cm wingspan) orange-and-black nymphalids with white forewing-tip markings. They are among the most cosmopolitan butterflies globally, with established populations or migratory circuits on every continent except Antarctica. Adults are broad nectar generalists and frequent mud-puddlers for mineral uptake.",
+        "university": "Vanessa cardui biogeography is exceptional — possibly the most cosmopolitan butterfly species. Continuous-generation migratory populations across the Americas, Afro-Eurasian circuit, and eastern-Asian circuit, with substantial interannual variation in migration intensity. The 2019 North American painted-lady super-migration was visible from weather radar across the southwestern United States. Oak Vista populations are migratory arrivals breeding in-place across multiple summer generations before (in most years) the migratory return southward — though the return migration is less documented than the northward spring movement."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "cirsium-vulgare",
+        "centaurea-solstitialis",
+        "cosmos-bipinnatus",
+        "asclepias-speciosa",
+        "verbena-lilacina",
+        "lantana-camara"
+      ],
+      "ecologicalRole": "Migratory pollinator and keystone migrational-lepidopteran ecosystem-connector across continents.",
+      "lifespan": "Migratory adults 4–6 weeks; summer-generation adults 2–4 weeks."
+    }
   },
   {
     "name": "green-lacewing",
@@ -229,9 +2273,190 @@
       "secondary": "Chrysopidae (green lacewings) are neuropteran insects exhibiting one of the most striking examples of complete metamorphosis in beneficial insects. The adult is a polyphagous nectarivore and incidental pollinator; the larva (colloquially Aphid Lion) is a voracious generalist predator of soft-bodied arthropods — aphids, mites, thrips, whitefly, and small caterpillars — consuming 200+ prey items per week. Eggs are laid on silk stalks 10–15 mm tall, a remarkable adaptive structure: newly hatched larvae are themselves predatory, and the stalk delays sibling encounters until dispersal reduces cannibalism. Adults are attracted to artificial lights and to shallow open flowers — umbellifers (Apiaceae) and alyssum are the primary nectar sources at Oak Vista. The species arrived at Oak Vista naturally, indicating habitat quality sufficient to support the adult nectar requirements.",
       "university": "Family Chrysopidae (Neuroptera), genus Chrysoperla — confirmed natural colonist at Oak Vista, Spring 2026 (census observation #17). Larval ecology: obligate predator with suctorial mandibles delivering proteolytic saliva; prey includes Aphididae, Tetranychidae, Thysanoptera, Aleyrodidae, and lepidopteran eggs. Larval consumption rate: 200+ aphids/week (3 larval instars); camouflage behaviour — carrying debris and prey remains on dorsal setae-lined trough — is unique among Neuroptera and reduces predation risk from ants guarding aphid colonies. Egg morphology: stalked oviposition on silk pedicels prevents hatching larvae from consuming unhatched siblings before dispersal. Adult guild assignment: POLLINATOR (nectarivore visiting Apiaceae, Alyssum, Trifolium, Pelargonium) and PREDATOR (larval stage). Commercial release for IPM is well established; natural arrival to Oak Vista confirms habitat criterion satisfaction without augmentation. Warm Central Valley climate (Chico) supports multiple voltine cycles per season."
     },
-    "guilds": ["PREDATOR", "POLLINATOR"],
+    "guilds": [
+      "PREDATOR",
+      "POLLINATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Single adult observed on white wall surface at night, Spring 2026 — attracted to exterior lighting. Natural arrival; not purchased or released. Observation #17 in Oak Vista beneficial insect census. Breeding unconfirmed — watch for stalked eggs on plant foliage. Supported by dill, sweet alyssum, crimson clover, and scented geranium plantings."
+    "sightingNotes": "Single adult observed on white wall surface at night, Spring 2026 — attracted to exterior lighting. Natural arrival; not purchased or released. Observation #17 in Oak Vista beneficial insect census. Breeding unconfirmed — watch for stalked eggs on plant foliage. Supported by dill, sweet alyssum, crimson clover, and scented geranium plantings.",
+    "egg": {
+      "name": "green-lacewing-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-01",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Oviposition tracks aphid and small-prey colony development."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": "Silk stalks — each egg is suspended on a hair-thin silk pedicel a few millimeters above the leaf or stem. Eggs are typically placed singly, occasionally in loose clusters.",
+        "microclimate": "Exposed foliar; silk stalk isolates egg from crawling predators.",
+        "spatialNotes": "Oak Vista: widespread on aphid-infested plants; visible on leaf undersides in good light."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The lacewing lays eggs on tiny little stalks — it looks like a little forest of white balls on thin sticks!",
+        "elementary": "Green lacewings lay pale eggs on long thin silk stalks that stand up from the leaf. This is very unusual — almost no other insect does this. The stalk keeps the egg away from ants and other crawling predators. Even the lacewing's own siblings can't easily reach each other, which is important because the larvae eat almost anything they touch.",
+        "secondary": "Chrysopidae oviposit single eggs on silk pedicels elevated 2–10 mm above the substrate — a family-level signature behavior. The silk stalk is extruded by the female and hardens on contact with air; the egg is deposited at the tip. Pedicel function is dual: protection from ants and other crawling predators, and separation of sibling eggs to reduce the severe sibling-cannibalism risk posed by the highly predatory larvae.",
+        "university": "Chrysopidae egg-stalk oviposition is a derived Neuropteran trait with a well-characterized mechanism — the female extrudes adhesive silk from colleterial glands, raises her abdomen to stretch the silk into a pedicel, deposits the egg at the apex, and moves on. Stalk hardening is rapid. Sibling cannibalism risk is substantial — Chrysoperla larvae are extreme generalist predators and will readily consume one another if contact is possible. The stalk enforces spacing."
+      },
+      "colorProgression": "Pale green-white at laying; darkens through development; dark spot visible through chorion immediately before hatch.",
+      "layingPattern": "Single egg on silk pedicel; occasionally grouped but stalks keep eggs spatially separated.",
+      "adaptiveSignificance": "Silk-stalked oviposition is among the most distinctive insect reproductive behaviors — simultaneously defending against ants and enforcing sibling spacing to prevent cannibalism."
+    },
+    "larva": {
+      "name": "green-lacewing-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-25",
+            "peak": "--05-15",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development 2–3 weeks; voracious predation throughout."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": "Aphid-infested foliage; mobile across leaves and stems hunting small soft-bodied prey.",
+        "microclimate": "Exposed foliar.",
+        "spatialNotes": "Oak Vista: active on aphid colonies across the garden."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The aphid-lion looks like a tiny spiky alligator and eats lots and lots of aphids.",
+        "elementary": "Green lacewing larvae are called aphid-lions — they are among the hungriest aphid predators in the garden. They are spindle-shaped, light-brown, with big curved jaws. Some species stick dead prey and debris onto spines on their back as camouflage. One aphid-lion can eat over a thousand aphids before it pupates.",
+        "secondary": "Chrysoperla larvae (aphid-lions) are elongate-spindle shaped, light-brown with darker markings, and bear prominent paired falcate mandibles used to pierce and drain prey. Feeding is by extra-oral digestion — the mandibles are grooved and inject digestive enzymes, with liquefied prey contents sucked back through the mandibular grooves. Per-larva consumption reaches 200–500 aphids or equivalent soft-bodied prey across three instars.",
+        "university": "Chrysopidae larvae exhibit sister-clade-level diversity in defensive morphology: naked-bodied Chrysoperla relies on cryptic coloration; debris-carrying genera (Ceraeochrysa, Chrysopa) carry dead-prey and substrate material on dorsal setae as camouflage. Extraoral digestion via grooved mandibles is family-conserved. Predation spectrum is broader than aphids alone — Chrysoperla consume mites, thrips, small lepidopteran eggs and first-instars, psyllids, and whiteflies."
+      },
+      "feedingStrategy": "PREDATORY",
+      "hostPlants": [],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Grooved falcate mandibles for extra-oral digestion; voracious generalist predation on small soft-bodied prey. Some species debris-carry dead prey as camouflage.",
+      "instarProgression": "Three instars over 2–3 weeks; escalating per-day consumption."
+    },
+    "pupa": {
+      "name": "green-lacewing-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--06-01",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Cocooned pupation on host plant or in litter; duration 7–14 days."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER",
+            "GROUND_SURFACE"
+          ]
+        },
+        "substrate": "Silken spherical cocoon on stem, leaf underside, or in litter.",
+        "microclimate": "Somewhat sheltered; exposed to ambient conditions.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The aphid-lion spins itself a little white silk ball to change inside.",
+        "elementary": "When a green lacewing larva is ready to pupate, it spins a small, round, silken cocoon. Inside, it transforms into an adult lacewing. In about a week or two, the adult cuts a neat circular lid in the cocoon and climbs out.",
+        "secondary": "Chrysopidae pupation occurs within a spherical silken cocoon spun by the final-instar larva. Emergence is by a characteristic circular operculum cut by the pupa from inside. Cocoon attachment is on stem or leaf underside, or at ground-surface in leaf litter for late-season pupae.",
+        "university": "Spherical cocoon morphology and operculum-emergence distinguish Chrysopidae from related Neuroptera families. Overwintering in temperate populations can occur at this stage or at prepupal / adult stage depending on species. Chrysoperla carnea species complex typically overwinters as adults in sheltered sites."
+      },
+      "appearance": "Small white spherical silk cocoon.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": "Circular-operculum emergence is mechanically elegant — a clean circular cut by the enclosed pharate adult, minimal structural damage to the cocoon."
+    },
+    "adult": {
+      "name": "green-lacewing-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-01",
+            "peak": "--05-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Adults multiple overlapping generations; some species overwinter as reproductively quiescent adults in sheltered microsites."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW",
+            "WOODLAND_EDGE"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm to moderate; crepuscular and nocturnal flight.",
+        "spatialNotes": "Oak Vista: frequent at porch lights on summer nights; day refuges in dense foliage."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "A delicate green insect with lacy wings flutters near the lights at night.",
+        "elementary": "Green lacewing adults are bright green with clear lacy wings and gold eyes. They fly gently at dusk and at night, often coming to porch lights. Adults eat pollen, nectar, and honeydew — not aphids. It is the larvae that are the predators; the adults are pollinators and scavengers.",
+        "secondary": "Chrysoperla adults are bright green, 10–20 mm, with clear lace-patterned wings and metallic gold compound eyes. Adults feed on honeydew, pollen, and nectar — no predation at this stage. Crepuscular and nocturnal flight; adults are attracted to lights. The Chrysoperla carnea group is the best-documented biological control clade in the family.",
+        "university": "Chrysopidae adult trophic shift — from predatory larva to saprophagous/palynophagous adult — is common across Neuroptera and supports dispersal biology separate from larval prey location. Adult honeydew-feeding couples the family tightly to honeydew-producing Hemiptera (aphids, scales, whiteflies) that are also the larval prey — a tight ecological loop. Oak Vista's aphid community supports both adult honeydew resource and larval prey."
+      },
+      "feedingHabit": "HONEYDEW",
+      "nectarSources": [
+        "anethum-graveolens",
+        "foeniculum-vulgare",
+        "lobularia-maritima",
+        "fagopyrum-esculentum"
+      ],
+      "ecologicalRole": "Adult pollinator and pollen-feeder; reproductive stage of a keystone predatory family.",
+      "lifespan": "Typically 4–6 weeks; overwintering adults longer."
+    }
   },
   {
     "name": "pipevine-swallowtail",
@@ -247,7 +2472,9 @@
       "secondary": "Battus philenor (Pipevine Swallowtail) is a Batesian-Müllerian chemical defence complex species with deep host-plant specialisation. Females are obligately ovipositing on Aristolochia species (Pipevine, birthwort) — California populations primarily use Aristolochia californica (California Pipevine). Caterpillars sequester aristolochic acids from their host plant, rendering themselves and adult butterflies chemically unpalatable (aposematic). Adults exhibit iridescent blue hindwing colouration that serves as a warning signal reinforced by multiple unrelated species mimicking the pattern (Battus mimicry complex including Papilio troilus and Limenitis arthemis). Eggs confirmed at Oak Vista April 2026 on Aristolochia californica — this is a keystone ecological record. CRITICAL management constraint: zero pesticide application to Aristolochia or adjacent vegetation while eggs, larvae, or adults are present.",
       "university": "Battus philenor (Linnaeus, 1771) — Lepidoptera: Papilionidae: Troidini. Confirmed breeding at Oak Vista, April 2026 — eggs observed on Aristolochia californica (California Pipevine). Ecological status: KEYSTONE SPECIES for California riparian and garden ecosystems. Host specificity: larval feeding restricted to Aristolochia spp. (Aristolochiaceae); females use volatile semiochemical (aristolochic acid derivatives) for host-plant selection. Chemical sequestration: aristolochic acids (particularly aristolochic acid I and II) are accumulated in larval and adult tissues; bitter taste and probable mutagenicity in avian digestive systems create aversive conditioning in bird predators. Mimicry complex: the Pipevine Swallowtail aposematic pattern is replicated by multiple palatable Papilionidae and Nymphalidae (Müllerian and Batesian mimics), amplifying predator avoidance learning. Conservation management: Aristolochia californica must be maintained as a permanent garden element without any pesticide application; the plant is the non-negotiable prerequisite for breeding presence. Nick's Italian Pear heirloom conservation ethic extends to this species — both are irreplaceable Oak Vista genetic heritage."
     },
-    "guilds": ["KEYSTONE"],
+    "guilds": [
+      "KEYSTONE"
+    ],
     "beneficial": true,
     "sightingNotes": "CRITICAL — eggs confirmed on Aristolochia californica (California Pipevine) at Oak Vista, April 2026. Never apply pesticides to Pipevine plant or within 3 meters of it during the growing season. This is an irreversible ecological commitment. Breeding confirmed.",
     "identificationFeatures": {
@@ -260,15 +2487,220 @@
         "Chrysalis: brown or green with delicate golden filigree — the only cryptic stage"
       ]
     },
-    "egg": null,
-    "larva": null,
-    "pupa": null,
-    "adult": null,
+    "egg": {
+      "name": "pipevine-swallowtail-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-01",
+            "peak": "--04-15",
+            "tail": "--07-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Egg-laying tracks Aristolochia californica tender shoot availability. Oviposition ceases when the host stops producing young growth in June or July. Eggs confirmed at Oak Vista April 2026 on new Pipevine growth."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "RIPARIAN"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": "Young tender shoot tips of Aristolochia californica — egg clusters of up to 20 are deposited on new growth where emerging larvae will find the most palatable leaves.",
+        "microclimate": "Partial-sun microsites along the Pipevine trellis; the plant climbs into dappled light and eggs concentrate where new growth extends into warmed but not heat-stressed tissue.",
+        "spatialNotes": "Oak Vista: on the Aristolochia californica planting. Egg clusters April 2026 were on the southeast-facing trellis growth."
+      },
+      "chemistryRole": {
+        "role": "MATERNAL_TRANSFER",
+        "notes": "Brick-red egg coloration advertises maternal deposition of aristolochic acids into the chorion. Defended before hatching."
+      },
+      "description": {
+        "preschool": "The butterfly lays shiny red eggs in little bunches on the Pipevine plant. The red color warns animals not to eat them.",
+        "elementary": "Female Pipevine Swallowtails lay bright brick-red egg clusters on the young tips of California Pipevine. The mother passes her plant-based poison into the eggs, so even before hatching they are protected. The red color tells birds and lizards to leave them alone.",
+        "secondary": "Battus philenor females oviposit clusters of 5–20 bright brick-red eggs exclusively on young tender shoots of Aristolochia species (Aristolochiaceae). Maternal provisioning transfers sequestered aristolochic acids into the egg chorion, producing a chemically defended propagule stage. The conspicuous red coloration is aposematic — advertising unpalatability before the larva has acquired its own toxin load.",
+        "university": "Oviposition is obligate on Aristolochia spp. (Aristolochiaceae); at Oak Vista on A. californica confirmed April 2026. Clutch size typically 5–20 per oviposition bout, deposited on young, chemically richest shoot tips. The brick-red chorion carries maternally transferred aristolochic acid derivatives, producing an aposematic chemically defended egg stage. Host selection is mediated by volatile aristolochic acid derivatives acting as ovipositional stimulants; this semiochemical dependence is why host-switching is evolutionarily constrained."
+      },
+      "colorProgression": "Bright brick-red at laying; darkens and loses sheen toward hatching, finally showing the dark larva visible through the chorion.",
+      "layingPattern": "Clusters of 5–20 eggs on young Aristolochia shoot tips. One female may deposit several clusters across an afternoon of host searching.",
+      "adaptiveSignificance": "Brick-red aposematic coloration enables pre-hatch chemical defense — the cluster is defended from the moment of laying by maternal transfer of aristolochic acids."
+    },
+    "larva": {
+      "name": "pipevine-swallowtail-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-15",
+            "tail": "--08-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development window tracks egg-hatch timing. In California Central Valley, first-instar larvae appear approximately two weeks after oviposition; larval period is four to six weeks depending on thermal regime and host-plant quality."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "RIPARIAN"
+          ],
+          "moisture": "MESIC",
+          "light": "PARTIAL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER"
+          ]
+        },
+        "substrate": "Aristolochia californica foliage; early instars skeletonize young leaves, later instars consume entire leaves and migrate down the trellis as foliage is stripped.",
+        "microclimate": "Larvae tolerate the full temperature range the host plant tolerates; they cluster in early instars then disperse as they grow.",
+        "spatialNotes": "Oak Vista: on the Aristolochia californica planting. Larvae progress down the trellis as they consume foliage."
+      },
+      "chemistryRole": {
+        "role": "ACQUISITION",
+        "notes": "Primary sequestration site. Larvae accumulate aristolochic acids I and II from Aristolochia californica leaf tissue into their own hemolymph and body tissues; this acquired toxin load is retained through pupation and adulthood."
+      },
+      "description": {
+        "preschool": "The caterpillars are dark with soft red spikes. They only eat the Pipevine plant. Never spray anything on the Pipevine!",
+        "elementary": "Pipevine caterpillars are dark-bodied with fleshy red filaments — bright colors that warn birds. They can only eat the California Pipevine plant, and they take the plant's natural poison into their own bodies so they become protected too. They eat a lot and grow fast.",
+        "secondary": "Battus philenor larvae are aposematically colored — dark-bodied with fleshy reddish-orange filaments (scoli) — warning predators of their chemical unpalatability. They feed exclusively on Aristolochia species, sequestering aristolochic acids from host leaf tissue into their own hemolymph. Early instars feed gregariously; later instars disperse. Development proceeds through five instars over four to six weeks at Central Valley temperatures.",
+        "university": "Lepidoptera: Papilionidae: Troidini. Five larval instars. Obligate monophagy on Aristolochia (most commonly A. californica in this range); host selection cued by aristolochic acid derivatives. Sequestration mechanism accumulates aristolochic acids I and II into hemolymph and integumentary tissue at concentrations producing emetic and aversive conditioning in naive avian predators. Larval warning coloration (black ground with reddish-orange fleshy tubercles) is both Müllerian signal shared with related Troidini and — at Oak Vista's range edge — an honest individual signal, as no California mimics have evolved. Larvae can defoliate individual Aristolochia plants; host abundance is a direct population-limiting factor."
+      },
+      "feedingStrategy": "PHYTOPHAGOUS",
+      "hostPlants": [
+        "aristolochia-californica"
+      ],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Early instars gregarious (feeding cohort of the clutch); later instars disperse along the host plant. No leaf-rolling or tent-building — direct exposed feeding with chemical defense as the only protection.",
+      "instarProgression": "Five instars over four to six weeks. Warning coloration present from first instar — dark body with reddish scoli — intensifying with each molt as toxin load accumulates."
+    },
+    "pupa": {
+      "name": "pipevine-swallowtail-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--05-01",
+            "peak": "--06-15",
+            "tail": "--08-31",
+            "cohortLabel": "direct-developer"
+          },
+          {
+            "onset": "--07-01",
+            "peak": null,
+            "tail": "--03-31",
+            "cohortLabel": "diapauser"
+          }
+        ],
+        "notes": "Split diapause — sibling larvae from a single clutch pupate at the same time but produce two developmental cohorts. Direct-developers eclose within two to four weeks for same-season flight; diapausers remain as pupae through summer, autumn, and winter, eclosing the following spring. Some diapausers break diapause later in the same year, producing an August emergence bump. Mechanism: pupal dormancy is regulated by larval food water content (Aristolochia leaf hydration at pupation), not photoperiod. See NOTES.md — DiapauseRegulation content pending Jackson wiring."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "RIPARIAN",
+            "WOODLAND_EDGE"
+          ],
+          "moisture": "MESIC",
+          "light": "DAPPLED",
+          "layers": [
+            "SHRUB_LAYER",
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Stems, trellis structure, nearby shrubs or garden structures. Larvae leave the host plant before pupation; attachment by cremaster and silk girdle to woody or semi-woody substrate.",
+        "microclimate": "Sheltered, dappled locations — pupae must survive either a few weeks of summer heat or the full range from summer heat through winter chill into spring warming.",
+        "spatialNotes": "Oak Vista: expect pupae on Pipevine trellis, adjacent shrubs, and garden structures within a few meters of the host plant."
+      },
+      "chemistryRole": {
+        "role": "RETENTION",
+        "notes": "Aristolochic acids acquired at larval stage are retained through the molecular reorganization of metamorphosis — biochemically non-trivial, as many sequestered compounds do not survive pupation in other lepidopterans."
+      },
+      "description": {
+        "preschool": "The caterpillar hangs upside-down and turns into a chrysalis. Some wait just a little, some wait all winter, before becoming butterflies.",
+        "elementary": "When a Pipevine caterpillar is done eating, it finds a stem, spins a silk belt, and becomes a chrysalis. Some chrysalises hatch into butterflies a few weeks later; others wait through the whole winter and hatch the next spring. In one batch of siblings you get both kinds — it depends on the water in the leaves they ate.",
+        "secondary": "Battus philenor pupae attach to stems by cremaster and silk girdle. The chrysalis is dimorphic — either green or brown with delicate golden filigree — and is the only cryptic stage in an otherwise aposematic life cycle. Split diapause produces both direct-developers (eclose within weeks) and diapausers (overwinter and eclose in spring) from a single clutch, regulated by larval food water content rather than photoperiod. This is the mechanism behind the species's indeterminate voltinism.",
+        "university": "Pupation by cremaster-and-girdle attachment to woody substrate; prepupal larvae leave the host plant and move several metres to pupate. Chrysalis dimorphism (green / brown with golden filigree) is the sole cryptic stage in the life cycle — chemical defense is retained but aposematic signaling is suspended. Diapause regulation is decoupled from photoperiod and cued by larval food water content at pupation; this mechanism generates the mixed direct-developer / diapauser cohort from a single clutch and explains site-level INDETERMINATE voltinism. Retention of aristolochic acids through metamorphosis is a non-trivial biochemical trait — the compounds survive the reorganization that destroys many other sequestered secondary metabolites in Lepidoptera."
+      },
+      "appearance": "Dimorphic — either green or brown — with delicate golden filigree patterning. Cremaster-and-girdle attachment. The only cryptic stage in an otherwise aposematic life cycle.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": "Split diapause: direct-developer and diapauser cohorts from a single clutch, regulated by larval food water content. Mechanism decouples the species from photoperiodic cues and produces indeterminate voltinism — a bet-hedging strategy against host-plant failure in any single season."
+    },
+    "adult": {
+      "name": "pipevine-swallowtail-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--02-15",
+            "peak": "--04-15",
+            "tail": "--06-30",
+            "cohortLabel": "spring-brood"
+          },
+          {
+            "onset": "--07-15",
+            "peak": "--08-20",
+            "tail": "--10-31",
+            "cohortLabel": "summer-brood"
+          }
+        ],
+        "notes": "Long flight season in California Central Valley driven by split diapause. Spring brood emerges from overwintered diapausing pupae (February–April). Summer brood from direct-developing pupae of the spring cohort, augmented by diapausing pupae that break dormancy mid-season. No strict generational boundary — broods overlap."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "RIPARIAN",
+            "WOODLAND_EDGE",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER",
+            "SHRUB_LAYER",
+            "CANOPY"
+          ]
+        },
+        "substrate": "Nectar plants across the garden; Aristolochia californica for oviposition return visits.",
+        "microclimate": "Warm, sunny conditions; active flight from mid-morning through late afternoon in peak heat.",
+        "spatialNotes": "Oak Vista: adults range across the full garden between nectar sources and the Pipevine trellis; strong, conspicuous fliers along riparian corridors."
+      },
+      "chemistryRole": {
+        "role": "EXPRESSION",
+        "notes": "Adults retain and express aristolochic acids in wing scales and hemolymph. Iridescent blue hindwing coloration is the aposematic signal presented to predators; reinforced by the Battus mimicry complex across the species range (though no California mimics exist)."
+      },
+      "description": {
+        "preschool": "The butterfly is big and dark and shiny blue-green. It drinks from flowers and visits the Pipevine plant to lay eggs.",
+        "elementary": "Pipevine Swallowtail adults are beautiful dark butterflies with iridescent blue and green hindwings. The shining colors are a warning to birds that they taste terrible. Adults drink nectar from many flowers and the females lay eggs on the California Pipevine. They fly from late winter all the way through autumn.",
+        "secondary": "Battus philenor adults are large dark swallowtails with iridescent blue to blue-green hindwing scaling, forming the aposematic signal of the species's chemical defense. They are the model species in a mimicry complex that includes Papilio troilus (Spicebush Swallowtail), female Papilio polyxenes (Black Swallowtail), Limenitis arthemis astyanax (Red-spotted Purple), and dark-morph female Papilio glaucus — though in California the species occurs without local mimics. Adults nectar widely; females return to Aristolochia californica for oviposition.",
+        "university": "Adult wingspan 70–100 mm; marked sexual dimorphism with males showing more extensive iridescent blue hindwing coloration. Adults are strong fliers and range widely along riparian corridors. Aristolochic acid expression in wing scales, hemolymph, and integumentary tissues — predator naive-conditioning trials demonstrate strong aversive learning on first encounter. Mimicry complex: California populations present the model phenotype without local mimics, consistent with molecular evidence of recent (late Quaternary) colonization. Adult lifespan typically 2–4 weeks; overwintering-emerged spring brood can live longer given cooler thermal regime. Nectar reliance is broad but Yellow Star Thistle bridges the mid-summer floral gap at Oak Vista."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "raphanus-sativus",
+        "aesculus-californica",
+        "dichelostemma-capitatum",
+        "triteleia-laxa",
+        "eriodictyon-californicum",
+        "centaurea-solstitialis"
+      ],
+      "ecologicalRole": "Keystone pollinator of riparian wildflowers along the Central Valley foothills; reproductive stage of an obligate Aristolochia-specialist lineage; model species in the Battus mimicry complex.",
+      "lifespan": "Typically 2–4 weeks; spring brood emerging from overwintered pupae may persist longer given cooler thermal regime."
+    },
     "chemicalDefense": {
       "mechanism": "Sequestration of aristolochic acids from the larval host plant (Aristolochia californica). Toxins are retained through pupation, carried by adults, and transferred maternally to the eggs — every stage of the life cycle is chemically defended.",
       "sourceCompounds": "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
       "aposematicSignal": "Iridescent blue hindwing coloration in adults; conspicuous brick-red egg clusters; warningly coloured dark larvae with reddish filaments. The pupa is the exception — cryptic rather than aposematic.",
-      "protectedStages": ["EGG", "LARVA", "PUPA", "ADULT"]
+      "protectedStages": [
+        "EGG",
+        "LARVA",
+        "PUPA",
+        "ADULT"
+      ]
     },
     "voltinism": {
       "pattern": "INDETERMINATE",
@@ -320,9 +2752,94 @@
       "secondary": "Empoasca spp. (Cicadellidae: Typhlocybinae) are phloem-feeding hemipterans common on legumes, Solanaceae, and other broadleaf crops. Damage occurs through two mechanisms: direct removal of phloem contents during feeding, and salivary toxicosis — injection of enzymatic compounds that disrupt phloem sieve tube function and cause systemic chlorosis with marginal leaf necrosis (hopperburn). Adults jump or fly explosively on disturbance, making contact insecticide application largely ineffective. At population densities typical in a diverse garden supporting natural enemies, impact usually remains below economic threshold. Eggs are endophytically inserted into leaf and stem tissue; nymphs are wingless and pale green, easily mistaken for aphid crawlers. Primary natural enemies at Oak Vista are likely Anagrus spp. (Mymaridae) egg parasitoids, which are conserved by the crimson clover cover crop reservoir.",
       "university": "Empoasca spp. (Hemiptera: Cicadellidae: Typhlocybinae) — photo-identified to genus by the characteristic wedge-shaped body profile and uniform bright-green coloration at Oak Vista, April 2026. Species determination requires specimen examination or COI barcoding; the California Central Valley hosts multiple Empoasca species including E. fabae (potato leafhopper) and E. filamenta. Feeding biology: stylet penetration targets phloem sieve elements via intercellular salivary sheath; saliva contains pectinase, cellulase, and proteinase activities that degrade middle lamella and trigger callose deposition in sieve plates, producing systemic hopperburn symptomatology independent of plant water status. Biological control: Anagrus spp. (Mymaridae) are obligate egg parasitoids of Cicadellidae achieving up to 80% parasitism in vineyards where floral resources support adult parasitoid nutrition — the crimson clover cover crop at Oak Vista provides equivalent habitat function. Population presence on Trifolium incarnatum is ecologically expected; the cover crop acts as a reservoir for both Empoasca and its natural enemies, with net food-web value exceeding suppression benefit of elimination."
     },
-    "guilds": ["FOOD_WEB"],
+    "guilds": [
+      "FOOD_WEB"
+    ],
     "beneficial": false,
-    "sightingNotes": "Two individuals photographed on crimson clover (Trifolium incarnatum) in active bloom at Oak Vista, April 2026. Photo identification — genus confirmed by wedge-shaped body profile and uniform lime-green coloration; species not confirmed without specimen. First pest species documented in Oak Vista insect census. Population expected to be regulated by Anagrus egg parasitoids supported by the cover crop system."
+    "sightingNotes": "Two individuals photographed on crimson clover (Trifolium incarnatum) in active bloom at Oak Vista, April 2026. Photo identification — genus confirmed by wedge-shaped body profile and uniform lime-green coloration; species not confirmed without specimen. First pest species documented in Oak Vista insect census. Population expected to be regulated by Anagrus egg parasitoids supported by the cover crop system.",
+    "egg": {
+      "name": "potato-leafhopper-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--06-15",
+            "tail": "--09-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Oviposition by immigrant adults from spring migration; subsequent generations oviposit through summer."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Inserted into host-plant leaf veins or stem tissue by the female's ovipositor; concealed within the plant.",
+        "microclimate": "Within plant tissue; high humidity, protected.",
+        "spatialNotes": "Oak Vista: alfalfa, bean family plants, potato, and many herbaceous hosts."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The leafhopper lays tiny white eggs inside the leaves — you can't even see them!",
+        "elementary": "Potato leafhopper females push their eggs into plant leaves and stems using a sharp tube called an ovipositor. The eggs are hidden inside the plant tissue, where they are protected. This is very different from most insects, which lay their eggs on the outside of plants.",
+        "secondary": "Cicadellidae oviposition is endophytic — eggs are inserted into plant vascular tissue (typically leaf midrib, petiole, or young stem) using a bladed ovipositor. Eggs are elongate, translucent, and concealed within the plant. Hatching is 6–14 days; emerging nymphs break through the leaf surface.",
+        "university": "Empoasca fabae endophytic oviposition is a standard cicadellid strategy. Egg placement within plant tissue mechanically damages vascular bundles and initiates the feeding-injury pathway (hopperburn) that accumulates across subsequent nymphal and adult feeding. Reproductive output is high — a single female deposits 100+ eggs over her adult lifespan."
+      },
+      "colorProgression": "Pale translucent at laying; little colour change through development.",
+      "layingPattern": "Individually inserted into host-plant vascular tissue by ovipositor — concealed, not externally visible.",
+      "adaptiveSignificance": "Endophytic oviposition protects eggs from parasitoids and surface-dwelling predators while mechanically initiating host-plant vascular damage."
+    },
+    "larva": null,
+    "pupa": null,
+    "adult": {
+      "name": "potato-leafhopper-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--06-15",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Spring migratory influx; multiple summer generations. Central Valley populations are largely seasonal — no winter resident population in most years. Nymphal stages not modeled per hemimetabolous framework."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; active on host plant foliage.",
+        "spatialNotes": "Oak Vista: active on alfalfa, beans, potato, and many broad-herbaceous hosts; population-level management concern."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "Tiny green hoppers jump off the leaves when you touch them. They damage crops by drinking plant juice.",
+        "elementary": "Potato leafhoppers are small pale-green insects that suck juices from plants. When they feed, they inject saliva that damages the plant — this causes wilting and yellow leaf-tips called 'hopperburn'. They are a major pest on alfalfa, beans, potato, and many garden vegetables. At Oak Vista they are monitored as part of IPM.",
+        "secondary": "Empoasca fabae adults are small pale-green cicadellids (2–3 mm) that feed by phloem-piercing on a broad range of herbaceous hosts. Feeding causes characteristic 'hopperburn' — leaf-tip yellowing and necrosis resulting from salivary phytotoxin injection — and severe infestations cause substantial yield loss on alfalfa, beans, and potato. Cicadellidae broadly are among the most agriculturally significant Hemiptera.",
+        "university": "Empoasca fabae is the most economically significant Auchenorrhyncha pest of North American alfalfa and bean production. Feeding-injury mechanism involves saliva-mediated disruption of phloem transport; hopperburn is a specific physiological response to cicadellid salivary secretion rather than a general mechanical-damage response. Central Valley populations are seasonal migrants from warmer overwintering grounds to the south — the species does not successfully overwinter in the Central Valley in most years, making local populations dependent on annual re-immigration. Management integrates biological control (hymenopteran egg parasitoids, dryinid wasp adults parasitizing nymphs — not modeled here), resistant cultivars (glandular-haired alfalfa), and threshold-based intervention. Non-pest Cicadellidae at Oak Vista include a diverse wild-edge community not typically confused with Empoasca."
+      },
+      "feedingHabit": "SAP",
+      "nectarSources": [],
+      "ecologicalRole": "Herbaceous phloem-feeding hemipteran; agronomically significant pest on alfalfa, beans, potato, and many garden vegetables.",
+      "lifespan": "Adults 2–4 weeks."
+    }
   },
   {
     "name": "orange-sulphur",
@@ -338,8 +2855,186 @@
       "secondary": "Colias eurytheme (Orange Sulphur) is one of the most abundant pierid butterflies in North America, particularly in California's Central Valley where alfalfa and clover agriculture provides extensive larval habitat. Adults are polylectic nectarivores visiting Asteraceae, Brassicaceae, Fabaceae, and Lamiaceae. Wing coloration is sexually dimorphic — males are bright orange-yellow dorsally with solid black borders; females are paler yellow with lighter, spotted borders and a white morph (alba form) occurs in some populations. Colias eurytheme hybridises extensively with C. philodice (Clouded Sulphur) in areas of sympatry, producing intermediates that are difficult to separate without genitalic or molecular analysis. Larval host plants are Fabaceae: Medicago sativa (alfalfa), Trifolium spp. (clovers), and Astragalus spp. At Oak Vista, the crimson clover cover crop provides both adult nectar and potential larval host plant resources.",
       "university": "Colias eurytheme (Boisduval, 1852) — Lepidoptera: Pieridae: Coliadinae. Documented at Oak Vista nectaring on Raphanus sativus (wild radish, Brassicaceae), April 2026. Population ecology: multivoltine in Central Valley California (4–6 generations per year); continuous flight period March–November. Wing pigmentation: pterins (erythropterin, xanthopterin) produce the yellow-orange coloration; UV-reflective patches on male dorsal forewing function in mate recognition and species isolation from C. philodice. Hybridisation with C. philodice is well-documented across the Great Basin and Central Valley — F1 hybrids are fertile and backcross in both directions, creating a hybrid zone that has persisted for at least 10,000 years; some systematists treat the two as conspecific. Larval feeding: obligate on Fabaceae; larvae sequester no defensive compounds and rely on cryptic green coloration for predator avoidance. At Oak Vista, the Trifolium incarnatum (crimson clover) cover crop is a plausible oviposition target — larval feeding on cover crop biomass is ecologically neutral (cover crop function is nitrogen fixation and biomass, not seed harvest). Adults contribute to pollination of Brassicaceae and Asteraceae border plantings."
     },
-    "guilds": ["POLLINATOR"],
+    "guilds": [
+      "POLLINATOR"
+    ],
     "beneficial": true,
-    "sightingNotes": "Single individual photographed nectaring on wild radish (Raphanus sativus) flowers at Oak Vista, April 17 2026. Species-level identification confident based on orange-yellow wing coloration, dark forewing borders, and dark discal spot on hindwing — diagnostic for C. eurytheme. Crimson clover cover crop provides potential larval host plant (Fabaceae). Six photos taken from multiple angles."
+    "sightingNotes": "Single individual photographed nectaring on wild radish (Raphanus sativus) flowers at Oak Vista, April 17 2026. Species-level identification confident based on orange-yellow wing coloration, dark forewing borders, and dark discal spot on hindwing — diagnostic for C. eurytheme. Crimson clover cover crop provides potential larval host plant (Fabaceae). Six photos taken from multiple angles.",
+    "egg": {
+      "name": "orange-sulphur-egg",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-15",
+            "peak": "--05-15",
+            "tail": "--10-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Multi-generation; egg deposition tracks Fabaceae host availability through the season."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Leaves of Fabaceae host plants — alfalfa (Medicago sativa), clovers (Trifolium spp.), vetches.",
+        "microclimate": "Exposed, sunny foliage.",
+        "spatialNotes": "Oak Vista: crimson clover cover crop (Trifolium incarnatum) and any alfalfa/Medicago plantings."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The orange-sulphur butterfly lays pale yellow-green eggs one at a time on clover leaves.",
+        "elementary": "Orange sulphur butterflies lay single spindle-shaped eggs on Fabaceae plants — alfalfa, clovers, and vetches. Eggs are pale at first, turning pink, then red, then gray before the caterpillar hatches.",
+        "secondary": "Colias eurytheme oviposits singly on Fabaceae leaves. Eggs are spindle-shaped and show a distinctive colour progression through development — pale green-yellow at laying, pinking toward mid-development, deepening to red-orange, and darkening to gray immediately before hatch.",
+        "university": "Colias eurytheme host-plant specificity is Fabaceae-broad with alfalfa (Medicago sativa) as the single most important larval resource across its range. Egg color progression is a pronounced Colias-characteristic trait useful for field identification of unhatched clutches."
+      },
+      "colorProgression": "Pale green-yellow at laying; pinks through development; deepens to red-orange; grays immediately before hatch.",
+      "layingPattern": "Single eggs on host leaves.",
+      "adaptiveSignificance": null
+    },
+    "larva": {
+      "name": "orange-sulphur-larva",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-25",
+            "peak": "--06-01",
+            "tail": "--10-31",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Larval development 3–4 weeks; late-season larvae may overwinter as final-instar, though most Oak Vista populations do not strictly overwinter."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Fabaceae host-plant leaves — larvae feed openly on foliage.",
+        "microclimate": "Exposed foliar.",
+        "spatialNotes": "Oak Vista: crimson clover cover crop and alfalfa plantings."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The green caterpillar with white-and-yellow stripes eats clover leaves.",
+        "elementary": "Orange sulphur caterpillars are bright green with a white and yellow stripe down each side. They blend in very well with clover and alfalfa leaves. They eat steadily through five growth stages before pupating.",
+        "secondary": "Colias eurytheme larvae are bright leaf-green with a white lateral stripe bordered below by a thin yellow line — strongly cryptic on Fabaceae foliage. Development through five instars over 3–4 weeks at Central Valley summer temperatures.",
+        "university": "Crypsis on legume foliage is tight — colour matching is one of the clearest Colias examples of substrate-mimetic larval coloration. Host-plant use in orchard and cover-crop contexts (Medicago sativa, Trifolium incarnatum) makes the species a regular Oak Vista resident during cover-crop maturity. Mild herbivory; not typically a cover-crop management concern."
+      },
+      "feedingStrategy": "PHYTOPHAGOUS",
+      "hostPlants": [
+        "medicago-sativa",
+        "trifolium-incarnatum",
+        "trifolium-pratense",
+        "vicia-villosa"
+      ],
+      "parasitoidHosts": [],
+      "remarkableBehavior": "Strong crypsis on Fabaceae foliage — green body, white lateral stripe, yellow underline.",
+      "instarProgression": "Five instars over 3–4 weeks."
+    },
+    "pupa": {
+      "name": "orange-sulphur-pupa",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--04-15",
+            "peak": "--07-01",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Pupation on host plant or nearby stem. Pupal duration 7–14 days in summer generations."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": "Attached to host-plant stem or nearby vegetation by cremaster and silk girdle.",
+        "microclimate": "Exposed; short summer pupal duration.",
+        "spatialNotes": null
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "The caterpillar becomes a little green pupa on a stem.",
+        "elementary": "Orange sulphur pupae are small, green, and cryptic. They are attached upright to a plant stem by a silk girdle around the middle and a cremaster at the tail. They transform into adults in a week or two.",
+        "secondary": "Colias eurytheme pupation is cremaster-and-girdle upright attachment — the Pieridae / Papilionidae pattern. Pupa is bright leaf-green and cryptic on host-plant stems. Duration 7–14 days at summer temperatures.",
+        "university": "Upright cremaster-and-girdle pupation is Pieridae-conserved. Colias lineage is not known to diapause robustly at Central Valley temperatures — winter populations are generally not overwintering-pupal resident, and most winter is passed by immigration/reimmigration rather than local diapause."
+      },
+      "appearance": "Green, cryptic, upright cremaster-and-girdle attachment.",
+      "diapauseRegulation": null,
+      "adaptiveSignificance": null
+    },
+    "adult": {
+      "name": "orange-sulphur-adult",
+      "phenology": {
+        "windows": [
+          {
+            "onset": "--03-01",
+            "peak": "--05-15",
+            "tail": "--11-15",
+            "cohortLabel": null
+          }
+        ],
+        "notes": "Multiple overlapping generations across the growing season. Winter resident status is marginal; most Oak Vista seasons see re-immigration rather than strict overwintering."
+      },
+      "habitat": {
+        "profile": {
+          "zones": [
+            "CULTIVATED",
+            "MEADOW",
+            "HEDGEROW"
+          ],
+          "moisture": "MESIC",
+          "light": "FULL_SUN",
+          "layers": [
+            "HERBACEOUS_LAYER"
+          ]
+        },
+        "substrate": null,
+        "microclimate": "Warm, sunny; active through the hottest part of the day.",
+        "spatialNotes": "Oak Vista: widespread across cover crop, pasture edges, and flowering herbaceous plantings."
+      },
+      "chemistryRole": null,
+      "description": {
+        "preschool": "A bright yellow-orange butterfly flies quickly over the clover field.",
+        "elementary": "Orange sulphurs are medium-sized yellow or yellow-orange butterflies with black wing borders. They rarely open their wings when at rest — you usually see the underside, which is pale yellow with small spots. Females sometimes appear white instead of yellow. They visit many garden flowers.",
+        "secondary": "Colias eurytheme adults are 4–6 cm wingspan Pieridae with yellow to orange ground color and black border markings. Sexually dimorphic — females have larger and more diffuse dark borders. Female white morph ('alba' form) is genetically determined and appears at low frequency. Adults rarely spread their wings at rest; most field observation is of the pale underside.",
+        "university": "Colias eurytheme is among the most widely-distributed North American Pieridae, closely sympatric with congener C. philodice (common sulphur) across overlapping ranges. Hybridization between the two is documented. Female alba-morph polymorphism is well-studied — the morph is genetically determined and may have frequency-dependent fitness advantages in some populations. Oak Vista populations are agriculturally valuable as pollinators of Fabaceae cover-crop blooms and generalist herbaceous garden flowers."
+      },
+      "feedingHabit": "NECTAR",
+      "nectarSources": [
+        "trifolium-incarnatum",
+        "medicago-sativa",
+        "cosmos-bipinnatus",
+        "asclepias-speciosa",
+        "centaurea-solstitialis",
+        "eriogonum-fasciculatum"
+      ],
+      "ecologicalRole": "Fabaceae-dependent pollinator; abundant generalist herbaceous visitor.",
+      "lifespan": "Adults 2–4 weeks."
+    }
   }
 ]
