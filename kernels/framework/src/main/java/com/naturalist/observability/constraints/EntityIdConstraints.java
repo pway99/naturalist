@@ -12,11 +12,16 @@ public interface EntityIdConstraints {
 
         @Override
         public boolean isValid() {
-            return value != null && value.isValid();
+            return EntityId.isValid(value);
         }
 
         public EntityIdConstraint<NAME> withName(String name) {
             return new EntityIdConstraint<>(value, name);
+        }
+
+        @Override
+        public String errorMessage() {
+            return EntityId.errorMessageFor(value);
         }
     }
 }

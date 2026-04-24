@@ -1,5 +1,7 @@
 package com.naturalist.ddd;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -34,6 +36,33 @@ public abstract class EntityName {
 
     public boolean isNotValid() {
         return !isValid();
+    }
+
+    public String errorMessage() {
+        if (isValid()) return "";
+        if (value == null) return "null value";
+        if (value.length() > maxLength()) {
+            return "Length %d exceeds max %d".formatted(value.length(), maxLength());
+        }
+        return "Value '%s' is not lower-kebab-case".formatted(value);
+    }
+
+    /**
+     * Null-safe accessor for {@link #errorMessage()} — returns {@code "null value"}
+     * when {@code name} itself is null, otherwise delegates to the instance method.
+     * Use this from constraint code that must render a message regardless of
+     * whether the EntityName reference is present.
+     */
+    public static String errorMessageFor(@Nullable EntityName name) {
+        return name == null ? "null value" : name.errorMessage();
+    }
+
+    /**
+     * Null-safe validity check — {@code false} when {@code name} is null, otherwise
+     * delegates to {@link #isValid()}.
+     */
+    public static boolean isValid(@Nullable EntityName name) {
+        return name != null && name.isValid();
     }
 
     @Override

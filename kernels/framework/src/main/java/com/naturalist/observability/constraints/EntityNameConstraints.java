@@ -15,11 +15,16 @@ public interface EntityNameConstraints {
 
         @Override
         public boolean isValid() {
-            return value != null && value.isValid();
+            return EntityName.isValid(value);
         }
 
         public EntityNameConstraint<NAME> withName(String name) {
             return new EntityNameConstraint<>(value, name);
+        }
+
+        @Override
+        public String errorMessage() {
+            return EntityName.errorMessageFor(value);
         }
     }
 

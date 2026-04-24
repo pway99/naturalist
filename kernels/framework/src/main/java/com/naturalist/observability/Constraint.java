@@ -33,4 +33,8 @@ public interface Constraint<V> {
         int second = n.indexOf('.', first + 1);
         return second > 0 ? n.substring(first + 1, second) : n.substring(first + 1);
     }
+
+    default String errorMessage() {
+        return "";
+    }
 }

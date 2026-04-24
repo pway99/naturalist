@@ -42,7 +42,13 @@ public class InvariantViolationException extends RuntimeException {
                 .append(violations.size())
                 .append(" invariant violation(s)");
         for (Constraint<?> v : violations) {
-            sb.append("\n  - ").append(v.name());
+            sb.append("\n  - ")
+                    .append(v.getClass().getSimpleName())
+                    .append(" [").append(v.name()).append("]");
+            String err = v.errorMessage();
+            if (err != null && !err.isEmpty()) {
+                sb.append(": ").append(err);
+            }
         }
         return sb.toString();
     }

@@ -15,8 +15,9 @@ import java.util.function.Consumer;
  * identity is its UUID-based {@link InsectImageId}.
  * <p>
  * {@code insectSpeciesName} is the stable slug of the parent {@link InsectSpecies} — the
- * authoritative cross-entity reference per ADR-021. The RDBMS adapter is free to carry a
- * numeric foreign-key column privately; it never surfaces on the domain record.
+ * authoritative cross-entity reference per ADR-022 (superseding ADR-021). The RDBMS
+ * adapter is free to carry a numeric foreign-key column privately; it never surfaces on
+ * the domain record.
  * <p>
  * {@code resourceName} is a {@link FileName} wrapping the image filename as stored under
  * {@code insects/images/} in the classpath resources (e.g. {@code "IMG_9047.HEIC"}).
@@ -35,7 +36,7 @@ public record InsectImage(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, InsectImage::name, "name")
+                .entityId(name, "name")
                 .entityName(insectSpeciesName(), "insectSpeciesName")
                 .notNull(this, InsectImage::dateAdded, "dateAdded")
                 .namedValue(this, InsectImage::resourceName, "resourceName");

@@ -1,6 +1,7 @@
 package com.naturalist.ddd;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -53,6 +54,31 @@ public abstract class EntityId {
 
     public boolean isNotValid() {
         return !isValid();
+    }
+
+    public String errorMessage() {
+        if (isValid()) return "";
+        return value == null
+                ? "null value"
+                : "Found UUID Version:%d, expected:7".formatted(value.version());
+    }
+
+    /**
+     * Null-safe accessor for {@link #errorMessage()} — returns {@code "null value"}
+     * when {@code id} itself is null, otherwise delegates to the instance method.
+     * Use this from constraint code that must render a message regardless of
+     * whether the EntityId reference is present.
+     */
+    public static String errorMessageFor(@Nullable EntityId id) {
+        return id == null ? "null value" : id.errorMessage();
+    }
+
+    /**
+     * Null-safe validity check — {@code false} when {@code id} is null, otherwise
+     * delegates to {@link #isValid()}.
+     */
+    public static boolean isValid(@Nullable EntityId id) {
+        return id != null && id.isValid();
     }
 
     @Override
