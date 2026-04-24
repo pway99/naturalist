@@ -7,6 +7,7 @@ import com.naturalist.insects.InsectEntityCollections;
 import com.naturalist.insects.InsectQuery;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.InsectsTestContext;
+import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -29,12 +30,14 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/insects")
 public class InsectsController {
     private final InsectQuery insectQuery;
+    private final InsectLifeStageQuery insectLifeStageQuery;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
     InsectsController() {
         //TODO:: This will eventually be a spring managed bean
         InsectsTestContext context = InsectsTestContext.create(NaturalistDatabase.create());
         this.insectQuery = context.insectQuery();
+        this.insectLifeStageQuery = context.insectLifeStageQuery();
     }
 
     @GetMapping
@@ -77,6 +80,21 @@ public class InsectsController {
         model.addAttribute("species", species.get());
         model.addAttribute("images", images.stream().toList());
         return "insects/detail";
+    }
+
+    @GetMapping("/{name}/life-stages")
+    String lifeStages(@PathVariable String name, Model model) {
+        var speciesName = InsectSpeciesName.of(name);
+        var species = insectQuery.species().getByName(speciesName);
+        if (species.isEmpty()) {
+            return "redirect:/insects";
+        }
+        var stages = insectLifeStageQuery.lifeStages().forSpeciesName(speciesName).stream()
+                .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
+                .toList();
+        model.addAttribute("species", species.get());
+        model.addAttribute("stages", stages);
+        return "insects/life-stages";
     }
 
     @GetMapping("/images/{filename}")

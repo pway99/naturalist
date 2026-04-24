@@ -51,6 +51,11 @@
                     @endfor
                 </div>
                 <p class="description-preview">${s.description().preschool()}</p>
+                <footer>
+                    <a href="/insects/${s.name().value()}/life-stages" class="secondary">
+                        Life Stages &rarr;
+                    </a>
+                </footer>
             </article>
         @endfor
     </div>

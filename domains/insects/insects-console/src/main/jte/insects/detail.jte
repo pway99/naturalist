@@ -10,6 +10,12 @@
 
     <h1>${species.name().value()}</h1>
 
+    <p>
+        <a href="/insects/${species.name().value()}/life-stages" role="button" class="secondary">
+            View Life Stages &rarr;
+        </a>
+    </p>
+
     @template.components.taxonomy(taxonomy = species.taxonomy())
 
     <div class="guilds">

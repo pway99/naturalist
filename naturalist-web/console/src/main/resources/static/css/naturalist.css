@@ -8,12 +8,12 @@
     --pico-h2-color: #6B4423;
     --pico-h3-color: #5B7553;
     --pico-muted-color: #8B7D6B;
-    --pico-card-background-color: #E4DDD2;
-    --pico-card-border-color: #D4C9B8;
-    --pico-card-sectioning-background-color: #E4DDD2;
-    --pico-table-border-color: #D4C9B8;
-    --pico-form-element-background-color: #E4DDD2;
-    --pico-form-element-border-color: #D4C9B8;
+    --pico-card-background-color: #F2E8D4;
+    --pico-card-border-color: #8B6B3D;
+    --pico-card-sectioning-background-color: #E8DBBF;
+    --pico-table-border-color: #8B6B3D;
+    --pico-form-element-background-color: #F2E8D4;
+    --pico-form-element-border-color: #8B6B3D;
     --pico-form-element-focus-color: var(--pico-primary);
     --pico-secondary: #6B4423;
     --pico-secondary-hover: #5A3719;
@@ -27,11 +27,20 @@
     --image-opacity: 1;
     --bg-overlay-opacity: 0.3;
 
-    /* Card styling */
-    --card-background: #A0826D;
-    --card-header-background: #6B5D52;
-    --card-text-color: #FAF8F5;
-    --card-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    /* Durrell "Amateur Naturalist" plate palette — shared across the console. */
+    --parchment: #F2E8D4;
+    --parchment-deep: #E8DBBF;
+    --sepia-ink: #3A2A18;
+    --sepia-ink-soft: #5A4329;
+    --sepia-rule: #8B6B3D;
+    --plate-shadow: 0 4px 10px rgba(58, 42, 24, 0.25);
+
+    /* Legacy card vars — retained but repointed to the parchment palette so any
+       lingering references match the rest of the app. */
+    --card-background: var(--parchment);
+    --card-header-background: var(--parchment-deep);
+    --card-text-color: var(--sepia-ink);
+    --card-text-shadow: none;
 }
 
 body {
@@ -138,51 +147,127 @@ footer {
     color: var(--pico-muted-color);
 }
 
+/* Plate — the shared Durrell "Amateur Naturalist" surface. Any card, section, or
+   container inside <main> that needs sepia-on-parchment uses this. Global white
+   body text is overridden inside a plate. */
+.plate,
+.species-grid article,
+main > section:not(.life-stages):not(.bare),
+.description-tabs {
+    background: var(--parchment) !important;
+    color: var(--sepia-ink) !important;
+    border: 1px solid var(--sepia-rule) !important;
+    border-radius: 0.25rem;
+    box-shadow: var(--plate-shadow);
+    padding: 1.25rem 1.5rem;
+    position: relative;
+}
+.plate p, .plate li, .plate span:not(.badge), .plate a, .plate em, .plate strong,
+.plate dt, .plate dd, .plate h2, .plate h3, .plate h4, .plate summary, .plate div,
+.species-grid article p, .species-grid article li, .species-grid article span:not(.badge),
+.species-grid article a, .species-grid article em, .species-grid article strong,
+.species-grid article h2, .species-grid article h3, .species-grid article header strong,
+main > section:not(.life-stages) p, main > section:not(.life-stages) li,
+main > section:not(.life-stages) span:not(.badge), main > section:not(.life-stages) a,
+main > section:not(.life-stages) em, main > section:not(.life-stages) strong,
+main > section:not(.life-stages) h2, main > section:not(.life-stages) h3,
+main > section:not(.life-stages) h4, main > section:not(.life-stages) dt,
+main > section:not(.life-stages) dd, main > section:not(.life-stages) div,
+.description-tabs p, .description-tabs a, .description-tabs span:not(.badge) {
+    color: var(--sepia-ink) !important;
+    text-shadow: none !important;
+}
+.species-grid article em, main > section:not(.life-stages) em, .plate em {
+    color: var(--sepia-ink-soft) !important;
+    font-style: italic;
+}
+
 /* Species grid */
 .species-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1rem;
+    gap: 1.25rem;
 }
 .species-grid article {
     margin: 0;
-    background: var(--card-background) !important;
-    border: none;
-    color: var(--card-text-color);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 .species-grid article header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--card-header-background) !important;
-    padding: 0.75rem !important;
-    margin: -1rem -1rem 0.75rem -1rem !important;
-    border-radius: 0.5rem 0.5rem 0 0;
+    background: var(--parchment-deep) !important;
+    border-bottom: 1px solid var(--sepia-rule);
+    padding: 0.75rem 1rem !important;
+    margin: 0 !important;
+    border-radius: 0.25rem 0.25rem 0 0;
 }
 .species-grid article header strong {
-    color: var(--card-text-color);
-    text-shadow: var(--card-text-shadow);
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
 }
-.species-grid article p {
-    color: var(--card-text-color);
-    text-shadow: var(--card-text-shadow);
+.species-grid article > *:not(header):not(footer) {
+    padding: 0 1rem;
 }
-.species-grid article a {
-    color: var(--card-text-color);
+.species-grid article > header + * { padding-top: 0.75rem; }
+.species-grid article .description-preview { flex: 1 1 auto; }
+.species-grid article footer {
+    background: var(--parchment-deep) !important;
+    border-top: 1px solid var(--sepia-rule);
+    border-radius: 0 0 0.25rem 0.25rem;
+    padding: 0.6rem 1rem !important;
+    margin: 0.75rem 0 0 0 !important;
+    color: var(--sepia-ink) !important;
+}
+.species-grid article footer a {
+    color: var(--sepia-ink) !important;
+    font-style: italic;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--sepia-rule);
+}
+.species-grid article footer a:hover {
+    color: var(--pico-primary) !important;
 }
 
 .taxonomy {
-    color: var(--text-light-color);
-    text-shadow: var(--card-text-shadow);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
+    font-style: italic;
+}
+.species-grid article .taxonomy,
+main > section .taxonomy,
+.life-stages .plate-subtitle.taxonomy {
+    color: var(--sepia-ink-soft) !important;
+    text-shadow: none !important;
 }
 
 .description-preview {
     font-size: 0.9rem;
     line-height: 1.5;
-    color: var(--text-light-color);
-    text-shadow: var(--card-text-shadow);
+}
+
+/* Detail page sections — each <section> in main becomes a plate. */
+main > section:not(.life-stages) {
+    margin: 1rem 0 1.5rem 0;
+}
+main > section:not(.life-stages) > h2 {
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 700;
+    margin-top: 0;
+    border-bottom: 1px solid var(--sepia-rule);
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.75rem;
+}
+main > section:not(.life-stages) a {
+    font-weight: 600;
+    border-bottom: 1px dotted var(--sepia-rule);
+    text-decoration: none;
 }
 
 /* Badges */
@@ -200,6 +285,14 @@ footer {
     background: #5B7553;
     color: #FAF8F5;
 }
+.badge.stage {
+    background: var(--parchment-deep);
+    border: 1px solid var(--sepia-rule);
+    color: var(--sepia-ink);
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    text-transform: capitalize;
+}
 .guilds {
     display: flex;
     flex-wrap: wrap;
@@ -215,49 +308,268 @@ footer {
 .guild-migratory   { background: #5B7FA5; color: #FAF8F5; }
 .guild-keystone    { background: #7A3B5E; color: #FAF8F5; }
 
-/* Description tabs */
+/* Description tabs — parchment plate with sepia ink. */
 .description-tabs {
-    margin: 1.5rem 0;
+    margin: 1.25rem 0;
+    padding: 1.25rem 1.5rem;
 }
 .description-tabs nav {
     display: flex;
     gap: 0;
-    border-bottom: 2px solid rgba(250, 248, 245, 0.3);
+    border-bottom: 1px solid var(--sepia-rule);
     margin-bottom: 0;
 }
 .description-tabs .tab {
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
+    margin-bottom: -1px;
     padding: 0.5rem 1rem;
     cursor: pointer;
-    font-family: inherit;
-    font-size: 0.9rem;
-    color: var(--text-light-color);
-    text-shadow: var(--card-text-shadow);
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--sepia-ink-soft) !important;
+    text-shadow: none !important;
+}
+.description-tabs .tab:hover {
+    color: var(--sepia-ink) !important;
 }
 .description-tabs .tab.active {
-    color: #FFFFFF;
-    border-bottom-color: rgba(250, 248, 245, 0.8);
-    font-weight: 600;
+    color: var(--sepia-ink) !important;
+    border-bottom-color: var(--sepia-rule);
+    font-weight: 700;
 }
 .tab-content {
     display: none;
-    padding: 1rem 0;
-    line-height: 1.7;
+    padding: 1rem 0 0.25rem 0;
+    line-height: 1.75;
+    font-family: 'Georgia', 'Cambria', serif;
 }
-.tab-content.active {
-    display: block;
-}
+.tab-content.active { display: block; }
 .tab-content p {
-    color: var(--text-light-color);
-    text-shadow: var(--card-text-shadow);
+    color: var(--sepia-ink) !important;
+    text-shadow: none !important;
 }
 .tab-content a {
-    color: #FFFFFF;
-    text-shadow: var(--card-text-shadow);
+    color: var(--pico-primary) !important;
     font-weight: 600;
+    text-shadow: none !important;
+}
+
+/* Life stages — Durrell "Amateur Naturalist" plate aesthetic. Uses the shared
+   parchment/sepia palette declared at :root. */
+.life-stages .naturalist-backlink,
+.naturalist-backlink {
+    color: var(--text-light-color);
+    text-shadow: var(--text-shadow-subtle);
+    font-style: italic;
+}
+.life-stages .plate-heading {
+    text-align: center;
+    border-top: 2px solid var(--sepia-rule);
+    border-bottom: 2px solid var(--sepia-rule);
+    padding: 1.5rem 0;
+    margin: 0 0 2rem 0;
+    background: transparent;
+}
+.life-stages .plate-heading h1 {
+    color: var(--text-light-color);
+    text-shadow: var(--text-shadow-strong);
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin: 0.25rem 0;
+}
+.life-stages .plate-eyebrow {
+    color: var(--text-light-color);
+    text-shadow: var(--text-shadow-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-size: 0.75rem;
+    margin: 0;
+}
+.life-stages .plate-subtitle {
+    color: var(--text-light-color);
+    text-shadow: var(--text-shadow-subtle);
+    font-style: italic;
+    margin: 0;
+}
+.life-stages .plate-note {
+    color: var(--text-light-color);
+    text-shadow: var(--text-shadow-subtle);
+    text-align: center;
+    padding: 2rem;
+}
+
+.life-stages .stage-plate {
+    background: var(--parchment) !important;
+    color: var(--sepia-ink);
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.25rem;
+    box-shadow: var(--plate-shadow);
+    padding: 1.75rem 2rem;
+    margin: 0 0 2rem 0;
+    position: relative;
+}
+.life-stages .stage-plate::before {
+    content: '';
+    position: absolute;
+    top: 0.35rem; left: 0.35rem; right: 0.35rem; bottom: 0.35rem;
+    border: 1px solid rgba(139, 107, 61, 0.35);
+    border-radius: 0.15rem;
+    pointer-events: none;
+}
+
+/* Override the global white text for everything inside a plate */
+.life-stages .stage-plate,
+.life-stages .stage-plate h2,
+.life-stages .stage-plate h3,
+.life-stages .stage-plate p,
+.life-stages .stage-plate li,
+.life-stages .stage-plate span,
+.life-stages .stage-plate em,
+.life-stages .stage-plate strong,
+.life-stages .stage-plate dt,
+.life-stages .stage-plate dd,
+.life-stages .stage-plate div,
+.life-stages .stage-plate a,
+.life-stages .stage-plate summary {
+    color: var(--sepia-ink);
+    text-shadow: none;
+}
+.life-stages .stage-plate em {
+    color: var(--sepia-ink-soft);
+    font-style: italic;
+}
+
+.life-stages .stage-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid var(--sepia-rule);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    background: transparent !important;
+}
+.life-stages .stage-header h2 {
+    margin: 0;
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--sepia-ink) !important;
+    text-shadow: none !important;
+}
+.life-stages .stage-slug {
+    margin: 0.1rem 0 0 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+    color: var(--sepia-ink-soft) !important;
+    font-family: 'Courier New', monospace;
+}
+.life-stages .stage-ordinal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--sepia-rule);
+    background: var(--parchment-deep);
+    color: var(--sepia-ink) !important;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.life-stages .stage-description .lead {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin: 0 0 0.75rem 0;
+    font-family: 'Georgia', 'Cambria', serif;
+}
+.life-stages .stage-description details {
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--parchment-deep);
+    border-left: 3px solid var(--sepia-rule);
+    border-radius: 0.15rem;
+}
+.life-stages .stage-description details summary {
+    cursor: pointer;
+    font-style: italic;
+    color: var(--sepia-ink-soft) !important;
+}
+.life-stages .stage-description details p {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.life-stages .stage-facts {
+    display: grid;
+    grid-template-columns: minmax(9rem, 12rem) 1fr;
+    gap: 0.5rem 1.25rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--sepia-rule);
+}
+.life-stages .stage-facts dt {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-weight: 700;
+    color: var(--sepia-ink) !important;
+    text-align: right;
+    padding-top: 0.1rem;
+    border-right: 1px solid rgba(139, 107, 61, 0.35);
+    padding-right: 1rem;
+}
+.life-stages .stage-facts dd {
+    margin: 0;
+    line-height: 1.6;
+}
+.life-stages .stage-facts .aside {
+    margin: 0.35rem 0 0 0;
+    font-style: italic;
+    color: var(--sepia-ink-soft) !important;
+    font-size: 0.9rem;
+}
+.life-stages .stage-facts .token {
+    display: inline-block;
+    margin: 0.1rem 0.35rem 0.1rem 0;
+    padding: 0.1rem 0.5rem;
+    background: var(--parchment-deep);
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.15rem;
+    font-size: 0.85rem;
+    font-family: 'Courier New', monospace;
+    color: var(--sepia-ink) !important;
+}
+
+/* Stage kind accent — a slim coloured edge echoing field-guide plates */
+.life-stages .stage-egg    { border-left: 6px solid #C9A83E; }
+.life-stages .stage-larva  { border-left: 6px solid #7B8C3E; }
+.life-stages .stage-pupa   { border-left: 6px solid #8B6B4A; }
+.life-stages .stage-adult  { border-left: 6px solid #A0522D; }
+
+@media (max-width: 640px) {
+    .life-stages .stage-facts {
+        grid-template-columns: 1fr;
+        gap: 0.15rem 0;
+    }
+    .life-stages .stage-facts dt {
+        text-align: left;
+        border-right: none;
+        border-bottom: 1px solid rgba(139, 107, 61, 0.35);
+        padding-right: 0;
+        padding-bottom: 0.15rem;
+        margin-top: 0.75rem;
+    }
 }
 
 /* Image gallery */

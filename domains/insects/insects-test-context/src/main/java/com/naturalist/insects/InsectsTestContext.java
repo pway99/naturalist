@@ -1,6 +1,8 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.insects.lifestage.InsectLifeStageQuery;
+import com.naturalist.insects.lifestage.InsectLifeStageTestContext;
 
 /**
  * Pre-wired, in-memory read surface for the insects bounded context. Colocates into
@@ -22,6 +24,7 @@ import com.naturalist.data.NaturalistDatabase;
  */
 public class InsectsTestContext {
     private final InsectQuery insectQuery;
+    private final InsectLifeStageQuery insectLifeStageQuery;
 
     private InsectsTestContext(NaturalistDatabase db) {
         InsectRepository repository = InsectRepository.create(
@@ -30,6 +33,7 @@ public class InsectsTestContext {
         InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository.speciesRepository);
         InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(repository.imageRepository);
         this.insectQuery = new InsectQueryImpl(speciesQuery, imageQuery);
+        this.insectLifeStageQuery = InsectLifeStageTestContext.createQuery(db);
     }
 
     public static InsectsTestContext create(NaturalistDatabase db) {
@@ -38,5 +42,9 @@ public class InsectsTestContext {
 
     public InsectQuery insectQuery() {
         return insectQuery;
+    }
+
+    public InsectLifeStageQuery insectLifeStageQuery() {
+        return insectLifeStageQuery;
     }
 }
