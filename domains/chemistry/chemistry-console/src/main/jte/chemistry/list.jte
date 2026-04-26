@@ -7,7 +7,7 @@
 
 @template.layout.page(title = "Chemistry Catalog", content = @`
     <h1>Chemistry Catalog</h1>
-    <p>${compounds.size()} compounds catalogued.</p>
+    <p>${compounds.size()} compounds catalogued. <a href="/chemistry/products">View products &rarr;</a></p>
 
     <div class="entity-grid">
         @for(var c : compounds)

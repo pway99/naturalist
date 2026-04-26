@@ -5,10 +5,15 @@ import com.naturalist.chemistry.TestChemistryIdentifiers;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link ProductRepository}.
@@ -64,5 +69,35 @@ interface ProductEntityRepositoryTest
                 RandomValue.string(),
                 Set.of(CompoundName.of(RandomValue.string())),
                 Map.of(RandomValue.string(), RandomValue.string()));
+    }
+
+    // =========================================================================
+    // getByCompoundName — reverse lookup from compound to its products
+    // =========================================================================
+
+    @Test
+    default void getByCompoundName_nullArgument() {
+        assertThatThrownBy(() -> repository().getByCompoundName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("compoundName");
+    }
+
+    @Test
+    default void getByCompoundName_unknownCompound_returnsEmpty() {
+        assertThat(repository().getByCompoundName(TestChemistryIdentifiers.Compounds.NotFound.name))
+                .isEmpty();
+    }
+
+    @Test
+    default void getByCompoundName_knownCompound_returnsContainingProducts() {
+        CompoundName thymol = TestChemistryIdentifiers.Compounds.Thymol.name;
+
+        List<Product> result = repository().getByCompoundName(thymol);
+
+        assertThat(result)
+                .extracting(Product::name)
+                .contains(TestChemistryIdentifiers.Products.Apiguard.name);
+        assertThat(result).allSatisfy(product ->
+                assertThat(product.compounds()).contains(thymol));
     }
 }

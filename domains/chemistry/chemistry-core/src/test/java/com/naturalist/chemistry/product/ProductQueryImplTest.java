@@ -1,6 +1,7 @@
 package com.naturalist.chemistry.product;
 
 import com.naturalist.chemistry.TestChemistryIdentifiers;
+import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -35,5 +36,19 @@ class ProductQueryImplTest {
         assertThat(pc.size()).isEqualTo(2);
         assertThat(pc.stream().toList())
                 .containsExactlyElementsOf(expected);
+    }
+
+    @Test
+    void findByCompoundName_happyPath() {
+        CompoundName thymol = TestChemistryIdentifiers.Compounds.Thymol.name;
+
+        ProductCollection pc = productQuery.findByCompoundName(thymol);
+
+        assertThat(pc).isNotNull();
+        assertThat(pc.stream().toList())
+                .extracting(Product::name)
+                .contains(TestChemistryIdentifiers.Products.Apiguard.name);
+        assertThat(pc.stream().toList()).allSatisfy(product ->
+                assertThat(product.compounds()).contains(thymol));
     }
 }

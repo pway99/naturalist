@@ -297,9 +297,33 @@ main > section:not(.life-stages) > h2 {
     margin-bottom: 0.75rem;
 }
 main > section:not(.life-stages) a {
+    color: var(--pico-primary) !important;
     font-weight: 600;
-    border-bottom: 1px dotted var(--sepia-rule);
+    border-bottom: 1px dotted var(--pico-primary);
     text-decoration: none;
+}
+main > section:not(.life-stages) a:hover {
+    color: var(--pico-primary-hover) !important;
+    border-bottom-color: var(--pico-primary-hover);
+}
+
+/* Entity-grid card body links — distinguish from sepia body text. The header
+   title link and footer "details →" link keep their own treatments. */
+.entity-grid article .description-preview a {
+    color: var(--pico-primary) !important;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--pico-primary);
+}
+.entity-grid article .description-preview a:hover {
+    color: var(--pico-primary-hover) !important;
+    border-bottom-color: var(--pico-primary-hover);
+}
+.entity-grid article .description-preview a code {
+    color: var(--pico-primary) !important;
+}
+.entity-grid article .description-preview a:hover code {
+    color: var(--pico-primary-hover) !important;
 }
 
 /* Badges */

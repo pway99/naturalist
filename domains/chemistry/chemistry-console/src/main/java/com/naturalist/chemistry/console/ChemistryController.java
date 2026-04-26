@@ -4,6 +4,9 @@ import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.compound.CompoundQuery;
+import com.naturalist.chemistry.product.Product;
+import com.naturalist.chemistry.product.ProductName;
+import com.naturalist.chemistry.product.ProductQuery;
 import com.naturalist.data.NaturalistDatabase;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +24,14 @@ import java.util.stream.Collectors;
 public class ChemistryController {
 
     private final CompoundQuery compoundQuery;
+    private final ProductQuery productQuery;
     private final DepictionRenderer depictionRenderer;
 
     ChemistryController(DepictionRenderer depictionRenderer) {
         //TODO:: This will eventually be a spring managed bean
         ChemistryTestContext context = ChemistryTestContext.create(NaturalistDatabase.create());
         this.compoundQuery = context.compoundQuery();
+        this.productQuery = context.productQuery();
         this.depictionRenderer = depictionRenderer;
     }
 
@@ -52,9 +57,13 @@ public class ChemistryController {
             return "redirect:/chemistry";
         }
         var depiction = compoundQuery.depictions().getByCompoundName(compoundName);
+        var products = productQuery.findByCompoundName(compoundName).stream()
+                .sorted(Comparator.comparing((Product p) -> p.name().value()))
+                .toList();
         model.addAttribute("compound", compound.get());
         model.addAttribute("hasDepiction", depiction.isPresent());
         model.addAttribute("depictionNote", depiction.map(d -> d.note()).orElse(null));
+        model.addAttribute("products", products);
         return "chemistry/detail";
     }
 
@@ -66,5 +75,30 @@ public class ChemistryController {
                         .contentType(MediaType.valueOf("image/svg+xml"))
                         .body(svg))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/products")
+    String productList(Model model) {
+        var nameSet = productQuery.allProductNames().stream().collect(Collectors.toSet());
+        var products = productQuery.findByNameSet(nameSet).stream()
+                .sorted(Comparator.comparing((Product p) -> p.name().value()))
+                .toList();
+        model.addAttribute("products", products);
+        return "chemistry/products/list";
+    }
+
+    @GetMapping("/products/{name}")
+    String productDetail(@PathVariable String name, Model model) {
+        var productName = ProductName.of(name);
+        var product = productQuery.getByName(productName);
+        if (product.isEmpty()) {
+            return "redirect:/chemistry/products";
+        }
+        var compounds = compoundQuery.compounds().findByNameSet(product.get().compounds()).stream()
+                .sorted(Comparator.comparing((Compound c) -> c.name().value()))
+                .toList();
+        model.addAttribute("product", product.get());
+        model.addAttribute("compounds", compounds);
+        return "chemistry/products/detail";
     }
 }
