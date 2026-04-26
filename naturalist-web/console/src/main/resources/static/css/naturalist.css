@@ -619,3 +619,36 @@ main > section:not(.life-stages) a {
     border-radius: 0.5rem;
     border: 1px solid var(--pico-card-border-color);
 }
+
+/* Chemistry — 2D structural depictions rendered by CDK */
+.compound-depiction-link {
+    display: block;
+    width: 100%;
+    margin: 0.75rem 0;
+}
+.compound-depiction-thumb {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    background: #ffffff;
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+}
+figure.compound-depiction {
+    margin: 1rem 0 1.5rem 0;
+    text-align: center;
+}
+figure.compound-depiction img {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+}

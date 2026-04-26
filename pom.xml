@@ -32,6 +32,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>3.5.0</spring-boot.version>
         <jte.version>3.2.1</jte.version>
+        <cdk.version>2.12</cdk.version>
     </properties>
 
     <build>
@@ -58,6 +59,13 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- THIRD PARTY -->
+            <dependency>
+                <groupId>org.openscience.cdk</groupId>
+                <artifactId>cdk-bundle</artifactId>
+                <version>${cdk.version}</version>
+            </dependency>
 
             <!-- KERNELS -->
             <dependency>

@@ -1,12 +1,27 @@
 @import com.naturalist.chemistry.compound.Compound
 
 @param Compound compound
+@param boolean hasDepiction = false
+@param String depictionNote = null
 
 @template.layout.page(title = compound.name().value(), content = @`
     <a href="/chemistry" class="naturalist-backlink">&larr; Back to catalog</a>
 
     <h1>${compound.commonName()}</h1>
     <p>${compound.name().value()} &middot; <em>${compound.formula()}</em></p>
+
+    @if(hasDepiction)
+        <figure class="compound-depiction">
+            <img src="/chemistry/${compound.name().value()}/depiction.svg"
+                 alt="2D structural depiction of ${compound.commonName()}" />
+        </figure>
+        @if(depictionNote != null)
+            <section>
+                <h2>Depiction note</h2>
+                <p>${depictionNote}</p>
+            </section>
+        @endif
+    @endif
 
     <section>
         <h2>Identity</h2>

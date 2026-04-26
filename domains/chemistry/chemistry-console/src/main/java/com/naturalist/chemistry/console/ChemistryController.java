@@ -5,6 +5,8 @@ import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.compound.CompoundQuery;
 import com.naturalist.data.NaturalistDatabase;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,11 +21,13 @@ import java.util.stream.Collectors;
 public class ChemistryController {
 
     private final CompoundQuery compoundQuery;
+    private final CompoundDepictionService depictionService;
 
-    ChemistryController() {
+    ChemistryController(CompoundDepictionService depictionService) {
         //TODO:: This will eventually be a spring managed bean
         ChemistryTestContext context = ChemistryTestContext.create(NaturalistDatabase.create());
         this.compoundQuery = context.compoundQuery();
+        this.depictionService = depictionService;
     }
 
     @GetMapping
@@ -33,6 +37,7 @@ public class ChemistryController {
                 .sorted(Comparator.comparing((Compound c) -> c.name().value()))
                 .toList();
         model.addAttribute("compounds", compounds);
+        model.addAttribute("depictableSlugs", depictionService.depictableSlugs());
         return "chemistry/list";
     }
 
@@ -44,6 +49,17 @@ public class ChemistryController {
             return "redirect:/chemistry";
         }
         model.addAttribute("compound", compound.get());
+        model.addAttribute("hasDepiction", depictionService.canDepict(compoundName));
+        model.addAttribute("depictionNote", depictionService.depictionNote(compoundName).orElse(null));
         return "chemistry/detail";
+    }
+
+    @GetMapping(value = "/{name}/depiction.svg", produces = "image/svg+xml")
+    ResponseEntity<String> depiction(@PathVariable String name) {
+        var svg = depictionService.depictAsSvg(CompoundName.of(name));
+        return svg.map(s -> ResponseEntity.ok()
+                        .contentType(MediaType.valueOf("image/svg+xml"))
+                        .body(s))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

@@ -1,7 +1,9 @@
 @import com.naturalist.chemistry.compound.Compound
 @import java.util.List
+@import java.util.Set
 
 @param List<Compound> compounds
+@param Set<String> depictableSlugs = java.util.Set.of()
 
 @template.layout.page(title = "Chemistry Catalog", content = @`
     <h1>Chemistry Catalog</h1>
@@ -21,6 +23,13 @@
                         <span class="badge guild-pollinator">fumigant</span>
                     @endif
                 </header>
+                @if(depictableSlugs.contains(c.name().value()))
+                    <a href="/chemistry/${c.name().value()}" class="compound-depiction-link">
+                        <img src="/chemistry/${c.name().value()}/depiction.svg"
+                             alt="2D structural depiction of ${c.commonName()}"
+                             class="compound-depiction-thumb" />
+                    </a>
+                @endif
                 <p class="taxonomy">
                     <code>${c.name().value()}</code>
                 </p>
