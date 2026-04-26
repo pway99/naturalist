@@ -403,20 +403,95 @@ Do **not** do any of the following in this refactor:
 
 ## 12. Done Criteria
 
-- [ ] `CompoundType` enum file deleted.
-- [ ] `ChemicalNature`, `PhysicalForm` enums created in
+- [x] `CompoundType` enum file deleted.
+- [x] `ChemicalNature`, `PhysicalForm` enums created in
       `com.naturalist.chemistry.compound`.
-- [ ] `FunctionalRole` sealed interface + permits created in
+- [x] `FunctionalRole` sealed interface + permits created in
       `com.naturalist.chemistry.compound.role`.
-- [ ] `CompoundInfo` updated: `type` removed, three new components added,
+- [x] `CompoundInfo` updated: `type` removed, three new components added,
       `invariants()` updated.
-- [ ] `Compound` updated: four behavioral predicates added.
-- [ ] `CompoundCollection` updated: two filtering methods added.
-- [ ] `compounds.json` migrated; deserialization passes.
-- [ ] `CompoundTest`, `CompoundInfoTest` (if present), and any other affected
-      tests pass with updated path assertions.
-- [ ] Repository contract test passes unchanged.
-- [ ] New unit tests for predicates and collection filters added and passing.
-- [ ] `grep -r CompoundType domains/chemistry/` returns zero results.
-- [ ] Console templates updated if they referenced `compoundInfo.type`.
-- [ ] No new dependencies introduced; DAG unchanged.
+- [x] `Compound` updated: four behavioral predicates added
+      (`isFumigant`, `isHazardous`, `isChelated`, `playsRole`).
+- [x] `CompoundCollection` updated: two filtering methods added
+      (`withChemicalNature`, `withFunctionalRole`).
+- [x] `compounds.json` migrated; deserialization passes.
+- [x] `CompoundTest`, `CompoundInfoTest`, and other affected tests updated.
+- [x] Repository contract test passes unchanged.
+- [x] New unit tests for predicates and collection filters added.
+- [x] `grep -r CompoundType domains/chemistry/` returns zero results in
+      production code (only this doc and the historical
+      `docs/chemistry-api-briefing.md` retain the name as historical context).
+- [x] Console templates updated — `chemistry/detail.jte` renders
+      `chemicalNature`, `physicalForm`, and `functionalRoles` instead of
+      the deleted `type`.
+- [x] No new dependencies introduced; DAG unchanged.
+
+**Status:** Refactor complete as of 2026-04-26.
+
+---
+
+## 13. Follow-on Work Landed After This Refactor
+
+The taxonomy refactor unblocked a sequence of adjacent chemistry work. None of
+the following was in the original scope — record here so the next contributor
+can see the current shape of the domain at a glance.
+
+### 13.1 Product entity (new sub-context)
+
+- New `NamedEntity<ProductName>` at `com.naturalist.chemistry.product` with
+  `displayName`, `Set<CompoundName> compounds`, and `Map<String, String> properties`.
+- Full stack: `ProductRepository` (package-private), `ProductQuery`
+  (`findByNameSet`, `findByCompoundName`, `allProductNames`), `ProductCollection`,
+  `ProductEntityRepositoryMock`, `ProductEntityRepositoryTest` contract,
+  `ProductTestEntitySource`, and `products-base.json` (12 products).
+- Wired into `ChemistryTestContext` alongside `compoundQuery()`.
+- Product owns the compound→product relationship; reverse lookup is a query.
+- N=1 collapse applied — single entity in the package, no namespace types.
+
+### 13.2 Property migration: compound → product
+
+- All amendment-application properties (concentration, application window,
+  applied rates, optimum range, NPK ratios, efficacy claims, BER protocol roles,
+  phEffect, insituReaction, biologicalCatalyst chemistry-context entries)
+  migrated out of `compounds-base.json` onto the relevant product.
+- Created 7 new generic-amendment products (gypsum, epsom-salt, lime,
+  formic-acid-mite-treatment, oxalic-acid-mite-treatment, neem-oil,
+  kirkland-ultra-shine) for compounds without an explicit branded SKU but
+  carrying product-shaped properties.
+- `calcium-pectate` retains its biology-context properties (plant-tissue
+  biology, not an amendment) — the only compound with a non-empty `properties`
+  map after migration.
+
+### 13.3 Compound depictions
+
+- New `CompoundDepiction` aggregate with its own repository, query, and
+  test-entity source. SVG rendering via `DepictionRenderer` in the console.
+- Depictions are persisted (not generated on the fly).
+
+### 13.4 Chemistry console
+
+- `/chemistry` — compound list (with depiction thumbnails on cards that have
+  one).
+- `/chemistry/{name}` — compound detail with depiction, profiles, and
+  "Products containing this compound" section.
+- `/chemistry/{name}/depiction.svg` — SVG endpoint.
+- `/chemistry/products` — product catalog, compound names on cards link
+  through to compound detail.
+- `/chemistry/products/{name}` — product detail with compound list and
+  properties.
+- Console CSS: card-body links rendered in `--pico-primary` (green) with a
+  dotted underline so they read as links against sepia card text.
+
+### 13.5 Open follow-ups (not blocking)
+
+- Promote ad-hoc product property keys (concentration, application window,
+  NPK) to typed fields on `Product` if/when a consumer needs them — currently
+  `Map<String, String>` is the right shape for an open-ended SKU attribute set.
+- Remove the `"biologicalCatalyst"` string property from any remaining compound
+  `properties` maps once a deprecation window passes (see §11 — still out of
+  scope).
+- `ChemistryController` instantiates `ChemistryTestContext` directly with a
+  `// TODO` — promote to a Spring-managed bean when the production wiring
+  story is decided.
+- Add `withPhysicalForm(...)` to `CompoundCollection` if/when a consumer asks
+  (deferred per §6).
