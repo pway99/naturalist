@@ -73,16 +73,20 @@ via `compound.bioavailability()` and `compound.solubility()`.
 ## Compound Properties
 
 `Compound` owns a `Map<String, String> properties` — an open-ended set of named attributes
-(e.g. `omriListed`, `safeRateLbsPer1000Sqft`, `biologicalCatalyst`). These are
-compound-scoped key-value pairs with no independent lifecycle and no cross-domain identity.
-Persisted via `@ElementCollection` at the RDBMS adapter layer.
+(e.g. `safeRateLbsPer1000Sqft`, `biologicalCatalyst`). These are compound-scoped
+key-value pairs with no independent lifecycle and no cross-domain identity. Persisted via
+`@ElementCollection` at the RDBMS adapter layer.
+
+Recurring regulatory flags have been promoted out of the map onto `Compound` itself:
+`boolean omriListed` and `boolean cdfaRegistered`. Missing values default to `false`.
 
 `CompoundProperty` was previously modeled as a standalone `NamedEntity`. That model
 was wrong on two counts:
 
-1. `NamedEntity` requires a globally unique `EntityName`. The property key (e.g.
-   `"omriListed"`) is unique only within a compound — not globally. Multiple compounds
-   share the same key names, which violated `TestEntitySource` uniqueness enforcement.
+1. `NamedEntity` requires a globally unique `EntityName`. A property key (e.g.
+   `"safeRateLbsPer1000Sqft"`) is unique only within a compound — not globally. Multiple
+   compounds share the same key names, which violated `TestEntitySource` uniqueness
+   enforcement.
 2. A compound property has no independent lifecycle. It exists only as an attribute of its
    parent compound, is never referenced cross-domain by identity, and has no repository of
    its own. This is a value collection, not an entity.

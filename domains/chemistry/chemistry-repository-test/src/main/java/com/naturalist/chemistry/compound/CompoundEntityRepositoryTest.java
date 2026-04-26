@@ -52,6 +52,8 @@ interface CompoundEntityRepositoryTest
                 bioavailability(),
                 null,
                 null,
+                false,
+                false,
                 Map.of());
     }
 
@@ -65,6 +67,8 @@ interface CompoundEntityRepositoryTest
                 bioavailability(),
                 null,
                 null,
+                false,
+                false,
                 Map.of());
     }
 
@@ -78,6 +82,8 @@ interface CompoundEntityRepositoryTest
                 bioavailability(),
                 volatilization(),
                 safety(),
+                !original.omriListed(),
+                !original.cdfaRegistered(),
                 Map.of(RandomValue.string(), RandomValue.string()));
     }
 

@@ -32,6 +32,12 @@
             @if(compound.molecularWeight() != null)
                 <li><strong>Molecular weight:</strong> ${compound.molecularWeight().value().toPlainString()} g/mol</li>
             @endif
+            @if(compound.omriListed())
+                <li><strong>OMRI listed</strong></li>
+            @endif
+            @if(compound.cdfaRegistered())
+                <li><strong>CDFA registered</strong></li>
+            @endif
         </ul>
     </section>
 

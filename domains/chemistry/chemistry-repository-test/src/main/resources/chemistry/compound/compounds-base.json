@@ -27,9 +27,9 @@
     },
     "volatilization": null,
     "safety": null,
+    "omriListed": true,
+    "cdfaRegistered": true,
     "properties": {
-      "omriListed": "true",
-      "cdfaRegistered": "true",
       "safeRateLbsPer1000Sqft": "2-4",
       "oakVistaAppliedRate": "3.3 lbs/100sqft — April 1 2026",
       "rehabilitationTarget": "Coco coir Ca2+ binding sites",
@@ -64,8 +64,8 @@
     },
     "volatilization": null,
     "safety": null,
+    "omriListed": false,
     "properties": {
-      "omriListed": "false",
       "product": "Bonide Rot-Stop RTU",
       "concentrationInProduct": "1.6% CaCl2",
       "applicationMethod": "RTU foliar spray",
@@ -101,9 +101,9 @@
     },
     "volatilization": null,
     "safety": null,
+    "omriListed": true,
+    "cdfaRegistered": true,
     "properties": {
-      "omriListed": "true",
-      "cdfaRegistered": "true",
       "product": "Down to Earth 0-0-50",
       "densityCupsToLbs": "1 cup = 1 lb",
       "backyardAppliedRate": "13 lbs/1000sqft — OPTIMAL",
@@ -176,8 +176,8 @@
     },
     "volatilization": null,
     "safety": null,
+    "omriListed": true,
     "properties": {
-      "omriListed": "true",
       "drenchRate": "1 tbsp per gallon",
       "drenchVolume": "1 gallon per plant",
       "berProtocolRole": "Day 2 of monthly drench — sulfate + magnesium",
@@ -284,9 +284,9 @@
     },
     "volatilization": null,
     "safety": null,
+    "omriListed": true,
+    "cdfaRegistered": true,
     "properties": {
-      "omriListed": "true",
-      "cdfaRegistered": "true",
       "product": "TPS Nutrients CalMag OAC",
       "calciumPct": "4.5",
       "magnesiumPct": "1.1",
@@ -490,8 +490,8 @@
       "requiresEveningApplication": true,
       "applicationConstraints": "Apply after 7 PM when bee foragers have returned to hive. Harmful to bees when wet. Safe when dry. OMRI listed. Repeat every 5-7 days x3 applications for thrips control."
     },
+    "omriListed": true,
     "properties": {
-      "omriListed": "true",
       "applicationRate": "2 tbsp neem oil per gallon with 2 tbsp dish soap emulsifier",
       "targetPests": "Thrips, spider mites, aphids, whitefly, fungus gnats",
       "oakVistaUse": "Straw mulch drench for thrips control — April 7 2026 TSWV outbreak",
@@ -536,8 +536,8 @@
       "requiresEveningApplication": true,
       "applicationConstraints": "Apply after 7 PM — harmful to bees on direct contact when wet. Safe when dry."
     },
+    "omriListed": true,
     "properties": {
-      "omriListed": "true",
       "strawDrenchRate": "2 tbsp per gallon",
       "foliarRate": "1 tsp per quart",
       "emulsifierRole": "Emulsifies neem oil in water for combined treatment",

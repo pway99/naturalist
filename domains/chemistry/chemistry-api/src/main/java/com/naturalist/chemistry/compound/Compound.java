@@ -38,12 +38,14 @@ public record Compound(
         BioavailabilityProfile bioavailability,
         @Nullable VolatilizationProfile volatilization,
         @Nullable SafetyProfile safety,
+        boolean omriListed,
+        boolean cdfaRegistered,
         Map<String, String> properties
 ) implements NamedEntity<CompoundName> {
 
     public Compound withSafety(@Nullable SafetyProfile safety) {
         return new Compound(name, commonName, compoundInfo, solubility, bioavailability,
-                volatilization, safety, properties);
+                volatilization, safety, omriListed, cdfaRegistered, properties);
     }
 
     // ── Chemical classification delegations ──────────────────────────────────

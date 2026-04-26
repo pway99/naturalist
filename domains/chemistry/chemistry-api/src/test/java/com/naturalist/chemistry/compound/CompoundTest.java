@@ -31,7 +31,7 @@ class CompoundTest {
     @Test
     void compoundIsNotValid() {
         var mo = observer.forMethod("compoundIsNotValid");
-        Compound c = new Compound(null, null, null, null, null, null, null, null);
+        Compound c = new Compound(null, null, null, null, null, null, null, false, false, null);
 
         InvariantObservation observation = mo.namedEntity(c, "c");
 
@@ -49,7 +49,7 @@ class CompoundTest {
         Compound c = validCompound();
         Compound fumigant = new Compound(
                 c.name(), c.commonName(), c.compoundInfo(), c.solubility(), c.bioavailability(),
-                volatilizationProfile(), c.safety(), c.properties());
+                volatilizationProfile(), c.safety(), c.omriListed(), c.cdfaRegistered(), c.properties());
 
         assertThat(fumigant.isFumigant()).isTrue();
     }
@@ -105,6 +105,8 @@ class CompoundTest {
                 bioavailability(true),
                 null,
                 null,
+                false,
+                false,
                 Map.of()
         );
     }
@@ -112,7 +114,8 @@ class CompoundTest {
     private static Compound compoundWithBioavailability(BioavailabilityProfile bioavailability) {
         Compound c = validCompound();
         return new Compound(c.name(), c.commonName(), c.compoundInfo(), c.solubility(),
-                bioavailability, c.volatilization(), c.safety(), c.properties());
+                bioavailability, c.volatilization(), c.safety(),
+                c.omriListed(), c.cdfaRegistered(), c.properties());
     }
 
     private static Compound compoundWithRoles(Set<FunctionalRole> roles) {
@@ -122,7 +125,8 @@ class CompoundTest {
                 info.formula(), info.molecularWeight(), info.phCharacter(),
                 info.chemicalNature(), info.physicalForm(), roles, info.constituentElements());
         return new Compound(c.name(), c.commonName(), updated, c.solubility(),
-                c.bioavailability(), c.volatilization(), c.safety(), c.properties());
+                c.bioavailability(), c.volatilization(), c.safety(),
+                c.omriListed(), c.cdfaRegistered(), c.properties());
     }
 
     private static BioavailabilityProfile bioavailability(boolean chelateEnhanced) {
