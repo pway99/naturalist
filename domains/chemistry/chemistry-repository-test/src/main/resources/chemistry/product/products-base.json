@@ -1,0 +1,27 @@
+[
+  {
+    "name": "bonide-rot-stop-rtu",
+    "displayName": "Bonide Rot-Stop RTU",
+    "compounds": ["calcium-chloride"]
+  },
+  {
+    "name": "down-to-earth-0-0-50",
+    "displayName": "Down to Earth 0-0-50",
+    "compounds": ["potassium-sulfate"]
+  },
+  {
+    "name": "eb-stone-soil-sulfur-minerals",
+    "displayName": "E.B. Stone Soil Sulfur Minerals",
+    "compounds": ["elemental-sulfur"]
+  },
+  {
+    "name": "tps-calmag-oac",
+    "displayName": "TPS Nutrients CalMag OAC",
+    "compounds": ["organic-acid-chelate"]
+  },
+  {
+    "name": "apiguard",
+    "displayName": "Apiguard (Véto-pharma)",
+    "compounds": ["thymol"]
+  }
+]

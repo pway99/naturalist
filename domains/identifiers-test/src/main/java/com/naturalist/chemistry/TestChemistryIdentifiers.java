@@ -3,6 +3,7 @@ package com.naturalist.chemistry;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.compound.DepictionId;
 import com.naturalist.chemistry.element.ElementName;
+import com.naturalist.chemistry.product.ProductName;
 
 import java.util.UUID;
 
@@ -219,6 +220,46 @@ public class TestChemistryIdentifiers {
                 public static final ElementName O = TestChemistryIdentifiers.Elements.O;
                 public static final ElementName H = TestChemistryIdentifiers.Elements.H;
             }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Products — commercial formulations referencing one or more compounds
+    // -------------------------------------------------------------------------
+
+    public static class Products {
+
+        private Products() {}
+
+        /** Fictitious identifier — guaranteed absent from any catalog. */
+        public static class NotFound {
+            public static final ProductName name = ProductName.of("unobtainium-rtu");
+            public static final String displayName = "Unobtainium RTU";
+        }
+
+        public static class Apiguard {
+            public static final ProductName name = ProductName.of("apiguard");
+            public static final String displayName = "Apiguard (Véto-pharma)";
+        }
+
+        public static class TpsCalmagOac {
+            public static final ProductName name = ProductName.of("tps-calmag-oac");
+            public static final String displayName = "TPS Nutrients CalMag OAC";
+        }
+
+        public static class BonideRotStopRtu {
+            public static final ProductName name = ProductName.of("bonide-rot-stop-rtu");
+            public static final String displayName = "Bonide Rot-Stop RTU";
+        }
+
+        public static class DownToEarth_0_0_50 {
+            public static final ProductName name = ProductName.of("down-to-earth-0-0-50");
+            public static final String displayName = "Down to Earth 0-0-50";
+        }
+
+        public static class EbStoneSoilSulfurMinerals {
+            public static final ProductName name = ProductName.of("eb-stone-soil-sulfur-minerals");
+            public static final String displayName = "E.B. Stone Soil Sulfur Minerals";
         }
     }
 }

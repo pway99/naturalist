@@ -1,0 +1,25 @@
+package com.naturalist.chemistry.product;
+
+import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
+
+import java.util.Set;
+
+@DomainService
+class ProductQueryImpl
+        extends AbstractEntityQuery<ProductName, Product, ProductCollection, ProductRepository>
+        implements ProductQuery {
+
+    ProductQueryImpl(ProductRepository repository) {
+        super(repository);
+    }
+
+    @Override
+    public ProductCollection findByNameSet(Set<ProductName> productNames) {
+        observer().arguments("findByNameSet", i -> i
+                .identifierSet(productNames, "productNames"))
+                .throwWhenInvalid();
+
+        return new ProductCollection(repository().getByEntityNameSet(productNames));
+    }
+}
