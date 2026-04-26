@@ -1,7 +1,10 @@
 package com.naturalist.chemistry;
 
 import com.naturalist.chemistry.compound.CompoundName;
+import com.naturalist.chemistry.compound.depiction.DepictionId;
 import com.naturalist.chemistry.element.ElementName;
+
+import java.util.UUID;
 
 /**
  * Hardcoded EntityName constants for deterministic chemistry repository test authoring.
@@ -21,6 +24,8 @@ import com.naturalist.chemistry.element.ElementName;
  *     repository().getByName(TestChemistryIdentifiers.Compounds.NotFound.name)
  *     repository().getByName(TestChemistryIdentifiers.Elements.K)
  *     repository().getByName(TestChemistryIdentifiers.Elements.NotFound.name)
+ *     repository().getByName(TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.depictionName)
+ *     repository().getByName(TestChemistryIdentifiers.Compounds.NotFound.depictionName)
  * </pre>
  */
 public class TestChemistryIdentifiers {
@@ -58,15 +63,19 @@ public class TestChemistryIdentifiers {
 
         private Compounds() {}
 
-        /** Fictitious compound name — guaranteed absent from the catalog. */
+        /** Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog. */
         public static class NotFound {
             public static final CompoundName name = CompoundName.of("unobtainium-oxide");
             public static final String commonName = "Unobtainium Oxide";
+            public static final DepictionId depictionName = DepictionId.of(
+                    UUID.fromString("01970000-0001-7001-8001-0000000000ff"));
         }
 
         public static class CalciumSulfateDihydrate {
             public static final CompoundName name = CompoundName.of("calcium-sulfate-dihydrate");
             public static final String commonName = "Calcium Sulfate Dihydrate";
+            public static final DepictionId depictionName = DepictionId.of(
+                    UUID.fromString("01970000-0001-7001-8001-000000000001"));
 
             public static class Elements {
                 public static final ElementName Ca = TestChemistryIdentifiers.Elements.Ca;
@@ -157,6 +166,8 @@ public class TestChemistryIdentifiers {
         public static class FormicAcid {
             public static final CompoundName name = CompoundName.of("formic-acid");
             public static final String commonName = "Formic Acid";
+            public static final DepictionId depictionName = DepictionId.of(
+                    UUID.fromString("01970000-0001-7001-8001-000000000002"));
 
             public static class Elements {
                 public static final ElementName H = TestChemistryIdentifiers.Elements.H;
