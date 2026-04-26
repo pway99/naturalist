@@ -4,6 +4,7 @@ import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.compound.CompoundQuery;
+import com.naturalist.chemistry.compound.depiction.DepictionQuery;
 import com.naturalist.data.NaturalistDatabase;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +22,15 @@ import java.util.stream.Collectors;
 public class ChemistryController {
 
     private final CompoundQuery compoundQuery;
-    private final CompoundDepictionService depictionService;
+    private final DepictionQuery depictionQuery;
+    private final DepictionRenderer depictionRenderer;
 
-    ChemistryController(CompoundDepictionService depictionService) {
+    ChemistryController(DepictionRenderer depictionRenderer) {
         //TODO:: This will eventually be a spring managed bean
         ChemistryTestContext context = ChemistryTestContext.create(NaturalistDatabase.create());
         this.compoundQuery = context.compoundQuery();
-        this.depictionService = depictionService;
+        this.depictionQuery = context.depictionQuery();
+        this.depictionRenderer = depictionRenderer;
     }
 
     @GetMapping
@@ -36,8 +39,11 @@ public class ChemistryController {
         var compounds = compoundQuery.findByNameSet(nameSet).stream()
                 .sorted(Comparator.comparing((Compound c) -> c.name().value()))
                 .toList();
+        var depictableSlugs = depictionQuery.allDepictedCompounds().stream()
+                .map(CompoundName::value)
+                .collect(Collectors.toSet());
         model.addAttribute("compounds", compounds);
-        model.addAttribute("depictableSlugs", depictionService.depictableSlugs());
+        model.addAttribute("depictableSlugs", depictableSlugs);
         return "chemistry/list";
     }
 
@@ -48,18 +54,20 @@ public class ChemistryController {
         if (compound.isEmpty()) {
             return "redirect:/chemistry";
         }
+        var depiction = depictionQuery.getByCompoundName(compoundName);
         model.addAttribute("compound", compound.get());
-        model.addAttribute("hasDepiction", depictionService.canDepict(compoundName));
-        model.addAttribute("depictionNote", depictionService.depictionNote(compoundName).orElse(null));
+        model.addAttribute("hasDepiction", depiction.isPresent());
+        model.addAttribute("depictionNote", depiction.map(d -> d.note()).orElse(null));
         return "chemistry/detail";
     }
 
     @GetMapping(value = "/{name}/depiction.svg", produces = "image/svg+xml")
     ResponseEntity<String> depiction(@PathVariable String name) {
-        var svg = depictionService.depictAsSvg(CompoundName.of(name));
-        return svg.map(s -> ResponseEntity.ok()
+        return depictionQuery.getByCompoundName(CompoundName.of(name))
+                .map(depictionRenderer::renderSvg)
+                .map(svg -> ResponseEntity.ok()
                         .contentType(MediaType.valueOf("image/svg+xml"))
-                        .body(s))
+                        .body(svg))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
