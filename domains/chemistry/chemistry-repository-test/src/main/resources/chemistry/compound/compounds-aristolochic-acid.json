@@ -1,0 +1,113 @@
+[
+  {
+    "name": "aristolochic-acid-i",
+    "commonName": "Aristolochic Acid I",
+    "compoundInfo": {
+      "formula": "C17H11NO7",
+      "molecularWeight": 341.2700,
+      "phCharacter": "ACIDIC",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "ACID",
+      "functionalRoles": [
+        { "kind": "BIOLOGICAL_CATALYST" }
+      ],
+      "constituentElements": ["C", "H", "N", "O"]
+    },
+    "solubility": {
+      "gramsPerLiterAt20C": 0.05,
+      "category": "INSOLUBLE",
+      "ecContributionFactor": 0.0,
+      "notes": "Crystalline solid, slightly soluble in water. More soluble in ethanol and other organic solvents."
+    },
+    "bioavailability": {
+      "primaryPathway": "ROOT_DIFFUSION",
+      "relativeAbsorptionRate": 0.8,
+      "cuticular": true,
+      "stomatal": true,
+      "isChelateEnhanced": false,
+      "mechanism": "Readily absorbed through plant tissues. Sequestered by specialist herbivores like Pipevine Swallowtail larvae for chemical defense."
+    },
+    "volatilization": null,
+    "safety": {
+      "hazardLevel": "EXTREME",
+      "maxSafeConcentrationPpm": 0.0,
+      "minApplicationTempF": null,
+      "maxApplicationTempF": null,
+      "requiresProtectiveEquipment": true,
+      "hazardousToBeesWhenWet": true,
+      "requiresEveningApplication": false,
+      "applicationConstraints": "BANNED SUBSTANCE - Do not handle, apply, or consume. Causes rapid kidney failure and cancer."
+    },
+    "properties": {
+      "iarcClassification": "Group 1 Carcinogen",
+      "fdaBanStatus": "Prohibited in dietary supplements since 2001",
+      "epaBanStatus": "Banned for agricultural use",
+      "nephrotoxic": "true",
+      "mutagenic": "true",
+      "carcinogenic": "true",
+      "plantFamily": "Aristolochiaceae",
+      "hostInsect": "Battus philenor (Pipevine Swallowtail)",
+      "chemicalClass": "nitrophenanthrene carboxylic acid",
+      "casNumber": "313-67-7",
+      "iupacName": "8-methoxy-6-nitronaphtho[2,1-g][1,3]benzodioxole-5-carboxylic acid",
+      "structuralFeature": "methoxy group at C-8 position",
+      "dataGap": "Exact solubility and absorption values difficult to study due to extreme toxicity"
+    }
+  },
+  {
+    "name": "aristolochic-acid-ii",
+    "commonName": "Aristolochic Acid II",
+    "compoundInfo": {
+      "formula": "C16H9NO6",
+      "molecularWeight": 311.2500,
+      "phCharacter": "ACIDIC",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "ACID",
+      "functionalRoles": [
+        { "kind": "BIOLOGICAL_CATALYST" }
+      ],
+      "constituentElements": ["C", "H", "N", "O"]
+    },
+    "solubility": {
+      "gramsPerLiterAt20C": 0.02,
+      "category": "INSOLUBLE",
+      "ecContributionFactor": 0.0,
+      "notes": "Less soluble than AA-I due to absence of methoxy group. Crystalline solid with limited water solubility."
+    },
+    "bioavailability": {
+      "primaryPathway": "ROOT_DIFFUSION",
+      "relativeAbsorptionRate": 0.3,
+      "cuticular": true,
+      "stomatal": true,
+      "isChelateEnhanced": false,
+      "mechanism": "Approximately 3 times less readily absorbed than AA-I. Lower bioavailability results in reduced toxicity compared to AA-I."
+    },
+    "volatilization": null,
+    "safety": {
+      "hazardLevel": "EXTREME",
+      "maxSafeConcentrationPpm": 0.0,
+      "minApplicationTempF": null,
+      "maxApplicationTempF": null,
+      "requiresProtectiveEquipment": true,
+      "hazardousToBeesWhenWet": true,
+      "requiresEveningApplication": false,
+      "applicationConstraints": "BANNED SUBSTANCE - Do not handle, apply, or consume. Causes kidney failure and cancer, though less potent than AA-I."
+    },
+    "properties": {
+      "iarcClassification": "Group 1 Carcinogen",
+      "fdaBanStatus": "Prohibited in dietary supplements since 2001",
+      "epaBanStatus": "Banned for agricultural use",
+      "nephrotoxic": "true",
+      "mutagenic": "true",
+      "carcinogenic": "true",
+      "plantFamily": "Aristolochiaceae",
+      "hostInsect": "Battus philenor (Pipevine Swallowtail)",
+      "chemicalClass": "nitrophenanthrene carboxylic acid",
+      "casNumber": "475-80-9",
+      "iupacName": "6-nitronaphtho[2,1-g][1,3]benzodioxole-5-carboxylic acid",
+      "structuralFeature": "hydrogen at C-8 position (demethoxylated derivative of AA-I)",
+      "relativeToxicity": "approximately 3-fold less toxic than AA-I due to lower absorption",
+      "dataGap": "Exact solubility and absorption values difficult to study due to extreme toxicity"
+    }
+  }
+]

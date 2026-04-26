@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public class CompoundTestEntitySource extends TestEntitySource<CompoundName, Compound> {
     public CompoundTestEntitySource() {
-        loadFile("chemistry/compound/compounds.json");
+        loadFiles("chemistry/compound/compounds-%s.json","base", "aristolochic-acid");
     }
 
     @Override
