@@ -140,12 +140,22 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>chemistry-console</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>chemistry-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
                 <artifactId>chemistry-repository-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>chemistry-test-context</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- CLIMATE -->

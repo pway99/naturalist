@@ -48,6 +48,10 @@
         <!-- DOMAIN CONSOLE MODULES -->
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>chemistry-console</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>insects-console</artifactId>
         </dependency>
 

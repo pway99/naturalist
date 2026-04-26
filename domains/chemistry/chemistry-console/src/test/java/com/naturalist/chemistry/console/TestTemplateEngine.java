@@ -1,43 +1,39 @@
-package com.naturalist.console;
+package com.naturalist.chemistry.console;
 
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.TemplateNotFoundException;
 import gg.jte.resolve.DirectoryCodeResolver;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
-class JteConfiguration {
+final class TestTemplateEngine {
 
     private static final String[] TEMPLATE_ROOTS = {
             "naturalist-web/console/src/main/jte",
             "domains/chemistry/chemistry-console/src/main/jte",
-            "domains/insects/insects-console/src/main/jte",
     };
 
-    @Bean
-    TemplateEngine jteTemplateEngine() {
-        var projectRoot = findProjectRoot();
-        var resolvers = new ArrayList<DirectoryCodeResolver>();
-        for (var root : TEMPLATE_ROOTS) {
-            var path = projectRoot.resolve(root);
+    private TestTemplateEngine() {}
+
+    static TemplateEngine create() {
+        Path projectRoot = findProjectRoot();
+        List<DirectoryCodeResolver> resolvers = new ArrayList<>();
+        for (String root : TEMPLATE_ROOTS) {
+            Path path = projectRoot.resolve(root);
             if (Files.isDirectory(path)) {
                 resolvers.add(new DirectoryCodeResolver(path));
             }
         }
-        var codeResolver = new CompositeCodeResolver(resolvers);
-        return TemplateEngine.create(codeResolver, projectRoot.resolve("jte-classes"), ContentType.Html, getClass().getClassLoader());
+        return TemplateEngine.create(new CompositeCodeResolver(resolvers), ContentType.Html);
     }
 
-    private Path findProjectRoot() {
-        var dir = Path.of("").toAbsolutePath();
+    private static Path findProjectRoot() {
+        Path dir = Path.of("").toAbsolutePath();
         while (dir != null) {
             if (Files.exists(dir.resolve("pom.xml")) && Files.isDirectory(dir.resolve("kernels"))) {
                 return dir;
@@ -51,8 +47,8 @@ class JteConfiguration {
 
         @Override
         public String resolve(String name) {
-            for (var resolver : resolvers) {
-                var result = resolver.resolve(name);
+            for (DirectoryCodeResolver r : resolvers) {
+                String result = r.resolve(name);
                 if (result != null) {
                     return result;
                 }
@@ -62,13 +58,11 @@ class JteConfiguration {
 
         @Override
         public String resolveRequired(String name) throws TemplateNotFoundException {
-            for (var resolver : resolvers) {
-                var result = resolver.resolve(name);
-                if (result != null) {
-                    return result;
-                }
+            String result = resolve(name);
+            if (result == null) {
+                throw new TemplateNotFoundException("Template not found: " + name);
             }
-            throw new TemplateNotFoundException("Template not found: " + name);
+            return result;
         }
 
         @Override
@@ -78,9 +72,9 @@ class JteConfiguration {
 
         @Override
         public long getLastModified(String name) {
-            for (var resolver : resolvers) {
-                if (resolver.exists(name)) {
-                    return resolver.getLastModified(name);
+            for (DirectoryCodeResolver r : resolvers) {
+                if (r.exists(name)) {
+                    return r.getLastModified(name);
                 }
             }
             return 0;
@@ -88,9 +82,9 @@ class JteConfiguration {
 
         @Override
         public List<String> resolveAllTemplateNames() {
-            var names = new ArrayList<String>();
-            for (var resolver : resolvers) {
-                names.addAll(resolver.resolveAllTemplateNames());
+            List<String> names = new ArrayList<>();
+            for (DirectoryCodeResolver r : resolvers) {
+                names.addAll(r.resolveAllTemplateNames());
             }
             return names;
         }

@@ -100,43 +100,41 @@ header nav strong {
 
 .background-opacity-control {
     position: fixed;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 0.75rem;
+    right: 0.75rem;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1.5rem;
-    background: rgba(91, 117, 83, 0.95);
-    border-radius: 0.5rem;
+    gap: 0.35rem;
+    padding: 0.5rem 0.4rem;
+    background: rgba(91, 117, 83, 0.85);
+    border-radius: 0.35rem;
     z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    border: 2px solid #5B7553;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border: 1px solid #5B7553;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 }
 
-.opacity-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #FAF8F5;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+.background-opacity-control:hover {
+    opacity: 1;
 }
 
 .opacity-slider {
-    width: 200px;
-    height: 6px;
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 6px;
+    height: 100px;
     cursor: pointer;
 }
 
 #opacity-display {
-    font-size: 0.85rem;
-    font-weight: 800;
+    font-size: 0.6rem;
+    font-weight: 700;
     color: #FAF8F5;
-    min-width: 2.5rem;
-    text-align: right;
+    text-align: center;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -151,7 +149,7 @@ footer {
    container inside <main> that needs sepia-on-parchment uses this. Global white
    body text is overridden inside a plate. */
 .plate,
-.species-grid article,
+.entity-grid article,
 main > section:not(.life-stages):not(.bare),
 .description-tabs {
     background: var(--parchment) !important;
@@ -164,37 +162,50 @@ main > section:not(.life-stages):not(.bare),
 }
 .plate p, .plate li, .plate span:not(.badge), .plate a, .plate em, .plate strong,
 .plate dt, .plate dd, .plate h2, .plate h3, .plate h4, .plate summary, .plate div,
-.species-grid article p, .species-grid article li, .species-grid article span:not(.badge),
-.species-grid article a, .species-grid article em, .species-grid article strong,
-.species-grid article h2, .species-grid article h3, .species-grid article header strong,
+.plate code,
+.entity-grid article p, .entity-grid article li, .entity-grid article span:not(.badge),
+.entity-grid article a, .entity-grid article em, .entity-grid article strong,
+.entity-grid article h2, .entity-grid article h3, .entity-grid article header strong,
+.entity-grid article code,
 main > section:not(.life-stages) p, main > section:not(.life-stages) li,
 main > section:not(.life-stages) span:not(.badge), main > section:not(.life-stages) a,
 main > section:not(.life-stages) em, main > section:not(.life-stages) strong,
 main > section:not(.life-stages) h2, main > section:not(.life-stages) h3,
 main > section:not(.life-stages) h4, main > section:not(.life-stages) dt,
 main > section:not(.life-stages) dd, main > section:not(.life-stages) div,
+main > section:not(.life-stages) summary, main > section:not(.life-stages) code,
 .description-tabs p, .description-tabs a, .description-tabs span:not(.badge) {
     color: var(--sepia-ink) !important;
     text-shadow: none !important;
 }
-.species-grid article em, main > section:not(.life-stages) em, .plate em {
+.entity-grid article em, main > section:not(.life-stages) em, .plate em {
     color: var(--sepia-ink-soft) !important;
     font-style: italic;
 }
+main > section:not(.life-stages) code,
+.entity-grid article code,
+.plate code {
+    background: var(--parchment-deep);
+    border: 1px solid rgba(139, 107, 61, 0.35);
+    border-radius: 0.15rem;
+    padding: 0.05rem 0.35rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
 
-/* Species grid */
-.species-grid {
+/* Entity grid — card-based catalog listing. Default style for any catalog page. */
+.entity-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.25rem;
 }
-.species-grid article {
+.entity-grid article {
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
 }
-.species-grid article header {
+.entity-grid article header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -204,18 +215,18 @@ main > section:not(.life-stages) dd, main > section:not(.life-stages) div,
     margin: 0 !important;
     border-radius: 0.25rem 0.25rem 0 0;
 }
-.species-grid article header strong {
+.entity-grid article header strong {
     font-family: 'Georgia', 'Cambria', serif;
     font-style: italic;
     font-size: 1.05rem;
     letter-spacing: 0.01em;
 }
-.species-grid article > *:not(header):not(footer) {
+.entity-grid article > *:not(header):not(footer) {
     padding: 0 1rem;
 }
-.species-grid article > header + * { padding-top: 0.75rem; }
-.species-grid article .description-preview { flex: 1 1 auto; }
-.species-grid article footer {
+.entity-grid article > header + * { padding-top: 0.75rem; }
+.entity-grid article .description-preview { flex: 1 1 auto; }
+.entity-grid article footer {
     background: var(--parchment-deep) !important;
     border-top: 1px solid var(--sepia-rule);
     border-radius: 0 0 0.25rem 0.25rem;
@@ -223,14 +234,14 @@ main > section:not(.life-stages) dd, main > section:not(.life-stages) div,
     margin: 0.75rem 0 0 0 !important;
     color: var(--sepia-ink) !important;
 }
-.species-grid article footer a {
+.entity-grid article footer a {
     color: var(--sepia-ink) !important;
     font-style: italic;
     font-weight: 600;
     text-decoration: none;
     border-bottom: 1px dotted var(--sepia-rule);
 }
-.species-grid article footer a:hover {
+.entity-grid article footer a:hover {
     color: var(--pico-primary) !important;
 }
 
@@ -239,11 +250,32 @@ main > section:not(.life-stages) dd, main > section:not(.life-stages) div,
     margin-bottom: 0.5rem;
     font-style: italic;
 }
-.species-grid article .taxonomy,
+.entity-grid article .taxonomy,
 main > section .taxonomy,
 .life-stages .plate-subtitle.taxonomy {
     color: var(--sepia-ink-soft) !important;
     text-shadow: none !important;
+}
+
+/* Nested <details> tree inside a section plate — used for collapsible sub-trees. */
+main > section:not(.life-stages) details {
+    margin: 0.35rem 0;
+}
+main > section:not(.life-stages) details summary {
+    cursor: pointer;
+    font-style: italic;
+    color: var(--sepia-ink-soft) !important;
+}
+main > section:not(.life-stages) details[open] summary {
+    color: var(--sepia-ink) !important;
+    margin-bottom: 0.35rem;
+}
+main > section:not(.life-stages) ul {
+    margin: 0.35rem 0;
+    padding-left: 1.25rem;
+}
+main > section:not(.life-stages) ul ul {
+    margin: 0.25rem 0;
 }
 
 .description-preview {

@@ -27,7 +27,7 @@
 
     <p>${species.size()} species in this guild.</p>
 
-    <div class="species-grid">
+    <div class="entity-grid">
         @for(var s : species)
             <article>
                 <header>

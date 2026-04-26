@@ -15,8 +15,10 @@
 
     <modules>
         <module>chemistry-api</module>
+        <module>chemistry-console</module>
         <module>chemistry-core</module>
         <module>chemistry-repository-test</module>
+        <module>chemistry-test-context</module>
     </modules>
 
 </project>

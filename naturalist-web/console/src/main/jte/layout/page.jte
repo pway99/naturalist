@@ -17,6 +17,7 @@
             <ul><li><strong>The Amateur Naturalist</strong></li></ul>
             <ul>
                 <li><a href="/">Home</a></li>
+                <li><a href="/chemistry">Chemistry</a></li>
                 <li><a href="/insects">Insects</a></li>
             </ul>
         </nav>
@@ -27,8 +28,7 @@
     <footer class="container">
         <small>Management Console</small>
     </footer>
-    <div class="background-opacity-control">
-        <div class="opacity-label">Image Opacity</div>
+    <div class="background-opacity-control" title="Image Opacity">
         <input type="range" id="bg-opacity-slider" min="0" max="100" value="100" class="opacity-slider">
         <div id="opacity-display">100%</div>
     </div>
