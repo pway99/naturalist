@@ -2,8 +2,6 @@ package com.naturalist.chemistry;
 
 import com.naturalist.chemistry.compound.CompoundQuery;
 import com.naturalist.chemistry.compound.CompoundTestContext;
-import com.naturalist.chemistry.compound.depiction.DepictionQuery;
-import com.naturalist.chemistry.compound.depiction.DepictionTestContext;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -26,11 +24,9 @@ import com.naturalist.data.NaturalistDatabase;
 public class ChemistryTestContext {
 
     private final CompoundQuery compoundQuery;
-    private final DepictionQuery depictionQuery;
 
     private ChemistryTestContext(NaturalistDatabase db) {
         this.compoundQuery = CompoundTestContext.createQuery(db);
-        this.depictionQuery = DepictionTestContext.createQuery(db);
     }
 
     public static ChemistryTestContext create(NaturalistDatabase db) {
@@ -39,9 +35,5 @@ public class ChemistryTestContext {
 
     public CompoundQuery compoundQuery() {
         return compoundQuery;
-    }
-
-    public DepictionQuery depictionQuery() {
-        return depictionQuery;
     }
 }

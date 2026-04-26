@@ -1,36 +1,54 @@
 package com.naturalist.chemistry.compound;
 
-import com.naturalist.chemistry.TestChemistryIdentifiers;
-import com.naturalist.data.EntityQuery;
-import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.exception.InvariantViolationException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class CompoundQueryImplTest
-        implements EntityQueryContractTest<CompoundName, Compound, CompoundCollection> {
+class CompoundQueryImplTest {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    CompoundRepository.CompoundEntityRepository repository = new CompoundEntityRepositoryMock(db);
-    CompoundQuery query = new CompoundQueryImpl(repository);
+    CompoundEntityRepositoryMock compoundRepository = new CompoundEntityRepositoryMock(db);
+    DepictionEntityRepositoryMock depictionRepository = new DepictionEntityRepositoryMock(db);
+    CompoundQuery.CompoundEntityQuery compoundEntityQuery = new CompoundEntityQueryImpl(compoundRepository);
+    CompoundQuery.DepictionQuery depictionQuery = new DepictionQueryImpl(depictionRepository);
+    CompoundQuery compoundQuery = new CompoundQueryImpl(compoundEntityQuery, depictionQuery);
 
-    @Override
-    public EntityQuery<CompoundName, Compound, CompoundCollection> query() {
-        return query;
+    @Test
+    void accessors_returnNonNullDelegates() {
+        assertThat(compoundQuery.compounds()).isSameAs(compoundEntityQuery);
+        assertThat(compoundQuery.depictions()).isSameAs(depictionQuery);
     }
 
-    @Override
-    public CompoundName notFoundName() {
-        return TestChemistryIdentifiers.Compounds.NotFound.name;
+    @Test
+    void accessors_idempotent() {
+        assertThat(compoundQuery.compounds()).isSameAs(compoundQuery.compounds());
+        assertThat(compoundQuery.depictions()).isSameAs(compoundQuery.depictions());
     }
 
-    @Override
-    public List<CompoundName> knownEntityNames() {
-        return List.of(
-                TestChemistryIdentifiers.Compounds.PotassiumSulfate.name,
-                TestChemistryIdentifiers.Compounds.CalciumChloride.name);
+    @Test
+    void constructor_rejectsNullCompoundEntityQuery() {
+        assertThatThrownBy(() -> new CompoundQueryImpl(null, depictionQuery))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("compoundEntityQuery");
+    }
+
+    @Test
+    void constructor_rejectsNullDepictionQuery() {
+        assertThatThrownBy(() -> new CompoundQueryImpl(compoundEntityQuery, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("depictionQuery");
+    }
+
+    @Test
+    void constructor_collectsAllViolationsInSinglePass() {
+        assertThatThrownBy(() -> new CompoundQueryImpl(null, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("compoundEntityQuery", "depictionQuery");
     }
 }

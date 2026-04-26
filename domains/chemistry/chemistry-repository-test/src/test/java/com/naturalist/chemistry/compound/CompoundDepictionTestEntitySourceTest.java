@@ -1,4 +1,4 @@
-package com.naturalist.chemistry.compound.depiction;
+package com.naturalist.chemistry.compound;
 
 import com.naturalist.data.TestEntitySourceTest;
 

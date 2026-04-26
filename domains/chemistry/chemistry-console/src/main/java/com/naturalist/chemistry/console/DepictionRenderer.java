@@ -1,7 +1,7 @@
 package com.naturalist.chemistry.console;
 
-import com.naturalist.chemistry.compound.depiction.CompoundDepiction;
-import com.naturalist.chemistry.compound.depiction.DepictionId;
+import com.naturalist.chemistry.compound.CompoundDepiction;
+import com.naturalist.chemistry.compound.DepictionId;
 import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;

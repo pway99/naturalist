@@ -1,8 +1,7 @@
-package com.naturalist.chemistry.compound.depiction;
+package com.naturalist.chemistry.compound;
 
 import com.naturalist.RandomValue;
 import com.naturalist.chemistry.TestChemistryIdentifiers;
-import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
@@ -15,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link DepictionRepository.DepictionEntityRepository}.
+ * Behavioral contract for {@link CompoundRepository.DepictionRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies CompoundDepiction-specific identity constants and entity construction.
@@ -24,7 +23,7 @@ interface DepictionEntityRepositoryTest
         extends EntityRepositoryTest<DepictionId, CompoundDepiction> {
 
     @Override
-    DepictionRepository.DepictionEntityRepository repository();
+    CompoundRepository.DepictionRepository repository();
 
     @Override
     default TestEntitySource<DepictionId, CompoundDepiction> source() {

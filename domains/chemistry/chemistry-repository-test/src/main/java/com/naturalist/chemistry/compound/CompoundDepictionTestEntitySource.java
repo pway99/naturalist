@@ -1,4 +1,4 @@
-package com.naturalist.chemistry.compound.depiction;
+package com.naturalist.chemistry.compound;
 
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
@@ -9,7 +9,7 @@ import java.util.function.Function;
 public class CompoundDepictionTestEntitySource extends TestEntitySource<DepictionId, CompoundDepiction> {
 
     public CompoundDepictionTestEntitySource() {
-        loadFile("chemistry/compound/depiction/depictions.json");
+        loadFile("chemistry/compound/depictions.json");
     }
 
     @Override

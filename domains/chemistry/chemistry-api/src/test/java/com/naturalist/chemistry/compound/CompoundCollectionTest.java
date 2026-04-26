@@ -1,5 +1,6 @@
 package com.naturalist.chemistry.compound;
 
+import com.naturalist.chemistry.compound.CompoundEntityCollections.CompoundCollection;
 import com.naturalist.chemistry.compound.role.FunctionalRole;
 import org.junit.jupiter.api.Test;
 

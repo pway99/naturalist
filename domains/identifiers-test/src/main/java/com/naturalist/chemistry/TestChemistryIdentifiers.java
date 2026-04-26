@@ -1,7 +1,7 @@
 package com.naturalist.chemistry;
 
 import com.naturalist.chemistry.compound.CompoundName;
-import com.naturalist.chemistry.compound.depiction.DepictionId;
+import com.naturalist.chemistry.compound.DepictionId;
 import com.naturalist.chemistry.element.ElementName;
 
 import java.util.UUID;

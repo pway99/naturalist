@@ -9,7 +9,7 @@ import java.util.List;
 
 
 /**
- * Behavioral contract for {@link ElementRepository.ElementEntityRepository}.
+ * Behavioral contract for {@link ElementRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies Element-specific identity constants and entity construction.
@@ -18,7 +18,7 @@ interface ElementEntityRepositoryTest
         extends EntityRepositoryTest<ElementName, Element> {
 
     @Override
-    ElementRepository.ElementEntityRepository repository();
+    ElementRepository repository();
 
     @Override
     default TestEntitySource<ElementName, Element> source() {

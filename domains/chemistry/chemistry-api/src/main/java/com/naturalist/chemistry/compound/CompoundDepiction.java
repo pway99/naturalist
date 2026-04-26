@@ -1,7 +1,5 @@
-package com.naturalist.chemistry.compound.depiction;
+package com.naturalist.chemistry.compound;
 
-import com.naturalist.chemistry.compound.Compound;
-import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.Entity;
 import com.naturalist.ddd.EntityIdentifier;
 import com.naturalist.observability.Constraints;

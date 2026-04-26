@@ -1,6 +1,6 @@
-package com.naturalist.chemistry.compound.depiction;
+package com.naturalist.chemistry.compound;
 
-import com.naturalist.chemistry.compound.CompoundName;
+import com.naturalist.chemistry.compound.CompoundEntityCollections.DepictionCollection;
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.infrastructure.DomainService;
@@ -10,10 +10,10 @@ import java.util.Set;
 
 @DomainService
 class DepictionQueryImpl
-        extends AbstractEntityQuery<DepictionId, CompoundDepiction, DepictionCollection, DepictionRepository.DepictionEntityRepository>
-        implements DepictionQuery {
+        extends AbstractEntityQuery<DepictionId, CompoundDepiction, DepictionCollection, CompoundRepository.DepictionRepository>
+        implements CompoundQuery.DepictionQuery {
 
-    DepictionQueryImpl(DepictionRepository.DepictionEntityRepository repository) {
+    DepictionQueryImpl(CompoundRepository.DepictionRepository repository) {
         super(repository);
     }
 

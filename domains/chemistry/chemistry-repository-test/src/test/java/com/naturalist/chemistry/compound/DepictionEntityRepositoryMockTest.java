@@ -1,8 +1,8 @@
-package com.naturalist.chemistry.compound.depiction;
+package com.naturalist.chemistry.compound;
 
 class DepictionEntityRepositoryMockTest implements DepictionEntityRepositoryTest {
     @Override
-    public DepictionRepository.DepictionEntityRepository repository() {
+    public CompoundRepository.DepictionRepository repository() {
         return new DepictionEntityRepositoryMock(db);
     }
 }

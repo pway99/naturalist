@@ -1,6 +1,5 @@
-package com.naturalist.chemistry.compound.depiction;
+package com.naturalist.chemistry.compound;
 
-import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 
@@ -9,7 +8,7 @@ import java.util.Optional;
 
 class DepictionEntityRepositoryMock
         extends AbstractTestEntityRepository<DepictionId, CompoundDepiction, CompoundDepictionTestEntitySource>
-        implements DepictionRepository.DepictionEntityRepository {
+        implements CompoundRepository.DepictionRepository {
 
     protected DepictionEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);

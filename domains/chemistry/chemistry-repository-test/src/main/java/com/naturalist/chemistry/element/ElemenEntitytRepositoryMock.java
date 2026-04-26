@@ -5,7 +5,7 @@ import com.naturalist.data.NaturalistDatabase;
 
 class ElemenEntitytRepositoryMock
         extends AbstractTestEntityRepository<ElementName, Element, ElementTestEntitySource>
-        implements ElementRepository.ElementEntityRepository {
+        implements ElementRepository {
 
     protected ElemenEntitytRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);

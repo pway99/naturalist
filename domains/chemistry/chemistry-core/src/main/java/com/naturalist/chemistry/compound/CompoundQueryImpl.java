@@ -1,31 +1,28 @@
 package com.naturalist.chemistry.compound;
 
-import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.ddd.EntityNameSet;
-import com.naturalist.infrastructure.DomainService;
+import com.naturalist.observability.Observer;
 
-import java.util.Set;
+class CompoundQueryImpl implements CompoundQuery {
 
-@DomainService
-class CompoundQueryImpl
-        extends AbstractEntityQuery<CompoundName, Compound, CompoundCollection, CompoundRepository.CompoundEntityRepository>
-        implements CompoundQuery {
+    private final CompoundEntityQuery compoundEntityQuery;
+    private final DepictionQuery depictionQuery;
 
-    CompoundQueryImpl(CompoundRepository.CompoundEntityRepository repository) {
-        super(repository);
-    }
-
-    @Override
-    public CompoundCollection findByNameSet(Set<CompoundName> names) {
-        observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+    CompoundQueryImpl(CompoundEntityQuery compoundEntityQuery, DepictionQuery depictionQuery) {
+        Observer.forClass(CompoundQueryImpl.class).arguments("constructor", i -> i
+                        .notNull(compoundEntityQuery, "compoundEntityQuery")
+                        .notNull(depictionQuery, "depictionQuery"))
                 .throwWhenInvalid();
-
-        return CompoundCollection.of(repository().getByEntityNameSet(names));
+        this.compoundEntityQuery = compoundEntityQuery;
+        this.depictionQuery = depictionQuery;
     }
 
     @Override
-    public EntityNameSet<CompoundName> allCompoundNames() {
-        return EntityNameSet.of(repository().getAllCompoundNames());
+    public CompoundEntityQuery compounds() {
+        return compoundEntityQuery;
+    }
+
+    @Override
+    public DepictionQuery depictions() {
+        return depictionQuery;
     }
 }

@@ -7,10 +7,10 @@ import java.util.Set;
 
 @DomainService
 class ElementQueryImpl
-        extends AbstractEntityQuery<ElementName, Element, ElementCollection, ElementRepository.ElementEntityRepository>
+        extends AbstractEntityQuery<ElementName, Element, ElementCollection, ElementRepository>
         implements ElementQuery {
 
-    ElementQueryImpl(ElementRepository.ElementEntityRepository repository) {
+    ElementQueryImpl(ElementRepository repository) {
         super(repository);
     }
 
