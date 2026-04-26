@@ -5,8 +5,10 @@
     "compoundInfo": {
       "formula": "CaSO4·2H2O",
       "molecularWeight": 172.17,
-      "type": "INORGANIC_SALT",
       "phCharacter": "NEUTRAL",
+      "chemicalNature": "INORGANIC",
+      "physicalForm": "SALT",
+      "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["Ca", "S", "O", "H"]
     },
     "solubility": {
@@ -40,8 +42,10 @@
     "compoundInfo": {
       "formula": "CaCl2",
       "molecularWeight": 110.98,
-      "type": "INORGANIC_SALT",
       "phCharacter": "NEUTRAL",
+      "chemicalNature": "INORGANIC",
+      "physicalForm": "SALT",
+      "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["Ca", "Cl"]
     },
     "solubility": {
@@ -75,8 +79,10 @@
     "compoundInfo": {
       "formula": "K2SO4",
       "molecularWeight": 174.26,
-      "type": "INORGANIC_SALT",
       "phCharacter": "NEUTRAL",
+      "chemicalNature": "INORGANIC",
+      "physicalForm": "SALT",
+      "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["K", "S", "O"]
     },
     "solubility": {
@@ -111,8 +117,10 @@
     "compoundInfo": {
       "formula": "S",
       "molecularWeight": 32.07,
-      "type": "ELEMENT",
       "phCharacter": "ACIDIC",
+      "chemicalNature": "INORGANIC",
+      "physicalForm": "ELEMENT",
+      "functionalRoles": [{ "kind": "FERTILIZER" }, { "kind": "BIOLOGICAL_CATALYST" }],
       "constituentElements": ["S"]
     },
     "solubility": {
@@ -146,8 +154,10 @@
     "compoundInfo": {
       "formula": "MgSO4·7H2O",
       "molecularWeight": 246.47,
-      "type": "INORGANIC_SALT",
       "phCharacter": "NEUTRAL",
+      "chemicalNature": "INORGANIC",
+      "physicalForm": "SALT",
+      "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["Mg", "S", "O", "H"]
     },
     "solubility": {
@@ -180,8 +190,10 @@
     "compoundInfo": {
       "formula": "CaCO3",
       "molecularWeight": 100.09,
-      "type": "MINERAL",
       "phCharacter": "ALKALINE",
+      "chemicalNature": "INORGANIC",
+      "physicalForm": "MINERAL",
+      "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["Ca", "C", "O"]
     },
     "solubility": {
@@ -215,8 +227,10 @@
     "compoundInfo": {
       "formula": "Ca-pectate complex",
       "molecularWeight": null,
-      "type": "BIOLOGICAL_COMPOUND",
       "phCharacter": "NEUTRAL",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "COMPLEX",
+      "functionalRoles": [{ "kind": "CHELATOR" }],
       "constituentElements": ["Ca", "C", "O", "H"]
     },
     "solubility": {
@@ -248,8 +262,10 @@
     "compoundInfo": {
       "formula": "Ca/Mg-organic acid complex",
       "molecularWeight": null,
-      "type": "CHELATE",
       "phCharacter": "ACIDIC",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "COMPLEX",
+      "functionalRoles": [{ "kind": "CHELATOR" }, { "kind": "FERTILIZER" }],
       "constituentElements": ["Ca", "Mg", "C", "O", "H"]
     },
     "solubility": {
@@ -288,8 +304,10 @@
     "compoundInfo": {
       "formula": "HCOOH",
       "molecularWeight": 46.03,
-      "type": "VOLATILE_ORGANIC",
       "phCharacter": "STRONGLY_ACIDIC",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "ACID",
+      "functionalRoles": [{ "kind": "FUMIGANT" }, { "kind": "ACARICIDE" }],
       "constituentElements": ["H", "C", "O"]
     },
     "solubility": {
@@ -337,8 +355,10 @@
     "compoundInfo": {
       "formula": "H2C2O4",
       "molecularWeight": 90.03,
-      "type": "ORGANIC_ACID",
       "phCharacter": "ACIDIC",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "ACID",
+      "functionalRoles": [{ "kind": "FUMIGANT" }, { "kind": "ACARICIDE" }],
       "constituentElements": ["H", "C", "O"]
     },
     "solubility": {
@@ -386,8 +406,10 @@
     "compoundInfo": {
       "formula": "C10H14O",
       "molecularWeight": 150.22,
-      "type": "VOLATILE_ORGANIC",
       "phCharacter": "NEUTRAL",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "COMPLEX",
+      "functionalRoles": [{ "kind": "FUMIGANT" }, { "kind": "ACARICIDE" }],
       "constituentElements": ["C", "H", "O"]
     },
     "solubility": {
@@ -437,8 +459,10 @@
     "compoundInfo": {
       "formula": "C35H44O16",
       "molecularWeight": 720.71,
-      "type": "BIOLOGICAL_COMPOUND",
       "phCharacter": "NEUTRAL",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "COMPLEX",
+      "functionalRoles": [{ "kind": "ACARICIDE" }],
       "constituentElements": ["C", "H", "O"]
     },
     "solubility": {
@@ -481,8 +505,10 @@
     "compoundInfo": {
       "formula": "K-RCOOH",
       "molecularWeight": null,
-      "type": "BIOLOGICAL_COMPOUND",
       "phCharacter": "NEUTRAL",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "SALT",
+      "functionalRoles": [{ "kind": "ACARICIDE" }],
       "constituentElements": ["K", "C", "O", "H"]
     },
     "solubility": {

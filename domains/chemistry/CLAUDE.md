@@ -7,8 +7,9 @@ weight, and ionic form. Exists independently; referenced by Compounds. Instances
 `elements.json`. Equality is by `ElementName` (ADR-022); no `id` component.
 
 **CompoundInfo** — `ValueObject` owned by `Compound`. Chemical classification facts:
-formula, molecular weight, type, pH character, constituent elements. No identity of its
-own — exists only as an attribute of its parent compound.
+formula, molecular weight, pH character, chemical nature, physical form, functional roles,
+constituent elements. No identity of its own — exists only as an attribute of its parent
+compound.
 
 **Compound** — `NamedEntity<CompoundName>` + `@AggregateRoot`. The single identity
 and consistency boundary for compound data. Carries `name` (slug),
@@ -19,8 +20,19 @@ Has a `TestEntitySource`. Instances in `compounds.json`.
 Java model is agnostic to specific compounds — the catalog is data, not code.
 Cross-domain references use `CompoundName` slug.
 
-**CompoundType** — INORGANIC_SALT, ORGANIC_ACID, MINERAL, ELEMENT,
-CHELATE, BIOLOGICAL_COMPOUND, VOLATILE_ORGANIC.
+**ChemicalNature** — ORGANIC, INORGANIC, ORGANOMETALLIC. The chemical-nature axis on
+`CompoundInfo`. Carbonates, oxides, cyanides, and pure carbon allotropes are conventionally
+INORGANIC despite containing carbon.
+
+**PhysicalForm** — ELEMENT, MINERAL, SALT, ACID, BASE, COMPLEX. The physical-form axis on
+`CompoundInfo`. Independent of `ChemicalNature` — NaCl is both INORGANIC and SALT.
+
+**FunctionalRole** — sealed interface in `compound.role` with stateless record permits
+(`Chelator`, `Fumigant`, `BiologicalCatalyst`, `Fertilizer`, `Acaricide`). What a compound
+*does* in the field. `CompoundInfo` carries a non-empty `Set<FunctionalRole>`. Behavioral
+predicates `Compound.isFumigant()`, `Compound.isHazardous()`, `Compound.isChelated()` and
+`Compound.playsRole(role)` are first-class — upstream domains never inspect the structural
+form to learn what a compound does.
 
 **SolubilityProfile** — ValueObject owned by `Compound`. Required (non-nullable).
 Water solubility at 20°C in g/L. Categories: INSOLUBLE through MISCIBLE.

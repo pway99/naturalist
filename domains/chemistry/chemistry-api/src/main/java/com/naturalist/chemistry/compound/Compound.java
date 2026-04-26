@@ -1,6 +1,7 @@
 package com.naturalist.chemistry.compound;
 
 import com.naturalist.chemistry.TemperatureFahrenheit;
+import com.naturalist.chemistry.compound.role.FunctionalRole;
 import com.naturalist.ddd.AggregateRoot;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.UniqueValue;
@@ -55,10 +56,6 @@ public record Compound(
         return compoundInfo.molecularWeight();
     }
 
-    public CompoundType type() {
-        return compoundInfo.type();
-    }
-
     public PhCharacter phCharacter() {
         return compoundInfo.phCharacter();
     }
@@ -111,11 +108,19 @@ public record Compound(
     }
 
     public boolean isFumigant() {
-        return compoundInfo.type() == CompoundType.VOLATILE_ORGANIC && volatilization != null;
+        return volatilization != null;
     }
 
-    public boolean isChelate() {
-        return compoundInfo.type() == CompoundType.CHELATE;
+    public boolean isHazardous() {
+        return safety != null;
+    }
+
+    public boolean isChelated() {
+        return bioavailability.isChelateEnhanced();
+    }
+
+    public boolean playsRole(FunctionalRole role) {
+        return compoundInfo.functionalRoles().contains(role);
     }
 
     /**
