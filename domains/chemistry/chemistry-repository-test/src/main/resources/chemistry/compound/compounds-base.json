@@ -29,12 +29,7 @@
     "safety": null,
     "omriListed": true,
     "cdfaRegistered": true,
-    "properties": {
-      "safeRateLbsPer1000Sqft": "2-4",
-      "oakVistaAppliedRate": "3.3 lbs/100sqft — April 1 2026",
-      "rehabilitationTarget": "Coco coir Ca2+ binding sites",
-      "projectedSeasonsToOptimum": "3-5"
-    }
+    "properties": {}
   },
   {
     "name": "calcium-chloride",
@@ -65,13 +60,7 @@
     "volatilization": null,
     "safety": null,
     "omriListed": false,
-    "properties": {
-      "product": "Bonide Rot-Stop RTU",
-      "concentrationInProduct": "1.6% CaCl2",
-      "applicationMethod": "RTU foliar spray",
-      "berPreventionRole": "Week 1 and 3 of alternating protocol — fast ionic Ca delivery",
-      "weekInBerProtocol": "1,3,5 (odd weeks)"
-    }
+    "properties": {}
   },
   {
     "name": "potassium-sulfate",
@@ -103,13 +92,7 @@
     "safety": null,
     "omriListed": true,
     "cdfaRegistered": true,
-    "properties": {
-      "product": "Down to Earth 0-0-50",
-      "densityCupsToLbs": "1 cup = 1 lb",
-      "backyardAppliedRate": "13 lbs/1000sqft — OPTIMAL",
-      "box1AppliedRate": "46.9 lbs/1000sqft — HIGH — ChatGPT cup error",
-      "optimumRange": "6.5-19 lbs/1000sqft"
-    }
+    "properties": {}
   },
   {
     "name": "elemental-sulfur",
@@ -139,14 +122,7 @@
     },
     "volatilization": null,
     "safety": null,
-    "properties": {
-      "product": "E.B. Stone Soil Sulfur Minerals",
-      "box1AppliedRate": "7.7 lbs/1000sqft",
-      "backyardAppliedRate": "1.2 lbs/1000sqft",
-      "phEffect": "Mild acidification — largely neutralized by limestone in Oak Vista soil",
-      "insituReaction": "Sulfur + limestone → in-situ gypsum formation",
-      "biologicalCatalyst": "Thiobacillus bacteria — accelerates above 77°F"
-    }
+    "properties": {}
   },
   {
     "name": "magnesium-sulfate",
@@ -177,12 +153,7 @@
     "volatilization": null,
     "safety": null,
     "omriListed": true,
-    "properties": {
-      "drenchRate": "1 tbsp per gallon",
-      "drenchVolume": "1 gallon per plant",
-      "berProtocolRole": "Day 2 of monthly drench — sulfate + magnesium",
-      "separationRationale": "Applied Day 2 after CalMag OAC Day 1 — sulfate does not interfere with next-day chelate application"
-    }
+    "properties": {}
   },
   {
     "name": "calcium-carbonate",
@@ -212,14 +183,7 @@
     },
     "volatilization": null,
     "safety": null,
-    "properties": {
-      "oakVistaSource": "Native Chico Valley parent material + post-hole subsoil",
-      "box1Percent": "1.7%",
-      "backyardPercent": "2.9%",
-      "optimumPercent": "less than 0.50%",
-      "phBufferingRole": "Neutralizes acid from sulfur oxidation — limits pH reduction",
-      "contraindicatedAmendment": "Do not add lime — pH already optimal at 7.2"
-    }
+    "properties": {}
   },
   {
     "name": "calcium-pectate",
@@ -286,17 +250,7 @@
     "safety": null,
     "omriListed": true,
     "cdfaRegistered": true,
-    "properties": {
-      "product": "TPS Nutrients CalMag OAC",
-      "calciumPct": "4.5",
-      "magnesiumPct": "1.1",
-      "npk": "0-0-0",
-      "halfStrengthRate": "10 mL per gallon",
-      "fullStrengthRate": "20 mL per gallon",
-      "berProtocolRole": "Week 2 and 4 of alternating protocol — chelated cuticular Ca+Mg",
-      "weekInBerProtocol": "2,4,6 (even weeks)",
-      "advantageOverIonic": "Penetrates cuticle when stomata closed — heat resilient"
-    }
+    "properties": {}
   },
   {
     "name": "formic-acid",
@@ -342,12 +296,7 @@
       "requiresEveningApplication": false,
       "applicationConstraints": "Do not apply when ambient temperature exceeds 85°F. Corrosive — gloves and eye protection required. Verify California CDPR approval status with Dadant Chico before purchase."
     },
-    "properties": {
-      "varroaEfficacy": "High — penetrates capped brood cells",
-      "chicoRisk": "HIGH — summer temperatures exceed safe application window June-September",
-      "californiaStatus": "Verify CDPR approval with Dadant Chico before procurement",
-      "alternativeForChico": "Apiguard (thymol) preferred for August-September treatment window"
-    }
+    "properties": {}
   },
   {
     "name": "oxalic-acid",
@@ -393,12 +342,7 @@
       "requiresEveningApplication": false,
       "applicationConstraints": "Respiratory protection required for vaporization. Most effective during broodless period (winter or after artificial swarm). Verify California CDPR approval with Dadant Chico."
     },
-    "properties": {
-      "bestApplicationTiming": "Broodless period — winter or post-swarm",
-      "chicoWindow": "December-January during winter broodless period",
-      "californiaStatus": "Verify CDPR approval with Dadant Chico",
-      "advantageOverFormic": "Wider temperature safety window — viable in Chico conditions"
-    }
+    "properties": {}
   },
   {
     "name": "thymol",
@@ -444,14 +388,7 @@
       "requiresEveningApplication": false,
       "applicationConstraints": "Temperature must be above 59°F for efficacy. Do not apply during honey flow — thymol taints honey. Remove honey super before treatment."
     },
-    "properties": {
-      "product": "Apiguard (Véto-pharma)",
-      "concentration": "25% thymol in gel",
-      "chicoApplicationWindow": "Late August through September — temperatures moderating from summer peak",
-      "advantageOverFormic": "Safer temperature profile for Chico climate — viable when formic acid is too risky",
-      "honeyWarning": "Remove honey super before treatment — thymol taints honey",
-      "varroaEfficacy": "Good — 90%+ efficacy in two-treatment protocol"
-    }
+    "properties": {}
   },
   {
     "name": "azadirachtin",
@@ -491,13 +428,7 @@
       "applicationConstraints": "Apply after 7 PM when bee foragers have returned to hive. Harmful to bees when wet. Safe when dry. OMRI listed. Repeat every 5-7 days x3 applications for thrips control."
     },
     "omriListed": true,
-    "properties": {
-      "applicationRate": "2 tbsp neem oil per gallon with 2 tbsp dish soap emulsifier",
-      "targetPests": "Thrips, spider mites, aphids, whitefly, fungus gnats",
-      "oakVistaUse": "Straw mulch drench for thrips control — April 7 2026 TSWV outbreak",
-      "uvDegradation": "Breaks down within 24-48 hours in sunlight — evening application required",
-      "repeatInterval": "5-7 days for 3 applications minimum"
-    }
+    "properties": {}
   },
   {
     "name": "potassium-fatty-acids",
@@ -537,12 +468,6 @@
       "applicationConstraints": "Apply after 7 PM — harmful to bees on direct contact when wet. Safe when dry."
     },
     "omriListed": true,
-    "properties": {
-      "strawDrenchRate": "2 tbsp per gallon",
-      "foliarRate": "1 tsp per quart",
-      "emulsifierRole": "Emulsifies neem oil in water for combined treatment",
-      "oakVistaProduct": "Kirkland Ultra Shine dish soap (equivalent mechanism to commercial insecticidal soap)",
-      "traditionalUse": "Traditional pest control remedy — scientifically validated contact insecticide"
-    }
+    "properties": {}
   }
 ]

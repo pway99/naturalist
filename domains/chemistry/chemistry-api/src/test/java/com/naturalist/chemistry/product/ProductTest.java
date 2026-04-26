@@ -6,6 +6,7 @@ import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,18 +27,19 @@ class ProductTest {
     @Test
     void productIsNotValid() {
         var mo = observer.forMethod("productIsNotValid");
-        Product p = new Product(null, null, null);
+        Product p = new Product(null, null, null, null);
 
         InvariantObservation observation = mo.namedEntity(p, "p");
 
         assertThat(observation.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".p.name", ".p.displayName", ".p.compounds");
+                .containsExactlyInAnyOrder(".p.name", ".p.displayName", ".p.compounds", ".p.properties");
     }
 
     private static Product validProduct() {
         return new Product(
                 ProductName.of(RandomValue.string()),
                 RandomValue.string(),
-                Set.of(CompoundName.of(RandomValue.string())));
+                Set.of(CompoundName.of(RandomValue.string())),
+                Map.of());
     }
 }

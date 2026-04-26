@@ -1,27 +1,144 @@
 [
   {
+    "name": "gypsum",
+    "displayName": "Gypsum (Calcium Sulfate Dihydrate Amendment)",
+    "compounds": ["calcium-sulfate-dihydrate"],
+    "properties": {
+      "safeRateLbsPer1000Sqft": "2-4",
+      "oakVistaAppliedRate": "3.3 lbs/100sqft — April 1 2026",
+      "rehabilitationTarget": "Coco coir Ca2+ binding sites",
+      "projectedSeasonsToOptimum": "3-5"
+    }
+  },
+  {
     "name": "bonide-rot-stop-rtu",
     "displayName": "Bonide Rot-Stop RTU",
-    "compounds": ["calcium-chloride"]
+    "compounds": ["calcium-chloride"],
+    "properties": {
+      "concentration": "1.6% CaCl2",
+      "applicationMethod": "RTU foliar spray",
+      "berPreventionRole": "Week 1 and 3 of alternating protocol — fast ionic Ca delivery",
+      "weekInBerProtocol": "1,3,5 (odd weeks)"
+    }
   },
   {
     "name": "down-to-earth-0-0-50",
     "displayName": "Down to Earth 0-0-50",
-    "compounds": ["potassium-sulfate"]
+    "compounds": ["potassium-sulfate"],
+    "properties": {
+      "npk": "0-0-50",
+      "densityCupsToLbs": "1 cup = 1 lb",
+      "backyardAppliedRate": "13 lbs/1000sqft — OPTIMAL",
+      "box1AppliedRate": "46.9 lbs/1000sqft — HIGH — ChatGPT cup error",
+      "optimumRange": "6.5-19 lbs/1000sqft"
+    }
   },
   {
     "name": "eb-stone-soil-sulfur-minerals",
     "displayName": "E.B. Stone Soil Sulfur Minerals",
-    "compounds": ["elemental-sulfur"]
+    "compounds": ["elemental-sulfur"],
+    "properties": {
+      "box1AppliedRate": "7.7 lbs/1000sqft",
+      "backyardAppliedRate": "1.2 lbs/1000sqft",
+      "phEffect": "Mild acidification — largely neutralized by limestone in Oak Vista soil",
+      "insituReaction": "Sulfur + limestone → in-situ gypsum formation",
+      "biologicalCatalyst": "Thiobacillus bacteria — accelerates above 77°F"
+    }
+  },
+  {
+    "name": "epsom-salt",
+    "displayName": "Epsom Salt (Magnesium Sulfate Heptahydrate Amendment)",
+    "compounds": ["magnesium-sulfate"],
+    "properties": {
+      "drenchRate": "1 tbsp per gallon",
+      "drenchVolume": "1 gallon per plant",
+      "berProtocolRole": "Day 2 of monthly drench — sulfate + magnesium",
+      "separationRationale": "Applied Day 2 after CalMag OAC Day 1 — sulfate does not interfere with next-day chelate application"
+    }
+  },
+  {
+    "name": "lime",
+    "displayName": "Lime (Calcium Carbonate Amendment)",
+    "compounds": ["calcium-carbonate"],
+    "properties": {
+      "oakVistaSource": "Native Chico Valley parent material + post-hole subsoil",
+      "box1Percent": "1.7%",
+      "backyardPercent": "2.9%",
+      "optimumPercent": "less than 0.50%",
+      "phBufferingRole": "Neutralizes acid from sulfur oxidation — limits pH reduction",
+      "contraindicatedAmendment": "Do not add lime — pH already optimal at 7.2"
+    }
   },
   {
     "name": "tps-calmag-oac",
     "displayName": "TPS Nutrients CalMag OAC",
-    "compounds": ["organic-acid-chelate"]
+    "compounds": ["organic-acid-chelate"],
+    "properties": {
+      "calciumPct": "4.5",
+      "magnesiumPct": "1.1",
+      "npk": "0-0-0",
+      "halfStrengthRate": "10 mL per gallon",
+      "fullStrengthRate": "20 mL per gallon",
+      "berProtocolRole": "Week 2 and 4 of alternating protocol — chelated cuticular Ca+Mg",
+      "weekInBerProtocol": "2,4,6 (even weeks)",
+      "advantageOverIonic": "Penetrates cuticle when stomata closed — heat resilient"
+    }
+  },
+  {
+    "name": "formic-acid-mite-treatment",
+    "displayName": "Formic Acid Varroa Mite Treatment",
+    "compounds": ["formic-acid"],
+    "properties": {
+      "varroaEfficacy": "High — penetrates capped brood cells",
+      "chicoRisk": "HIGH — summer temperatures exceed safe application window June-September",
+      "californiaStatus": "Verify CDPR approval with Dadant Chico before procurement",
+      "alternativeForChico": "Apiguard (thymol) preferred for August-September treatment window"
+    }
+  },
+  {
+    "name": "oxalic-acid-mite-treatment",
+    "displayName": "Oxalic Acid Varroa Mite Treatment",
+    "compounds": ["oxalic-acid"],
+    "properties": {
+      "bestApplicationTiming": "Broodless period — winter or post-swarm",
+      "chicoWindow": "December-January during winter broodless period",
+      "californiaStatus": "Verify CDPR approval with Dadant Chico",
+      "advantageOverFormic": "Wider temperature safety window — viable in Chico conditions"
+    }
   },
   {
     "name": "apiguard",
     "displayName": "Apiguard (Véto-pharma)",
-    "compounds": ["thymol"]
+    "compounds": ["thymol"],
+    "properties": {
+      "concentration": "25% thymol in gel",
+      "applicationWindow": "Late August through September — temperatures moderating from summer peak",
+      "honeyWarning": "Remove honey super before treatment — thymol taints honey",
+      "advantageOverFormic": "Safer temperature profile for Chico climate — viable when formic acid is too risky",
+      "varroaEfficacy": "Good — 90%+ efficacy in two-treatment protocol"
+    }
+  },
+  {
+    "name": "neem-oil",
+    "displayName": "Neem Oil (Azadirachtin Amendment)",
+    "compounds": ["azadirachtin"],
+    "properties": {
+      "applicationRate": "2 tbsp neem oil per gallon with 2 tbsp dish soap emulsifier",
+      "targetPests": "Thrips, spider mites, aphids, whitefly, fungus gnats",
+      "oakVistaUse": "Straw mulch drench for thrips control — April 7 2026 TSWV outbreak",
+      "uvDegradation": "Breaks down within 24-48 hours in sunlight — evening application required",
+      "repeatInterval": "5-7 days for 3 applications minimum"
+    }
+  },
+  {
+    "name": "kirkland-ultra-shine",
+    "displayName": "Kirkland Ultra Shine Dish Soap",
+    "compounds": ["potassium-fatty-acids"],
+    "properties": {
+      "strawDrenchRate": "2 tbsp per gallon",
+      "foliarRate": "1 tsp per quart",
+      "emulsifierRole": "Emulsifies neem oil in water for combined treatment",
+      "traditionalUse": "Traditional pest control remedy — scientifically validated contact insecticide"
+    }
   }
 ]

@@ -5,6 +5,8 @@ import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.UniqueValue;
 import com.naturalist.observability.Constraints;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -23,14 +25,20 @@ import java.util.function.Consumer;
 public record Product(
         ProductName name,
         @UniqueValue String displayName,
-        Set<CompoundName> compounds
+        Set<CompoundName> compounds,
+        Map<String, String> properties
 ) implements NamedEntity<ProductName> {
+
+    public Optional<String> property(String key) {
+        return Optional.ofNullable(properties.get(key));
+    }
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
                 .notBlank(displayName, "displayName")
-                .notEmpty(this, Product::compounds, "compounds");
+                .notEmpty(this, Product::compounds, "compounds")
+                .notNull(this, Product::properties, "properties");
     }
 }

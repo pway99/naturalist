@@ -7,6 +7,7 @@ import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,7 +44,8 @@ interface ProductEntityRepositoryTest
         return new Product(
                 ProductName.of(RandomValue.string()),
                 RandomValue.string(),
-                Set.of(CompoundName.of(RandomValue.string())));
+                Set.of(CompoundName.of(RandomValue.string())),
+                Map.of(RandomValue.string(), RandomValue.string()));
     }
 
     @Override
@@ -51,7 +53,8 @@ interface ProductEntityRepositoryTest
         return new Product(
                 ProductName.of(RandomValue.string()),
                 RandomValue.string(),
-                Set.of(CompoundName.of(RandomValue.string())));
+                Set.of(CompoundName.of(RandomValue.string())),
+                Map.of(RandomValue.string(), RandomValue.string()));
     }
 
     @Override
@@ -59,6 +62,7 @@ interface ProductEntityRepositoryTest
         return new Product(
                 original.name(),
                 RandomValue.string(),
-                Set.of(CompoundName.of(RandomValue.string())));
+                Set.of(CompoundName.of(RandomValue.string())),
+                Map.of(RandomValue.string(), RandomValue.string()));
     }
 }

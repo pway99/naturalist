@@ -20,6 +20,15 @@ Has a `TestEntitySource`. Instances in `compounds.json`.
 Java model is agnostic to specific compounds — the catalog is data, not code.
 Cross-domain references use `CompoundName` slug.
 
+**Product** — `NamedEntity<ProductName>`. A commercial SKU (e.g. `"Apiguard (Véto-pharma)"`,
+`"TPS Nutrients CalMag OAC"`) carrying `name` (slug), `@UniqueValue String displayName`,
+`Set<CompoundName> compounds` (the formulation), and a `Map<String, String> properties`
+of SKU-scoped attributes (concentration, application window, NPK ratio, etc.). The product
+authoritatively defines its ingredient list; the reverse lookup is a query.
+Lives in its own subpackage (`com.naturalist.chemistry.product`) so it can graduate to a
+standalone `product` domain without disturbing chemistry consumers. Instances in
+`products-base.json`.
+
 **ChemicalNature** — ORGANIC, INORGANIC, ORGANOMETALLIC. The chemical-nature axis on
 `CompoundInfo`. Carbonates, oxides, cyanides, and pure carbon allotropes are conventionally
 INORGANIC despite containing carbon.
