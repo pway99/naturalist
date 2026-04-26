@@ -4,6 +4,7 @@ import com.naturalist.Incubating;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,5 +21,12 @@ interface DepictionRepository {
          * result is at most one entity.
          */
         Optional<CompoundDepiction> getByCompoundName(CompoundName compoundName);
+
+        /**
+         * The set of {@link CompoundName}s with a catalogued depiction — drives the
+         * "depictable compounds" filter at the consumer surface (e.g. the chemistry
+         * console list view).
+         */
+        List<CompoundName> getAllDepictedCompoundNames();
     }
 }

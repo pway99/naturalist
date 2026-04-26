@@ -5,8 +5,14 @@ import com.naturalist.chemistry.TestChemistryIdentifiers;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link DepictionRepository.DepictionEntityRepository}.
@@ -62,5 +68,48 @@ interface DepictionEntityRepositoryTest
                 original.compoundName(),
                 RandomValue.string(),
                 RandomValue.string());
+    }
+
+    // =========================================================================
+    // getByCompoundName — FK-unique lookup
+    // =========================================================================
+
+    @Test
+    default void getByCompoundName_nullArgument() {
+        assertThatThrownBy(() -> repository().getByCompoundName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("compoundName");
+    }
+
+    @Test
+    default void getByCompoundName_unknownCompound_returnsEmpty() {
+        assertThat(repository().getByCompoundName(TestChemistryIdentifiers.Compounds.NotFound.name))
+                .isEmpty();
+    }
+
+    @Test
+    default void getByCompoundName_knownCompound_returnsDepiction() {
+        CompoundName knownCompound = TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.name;
+        DepictionId expectedId = TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.depictionName;
+        CompoundDepiction expected = source().getByName(expectedId).orElseThrow();
+
+        Optional<CompoundDepiction> result = repository().getByCompoundName(knownCompound);
+
+        assertThat(result).isPresent();
+        assertEntityEquals(result.get(), expected);
+    }
+
+    // =========================================================================
+    // getAllDepictedCompoundNames
+    // =========================================================================
+
+    @Test
+    default void getAllDepictedCompoundNames_returnsAllDepictedCompounds() {
+        List<CompoundName> result = repository().getAllDepictedCompoundNames();
+
+        assertThat(result).contains(
+                TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.name,
+                TestChemistryIdentifiers.Compounds.FormicAcid.name);
+        assertThat(result).doesNotContain(TestChemistryIdentifiers.Compounds.NotFound.name);
     }
 }
