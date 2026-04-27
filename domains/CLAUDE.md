@@ -74,6 +74,15 @@ Structure rules:
   top-level class.** An `InsectImage` owned by `PotatoLeafhopper` goes inside
   `PotatoLeafhopper.Images`, not a parallel `InsectImages` class at the same level as
   `InsectSpecies`. A flat sibling class implies peer status in the domain graph, which is wrong.
+- **Promote flat constants to parent classes the moment a child collection is added.**
+  If a parent is currently held as a top-level `EntityName` constant
+  (e.g. `Plants.CaliforniaPipevine = PlantName.of("california-pipevine")`) and a child
+  entity collection (programs, images, life stages, …) is introduced, replace the
+  constant with a static class carrying `name` plus the child inner classes —
+  `Plants.CaliforniaPipevine { name; Programs { … } }`. Declaring the child collection
+  as a sibling of the constant (`Plants.Programs` next to `Plants.CaliforniaPipevine`)
+  flattens the ownership graph and forces every consumer to re-cross-reference plant
+  ↔ program by hand. Update existing call sites to `Parent.name` in the same change.
 - Every entity type must define **at least two** known `EntityName` constants, enabling both
   single-entity and set-based lookup tests. Partial-match tests for `getByEntityNameSet`
   must include at least two known values plus the `NotFound` value — a single known value

@@ -37,8 +37,8 @@ interface PlantEntityRepositoryTest
     @Override
     default List<PlantName> knownEntityNames() {
         return List.of(
-                TestPlantsIdentifiers.Plants.CaliforniaPipevine,
-                TestPlantsIdentifiers.Plants.Borage
+                TestPlantsIdentifiers.Plants.CaliforniaPipevine.name,
+                TestPlantsIdentifiers.Plants.Borage.name
         );
     }
 

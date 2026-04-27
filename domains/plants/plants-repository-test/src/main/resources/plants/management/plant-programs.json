@@ -1,0 +1,98 @@
+[
+  {
+    "name": "pipevine-pesticide-exclusion",
+    "plantName": "california-pipevine",
+    "description": {
+      "preschool": "Big special caterpillars live on this vine. We never spray near it so the caterpillars stay safe.",
+      "elementary": "California Pipevine is the only food the Pipevine Swallowtail caterpillars eat. If anything that kills bugs gets on this plant, the caterpillars die and we lose our butterflies.",
+      "secondary": "An absolute pesticide-exclusion zone around our Aristolochia californica trellis. Pipevine Swallowtail (Battus philenor hirsuta) larvae sequester aristolochic acids from the host foliage; any insecticide — including organic options like Bt, spinosad, pyrethrin, or insecticidal soap — eliminates the breeding cohort.",
+      "university": "Constraint-bearing program protecting the sole obligate larval host of Battus philenor hirsuta on site. The exclusion is non-negotiable and overrides all integrated pest management routines for adjacent plantings while larvae or eggs are present (typically March through October at our latitude)."
+    },
+    "constraint": "NEVER spray any pesticide, organic or conventional, on or near this plant while larvae or eggs are present. Bt, spinosad, pyrethrin, and insecticidal soap are all prohibited. The Pipevine Swallowtail breeding population at Oak Vista depends entirely on this plant.",
+    "notes": "Established on back fence trellis. Adults appear March; larval cohorts persist through October. Eggs are rust-orange spheres laid in clusters on the underside of young leaves and on new stems."
+  },
+  {
+    "name": "pipevine-larval-monitoring",
+    "plantName": "california-pipevine",
+    "description": {
+      "preschool": "Every week we look under the leaves for tiny orange dots and dark fuzzy caterpillars.",
+      "elementary": "Once a week we check the Pipevine for butterfly eggs and caterpillars so we know if any garden work nearby has to wait.",
+      "secondary": "Weekly inspection cadence on the Aristolochia californica trellis from March onward, recording presence and stage of Pipevine Swallowtail eggs and larvae. The inspection log gates pesticide decisions on neighboring plantings.",
+      "university": "Phenological monitoring program coupled to the pesticide-exclusion constraint. Weekly walk-bys record egg cluster counts (rust-orange spheres on leaf undersides), larval instar (dark integument with orange tubercles), and pupation events. The presence record is the gating signal for any chemical intervention within drift range."
+    },
+    "constraint": null,
+    "notes": "Walk the trellis Friday mornings from early March. Record egg clusters and larval instar in the field journal. Cohort presence here vetoes pesticide work on neighboring tomato and citrus plantings until the cohort departs."
+  },
+  {
+    "name": "borage-volunteer-thinning",
+    "plantName": "borage",
+    "description": {
+      "preschool": "Borage makes lots of baby plants by itself. We pull some out so the others have room.",
+      "elementary": "Borage drops seeds and grows back next year. We thin out the extras so each plant has space to bloom big and feed bees.",
+      "secondary": "Self-seeding management for Borago officinalis: allow seed set on selected plants, then thin volunteer seedlings the following spring to maintain bumblebee foraging value without crowding.",
+      "university": "Volunteer-population management for an annual self-seeder. Seed retention is selective — favor plants with larger flower display and longer bloom duration — and thinning targets a stand density that preserves bumblebee (Bombus spp.) foraging visibility as one of the site's most legible pollinator-health indicators."
+    },
+    "constraint": null,
+    "notes": "Allow seedheads to mature and drop. Pull excess volunteers in spring to prevent overcrowding. Blue flowers edible; used as garnish. Bumblebee foraging on borage is a primary visible indicator of pollinator community health."
+  },
+  {
+    "name": "tomato-blossom-end-rot-prevention",
+    "plantName": "tomato",
+    "description": {
+      "preschool": "Tomato fruit can get a black bottom if it gets thirsty. We water carefully so that doesn't happen.",
+      "elementary": "Blossom end rot is when the bottom of a tomato turns black because the plant couldn't get enough calcium. Steady watering and mulch keep the calcium flowing.",
+      "secondary": "BER is a physiological disorder caused by localised calcium deficiency at the developing fruit. We manage transpiration steadiness through deep mulching, even soil moisture, and a foliar chelated calcium application schedule during fruit set.",
+      "university": "Calcium-transport management for indeterminate tomato in the Oak Vista substrate (coir-bound, low soluble Ca per FGL CH 2671853). Foliar TPS CalMag OAC bypasses the root-to-xylem pathway during heat-induced stomatal closure. Application is timed to fruit-set onset and repeated weekly through peak heat."
+    },
+    "constraint": null,
+    "notes": "Deep mulch transplant. Maintain even soil moisture; avoid drying cycles. Apply foliar TPS CalMag OAC weekly from first fruit set through peak summer heat. Bumblebee buzz pollination audible in early morning."
+  },
+  {
+    "name": "peach-leaf-curl-dormant-copper",
+    "plantName": "oh-henry-peach",
+    "description": {
+      "preschool": "In winter, when the peach tree is asleep, we paint it with copper to keep the leaves from getting curly and red.",
+      "elementary": "Peach leaf curl is a fungus. We spray copper on the bare tree in winter, before any buds open, and that stops the fungus before it can reach new leaves.",
+      "secondary": "Dormant copper application targeting Taphrina deformans before bud swell. Treatment window is November through January at this site; copper after petal fall is forbidden because copper-laden pollen is toxic to bee larvae.",
+      "university": "Constraint-bearing dormant fungicide program for Prunus persica 'Oh Henry'. Application is restricted to the dormant window (November–January at our latitude) before 1% bud swell, to suppress Taphrina deformans ascospore germination on emerging tissue. Post-petal-fall copper is prohibited — copper-contaminated pollen is acutely toxic to honeybee and native bee larvae."
+    },
+    "constraint": "Copper fungicide must be applied during dormancy (November–January) only, before 1% bud swell. Never apply copper after petal fall — copper-contaminated pollen is toxic to bee larvae.",
+    "notes": "Oh Henry — large, late-season freestone. Annual dormant pruning to open-vase form. One of the earliest-blooming trees on site; critical early-season bee forage when in flower."
+  },
+  {
+    "name": "tall-fescue-low-mow-protocol",
+    "plantName": "tall-fescue",
+    "description": {
+      "preschool": "We let our grass grow tall so the tiny grass-bugs and butterflies can hide and grow up in it.",
+      "elementary": "We never cut the lawn shorter than four inches. Long grass keeps skipper butterfly babies safe and helps the grass eat the leafhopper bugs that hurt the tomatoes.",
+      "secondary": "Minimum four-inch cutting height per Oak Vista IPM. Lower mowing degrades leafhopper suppression and destroys skipper larval shelters. Clippings are returned as mulch — never bagged.",
+      "university": "Constraint-bearing turf management for Festuca arundinacea: 4–6 inch cutting height, deep infrequent irrigation to maintain a deep root profile, and clipping return for nutrient cycling. The low-mow protocol preserves leafhopper-suppression function and skipper (Hesperiidae) larval habitat in folded-blade shelters."
+    },
+    "constraint": "Maintain at minimum 4-inch cutting height per Oak Vista IPM protocol. Lower mowing height degrades leafhopper suppression function and destroys skipper larval habitat. Do not scalp or bag clippings — return them as mulch.",
+    "notes": "Main lawn area. Mow at 4–6 inches minimum. Deep-water infrequently rather than shallow-water frequently. Skipper larvae (small, green, in folded grass blade shelters) are residents — do not disturb."
+  },
+  {
+    "name": "passiflora-edulis-larval-protection",
+    "plantName": "passiflora-edulis",
+    "description": {
+      "preschool": "Orange spiky caterpillars live on the passion vine. We never spray the leaves so they stay safe.",
+      "elementary": "Gulf Fritillary caterpillars eat passion vine leaves and turn into orange butterflies. We check under the leaves before doing anything near the trellis.",
+      "secondary": "Larval-protection program for Agraulis vanillae on Passiflora edulis. No foliar pesticide while larvae are present; pre-treatment leaf-underside inspection is mandatory.",
+      "university": "Larval-host protection program for Agraulis vanillae on Passiflora edulis. Constraint enforces a no-spray rule on foliage during larval presence; pre-treatment underside inspection of the trellis is required for any application within drift range. The program complements the ornamental-passiflora protection program — together both vines support a stable Gulf Fritillary breeding population on site."
+    },
+    "constraint": "Do not apply pesticides to foliage while Gulf Fritillary larvae are present. Inspect underside of leaves before any treatment in the vicinity of the trellis.",
+    "notes": "Steel trellis, full sun. Large carpenter bees (Xylocopa varipuncta) are the primary pollinators. Self-incompatibility may limit fruit set; consider adding a second clone. Gulf Fritillary larvae (orange with black spines) are residents."
+  },
+  {
+    "name": "citrus-bloom-pesticide-window",
+    "plantName": "citrus",
+    "description": {
+      "preschool": "When the orange and lemon trees have white flowers, lots of bees come. We never spray then.",
+      "elementary": "Citrus blooms in March and April and the bees come every day. No pesticides during bloom — even safe ones can hurt the bees while flowers are open.",
+      "secondary": "Citrus bloom (March–April) is a peak pollinator activity window at the front yard orchard. All foliar pesticide work — including OMRI-listed materials — is paused for the duration of bloom across the citrus plantings.",
+      "university": "Bloom-window pesticide blackout for the Citrus front yard orchard. The blackout extends from first open flower through 80% petal fall and is enforced site-wide on any treatment whose drift could reach citrus foliage. Scale insects are managed through beneficial-insect pressure during bloom rather than direct treatment."
+    },
+    "constraint": null,
+    "notes": "Multiple varieties — species/cultivar TBD per individual tree. Evergreen structural backbone of front yard orchard. Citrus bloom is a peak pollinator activity event; avoid any pesticide application during bloom. Scale insects monitored and managed through beneficial pressure."
+  }
+]

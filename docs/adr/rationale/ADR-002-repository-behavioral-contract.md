@@ -174,13 +174,13 @@ value was filtered without affecting the matched results.
 default void getByEntityNameSet_partialMatch_returnsOnlyMatchingPlants() {
     // Arrange — two known + one fictitious
     Set<PlantName> names = Set.of(
-            TestPlantsIdentifiers.Plants.CaliforniaPipevine,
-            TestPlantsIdentifiers.Plants.Borage,
+            TestPlantsIdentifiers.Plants.CaliforniaPipevine.name,
+            TestPlantsIdentifiers.Plants.Borage.name,
             TestPlantsIdentifiers.Plants.NotFound.name
     );
     Set<PlantName> knownNames = Set.of(
-            TestPlantsIdentifiers.Plants.CaliforniaPipevine,
-            TestPlantsIdentifiers.Plants.Borage
+            TestPlantsIdentifiers.Plants.CaliforniaPipevine.name,
+            TestPlantsIdentifiers.Plants.Borage.name
     );
     List<Plant> expected = source().getByEntityNameSet(knownNames);
 
