@@ -1,6 +1,9 @@
 package com.naturalist.plants;
 
 import com.naturalist.RandomValue;
+import com.naturalist.biogeography.Bioregion;
+import com.naturalist.biogeography.SacramentoValley;
+import com.naturalist.biogeography.SouthernCascades;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.fieldnotes.Description;
@@ -53,7 +56,9 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.FOOD_CROP),
                 PlantLifeForm.ANNUAL,
-                false, null, null
+                Set.of(),
+                null,
+                null
         );
     }
 
@@ -70,12 +75,17 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.FOOD_CROP),
                 PlantLifeForm.ANNUAL,
-                false, null, null
+                Set.of(),
+                null,
+                null
         );
     }
 
     @Override
     default Plant modifiedEntity(Plant original) {
+        Set<Bioregion> flippedBioregions = original.nativeBioregions().isEmpty()
+                ? Set.of(new SacramentoValley())
+                : Set.of(new SouthernCascades());
         return new Plant(
                 original.name(),
                 new TaxonomicClassification(
@@ -88,7 +98,7 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.NITROGEN_FIXER),
                 PlantLifeForm.PERENNIAL,
-                !original.nativeToSacramentoValley(),
+                flippedBioregions,
                 RandomValue.string(),
                 RandomValue.string()
         );

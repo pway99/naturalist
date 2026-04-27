@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.biogeography.Bioregion;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
@@ -23,11 +24,14 @@ import java.util.function.Consumer;
  * fills at Oak Vista simultaneously. {@link PlantLifeForm} governs management
  * cadence — annual replanting vs. perennial maintenance vs. tree pruning schedules.
  * <p>
- * {@code nativeToSacramentoValley} matters for two reasons: native species are
- * generally exempt from invasive plant concerns, and they evolved alongside the
- * local pollinator and butterfly communities — their ecological relationships
- * are deep and mutually adapted. California Pipevine is the clearest example:
- * Pipevine Swallowtail has co-evolved with Aristolochia californica specifically.
+ * {@code nativeBioregions} records the {@link Bioregion}s where this species
+ * is native. The set is informational at the species level and informs management
+ * decisions: plants native to a bioregion the application is operating in are
+ * generally exempt from invasive plant concerns and have evolved alongside the
+ * local pollinator and butterfly communities. California Pipevine is the
+ * clearest example — Pipevine Swallowtail co-evolved with Aristolochia
+ * californica specifically. An empty set means we do not assert this species
+ * is native to any of the recognised bioregions; it is not a claim of unknown.
  * <p>
  * {@code managementConstraint} encodes non-negotiable management rules derived
  * from ecological field observations. The Pipevine constraint — never spray any
@@ -40,7 +44,7 @@ public record Plant(
         Description description,
         Set<PlantRole> roles,
         PlantLifeForm lifeForm,
-        boolean nativeToSacramentoValley,
+        Set<Bioregion> nativeBioregions,
         @Nullable String managementConstraint,
         @Nullable String gardenNotes
 ) implements NamedEntity<PlantName> {
@@ -72,6 +76,13 @@ public record Plant(
     }
 
     /**
+     * Whether this species is recorded as native to the given bioregion.
+     */
+    public boolean isNativeTo(Bioregion bioregion) {
+        return nativeBioregions.contains(bioregion);
+    }
+
+    /**
      * Whether this plant has a non-negotiable management constraint that
      * must be checked before any pesticide or amendment application in
      * its vicinity.
@@ -87,6 +98,7 @@ public record Plant(
                 .notNull(this, Plant::taxonomy, "taxonomy")
                 .notNull(this, Plant::description, "description")
                 .notNull(this, Plant::roles, "roles")
-                .notNull(this, Plant::lifeForm, "lifeForm");
+                .notNull(this, Plant::lifeForm, "lifeForm")
+                .notNull(this, Plant::nativeBioregions, "nativeBioregions");
     }
 }

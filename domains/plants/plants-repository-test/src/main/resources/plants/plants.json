@@ -15,7 +15,7 @@
     },
     "roles": ["KEYSTONE_HOST", "POLLINATOR_SUPPORT"],
     "lifeForm": "VINE",
-    "nativeToSacramentoValley": true,
+    "nativeBioregions": ["sacramento-valley", "coast-ranges"],
     "managementConstraint": "NEVER spray any pesticide, organic or conventional, on or near this plant while larvae or eggs are present. This is an absolute constraint — Bt, spinosad, pyrethrin, and insecticidal soap are all prohibited. The Pipevine Swallowtail breeding population at Oak Vista depends entirely on this plant.",
     "gardenNotes": "Established on back fence trellis. First adult Pipevine Swallowtails typically appear March; larval cohorts present through October. Eggs are rust-orange spheres laid in clusters on the underside of young leaves and on new stems. Larvae are dark with orange tubercles. Check plant weekly from March before any garden treatment is planned."
   },
@@ -35,7 +35,7 @@
     },
     "roles": ["POLLINATOR_SUPPORT", "GROUND_COVER"],
     "lifeForm": "SHRUB",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Eastern border hedge, 6–8 feet wide at maturity. Hard prune in late winter (February) to maintain shape and encourage new flowering growth. Drought tolerant once established — do not overwater. Rose-scented cultivar confirmed."
   },
@@ -55,7 +55,7 @@
     },
     "roles": ["COVER_CROP", "NITROGEN_FIXER", "POLLINATOR_SUPPORT"],
     "lifeForm": "ANNUAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Sown in autumn or early spring as cover crop in vegetable beds and orchard understory. Incorporate before seed set to maximise nitrogen return to soil. Allow some plants to flower fully for bee forage before turning in."
   },
@@ -75,7 +75,7 @@
     },
     "roles": ["COVER_CROP", "NITROGEN_FIXER", "POLLINATOR_SUPPORT", "INSECT_LARVAL_HOST", "GROUND_COVER"],
     "lifeForm": "PERENNIAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Established in orchard understory and mixed into lawn margins. Tolerates moderate foot traffic. Mow high (4 inches minimum) when co-planted with tall fescue to prevent shading out the fescue."
   },
@@ -95,7 +95,7 @@
     },
     "roles": ["BENEFICIAL_INSECT_HABITAT", "POLLINATOR_SUPPORT"],
     "lifeForm": "ANNUAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Direct sow or transplant in spring; self-seeds abundantly thereafter. Interplant within vegetable beds and along borders adjacent to tomatoes and brassicas. Shear back by one-third if it becomes leggy to encourage fresh bloom flush. White and purple varieties present at Oak Vista."
   },
@@ -115,7 +115,7 @@
     },
     "roles": ["BENEFICIAL_INSECT_HABITAT", "INSECT_LARVAL_HOST"],
     "lifeForm": "ANNUAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Allow to bolt and flower — the umbels are the primary functional value at Oak Vista. Self-seeds prolifically once established; expect volunteer plants throughout the season. Anise Swallowtail caterpillars (green-yellow-black banded) are residents and should not be removed. Confirmed as tachinid fly and braconid wasp foraging plant in April 2026 assessment."
   },
@@ -135,7 +135,7 @@
     },
     "roles": ["POLLINATOR_SUPPORT"],
     "lifeForm": "ANNUAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Self-seeds prolifically — allow seedheads to mature and drop for next season's volunteers. Pull excess volunteers to prevent overcrowding. Blue flowers edible; used as garnish. Bumblebee foraging on borage is one of the most visible indicators of Oak Vista pollinator community health."
   },
@@ -155,7 +155,7 @@
     },
     "roles": ["INSECT_LARVAL_HOST", "POLLINATOR_SUPPORT", "GROUND_COVER"],
     "lifeForm": "PERENNIAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Naturalised in shadier garden margins and orchard understory. Spreads by stolons — allow it to colonise naturally. Early spring bloom provides critical nectar for newly emerged queen bumblebees. Do not remove — larval host for fritillary butterflies."
   },
@@ -175,7 +175,7 @@
     },
     "roles": ["GROUND_COVER", "POLLINATOR_SUPPORT"],
     "lifeForm": "PERENNIAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Planted in sunny, well-drained areas including path margins and orchard understory. Shear lightly after flowering to maintain dense mat. Genus-level identification only — species confirmed by flower and leaf morphology pending."
   },
@@ -195,7 +195,7 @@
     },
     "roles": ["POLLINATOR_SUPPORT", "ORNAMENTAL", "NITROGEN_FIXER"],
     "lifeForm": "VINE",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Sow in autumn or late winter for spring bloom. Provide fence or trellis support. Deadhead regularly to prolong flowering — seed set triggers senescence. Plant dislikes Sacramento summer heat; will decline by June. Mixed colour varieties planted at Oak Vista."
   },
@@ -215,7 +215,7 @@
     },
     "roles": ["INSECT_LARVAL_HOST", "GROUND_COVER"],
     "lifeForm": "GRASS",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": "Maintain at minimum 4-inch cutting height per Oak Vista IPM protocol. Lower mowing height degrades leafhopper suppression function and destroys skipper larval habitat. Do not scalp or bag clippings — return them as mulch.",
     "gardenNotes": "Main lawn area. Mow at 4–6 inches minimum. Deep-water infrequently rather than shallow-water frequently to maintain deep root system. Skipper larvae (small, green, found in folded grass blade shelters) are residents — do not disturb."
   },
@@ -235,7 +235,7 @@
     },
     "roles": ["FOOD_CROP"],
     "lifeForm": "ANNUAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Primary food crop. Multiple varieties grown annually. Aphid monitoring weekly from transplant through fruit set. Beneficial insect activity (braconid mummies on aphid colonies, tachinid adults on dill) is the primary pest suppression mechanism — avoid broad-spectrum pesticides that would disrupt it. Bumblebee buzz pollination audible in early morning."
   },
@@ -255,7 +255,7 @@
     },
     "roles": ["FOOD_CROP", "POLLINATOR_SUPPORT", "KEYSTONE_HOST"],
     "lifeForm": "VINE",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": "Do not apply pesticides to foliage while Gulf Fritillary larvae are present. Inspect underside of leaves before any treatment in the vicinity of the trellis.",
     "gardenNotes": "Steel trellis, full sun. Large carpenter bees (Xylocopa varipuncta — the female is all black, the male is golden) are the primary pollinators — their early-morning foraging visits are audible. Self-incompatibility may limit fruit set if only one clone is present; consider adding a second vine. Gulf Fritillary larvae (orange with black spines) may be present on foliage — they are residents."
   },
@@ -275,7 +275,7 @@
     },
     "roles": ["KEYSTONE_HOST", "ORNAMENTAL", "POLLINATOR_SUPPORT"],
     "lifeForm": "VINE",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": "Do not apply pesticides to foliage while Gulf Fritillary larvae are present.",
     "gardenNotes": "Species/cultivar TBD — confirm at next bloom. Gulf Fritillary larvae (orange with black spines) are residents on this vine and Passiflora edulis. Combined, both vines support a stable breeding Gulf Fritillary population at Oak Vista."
   },
@@ -295,7 +295,7 @@
     },
     "roles": ["POLLINATOR_SUPPORT", "ORNAMENTAL"],
     "lifeForm": "PERENNIAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Ornamental border planting. Species/cultivar TBD — confirm single vs. double flower form. Single-flowered varieties preferred for pollinator accessibility. Deadhead to extend bloom period."
   },
@@ -315,7 +315,7 @@
     },
     "roles": ["POLLINATOR_SUPPORT"],
     "lifeForm": "PERENNIAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Herb garden planting. Genus-level identification — species/cultivar TBD. Prune back by one-third after spring flowering to maintain compact shape. Drought tolerant once established. Bumblebee and carpenter bee foraging activity visible through the day during bloom."
   },
@@ -335,7 +335,7 @@
     },
     "roles": ["FOOD_CROP", "POLLINATOR_SUPPORT"],
     "lifeForm": "TREE",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": "Copper fungicide for peach leaf curl must be applied during dormancy (November–January) only, before 1% bud swell. Never apply copper after petal fall — copper-contaminated pollen is toxic to bee larvae.",
     "gardenNotes": "Oh Henry cultivar — large, late-season freestone peach. Annual dormant pruning required (open-vase form). Peach leaf curl managed with dormant copper application. One of the earliest-blooming trees at Oak Vista — critical early-season bee forage. Front yard orchard."
   },
@@ -355,7 +355,7 @@
     },
     "roles": ["FOOD_CROP", "POLLINATOR_SUPPORT"],
     "lifeForm": "TREE",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Multiple varieties — species/cultivar TBD per individual tree. Evergreen; structural backbone of front yard orchard alongside peach and other stone fruit. Citrus bloom (March–April) is a peak pollinator activity event at Oak Vista — avoid any pesticide applications during bloom. Scale insects monitored and managed through beneficial insect pressure."
   },
@@ -375,7 +375,7 @@
     },
     "roles": ["POLLINATOR_SUPPORT"],
     "lifeForm": "ANNUAL",
-    "nativeToSacramentoValley": false,
+    "nativeBioregions": [],
     "managementConstraint": null,
     "gardenNotes": "Naturalised wildflower — not intentionally planted but tolerated for pollinator support during spring bloom. Self-seeds prolifically. Documented as nectar source for Orange Sulphur butterfly (Colias eurytheme) April 2026. Do not weed during spring bloom period when pollinator activity is highest."
   }
