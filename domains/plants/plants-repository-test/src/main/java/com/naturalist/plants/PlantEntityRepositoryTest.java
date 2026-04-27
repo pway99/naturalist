@@ -56,9 +56,7 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.FOOD_CROP),
                 PlantLifeForm.ANNUAL,
-                Set.of(),
-                null,
-                null
+                Set.of()
         );
     }
 
@@ -75,9 +73,7 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.FOOD_CROP),
                 PlantLifeForm.ANNUAL,
-                Set.of(),
-                null,
-                null
+                Set.of()
         );
     }
 
@@ -98,9 +94,7 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.NITROGEN_FIXER),
                 PlantLifeForm.PERENNIAL,
-                flippedBioregions,
-                RandomValue.string(),
-                RandomValue.string()
+                flippedBioregions
         );
     }
 }

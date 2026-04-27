@@ -5,7 +5,6 @@ import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.TaxonomicClassification;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -33,10 +32,11 @@ import java.util.function.Consumer;
  * californica specifically. An empty set means we do not assert this species
  * is native to any of the recognised bioregions; it is not a claim of unknown.
  * <p>
- * {@code managementConstraint} encodes non-negotiable management rules derived
- * from ecological field observations. The Pipevine constraint — never spray any
- * pesticide, organic or conventional — is recorded here and surfaced by the
- * PestManagement application module whenever a treatment is proposed near the plant.
+ * Operational management — non-negotiable constraints, schedules, observation
+ * cadence — lives on {@link com.naturalist.plants.management.PlantProgram}
+ * records keyed off this plant's {@link PlantName}. A plant may carry many
+ * programs (e.g. pesticide-exclusion plus larval-monitoring); the botanical
+ * record is intentionally free of operational fields.
  */
 public record Plant(
         PlantName name,
@@ -44,9 +44,7 @@ public record Plant(
         Description description,
         Set<PlantRole> roles,
         PlantLifeForm lifeForm,
-        Set<Bioregion> nativeBioregions,
-        @Nullable String managementConstraint,
-        @Nullable String gardenNotes
+        Set<Bioregion> nativeBioregions
 ) implements NamedEntity<PlantName> {
 
     /**
@@ -80,15 +78,6 @@ public record Plant(
      */
     public boolean isNativeTo(Bioregion bioregion) {
         return nativeBioregions.contains(bioregion);
-    }
-
-    /**
-     * Whether this plant has a non-negotiable management constraint that
-     * must be checked before any pesticide or amendment application in
-     * its vicinity.
-     */
-    public boolean hasManagementConstraint() {
-        return managementConstraint != null;
     }
 
     @Override

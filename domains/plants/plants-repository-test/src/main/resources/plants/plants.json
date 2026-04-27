@@ -13,11 +13,15 @@
       "secondary": "Aristolochia californica is a deciduous vine native to the Coast Ranges and Sacramento foothills. Its zygomorphic flowers emit a carrion-like scent that attracts small Diptera, which become temporarily trapped in the floral tube, contact the anthers or stigma, and exit through the wilting corolla — a deceptive pollination mechanism common in the family. Pipevine Swallowtail (Battus philenor) is an obligate specialist on Aristolochia; larvae sequester aristolochic acids that render both caterpillars and adults unpalatable to vertebrate predators. This chemical defence is mimicked by several co-occurring butterfly species (Spicebush Swallowtail, Black Swallowtail). CRITICAL management constraint: no pesticide application of any kind within the flight range of this plant while larvae or eggs are present.",
       "university": "Aristolochia californica (Torr.) — the sole California endemic in a pantropical genus of ~500 species. Produces aristolochic acids (AAs), nitrophenanthrene carboxylic acids that are potent nephrotoxins and carcinogens but function as larval sequestration targets for Battus philenor (Papilionidae: Troidinae). The obligate trophic specialisation is absolute — no other Aristolochia species sustains stable Pacific Coast Pipevine Swallowtail populations. At Oak Vista, the vine is established on the back fence trellis; the population supports first-flight adults from March and a continuous larval cohort through October. Management constraint is non-negotiable: aristolochic acid sequestration requires intact larval feeding; any pesticide exposure (including Bt, spinosad, pyrethrin, or insecticidal soap) directed at the plant or surrounding foliage during the larval window constitutes an irreversible ecological intervention that eliminates the breeding cohort."
     },
-    "roles": ["KEYSTONE_HOST", "POLLINATOR_SUPPORT"],
+    "roles": [
+      "KEYSTONE_HOST",
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "VINE",
-    "nativeBioregions": ["sacramento-valley", "coast-ranges"],
-    "managementConstraint": "NEVER spray any pesticide, organic or conventional, on or near this plant while larvae or eggs are present. This is an absolute constraint — Bt, spinosad, pyrethrin, and insecticidal soap are all prohibited. The Pipevine Swallowtail breeding population at Oak Vista depends entirely on this plant.",
-    "gardenNotes": "Established on back fence trellis. First adult Pipevine Swallowtails typically appear March; larval cohorts present through October. Eggs are rust-orange spheres laid in clusters on the underside of young leaves and on new stems. Larvae are dark with orange tubercles. Check plant weekly from March before any garden treatment is planned."
+    "nativeBioregions": [
+      "sacramento-valley",
+      "coast-ranges"
+    ]
   },
   {
     "name": "scented-geranium",
@@ -33,11 +37,12 @@
       "secondary": "Pelargonium graveolens is a woody perennial shrub from southern Africa, naturalised and widely cultivated for its essential oil (geraniol, citronellol, linalool) used in perfumery. The glandular trichomes on the leaf surface are the site of volatile terpenoid synthesis. Flowers are zygomorphic, producing nectar accessible to long-tongued bees and some hoverflies. At Oak Vista, the 6–8 foot wide hedge along the eastern border functions as structural habitat — providing nesting substrate for solitary bees, shelter for ground beetles, and refugia for overwintering adult hoverflies and lacewings in the dense interior stems.",
       "university": "Pelargonium graveolens (L'Hér.) Andrews — Geraniaceae. The essential oil profile (geraniol 45–60%, citronellol 10–20%, linalool 5–10%) is of commercial importance; the terpenoids are synthesised in pluricellular glandular trichomes of the secretory type. Floral nectary rewards in Pelargonium are relatively modest compared to Boraginaceae or Lamiaceae, but the hedge mass and extended bloom period (March–November at Oak Vista) provide consistent supplementary nectar flow. The structural complexity of a mature hedge (multi-stemmed, 1.5–2 m tall, 2–2.5 m wide) creates a significant microhabitat mosaic — stem cavities for twig-nesting Megachile, leaf litter accumulation for Carabidae, and sheltered interior airspace that maintains elevated temperatures for overwintering ectotherms."
     },
-    "roles": ["POLLINATOR_SUPPORT", "GROUND_COVER"],
+    "roles": [
+      "POLLINATOR_SUPPORT",
+      "GROUND_COVER"
+    ],
     "lifeForm": "SHRUB",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Eastern border hedge, 6–8 feet wide at maturity. Hard prune in late winter (February) to maintain shape and encourage new flowering growth. Drought tolerant once established — do not overwater. Rose-scented cultivar confirmed."
+    "nativeBioregions": []
   },
   {
     "name": "crimson-clover",
@@ -53,11 +58,13 @@
       "secondary": "Trifolium incarnatum is an annual legume widely used as a winter cover crop and green manure. Like all legumes, it forms a symbiotic association with nitrogen-fixing Rhizobium leguminosarum bacteria in root nodules. The bacteria reduce atmospheric N₂ to ammonium (NH₄⁺), which the plant uses for protein synthesis; when the plant is incorporated, the nitrogen enters the mineralisation pathway and becomes available to subsequent crops. The elongated flower head structure (composed of 25–75 individual florets) is accessible to long-tongued bees; honeybee tongue length is borderline for crimson clover, making bumblebees the primary pollinators. Bloom time at Oak Vista is March–May.",
       "university": "Trifolium incarnatum L. — Fabaceae: Faboideae. Root nodule symbiont: Rhizobium leguminosarum bv. trifolii. Nitrogen fixation rates under optimal conditions: 100–200 kg N ha⁻¹ season⁻¹. At Oak Vista scale, the contribution is modest in absolute terms but locally significant in the clover carpet zones — measurable NH₄⁺ and NO₃⁻ elevation in the top 10 cm post-incorporation. The elongated calyx tube (floret corolla length 12–18 mm) restricts nectar access to Bombus spp. and long-tongued solitary bees (Megachile, Anthophora); Apis mellifera is a marginal visitor and exhibits leg-robbing behaviour on the exterior of the floret rather than legitimate pollination. Annual; requires autumn sowing or early spring sowing for late-winter establishment at Oak Vista latitudes."
     },
-    "roles": ["COVER_CROP", "NITROGEN_FIXER", "POLLINATOR_SUPPORT"],
+    "roles": [
+      "COVER_CROP",
+      "NITROGEN_FIXER",
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Sown in autumn or early spring as cover crop in vegetable beds and orchard understory. Incorporate before seed set to maximise nitrogen return to soil. Allow some plants to flower fully for bee forage before turning in."
+    "nativeBioregions": []
   },
   {
     "name": "white-clover",
@@ -73,11 +80,15 @@
       "secondary": "Trifolium repens is a stoloniferous perennial legume, native to Europe but naturalised worldwide. It spreads vegetatively via stolons that root at nodes, making it persistent in disturbed ground. Its Rhizobium association fixes atmospheric nitrogen year-round under suitable temperatures. The flower head structure (15–30 mm diameter, individual floret corolla 8–10 mm) is accessible to honeybees, bumblebees, and many solitary bees. At Oak Vista it functions as a living mulch in the orchard understory and lawn margins — suppressing weeds, retaining soil moisture, and providing a continuous forage source from March through November. The foliage hosts larvae of several grass-associated butterfly species.",
       "university": "Trifolium repens L. — stoloniferous perennial; polyploidy common (2n = 32, allotetraploid). Nitrogen fixation via Rhizobium leguminosarum bv. trifolii — nodule formation begins within days of germination; mature stands fix 100–150 kg N ha⁻¹ yr⁻¹ under favourable conditions. At Oak Vista, white clover serves multiple concurrent functions: (1) nitrogen input to the orchard floor nutrient cycle; (2) weed suppression through shade competition and allelopathy (isoflavone production inhibits germination of some annuals); (3) continuous pollinator forage resource from March through November; (4) larval host for Colias eurytheme (Orange Sulphur) and Lycaeides melissa (Melissa Blue) in the adjacent bioregion. The low growth form (5–20 cm) permits coexistence with tall fescue in mixed-species turf without light competition."
     },
-    "roles": ["COVER_CROP", "NITROGEN_FIXER", "POLLINATOR_SUPPORT", "INSECT_LARVAL_HOST", "GROUND_COVER"],
+    "roles": [
+      "COVER_CROP",
+      "NITROGEN_FIXER",
+      "POLLINATOR_SUPPORT",
+      "INSECT_LARVAL_HOST",
+      "GROUND_COVER"
+    ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Established in orchard understory and mixed into lawn margins. Tolerates moderate foot traffic. Mow high (4 inches minimum) when co-planted with tall fescue to prevent shading out the fescue."
+    "nativeBioregions": []
   },
   {
     "name": "sweet-alyssum",
@@ -93,11 +104,12 @@
       "secondary": "Lobularia maritima (Brassicaceae) produces dense corymbs of small four-petalled flowers whose short corolla tube (~1.5 mm depth) makes nectar accessible to insects with very short mouthparts — particularly Chalcidoidea, Mymaridae, Figitidae (small parasitoid wasps), and Syrphidae (hoverflies). This structural match makes alyssum disproportionately valuable for biological control, since it maintains populations of parasitoids whose larvae prey on aphids, scale insects, and whitefly eggs. At Oak Vista, alyssum self-seeds prolifically through autumn from spring plantings, providing near-year-round floral resource for the beneficials guild. Fragrance derives from 2-phenylethanol and benzyl alcohol volatiles produced by the petals.",
       "university": "Lobularia maritima (L.) Desv. — Brassicaceae: Arabideae. Annual or short-lived perennial in mild climates; at Oak Vista it behaves as a prolific self-seeding annual with near-continuous bloom from March through December in sheltered positions. The floral architecture — actinomorphic, tetramerous, nectar secreted by median nectaries at the base of the short stamens — positions it as a primary resource for Chalcidoidea and other micro-Hymenoptera whose mouthpart lengths restrict them to open, shallow floral tubes. The volatile profile (2-phenylethanol, benzyl alcohol, methyl benzoate) functions as a long-range attractant for small Diptera and Hymenoptera. Practical significance: alyssum interplanted within 1 m of aphid-susceptible crops (Brassica, Solanaceae) demonstrably increases parasitoid residence time and parasitism rates in peer-reviewed companion planting studies."
     },
-    "roles": ["BENEFICIAL_INSECT_HABITAT", "POLLINATOR_SUPPORT"],
+    "roles": [
+      "BENEFICIAL_INSECT_HABITAT",
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Direct sow or transplant in spring; self-seeds abundantly thereafter. Interplant within vegetable beds and along borders adjacent to tomatoes and brassicas. Shear back by one-third if it becomes leggy to encourage fresh bloom flush. White and purple varieties present at Oak Vista."
+    "nativeBioregions": []
   },
   {
     "name": "dill",
@@ -113,11 +125,12 @@
       "secondary": "Anethum graveolens (Apiaceae) produces large compound umbels — flat-topped flower clusters composed of many small individual flowers with exposed nectaries accessible to short-tongued and long-tongued insects alike. Apiaceae is the critical plant family for parasitoid Hymenoptera and Diptera support: the open floret architecture accommodates the short mouthparts of Chalcidoidea, Ichneumonidae, Braconidae, and Tachinidae, which cannot reach nectar in tubular flowers. At Oak Vista, dill simultaneously functions as a larval host for Papilio zelicaon (Anise Swallowtail) — caterpillars feed on foliage for 2–3 weeks before wandering to pupate on nearby structures. The essential oil (carvone, limonene) is a minor deterrent to some aphid species but does not affect beneficial insects.",
       "university": "Anethum graveolens L. — Apiaceae: Apioideae. Annual; characteristic compound umbel architecture with pedicellate flowers, each with five exposed petals and five epipetalous stamens surrounding a bipartite nectary disc. The open nectary and umbel landing platform are the morphological basis for Apiaceae's role as the dominant parasitoid-support plant family: nectar is freely accessible to insects across the full range of mouthpart lengths from 0.5 to 7 mm. At Oak Vista, confirmed visitors on dill umbels include Tachinidae, Braconidae (Aphidiinae), Chalcidoidea, Syrphidae, and adult Papilio zelicaon. Larval use: Papilio zelicaon (Anise Swallowtail) caterpillars are univoltine to multivoltine depending on temperature; late-instar larvae are conspicuous (green-yellow banded with black saddles and orange dots) and represent the primary herbivory pressure on dill. Allowing 30–40% of plants to bolt and flower fully before harvest maximises functional value for the beneficial insect guild."
     },
-    "roles": ["BENEFICIAL_INSECT_HABITAT", "INSECT_LARVAL_HOST"],
+    "roles": [
+      "BENEFICIAL_INSECT_HABITAT",
+      "INSECT_LARVAL_HOST"
+    ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Allow to bolt and flower — the umbels are the primary functional value at Oak Vista. Self-seeds prolifically once established; expect volunteer plants throughout the season. Anise Swallowtail caterpillars (green-yellow-black banded) are residents and should not be removed. Confirmed as tachinid fly and braconid wasp foraging plant in April 2026 assessment."
+    "nativeBioregions": []
   },
   {
     "name": "borage",
@@ -133,11 +146,11 @@
       "secondary": "Borago officinalis (Boraginaceae) is an annual native to the Mediterranean basin. Its pendulous blue flowers are structured for buzz pollination (sonication): the anthers form a tight cone around the style, and the pollen is released only when the anther wall is vibrated at the appropriate frequency by a bee's thoracic flight muscles. This makes Bombus spp. (bumblebees) the primary pollinators and limits honeybee (which does not buzz-pollinate) to secondary visitor status. Borage is among the highest nectar-producing annual plants by volume per flower, with nectar sugar concentrations of 30–50%. At Oak Vista it serves as a sustained nectar source from spring through autumn and self-seeds so prolifically that it functions as a reliable perennial without replanting.",
       "university": "Borago officinalis L. — Boraginaceae: Boraginoideae. Flowers pentamerous, actinomorphic, with a reflex corolla exposing the stylar column and anther cone. Floral pigment: delphinidin glycosides producing the characteristic intense blue (one of the few true blues in the angiosperm palette). Sonication (buzz pollination) releases pollen from poricidal anthers — requires substrate vibration at frequencies matching Bombus flight muscle resonance (~400 Hz); Apis mellifera lacks this behaviour. Nectar production is high and continuous: measured at 0.2–0.8 mg sugar per flower per day across the bloom period. Self-seeding phenology at Oak Vista: primary seed set June–August; volunteer seedling emergence September–November for winter rosette establishment and spring bloom. The self-seeding strategy makes it ecologically perennial in practice despite being biologically annual."
     },
-    "roles": ["POLLINATOR_SUPPORT"],
+    "roles": [
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Self-seeds prolifically — allow seedheads to mature and drop for next season's volunteers. Pull excess volunteers to prevent overcrowding. Blue flowers edible; used as garnish. Bumblebee foraging on borage is one of the most visible indicators of Oak Vista pollinator community health."
+    "nativeBioregions": []
   },
   {
     "name": "wild-violet",
@@ -153,11 +166,13 @@
       "secondary": "Viola odorata (Violaceae) is a stoloniferous perennial producing two types of flowers: the conspicuous spring chasmogamous flowers (open, insect-pollinated, producing seed) and summer cleistogamous flowers (closed, self-pollinating, underground or near-ground, producing seed autonomously without pollination). The chasmogamous flowers are important early-spring nectar and pollen sources for queen bumblebees emerging from hibernation. The foliage is the obligate larval host for several Speyeria fritillary species (Great Spangled Fritillary, Callippe Fritillary) — the adult butterflies lay eggs near but not on the plant in summer; newly hatched autumn larvae overwinter and begin feeding on violet foliage in spring.",
       "university": "Viola odorata L. — Violaceae. Reproduction via two mechanisms: chasmogamous (CH) flowers (spring, cross-pollinated, high outcrossing rate) and cleistogamous (CL) flowers (summer, autogamous, underground seed set). The combined strategy ensures seed set under variable pollinator availability while maintaining genetic diversity via CH reproduction. Fritillary trophic specialisation: Speyeria aphrodite, S. callippe, and related Nymphalidae are monophagous on Viola foliage in larval stages; adult females oviposit on leaf litter or substrate adjacent to Viola colonies in late summer; neonate larvae overwinter without feeding, resuming in March on fresh Viola growth. The presence of Viola odorata at Oak Vista extends the potential butterfly species list to include fritillaries currently unconfirmed but biogeographically possible. Fragrance from methyl salicylate and ionone glycosides."
     },
-    "roles": ["INSECT_LARVAL_HOST", "POLLINATOR_SUPPORT", "GROUND_COVER"],
+    "roles": [
+      "INSECT_LARVAL_HOST",
+      "POLLINATOR_SUPPORT",
+      "GROUND_COVER"
+    ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Naturalised in shadier garden margins and orchard understory. Spreads by stolons — allow it to colonise naturally. Early spring bloom provides critical nectar for newly emerged queen bumblebees. Do not remove — larval host for fritillary butterflies."
+    "nativeBioregions": []
   },
   {
     "name": "creeping-thyme",
@@ -173,11 +188,12 @@
       "secondary": "Thymus sp. (Lamiaceae) — mat-forming perennial subshrub growing 2–5 cm tall and spreading 30–60 cm wide via woody decumbent stems. Flowers are bilabiate (two-lipped), produced in dense verticillasters along the upper stem; the floral tube depth accommodates short-tongued bees and long-tongued bees equally. The aromatic essential oil profile (thymol, carvacrol) deters some herbivores. At Oak Vista, creeping thyme fills the ground cover role in sunny, well-drained areas — suppressing weeds through dense mat formation, retaining soil moisture, and providing concentrated floral resources for bees during the May–July bloom peak. It tolerates light foot traffic and regrows vigorously after hard cutting.",
       "university": "Thymus sp. L. — Lamiaceae: Nepetoideae. The genus Thymus comprises ~350 species and numerous cultivars; the Oak Vista planting is provisionally identified to genus level. Essential oil production occurs in secretory peltate glandular trichomes on leaves and stems; principal monoterpenes thymol and carvacrol have documented antimicrobial and antifeedant properties. Floral reward chemistry: nectar sugar concentration 20–40%, accessible to the full bee guild from small Halictidae to Bombus. The dense vegetative mat creates refugial microhabitat at the soil-atmosphere interface — elevated relative humidity, stable diurnal temperature range — used by Carabidae, Staphylinidae, and overwintering pupae of ground-pupating Lepidoptera. Long-term ground cover with minimal management inputs after establishment."
     },
-    "roles": ["GROUND_COVER", "POLLINATOR_SUPPORT"],
+    "roles": [
+      "GROUND_COVER",
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Planted in sunny, well-drained areas including path margins and orchard understory. Shear lightly after flowering to maintain dense mat. Genus-level identification only — species confirmed by flower and leaf morphology pending."
+    "nativeBioregions": []
   },
   {
     "name": "sweet-pea",
@@ -193,11 +209,13 @@
       "secondary": "Lathyrus odoratus (Fabaceae: Faboideae) is a tendril-climbing annual legume native to Sicily and southern Italy. The keel petal of the papilionaceous flower conceals the stamens and style; pollination occurs when a heavy bee lands on the keel, depressing it to expose the pollen-laden anthers — a classic bee-pollination mechanism excluding smaller insects. Fragrance compounds include linalool, benzyl alcohol, and hotrienol. Root nodule Rhizobium association provides modest nitrogen fixation; at Oak Vista the primary values are aesthetic, pollinator support, and vertical space use. Seeds are mildly toxic if consumed in quantity (lathyrism).",
       "university": "Lathyrus odoratus L. — Fabaceae: Faboideae: Vicieae. Tendril-climbing annual to 2 m; stipulate leaves with a single pair of leaflets and branched tendrils. Flower morphology: standard, wings, and keel (papilionaceous); keel houses the androecium and gynoecium, exposed by bee mass on landing — a type II floral mechanism. Fragrance volatile profile dominated by linalool, benzyl benzoate, and hotrienol; the latter is a sesquiterpene responsible for the distinctively sweet character. Nitrogen fixation via Rhizobium leguminosarum bv. viciae. Seed toxin: β-aminopropionitrile and related lathyrogens in seed coat cause collagen cross-linking inhibition (skeletal lathyrism) at dietary levels — not relevant for garden ornamental use. Bloom period at Oak Vista: February through May before heat-induced senescence."
     },
-    "roles": ["POLLINATOR_SUPPORT", "ORNAMENTAL", "NITROGEN_FIXER"],
+    "roles": [
+      "POLLINATOR_SUPPORT",
+      "ORNAMENTAL",
+      "NITROGEN_FIXER"
+    ],
     "lifeForm": "VINE",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Sow in autumn or late winter for spring bloom. Provide fence or trellis support. Deadhead regularly to prolong flowering — seed set triggers senescence. Plant dislikes Sacramento summer heat; will decline by June. Mixed colour varieties planted at Oak Vista."
+    "nativeBioregions": []
   },
   {
     "name": "tall-fescue",
@@ -213,11 +231,12 @@
       "secondary": "Festuca arundinacea (Poaceae) is a cool-season perennial bunchgrass widely used for high-traffic lawns in temperate climates. At Oak Vista it is maintained at 4–6 inches minimum cutting height per the IPM protocol for two confirmed ecological functions: (1) leafhopper suppression — taller sward creates cooler, more humid microclimate unfavourable to Circulifer tenellus (beet leafhopper) and reduces alighting pressure on adjacent vegetable beds; (2) larval habitat for Hesperiidae (skipper butterflies) — grass-feeding larvae (Ochlodes sylvanoides, Hylephila phileus) require tall grass blades for feeding and shelter. The dense root system (2–4 feet deep) tolerates California dry-season stress better than cool-season alternatives.",
       "university": "Festuca arundinacea Schreb. (syn. Schedonorus arundinaceus) — Poaceae: Pooideae: Poeae. Allohexaploid (2n = 42) cool-season perennial; deep root system to 1–1.5 m provides exceptional drought tolerance relative to other cool-season turfgrasses. Management at non-standard 4–6 inch height is ecologically motivated: (1) canopy height and density affect the boundary layer microclimate — at 10 cm sward height, daytime temperature is 2–4°C lower and relative humidity 10–15% higher at the soil surface than at standard 5 cm mowing height, reducing leafhopper habitat suitability; (2) Hesperiidae larval ecology requires grass blade length exceeding larval body length for shelter tube construction — Ochlodes sylvanoides and Atalopedes campestris larvae are confirmed or biogeographically expected at Oak Vista. Endophyte associations (Neotyphodium coenophialum) common in commercially available cultivars; endophyte alkaloids deter some herbivores but do not affect targeted insects."
     },
-    "roles": ["INSECT_LARVAL_HOST", "GROUND_COVER"],
+    "roles": [
+      "INSECT_LARVAL_HOST",
+      "GROUND_COVER"
+    ],
     "lifeForm": "GRASS",
-    "nativeBioregions": [],
-    "managementConstraint": "Maintain at minimum 4-inch cutting height per Oak Vista IPM protocol. Lower mowing height degrades leafhopper suppression function and destroys skipper larval habitat. Do not scalp or bag clippings — return them as mulch.",
-    "gardenNotes": "Main lawn area. Mow at 4–6 inches minimum. Deep-water infrequently rather than shallow-water frequently to maintain deep root system. Skipper larvae (small, green, found in folded grass blade shelters) are residents — do not disturb."
+    "nativeBioregions": []
   },
   {
     "name": "tomato",
@@ -233,11 +252,11 @@
       "secondary": "Solanum lycopersicum (Solanaceae) — the primary food production species at Oak Vista. Its poricidal anthers form a cone around the style, requiring buzz pollination (sonication) for efficient pollen release — Bombus spp. are the primary pollinators, while Apis mellifera provides limited buzz pollination capacity. Tomatoes are the target of multiple pest species at Oak Vista: Myzus persicae (green peach aphid), Spodoptera exigua (beet armyworm) larvae, and Tuta absoluta risk from adjacent agricultural areas. The entire beneficial insect planting strategy at Oak Vista — dill, alyssum, clover, borage — is fundamentally oriented toward protecting the tomato crop through biological control intensification.",
       "university": "Solanum lycopersicum L. — Solanaceae: Solanoideae. Cultivated annual; polyploid history with 2n = 24 (diploid). Floral architecture: synandrous (anthers fused into a cone), poricidal pollen release requiring vibrational stimulation at 400–450 Hz — frequencies produced by Bombus thoracic flight muscles during buzz-pollination bouts. Apis mellifera achieves minimal buzz pollination; yields in greenhouse production increase 20–40% with Bombus colonies. Major pest complex at Oak Vista: Myzus persicae (vector of Potato virus Y, Cucumber mosaic virus), aphid colonies suppressed by Braconidae (Aphidiinae) parasitism; Spodoptera exigua and Helicoverpa zea larval pressure suppressed by Tachinidae and Ichneumonidae. The integrated pest management framework at Oak Vista treats Solanum lycopersicum as the flagship crop whose protection justifies the entire beneficial insect habitat infrastructure."
     },
-    "roles": ["FOOD_CROP"],
+    "roles": [
+      "FOOD_CROP"
+    ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Primary food crop. Multiple varieties grown annually. Aphid monitoring weekly from transplant through fruit set. Beneficial insect activity (braconid mummies on aphid colonies, tachinid adults on dill) is the primary pest suppression mechanism — avoid broad-spectrum pesticides that would disrupt it. Bumblebee buzz pollination audible in early morning."
+    "nativeBioregions": []
   },
   {
     "name": "passiflora-edulis",
@@ -253,11 +272,13 @@
       "secondary": "Passiflora edulis (Passifloraceae) is a vigorous tendril-climbing vine native to South America, grown at Oak Vista for fruit production on a steel trellis. The highly complex flower structure — radially symmetric with a corona of banded filaments, androgynophore holding five stamens above three stigmas — is adapted for specific pollinator body size. Valley Carpenter Bee (Xylocopa varipuncta) is the primary pollinator at Oak Vista, with body size matching the anther-to-stigma distance for efficient pollen transfer. Passiflora species are obligate larval hosts for Agraulis vanillae (Gulf Fritillary) — larvae feed exclusively on Passiflora foliage and sequester cyanogenic glycosides for chemical defence. The vine also produces extrafloral nectaries that attract ants as incidental defenders.",
       "university": "Passiflora edulis Sims — Passifloraceae. Vigorous liana to 15 m; tendril-climbing via axillary tendrils. Floral morphology: actinomorphic, hypanthium-based; corona filaments banded purple-white (delphinidin + flavone glycosides); androgynophore positions anthers and three reflexed stigmas above the corona plane, requiring a pollinator of sufficient body size (Xylocopa, Bombus) to contact both anther and stigma simultaneously. Self-incompatibility system requires cross-pollination between different clones for fruit set; at Oak Vista, the single-clone planting may limit yield. Gulf Fritillary (Agraulis vanillae) larval biology: obligate Passiflora specialist; cyanogenic glycoside sequestration from host tissue provides aposematic chemical defence in larvae and adults; egg laying is elicited by passion vine leaf surface chemicals (flavone glycosides). Extrafloral nectaries on petioles and stipules produce sucrose-rich secretions that recruit ant attendants providing incidental herbivore deterrence."
     },
-    "roles": ["FOOD_CROP", "POLLINATOR_SUPPORT", "KEYSTONE_HOST"],
+    "roles": [
+      "FOOD_CROP",
+      "POLLINATOR_SUPPORT",
+      "KEYSTONE_HOST"
+    ],
     "lifeForm": "VINE",
-    "nativeBioregions": [],
-    "managementConstraint": "Do not apply pesticides to foliage while Gulf Fritillary larvae are present. Inspect underside of leaves before any treatment in the vicinity of the trellis.",
-    "gardenNotes": "Steel trellis, full sun. Large carpenter bees (Xylocopa varipuncta — the female is all black, the male is golden) are the primary pollinators — their early-morning foraging visits are audible. Self-incompatibility may limit fruit set if only one clone is present; consider adding a second vine. Gulf Fritillary larvae (orange with black spines) may be present on foliage — they are residents."
+    "nativeBioregions": []
   },
   {
     "name": "ornamental-passiflora",
@@ -273,11 +294,13 @@
       "secondary": "Passiflora sp. (ornamental) — genus-level identification. Ornamental Passiflora cultivars and species grown at Oak Vista for floral display; most commercially available ornamental Passifloraceae are acceptable larval hosts for Agraulis vanillae (Gulf Fritillary). The larval host specificity of Gulf Fritillary spans the genus Passiflora broadly, unlike Pipevine Swallowtail which is restricted to Aristolochia californica specifically. Having two Passiflora plants at Oak Vista increases the available oviposition and larval feeding area, buffering the Gulf Fritillary breeding population against defoliation events on either plant. The extrafloral nectaries on petioles attract ants as incidental herbivore deterrents.",
       "university": "Passiflora sp. — Passifloraceae. Genus-level identification pending species or cultivar confirmation. The chemical cues eliciting oviposition by Agraulis vanillae females — flavone C-glycosides on the leaf surface (vitexin, orientin) — are conserved across the genus, making most Passiflora spp. acceptable larval hosts. The ornamental planting contributes to Gulf Fritillary population support independently of Passiflora edulis; the two-plant resource base at Oak Vista extends total larval carrying capacity. Larval defence: sequestration of cyanogenic glycosides (passicapsin, epipassicapsin) from host tissue; aposematic colouration (orange-red with black spines) signals toxicity to vertebrate predators. Extrafloral nectaries produce amino acid-enriched secretions maintaining ant mutualists on the vine surface."
     },
-    "roles": ["KEYSTONE_HOST", "ORNAMENTAL", "POLLINATOR_SUPPORT"],
+    "roles": [
+      "KEYSTONE_HOST",
+      "ORNAMENTAL",
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "VINE",
-    "nativeBioregions": [],
-    "managementConstraint": "Do not apply pesticides to foliage while Gulf Fritillary larvae are present.",
-    "gardenNotes": "Species/cultivar TBD — confirm at next bloom. Gulf Fritillary larvae (orange with black spines) are residents on this vine and Passiflora edulis. Combined, both vines support a stable breeding Gulf Fritillary population at Oak Vista."
+    "nativeBioregions": []
   },
   {
     "name": "dianthus",
@@ -293,11 +316,12 @@
       "secondary": "Dianthus sp. (Caryophyllaceae) — genus-level identification. Cultivated pinks and carnations, grown primarily as ornamentals at Oak Vista. The flower structure is actinomorphic with fringed petals and a tubular calyx; floral tube depth varies by species and cultivar. Fragrance profile includes eugenol, benzyl benzoate, and methyl salicylate. Many ornamental Dianthus cultivars provide accessible nectar and pollen to butterflies (especially Nymphalidae and Papilionidae with their long proboscises) and some bee species. Grown in the ornamental border for aesthetic contribution; the ecological value is secondary but real.",
       "university": "Dianthus sp. L. — Caryophyllaceae: Caryophylloideae: Caryophylleae. Genus of ~300 species and innumerable horticultural cultivars. Floral volatile chemistry: eugenol, methyl eugenol, benzyl benzoate, methyl salicylate — a characteristic Caryophyllaceae fragrance profile. Nectar accessibility varies substantially by cultivar: single-flowered, open-tubed varieties (e.g., D. barbatus, D. deltoides) are broadly accessible; double-flowered cultivars with reduced or absent nectaries provide minimal pollinator value. At Oak Vista, single-flowered or semi-double varieties are preferred for the ornamental border. Documented butterfly visitors include Vanessa cardui (Painted Lady) and Papilio spp. using the long proboscis to access narrow tubular nectaries inaccessible to short-tongued bees."
     },
-    "roles": ["POLLINATOR_SUPPORT", "ORNAMENTAL"],
+    "roles": [
+      "POLLINATOR_SUPPORT",
+      "ORNAMENTAL"
+    ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Ornamental border planting. Species/cultivar TBD — confirm single vs. double flower form. Single-flowered varieties preferred for pollinator accessibility. Deadhead to extend bloom period."
+    "nativeBioregions": []
   },
   {
     "name": "sage",
@@ -313,11 +337,11 @@
       "secondary": "Salvia sp. (Lamiaceae: Nepetoideae) — genus-level identification; one of the largest flowering plant genera (~1000 species). Salvia flowers have a specialised pollination mechanism: two modified stamens form a lever system. When a bee presses on the lower lip to access the nectary, the connective (elongated stamen filament) levers the fertile anther lobes down to contact the bee's thorax. The mechanism rewards heavier pollinators (Bombus, Xylocopa) more effectively than lighter bees. Essential oil profile (thujone, camphor, 1,8-cineole) in leaves deters many herbivores. At Oak Vista, sage extends the pollinator forage season into late summer and autumn when other plants are past bloom.",
       "university": "Salvia sp. L. — Lamiaceae: Nepetoideae: Mentheae. Bilabiate flowers with the characteristic Salvia stamen lever mechanism: the fertile anther lobe is positioned above the corolla entrance on an elongated connective; the sterile lobe forms a platform blocking the corolla tube entrance. Visitor weight on the sterile lobe deflects the connective, bringing the fertile anther into contact with the visitor's dorsum. This mechanism selectively rewards pollinators of sufficient mass (Bombus, Xylocopa, Anthophora) over smaller visitors. The essential oil monoterpene profile (thujone, camphor, borneol, 1,8-cineole) functions in herbivore deterrence via toxic and antifeedant mechanisms. Salvia officinalis and related culinary sages are semi-hardy perennial subshrubs; bloom period at Oak Vista extends April–October with peaks in May and August."
     },
-    "roles": ["POLLINATOR_SUPPORT"],
+    "roles": [
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Herb garden planting. Genus-level identification — species/cultivar TBD. Prune back by one-third after spring flowering to maintain compact shape. Drought tolerant once established. Bumblebee and carpenter bee foraging activity visible through the day during bloom."
+    "nativeBioregions": []
   },
   {
     "name": "oh-henry-peach",
@@ -333,11 +357,12 @@
       "secondary": "Prunus persica (Rosaceae) — the Oh Henry cultivar is a late-season freestone peach with large yellow flesh and high sugar content. Peach flowers are among the earliest Rose family blooms at Oak Vista (February–March), providing a critical early-season pollen and nectar resource when few other flowers are available. The flowers are self-fertile, so a single tree produces fruit without cross-pollination. Management at Oak Vista includes an IPM-based approach to peach leaf curl (Taphrina deformans) — copper applications timed to dormancy only, before bud swell, to avoid impact on emerging beneficial insects and pollinators visiting open flowers.",
       "university": "Prunus persica (L.) Batsch — Rosaceae: Prunoideae. The Oh Henry cultivar is a late-season freestone selection (harvest August–September in Sacramento Valley). Flowers: actinomorphic, pentamerous, with 25–30 stamens and a single pistil; nectary at base of hypanthium produces abundant dilute nectar accessible to the full bee guild. Self-compatible (S-allele genotype permitting self-fertilisation). Primary pest: Taphrina deformans (peach leaf curl fungus) — obligate biotrophic pathogen infecting expanding leaf tissue; copper hydroxide or copper sulfate applied during dormancy (November–January, before 1% bud swell) is the standard IPM intervention. Critical timing: copper must be applied before pollinators begin foraging on early flowers; any copper application after petal fall risks toxicity to bee larvae via contaminated pollen loads. Brown rot (Monilinia fructicola) at stone fruit maturity managed by thinning to improve air circulation."
     },
-    "roles": ["FOOD_CROP", "POLLINATOR_SUPPORT"],
+    "roles": [
+      "FOOD_CROP",
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "TREE",
-    "nativeBioregions": [],
-    "managementConstraint": "Copper fungicide for peach leaf curl must be applied during dormancy (November–January) only, before 1% bud swell. Never apply copper after petal fall — copper-contaminated pollen is toxic to bee larvae.",
-    "gardenNotes": "Oh Henry cultivar — large, late-season freestone peach. Annual dormant pruning required (open-vase form). Peach leaf curl managed with dormant copper application. One of the earliest-blooming trees at Oak Vista — critical early-season bee forage. Front yard orchard."
+    "nativeBioregions": []
   },
   {
     "name": "citrus",
@@ -353,11 +378,12 @@
       "secondary": "Citrus sp. (Rutaceae) — genus-level identification; multiple species or hybrid cultivars present at Oak Vista. Citrus flowers are heavily nectariferous and produce linalool-dominant fragrance volatiles among the most attractive to honeybees of any cultivated plant. Bloom typically occurs March–April (main flush) with occasional off-season flushes. The trees are evergreen and provide year-round structural habitat — bark crevices for overwintering insects, dense canopy for temperature buffering. Primary pest at Oak Vista: Coccidae (soft scales) and Coccus hesperidum (brown soft scale) managed through beneficial insect pressure rather than chemical intervention where possible.",
       "university": "Citrus sp. L. — Rutaceae: Aurantioideae. Genus of hybrid complexity; most cultivated citrus are interspecific hybrids of Citrus maxima, C. reticulata, and C. medica. Flower fragrance dominated by linalool (30–60% of volatile profile), with secondary monoterpenes (α-terpineol, geraniol) and sesquiterpenes; the linalool-bee attractant relationship is well-documented — linalool activates olfactory receptor neurons associated with floral tracking in Apis mellifera. Nectar production is among the highest of cultivated tree crops per flower: 1–3 mg sucrose equivalent per flower per day, accessible via shallow open nectary at base of petals. Primary pest: Planococcus citri (citrus mealybug), Coccus hesperidum (brown soft scale), and Phyllocoptruta oleivora (citrus rust mite) in hot dry years. Biological control via Coccophagus scutellaris (Encyrtidae) and Metaphycus helvolus (Encyrtidae) parasitoids maintained by the adjacent beneficial insect infrastructure. Evergreen habit at Sacramento Valley temperatures."
     },
-    "roles": ["FOOD_CROP", "POLLINATOR_SUPPORT"],
+    "roles": [
+      "FOOD_CROP",
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "TREE",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Multiple varieties — species/cultivar TBD per individual tree. Evergreen; structural backbone of front yard orchard alongside peach and other stone fruit. Citrus bloom (March–April) is a peak pollinator activity event at Oak Vista — avoid any pesticide applications during bloom. Scale insects monitored and managed through beneficial insect pressure."
+    "nativeBioregions": []
   },
   {
     "name": "wild-radish",
@@ -373,10 +399,10 @@
       "secondary": "Raphanus sativus (wild radish) is a naturalised annual or biennial Brassicaceae abundant throughout California's Central Valley and coastal areas. Originally a cultivated species (the garden radish), feral populations have established as a ubiquitous ruderal wildflower. The four-petalled cruciform flowers (white to lavender, often with purple veining) produce copious nectar accessible to both long-tongued Lepidoptera and short-tongued Diptera and Hymenoptera, making wild radish one of the most broadly visited nectar sources in California spring wildflower communities. At Oak Vista, wild radish serves as a critical early-to-mid spring nectar bridge — blooming when many cultivated pollinator plants have not yet flowered. Cabbage white butterflies (Pieris rapae) and other Pieridae use Brassicaceae as larval hosts, though the primary Oak Vista pierid visitor Colias eurytheme oviposits on Fabaceae rather than Brassicaceae.",
       "university": "Raphanus sativus L. — Brassicales: Brassicaceae. Naturalised throughout California; the feral form (sometimes treated as R. raphanistrum or the hybrid R. × sativus) is among the most successful plant invasions in California agricultural and ruderal landscapes. Floral biology: tetramerous actinomorphic flowers with four nectaries (two lateral, two median) producing nectar at rates of 0.5–2.0 µL/flower/day with sugar concentration 20–40% w/w; floral volatiles include phenylacetaldehyde and benzaldehyde attracting both diurnal Lepidoptera and nocturnal moths. At Oak Vista, documented as nectar source for Colias eurytheme (Orange Sulphur, April 2026) — the adult butterfly nectars on Brassicaceae flowers while its larvae are obligate Fabaceae feeders, a common guild separation between adult and larval resource use in Pieridae. Glucosinolate chemistry in vegetative tissue serves as oviposition stimulant for specialist Pieridae (Pieris rapae, P. napi) while deterring generalist herbivores. Management status at Oak Vista: tolerated naturalised wildflower providing pollinator support; not weeded during spring bloom period."
     },
-    "roles": ["POLLINATOR_SUPPORT"],
+    "roles": [
+      "POLLINATOR_SUPPORT"
+    ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": [],
-    "managementConstraint": null,
-    "gardenNotes": "Naturalised wildflower — not intentionally planted but tolerated for pollinator support during spring bloom. Self-seeds prolifically. Documented as nectar source for Orange Sulphur butterfly (Colias eurytheme) April 2026. Do not weed during spring bloom period when pollinator activity is highest."
+    "nativeBioregions": []
   }
 ]
