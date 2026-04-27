@@ -26,6 +26,7 @@
     <modules>
         <module>framework</module>
         <module>framework-test</module>
+        <module>biogeography</module>
         <module>field-notes</module>
         <module>taxonomy</module>
         <module>habitat</module>
