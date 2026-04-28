@@ -16,6 +16,7 @@
                     <a href="/chemistry/${c.name().value()}">
                         <strong>${c.commonName()}</strong>
                     </a>
+                    <span class="badge category-badge">${c.category().name()}</span>
                     @if(!c.isSafe())
                         <span class="badge guild-apex_predator">hazardous</span>
                     @endif
@@ -35,6 +36,7 @@
                 </p>
                 <p class="description-preview">
                     <strong>Formula:</strong> <code>${c.formula()}</code><br>
+                    <strong>Structural type:</strong> ${c.structuralType().getClass().getSimpleName()}<br>
                     <strong>Nature:</strong> ${c.compoundInfo().chemicalNature().name()}
                     &middot; <strong>Form:</strong> ${c.compoundInfo().physicalForm().name()}<br>
                     <strong>pH:</strong> ${c.phCharacter().name()}

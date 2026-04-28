@@ -70,6 +70,37 @@
     </section>
 
     <section>
+        <h2>Structural classification</h2>
+        <ul>
+            <li><strong>Structural type:</strong> ${compound.structuralType().getClass().getSimpleName()}</li>
+            <li><strong>Category:</strong> <span class="badge category-badge">${compound.category().name()}</span></li>
+        </ul>
+        <p class="description-preview">
+            @if(compound.isAlkaloid())
+                <span class="badge">Alkaloid family</span>
+            @endif
+            @if(compound.isTerpenoid())
+                <span class="badge">Terpenoid family</span>
+            @endif
+            @if(compound.isPhenolic())
+                <span class="badge">Phenolic family</span>
+            @endif
+            @if(compound.isGlycoside())
+                <span class="badge">Glycoside family</span>
+            @endif
+            @if(compound.isGlucosinolate())
+                <span class="badge">Glucosinolate</span>
+            @endif
+        </p>
+        <p class="description-preview">
+            Structural type is the carbon-skeleton taxonomy of the molecule;
+            category is the bucket aligned with the plants-side
+            <code>PhytochemicalCategory</code>. The two axes are intentionally
+            distinct &mdash; see <code>chemistry/CLAUDE.md</code>.
+        </p>
+    </section>
+
+    <section>
         <h2>Solubility</h2>
         <ul>
             <li><strong>Category:</strong> ${compound.solubility().category().name()}</li>
