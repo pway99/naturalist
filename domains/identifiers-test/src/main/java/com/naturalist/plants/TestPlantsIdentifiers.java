@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.plants.cultivar.CultivarName;
+import com.naturalist.plants.heritage.SeedLineageName;
 import com.naturalist.plants.management.PlantProgramName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 
@@ -37,6 +38,8 @@ public class TestPlantsIdentifiers {
                     PhytochemicalConstituentName.of("unobtainium-vine-unobtainium-acid");
             public static final CultivarName cultivarName =
                     CultivarName.of("unobtainium-cultivar");
+            public static final SeedLineageName seedLineageName =
+                    SeedLineageName.of("unobtainium-lineage");
         }
 
         public static class CaliforniaPipevine {
@@ -84,10 +87,29 @@ public class TestPlantsIdentifiers {
 
             public static class Cultivars {
                 private Cultivars() {}
-                public static final CultivarName AmishPaste =
-                        CultivarName.of("amish-paste");
-                public static final CultivarName ItalianPearNicks =
-                        CultivarName.of("italian-pear-nicks");
+
+                /** Cultivar with seed lineages — promoted to a nested class per the convention. */
+                public static class AmishPaste {
+                    public static final CultivarName name = CultivarName.of("amish-paste");
+
+                    public static class Lineages {
+                        private Lineages() {}
+                        public static final SeedLineageName BakerCreek =
+                                SeedLineageName.of("amish-paste-baker-creek");
+                    }
+                }
+
+                /** Cultivar with seed lineages — promoted to a nested class per the convention. */
+                public static class ItalianPearNicks {
+                    public static final CultivarName name = CultivarName.of("italian-pear-nicks");
+
+                    public static class Lineages {
+                        private Lineages() {}
+                        public static final SeedLineageName Original =
+                                SeedLineageName.of("italian-pear-nicks");
+                    }
+                }
+
                 public static final CultivarName SungoldCherry =
                         CultivarName.of("sungold-cherry");
                 public static final CultivarName SanMarzanoF2 =

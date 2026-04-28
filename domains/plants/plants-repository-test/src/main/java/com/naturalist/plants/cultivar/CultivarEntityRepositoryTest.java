@@ -34,8 +34,8 @@ interface CultivarEntityRepositoryTest
     @Override
     default List<CultivarName> knownEntityNames() {
         return List.of(
-                TestPlantsIdentifiers.Plants.Tomato.Cultivars.AmishPaste,
-                TestPlantsIdentifiers.Plants.Tomato.Cultivars.ItalianPearNicks
+                TestPlantsIdentifiers.Plants.Tomato.Cultivars.AmishPaste.name,
+                TestPlantsIdentifiers.Plants.Tomato.Cultivars.ItalianPearNicks.name
         );
     }
 

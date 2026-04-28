@@ -1,0 +1,101 @@
+package com.naturalist.plants.heritage;
+
+import com.naturalist.RandomValue;
+import com.naturalist.data.EntityRepositoryTest;
+import com.naturalist.data.TestEntitySource;
+import com.naturalist.fieldnotes.Description;
+import com.naturalist.plants.TestPlantsIdentifiers;
+import com.naturalist.plants.cultivar.CultivarName;
+
+import java.util.List;
+
+/**
+ * Behavioral contract for {@link SeedLineageRepository.SeedLineageEntityRepository}.
+ * <p>
+ * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
+ * Supplies SeedLineage-specific identity constants and entity construction.
+ * <p>
+ * The cultivar-must-be-OPEN_POLLINATED rule lives at the service layer, not in
+ * the record invariants — fixtures here reference open-pollinated cultivars
+ * (italian-pear-nicks, amish-paste) so the constructed lineages are
+ * service-layer-valid as well as record-valid.
+ */
+interface SeedLineageEntityRepositoryTest
+        extends EntityRepositoryTest<SeedLineageName, SeedLineage> {
+
+    @Override
+    SeedLineageRepository.SeedLineageEntityRepository repository();
+
+    @Override
+    default TestEntitySource<SeedLineageName, SeedLineage> source() {
+        return db.getNamed(SeedLineageTestEntitySource.class);
+    }
+
+    @Override
+    default SeedLineageName notFoundName() {
+        return TestPlantsIdentifiers.Plants.NotFound.seedLineageName;
+    }
+
+    @Override
+    default List<SeedLineageName> knownEntityNames() {
+        return List.of(
+                TestPlantsIdentifiers.Plants.Tomato.Cultivars.AmishPaste.Lineages.BakerCreek,
+                TestPlantsIdentifiers.Plants.Tomato.Cultivars.ItalianPearNicks.Lineages.Original
+        );
+    }
+
+    @Override
+    default SeedLineage newEntity() {
+        return new SeedLineage(
+                SeedLineageName.of("test-" + RandomValue.string()),
+                TestPlantsIdentifiers.Plants.Tomato.Cultivars.ItalianPearNicks.name,
+                provenance(),
+                description(),
+                2026,
+                "earliest ripening, best flavour under heat",
+                null);
+    }
+
+    @Override
+    default SeedLineage ghostEntity() {
+        return new SeedLineage(
+                SeedLineageName.of("ghost-" + RandomValue.string()),
+                TestPlantsIdentifiers.Plants.Tomato.Cultivars.AmishPaste.name,
+                provenance(),
+                description(),
+                0,
+                null,
+                "fictitious test fixture");
+    }
+
+    @Override
+    default SeedLineage modifiedEntity(SeedLineage original) {
+        CultivarName flippedCultivar = original.cultivarName()
+                .equals(TestPlantsIdentifiers.Plants.Tomato.Cultivars.ItalianPearNicks.name)
+                ? TestPlantsIdentifiers.Plants.Tomato.Cultivars.AmishPaste.name
+                : TestPlantsIdentifiers.Plants.Tomato.Cultivars.ItalianPearNicks.name;
+        int flippedYear = original.adaptationStartYear() == 0 ? 2026 : 0;
+        return new SeedLineage(
+                original.name(),
+                flippedCultivar,
+                provenance(),
+                description(),
+                flippedYear,
+                RandomValue.string(),
+                RandomValue.string());
+    }
+
+    private static Provenance provenance() {
+        return new Provenance(
+                "Originator " + RandomValue.string(),
+                "Origin Location " + RandomValue.string(),
+                RandomValue.integer(),
+                RandomValue.string());
+    }
+
+    private static Description description() {
+        return new Description(
+                RandomValue.string(), RandomValue.string(),
+                RandomValue.string(), RandomValue.string());
+    }
+}
