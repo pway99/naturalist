@@ -196,6 +196,7 @@ public record PhytochemicalConstituent(
                 .valueObject(this, PhytochemicalConstituent::description, "description")
                 .notNull(this, PhytochemicalConstituent::category, "category")
                 .notEmpty(this, PhytochemicalConstituent::roles, "roles")
+                .valueObjectCollection(this, PhytochemicalConstituent::roles, "roles")
                 .notEmpty(this, PhytochemicalConstituent::tissues, "tissues")
                 .notNull(this, PhytochemicalConstituent::induction, "induction");
     }

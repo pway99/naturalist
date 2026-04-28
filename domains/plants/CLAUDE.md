@@ -182,6 +182,7 @@ mirrors the Java sub-package.
 | Cultivars | `plants/cultivar/cultivars.json` | `CultivarTestEntitySource` |
 | Seed lineages | `plants/heritage/seed-lineages.json` | `SeedLineageTestEntitySource` |
 | Plant programs | `plants/management/plant-programs.json` | `PlantProgramTestEntitySource` |
+| Phytochemical constituents | `plants/phytochemistry/phytochemical-constituents.json` | `PhytochemicalConstituentTestEntitySource` |
 
 ### `plants.json`
 
@@ -223,6 +224,41 @@ Each entry must include:
 - `"adaptationStartYear": <int>` — `0` means no active adaptation program
 - `"selectionCriteria": <string | null>` — nullable
 - `"notes": <string | null>` — nullable
+
+### `phytochemistry/phytochemical-constituents.json`
+
+Each entry must include:
+
+- `"name": "<constituent-slug>"` — `PhytochemicalConstituentName` natural key.
+  Encodes both sides of the link: `<plant-slug>-<compound-slug>` (e.g.
+  `"california-pipevine-aristolochic-acid-i"`,
+  `"creeping-thyme-thymol"`) — built programmatically via
+  `PhytochemicalConstituentName.of(plantName, compoundName)` in code.
+- `"plantName": "<plant-slug>"` — soft FK to a `Plant` in `plants.json`
+- `"compoundName": "<compound-slug>"` — cross-domain soft FK to a
+  `chemistry.Compound` in the chemistry catalog. Service-layer rule: the
+  referenced compound must exist in `compounds-base.json` /
+  `compounds-aristolochic-acid.json`. Not enforced in record invariants
+  (cross-aggregate validation).
+- `"description": { ... }` — Durrell four-level `Description` of the
+  constituent in this plant: what the compound is, how the plant uses it,
+  what makes it interesting in this species
+- `"category": "<enum>"` — `PhytochemicalCategory` constant. Aligns with
+  `chemistry.CompoundCategory` where the two enums overlap; expresses the
+  ecological/use bucket from a naturalist's perspective
+- `"roles": [ ... ]` — non-empty set of `PhytochemicalRole` permits using
+  the discriminated `{"kind": "<NAME>"}` form. Multiple roles per
+  constituent are common — caffeine is at once an `INSECT_DETERRENT`, a
+  `PHARMACEUTICAL`, and a `NUTRACEUTICAL`. An empty array is an invariant
+  violation
+- `"tissues": [ ... ]` — non-empty set of `PlantTissue` enum values. Same
+  compound in seed vs leaf vs latex carries different ecological meaning;
+  unknown tissue is recorded as `["WHOLE_PLANT"]` rather than an empty array
+- `"induction": "<enum>"` — `CONSTITUTIVE | INDUCED | DEVELOPMENTAL`. A
+  compound expressed in two modes (e.g. low constitutive plus an induced
+  burst on damage) is recorded as two separate constituents
+- `"notes": <string | null>` — operational guidance: extraction notes,
+  seasonal concentration variation, observation cadence; nullable
 
 ### `management/plant-programs.json`
 

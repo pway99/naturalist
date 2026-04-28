@@ -1,0 +1,68 @@
+[
+  {
+    "name": "california-pipevine-aristolochic-acid-i",
+    "plantName": "california-pipevine",
+    "compoundName": "aristolochic-acid-i",
+    "description": {
+      "preschool": "The pipevine makes a special bitter chemical. It tastes terrible to most animals so they leave the leaves alone. The pipevine swallowtail caterpillar is the only one who can eat it, and it borrows the bitterness as armor.",
+      "elementary": "California Pipevine produces aristolochic acid in its leaves and stems. It tastes awful and is poisonous to most animals, so they don't eat the plant. Pipevine Swallowtail caterpillars have a trick — they eat the leaves and store the chemical in their bodies, which keeps birds from eating them.",
+      "secondary": "Aristolochic acid I is the principal nitrophenanthrene defensive metabolite of Aristolochia californica, present constitutively in foliage, stems, and roots. The compound is acutely toxic to most herbivores and is sequestered by Battus philenor hirsuta larvae for life-long chemical defense — the larvae and adults retain enough acid to be unpalatable to vertebrate predators.",
+      "university": "Aristolochic acid I (8-methoxy-6-nitrophenanthrene-1-carboxylic acid) is the dominant alkaloid of Aristolochia californica, accumulated constitutively in vegetative tissue at concentrations sufficient to enforce host specialisation. The defensive co-evolution with Battus philenor is the textbook example of obligate sequestration in California: larvae acquire AA-I trans-cuticularly during feeding, retain it through metamorphosis, and the adult butterfly remains unpalatable to avian predators. AA-I is also a Group 1 IARC carcinogen, nephrotoxic in mammals at sub-acute doses, and is the basis of the absolute pesticide-exclusion constraint on the host trellis."
+    },
+    "category": "ALKALOID",
+    "roles": [
+      { "kind": "HERBIVORE_DETERRENT" },
+      { "kind": "INSECT_DETERRENT" },
+      { "kind": "HUMAN_TOXIN" },
+      { "kind": "LIVESTOCK_TOXIN" }
+    ],
+    "tissues": ["LEAF", "STEM", "ROOT"],
+    "induction": "CONSTITUTIVE",
+    "notes": "Sequestered by Pipevine Swallowtail (Battus philenor hirsuta) larvae for chemical defense. Concentration in foliage rises with new leaf flush in spring. Handle the plant only with gloves; do not compost prunings near food crops."
+  },
+  {
+    "name": "california-pipevine-aristolochic-acid-ii",
+    "plantName": "california-pipevine",
+    "compoundName": "aristolochic-acid-ii",
+    "description": {
+      "preschool": "Pipevine makes a second bitter chemical too, almost the same as the first one but a little weaker.",
+      "elementary": "California Pipevine also has aristolochic acid II, a close cousin of aristolochic acid I. It does the same job — keeping animals from eating the leaves — but it's a little less strong.",
+      "secondary": "Aristolochic acid II is the demethoxy derivative of AA-I, present at lower concentrations in the same tissues. Slightly less bioavailable than AA-I (about a third the absorption rate), but contributes additively to the defensive chemistry of A. californica and is co-sequestered by Battus philenor larvae.",
+      "university": "Aristolochic acid II (6-nitrophenanthrene-1-carboxylic acid) co-occurs with AA-I in Aristolochia californica at roughly 30-40% the AA-I concentration. The reduced cuticular permeability — driven by the absence of the C-8 methoxy group — yields proportionally lower mammalian toxicity per unit dose, but the IARC Group 1 carcinogen classification still applies. Both isomers are recovered from sequestering larvae in the Battus philenor system."
+    },
+    "category": "ALKALOID",
+    "roles": [
+      { "kind": "HERBIVORE_DETERRENT" },
+      { "kind": "INSECT_DETERRENT" },
+      { "kind": "HUMAN_TOXIN" },
+      { "kind": "LIVESTOCK_TOXIN" }
+    ],
+    "tissues": ["LEAF", "STEM", "ROOT"],
+    "induction": "CONSTITUTIVE",
+    "notes": "Co-occurs with aristolochic acid I but at lower titer. Same handling precautions apply — toxicity is additive in mammalian systems."
+  },
+  {
+    "name": "creeping-thyme-thymol",
+    "plantName": "creeping-thyme",
+    "compoundName": "thymol",
+    "description": {
+      "preschool": "Thyme leaves smell strong because they are full of thymol. The smell keeps bugs away and helps keep the plant healthy.",
+      "elementary": "Creeping thyme makes thymol, the chemical that gives thyme its smell. The plant stores it in tiny hair-shaped sacs on the leaves. Thymol kills fungi, bothers insects, and is also used by people as a mouthwash and a beekeeping medicine.",
+      "secondary": "Thymol is the dominant volatile monoterpenoid of Thymus serpyllum, accumulated in glandular trichomes on the abaxial leaf surface. It is the active ingredient of Apiguard (Varroa control) and the source of the characteristic thyme aroma. Antifungal, antimicrobial, and a contact insect deterrent in vivo.",
+      "university": "Thymol (2-isopropyl-5-methylphenol) is a methylated monoterpene phenol biosynthesised through the para-cymene pathway and stored at high concentration in peltate glandular trichomes on the leaf surface of Thymus species. The compound exhibits broad-spectrum antifungal activity against soil and foliar pathogens, antimicrobial activity against gram-positive bacteria, and acaricidal activity against Varroa destructor — the mechanism behind its use in apiary disease management. Pharmaceutically established as an antiseptic; commercially harvested for fragrance, flavour, and the Apiguard formulation."
+    },
+    "category": "TERPENOID",
+    "roles": [
+      { "kind": "ANTI_FUNGAL" },
+      { "kind": "ANTI_MICROBIAL" },
+      { "kind": "INSECT_DETERRENT" },
+      { "kind": "PHARMACEUTICAL" },
+      { "kind": "FLAVOR_SOURCE" },
+      { "kind": "FRAGRANCE_SOURCE" },
+      { "kind": "INSECTICIDE_SOURCE" }
+    ],
+    "tissues": ["LEAF", "TRICHOME"],
+    "induction": "CONSTITUTIVE",
+    "notes": "Concentration peaks in summer foliage. Stored in peltate glandular trichomes on the abaxial leaf surface — visible as small reflective dots under low magnification. Crushing or warming the leaf releases the volatile."
+  }
+]

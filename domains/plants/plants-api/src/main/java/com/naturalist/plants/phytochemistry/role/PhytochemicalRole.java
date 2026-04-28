@@ -2,6 +2,10 @@ package com.naturalist.plants.phytochemistry.role;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.naturalist.ddd.ValueObject;
+import com.naturalist.observability.Constraints;
+
+import java.util.function.Consumer;
 
 /**
  * Functional role a phytochemical constituent plays within (or because of) a
@@ -71,7 +75,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = PhytochemicalRole.HumanToxin.class,            name = "HUMAN_TOXIN"),
         @JsonSubTypes.Type(value = PhytochemicalRole.LivestockToxin.class,        name = "LIVESTOCK_TOXIN")
 })
-public sealed interface PhytochemicalRole {
+public sealed interface PhytochemicalRole extends ValueObject {
+
+    /**
+     * Default no-op {@code invariants()} — stateless permits have no constraints
+     * of their own. Permits that acquire state override this to declare their
+     * own validation. {@code PhytochemicalConstituent} validates the role set
+     * via {@code notEmpty} plus {@code valueObjectCollection}, so a future
+     * stateful permit is picked up automatically without call-site updates.
+     */
+    @Override
+    default Consumer<? extends Constraints> invariants() {
+        return i -> {};
+    }
 
     // ── Defense ──────────────────────────────────────────────────────────
     /** Deters mammalian or vertebrate herbivores — bitter alkaloids, tannins. */
