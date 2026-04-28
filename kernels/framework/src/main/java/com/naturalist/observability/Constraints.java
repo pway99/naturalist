@@ -59,6 +59,17 @@ public class Constraints {
         return add(new EntityNameConstraints.EntityNameConstraint<>(e, name));
     }
 
+    /**
+     * Null-tolerant variant of {@link #entityName}. A null value passes; a
+     * non-null value must satisfy {@link EntityName#isValid()} (kebab-case
+     * format and subtype {@code maxLength()}). Use for {@code @Nullable
+     * EntityName} record components — the reference is optional, but when
+     * present it must still be a valid slug.
+     */
+    public <E extends EntityName> Constraints entityNameOrNull(E e, String name) {
+        return add(new EntityNameConstraints.EntityNameOrNullConstraint<>(e, name));
+    }
+
     public <F extends EntityId> Constraints entityId(F f, String name) {
         return add(new EntityIdConstraints.EntityIdConstraint<>(f, name));
     }

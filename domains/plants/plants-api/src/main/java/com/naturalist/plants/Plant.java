@@ -84,8 +84,8 @@ public record Plant(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, Plant::taxonomy, "taxonomy")
-                .notNull(this, Plant::description, "description")
+                .valueObject(taxonomy, "taxonomy")
+                .valueObject(description, "description")
                 .notNull(this, Plant::roles, "roles")
                 .notNull(this, Plant::lifeForm, "lifeForm")
                 .notNull(this, Plant::nativeBioregions, "nativeBioregions");

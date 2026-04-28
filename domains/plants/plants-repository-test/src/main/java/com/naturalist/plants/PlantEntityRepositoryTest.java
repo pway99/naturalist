@@ -47,10 +47,10 @@ interface PlantEntityRepositoryTest
         return new Plant(
                 PlantName.of(RandomValue.string()),
                 new TaxonomicClassification(
-                        TaxonomicOrder.of(RandomValue.string()),
-                        TaxonomicFamily.of(RandomValue.string()),
-                        TaxonomicGenus.of(RandomValue.string()),
-                        TaxonomicSpecies.of(RandomValue.string())
+                        TaxonomicOrder.of("Order" + RandomValue.string()),
+                        TaxonomicFamily.of("Family" + RandomValue.string()),
+                        TaxonomicGenus.of("Genus" + RandomValue.string()),
+                        TaxonomicSpecies.of("species" + RandomValue.string())
                 ),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
@@ -65,8 +65,8 @@ interface PlantEntityRepositoryTest
         return new Plant(
                 PlantName.of(RandomValue.string()),
                 new TaxonomicClassification(
-                        TaxonomicOrder.of(RandomValue.string()),
-                        TaxonomicFamily.of(RandomValue.string()),
+                        TaxonomicOrder.of("Order" + RandomValue.string()),
+                        TaxonomicFamily.of("Family" + RandomValue.string()),
                         null, null
                 ),
                 new Description(RandomValue.string(), RandomValue.string(),
@@ -85,10 +85,10 @@ interface PlantEntityRepositoryTest
         return new Plant(
                 original.name(),
                 new TaxonomicClassification(
-                        TaxonomicOrder.of(RandomValue.string()),
-                        TaxonomicFamily.of(RandomValue.string()),
-                        TaxonomicGenus.of(RandomValue.string()),
-                        TaxonomicSpecies.of(RandomValue.string())
+                        TaxonomicOrder.of("Order" + RandomValue.string()),
+                        TaxonomicFamily.of("Family" + RandomValue.string()),
+                        TaxonomicGenus.of("Genus" + RandomValue.string()),
+                        TaxonomicSpecies.of("species" + RandomValue.string())
                 ),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),

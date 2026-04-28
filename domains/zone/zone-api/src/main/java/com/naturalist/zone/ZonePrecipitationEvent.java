@@ -80,7 +80,8 @@ public record ZonePrecipitationEvent(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityId(name, "name")
-                .notNull(this, ZonePrecipitationEvent::zoneName, "zoneName")
+                .entityName(zoneName, "zoneName")
+                .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(this, ZonePrecipitationEvent::startDate, "startDate")
                 .notNull(this, ZonePrecipitationEvent::endDate, "endDate")
                 .namedValue(this, ZonePrecipitationEvent::totalInches, "totalInches")

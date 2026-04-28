@@ -81,7 +81,8 @@ public record TillageEvent(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityId(name, "name")
-                .notNull(this, TillageEvent::zoneName, "zoneName")
+                .entityName(zoneName, "zoneName")
+                .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(this, TillageEvent::tillageDate, "tillageDate")
                 .namedValue(this, TillageEvent::depthInches, "depthInches")
                 .notNull(this, TillageEvent::tillageType, "tillageType");

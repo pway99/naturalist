@@ -66,6 +66,7 @@ public record SoilProfileInfo(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, SoilProfileInfo::zoneName, "zoneName");
+                .entityName(zoneName, "zoneName")
+                .entityNameOrNull(subZoneName, "subZoneName");
     }
 }

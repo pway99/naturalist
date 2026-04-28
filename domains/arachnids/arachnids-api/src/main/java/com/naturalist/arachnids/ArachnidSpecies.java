@@ -52,8 +52,8 @@ public record ArachnidSpecies(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, ArachnidSpecies::taxonomy, "taxonomy")
-                .notNull(this, ArachnidSpecies::description, "description")
+                .valueObject(taxonomy, "taxonomy")
+                .valueObject(description, "description")
                 .notNull(this, ArachnidSpecies::huntingStrategy, "huntingStrategy");
     }
 }

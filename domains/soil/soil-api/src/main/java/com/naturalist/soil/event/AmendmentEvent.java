@@ -58,8 +58,9 @@ public record AmendmentEvent(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityId(name, "name")
-                .notNull(this, AmendmentEvent::zoneName, "zoneName")
-                .notNull(this, AmendmentEvent::compoundName, "compoundName")
+                .entityName(zoneName, "zoneName")
+                .entityNameOrNull(subZoneName, "subZoneName")
+                .entityName(compoundName, "compoundName")
                 .namedValue(this, AmendmentEvent::amount, "amount")
                 .notNull(this, AmendmentEvent::unit, "unit")
                 .notNull(this, AmendmentEvent::appliedDate, "appliedDate");

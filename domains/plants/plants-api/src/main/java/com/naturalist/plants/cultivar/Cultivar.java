@@ -81,9 +81,9 @@ public record Cultivar(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, Cultivar::plantName, "plantName")
+                .entityName(plantName, "plantName")
                 .notBlank(commonName, "commonName")
-                .notNull(this, Cultivar::description, "description")
+                .valueObject(description, "description")
                 .notNull(this, Cultivar::varietyType, "varietyType")
                 .notNull(this, Cultivar::fruitType, "fruitType")
                 .notNull(this, Cultivar::seedSavingPolicy, "seedSavingPolicy");

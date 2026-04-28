@@ -28,6 +28,34 @@ public interface EntityNameConstraints {
         }
     }
 
+    /**
+     * Null-tolerant variant of {@link EntityNameConstraint}. A null value passes
+     * (the field is optional); a non-null value must satisfy
+     * {@link EntityName#isValid()} — kebab-case format and the concrete subtype's
+     * {@code maxLength()}. Use for {@code @Nullable EntityName} record components
+     * where the reference is genuinely optional but, when present, must still be
+     * a valid slug.
+     */
+    record EntityNameOrNullConstraint<NAME extends EntityName>(
+            NAME value,
+            String name
+    ) implements Constraint<NAME> {
+
+        @Override
+        public boolean isValid() {
+            return value == null || value.isValid();
+        }
+
+        public EntityNameOrNullConstraint<NAME> withName(String name) {
+            return new EntityNameOrNullConstraint<>(value, name);
+        }
+
+        @Override
+        public String errorMessage() {
+            return value == null ? "" : value.errorMessage();
+        }
+    }
+
     record EntityNameCollectionConstraint<NAME extends EntityName>(
             Collection<NAME> value,
             String name

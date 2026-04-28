@@ -120,7 +120,8 @@ public record SubZone(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, SubZone::parentZoneName, "parentZoneName")
+                .entityName(parentZoneName, "parentZoneName")
+                .entityNameOrNull(soilProfileName, "soilProfileName")
                 .notNull(this, SubZone::position, "position")
                 .namedValue(this, SubZone::areaSqft, "areaSqft")
                 .notNull(this, SubZone::surfaceHabitatRisk, "surfaceHabitatRisk");

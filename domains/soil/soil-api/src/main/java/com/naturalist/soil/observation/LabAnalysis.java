@@ -85,6 +85,6 @@ public record LabAnalysis(
                 .notNull(this, LabAnalysis::sampleDate, "sampleDate")
                 .notNull(this, LabAnalysis::labId, "labId")
                 .notNull(this, LabAnalysis::labSampleId, "labSampleId")
-                .notNull(this, LabAnalysis::nutrients, "nutrients");
+                .valueObject(nutrients, "nutrients");
     }
 }

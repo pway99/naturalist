@@ -222,11 +222,11 @@ public record Zone(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .namedEntity(this, Zone::zoneInfo, "zoneInfo")
-                .notNull(this, Zone::sunExposure, "sunExposure")
-                .notNull(this, Zone::aspect, "aspect")
-                .notNull(this, Zone::boundary, "boundary")
-                .notNull(this, Zone::microclimate, "microclimate")
-                .notNull(this, Zone::substrate, "substrate")
-                .notNull(this, Zone::infrastructure, "infrastructure");
+                .valueObject(sunExposure, "sunExposure")
+                .valueObject(aspect, "aspect")
+                .valueObject(boundary, "boundary")
+                .valueObject(microclimate, "microclimate")
+                .valueObject(substrate, "substrate")
+                .valueObject(infrastructure, "infrastructure");
     }
 }

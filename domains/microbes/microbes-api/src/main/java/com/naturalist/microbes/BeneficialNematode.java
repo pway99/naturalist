@@ -63,8 +63,8 @@ public record BeneficialNematode(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, BeneficialNematode::taxonomy, "taxonomy")
-                .notNull(this, BeneficialNematode::description, "description")
+                .valueObject(taxonomy, "taxonomy")
+                .valueObject(description, "description")
                 .notNull(this, BeneficialNematode::primaryTargetPest, "primaryTargetPest")
                 .notNull(this, BeneficialNematode::foragingStrategy, "foragingStrategy");
     }

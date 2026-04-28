@@ -151,7 +151,8 @@ public record SensorReading(
         return i -> i
                 .entityId(name, "name")
                 .entityName(sensorName, "sensorName")
-                .notNull(this, SensorReading::zoneName, "zoneName")
+                .entityName(zoneName, "zoneName")
+                .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(this, SensorReading::recordedAt, "recordedAt")
                 .namedValue(this, SensorReading::moisturePercent, "moisturePercent");
     }

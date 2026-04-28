@@ -226,6 +226,7 @@ public record SoilProfile(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .namedEntity(this, SoilProfile::soilProfileInfo, "soilProfileInfo")
+                .valueObjectOrNull(this, SoilProfile::currentMulchLayer, "currentMulchLayer")
                 .notNull(this, SoilProfile::labAnalyses, "labAnalyses")
                 .notNull(this, SoilProfile::amendmentEvents, "amendmentEvents")
                 .notNull(this, SoilProfile::irrigationEvents, "irrigationEvents")

@@ -65,7 +65,7 @@ public record PlantProgram(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, PlantProgram::plantName, "plantName")
-                .valueObject(this, PlantProgram::description, "description");
+                .entityName(plantName, "plantName")
+                .valueObject(description, "description");
     }
 }

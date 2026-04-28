@@ -54,8 +54,8 @@ public record SeedLineage(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, SeedLineage::cultivarName, "cultivarName")
-                .valueObject(this, SeedLineage::provenance, "provenance")
-                .notNull(this, SeedLineage::description, "description");
+                .entityName(cultivarName, "cultivarName")
+                .valueObject(provenance, "provenance")
+                .valueObject(description, "description");
     }
 }
