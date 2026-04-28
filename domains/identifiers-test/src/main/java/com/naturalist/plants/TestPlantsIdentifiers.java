@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.plants.management.PlantProgramName;
+import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 
 /**
  * Hardcoded EntityName constants for deterministic plants repository test authoring.
@@ -31,6 +32,8 @@ public class TestPlantsIdentifiers {
             public static final PlantName name = PlantName.of("unobtainium-vine");
             public static final PlantProgramName programName =
                     PlantProgramName.of("unobtainium-program");
+            public static final PhytochemicalConstituentName constituentName =
+                    PhytochemicalConstituentName.of("unobtainium-vine-unobtainium-acid");
         }
 
         public static class CaliforniaPipevine {
@@ -43,6 +46,14 @@ public class TestPlantsIdentifiers {
                 public static final PlantProgramName LarvalMonitoring =
                         PlantProgramName.of("pipevine-larval-monitoring");
             }
+
+            public static class Constituents {
+                private Constituents() {}
+                public static final PhytochemicalConstituentName AristolochicAcidI =
+                        PhytochemicalConstituentName.of("california-pipevine-aristolochic-acid-i");
+                public static final PhytochemicalConstituentName AristolochicAcidII =
+                        PhytochemicalConstituentName.of("california-pipevine-aristolochic-acid-ii");
+            }
         }
 
         public static class Borage {
@@ -52,6 +63,16 @@ public class TestPlantsIdentifiers {
                 private Programs() {}
                 public static final PlantProgramName VolunteerThinning =
                         PlantProgramName.of("borage-volunteer-thinning");
+            }
+        }
+
+        public static class CreepingThyme {
+            public static final PlantName name = PlantName.of("creeping-thyme");
+
+            public static class Constituents {
+                private Constituents() {}
+                public static final PhytochemicalConstituentName Thymol =
+                        PhytochemicalConstituentName.of("creeping-thyme-thymol");
             }
         }
     }

@@ -57,13 +57,15 @@ chemistry catalog) is a service-layer rule, not a record invariant.
 
 ## Repository namespace pattern
 
-Two sub-contexts currently expose a repository, both following the namespace
+Three sub-contexts currently expose a repository, all following the namespace
 class convention from `domains/CLAUDE.md`:
 
 - `PlantRepository` (top-level package-private class) →
   `protected interface PlantEntityRepository extends EntityRepository<PlantName, Plant>`
 - `PlantProgramRepository` (management package-private class) →
   `protected interface PlantProgramEntityRepository extends EntityRepository<PlantProgramName, PlantProgram>`
+- `PhytochemicalConstituentRepository` (phytochemistry package-private class) →
+  `protected interface PhytochemicalConstituentEntityRepository extends EntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent>`
 
 `Cultivar` and `SeedLineage` do not yet have repositories. When added, follow
 the same namespace pattern (`CultivarRepository` in `cultivar/`,
@@ -164,6 +166,7 @@ Repository contract tests live in `plants-repository-test/`:
 
 - `PlantEntityRepositoryTest`, `PlantEntityRepositoryMock`, `PlantEntityRepositoryMockTest`
 - `PlantProgramEntityRepositoryTest`, `PlantProgramEntityRepositoryMock`, `PlantProgramEntityRepositoryMockTest`
+- `PhytochemicalConstituentEntityRepositoryTest`, `PhytochemicalConstituentEntityRepositoryMock`, `PhytochemicalConstituentEntityRepositoryMockTest`
 
 When adding a new entity to the domain, scaffold via the standard skills
 (`/test-entity-source`, `/entity-repository`, `/entity-query`) — see

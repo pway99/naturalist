@@ -42,6 +42,26 @@
     "notes": "Co-occurs with aristolochic acid I but at lower titer. Same handling precautions apply — toxicity is additive in mammalian systems."
   },
   {
+    "name": "wild-violet-oxalic-acid",
+    "plantName": "wild-violet",
+    "compoundName": "oxalic-acid",
+    "description": {
+      "preschool": "Wild violet leaves have tiny invisible needles inside them. The needles taste bad and can hurt an animal's mouth, so most animals leave the violets alone.",
+      "elementary": "Wild violet stores oxalic acid as calcium oxalate crystals shaped like little needles, called raphides. When an animal bites a leaf the needles poke into its mouth, so the animal learns to skip the violets.",
+      "secondary": "Wild violet (Viola spp.) accumulates calcium oxalate as bundled needle-shaped raphides in vacuoles of specialised idioblast cells in foliage and rhizome. The crystals function as a mechanical herbivore deterrent — disrupted cells release the raphides into a herbivore's oral cavity, and the calcium oxalate also lowers protein digestibility.",
+      "university": "Constitutive accumulation of calcium oxalate raphides in idioblasts is a widespread plant defense in the Violaceae and several other families. The biosynthesis routes free oxalic acid via ascorbate degradation; the acid is then sequestered as the calcium salt in raphide bundles. Beyond the mechanical defense from raphide release on tissue damage, oxalic acid chelates dietary calcium and reduces protein digestibility in vertebrate herbivores. The compound itself is an IARC-listed nephrotoxin in mammals at sustained intake."
+    },
+    "category": "ORGANIC_ACID",
+    "roles": [
+      { "kind": "HERBIVORE_DETERRENT" },
+      { "kind": "HUMAN_TOXIN" },
+      { "kind": "LIVESTOCK_TOXIN" }
+    ],
+    "tissues": ["LEAF", "RHIZOME"],
+    "induction": "CONSTITUTIVE",
+    "notes": "Stored as bundled calcium oxalate raphides in idioblast cells. Visible under polarised light as bright needle-cluster inclusions. Fresh foliage is more potent than dried; cooking reduces but does not eliminate the deterrent effect."
+  },
+  {
     "name": "creeping-thyme-thymol",
     "plantName": "creeping-thyme",
     "compoundName": "thymol",
