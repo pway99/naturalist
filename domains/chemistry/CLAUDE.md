@@ -7,9 +7,9 @@ weight, and ionic form. Exists independently; referenced by Compounds. Instances
 `elements.json`. Equality is by `ElementName` (ADR-022); no `id` component.
 
 **CompoundInfo** — `ValueObject` owned by `Compound`. Chemical classification facts:
-formula, molecular weight, pH character, chemical nature, physical form, functional roles,
-constituent elements. No identity of its own — exists only as an attribute of its parent
-compound.
+formula, molecular weight, pH character, chemical nature, physical form, structural type,
+functional roles, constituent elements. No identity of its own — exists only as an
+attribute of its parent compound.
 
 **Compound** — `NamedEntity<CompoundName>` + `@AggregateRoot`. The single identity
 and consistency boundary for compound data. Carries `name` (slug),
@@ -36,12 +36,60 @@ INORGANIC despite containing carbon.
 **PhysicalForm** — ELEMENT, MINERAL, SALT, ACID, BASE, COMPLEX. The physical-form axis on
 `CompoundInfo`. Independent of `ChemicalNature` — NaCl is both INORGANIC and SALT.
 
+**CompoundCategory** — enum in `compound/`, the structural-axis bucket every `StructuralType` permit
+rolls up into. Values: `ALKALOID`, `TERPENOID`, `PHENOLIC`, `FLAVONOID`, `TANNIN`, `GLYCOSIDE`,
+`SAPONIN`, `GLUCOSINOLATE`, `ORGANIC_ACID`, `POLYSACCHARIDE`, `FATTY_ACID_LIPID`, `OTHER_ORGANIC`,
+`ELEMENT`, `INORGANIC`. Vocabulary deliberately aligns with `plants.phytochemistry.PhytochemicalCategory`
+where the two enums overlap (11 shared names with identical naturalist meaning); the chemistry side
+adds the structural-axis-only values `ELEMENT`, `INORGANIC`, `FATTY_ACID_LIPID`, and drops the
+ecological/physical-state values (`ESSENTIAL_OIL`, `RESIN`, `LATEX`, `NON_PROTEIN_AMINO_ACID`,
+`PRIMARY_METABOLITE`) that have no carbon-skeleton equivalent. The two enums are separate types
+because they describe different axes — see the two-axis section below.
+
+**StructuralType** — sealed interface in `compound.structure` with stateless record permits
+across the major carbon-skeleton families: alkaloids (`IndoleAlkaloid`, `TropaneAlkaloid`,
+`PurineAlkaloid`, `PyrrolizidineAlkaloid`, `QuinolineAlkaloid`, `IsoquinolineAlkaloid`,
+`OtherAlkaloid`); terpenoids by carbon count (`Monoterpene`, `Sesquiterpene`, `Diterpene`,
+`Triterpene`, `Tetraterpene`); phenolic family (`SimplePhenolic`, `Flavonoid`, `Anthocyanin`,
+`Tannin`); glycosides (`CardiacGlycoside`, `CyanogenicGlycoside`, `Saponin`,
+`OtherGlycoside`); sulfur-containing (`Glucosinolate`); other organic (`OrganicAcid`,
+`FattyAcidLipid`, `Polysaccharide`, `OtherOrganic`); plus the explicit "axis does not
+apply" permits `Element` (pure elemental compounds) and `Inorganic` (inorganic salts,
+minerals, oxides, simple inorganic acids). The structural-type axis on `CompoundInfo`
+is **non-null** — every compound carries a positive answer rather than encoding the
+inorganic case as a missing value. The `Element` and `Inorganic` permits intentionally
+restate information also visible through `ChemicalNature` and `PhysicalForm`; they are
+the structural-type axis's own way of saying "the carbon-skeleton question has no
+answer here", which is a different statement from "this molecule has no organic
+chemistry." Each permit answers `category()` itself via a default method on the
+interface — an exhaustive switch over the sealed permits, so adding a permit forces the
+compiler to require a corresponding case in one place. Consumers compare on
+`compound.category()` (or `switch` over it) rather than `instanceof`-chaining the
+sealed permits.
+
+`StructuralType` extends `ValueObject` and provides a default no-op `invariants()` —
+stateless permits inherit it without ceremony, but the validation pipeline is wired up
+now so promoting a permit to a stateful record (e.g. a future `IndoleAlkaloid(RingSubstitution
+substitution)`) does not require chasing down validation call sites. `CompoundInfo` already
+validates `structuralType` via `valueObject(...)`, walking whatever invariants the concrete
+permit declares — when a future permit overrides the default, it is automatically picked up. Top-level family membership is also surfaced as behavioral predicates on
+`Compound`: `isAlkaloid()`, `isTerpenoid()`, `isPhenolic()`, `isGlycoside()`,
+`isGlucosinolate()`. These are one-liner rollups over `category()` — `isPhenolic()`
+spans `PHENOLIC`, `FLAVONOID`, `TANNIN`; `isGlycoside()` spans `GLYCOSIDE`, `SAPONIN`.
+Adding a permit means adding it to the switch in `StructuralType.category()`; consumers
+never need to update. The list is intentionally non-exhaustive; add permits when real
+catalog entries call for them, and use `OtherOrganic` only as a fallback while a new
+permit is being agreed.
+
 **FunctionalRole** — sealed interface in `compound.role` with stateless record permits
 (`Chelator`, `Fumigant`, `BiologicalCatalyst`, `Fertilizer`, `Acaricide`). What a compound
 *does* in the field. `CompoundInfo` carries a non-empty `Set<FunctionalRole>`. Behavioral
 predicates `Compound.isFumigant()`, `Compound.isHazardous()`, `Compound.isChelated()` and
 `Compound.playsRole(role)` are first-class — upstream domains never inspect the structural
-form to learn what a compound does.
+form to learn what a compound does. `FunctionalRole` extends `ValueObject` with a default
+no-op `invariants()` for the same forward-proofing reason as `StructuralType` — `CompoundInfo`
+validates the set via `notEmpty` plus `valueObjectCollection`, so a future stateful permit is
+picked up automatically without call-site updates.
 
 **SolubilityProfile** — ValueObject owned by `Compound`. Required (non-nullable).
 Water solubility at 20°C in g/L. Categories: INSOLUBLE through MISCIBLE.
@@ -78,6 +126,31 @@ public Optional<SafetyProfile>         safetyOptional()         { ... }
 
 `bioavailability` and `solubility` are required (non-nullable) — access them directly
 via `compound.bioavailability()` and `compound.solubility()`.
+
+`structuralType` is required (non-null) on `CompoundInfo` and is exposed on `Compound`
+via a plain delegating accessor (`StructuralType structuralType()`) — there is no record
+component on `Compound` of this name to conflict with, so the simple delegation pattern
+applies rather than the `Optional` suffix. Consumers usually do not need the structural
+type directly; the family predicates (`isAlkaloid()`, `isTerpenoid()`, …) are the
+intended interface.
+
+## Two-axis classification with phytochemistry
+
+A plant compound is classified along two complementary axes:
+
+1. **Structural type** (this domain) — `CompoundInfo.structuralType`. Carbon-skeleton
+   taxonomy: indole alkaloid, monoterpene, flavonol, glucosinolate, etc. Property of the
+   molecule itself, plant-agnostic.
+2. **Ecological/use category** (`plants` domain) —
+   `PhytochemicalConstituent.category` (`PhytochemicalCategory` enum). Coarser, organised
+   for ecological queries (alkaloid, latex, essential oil, glucosinolate as a flat
+   bucket). Plant-side, since the same compound may sit in different categories per
+   plant in the literature.
+
+The two axes are deliberately not collapsed into each other — thymol is a `Monoterpene`
+structurally and an `ESSENTIAL_OIL` ecologically, and a query may want either answer.
+Cross-domain reference is by `CompoundName` slug from the plants domain into the
+chemistry catalog; `plants-api` does not depend on `chemistry-api`.
 
 ## Compound Properties
 
@@ -125,9 +198,17 @@ which is loaded by `CompoundTestEntitySource` at test time.
 Each entry in `compounds.json` must include:
 - `"name": "<compound-slug>"` — the `CompoundName` natural key (no `id` field; ADR-022)
 - `"commonName": "<display name>"` — the human-readable common name (`@UniqueValue String`)
-- `"compoundInfo": { ... }` — nested `CompoundInfo` ValueObject (formula, molecularWeight, type, phCharacter, constituentElements)
+- `"compoundInfo": { ... }` — nested `CompoundInfo` ValueObject (formula, molecularWeight,
+  phCharacter, chemicalNature, physicalForm, structuralType, functionalRoles,
+  constituentElements)
 - `"solubility": { ... }` — `SolubilityProfile` ValueObject
 - `"bioavailability": { ... }` — `BioavailabilityProfile` ValueObject
 - `"volatilization": null | { ... }` — `VolatilizationProfile` ValueObject, null for non-fumigants
 - `"safety": null | { ... }` — `SafetyProfile` ValueObject, null for non-hazardous compounds
 - `"properties": { ... }` — `Map<String, String>` open-ended key-value attributes
+
+`compoundInfo.structuralType` is `null` for inorganic compounds (calcium-sulfate-dihydrate,
+elemental-sulfur, all simple metal salts and minerals) and a discriminated record for
+organic compounds, e.g. `{"kind": "MONOTERPENE"}`, `{"kind": "ORGANIC_ACID"}`,
+`{"kind": "OTHER_ALKALOID"}`. The `kind` discriminator names match the `@JsonSubTypes`
+registration on `StructuralType`.

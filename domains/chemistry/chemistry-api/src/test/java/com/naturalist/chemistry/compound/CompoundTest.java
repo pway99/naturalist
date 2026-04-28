@@ -3,6 +3,7 @@ package com.naturalist.chemistry.compound;
 import com.naturalist.RandomValue;
 import com.naturalist.chemistry.TemperatureFahrenheit;
 import com.naturalist.chemistry.compound.role.FunctionalRole;
+import com.naturalist.chemistry.compound.structure.StructuralType;
 import com.naturalist.chemistry.element.PeriodicElement;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
@@ -96,6 +97,7 @@ class CompoundTest {
                         PhCharacter.STRONGLY_ACIDIC,
                         ChemicalNature.ORGANIC,
                         PhysicalForm.COMPLEX,
+                        new StructuralType.OtherOrganic(),
                         Set.of(new FunctionalRole.Chelator()),
                         Set.of(PeriodicElement.P, PeriodicElement.Be)),
                 new SolubilityProfile(Solubility.of(RandomValue.bigDecimal()),
@@ -123,7 +125,8 @@ class CompoundTest {
         CompoundInfo info = c.compoundInfo();
         CompoundInfo updated = new CompoundInfo(
                 info.formula(), info.molecularWeight(), info.phCharacter(),
-                info.chemicalNature(), info.physicalForm(), roles, info.constituentElements());
+                info.chemicalNature(), info.physicalForm(), info.structuralType(),
+                roles, info.constituentElements());
         return new Compound(c.name(), c.commonName(), updated, c.solubility(),
                 c.bioavailability(), c.volatilization(), c.safety(),
                 c.omriListed(), c.cdfaRegistered(), c.properties());

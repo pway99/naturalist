@@ -38,7 +38,8 @@ class CompoundCollectionTest {
         CompoundInfo info = base.compoundInfo();
         CompoundInfo updated = new CompoundInfo(
                 info.formula(), info.molecularWeight(), info.phCharacter(),
-                nature, info.physicalForm(), roles, info.constituentElements());
+                nature, info.physicalForm(), info.structuralType(),
+                roles, info.constituentElements());
         return new Compound(base.name(), base.commonName(), updated, base.solubility(),
                 base.bioavailability(), base.volatilization(), base.safety(),
                 base.omriListed(), base.cdfaRegistered(), base.properties());

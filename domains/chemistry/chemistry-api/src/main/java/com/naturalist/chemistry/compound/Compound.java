@@ -2,6 +2,7 @@ package com.naturalist.chemistry.compound;
 
 import com.naturalist.chemistry.TemperatureFahrenheit;
 import com.naturalist.chemistry.compound.role.FunctionalRole;
+import com.naturalist.chemistry.compound.structure.StructuralType;
 import com.naturalist.ddd.AggregateRoot;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.UniqueValue;
@@ -68,6 +69,66 @@ public record Compound(
 
     public boolean isAcidic() {
         return compoundInfo.isAcidic();
+    }
+
+    public StructuralType structuralType() {
+        return compoundInfo.structuralType();
+    }
+
+    /**
+     * The {@link CompoundCategory} bucket this compound rolls up into along the
+     * structural-classification axis. Delegates to the structural type itself —
+     * each {@link StructuralType} permit decides its own category answer.
+     * <p>
+     * Consumers expecting to dispatch over more than a handful of cases should
+     * {@code switch} on this value. The boolean predicates below
+     * ({@link #isAlkaloid()} etc.) are sugar for the common single-bucket and
+     * family-rollup cases.
+     */
+    public CompoundCategory category() {
+        return compoundInfo.structuralType().category();
+    }
+
+    // ── Structural-family predicates ─────────────────────────────────────────
+    //
+    // One-liner rollups over CompoundCategory. Family predicates that span
+    // more than one category (isPhenolic, isGlycoside) keep the rollup logic
+    // co-located with the predicate so a consumer never has to know which
+    // categories make up "the phenolic family" or "the glycoside family".
+
+    /** Whether this compound is in the alkaloid structural family. */
+    public boolean isAlkaloid() {
+        return category() == CompoundCategory.ALKALOID;
+    }
+
+    /** Whether this compound is in the terpenoid (isoprenoid) structural family. */
+    public boolean isTerpenoid() {
+        return category() == CompoundCategory.TERPENOID;
+    }
+
+    /**
+     * Whether this compound is in the phenolic family — covers simple phenolics,
+     * flavonoids (including anthocyanins), and tannins.
+     */
+    public boolean isPhenolic() {
+        CompoundCategory c = category();
+        return c == CompoundCategory.PHENOLIC
+                || c == CompoundCategory.FLAVONOID
+                || c == CompoundCategory.TANNIN;
+    }
+
+    /**
+     * Whether this compound is a glycoside (sugar-linked) — covers the generic
+     * GLYCOSIDE bucket and saponins (which are glycosylated triterpenes/steroids).
+     */
+    public boolean isGlycoside() {
+        CompoundCategory c = category();
+        return c == CompoundCategory.GLYCOSIDE || c == CompoundCategory.SAPONIN;
+    }
+
+    /** Whether this compound is a glucosinolate (sulfur-containing brassica metabolite). */
+    public boolean isGlucosinolate() {
+        return category() == CompoundCategory.GLUCOSINOLATE;
     }
 
     // ── Profile accessors ────────────────────────────────────────────────────

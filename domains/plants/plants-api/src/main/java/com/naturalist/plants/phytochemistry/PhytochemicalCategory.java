@@ -7,11 +7,13 @@ package com.naturalist.plants.phytochemistry;
  * <b>Two-axis classification.</b> Phytochemistry recognises two orthogonal
  * classification axes for any given compound:
  * <ol>
- *   <li><b>Structural class</b> — what kind of molecule it is by carbon
+ *   <li><b>Structural type</b> — what kind of molecule it is by carbon
  *       skeleton (e.g. <i>indole alkaloid</i>, <i>monoterpene</i>,
  *       <i>flavonol</i>). This is a property of the molecule itself and
- *       lives on {@code chemistry.CompoundInfo} (deferred to a follow-up
- *       chemistry-domain change).</li>
+ *       lives on {@code chemistry.CompoundInfo} as a
+ *       {@code chemistry.compound.structure.StructuralType}, with each
+ *       permit rolling up to a {@code chemistry.compound.CompoundCategory}
+ *       whose vocabulary aligns with this enum where the two overlap.</li>
  *   <li><b>Ecological/use category</b> — the bucket a field naturalist or a
  *       phytochemistry textbook would use as a section header. This enum.</li>
  * </ol>

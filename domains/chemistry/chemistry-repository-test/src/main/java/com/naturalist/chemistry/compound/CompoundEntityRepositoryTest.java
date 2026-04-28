@@ -4,6 +4,7 @@ import com.naturalist.RandomValue;
 import com.naturalist.chemistry.TemperatureFahrenheit;
 import com.naturalist.chemistry.TestChemistryIdentifiers;
 import com.naturalist.chemistry.compound.role.FunctionalRole;
+import com.naturalist.chemistry.compound.structure.StructuralType;
 import com.naturalist.chemistry.element.PeriodicElement;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
@@ -94,6 +95,7 @@ interface CompoundEntityRepositoryTest
                 PhCharacter.STRONGLY_ACIDIC,
                 ChemicalNature.ORGANIC,
                 PhysicalForm.COMPLEX,
+                new StructuralType.OtherOrganic(),
                 Set.of(new FunctionalRole.Chelator()),
                 Set.of(PeriodicElement.P, PeriodicElement.Be));
     }

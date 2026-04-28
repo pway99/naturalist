@@ -8,6 +8,7 @@
       "phCharacter": "NEUTRAL",
       "chemicalNature": "INORGANIC",
       "physicalForm": "SALT",
+      "structuralType": { "kind": "INORGANIC" },
       "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["Ca", "S", "O", "H"]
     },
@@ -40,6 +41,7 @@
       "phCharacter": "NEUTRAL",
       "chemicalNature": "INORGANIC",
       "physicalForm": "SALT",
+      "structuralType": { "kind": "INORGANIC" },
       "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["Ca", "Cl"]
     },
@@ -71,6 +73,7 @@
       "phCharacter": "NEUTRAL",
       "chemicalNature": "INORGANIC",
       "physicalForm": "SALT",
+      "structuralType": { "kind": "INORGANIC" },
       "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["K", "S", "O"]
     },
@@ -103,6 +106,7 @@
       "phCharacter": "ACIDIC",
       "chemicalNature": "INORGANIC",
       "physicalForm": "ELEMENT",
+      "structuralType": { "kind": "ELEMENT" },
       "functionalRoles": [{ "kind": "FERTILIZER" }, { "kind": "BIOLOGICAL_CATALYST" }],
       "constituentElements": ["S"]
     },
@@ -133,6 +137,7 @@
       "phCharacter": "NEUTRAL",
       "chemicalNature": "INORGANIC",
       "physicalForm": "SALT",
+      "structuralType": { "kind": "INORGANIC" },
       "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["Mg", "S", "O", "H"]
     },
@@ -164,6 +169,7 @@
       "phCharacter": "ALKALINE",
       "chemicalNature": "INORGANIC",
       "physicalForm": "MINERAL",
+      "structuralType": { "kind": "INORGANIC" },
       "functionalRoles": [{ "kind": "FERTILIZER" }],
       "constituentElements": ["Ca", "C", "O"]
     },
@@ -194,6 +200,7 @@
       "phCharacter": "NEUTRAL",
       "chemicalNature": "ORGANIC",
       "physicalForm": "COMPLEX",
+      "structuralType": { "kind": "POLYSACCHARIDE" },
       "functionalRoles": [{ "kind": "CHELATOR" }],
       "constituentElements": ["Ca", "C", "O", "H"]
     },
@@ -229,6 +236,7 @@
       "phCharacter": "ACIDIC",
       "chemicalNature": "ORGANIC",
       "physicalForm": "COMPLEX",
+      "structuralType": { "kind": "ORGANIC_ACID" },
       "functionalRoles": [{ "kind": "CHELATOR" }, { "kind": "FERTILIZER" }],
       "constituentElements": ["Ca", "Mg", "C", "O", "H"]
     },
@@ -261,6 +269,7 @@
       "phCharacter": "STRONGLY_ACIDIC",
       "chemicalNature": "ORGANIC",
       "physicalForm": "ACID",
+      "structuralType": { "kind": "ORGANIC_ACID" },
       "functionalRoles": [{ "kind": "FUMIGANT" }, { "kind": "ACARICIDE" }],
       "constituentElements": ["H", "C", "O"]
     },
@@ -307,6 +316,7 @@
       "phCharacter": "ACIDIC",
       "chemicalNature": "ORGANIC",
       "physicalForm": "ACID",
+      "structuralType": { "kind": "ORGANIC_ACID" },
       "functionalRoles": [{ "kind": "FUMIGANT" }, { "kind": "ACARICIDE" }],
       "constituentElements": ["H", "C", "O"]
     },
@@ -353,6 +363,7 @@
       "phCharacter": "NEUTRAL",
       "chemicalNature": "ORGANIC",
       "physicalForm": "COMPLEX",
+      "structuralType": { "kind": "MONOTERPENE" },
       "functionalRoles": [{ "kind": "FUMIGANT" }, { "kind": "ACARICIDE" }],
       "constituentElements": ["C", "H", "O"]
     },
@@ -399,6 +410,7 @@
       "phCharacter": "NEUTRAL",
       "chemicalNature": "ORGANIC",
       "physicalForm": "COMPLEX",
+      "structuralType": { "kind": "TRITERPENE" },
       "functionalRoles": [{ "kind": "ACARICIDE" }],
       "constituentElements": ["C", "H", "O"]
     },
@@ -439,6 +451,7 @@
       "phCharacter": "NEUTRAL",
       "chemicalNature": "ORGANIC",
       "physicalForm": "SALT",
+      "structuralType": { "kind": "FATTY_ACID_LIPID" },
       "functionalRoles": [{ "kind": "ACARICIDE" }],
       "constituentElements": ["K", "C", "O", "H"]
     },

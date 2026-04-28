@@ -138,19 +138,23 @@ surface; new permits should never require call-site changes elsewhere.
 
 Plant compounds are classified along two orthogonal axes:
 
-1. **Structural class** (chemistry domain) — carbon-skeleton taxonomy:
+1. **Structural type** (chemistry domain) — carbon-skeleton taxonomy:
    indole alkaloid, monoterpene, flavonol, etc. This is a property of the
-   molecule, not the plant. Lives on `chemistry.CompoundInfo`. *Not yet
-   modeled* — adding a structural-class component to `CompoundInfo` is
-   tracked as a chemistry-domain follow-up.
+   molecule, not the plant. Modelled on `chemistry.CompoundInfo` as a
+   required `StructuralType` (sealed interface in
+   `chemistry.compound.structure`). The non-organic case is named
+   explicitly via the `Element` and `Inorganic` permits rather than left
+   to a null value. Top-level family membership is exposed through
+   behavioral predicates on `Compound` (`isAlkaloid()`, `isTerpenoid()`,
+   `isPhenolic()`, `isGlycoside()`, `isGlucosinolate()`).
 2. **Ecological/use category** (plants domain) —
    `PhytochemicalCategory` enum on `PhytochemicalConstituent`. Coarser than
-   structural class; bundles compounds by the bands a naturalist or
+   structural type; bundles compounds by the bands a naturalist or
    phytochemistry textbook would group them under (alkaloid, terpenoid,
    glucosinolate, latex, …).
 
 The two axes are deliberately complementary. A given compound carries one
-structural class and appears under one ecological/use category per plant
+structural type and appears under one ecological/use category per plant
 record. The axes do not need to agree, and should not be flattened into
 each other.
 

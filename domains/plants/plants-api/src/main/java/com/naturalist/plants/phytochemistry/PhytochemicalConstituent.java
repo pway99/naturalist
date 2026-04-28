@@ -49,7 +49,7 @@ import java.util.function.Consumer;
  *       it, what makes it interesting in this species. Required.</li>
  *   <li>{@code category} — coarse ecological/use bucket
  *       ({@link PhytochemicalCategory#ALKALOID}, {@link
- *       PhytochemicalCategory#GLUCOSINOLATE}, …). The structural class
+ *       PhytochemicalCategory#GLUCOSINOLATE}, …). The structural type
  *       (indole alkaloid vs tropane alkaloid, monoterpene vs sesquiterpene)
  *       is a separate axis carried on {@code chemistry.CompoundInfo}.</li>
  *   <li>{@code roles} — non-empty set of {@link PhytochemicalRole} entries
@@ -191,8 +191,8 @@ public record PhytochemicalConstituent(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, PhytochemicalConstituent::plantName, "plantName")
-                .notNull(this, PhytochemicalConstituent::compoundName, "compoundName")
+                .entityName(plantName, "plantName")
+                .entityName(compoundName, "compoundName")
                 .valueObject(this, PhytochemicalConstituent::description, "description")
                 .notNull(this, PhytochemicalConstituent::category, "category")
                 .notEmpty(this, PhytochemicalConstituent::roles, "roles")

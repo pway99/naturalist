@@ -5,7 +5,7 @@ package com.naturalist.plants.phytochemistry;
  * phytochemical expression.
  * <p>
  * Induction is a first-class field because two compounds with the same
- * structural class and the same ecological role can carry very different
+ * structural type and the same ecological role can carry very different
  * management implications depending on when they appear. Glucosinolates
  * sit constitutively in brassica leaves (constant herbivore deterrent);
  * jasmonate-induced volatile terpenes in the same leaf surface only after

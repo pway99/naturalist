@@ -8,6 +8,7 @@
       "phCharacter": "ACIDIC",
       "chemicalNature": "ORGANIC",
       "physicalForm": "ACID",
+      "structuralType": { "kind": "OTHER_ALKALOID" },
       "functionalRoles": [
         { "kind": "BIOLOGICAL_CATALYST" }
       ],
@@ -63,6 +64,7 @@
       "phCharacter": "ACIDIC",
       "chemicalNature": "ORGANIC",
       "physicalForm": "ACID",
+      "structuralType": { "kind": "OTHER_ALKALOID" },
       "functionalRoles": [
         { "kind": "BIOLOGICAL_CATALYST" }
       ],
