@@ -2,6 +2,9 @@ package com.naturalist.plants.heritage;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.plants.cultivar.CultivarName;
+
+import java.util.List;
 
 public class SeedLineageEntityRepositoryMock
         extends AbstractTestEntityRepository<SeedLineageName, SeedLineage, SeedLineageTestEntitySource>
@@ -9,5 +12,19 @@ public class SeedLineageEntityRepositoryMock
 
     protected SeedLineageEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
+    }
+
+    @Override
+    public List<SeedLineageName> getAllSeedLineageNames() {
+        return testEntitySource().entityStream()
+                .map(SeedLineage::name)
+                .toList();
+    }
+
+    @Override
+    public List<SeedLineage> getByCultivarName(CultivarName cultivarName) {
+        return testEntitySource().entityStream()
+                .filter(s -> s.cultivarName().equals(cultivarName))
+                .toList();
     }
 }

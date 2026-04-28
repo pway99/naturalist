@@ -16,5 +16,16 @@
             <groupId>com.naturalist</groupId>
             <artifactId>plants-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework</artifactId>
+        </dependency>
+
+        <!-- TEST DEPENDENCIES -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>plants-repository-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
