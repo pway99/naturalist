@@ -19,6 +19,7 @@
                 <li><a href="/">Home</a></li>
                 <li><a href="/chemistry">Chemistry</a></li>
                 <li><a href="/insects">Insects</a></li>
+                <li><a href="/plants">Plants</a></li>
             </ul>
         </nav>
     </header>

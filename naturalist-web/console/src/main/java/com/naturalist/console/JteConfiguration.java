@@ -20,6 +20,7 @@ class JteConfiguration {
             "naturalist-web/console/src/main/jte",
             "domains/chemistry/chemistry-console/src/main/jte",
             "domains/insects/insects-console/src/main/jte",
+            "domains/plants/plants-console/src/main/jte",
     };
 
     @Bean
