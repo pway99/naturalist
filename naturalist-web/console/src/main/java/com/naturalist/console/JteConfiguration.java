@@ -8,31 +8,39 @@ import gg.jte.resolve.DirectoryCodeResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
+/**
+ * Wires the JTE template engine. Template roots are discovered from the
+ * project layout — adding a new domain-console module requires no
+ * configuration change here, only the standard
+ * {@code <module>/src/main/jte} directory and a dependency entry in this
+ * module's {@code pom.xml}.
+ *
+ * <p>Two predictable parents are scanned:
+ * <ul>
+ *   <li>{@code naturalist-web/*}/src/main/jte — the application shell and
+ *       any future application modules colocated under naturalist-web/.</li>
+ *   <li>{@code domains/<domain>/<domain>-console}/src/main/jte — every
+ *       domain console module follows this path.</li>
+ * </ul>
+ */
 @Configuration
 class JteConfiguration {
-
-    private static final String[] TEMPLATE_ROOTS = {
-            "naturalist-web/console/src/main/jte",
-            "domains/chemistry/chemistry-console/src/main/jte",
-            "domains/insects/insects-console/src/main/jte",
-            "domains/plants/plants-console/src/main/jte",
-    };
 
     @Bean
     TemplateEngine jteTemplateEngine() {
         var projectRoot = findProjectRoot();
-        var resolvers = new ArrayList<DirectoryCodeResolver>();
-        for (var root : TEMPLATE_ROOTS) {
-            var path = projectRoot.resolve(root);
-            if (Files.isDirectory(path)) {
-                resolvers.add(new DirectoryCodeResolver(path));
-            }
-        }
+        var roots = discoverTemplateRoots(projectRoot);
+        var resolvers = roots.stream()
+                .map(DirectoryCodeResolver::new)
+                .toList();
         var codeResolver = new CompositeCodeResolver(resolvers);
         return TemplateEngine.create(codeResolver, projectRoot.resolve("jte-classes"), ContentType.Html, getClass().getClassLoader());
     }
@@ -46,6 +54,43 @@ class JteConfiguration {
             dir = dir.getParent();
         }
         throw new IllegalStateException("Could not locate project root from " + Path.of("").toAbsolutePath());
+    }
+
+    /**
+     * Walk the predictable console-host parents — {@code naturalist-web/*}
+     * and {@code domains/<domain>/*} — and collect every existing
+     * {@code <module>/src/main/jte} directory. Order is stable: web shell
+     * roots first (so the layout templates resolve before any domain
+     * shadows them), then domain consoles in directory iteration order.
+     */
+    private List<Path> discoverTemplateRoots(Path projectRoot) {
+        var roots = new ArrayList<Path>();
+        addJteRootsUnder(projectRoot.resolve("naturalist-web"), roots);
+        var domainsDir = projectRoot.resolve("domains");
+        if (Files.isDirectory(domainsDir)) {
+            for (var domain : list(domainsDir)) {
+                addJteRootsUnder(domain, roots);
+            }
+        }
+        return roots;
+    }
+
+    private void addJteRootsUnder(Path parent, List<Path> roots) {
+        if (!Files.isDirectory(parent)) return;
+        for (var child : list(parent)) {
+            var jte = child.resolve("src/main/jte");
+            if (Files.isDirectory(jte)) {
+                roots.add(jte);
+            }
+        }
+    }
+
+    private static List<Path> list(Path dir) {
+        try (Stream<Path> stream = Files.list(dir)) {
+            return stream.filter(Files::isDirectory).sorted().toList();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private record CompositeCodeResolver(List<DirectoryCodeResolver> resolvers) implements CodeResolver {
