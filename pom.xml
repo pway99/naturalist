@@ -293,6 +293,11 @@
                 <artifactId>plants-repository-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>plants-test-context</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- SENSORS -->
             <dependency>
                 <groupId>com.naturalist</groupId>

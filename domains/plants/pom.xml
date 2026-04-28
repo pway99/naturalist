@@ -18,6 +18,7 @@
         <module>plants-api</module>
         <module>plants-core</module>
         <module>plants-repository-test</module>
+        <module>plants-test-context</module>
     </modules>
 
 </project>
