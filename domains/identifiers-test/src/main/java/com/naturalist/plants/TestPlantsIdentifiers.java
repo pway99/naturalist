@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.management.PlantProgramName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 
@@ -34,6 +35,8 @@ public class TestPlantsIdentifiers {
                     PlantProgramName.of("unobtainium-program");
             public static final PhytochemicalConstituentName constituentName =
                     PhytochemicalConstituentName.of("unobtainium-vine-unobtainium-acid");
+            public static final CultivarName cultivarName =
+                    CultivarName.of("unobtainium-cultivar");
         }
 
         public static class CaliforniaPipevine {
@@ -73,6 +76,22 @@ public class TestPlantsIdentifiers {
                 private Constituents() {}
                 public static final PhytochemicalConstituentName Thymol =
                         PhytochemicalConstituentName.of("creeping-thyme-thymol");
+            }
+        }
+
+        public static class Tomato {
+            public static final PlantName name = PlantName.of("tomato");
+
+            public static class Cultivars {
+                private Cultivars() {}
+                public static final CultivarName AmishPaste =
+                        CultivarName.of("amish-paste");
+                public static final CultivarName ItalianPearNicks =
+                        CultivarName.of("italian-pear-nicks");
+                public static final CultivarName SungoldCherry =
+                        CultivarName.of("sungold-cherry");
+                public static final CultivarName SanMarzanoF2 =
+                        CultivarName.of("san-marzano-f2");
             }
         }
     }

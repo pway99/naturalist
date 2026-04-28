@@ -57,20 +57,22 @@ chemistry catalog) is a service-layer rule, not a record invariant.
 
 ## Repository namespace pattern
 
-Three sub-contexts currently expose a repository, all following the namespace
+Four sub-contexts currently expose a repository, all following the namespace
 class convention from `domains/CLAUDE.md`:
 
 - `PlantRepository` (top-level package-private class) →
   `protected interface PlantEntityRepository extends EntityRepository<PlantName, Plant>`
+- `CultivarRepository` (cultivar package-private class) →
+  `protected interface CultivarEntityRepository extends EntityRepository<CultivarName, Cultivar>`
 - `PlantProgramRepository` (management package-private class) →
   `protected interface PlantProgramEntityRepository extends EntityRepository<PlantProgramName, PlantProgram>`
 - `PhytochemicalConstituentRepository` (phytochemistry package-private class) →
   `protected interface PhytochemicalConstituentEntityRepository extends EntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent>`
 
-`Cultivar` and `SeedLineage` do not yet have repositories. When added, follow
-the same namespace pattern (`CultivarRepository` in `cultivar/`,
-`SeedLineageRepository` in `heritage/`). N=1 per sub-context, so the repository
-namespace collapses to a single nested interface in each.
+`SeedLineage` does not yet have a repository. When added, follow the same
+namespace pattern (`SeedLineageRepository` in `heritage/`). N=1 per
+sub-context, so the repository namespace collapses to a single nested
+interface in each.
 
 No `PlantQuery`, `PlantEntityCollections`, or aggregate factories exist yet.
 Add them when read-side surface materializes — query interfaces public in api,
@@ -165,6 +167,7 @@ each other.
 Repository contract tests live in `plants-repository-test/`:
 
 - `PlantEntityRepositoryTest`, `PlantEntityRepositoryMock`, `PlantEntityRepositoryMockTest`
+- `CultivarEntityRepositoryTest`, `CultivarEntityRepositoryMock`, `CultivarEntityRepositoryMockTest`
 - `PlantProgramEntityRepositoryTest`, `PlantProgramEntityRepositoryMock`, `PlantProgramEntityRepositoryMockTest`
 - `PhytochemicalConstituentEntityRepositoryTest`, `PhytochemicalConstituentEntityRepositoryMock`, `PhytochemicalConstituentEntityRepositoryMockTest`
 
