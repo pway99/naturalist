@@ -220,7 +220,7 @@ whose providers handle a given target type; fan-out groups by `DomainId`;
 provider that throws is observed (next milestone) but does not break peer
 providers' results; empty providers yield empty result, not null.
 
-### M4 — Plants `AtlasContribution` (derived aliases)
+### M4 — Plants `AtlasContribution` (derived aliases) ✅
 
 **Goal.** First real producer. The plants domain contributes aliases for its own
 plants — slug, scientific binomial, genus, abbreviated binomial.
@@ -246,6 +246,21 @@ is recoverable through the contribution as `Aristolochia californica`,
 `Aristolochia`, `A. californica`, and `california-pipevine`. The plants
 contribution does not make the atlas depend on plants — assembled in plants-core
 test scope, consumed via the atlas SPI only.
+
+**Notes from execution.**
+
+- The `Plant` record does not yet carry a `commonNames` component; the
+  common-name pass-through is deferred per the plan's open question on
+  schema location. When `Plant` grows the field, extending
+  `PlantAtlasContribution.candidateForms` is a one-line addition.
+- The catalog naturally produces collisions on the genus-only surface form
+  (two `Trifolium` species, two `Passiflora` species). `DefaultAtlas`
+  rejects equal-length surface-form conflicts at assembly, which is correct
+  for routing safety but fatal for a derived contribution. The contribution
+  defends the assembly itself: it collects every candidate form, then
+  emits only those that resolve to a single target — ambiguous genus or
+  abbreviated-binomial forms are silently dropped. This is the contribution's
+  rule, not the kernel's.
 
 ### M5 — Plants `EntityReferences<CompoundName>`
 
