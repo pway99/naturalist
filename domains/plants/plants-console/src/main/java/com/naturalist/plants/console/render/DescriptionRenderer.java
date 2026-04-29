@@ -1,7 +1,11 @@
 package com.naturalist.plants.console.render;
 
+import com.naturalist.atlas.Atlas;
+import com.naturalist.atlas.EntityRef;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,12 +15,13 @@ import java.util.regex.Pattern;
  * binomials, lifted numbered enumerations, and (when present) a typographic
  * header chip carrying the leading taxonomic line.
  *
- * <p>Per the M6 milestone in {@code kernels/atlas/PLAN.md}, this is the
- * legibility half of the description renderer effort — formatting only, no
- * atlas integration. The class deliberately knows nothing about
- * {@code Atlas}, {@code EntityRef}, or links; M7 introduces a
- * {@code LinkResolver} collaborator that wraps the binomial italicisation
- * step in anchor tags when the surface form resolves.
+ * <p>Per the M7 milestone in {@code kernels/atlas/PLAN.md}, the binomial-
+ * italics pass is also an atlas-resolution pass: when an {@link Atlas} and
+ * {@link LinkResolver} are supplied, italicised binomials whose surface form
+ * resolves through the atlas <em>and</em> whose target's
+ * {@link com.naturalist.ddd.EntityName} subclass is known to the resolver are
+ * additionally wrapped in an {@code <a>} tag pointing at the target's console
+ * page. Surface forms that do not resolve stay as italics-only.
  *
  * <h2>Pipeline</h2>
  * <ol>
@@ -37,18 +42,27 @@ import java.util.regex.Pattern;
  *       is lifted into an {@code <ol>}. The lifted list inherits its
  *       containing paragraph's wrapping; trailing prose after the final item
  *       is rendered in its own paragraph.</li>
- *   <li><b>Binomial italics</b> — full binomials ({@code Genus species},
- *       optionally followed by {@code bv./var./subsp./ssp. epithet}) and
- *       abbreviated binomials ({@code G. species}) are wrapped in
- *       {@code <em>}.</li>
+ *   <li><b>Binomial italics &amp; resolution</b> — full binomials
+ *       ({@code Genus species}, optionally followed by
+ *       {@code bv./var./subsp./ssp. epithet}) and abbreviated binomials
+ *       ({@code G. species}) are wrapped in {@code <em>}. When an atlas and
+ *       link resolver are configured, binomials whose surface form resolves
+ *       are additionally wrapped in {@code <a>}.</li>
  * </ol>
  *
  * <p>The pipeline is content-conserving: every character of the original
  * input survives into the output (modulo HTML-escaping of {@code &}, {@code <},
  * {@code >}). The renderer never throws on real input.
  *
+ * <h2>Graceful degradation</h2>
+ * The no-arg constructor produces a renderer with no atlas wiring — the
+ * binomial pass becomes pure italicisation. This is the shape used by unit
+ * tests that do not exercise atlas behaviour and by any caller that wants the
+ * legibility transforms without the cross-domain navigation surface.
+ *
  * <h2>Thread-safety</h2>
- * The renderer is stateless; a single instance is safe for concurrent use.
+ * The renderer is stateless apart from its immutable atlas/resolver
+ * collaborators; a single instance is safe for concurrent use.
  */
 public final class DescriptionRenderer {
 
@@ -102,6 +116,30 @@ public final class DescriptionRenderer {
     private static final Pattern NUMBERED_ITEM = Pattern.compile(
             "\\((\\d+)\\)\\s+([^()]+?)(?=(?:[;.]\\s+\\(\\d+\\))|(?:\\.\\s|$))");
 
+    private final Atlas atlas;
+    private final LinkResolver linkResolver;
+
+    /**
+     * Renderer with no atlas wiring — the binomial pass produces italics only.
+     * Used by unit tests and callers that do not need cross-domain linking.
+     */
+    public DescriptionRenderer() {
+        this.atlas = null;
+        this.linkResolver = null;
+    }
+
+    /**
+     * Renderer wired to an {@link Atlas} and a {@link LinkResolver}. A
+     * binomial whose surface form resolves through {@code atlas} and whose
+     * resulting {@link EntityRef} carries an {@link com.naturalist.ddd.EntityName}
+     * subclass known to {@code linkResolver} is wrapped in an {@code <a>}
+     * tag. Misses on either side fall through to italics-only.
+     */
+    public DescriptionRenderer(Atlas atlas, LinkResolver linkResolver) {
+        this.atlas = atlas;
+        this.linkResolver = linkResolver;
+    }
+
     /**
      * Render the given description-level string as HTML. Returns an empty
      * string when the input is null or blank — the caller can emit the
@@ -129,7 +167,7 @@ public final class DescriptionRenderer {
         String binomial = m.group(1);
         String taxonomy = m.group(2);
         out.append("<header class=\"description-taxonomy\">")
-                .append("<span class=\"binomial\">").append(italicizeBinomials(binomial)).append("</span>")
+                .append("<span class=\"binomial\">").append(decorateBinomials(binomial)).append("</span>")
                 .append(" <span class=\"taxonomy\">").append(taxonomy).append("</span>")
                 .append("</header>\n");
         return escaped.substring(m.end());
@@ -176,7 +214,7 @@ public final class DescriptionRenderer {
     private void renderParagraph(String paragraph, StringBuilder out) {
         Matcher first = NUMBERED_ITEM.matcher(paragraph);
         if (!first.find() || !first.group(1).equals("1")) {
-            out.append("<p>").append(italicizeBinomials(paragraph)).append("</p>\n");
+            out.append("<p>").append(decorateBinomials(paragraph)).append("</p>\n");
             return;
         }
         int listStart = first.start();
@@ -185,7 +223,7 @@ public final class DescriptionRenderer {
             preface = preface.substring(0, preface.length() - 1).trim();
         }
         if (!preface.isEmpty()) {
-            out.append("<p>").append(italicizeBinomials(preface)).append("</p>\n");
+            out.append("<p>").append(decorateBinomials(preface)).append("</p>\n");
         }
 
         out.append("<ol>\n");
@@ -197,7 +235,7 @@ public final class DescriptionRenderer {
             if (item.endsWith(";") || item.endsWith(",")) {
                 item = item.substring(0, item.length() - 1).trim();
             }
-            out.append("  <li>").append(italicizeBinomials(item)).append("</li>\n");
+            out.append("  <li>").append(decorateBinomials(item)).append("</li>\n");
             afterLast = m.end();
         }
         out.append("</ol>\n");
@@ -207,25 +245,39 @@ public final class DescriptionRenderer {
             tail = tail.substring(1).trim();
         }
         if (!tail.isEmpty()) {
-            out.append("<p>").append(italicizeBinomials(tail)).append("</p>\n");
+            out.append("<p>").append(decorateBinomials(tail)).append("</p>\n");
         }
     }
 
-    // ── Binomial italics ─────────────────────────────────────────────────
+    // ── Binomial italics & atlas resolution ──────────────────────────────
 
-    private String italicizeBinomials(String text) {
+    private String decorateBinomials(String text) {
         String afterFull = BINOMIAL_PATTERN.matcher(text).replaceAll(matchResult -> {
             String genus = matchResult.group(1);
             String species = matchResult.group(2);
             String suffix = matchResult.group(3);
             String inner = genus + " " + species + (suffix == null ? "" : suffix);
-            return "<em>" + Matcher.quoteReplacement(inner) + "</em>";
+            return Matcher.quoteReplacement(decorate(inner));
         });
         return ABBREVIATED_BINOMIAL_PATTERN.matcher(afterFull).replaceAll(matchResult -> {
             String genus = matchResult.group(1);
             String species = matchResult.group(2);
-            return "<em>" + Matcher.quoteReplacement(genus + ". " + species) + "</em>";
+            return Matcher.quoteReplacement(decorate(genus + ". " + species));
         });
+    }
+
+    private String decorate(String surfaceForm) {
+        String italics = "<em>" + surfaceForm + "</em>";
+        Optional<String> url = urlFor(surfaceForm);
+        return url.map(href -> "<a href=\"" + attributeEscape(href) + "\">" + italics + "</a>").orElse(italics);
+    }
+
+    private Optional<String> urlFor(String surfaceForm) {
+        if (atlas == null || linkResolver == null) {
+            return Optional.empty();
+        }
+        Optional<EntityRef> ref = atlas.resolveAlias(surfaceForm);
+        return ref.flatMap(linkResolver::urlFor);
     }
 
     // ── HTML escape ──────────────────────────────────────────────────────
@@ -236,6 +288,21 @@ public final class DescriptionRenderer {
             char c = s.charAt(i);
             switch (c) {
                 case '&' -> out.append("&amp;");
+                case '<' -> out.append("&lt;");
+                case '>' -> out.append("&gt;");
+                default -> out.append(c);
+            }
+        }
+        return out.toString();
+    }
+
+    private static String attributeEscape(String s) {
+        StringBuilder out = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '&' -> out.append("&amp;");
+                case '"' -> out.append("&quot;");
                 case '<' -> out.append("&lt;");
                 case '>' -> out.append("&gt;");
                 default -> out.append(c);

@@ -407,7 +407,7 @@ and binomials italicised. A quick sweep of two or three other plants
 catches regressions. If the visual review surfaces issues, the renderer
 unit tests are the place to pin the regression before fixing it.
 
-### M7 — Description renderer atlas integration (forward linking)
+### M7 — Description renderer atlas integration (forward linking) ✅
 
 **Goal.** Wire `Atlas.resolveAlias` into the renderer. Surface forms that
 resolve become anchor tags pointing at the target's console URL; surface forms
@@ -430,6 +430,42 @@ remains italic with no link (no red clover entity exists), while "Apis
 mellifera" becomes a link to the apiary console once that domain's
 contribution is wired (or remains italic-only until then — graceful
 degradation is a tested behaviour).
+
+**Notes from execution.**
+
+- `LinkResolver` lives next to the renderer in
+  `domains/plants/plants-console/src/main/java/com/naturalist/plants/console/render/LinkResolver.java`,
+  for the same placement reason M6 documents (the renderer it serves
+  sits in `plants-console`). The class itself is domain-agnostic — it
+  imports nothing from `domains/plants`, only `kernels/atlas` and
+  `kernels/framework` (`EntityName`). When a future shared web module
+  centralises console rendering, both files move together.
+- The atlas dependency was added to `plants-console/pom.xml`. The
+  module's prior dependencies were `plants-api`, Spring web/context,
+  and the temporary `plants-test-context`; atlas joins them.
+- `DescriptionRenderer` keeps its no-arg constructor for graceful
+  degradation — unit tests that exercise pure formatting (the M6a
+  catalog smoke test class) construct the renderer with no atlas, and
+  the binomial pass produces italics only. The atlas-aware behaviour
+  has its own dedicated test class
+  (`DescriptionRendererAtlasTest`) covering: hit (anchor wraps the
+  italics), atlas miss (italics-only), resolver miss for an unmapped
+  `EntityName` subclass (italics-only), abbreviated binomial resolves
+  independently of the full form, and a mixed paragraph with a
+  resolved plant binomial, a resolved insect binomial, and two
+  unresolved binomials all in one input.
+- `PlantsController` assembles the atlas with a single
+  `PlantAtlasContribution` and a `LinkResolver` carrying URL
+  builders for `PlantName` (`/plants/{slug}`), `CompoundName`
+  (`/chemistry/{slug}`), and `InsectSpeciesName` (`/insects/{slug}`).
+  The chemistry and insects builders are wired now so a future
+  insects atlas contribution lights up automatically — no controller
+  change is required when M8/insects providers grow.
+- `htmlEscape` retained the M6 behaviour (escape `&`, `<`, `>`); a
+  new `attributeEscape` helper escapes `"` for the `href` value. URL
+  slugs from `EntityName` are kebab-case and therefore safe in
+  practice, but the escape is the cheapest defence against any
+  future builder that returns a path containing a double quote.
 
 ### M8 — Chemistry detail page back-references
 

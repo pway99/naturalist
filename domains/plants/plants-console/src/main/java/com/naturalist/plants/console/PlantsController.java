@@ -1,10 +1,16 @@
 package com.naturalist.plants.console;
 
+import com.naturalist.atlas.Atlas;
+import com.naturalist.atlas.AtlasAssembly;
+import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.ddd.EntityName;
+import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.PlantQuery;
 import com.naturalist.plants.PlantsTestContext;
+import com.naturalist.plants.atlas.PlantAtlasContribution;
 import com.naturalist.plants.cultivar.Cultivar;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.cultivar.CultivarQuery;
@@ -15,6 +21,7 @@ import com.naturalist.plants.management.PlantProgram;
 import com.naturalist.plants.management.PlantProgramName;
 import com.naturalist.plants.management.PlantProgramQuery;
 import com.naturalist.plants.console.render.DescriptionRenderer;
+import com.naturalist.plants.console.render.LinkResolver;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
@@ -25,6 +32,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Comparator;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -46,7 +55,17 @@ public class PlantsController {
         this.seedLineageQuery = context.seedLineageQuery();
         this.plantProgramQuery = context.plantProgramQuery();
         this.phytochemicalConstituentQuery = context.phytochemicalConstituentQuery();
-        this.descriptionRenderer = new DescriptionRenderer();
+        Atlas atlas = AtlasAssembly.from(new PlantAtlasContribution(plantQuery.plants()));
+        LinkResolver linkResolver = new LinkResolver(consoleUrlBuilders());
+        this.descriptionRenderer = new DescriptionRenderer(atlas, linkResolver);
+    }
+
+    private static Map<Class<? extends EntityName>, Function<EntityName, String>> consoleUrlBuilders() {
+        return Map.of(
+                PlantName.class, name -> "/plants/" + name.value(),
+                CompoundName.class, name -> "/chemistry/" + name.value(),
+                InsectSpeciesName.class, name -> "/insects/" + name.value()
+        );
     }
 
     // ── Plant catalog ────────────────────────────────────────────────────
