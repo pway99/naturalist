@@ -79,8 +79,7 @@ not exist in the chemistry catalog) are observed, not thrown. The atlas emits an
 `UnresolvedReferenceObservation` through the existing kernel `Observable` /
 `Observer` pipeline. A `MicrometerObserver` translates these to a counter.
 Diagnostic context (`source_name`, `target_name`) ships in tags, not in the metric
-name, with a bounded LRU to defend against cardinality runaway. Full forensic
-detail goes to structured logs.
+name, with a bounded LRU to defend against cardinality runaway.
 
 **Per-app composition, not a shared registry module.** The assembled `Atlas`
 instance lives in each app's composition root (currently `naturalist-web/console`,
@@ -375,6 +374,8 @@ emitted. Verify cardinality cap by injecting 300 distinct unresolved
 references and confirming the overflow tag captures the surplus.
 
 ### M10 — Eager startup validation pass
+
+(NOTE TO CLAUDE: Lets make this a scheduled task for continuos monitoring and fast startup)
 
 **Goal.** Surface deploy-time regressions early. At app startup, walk every
 known cross-aggregate reference once through the atlas; the observer

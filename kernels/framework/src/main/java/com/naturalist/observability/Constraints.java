@@ -117,6 +117,24 @@ public class Constraints {
         return add(new NotBlankConstraint<>(t, valueFunction, name));
     }
 
+    /**
+     * Asserts that the extracted string matches the project's standard kebab-case
+     * slug format — the same rule {@link com.naturalist.ddd.EntityName} subclasses
+     * apply to their own {@code value} string. Use for value objects that wrap a
+     * kebab slug (a {@code DomainId}, a future {@code Tag}, etc.) so the format
+     * rule is declared once instead of re-derived per type.
+     *
+     * <p>Null and empty values fail. Pair with {@link #notBlank} when the diagnostic
+     * message should distinguish &ldquo;missing&rdquo; from &ldquo;malformed&rdquo;.
+     */
+    public Constraints kebabFormat(String value, String name) {
+        return kebabFormat(value, Function.identity(), name);
+    }
+
+    public <T> Constraints kebabFormat(T t, Function<T, String> valueFunction, String name) {
+        return add(new KebabFormatConstraint<>(t, valueFunction, name));
+    }
+
     public <R> Constraints notNull(R value, String name) {
         return notNull(value, Function.identity(), name);
     }
