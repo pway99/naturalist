@@ -262,7 +262,7 @@ test scope, consumed via the atlas SPI only.
   abbreviated-binomial forms are silently dropped. This is the contribution's
   rule, not the kernel's.
 
-### M5 — Plants `EntityReferences<CompoundName>`
+### M5 — Plants `EntityReferences<CompoundName>` ✅
 
 **Goal.** First real inverse provider. Plants answers "who in plants references
 this compound?" by querying `PhytochemicalConstituentRepository`.
@@ -287,6 +287,31 @@ this compound?" by querying `PhytochemicalConstituentRepository`.
 `atlas.findReferencesTo(aristolochicAcidName)` returns plants entries grouped
 under `DomainId.PLANTS`. Empty for an unknown compound. Provider's `domain()`
 returns `DomainId.PLANTS`; `referenceType()` returns `CompoundName.class`.
+
+**Notes from execution.**
+
+- The provider lives at `plants-core/.../plants/atlas/PlantCompoundReferences.java`
+  and takes `PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery`
+  as its public collaborator — the same pattern M4 used for the forward
+  contribution (public namespace query rather than the package-private
+  repository, so the provider can sit in the `atlas` sub-package).
+- Per the plan's recommendation each match emits two `EntityRef`s — one
+  `PlantName`-typed (the navigation target) and one `PhytochemicalConstituentName`-typed
+  (the detail target). The two share `DomainId.Plants` and are
+  distinguishable by the runtime class of `EntityRef.name()`. Plants are
+  deduplicated via a `LinkedHashSet<PlantName>`; constituents are unique by
+  construction (one record per `(plant, compound)` pair) and are not
+  deduplicated.
+- `null` target short-circuits to `Stream.empty()`. The `Atlas` surface
+  already maps `null` to an empty result, but the underlying query's
+  argument observer would throw on `null` — the guard is the cheap defence
+  against any direct caller.
+- Test class lives in `com.naturalist.plants.phytochemistry` (sibling to the
+  package-private `PhytochemicalConstituentEntityQueryImpl` and the
+  protected-constructor `PhytochemicalConstituentEntityRepositoryMock`). The
+  M4 forward-contribution test sits in `com.naturalist.plants` for the
+  analogous reason; the package choice is dictated by which mock the test
+  needs to instantiate.
 
 ### M6 — Description renderer (formatting only, no atlas)
 
