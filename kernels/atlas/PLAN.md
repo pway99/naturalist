@@ -169,7 +169,7 @@ through the SPIs.
 following the pattern in any existing `*Test.java` in `kernels/framework-test/`
 or `kernels/field-notes/`. Module compiles. No domain code touched.
 
-### M2 — Forward SPI: `AtlasContribution` and `Atlas.resolveAlias`
+### M2 — Forward SPI: `AtlasContribution` and `Atlas.resolveAlias` ✅
 
 **Goal.** Define the forward-direction contract and the kernel's default
 in-memory assembly. This is what the console's description renderer eventually
