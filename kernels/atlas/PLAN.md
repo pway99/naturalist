@@ -313,7 +313,12 @@ returns `DomainId.PLANTS`; `referenceType()` returns `CompoundName.class`.
   analogous reason; the package choice is dictated by which mock the test
   needs to instantiate.
 
-### M6 — Description renderer (formatting only, no atlas)
+### M6 — Description renderer (formatting only, no atlas) — split mid-execution
+
+> **Status.** Mid-session split per the plan's "if a milestone proves bigger
+> than expected" guidance. The renderer code and the unit-test acceptance
+> (catalog smoke + worked-example assertions) shipped as M6a; the template
+> integration and visual-review acceptance remain in M6b.
 
 **Goal.** Address the legibility half independently. The renderer takes a
 `Description` level string and emits HTML with paragraph splits, italicised
@@ -343,6 +348,56 @@ as ≥3 short paragraphs with the leading taxonomic header above the body and
 binomials italicised. Renderer is unit-tested with golden-file fixtures over
 all four levels of every plant in `plants.json` (no exceptions thrown, no
 content lost — character count of the input is conserved or strictly grows).
+
+#### M6a — Renderer + unit tests ✅
+
+**What landed.**
+- `domains/plants/plants-console/src/main/java/com/naturalist/plants/console/render/DescriptionRenderer.java`.
+  Single public `render(String)` method. Pipeline: HTML escape → header
+  extraction (a leading binomial + em-dash + Family[: Subfamily[: Tribe]]
+  line is lifted into a `<header class="description-taxonomy">` chip) →
+  paragraph splitting on a documented closed-list of cue phrases (`At Oak
+  Vista`, `Management constraint`, `Bloom period at`, …) → numbered-list
+  lifting (`(1) ... (2) ...` becomes `<ol><li>…</li></ol>`) → binomial
+  italics (`Genus species`, `G. species`).
+- `domains/plants/plants-console/src/test/java/com/naturalist/plants/console/render/DescriptionRendererTest.java`.
+  Two-lens coverage: a catalog smoke test (every plant × every Durrell
+  level — no exceptions, output non-blank, char-count grows) plus pinned
+  worked-example assertions on `crimson-clover.university` (header chip,
+  ≥3 paragraphs, italicised binomials including `T. pratense`) and
+  `white-clover.university` (numbered list lifted to `<ol>` with four
+  `<li>`s, binomials italic inside list items). Plus HTML-escape and
+  null/blank-input cases.
+
+**Placement deviation from plan.**
+The plan called for the renderer in `naturalist-web/console`. The plants
+detail template lives in `plants-console`, and the dependency direction
+runs `naturalist-web/console → plants-console` — so for M6 the renderer
+sits in `plants-console` next to the template it serves. When M7 wires
+the atlas (which is assembled in `naturalist-web/console`'s composition
+root), the LinkResolver collaborator can be passed in by the controller
+without moving the renderer; if cross-domain reuse later forces a
+shared location, the move is mechanical.
+
+#### M6b — Template integration + visual review
+
+**Build.**
+- Inject `DescriptionRenderer` into `PlantsController` (constructor — keep
+  the manual-instantiation pattern in place until the controller becomes
+  Spring-managed). Pre-render each Durrell level in
+  `PlantsController.detail(...)` and pass the rendered HTML strings into
+  the model alongside the existing `plant` attribute.
+- Update `domains/plants/plants-console/src/main/jte/plants/detail.jte`
+  to consume the rendered HTML via `$unsafe{...}` (or the equivalent JTE
+  raw-HTML helper) instead of the current `${plant.description().X()}`
+  blocks.
+
+**Acceptance.** Boot the console (`mvn -pl naturalist-web/console
+spring-boot:run` in the user's workflow), navigate to
+`/plants/crimson-clover`, confirm the university description renders as
+≥3 short paragraphs with the leading taxonomic header above the body
+and binomials italicised. Sweep two or three other plants for
+regressions.
 
 ### M7 — Description renderer atlas integration (forward linking)
 
