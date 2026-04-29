@@ -14,6 +14,7 @@ import com.naturalist.plants.heritage.SeedLineageQuery;
 import com.naturalist.plants.management.PlantProgram;
 import com.naturalist.plants.management.PlantProgramName;
 import com.naturalist.plants.management.PlantProgramQuery;
+import com.naturalist.plants.console.render.DescriptionRenderer;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
@@ -35,6 +36,7 @@ public class PlantsController {
     private final SeedLineageQuery seedLineageQuery;
     private final PlantProgramQuery plantProgramQuery;
     private final PhytochemicalConstituentQuery phytochemicalConstituentQuery;
+    private final DescriptionRenderer descriptionRenderer;
 
     PlantsController() {
         //TODO:: This will eventually be a spring managed bean
@@ -44,6 +46,7 @@ public class PlantsController {
         this.seedLineageQuery = context.seedLineageQuery();
         this.plantProgramQuery = context.plantProgramQuery();
         this.phytochemicalConstituentQuery = context.phytochemicalConstituentQuery();
+        this.descriptionRenderer = new DescriptionRenderer();
     }
 
     // ── Plant catalog ────────────────────────────────────────────────────
@@ -74,10 +77,15 @@ public class PlantsController {
         var constituents = phytochemicalConstituentQuery.constituents().forPlantName(plantName).stream()
                 .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
                 .toList();
+        var description = plant.get().description();
         model.addAttribute("plant", plant.get());
         model.addAttribute("cultivars", cultivars);
         model.addAttribute("programs", programs);
         model.addAttribute("constituents", constituents);
+        model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
+        model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
+        model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
+        model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         return "plants/detail";
     }
 

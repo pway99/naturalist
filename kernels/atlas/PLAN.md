@@ -381,23 +381,31 @@ shared location, the move is mechanical.
 
 #### M6b — Template integration + visual review
 
-**Build.**
-- Inject `DescriptionRenderer` into `PlantsController` (constructor — keep
-  the manual-instantiation pattern in place until the controller becomes
-  Spring-managed). Pre-render each Durrell level in
-  `PlantsController.detail(...)` and pass the rendered HTML strings into
-  the model alongside the existing `plant` attribute.
-- Update `domains/plants/plants-console/src/main/jte/plants/detail.jte`
-  to consume the rendered HTML via `$unsafe{...}` (or the equivalent JTE
-  raw-HTML helper) instead of the current `${plant.description().X()}`
-  blocks.
+**What landed (wiring).**
+- `PlantsController` now owns a `DescriptionRenderer` field, instantiated
+  in the constructor next to the queries (matching the
+  manual-instantiation pattern already in place — promotion to Spring DI
+  is out of scope). `PlantsController.detail(...)` pre-renders all four
+  Durrell levels and exposes them as `descriptionPreschool`,
+  `descriptionElementary`, `descriptionSecondary`,
+  `descriptionUniversity` model attributes.
+- `domains/plants/plants-console/src/main/jte/plants/detail.jte` declares
+  the four new `@param String descriptionX = ""` parameters (each
+  defaulted to empty so existing template tests that pass only the
+  `plant` attribute continue to render). The four `<details>` blocks
+  emit the pre-rendered HTML via `$unsafe{...}`, falling back to the
+  original `<p>${plant.description().X()}</p>` block when the param is
+  blank — that fallback keeps the smoke template test from regressing
+  while the controller is the only call site that supplies the new
+  params.
 
-**Acceptance.** Boot the console (`mvn -pl naturalist-web/console
-spring-boot:run` in the user's workflow), navigate to
-`/plants/crimson-clover`, confirm the university description renders as
-≥3 short paragraphs with the leading taxonomic header above the body
-and binomials italicised. Sweep two or three other plants for
-regressions.
+**Acceptance — pending user visual review.** I can't drive a browser
+from here. The user should boot the console, navigate to
+`/plants/crimson-clover`, and verify the university description renders
+as ≥3 short paragraphs with the leading taxonomic header above the body
+and binomials italicised. A quick sweep of two or three other plants
+catches regressions. If the visual review surfaces issues, the renderer
+unit tests are the place to pin the regression before fixing it.
 
 ### M7 — Description renderer atlas integration (forward linking)
 

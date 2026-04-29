@@ -9,6 +9,10 @@
 @param List<Cultivar> cultivars = java.util.List.of()
 @param List<PlantProgram> programs = java.util.List.of()
 @param List<PhytochemicalConstituent> constituents = java.util.List.of()
+@param String descriptionPreschool = ""
+@param String descriptionElementary = ""
+@param String descriptionSecondary = ""
+@param String descriptionUniversity = ""
 
 @template.layout.page(title = plant.name().value(), content = @`
     <a href="/plants" class="naturalist-backlink">&larr; Back to catalog</a>
@@ -28,19 +32,19 @@
         <h2>Description</h2>
         <details open>
             <summary><strong>Preschool</strong></summary>
-            <p>${plant.description().preschool()}</p>
+            $unsafe{descriptionPreschool.isEmpty() ? "<p>" + plant.description().preschool() + "</p>" : descriptionPreschool}
         </details>
         <details>
             <summary><strong>Elementary</strong></summary>
-            <p>${plant.description().elementary()}</p>
+            $unsafe{descriptionElementary.isEmpty() ? "<p>" + plant.description().elementary() + "</p>" : descriptionElementary}
         </details>
         <details>
             <summary><strong>Secondary</strong></summary>
-            <p>${plant.description().secondary()}</p>
+            $unsafe{descriptionSecondary.isEmpty() ? "<p>" + plant.description().secondary() + "</p>" : descriptionSecondary}
         </details>
         <details>
             <summary><strong>University</strong></summary>
-            <p>${plant.description().university()}</p>
+            $unsafe{descriptionUniversity.isEmpty() ? "<p>" + plant.description().university() + "</p>" : descriptionUniversity}
         </details>
     </section>
 
