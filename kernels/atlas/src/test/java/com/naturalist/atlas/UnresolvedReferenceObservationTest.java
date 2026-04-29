@@ -1,10 +1,11 @@
 package com.naturalist.atlas;
 
 import com.naturalist.atlas.DomainId.Plants;
+import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.TestPlantsIdentifiers;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,15 +14,16 @@ class UnresolvedReferenceObservationTest {
 
     private static final Observer observer = Observer.forClass(UnresolvedReferenceObservationTest.class);
 
-    private static final EntityRef SOURCE =
-            new EntityRef(new Plants(), PlantName.of("california-pipevine"));
+    private static final EntityRef SOURCE = new EntityRef(
+            new Plants(), TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
+    private static final String UNKNOWN_SLUG = Compounds.NotFound.name.value();
 
     @Test
     void wellFormedObservationPassesInvariants() {
         UnresolvedReferenceObservation event = new UnresolvedReferenceObservation(
                 SOURCE,
                 CompoundName.class,
-                "made-up-compound",
+                UNKNOWN_SLUG,
                 "slug not present in domain catalogue"
         );
 
@@ -36,7 +38,7 @@ class UnresolvedReferenceObservationTest {
         UnresolvedReferenceObservation event = new UnresolvedReferenceObservation(
                 null,
                 CompoundName.class,
-                "made-up-compound",
+                UNKNOWN_SLUG,
                 "slug not present in domain catalogue"
         );
 
@@ -52,7 +54,7 @@ class UnresolvedReferenceObservationTest {
         UnresolvedReferenceObservation event = new UnresolvedReferenceObservation(
                 SOURCE,
                 null,
-                "made-up-compound",
+                UNKNOWN_SLUG,
                 "slug not present in domain catalogue"
         );
 
@@ -84,7 +86,7 @@ class UnresolvedReferenceObservationTest {
         UnresolvedReferenceObservation event = new UnresolvedReferenceObservation(
                 SOURCE,
                 CompoundName.class,
-                "made-up-compound",
+                UNKNOWN_SLUG,
                 ""
         );
 
@@ -100,13 +102,13 @@ class UnresolvedReferenceObservationTest {
         UnresolvedReferenceObservation event = new UnresolvedReferenceObservation(
                 SOURCE,
                 CompoundName.class,
-                "made-up-compound",
+                UNKNOWN_SLUG,
                 "slug not present in domain catalogue"
         );
 
         assertThat(event.source()).isEqualTo(SOURCE);
         assertThat(event.targetType()).isEqualTo(CompoundName.class);
-        assertThat(event.targetSlug()).isEqualTo("made-up-compound");
+        assertThat(event.targetSlug()).isEqualTo(UNKNOWN_SLUG);
         assertThat(event.reason()).isEqualTo("slug not present in domain catalogue");
     }
 }

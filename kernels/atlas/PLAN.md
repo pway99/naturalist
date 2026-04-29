@@ -196,7 +196,7 @@ overlapping contributions from two domains are detected at assembly with a
 deterministic resolution rule (longest match wins; equal-length match is an
 assembly error). No domain wiring yet — tests use synthetic contributions.
 
-### M3 — Inverse SPI: `EntityReferences<T>` and `Atlas.findReferencesTo`
+### M3 — Inverse SPI: `EntityReferences<T>` and `Atlas.findReferencesTo` ✅
 
 **Goal.** Define the inverse-direction contract. This is what the chemistry
 detail page eventually calls.

@@ -4,6 +4,7 @@ import com.naturalist.atlas.DomainId.Plants;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.PlantName;
+import com.naturalist.plants.TestPlantsIdentifiers;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +15,8 @@ class EntityRefTest {
 
     @Test
     void wellFormedRefPassesInvariants() {
-        EntityRef ref = new EntityRef(new Plants(), PlantName.of("california-pipevine"));
+        EntityRef ref = new EntityRef(new Plants(),
+                TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
 
         InvariantObservation result = observer.forMethod("wellFormedRefPassesInvariants")
                 .observable(ref, "ref");
@@ -24,7 +26,8 @@ class EntityRefTest {
 
     @Test
     void nullDomainViolatesInvariants() {
-        EntityRef ref = new EntityRef(null, PlantName.of("california-pipevine"));
+        EntityRef ref = new EntityRef(null,
+                TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
 
         InvariantObservation result = observer.forMethod("nullDomainViolatesInvariants")
                 .observable(ref, "ref");
@@ -57,9 +60,11 @@ class EntityRefTest {
 
     @Test
     void displayLabelReturnsTheSlug() {
-        EntityRef ref = new EntityRef(new Plants(), PlantName.of("crimson-clover"));
+        EntityRef ref = new EntityRef(new Plants(),
+                TestPlantsIdentifiers.Plants.Borage.name);
 
-        assertThat(ref.displayLabel()).isEqualTo("crimson-clover");
+        assertThat(ref.displayLabel())
+                .isEqualTo(TestPlantsIdentifiers.Plants.Borage.name.value());
     }
 
     @Test
@@ -71,9 +76,12 @@ class EntityRefTest {
 
     @Test
     void valueEqualityIsByContent() {
-        EntityRef a = new EntityRef(new Plants(), PlantName.of("california-pipevine"));
-        EntityRef b = new EntityRef(new Plants(), PlantName.of("california-pipevine"));
-        EntityRef c = new EntityRef(new Plants(), PlantName.of("crimson-clover"));
+        EntityRef a = new EntityRef(new Plants(),
+                TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
+        EntityRef b = new EntityRef(new Plants(),
+                TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
+        EntityRef c = new EntityRef(new Plants(),
+                TestPlantsIdentifiers.Plants.Borage.name);
 
         assertThat(a).isEqualTo(b);
         assertThat(a).isNotEqualTo(c);

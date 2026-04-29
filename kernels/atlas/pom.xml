@@ -27,5 +27,10 @@
             <artifactId>framework-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>identifiers-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
