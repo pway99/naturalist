@@ -188,7 +188,7 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | M10 — Eager startup validation | pending | revised — coverage assertion, not dangle hunt |
 | M11 — ArchUnit guard | pending | unchanged |
 | M12 — Documentation and ADR | pending | unchanged in shape, content updated |
-| — | new | **M1.5** — `CommonName` value object in field-notes |
+| — | ✅ shipped | **M1.5** — `CommonName` value object in field-notes |
 | — | new | **M2′** — Atlas.search + token index |
 | — | new | **M4′** — Plants searchable contribution (with common names) |
 | — | new | **M7′** — Renderer search affordances |
@@ -202,7 +202,7 @@ record. New milestone bodies follow.
 
 ## New milestone bodies
 
-### M1.5 — `CommonName` value object in field-notes
+### M1.5 — `CommonName` value object in field-notes ✅
 
 **Goal.** Establish the typed common-name vocabulary that M4′ will harvest as
 search tokens. Lands before the search-direction work because every
