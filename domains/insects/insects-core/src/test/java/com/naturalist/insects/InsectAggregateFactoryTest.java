@@ -1,6 +1,5 @@
 package com.naturalist.insects;
 
-import com.naturalist.RandomValue;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observability.Observer;

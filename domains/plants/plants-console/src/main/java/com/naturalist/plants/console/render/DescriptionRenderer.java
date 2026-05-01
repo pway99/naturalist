@@ -1,10 +1,6 @@
 package com.naturalist.plants.console.render;
 
-import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.EntityRef;
-import com.naturalist.atlas.MatchKind;
-import com.naturalist.atlas.SearchHit;
-import com.naturalist.atlas.SearchResults;
+import com.naturalist.atlas.*;
 
 import java.util.ArrayList;
 import java.util.List;

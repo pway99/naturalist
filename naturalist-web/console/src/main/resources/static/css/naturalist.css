@@ -162,7 +162,7 @@ main > section:not(.life-stages):not(.bare),
 }
 .plate p, .plate li, .plate span:not(.badge), .plate a, .plate em, .plate strong,
 .plate dt, .plate dd, .plate h2, .plate h3, .plate h4, .plate summary, .plate div,
-.plate code,
+.plate code, .plate label, .plate small,
 .entity-grid article p, .entity-grid article li, .entity-grid article span:not(.badge),
 .entity-grid article a, .entity-grid article em, .entity-grid article strong,
 .entity-grid article h2, .entity-grid article h3, .entity-grid article header strong,
@@ -174,6 +174,7 @@ main > section:not(.life-stages) h2, main > section:not(.life-stages) h3,
 main > section:not(.life-stages) h4, main > section:not(.life-stages) dt,
 main > section:not(.life-stages) dd, main > section:not(.life-stages) div,
 main > section:not(.life-stages) summary, main > section:not(.life-stages) code,
+main > section:not(.life-stages) label, main > section:not(.life-stages) small,
 .description-tabs p, .description-tabs a, .description-tabs span:not(.badge) {
     color: var(--sepia-ink) !important;
     text-shadow: none !important;
@@ -675,4 +676,42 @@ figure.compound-depiction img {
     border: 1px solid var(--sepia-rule);
     border-radius: 0.25rem;
     padding: 0.5rem;
+}
+
+/* Search page */
+.search-form {
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem 0 1.5rem;
+}
+.search-form label {
+    font-weight: 600;
+    margin: 0;
+}
+.search-form input[type="search"] {
+    margin: 0;
+}
+.search-form button {
+    margin: 0;
+    width: auto;
+}
+.search-domain-group {
+    margin-top: 1.25rem;
+}
+.search-domain-group ul {
+    list-style: none;
+    padding-left: 0;
+}
+.search-domain-group li {
+    padding: 0.25rem 0;
+}
+.search-matched-hint {
+    margin-left: 0.5rem;
+    opacity: 0.75;
+    font-style: italic;
+}
+.search-empty-state {
+    margin-top: 1.25rem;
 }

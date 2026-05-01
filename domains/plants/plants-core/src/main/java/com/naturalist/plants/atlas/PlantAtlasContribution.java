@@ -1,7 +1,6 @@
 package com.naturalist.plants.atlas;
 
 import com.naturalist.atlas.AtlasContribution;
-import com.naturalist.atlas.AtlasContribution.SearchableEntity;
 import com.naturalist.atlas.DomainId;
 import com.naturalist.atlas.EntityRef;
 import com.naturalist.fieldnotes.CommonName;

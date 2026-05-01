@@ -193,7 +193,7 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | — | ✅ shipped | **M4′** — Plants searchable contribution (with common names) |
 | — | new | **M7′** — Renderer search affordances |
 | — | new | **M-Search-UI-A** — persistent search box in console layout |
-| — | new | **M-Search-UI-B** — search results page |
+| — | ✅ shipped | **M-Search-UI-B** — search results page |
 
 Superseded milestones keep their existing text in PLAN.md as historical
 record. New milestone bodies follow.

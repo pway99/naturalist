@@ -2,11 +2,7 @@ package com.naturalist.insects.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.ddd.EntityName;
-import com.naturalist.insects.FunctionalGuild;
-import com.naturalist.insects.InsectEntityCollections;
-import com.naturalist.insects.InsectQuery;
-import com.naturalist.insects.InsectSpeciesName;
-import com.naturalist.insects.InsectsTestContext;
+import com.naturalist.insects.*;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;

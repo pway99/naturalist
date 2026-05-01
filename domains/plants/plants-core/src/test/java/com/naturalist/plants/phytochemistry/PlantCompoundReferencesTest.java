@@ -1,11 +1,7 @@
 package com.naturalist.plants.phytochemistry;
 
-import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.AtlasContribution;
+import com.naturalist.atlas.*;
 import com.naturalist.atlas.inmem.AtlasAssembly;
-import com.naturalist.atlas.DomainId;
-import com.naturalist.atlas.EntityRef;
-import com.naturalist.atlas.EntityReferences;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistDatabaseExtension;

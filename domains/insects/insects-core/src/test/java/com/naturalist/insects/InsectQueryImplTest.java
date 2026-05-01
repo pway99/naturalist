@@ -6,7 +6,8 @@ import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InsectQueryImplTest {
     private static final Observer observer = Observer.forClass(InsectQueryImplTest.class);

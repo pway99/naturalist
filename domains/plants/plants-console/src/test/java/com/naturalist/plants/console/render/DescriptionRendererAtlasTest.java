@@ -1,22 +1,13 @@
 package com.naturalist.plants.console.render;
 
-import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.DomainId;
-import com.naturalist.atlas.EntityRef;
-import com.naturalist.atlas.MatchKind;
-import com.naturalist.atlas.SearchHit;
-import com.naturalist.atlas.SearchResults;
+import com.naturalist.atlas.*;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.plants.PlantName;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;

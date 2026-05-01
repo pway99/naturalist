@@ -1,27 +1,11 @@
 package com.naturalist.atlas.inmem;
 
-import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.AtlasContribution;
+import com.naturalist.atlas.*;
 import com.naturalist.atlas.AtlasContribution.SearchableEntity;
-import com.naturalist.atlas.DomainId;
-import com.naturalist.atlas.EntityRef;
-import com.naturalist.atlas.EntityReferences;
-import com.naturalist.atlas.MatchKind;
-import com.naturalist.atlas.SearchHit;
-import com.naturalist.atlas.SearchResults;
-import com.naturalist.atlas.UnresolvedSearchObservation;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Observer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

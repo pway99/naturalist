@@ -1,17 +1,10 @@
 package com.naturalist.atlas.inmem;
 
-import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.AtlasContribution;
+import com.naturalist.atlas.*;
 import com.naturalist.atlas.AtlasContribution.SearchableEntity;
-import com.naturalist.atlas.DomainId;
 import com.naturalist.atlas.DomainId.Chemistry;
 import com.naturalist.atlas.DomainId.Insects;
 import com.naturalist.atlas.DomainId.Plants;
-import com.naturalist.atlas.EntityRef;
-import com.naturalist.atlas.EntityReferences;
-import com.naturalist.atlas.MatchKind;
-import com.naturalist.atlas.SearchHit;
-import com.naturalist.atlas.SearchResults;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.EntityName;

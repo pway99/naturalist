@@ -1,13 +1,8 @@
 package com.naturalist.plants;
 
-import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.inmem.AtlasAssembly;
+import com.naturalist.atlas.*;
 import com.naturalist.atlas.AtlasContribution.SearchableEntity;
-import com.naturalist.atlas.DomainId;
-import com.naturalist.atlas.EntityRef;
-import com.naturalist.atlas.MatchKind;
-import com.naturalist.atlas.SearchHit;
-import com.naturalist.atlas.SearchResults;
+import com.naturalist.atlas.inmem.AtlasAssembly;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
