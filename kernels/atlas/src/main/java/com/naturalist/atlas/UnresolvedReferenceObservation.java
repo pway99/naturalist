@@ -12,11 +12,9 @@ import java.util.function.Consumer;
  * validation — never thrown, always observed.
  * <p>
  * The producer is whichever atlas call site detects the miss: a startup
- * walker (M10), a runtime forward-resolution attempt against
- * {@code Atlas.resolveAlias}, or a fan-out provider that surfaces a
- * dangling target. The consumer is configured per app — typically a
- * Micrometer counter and a structured log line wired in the console's
- * composition root (M9).
+ * walker (M10) or a fan-out provider that surfaces a dangling target. The
+ * consumer is configured per app — typically a Micrometer counter and a
+ * structured log line wired in the console's composition root (M9).
  * <p>
  * The {@code targetType} carries the {@link EntityName} subclass the
  * source aggregate was pointing at; {@code targetSlug} carries the literal
@@ -41,9 +39,9 @@ public record UnresolvedReferenceObservation(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .valueObject(this, UnresolvedReferenceObservation::source, "source")
-                .notNull(this, UnresolvedReferenceObservation::targetType, "targetType")
-                .notBlank(this, UnresolvedReferenceObservation::targetSlug, "targetSlug")
-                .notBlank(this, UnresolvedReferenceObservation::reason, "reason");
+                .valueObject(source, "source")
+                .notNull(targetType, "targetType")
+                .notBlank(targetSlug, "targetSlug")
+                .notBlank(reason, "reason");
     }
 }

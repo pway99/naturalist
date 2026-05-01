@@ -1,8 +1,8 @@
 package com.naturalist.plants.phytochemistry;
 
 import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.AtlasAssembly;
 import com.naturalist.atlas.AtlasContribution;
+import com.naturalist.atlas.inmem.AtlasAssembly;
 import com.naturalist.atlas.DomainId;
 import com.naturalist.atlas.EntityRef;
 import com.naturalist.atlas.EntityReferences;

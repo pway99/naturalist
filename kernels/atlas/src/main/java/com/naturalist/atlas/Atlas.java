@@ -4,20 +4,17 @@ import com.naturalist.ddd.EntityName;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
- * Public-facing query interface for the atlas — the cross-domain navigation
- * surface the management console renders against.
+ * Public-facing query interface for the atlas — the cross-domain
+ * navigation surface the management console renders against.
  * <p>
- * The atlas is a routing table, not a knowledge graph: it does not ingest
- * {@code (source, target, kind)} triples at startup. It answers two
- * complementary questions:
+ * The atlas answers two complementary questions:
  * <ul>
- *   <li><b>Forward</b> ({@link #resolveAlias}) — "given this surface form in
- *       human prose, what entity does it point at?" Resolved from a
- *       precomputed map of aliases registered by {@link AtlasContribution}s.</li>
+ *   <li><b>Search</b> ({@link #search}) — "what does the catalog know
+ *       about this term?" Many possible answers, including none. Empty is
+ *       a first-class state and the catalog's growth signal.</li>
  *   <li><b>Inverse</b> ({@link #domainsReferencing}, {@link #findReferencesTo})
  *       — "which entities, in which domains, reference this entity?"
  *       Routed to live {@link EntityReferences} providers indexed by
@@ -25,59 +22,68 @@ import java.util.Set;
  * </ul>
  *
  * <h2>Construction</h2>
- * Apps obtain an {@code Atlas} via {@link AtlasAssembly#from} in their
- * composition root, passing the {@link AtlasContribution}s of the domains
- * they include. The kernel ships one default in-memory implementation
- * ({@link DefaultAtlas}); apps with bespoke needs (e.g. a remote registry)
- * may implement {@code Atlas} directly.
+ * Apps obtain an {@code Atlas} via an adapter-specific assembly factory in
+ * their composition root, passing the {@link AtlasContribution}s of the
+ * domains they include. The kernel ships an in-memory adapter in
+ * {@code kernels/atlas-inmem} (the {@code AtlasAssembly} factory there);
+ * apps with bespoke needs (e.g. a Lucene-backed registry) may implement
+ * {@code Atlas} directly in a sibling adapter module without disturbing
+ * contributing domains or consumers.
  *
  * <h2>Thread-safety</h2>
- * The default implementation is immutable post-assembly and safe for
- * concurrent reads. Custom implementations are expected to honour the same
- * contract — {@code resolveAlias} is a hot path on the description renderer
- * and must not block.
+ * The in-memory adapter is immutable post-assembly and safe for concurrent
+ * reads. Other adapters define their own thread-safety contracts.
  */
 public interface Atlas {
 
     /**
-     * Resolve a surface form to the typed {@link EntityRef} a domain
-     * registered for it.
+     * Run a search against the assembled token index.
      * <p>
      * <b>Matching rules:</b>
      * <ul>
-     *   <li>Exact-string match against the registered alias. No prefix,
-     *       suffix, or substring search; the renderer is responsible for
-     *       carving prose into candidate spans before calling this method.</li>
-     *   <li>Case-sensitive — {@code "Aristolochia"} (the genus) and
-     *       {@code "aristolochia"} (a wrong-case form, or a stem inside
-     *       {@code "aristolochic acid"}) are distinct surface forms.
-     *       Genus capitalisation is meaningful in living taxonomy and the
-     *       atlas preserves that.</li>
-     *   <li>Whitespace and punctuation are not normalised. {@code "A. californica"}
-     *       and {@code "A.californica"} are different surface forms; if both
-     *       should resolve, the contribution must register both.</li>
-     *   <li>{@code null} returns {@link Optional#empty()} rather than throwing,
-     *       so callers can pass arbitrary regex match groups without a
-     *       null-check.</li>
+     *   <li>Case-insensitive throughout — {@code "ARISTOLOCHIA"},
+     *       {@code "Aristolochia"}, and {@code "aristolochia"} are
+     *       equivalent. Genus capitalisation is a presentation concern
+     *       (the renderer italicises {@code Genus species} correctly);
+     *       the search is liberal in what it accepts.</li>
+     *   <li>The query is split on whitespace and ASCII punctuation; each
+     *       token is looked up independently and the results are merged.
+     *       {@code "A. californica"} therefore matches against both
+     *       {@code "a"} and {@code "californica"}.</li>
+     *   <li>An exact match against an entity's slug yields a hit with
+     *       {@link MatchKind#EXACT_SLUG}; an exact match against a
+     *       non-slug token yields {@link MatchKind#EXACT_TOKEN}; a
+     *       prefix match against any token yields
+     *       {@link MatchKind#PREFIX}.</li>
+     *   <li>Multiple tokens may match the same entity; the result
+     *       deduplicates per {@code (EntityRef, MatchKind)} so each
+     *       entity surfaces at most once per kind.</li>
+     *   <li>Hit ordering inside the returned {@link SearchResults} is by
+     *       {@link MatchKind#ordinal()} then by the slug's natural
+     *       ordering, for deterministic rendering.</li>
+     *   <li>{@code null} or blank input returns an empty
+     *       {@link SearchResults} without firing an
+     *       {@link UnresolvedSearchObservation} — the empty input is
+     *       not a search.</li>
+     *   <li>A non-empty input that resolves to no hits returns an empty
+     *       {@link SearchResults} <em>and</em> fires one
+     *       {@link UnresolvedSearchObservation} so observers can record
+     *       the catalog's growth signal.</li>
      * </ul>
      *
-     * @param text the literal surface form to look up; may be {@code null}
-     * @return the registered {@link EntityRef}, or {@link Optional#empty()}
-     *         if no contribution registered this exact form
+     * @param text the search input; may be {@code null}
+     * @return the matching hits in the documented order, never null
      */
-    Optional<EntityRef> resolveAlias(String text);
+    SearchResults search(String text);
 
     /**
      * The set of domains that have registered an {@link EntityReferences}
-     * provider for the given {@link EntityName} subclass — the coarse routing
-     * answer used when the console wants to know, before doing any fan-out,
-     * whether anyone holds back-references at all.
+     * provider for the given {@link EntityName} subclass — the coarse
+     * routing answer used when the console wants to know, before doing any
+     * fan-out, whether anyone holds back-references at all.
      * <p>
-     * Matching is by exact class equality; a provider declaring
-     * {@code referenceType() == CompoundName.class} is included for
-     * {@code domainsReferencing(CompoundName.class)} but not for any
-     * supertype query. {@code null} returns an empty set rather than
-     * throwing, mirroring {@link #resolveAlias}.
+     * Matching is by exact class equality. {@code null} returns an empty
+     * set rather than throwing.
      *
      * @param referenceType the target type to look up; may be {@code null}
      * @return the set of domains holding providers for this type, never null
@@ -93,17 +99,16 @@ public interface Atlas {
      * <b>Result shape:</b>
      * <ul>
      *   <li>Domains with no matching providers do not appear in the map.</li>
-     *   <li>Domains whose providers all return empty streams do not appear in
-     *       the map. The contract distinguishes "no references" (empty map,
-     *       suppressed panel per M8) from "no provider" — both yield no
+     *   <li>Domains whose providers all return empty streams do not appear
+     *       in the map. The contract distinguishes "no references" (empty
+     *       map, suppressed panel) from "no provider" — both yield no
      *       entries, which is the correct rendering.</li>
-     *   <li>{@link EntityRef}s within each domain's list are returned in the
-     *       order their provider yielded them; if a domain registers more
-     *       than one provider, the lists are concatenated in registration
-     *       order.</li>
+     *   <li>{@link EntityRef}s within each domain's list are returned in
+     *       the order their provider yielded them; if a domain registers
+     *       more than one provider, the lists are concatenated in
+     *       registration order.</li>
      *   <li>A provider that throws is observed (M9) and excluded from the
-     *       result; peer providers' results are returned regardless. Page
-     *       renders gracefully degrade rather than fail.</li>
+     *       result; peer providers' results are returned regardless.</li>
      *   <li>{@code null} target returns an empty map.</li>
      * </ul>
      *

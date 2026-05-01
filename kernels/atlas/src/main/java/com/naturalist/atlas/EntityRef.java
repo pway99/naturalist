@@ -40,7 +40,7 @@ public record EntityRef(DomainId domain, EntityName name) implements ValueObject
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .valueObject(this, EntityRef::domain, "domain")
+                .valueObject(domain, "domain")
                 .entityName(name, "name");
     }
 }

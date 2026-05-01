@@ -21,6 +21,11 @@
     "nativeBioregions": [
       "sacramento-valley",
       "coast-ranges"
+    ],
+    "commonNames": [
+      {"label": "California Pipevine", "locale": "en"},
+      {"label": "Pipevine", "locale": "en"},
+      {"label": "California Dutchman's pipe", "locale": "en"}
     ]
   },
   {
@@ -42,7 +47,11 @@
       "GROUND_COVER"
     ],
     "lifeForm": "SHRUB",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": [
+      {"label": "Scented geranium", "locale": "en"},
+      {"label": "Rose geranium", "locale": "en"}
+    ]
   },
   {
     "name": "crimson-clover",
@@ -64,7 +73,11 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": [
+      {"label": "Crimson clover", "locale": "en"},
+      {"label": "Italian clover", "locale": "en"}
+    ]
   },
   {
     "name": "white-clover",
@@ -88,7 +101,12 @@
       "GROUND_COVER"
     ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": [
+      {"label": "White clover", "locale": "en"},
+      {"label": "Dutch clover", "locale": "en"},
+      {"label": "Ladino clover", "locale": "en"}
+    ]
   },
   {
     "name": "sweet-alyssum",
@@ -109,7 +127,8 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "dill",
@@ -130,7 +149,8 @@
       "INSECT_LARVAL_HOST"
     ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "borage",
@@ -150,7 +170,8 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "wild-violet",
@@ -172,7 +193,8 @@
       "GROUND_COVER"
     ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "creeping-thyme",
@@ -193,7 +215,8 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "sweet-pea",
@@ -215,7 +238,8 @@
       "NITROGEN_FIXER"
     ],
     "lifeForm": "VINE",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "tall-fescue",
@@ -236,7 +260,8 @@
       "GROUND_COVER"
     ],
     "lifeForm": "GRASS",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "tomato",
@@ -256,7 +281,8 @@
       "FOOD_CROP"
     ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "passiflora-edulis",
@@ -278,7 +304,8 @@
       "KEYSTONE_HOST"
     ],
     "lifeForm": "VINE",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "ornamental-passiflora",
@@ -300,7 +327,8 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "VINE",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "dianthus",
@@ -321,7 +349,8 @@
       "ORNAMENTAL"
     ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "sage",
@@ -341,7 +370,8 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "PERENNIAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "oh-henry-peach",
@@ -362,7 +392,8 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "TREE",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "citrus",
@@ -383,7 +414,8 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "TREE",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   },
   {
     "name": "wild-radish",
@@ -403,6 +435,7 @@
       "POLLINATOR_SUPPORT"
     ],
     "lifeForm": "ANNUAL",
-    "nativeBioregions": []
+    "nativeBioregions": [],
+    "commonNames": []
   }
 ]

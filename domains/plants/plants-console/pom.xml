@@ -33,6 +33,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>atlas-inmem</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>plants-api</artifactId>
         </dependency>
         <dependency>

@@ -2,6 +2,9 @@ package com.naturalist.plants.console.render;
 
 import com.naturalist.atlas.Atlas;
 import com.naturalist.atlas.EntityRef;
+import com.naturalist.atlas.MatchKind;
+import com.naturalist.atlas.SearchHit;
+import com.naturalist.atlas.SearchResults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +18,15 @@ import java.util.regex.Pattern;
  * binomials, lifted numbered enumerations, and (when present) a typographic
  * header chip carrying the leading taxonomic line.
  *
- * <p>Per the M7 milestone in {@code kernels/atlas/PLAN.md}, the binomial-
- * italics pass is also an atlas-resolution pass: when an {@link Atlas} and
- * {@link LinkResolver} are supplied, italicised binomials whose surface form
- * resolves through the atlas <em>and</em> whose target's
+ * <p>The binomial-italics pass is also an atlas-resolution pass: when an
+ * {@link Atlas} and {@link LinkResolver} are supplied, italicised binomials
+ * whose surface form resolves to a single unambiguous entity through the
+ * atlas's search index <em>and</em> whose target's
  * {@link com.naturalist.ddd.EntityName} subclass is known to the resolver are
  * additionally wrapped in an {@code <a>} tag pointing at the target's console
- * page. Surface forms that do not resolve stay as italics-only.
+ * page. Ambiguous resolutions (multiple equally-strong hits) and prefix-only
+ * matches stay italics-only — the renderer never guesses which of two
+ * {@code Trifolium} species the prose meant.
  *
  * <h2>Pipeline</h2>
  * <ol>
@@ -112,9 +117,15 @@ public final class DescriptionRenderer {
     private static final Pattern ABBREVIATED_BINOMIAL_PATTERN = Pattern.compile(
             "\\b([A-Z])\\.\\s+([a-z]{3,})\\b");
 
-    /** Numbered enumeration entry inside a paragraph. */
+    /**
+     * Numbered enumeration entry inside a paragraph. The body class allows
+     * one level of balanced inner parentheses so that items carrying
+     * parenthetical asides — common in university-register prose
+     * (e.g. {@code "Colias eurytheme (Orange Sulphur)"}) — are captured
+     * intact rather than truncated at the first {@code '('}.
+     */
     private static final Pattern NUMBERED_ITEM = Pattern.compile(
-            "\\((\\d+)\\)\\s+([^()]+?)(?=(?:[;.]\\s+\\(\\d+\\))|(?:\\.\\s|$))");
+            "\\((\\d+)\\)\\s+((?:[^()]|\\([^()]*\\))+?)(?=(?:[;.]\\s+\\(\\d+\\))|(?:\\.\\s|$))");
 
     private final Atlas atlas;
     private final LinkResolver linkResolver;
@@ -276,8 +287,20 @@ public final class DescriptionRenderer {
         if (atlas == null || linkResolver == null) {
             return Optional.empty();
         }
-        Optional<EntityRef> ref = atlas.resolveAlias(surfaceForm);
-        return ref.flatMap(linkResolver::urlFor);
+        SearchResults results = atlas.search(surfaceForm);
+        // The renderer auto-links only when the surface form resolves to a
+        // single unambiguous entity. Multiple equally-strong hits (e.g. a
+        // shared genus token across two species) and prefix-only matches stay
+        // italics-only — the prose author wrote the binomial; we don't want
+        // the renderer guessing which Trifolium they meant.
+        List<SearchHit> exact = results.stream()
+                .filter(h -> h.kind() == MatchKind.EXACT_SLUG || h.kind() == MatchKind.EXACT_TOKEN)
+                .toList();
+        if (exact.size() != 1) {
+            return Optional.empty();
+        }
+        EntityRef ref = exact.get(0).target();
+        return linkResolver.urlFor(ref);
     }
 
     // ── HTML escape ──────────────────────────────────────────────────────

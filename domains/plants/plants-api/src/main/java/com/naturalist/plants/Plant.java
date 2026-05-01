@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.biogeography.Bioregion;
 import com.naturalist.ddd.NamedEntity;
+import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.TaxonomicClassification;
@@ -37,6 +38,11 @@ import java.util.function.Consumer;
  * records keyed off this plant's {@link PlantName}. A plant may carry many
  * programs (e.g. pesticide-exclusion plus larval-monitoring); the botanical
  * record is intentionally free of operational fields.
+ * <p>
+ * {@code commonNames} carries vernacular labels (English first, other locales
+ * as authored) under which a young naturalist might find this plant. The atlas
+ * search index harvests these as additional surface forms; an empty set means
+ * <em>no asserted common name yet</em>, not <em>none exist</em>.
  */
 public record Plant(
         PlantName name,
@@ -44,7 +50,8 @@ public record Plant(
         Description description,
         Set<PlantRole> roles,
         PlantLifeForm lifeForm,
-        Set<Bioregion> nativeBioregions
+        Set<Bioregion> nativeBioregions,
+        Set<CommonName> commonNames
 ) implements NamedEntity<PlantName> {
 
     /**
@@ -86,8 +93,9 @@ public record Plant(
                 .entityName(name, "name")
                 .valueObject(taxonomy, "taxonomy")
                 .valueObject(description, "description")
-                .notNull(this, Plant::roles, "roles")
-                .notNull(this, Plant::lifeForm, "lifeForm")
-                .notNull(this, Plant::nativeBioregions, "nativeBioregions");
+                .notNull(roles, "roles")
+                .notNull(lifeForm, "lifeForm")
+                .notNull(nativeBioregions, "nativeBioregions")
+                .notNull(commonNames, "commonNames");
     }
 }

@@ -3,6 +3,9 @@ package com.naturalist.plants.console.render;
 import com.naturalist.atlas.Atlas;
 import com.naturalist.atlas.DomainId;
 import com.naturalist.atlas.EntityRef;
+import com.naturalist.atlas.MatchKind;
+import com.naturalist.atlas.SearchHit;
+import com.naturalist.atlas.SearchResults;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.insects.InsectSpeciesName;
@@ -173,14 +176,21 @@ class DescriptionRendererAtlasTest {
     }
 
     /**
-     * Minimal {@link Atlas} backed by a fixed alias map. Inverse SPI methods
-     * are unused by these tests and return empty results.
+     * Minimal {@link Atlas} backed by a fixed surface-form → target map. The
+     * renderer treats a {@link SearchResults} containing exactly one
+     * EXACT_TOKEN hit as a unique resolution; the synth atlas synthesises
+     * that shape directly per matching surface form. Inverse SPI methods are
+     * unused by these tests and return empty results.
      */
     private static Atlas synthAtlas(Map<String, EntityRef> aliases) {
         Map<String, EntityRef> copy = Map.copyOf(aliases);
         return new Atlas() {
-            @Override public Optional<EntityRef> resolveAlias(String text) {
-                return Optional.ofNullable(copy.get(text));
+            @Override public SearchResults search(String text) {
+                EntityRef ref = copy.get(text);
+                if (ref == null) {
+                    return SearchResults.empty();
+                }
+                return SearchResults.of(List.of(new SearchHit(ref, text, MatchKind.EXACT_TOKEN)));
             }
             @Override public Set<DomainId> domainsReferencing(Class<? extends EntityName> referenceType) {
                 return Set.of();

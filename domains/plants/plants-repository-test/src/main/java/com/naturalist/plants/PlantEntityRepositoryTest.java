@@ -6,6 +6,7 @@ import com.naturalist.biogeography.SacramentoValley;
 import com.naturalist.biogeography.SouthernCascades;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.*;
 
@@ -56,6 +57,7 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.FOOD_CROP),
                 PlantLifeForm.ANNUAL,
+                Set.of(),
                 Set.of()
         );
     }
@@ -73,6 +75,7 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.FOOD_CROP),
                 PlantLifeForm.ANNUAL,
+                Set.of(),
                 Set.of()
         );
     }
@@ -94,7 +97,8 @@ interface PlantEntityRepositoryTest
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.NITROGEN_FIXER),
                 PlantLifeForm.PERENNIAL,
-                flippedBioregions
+                flippedBioregions,
+                Set.of(CommonName.of("alt-" + RandomValue.string()))
         );
     }
 }

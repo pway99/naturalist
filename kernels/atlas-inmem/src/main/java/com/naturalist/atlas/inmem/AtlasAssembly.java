@@ -1,11 +1,15 @@
-package com.naturalist.atlas;
+package com.naturalist.atlas.inmem;
+
+import com.naturalist.atlas.Atlas;
+import com.naturalist.atlas.AtlasContribution;
+import com.naturalist.atlas.EntityReferences;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Composition-root entry point for constructing an {@link Atlas}. Each app
- * collects the {@link AtlasContribution}s and {@link EntityReferences}
+ * Composition-root entry point for constructing an in-memory {@link Atlas}.
+ * Each app collects the {@link AtlasContribution}s and {@link EntityReferences}
  * providers of the domains it includes and passes them here.
  * <p>
  * Per the plan's "Per-app composition, not a shared registry module" rule, no
@@ -13,6 +17,12 @@ import java.util.List;
  * to assemble a global {@code Atlas}; that fan-in lives in each app's own
  * composition root. {@code AtlasAssembly} keeps that wiring trivially
  * declarative — a single static call.
+ *
+ * <h2>Adapter selection at the import site</h2>
+ * The factory returns the kernel's in-memory adapter ({@link InMemoryAtlas}).
+ * A future Lucene-backed or persistent adapter would ship as its own sibling
+ * module with its own assembly factory; choosing the adapter is therefore an
+ * import-site decision, visible at every consumer.
  *
  * <h2>Why a static factory and not a builder</h2>
  * Apps in this codebase wire their composition root by construction, not by
@@ -65,6 +75,6 @@ public final class AtlasAssembly {
      */
     public static Atlas from(List<AtlasContribution> contributions,
                              List<EntityReferences<?>> providers) {
-        return new DefaultAtlas(contributions, providers);
+        return new InMemoryAtlas(contributions, providers);
     }
 }

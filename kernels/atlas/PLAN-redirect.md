@@ -189,8 +189,8 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | M11 — ArchUnit guard | pending | unchanged |
 | M12 — Documentation and ADR | pending | unchanged in shape, content updated |
 | — | ✅ shipped | **M1.5** — `CommonName` value object in field-notes |
-| — | new | **M2′** — Atlas.search + token index |
-| — | new | **M4′** — Plants searchable contribution (with common names) |
+| — | ✅ shipped | **M2′** — Atlas.search + token index |
+| — | ✅ shipped | **M4′** — Plants searchable contribution (with common names) |
 | — | new | **M7′** — Renderer search affordances |
 | — | new | **M-Search-UI-A** — persistent search box in console layout |
 | — | new | **M-Search-UI-B** — search results page |
@@ -248,7 +248,7 @@ only on `framework`. No domain code touched.
 
 ---
 
-### M2′ — Atlas.search and the token index
+### M2′ — Atlas.search and the token index ✅
 
 **Supersedes.** M2 (`AtlasContribution.aliases()` + `Atlas.resolveAlias`).
 
@@ -332,7 +332,7 @@ Tests use synthetic contributions only — no domain wiring at this milestone.
 
 ---
 
-### M4′ — Plants searchable contribution (with common names)
+### M4′ — Plants searchable contribution (with common names) ✅
 
 **Supersedes.** M4 (`PlantAtlasContribution` deriving aliases with
 drop-on-collision).

@@ -1,7 +1,7 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.AtlasAssembly;
+import com.naturalist.atlas.inmem.AtlasAssembly;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.ddd.EntityName;

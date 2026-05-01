@@ -1,15 +1,23 @@
 package com.naturalist.plants;
 
 import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.AtlasAssembly;
+import com.naturalist.atlas.inmem.AtlasAssembly;
+import com.naturalist.atlas.AtlasContribution.SearchableEntity;
 import com.naturalist.atlas.DomainId;
 import com.naturalist.atlas.EntityRef;
+import com.naturalist.atlas.MatchKind;
+import com.naturalist.atlas.SearchHit;
+import com.naturalist.atlas.SearchResults;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
 import com.naturalist.plants.atlas.PlantAtlasContribution;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,67 +50,113 @@ class PlantAtlasContributionTest {
     }
 
     @Test
-    void aliasesResolveCaliforniaPipevineThroughAllFourDerivedForms() {
+    void californiaPipevineIsReachableThroughSlugBinomialGenusAbbreviationAndCommonNames() {
         Atlas atlas = AtlasAssembly.from(contribution);
         EntityRef expected = new EntityRef(new DomainId.Plants(), Plants.CaliforniaPipevine.name);
 
-        // Slug.
-        assertThat(atlas.resolveAlias("california-pipevine")).contains(expected);
-        // Genus.
-        assertThat(atlas.resolveAlias("Aristolochia")).contains(expected);
-        // Full binomial.
-        assertThat(atlas.resolveAlias("Aristolochia californica")).contains(expected);
-        // Abbreviated binomial.
-        assertThat(atlas.resolveAlias("A. californica")).contains(expected);
+        // Slug — strongest match.
+        assertThat(atlas.search("california-pipevine").stream())
+                .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
+
+        // Full binomial — case-insensitive.
+        assertThat(targetsOf(atlas.search("Aristolochia californica"))).contains(expected);
+        assertThat(targetsOf(atlas.search("aristolochia californica"))).contains(expected);
+
+        // Genus alone.
+        assertThat(targetsOf(atlas.search("Aristolochia"))).contains(expected);
+
+        // Abbreviated binomial — tokenises as "a" + "californica".
+        assertThat(targetsOf(atlas.search("A. californica"))).contains(expected);
+
+        // Common names harvested from the JSON catalog.
+        assertThat(targetsOf(atlas.search("pipevine"))).contains(expected);
+        assertThat(targetsOf(atlas.search("California Dutchman's pipe"))).contains(expected);
     }
 
     @Test
-    void aliasesAreCaseSensitive() {
+    void searchIsCaseInsensitive() {
         Atlas atlas = AtlasAssembly.from(contribution);
 
-        assertThat(atlas.resolveAlias("aristolochia")).isEmpty();
-        assertThat(atlas.resolveAlias("aristolochia californica")).isEmpty();
-        assertThat(atlas.resolveAlias("California-Pipevine")).isEmpty();
+        assertThat(atlas.search("ARISTOLOCHIA").size())
+                .isEqualTo(atlas.search("aristolochia").size());
+        assertThat(atlas.search("CALIFORNIA-PIPEVINE").size())
+                .isEqualTo(atlas.search("california-pipevine").size());
     }
 
     @Test
-    void unknownSurfaceFormReturnsEmpty() {
+    void unknownTokenReturnsEmptyResults() {
         Atlas atlas = AtlasAssembly.from(contribution);
 
-        assertThat(atlas.resolveAlias("not-a-plant")).isEmpty();
-        assertThat(atlas.resolveAlias("Battus philenor")).isEmpty();
+        assertThat(atlas.search("not-a-plant-anywhere").isEmpty()).isTrue();
+        assertThat(atlas.search("zzzzzzz").isEmpty()).isTrue();
     }
 
     @Test
-    void ambiguousGenusIsDroppedNotConflicted() {
+    void genusTokenReturnsBothTrifoliumSpecies() {
         // The catalog includes two Trifolium species (crimson-clover and
-        // white-clover). The genus alone is therefore ambiguous and would
-        // otherwise collide at assembly. The contribution silently drops
-        // it; the binomials and slugs still resolve cleanly.
+        // white-clover). Under search-and-discovery this is a feature, not a
+        // collision — both species surface, and the reader picks.
         Atlas atlas = AtlasAssembly.from(contribution);
 
-        assertThat(atlas.resolveAlias("Trifolium")).isEmpty();
-        assertThat(atlas.resolveAlias("Trifolium incarnatum"))
+        Set<PlantName> trifoliumHits = atlas.search("Trifolium").stream()
+                .map(SearchHit::target)
                 .map(EntityRef::name)
-                .contains(PlantName.of("crimson-clover"));
-        assertThat(atlas.resolveAlias("crimson-clover"))
-                .map(EntityRef::name)
-                .contains(PlantName.of("crimson-clover"));
+                .map(name -> (PlantName) name)
+                .collect(Collectors.toSet());
+
+        assertThat(trifoliumHits).contains(
+                PlantName.of("crimson-clover"),
+                PlantName.of("white-clover"));
     }
 
     @Test
-    void contributionEmitsAtLeastOneAliasPerPlant() {
-        // Lower bound: every plant contributes at least its slug. Upper bound
-        // is open because ambiguous genus aliases drop out.
+    void commonNameSearchHitsBothCloverSpeciesIndependently() {
+        Atlas atlas = AtlasAssembly.from(contribution);
+
+        // Crimson clover has "Crimson clover" / "Italian clover" — "italian"
+        // disambiguates from white clover.
+        assertThat(targetsOf(atlas.search("Italian clover")))
+                .map(EntityRef::name)
+                .contains(PlantName.of("crimson-clover"));
+
+        // White clover has "Dutch clover" / "Ladino clover" — both unique to
+        // the white-clover entry.
+        assertThat(targetsOf(atlas.search("Ladino clover")))
+                .map(EntityRef::name)
+                .contains(PlantName.of("white-clover"));
+    }
+
+    @Test
+    void contributionEmitsOneSearchableEntityPerPlant() {
         long plantCount = entityQuery.allPlantNames().size();
-        long aliasCount = contribution.aliases().count();
+        long entityCount = contribution.searchableEntities().count();
 
-        assertThat(aliasCount).isGreaterThanOrEqualTo(plantCount);
+        assertThat(entityCount).isEqualTo(plantCount);
     }
 
     @Test
-    void aliasesArePointedAtThePlantsDomain() {
-        contribution.aliases().forEach(alias ->
-                assertThat(alias.target().domain()).isEqualTo(new DomainId.Plants()));
+    void everySearchableEntityIsAttributedToThePlantsDomain() {
+        contribution.searchableEntities().forEach(entity ->
+                assertThat(entity.target().domain()).isEqualTo(new DomainId.Plants()));
+    }
+
+    @Test
+    void plantWithoutSpeciesContributesGenusButNoBinomial() {
+        // creeping-thyme has genus "Thymus" with null species. The token
+        // stream should include the slug and the genus, and skip the binomial
+        // forms — no NullPointerException, no malformed token.
+        SearchableEntity creepingThyme = contribution.searchableEntities()
+                .filter(e -> e.target().name().equals(PlantName.of("creeping-thyme")))
+                .findFirst()
+                .orElseThrow();
+        List<String> tokens = creepingThyme.tokens().toList();
+
+        assertThat(tokens).contains("creeping-thyme", "Thymus");
+        assertThat(tokens).noneMatch(t -> t.contains(" ") && t.startsWith("Thymus "));
+        assertThat(tokens).noneMatch(t -> t.startsWith("T. "));
+    }
+
+    private static List<EntityRef> targetsOf(SearchResults results) {
+        return results.stream().map(SearchHit::target).toList();
     }
 }

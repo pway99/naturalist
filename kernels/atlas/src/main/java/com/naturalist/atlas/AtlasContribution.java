@@ -7,69 +7,83 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * Forward-direction SPI — a participating domain's declaration of the surface
- * forms (substrings appearing in human prose, slugs, common names) under which
- * its own entities can be recognised by the atlas.
+ * Search-direction SPI — a participating domain's declaration of the
+ * entities it owns and the surface forms (tokens) under which each is
+ * findable.
  * <p>
- * Each contribution names a single {@link DomainId} and emits a {@link Stream}
- * of {@link Alias} records pairing a literal surface form with the typed
- * {@link EntityRef} it should resolve to. The kernel's {@link DefaultAtlas}
- * collects every contribution at assembly time, indexes the aliases, and
- * answers {@link Atlas#resolveAlias(String)} from the resulting table.
+ * Each contribution names a single {@link DomainId} and emits a
+ * {@link Stream} of {@link SearchableEntity} records pairing a typed
+ * {@link EntityRef} with the tokens that should index it. The
+ * configured {@link Atlas} adapter collects every contribution at
+ * assembly time and answers {@link Atlas#search(String)} from the
+ * resulting index — for the in-memory adapter shipped in
+ * {@code kernels/atlas-inmem}, that index is a token map built once
+ * at assembly.
  *
  * <h2>Derive, do not register</h2>
- * Per the plan's "Derive aliases, do not register" decision, the canonical
- * implementation is to compute aliases live from the domain's own entity data
- * — slug, scientific binomial, genus, abbreviated binomial — rather than to
- * maintain a parallel registration list. {@link #aliases()} returns a fresh
- * stream on every call so that a contribution backed by a mutable repository
- * can reflect newly added entities without needing to be re-registered.
+ * The canonical implementation computes tokens live from the domain's
+ * own entity data — slug, scientific binomial, genus, abbreviated
+ * binomial, common names — rather than authoring a parallel
+ * registration list. {@link #searchableEntities()} returns a fresh
+ * stream on every call so a contribution backed by a mutable repository
+ * can reflect newly added entities without re-registration.
+ *
+ * <h2>Token collisions are normal</h2>
+ * Multiple entities indexing the same token (two {@code Trifolium}
+ * species under the genus token) is not an error — under search it is
+ * the expected behaviour. The reader types the ambiguous term, the
+ * results page shows both species, the reader picks. Contributions
+ * should emit every derivable token unconditionally; ambiguity
+ * filtering is the search index's concern, not the contribution's.
  *
  * <h2>Placement</h2>
- * Implementations live in {@code <domain>-core} (where repository access is
- * available); the {@code -api} module never depends on atlas. The first real
- * producer ships in M4 ({@code plants-core}).
+ * Implementations live in {@code <domain>-core} (where repository
+ * access is available); the {@code -api} module never depends on
+ * atlas.
  *
  * <h2>Empty contributions</h2>
- * A contribution that returns an empty stream is legal — useful when a domain
- * wants to declare its presence to the atlas without (yet) having any entities
- * to surface. Tests should not assert non-emptiness as a general invariant.
+ * A contribution that returns an empty stream is legal — useful when a
+ * domain wants to declare its presence to the atlas without (yet)
+ * having any entities to surface.
  */
 public interface AtlasContribution {
 
     /**
-     * The contributing domain. Every alias emitted by this contribution is
-     * implicitly attributed to this {@link DomainId}; callers may use it as
-     * a tag for diagnostics or for grouping aliases when assembling per-app
-     * catalogues.
+     * The contributing domain. Every entity emitted by this contribution
+     * is implicitly attributed to this {@link DomainId}.
      */
     DomainId domain();
 
     /**
-     * The aliases this contribution wishes to register, computed live. Called
-     * once per atlas assembly; not cached by the kernel. Consumers that need
-     * to iterate twice should collect the stream themselves.
+     * The entities this contribution wishes to make searchable, computed
+     * live. Called once per atlas assembly; not cached by the kernel.
+     * Consumers that need to iterate twice should collect the stream
+     * themselves.
      */
-    Stream<Alias> aliases();
+    Stream<SearchableEntity> searchableEntities();
 
     /**
-     * A single (surface form, target) pair. The {@code surfaceForm} is the
-     * literal text the atlas matches against (case-sensitive, no normalisation);
-     * the {@code target} is the typed reference that text resolves to.
+     * A single (entity, tokens) pair. {@code target} is the typed
+     * reference a search hit will carry; {@code tokens} are the surface
+     * forms under which that entity should be findable.
      * <p>
-     * Both components are required. A blank surface form or null target is an
-     * invariant violation, observable through the standard pipeline.
+     * Tokens are not pre-normalised by the contribution — the kernel
+     * lowercases and tokenises them at index time, applying the same
+     * tokenisation to incoming queries for symmetric matching.
+     * Contributions should emit human-readable forms ({@code "Aristolochia
+     * californica"}, {@code "California Dutchman's pipe"}) rather than
+     * pre-tokenised stems.
      *
-     * @param surfaceForm the literal text to match
-     * @param target      the typed reference the surface form resolves to
+     * @param target the typed reference the search hit will point at
+     * @param tokens the surface forms under which {@code target} is findable
      */
-    record Alias(String surfaceForm, EntityRef target) implements ValueObject {
+    record SearchableEntity(EntityRef target, Stream<String> tokens) implements ValueObject {
 
         @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i
-                    .notBlank(this, Alias::surfaceForm, "surfaceForm")
-                    .valueObject(this, Alias::target, "target");
+                    .valueObject(target, "target")
+                    .notNull(tokens, "tokens");
         }
     }
 }
