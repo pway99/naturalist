@@ -21,6 +21,14 @@
                 <li><a href="/insects">Insects</a></li>
                 <li><a href="/plants">Plants</a></li>
             </ul>
+            <ul>
+                <li>
+                    <form action="/search" method="get" role="search" class="header-search">
+                        <input name="q" type="search" placeholder="Search the catalog" aria-label="Search the catalog">
+                        <button type="submit">Search</button>
+                    </form>
+                </li>
+            </ul>
         </nav>
     </header>
     <main class="container">

@@ -191,7 +191,7 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | — | ✅ shipped | **M1.5** — `CommonName` value object in field-notes |
 | — | ✅ shipped | **M2′** — Atlas.search + token index |
 | — | ✅ shipped | **M4′** — Plants searchable contribution (with common names) |
-| — | new | **M7′** — Renderer search affordances |
+| — | ✅ shipped | **M7′** — Renderer search affordances |
 | — | new | **M-Search-UI-A** — persistent search box in console layout |
 | — | ✅ shipped | **M-Search-UI-B** — search results page |
 
@@ -402,7 +402,7 @@ plants-core test scope, consumed via the atlas SPI only (unchanged from M4).
 
 ---
 
-### M7′ — Renderer search affordances
+### M7′ — Renderer search affordances ✅
 
 **Supersedes.** M7 (renderer + `LinkResolver` producing direct anchor tags
 to entity detail pages).

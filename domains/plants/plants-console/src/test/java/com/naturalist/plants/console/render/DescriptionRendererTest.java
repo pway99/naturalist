@@ -9,8 +9,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Acceptance for M6 ({@code kernels/atlas/PLAN.md}). The renderer is
- * unit-tested with two complementary lenses:
+ * Acceptance for M6 and M7' ({@code kernels/atlas/PLAN-redirect.md}). The
+ * renderer is unit-tested with three complementary lenses:
  *
  * <ol>
  *   <li>A <b>catalog smoke test</b> — every plant × every Durrell level
@@ -22,6 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *       binomial, lifted numbered list) are pinned against the
  *       {@code crimson-clover} and {@code white-clover} university
  *       descriptions.</li>
+ *   <li><b>Search-affordance assertions</b> — every detected binomial
+ *       (full or abbreviated) is wrapped in a {@code /search?q=...} anchor
+ *       with class {@code discover}, regardless of catalog membership. The
+ *       URL round-trips the surface form through {@link java.net.URLEncoder}.</li>
  * </ol>
  */
 class DescriptionRendererTest {
@@ -170,7 +174,78 @@ class DescriptionRendererTest {
         assertThat(renderer.render("   ")).isEmpty();
     }
 
+    // ── Search-affordance wrap (M7') ─────────────────────────────────────
+
+    @Test
+    void fullBinomialIsWrappedInSearchAnchor() {
+        String rendered = renderer.render("The vine Aristolochia californica is the larval host.");
+
+        assertThat(rendered).contains(
+                "<a href=\"/search?q=Aristolochia+californica\" class=\"discover\">"
+                        + "<em>Aristolochia californica</em></a>");
+    }
+
+    @Test
+    void abbreviatedBinomialIsWrappedInSearchAnchorWithItsOwnSurfaceForm() {
+        // The abbreviated form has its own anchor pointing at the abbreviated
+        // query — the renderer never expands "T. pratense" to "Trifolium
+        // pratense"; the search page is responsible for resolving either form.
+        String rendered = renderer.render("T. pratense leaves accumulate the toxin.");
+
+        assertThat(rendered).contains(
+                "<a href=\"/search?q=T.+pratense\" class=\"discover\">"
+                        + "<em>T. pratense</em></a>");
+    }
+
+    @Test
+    void unknownBinomialStillWrapsAsSearchAffordance() {
+        // Under the routing model this would have stayed italics-only; under
+        // search the empty-state lives on the search page, not in the
+        // renderer.
+        String rendered = renderer.render("Apis mellifera visits the flower.");
+
+        assertThat(rendered).contains(
+                "<a href=\"/search?q=Apis+mellifera\" class=\"discover\">"
+                        + "<em>Apis mellifera</em></a>");
+    }
+
+    @Test
+    void searchAnchorsCarryDiscoverClass() {
+        // The class hook lets the layout style discovery affordances
+        // distinctly from real links.
+        String rendered = renderer.render("Trifolium pratense and Apis mellifera.");
+
+        assertThat(rendered).contains("class=\"discover\"");
+    }
+
+    @Test
+    void everyItalicisedBinomialIsAnAnchor() {
+        // No italics-only graceful-degradation case survives M7'.
+        for (Plant plant : plants) {
+            String rendered = renderer.render(plant.description().university());
+            int emCount = countOccurrences(rendered, "<em>");
+            int anchorCount = countOccurrences(rendered, "<a href=\"/search?q=");
+            assertThat(anchorCount)
+                    .as("university/%s: every <em> binomial must sit inside a /search anchor",
+                            plant.name().value())
+                    .isEqualTo(emCount);
+        }
+    }
+
     // ── helpers ──────────────────────────────────────────────────────────
+
+    private static int countOccurrences(String haystack, String needle) {
+        int count = 0;
+        int from = 0;
+        while (true) {
+            int idx = haystack.indexOf(needle, from);
+            if (idx < 0) {
+                return count;
+            }
+            count++;
+            from = idx + needle.length();
+        }
+    }
 
     private Plant plantByName(String slug) {
         return plants.stream()
