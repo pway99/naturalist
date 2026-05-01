@@ -1,4 +1,5 @@
 @import com.naturalist.chemistry.compound.Compound
+@import com.naturalist.chemistry.console.atlas.BackReferencesViewModel
 @import com.naturalist.chemistry.product.Product
 @import java.util.List
 
@@ -6,6 +7,7 @@
 @param boolean hasDepiction = false
 @param String depictionNote = null
 @param List<Product> products = java.util.List.of()
+@param BackReferencesViewModel backReferences = new BackReferencesViewModel(java.util.List.of())
 
 @template.layout.page(title = compound.name().value(), content = @`
     <a href="/chemistry" class="naturalist-backlink">&larr; Back to catalog</a>
@@ -184,4 +186,6 @@
             </ul>
         </section>
     @endif
+
+    @template.chemistry.backReferences(backReferences = backReferences)
 `)

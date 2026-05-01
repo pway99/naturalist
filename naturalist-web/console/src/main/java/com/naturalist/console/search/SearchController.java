@@ -2,16 +2,9 @@ package com.naturalist.console.search;
 
 import com.naturalist.atlas.Atlas;
 import com.naturalist.atlas.DomainId;
+import com.naturalist.atlas.EntityRefLinker;
 import com.naturalist.atlas.SearchHit;
 import com.naturalist.atlas.SearchResults;
-import com.naturalist.atlas.inmem.AtlasAssembly;
-import com.naturalist.chemistry.compound.CompoundName;
-import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.ddd.EntityName;
-import com.naturalist.insects.InsectSpeciesName;
-import com.naturalist.plants.PlantName;
-import com.naturalist.plants.PlantsTestContext;
-import com.naturalist.plants.atlas.PlantAtlasContribution;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,24 +14,17 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 @Controller
 public class SearchController {
 
     private final Atlas atlas;
-    private final Map<Class<? extends EntityName>, Function<EntityName, String>> urlBuilders;
+    private final EntityRefLinker linker;
     private final Map<DomainId, String> domainDisplayNames;
 
-    SearchController() {
-        //TODO:: This will eventually be a spring managed bean
-        var plantContext = PlantsTestContext.create(NaturalistDatabase.create());
-        this.atlas = AtlasAssembly.from(new PlantAtlasContribution(plantContext.plantQuery().plants()));
-        this.urlBuilders = Map.of(
-                PlantName.class, name -> "/plants/" + name.value(),
-                CompoundName.class, name -> "/chemistry/" + name.value(),
-                InsectSpeciesName.class, name -> "/insects/" + name.value()
-        );
+    SearchController(Atlas atlas, EntityRefLinker linker) {
+        this.atlas = atlas;
+        this.linker = linker;
         this.domainDisplayNames = Map.of(
                 new DomainId.Plants(), "Plants",
                 new DomainId.Chemistry(), "Chemistry",
@@ -60,7 +46,7 @@ public class SearchController {
         Map<DomainId, List<Link>> grouped = new LinkedHashMap<>();
         for (SearchHit hit : results.stream().toList()) {
             var ref = hit.target();
-            String url = urlFor(ref.name());
+            String url = linker.linkFor(ref);
             if (url == null) {
                 continue;
             }
@@ -73,11 +59,6 @@ public class SearchController {
         grouped.forEach((domain, links) ->
                 groups.add(new Group(displayNameFor(domain), List.copyOf(links))));
         return List.copyOf(groups);
-    }
-
-    private String urlFor(EntityName name) {
-        Function<EntityName, String> builder = urlBuilders.get(name.getClass());
-        return builder == null ? null : builder.apply(name);
     }
 
     private String displayNameFor(DomainId domain) {

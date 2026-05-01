@@ -1,9 +1,12 @@
 package com.naturalist.chemistry.console;
 
+import com.naturalist.atlas.Atlas;
+import com.naturalist.atlas.EntityRefLinker;
 import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.compound.CompoundQuery;
+import com.naturalist.chemistry.console.atlas.BackReferencesViewModel;
 import com.naturalist.chemistry.product.Product;
 import com.naturalist.chemistry.product.ProductName;
 import com.naturalist.chemistry.product.ProductQuery;
@@ -26,13 +29,17 @@ public class ChemistryController {
     private final CompoundQuery compoundQuery;
     private final ProductQuery productQuery;
     private final DepictionRenderer depictionRenderer;
+    private final Atlas atlas;
+    private final EntityRefLinker linker;
 
-    ChemistryController(DepictionRenderer depictionRenderer) {
+    ChemistryController(DepictionRenderer depictionRenderer, Atlas atlas, EntityRefLinker linker) {
         //TODO:: This will eventually be a spring managed bean
         ChemistryTestContext context = ChemistryTestContext.create(NaturalistDatabase.create());
         this.compoundQuery = context.compoundQuery();
         this.productQuery = context.productQuery();
         this.depictionRenderer = depictionRenderer;
+        this.atlas = atlas;
+        this.linker = linker;
     }
 
     @GetMapping
@@ -60,10 +67,12 @@ public class ChemistryController {
         var products = productQuery.findByCompoundName(compoundName).stream()
                 .sorted(Comparator.comparing((Product p) -> p.name().value()))
                 .toList();
+        var backReferences = BackReferencesViewModel.from(atlas.findReferencesTo(compoundName), linker);
         model.addAttribute("compound", compound.get());
         model.addAttribute("hasDepiction", depiction.isPresent());
         model.addAttribute("depictionNote", depiction.map(d -> d.note()).orElse(null));
         model.addAttribute("products", products);
+        model.addAttribute("backReferences", backReferences);
         return "chemistry/detail";
     }
 

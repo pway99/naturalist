@@ -29,6 +29,10 @@
     <dependencies>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>atlas</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>chemistry-api</artifactId>
         </dependency>
         <dependency>

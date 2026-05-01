@@ -183,7 +183,7 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | M5 — Plants EntityReferences\<CompoundName\> | ✅ shipped | unchanged |
 | M6 — Description renderer (formatting only) | ✅ shipped (M6a + M6b wiring) | unchanged |
 | M7 — Renderer atlas integration (forward linking) | ✅ shipped, **superseded** | replaced by **M7′** |
-| M8 — Chemistry detail back-references | pending | unchanged |
+| M8 — Chemistry detail back-references | ✅ shipped | revised — Atlas wired as Spring `@Bean`; URL contribution moved to per-domain `EntityRefLinker` SPI composed by `CompositeEntityRefLinker` (LinkResolver removed in M7′) |
 | M9 — Observer wiring and metrics | pending | revised — split into INFO and WARN observation types |
 | M10 — Eager startup validation | pending | revised — coverage assertion, not dangle hunt |
 | M11 — ArchUnit guard | pending | unchanged |
@@ -192,7 +192,7 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | — | ✅ shipped | **M2′** — Atlas.search + token index |
 | — | ✅ shipped | **M4′** — Plants searchable contribution (with common names) |
 | — | ✅ shipped | **M7′** — Renderer search affordances |
-| — | new | **M-Search-UI-A** — persistent search box in console layout |
+| — | ✅ shipped | **M-Search-UI-A** — persistent search box in console layout |
 | — | ✅ shipped | **M-Search-UI-B** — search results page |
 
 Superseded milestones keep their existing text in PLAN.md as historical
@@ -479,7 +479,7 @@ away.
 
 ---
 
-### M-Search-UI-A — Persistent search box in console layout
+### M-Search-UI-A — Persistent search box in console layout ✅
 
 **Goal.** A search input on every page, in the layout shell, so the
 discovery affordance is one keystroke away regardless of where the
@@ -589,6 +589,82 @@ URL conventions. Owns the empty-state UX for no-hit searches.
   `california-pipevine` understands; a user who searches `pipevine` and
   gets `pipevine-swallowtail` understands equally; a user who searches
   `pipevine` and gets results without the hint is left wondering.
+
+---
+
+## Revision: M8 — Chemistry detail back-references ✅
+
+**Supersedes.** The original M8 in `PLAN.md` (which assumed the M7
+`LinkResolver` was still around).
+
+**What shipped.**
+- `naturalist-web/console/src/main/java/com/naturalist/console/atlas/AtlasConfiguration.java`
+  — first Spring `@Bean Atlas`, replacing the inline `AtlasAssembly.from(...)`
+  call SearchController used to make. Wires `PlantAtlasContribution` (forward)
+  and `PlantCompoundReferences` (inverse) using the existing
+  `PlantsTestContext` until proper Spring-managed test data lands.
+- `SearchController` now constructor-injects `Atlas` (its TODO comment
+  resolved). Behavior unchanged.
+- `chemistry-console`, `plants-console`, and `insects-console` each gain a
+  single new dependency: `atlas` (interface only). No cross-domain
+  coupling — every linker handles only the `EntityName` types its own
+  domain owns.
+- New `EntityRefLinker` SPI in `kernels/atlas` — third axis of the
+  contribution model alongside `AtlasContribution` (forward) and
+  `EntityReferences` (inverse). Returns `null` for any `EntityRef` whose
+  name type the linker does not own.
+- Per-domain `@Component` linkers
+  (`PlantsLinker`, `ChemistryLinker`, `InsectsLinker`) live in their
+  respective console modules under `…/console/atlas/` — the single place
+  to look when a detail-page route is added or moved.
+- `naturalist-web/console/.../atlas/CompositeEntityRefLinker` —
+  `@Component @Primary` walking every per-domain `EntityRefLinker` Spring
+  discovers, returning the first non-null URL. Self-injection guarded
+  with `delegates.stream().filter(l -> l != this)`.
+- `BackReferencesViewModel` in
+  `domains/chemistry/chemistry-console/src/main/java/com/naturalist/chemistry/console/atlas/`
+  takes the composite `EntityRefLinker` and asks it for each ref's URL.
+  Refs with no URL are dropped (no dead anchors). Display names sourced
+  from an exhaustive switch over the sealed `DomainId` permits.
+- `ChemistryController` constructor-injects `Atlas` and `EntityRefLinker`,
+  calls `atlas.findReferencesTo(compoundName)` in the detail handler, and
+  passes both into `BackReferencesViewModel.from(...)`.
+- `SearchController` drops its inline `urlBuilders` map in favor of the
+  same composite `EntityRefLinker` — one place for both the search-results
+  page and the back-references panel to ask "where does this ref link to?"
+- `chemistry/backReferences.jte` partial — renders nothing when empty
+  (no "no references found" banner, per the original M8 instruction); a
+  "Found in" section with one sub-section per domain otherwise.
+- `chemistry/detail.jte` accepts a defaulted `BackReferencesViewModel`
+  param and includes the partial below the products section.
+
+**Notes.**
+- The view-model lives in `chemistry-console`, not in
+  `naturalist-web/console`, even though the URL conventions span domains.
+  Rationale: a future Lucene swap or RSS-feed consumer is more likely to
+  want a domain-local back-references view than to want a shared
+  "linkifier service." With the linker SPI now in place, the URL
+  conventions are no longer hard-coded inside the view-model — each
+  domain owns its routes — so the dependency graph stays simple even as
+  more consumers arrive.
+- The per-domain linker pattern was chosen over a fully-qualified-name
+  router or a shared linker bean because it is *discoverable*: a future
+  contributor adding a new entity to the plants console knows to look at
+  `PlantsLinker` to wire its route. Each domain owns one class. Spring
+  composes them automatically via `CompositeEntityRefLinker`; no central
+  registry to keep in sync.
+- No insect-side `EntityReferences` provider exists yet, so insect
+  back-references will not appear on a chemistry detail page even though
+  the panel and `InsectsLinker` are structurally ready for them. Adding
+  an insect provider ships independently — no chemistry-side change
+  needed.
+
+**Acceptance.** Visual review (run `naturalist-web/console`):
+- Navigate to `/chemistry/aristolochic-acid-i` — the "Found in" section
+  shows a Plants subsection with `california-pipevine` and the
+  corresponding constituent.
+- Navigate to a compound with no plant references — no "Found in" section
+  is rendered.
 
 ---
 
