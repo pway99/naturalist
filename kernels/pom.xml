@@ -21,6 +21,7 @@
         <junit-version>6.0.3</junit-version>
         <assertj-version>3.26.0</assertj-version>
         <uuid-creator-version>6.0.0</uuid-creator-version>
+        <resilience4j-version>2.2.0</resilience4j-version>
     </properties>
 
     <modules>
@@ -33,6 +34,7 @@
         <module>taxonomy</module>
         <module>habitat</module>
         <module>measurements</module>
+        <module>resilience-resilience4j</module>
     </modules>
 
 </project>

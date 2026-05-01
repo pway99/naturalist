@@ -268,6 +268,16 @@ third-party deps. The adapter passes its own tests. A worked example in
 the adapter's tests demonstrates wrapping a synthetic flaky `Supplier`
 with retry+timeout+circuit-breaker via the facade.
 
+**Status: Shipped.** Facade in `kernels/framework/src/main/java/com/naturalist/resilience/`
+(`Resilience`, `Retry`, `Timeout`, `CircuitBreaker`, `Bulkhead`,
+`ResilienceConfig` sealed interface with four nested config records,
+`@Resilient`, `@ResilienceExempt`, package-private `NoOpResilience`).
+Adapter at `kernels/resilience-resilience4j/` (will move to
+`adapters/resilience-resilience4j/` in M5 per the executor sequencing
+note above). Tests cover each primitive plus a composed
+retry+timeout+circuit-breaker worked example. Policy note at
+`docs/resilience-policy.md`.
+
 ### M2 — Atlas → Catalog rename
 
 **Goal.** Mechanical rename. Zero semantic change. Done in one
