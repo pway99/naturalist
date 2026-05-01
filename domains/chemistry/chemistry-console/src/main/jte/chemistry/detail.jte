@@ -1,5 +1,5 @@
 @import com.naturalist.chemistry.compound.Compound
-@import com.naturalist.chemistry.console.atlas.BackReferencesViewModel
+@import com.naturalist.chemistry.console.catalog.BackReferencesViewModel
 @import com.naturalist.chemistry.product.Product
 @import java.util.List
 

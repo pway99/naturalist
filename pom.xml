@@ -70,17 +70,17 @@
             <!-- KERNELS -->
             <dependency>
                 <groupId>com.naturalist</groupId>
-                <artifactId>atlas</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.naturalist</groupId>
-                <artifactId>atlas-inmem</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.naturalist</groupId>
                 <artifactId>biogeography</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>catalog</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>catalog-inmem</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

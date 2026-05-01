@@ -27,8 +27,8 @@
     <modules>
         <module>framework</module>
         <module>framework-test</module>
-        <module>atlas</module>
-        <module>atlas-inmem</module>
+        <module>catalog</module>
+        <module>catalog-inmem</module>
         <module>biogeography</module>
         <module>field-notes</module>
         <module>taxonomy</module>

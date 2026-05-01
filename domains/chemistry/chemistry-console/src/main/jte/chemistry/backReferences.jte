@@ -1,4 +1,4 @@
-@import com.naturalist.chemistry.console.atlas.BackReferencesViewModel
+@import com.naturalist.chemistry.console.catalog.BackReferencesViewModel
 
 @param BackReferencesViewModel backReferences
 

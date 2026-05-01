@@ -1,10 +1,10 @@
 package com.naturalist.console.search;
 
-import com.naturalist.atlas.Atlas;
-import com.naturalist.atlas.DomainId;
-import com.naturalist.atlas.EntityRefLinker;
-import com.naturalist.atlas.SearchHit;
-import com.naturalist.atlas.SearchResults;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRefLinker;
+import com.naturalist.catalog.SearchHit;
+import com.naturalist.catalog.SearchResults;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +18,12 @@ import java.util.Map;
 @Controller
 public class SearchController {
 
-    private final Atlas atlas;
+    private final Catalog catalog;
     private final EntityRefLinker linker;
     private final Map<DomainId, String> domainDisplayNames;
 
-    SearchController(Atlas atlas, EntityRefLinker linker) {
-        this.atlas = atlas;
+    SearchController(Catalog catalog, EntityRefLinker linker) {
+        this.catalog = catalog;
         this.linker = linker;
         this.domainDisplayNames = Map.of(
                 new DomainId.Plants(), "Plants",
@@ -35,7 +35,7 @@ public class SearchController {
     @GetMapping("/search")
     String search(@RequestParam(value = "q", required = false) String q, Model model) {
         String query = q == null ? "" : q.trim();
-        SearchResults results = atlas.search(query);
+        SearchResults results = catalog.search(query);
         model.addAttribute("query", query);
         model.addAttribute("groups", buildGroups(results));
         model.addAttribute("totalHits", results.size());

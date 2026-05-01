@@ -1,14 +1,14 @@
 package com.naturalist.plants.phytochemistry;
 
-import com.naturalist.atlas.*;
-import com.naturalist.atlas.inmem.AtlasAssembly;
+import com.naturalist.catalog.*;
+import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
-import com.naturalist.plants.atlas.PlantCompoundReferences;
+import com.naturalist.plants.catalog.PlantCompoundReferences;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Lives in {@code com.naturalist.plants.phytochemistry} (not {@code .atlas})
+ * Lives in {@code com.naturalist.plants.phytochemistry} (not {@code .catalog})
  * so the test can see the package-private {@link PhytochemicalConstituentEntityQueryImpl}
  * and the protected-constructor {@link PhytochemicalConstituentEntityRepositoryMock}
  * without exposing either to the wider test classpath.
@@ -102,7 +102,7 @@ class PlantCompoundReferencesTest {
     @Test
     void nullTargetReturnsEmpty() {
         // Defensive — the kernel already maps null to an empty result at the
-        // Atlas surface, so a provider should not throw on null.
+        // Catalog surface, so a provider should not throw on null.
         assertThat(provider.referencesTo(null)).isEmpty();
     }
 
@@ -120,11 +120,11 @@ class PlantCompoundReferencesTest {
     }
 
     @Test
-    void atlasFindReferencesToGroupsResultsUnderPlantsDomain() {
-        Atlas atlas = AtlasAssembly.from(List.<AtlasContribution>of(),
+    void catalogFindReferencesToGroupsResultsUnderPlantsDomain() {
+        Catalog catalog = CatalogAssembly.from(List.<CatalogContribution>of(),
                 List.<EntityReferences<?>>of(provider));
 
-        Map<DomainId, List<EntityRef>> result = atlas.findReferencesTo(ARISTOLOCHIC_ACID_I);
+        Map<DomainId, List<EntityRef>> result = catalog.findReferencesTo(ARISTOLOCHIC_ACID_I);
 
         assertThat(result).containsOnlyKeys(new DomainId.Plants());
         assertThat(result.get(new DomainId.Plants()))
@@ -135,19 +135,19 @@ class PlantCompoundReferencesTest {
     }
 
     @Test
-    void atlasFindReferencesToReturnsEmptyForUnknownCompound() {
-        Atlas atlas = AtlasAssembly.from(List.<AtlasContribution>of(),
+    void catalogFindReferencesToReturnsEmptyForUnknownCompound() {
+        Catalog catalog = CatalogAssembly.from(List.<CatalogContribution>of(),
                 List.<EntityReferences<?>>of(provider));
 
-        assertThat(atlas.findReferencesTo(Compounds.NotFound.name)).isEmpty();
+        assertThat(catalog.findReferencesTo(Compounds.NotFound.name)).isEmpty();
     }
 
     @Test
-    void atlasDomainsReferencingExposesPlantsForCompoundName() {
-        Atlas atlas = AtlasAssembly.from(List.<AtlasContribution>of(),
+    void catalogDomainsReferencingExposesPlantsForCompoundName() {
+        Catalog catalog = CatalogAssembly.from(List.<CatalogContribution>of(),
                 List.<EntityReferences<?>>of(provider));
 
-        assertThat(atlas.domainsReferencing(CompoundName.class))
+        assertThat(catalog.domainsReferencing(CompoundName.class))
                 .containsExactly(new DomainId.Plants());
     }
 }

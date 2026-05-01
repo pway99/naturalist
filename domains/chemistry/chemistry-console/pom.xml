@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>atlas</artifactId>
+            <artifactId>catalog</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>

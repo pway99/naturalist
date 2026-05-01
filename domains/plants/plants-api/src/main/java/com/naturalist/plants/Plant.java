@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * record is intentionally free of operational fields.
  * <p>
  * {@code commonNames} carries vernacular labels (English first, other locales
- * as authored) under which a young naturalist might find this plant. The atlas
+ * as authored) under which a young naturalist might find this plant. The catalog
  * search index harvests these as additional surface forms; an empty set means
  * <em>no asserted common name yet</em>, not <em>none exist</em>.
  */

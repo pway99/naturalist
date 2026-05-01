@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * Common names are the field-naturalist's everyday vocabulary — "pipevine
  * swallowtail", "California Dutchman's pipe", "borraja". They are
  * deliberately textual (not a controlled vocabulary), often regional, and
- * frequently ambiguous. The atlas search index harvests them as additional
+ * frequently ambiguous. The catalog search index harvests them as additional
  * surface forms under which an entity is findable; the entity that owns the
  * name carries it as a {@code Set<CommonName>} alongside its scientific
  * identifiers.

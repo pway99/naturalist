@@ -54,7 +54,7 @@ directly.
 A fourth motivator is forward-looking rather than corrective: **resilience
 must become a first-order concern from this point onward.** Production
 deployment is closer than it felt a quarter ago. Every cross-boundary call
-— repository, atlas fan-out, future Solr query, every external service —
+— repository, catalog fan-out, future Solr query, every external service —
 needs an explicit resilience strategy (timeout, retry, circuit breaker,
 bulkhead, or a deliberate "no protection needed" exemption). Wiring
 resilience into the kernel's vocabulary first means subsequent milestones,
@@ -314,6 +314,19 @@ session because half-completed renames are toxic.
 only intentional references (changelog, ADR history). The dev console
 boots; the worked example in `kernels/catalog/PLAN.md` (the resolution
 of `Aristolochia californica`) still works end to end.
+
+**Status: Shipped.** Directories renamed (`kernels/catalog/`,
+`kernels/catalog-inmem/`); packages renamed (`com.naturalist.catalog`,
+`com.naturalist.catalog.inmem`); types renamed (`Atlas` → `Catalog`,
+`AtlasContribution` → `CatalogContribution`, `AtlasAssembly` →
+`CatalogAssembly`, `InMemoryAtlas` → `InMemoryCatalog`,
+`AtlasConfiguration` → `CatalogConfiguration`,
+`PlantAtlasContribution` → `PlantCatalogContribution`); per-domain
+sub-packages renamed (`plants/catalog/`, `console/catalog/`);
+artifactIds updated (`catalog`, `catalog-inmem`); jte templates,
+javadoc, and consumer wiring follow. Remaining `atlas` references
+appear only in this plan's narrative history and in
+`kernels/catalog/PLAN.md` / `PLAN-redirect.md`'s historical record.
 
 ### M3 — Open `DomainId`
 
