@@ -1,5 +1,6 @@
 @param String title = "The Amateur Naturalist"
 @param gg.jte.Content content
+@param String query = ""
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -23,10 +24,7 @@
             </ul>
             <ul>
                 <li>
-                    <form action="/search" method="get" role="search" class="header-search">
-                        <input name="q" type="search" placeholder="Search the catalog" aria-label="Search the catalog">
-                        <button type="submit">Search</button>
-                    </form>
+                    @template.components.searchBox(query = query)
                 </li>
             </ul>
         </nav>

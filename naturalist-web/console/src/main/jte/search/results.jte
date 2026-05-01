@@ -6,15 +6,9 @@
 @param List<Group> groups
 @param int totalHits
 
-@template.layout.page(title = "Search", content = @`
+@template.layout.page(title = "Search", query = query, content = @`
     <section class="search-page">
         <h1>Search</h1>
-
-        <form action="/search" method="get" role="search" class="search-form">
-            <label for="q">Search the catalog</label>
-            <input id="q" name="q" type="search" value="${query}" autofocus>
-            <button type="submit">Search</button>
-        </form>
 
         @if(query.isBlank())
             <p>Type a name, a genus, or a common term to discover what the catalog knows.</p>
