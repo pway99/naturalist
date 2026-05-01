@@ -149,6 +149,44 @@ public class Constraints {
         return add(new NotEmptyConstraint<>(t, valueFunction, name));
     }
 
+    /**
+     * Asserts the value lies within {@code [min, max]} inclusive. Null values
+     * pass (pair with {@link #notNull} when presence is also required); either
+     * bound may be null to express a one-sided range — see {@link #atLeast}
+     * and {@link #atMost} for the conventional spellings.
+     */
+    public <V extends Comparable<V>> Constraints inRange(V value, V min, V max, String name) {
+        return inRange(value, Function.identity(), min, max, name);
+    }
+
+    public <T, V extends Comparable<V>> Constraints inRange(T t, Function<T, V> valueFunction, V min, V max, String name) {
+        return add(new InRangeConstraint<>(t, valueFunction, min, max, name));
+    }
+
+    /**
+     * Asserts the value is greater than or equal to {@code min}. Null values
+     * pass (pair with {@link #notNull} when presence is also required).
+     */
+    public <V extends Comparable<V>> Constraints atLeast(V value, V min, String name) {
+        return inRange(value, Function.identity(), min, null, name);
+    }
+
+    public <T, V extends Comparable<V>> Constraints atLeast(T t, Function<T, V> valueFunction, V min, String name) {
+        return inRange(t, valueFunction, min, null, name);
+    }
+
+    /**
+     * Asserts the value is less than or equal to {@code max}. Null values pass
+     * (pair with {@link #notNull} when presence is also required).
+     */
+    public <V extends Comparable<V>> Constraints atMost(V value, V max, String name) {
+        return inRange(value, Function.identity(), null, max, name);
+    }
+
+    public <T, V extends Comparable<V>> Constraints atMost(T t, Function<T, V> valueFunction, V max, String name) {
+        return inRange(t, valueFunction, null, max, name);
+    }
+
     public List<Constraint<?>> collected() {
         return Collections.unmodifiableList(constraints);
     }

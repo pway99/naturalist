@@ -39,9 +39,73 @@ class ResilienceConfigInvariantsTest {
     }
 
     @Test
+    void adapter_rejectsRetryConfigWithZeroMaxAttempts() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new RetryConfig("fine", 0, Duration.ofMillis(1)))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("maxAttempts");
+    }
+
+    @Test
+    void adapter_rejectsRetryConfigWithExcessiveMaxAttempts() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new RetryConfig("fine", 100, Duration.ofMillis(1)))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("maxAttempts");
+    }
+
+    @Test
+    void adapter_rejectsRetryConfigWithExcessiveBackoff() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new RetryConfig("fine", 3, Duration.ofSeconds(30)))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("backoff");
+    }
+
+    @Test
     void adapter_rejectsTimeoutConfigWithNullDuration() {
         assertThatThrownBy(() -> new Resilience4jResilience(List.of(
                 new TimeoutConfig("slow", null))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("duration");
+    }
+
+    @Test
+    void adapter_rejectsTimeoutConfigWithZeroDuration() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new TimeoutConfig("slow", Duration.ZERO))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("duration");
+    }
+
+    @Test
+    void adapter_rejectsTimeoutConfigWithOneDayDuration() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new TimeoutConfig("slow", Duration.ofDays(1)))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("duration");
+    }
+
+    @Test
+    void adapter_rejectsRequestPathTimeoutAboveTwoSeconds() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new TimeoutConfig("slow", Duration.ofSeconds(5)))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("duration");
+    }
+
+    @Test
+    void adapter_acceptsUploadTimeoutAboveRequestPathCeiling() {
+        Resilience4jResilience adapter = new Resilience4jResilience(List.of(
+                new TimeoutConfig("upload", Duration.ofSeconds(20), true)));
+
+        assertThat(adapter.timeout("upload")).isNotNull();
+    }
+
+    @Test
+    void adapter_rejectsUploadTimeoutAboveThirtySeconds() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new TimeoutConfig("upload", Duration.ofMinutes(2), true))))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("duration");
     }
@@ -56,9 +120,61 @@ class ResilienceConfigInvariantsTest {
     }
 
     @Test
+    void adapter_rejectsCircuitBreakerConfigWithFailureRateBelowOne() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new CircuitBreakerConfig("trippy",
+                        0.0f, Duration.ofSeconds(10), 100.0f, Duration.ofSeconds(60), 4))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("failureRateThreshold");
+    }
+
+    @Test
+    void adapter_rejectsCircuitBreakerConfigWithFailureRateAboveOneHundred() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new CircuitBreakerConfig("trippy",
+                        150.0f, Duration.ofSeconds(10), 100.0f, Duration.ofSeconds(60), 4))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("failureRateThreshold");
+    }
+
+    @Test
+    void adapter_rejectsCircuitBreakerConfigWithExcessiveOpenWait() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new CircuitBreakerConfig("trippy",
+                        50.0f, Duration.ofSeconds(10), 100.0f, Duration.ofDays(1), 4))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("waitDurationInOpenState");
+    }
+
+    @Test
+    void adapter_rejectsCircuitBreakerConfigWithZeroMinimumCalls() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new CircuitBreakerConfig("trippy",
+                        50.0f, Duration.ofSeconds(10), 100.0f, Duration.ofSeconds(60), 0))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("minimumNumberOfCalls");
+    }
+
+    @Test
     void adapter_rejectsBulkheadConfigWithNullMaxWait() {
         assertThatThrownBy(() -> new Resilience4jResilience(List.of(
                 new BulkheadConfig("narrow", 1, null))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("maxWaitDuration");
+    }
+
+    @Test
+    void adapter_rejectsBulkheadConfigWithZeroMaxConcurrent() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new BulkheadConfig("narrow", 0, Duration.ZERO))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("maxConcurrentCalls");
+    }
+
+    @Test
+    void adapter_rejectsBulkheadConfigWithExcessiveMaxWait() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new BulkheadConfig("narrow", 1, Duration.ofDays(1)))))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("maxWaitDuration");
     }
