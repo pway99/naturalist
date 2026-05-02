@@ -1,5 +1,7 @@
 package com.naturalist.console;
 
+import com.naturalist.console.admin.AdminProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties(AdminProperties.class)
 class SecurityConfiguration {
 
     @Bean
@@ -18,6 +21,7 @@ class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -34,10 +38,10 @@ class SecurityConfiguration {
 
     @SuppressWarnings("deprecation")
     @Bean
-    UserDetailsService userDetailsService() {
+    UserDetailsService userDetailsService(AdminProperties admin) {
         var user = User.withDefaultPasswordEncoder()
-                .username("naturalist")
-                .password("durrell")
+                .username(admin.username())
+                .password(admin.password())
                 .roles("ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(user);

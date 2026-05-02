@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: naturalist-console
+
+gg:
+  jte:
+    development-mode: true
+    template-suffix: .jte
+
+naturalist:
+  admin:
+    username: test-admin
+    password: test-password
