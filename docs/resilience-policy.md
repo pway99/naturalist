@@ -1,7 +1,14 @@
 # Resilience Policy
 
 Every PR that introduces or modifies a cross-boundary call must declare its
-resilience strategy. Reviewers reject PRs that do not.
+resilience strategy. Reviewers reject PRs that do not. Every PR description
+should answer the question *"What resilience strategy does this introduce
+or rely on?"* — or check `@ResilienceExempt` with a reason.
+
+Build-time enforcement lives in `apps/management-console`'s
+`ResilienceComplianceTest` (ArchUnit). It fails the build when a class on a
+known cross-boundary path declares neither `@Resilient` nor
+`@ResilienceExempt`. Reviewer discipline catches the rest.
 
 ## What "cross-boundary" means
 
@@ -49,6 +56,23 @@ Reviewers should ask of every PR that touches a cross-boundary call site:
 - If exempt, does the reason hold up under scrutiny?
 
 PRs without a declared strategy are blocked until one is added.
+
+## Build-time gate
+
+`apps/management-console/src/test/java/com/naturalist/console/architecture/ResilienceComplianceTest`
+runs as part of the standard `mvn verify` cycle and asserts the policy
+across the assembled classpath. Its rules cover:
+
+- concrete `Catalog` implementations;
+- concrete `EntityReferences<?>` implementations;
+- classes depending on `java.lang.ProcessBuilder` (subprocess spawners);
+- classes residing in any package whose name includes an `rdms` segment
+  (the future RDMS adapter convention).
+
+The first three rules cover every cross-boundary site shipping today; the
+fourth arms the gate for the first soil RDMS adapter (and any successor).
+A new class matching one of these patterns must declare resilience or the
+build fails — pointing the author back at this file.
 
 ## Unconfigured-name contract
 

@@ -825,6 +825,46 @@ no resilience annotation fails the build with a message identifying the
 class. Annotating with `@ResilienceExempt(reason = "...")` makes the
 build pass; the rationale is captured in the source.
 
+**Status: Shipped.** ArchUnit 1.4.2 is registered in the root
+`<dependencyManagement>` (with a matching `archunit.version` property)
+and pulled into `apps/management-console` as a test-scope dependency.
+1.4.2 is required, not 1.4.0: the bundled ASM in 1.4.0 rejects Java 25
+class files (major version 69) and silently imports zero classes,
+turning every rule into "failed to check any classes". `apps/management-console/pom.xml`
+also sets the Surefire plugin's `useManifestOnlyJar=false` so the
+forked test JVM exposes the real classpath URLs to ArchUnit's
+classloader-based scan; without that, JAR-deployed dependencies are
+invisible. The compliance test lives at
+`apps/management-console/src/test/java/com/naturalist/console/architecture/ResilienceComplianceTest.java`
+and runs four rules against the assembled classpath, scoped via
+`ImportOption.DoNotIncludeTests` so synthetic providers in
+`CatalogResilienceTest` are out of scope:
+
+1. concrete `Catalog` implementations must declare resilience —
+   covers `InMemoryCatalog` (method-level `@Resilient` on
+   `findReferencesTo` satisfies it);
+2. concrete `EntityReferences<?>` implementations must declare
+   resilience — covers `PlantCompoundReferences` (class-level
+   `@Resilient`);
+3. concrete classes depending on `java.lang.ProcessBuilder` must
+   declare resilience — covers `InsectsController` (method-level
+   `@Resilient` on `image(...)`);
+4. concrete classes whose package contains an `rdms` segment must
+   declare resilience — vacuously satisfied today (the soil
+   `*-repository-rdms` ships only a `pom.xml`); arms the gate for the
+   first such adapter. The rule carries `allowEmptyShould(true)` so
+   the vacuous case does not fail the build.
+
+The custom `ArchCondition` accepts either class- or method-level
+`@Resilient` / `@ResilienceExempt`, matching the M8 mix of declaration
+shapes; the violation message names the class and points back at
+`docs/resilience-policy.md`. The policy doc was updated with two new
+sections — a top-of-file note that the question
+*"What resilience strategy does this introduce or rely on?"* belongs
+in every PR description, and a "Build-time gate" section enumerating
+the four rules. **PR template:** none exists in `.github/`, so per the
+plan's "if one exists" qualifier, no template was added.
+
 ### M10 — ADR sweep
 
 **Goal.** Record the architectural decisions in permanent ADRs so
