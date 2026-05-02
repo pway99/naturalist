@@ -17,11 +17,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Verifies the {@code /admin/**} branch of the security chain.
  *
- * <p>No admin controller exists yet (M3 ships the first one), so the
- * assertions are deliberately about the chain itself: anonymous traffic
- * is bounced to {@code /login} by form login; ADMIN-authenticated
- * traffic is allowed to fall through, where the dispatcher returns 404
- * for the unmapped path; a non-ADMIN authenticated user is forbidden.
+ * <p>The path {@code /admin/anything} is deliberately unmapped to keep
+ * the assertions about the chain itself, independent of any specific
+ * admin controller: anonymous traffic is bounced to {@code /login} by
+ * form login; ADMIN-authenticated traffic is allowed to fall through,
+ * where the dispatcher returns 404 for the unmapped path; a non-ADMIN
+ * authenticated user is forbidden. Per-controller render assertions
+ * live alongside their controllers (e.g. {@link AdminResilienceControllerWebMvcTest}).
  */
 @SpringBootTest
 class AdminSecurityWebMvcTest {

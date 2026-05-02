@@ -38,10 +38,10 @@ import java.util.List;
  * application of the marker is the follow-up tracked in the plan's M8 status.
  *
  * <h2>Diagnostics surface</h2>
- * The set of registered strategy names is published through a secure
- * {@code /admin/resilience} console page (forthcoming) rather than at-startup
- * logs — a deliberate choice to keep operational state behind authentication
- * and avoid pushing diagnostic data into a log aggregator.
+ * The set of registered strategy names is published through the secure
+ * {@code /admin/resilience} console page rather than at-startup logs — a
+ * deliberate choice to keep operational state behind authentication and avoid
+ * pushing diagnostic data into a log aggregator.
  */
 @Configuration
 public class ResilienceConfiguration {

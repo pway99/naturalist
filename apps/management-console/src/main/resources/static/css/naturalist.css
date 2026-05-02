@@ -678,6 +678,33 @@ figure.compound-depiction img {
     padding: 0.5rem;
 }
 
+/* Admin pages — diagnostic surfaces under /admin/**. Inner groups sit
+   inside the outer plate (which `main > section` already styles); each
+   group gets a sepia rule under its heading to echo the field-guide
+   plate look used elsewhere. */
+.admin-resilience-group {
+    margin: 1.25rem 0;
+}
+.admin-resilience-group h2 {
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--sepia-ink) !important;
+    text-shadow: none !important;
+    border-bottom: 1px solid var(--sepia-rule);
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+.admin-resilience-group ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0.25rem 0;
+}
+.admin-resilience-group li {
+    padding: 0.15rem 0;
+}
+
 /* Search page */
 .search-form {
     display: grid;
