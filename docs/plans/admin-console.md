@@ -111,26 +111,88 @@ facade boundary into Resilience4j-specific territory and justifies a
 small adapter-side extension rather than direct vendor imports in the
 controller.
 
+**Status: Shipped.** M1 added `retryNames()` / `timeoutNames()` /
+`circuitBreakerNames()` / `bulkheadNames()` to the kernel facade and
+the Resilience4j adapter. M2 added `naturalist.admin.username` /
+`naturalist.admin.password` property binding (refuses to start without
+both) and gated `/admin/**` on the `ADMIN` authority. M3+M4 landed
+`AdminResilienceController` + `admin/resilience.jte`, auth- and
+render-assertion tests, and styling.
+
+---
+
+## Milestones — `/admin/domain-services` (view 2)
+
+The second view lists every class the Spring-runtime adapter
+registered from the `@DomainService` marker, grouped by domain
+package. Two milestones, each its own PR.
+
+Design notes that shape the milestone count:
+
+- **No new kernel facade.** The kernel-level abstraction for view 2
+  is the `@DomainService` marker itself; the registry is owned by
+  `adapters/spring-runtime/`. The controller injects
+  `ApplicationContext` and calls
+  `getBeansWithAnnotation(DomainService.class)`. The console is a
+  Spring Boot composition root and may legitimately read its own
+  container. (This is consistent with the "vendor-neutral" rule from
+  view 1: that rule kept Resilience4j-specific types out of the
+  controller, not Spring out of a Spring-Boot app.)
+- **No new security work.** M2 of view 1 already gates `/admin/**` on
+  the `ADMIN` authority.
+- **Grouping** is the second segment of the bean class's package —
+  `com.naturalist.<domain>.…` → `<domain>` — alphabetised, with each
+  bean's simple name and FQCN listed under its domain heading.
+
+**M1 — Controller + template: render registered domain services.**
+Add `AdminDomainServicesController` (`com.naturalist.console.admin`)
+and `admin/domain-services.jte` under
+`apps/management-console/src/main/jte/`. The controller injects
+`ApplicationContext`, calls `getBeansWithAnnotation(DomainService.class)`,
+and groups results by the second segment of `Class#getPackageName()`.
+Template renders each domain section alphabetically with simple class
+name + FQCN per bean. No imports of Resilience4j, of `DomainServiceScan`
+internals, or of any domain `*-core` package. Acceptance: ADMIN-
+authenticated `GET /admin/domain-services` renders a 200 containing
+every currently registered `@DomainService` class under its correct
+domain heading.
+
+**M2 — Tests + polish.**
+Auth-assertion test (anonymous → reject, ADMIN → 200), render-assertion
+test (a representative `@DomainService` bean per domain appears under
+its expected heading; absence of any heading for a domain that has no
+`@DomainService` beans), navigation link added between
+`/admin/resilience` and `/admin/domain-services` (or a small admin
+index that links both), styling matched to existing console pages.
+Acceptance: full test suite green; manual smoke against a locally
+running console with the dev profile passes.
+
+Future enhancements (not part of view 2): per-bean dependency edges
+("this `@DomainService` depends on these other beans"); marking which
+beans contribute to which kernel ports (`CatalogContribution`,
+`EntityReferences`, `EntityRefLinker`). Those overlap with view 3
+(`/admin/catalog`) and should be designed against view 3's milestones,
+not bolted onto view 2.
+
 ---
 
 ## Anticipated views (in likely landing order)
 
-1. **`/admin/resilience` — registered strategies.** First view, drives
-   the kernel-side `Resilience.registeredNames()` addition. Lists
-   strategy names grouped by primitive (retry / timeout /
+1. **`/admin/resilience` — registered strategies.** ✅ Shipped (M1–M4).
+   Lists strategy names grouped by primitive (retry / timeout /
    circuit-breaker / bulkhead). Future enhancement: per-strategy
    config values; per-strategy live state (Resilience4j-side).
-2. **`/admin/domain-services` — discovered beans.** Lists every class
-   the `DomainServiceScan` registered, grouped by domain package.
-   Confirms that a new `@DomainService` actually got picked up.
+2. **`/admin/domain-services` — discovered beans.** Milestones above.
+   Lists every class the Spring-runtime adapter registered from the
+   `@DomainService` marker, grouped by domain package. Confirms that a
+   new `@DomainService` actually got picked up.
 3. **`/admin/catalog` — assembly state.** Lists every
    `CatalogContribution` and `EntityReferences` provider the assembled
    `Catalog` knows about, with their `DomainId`. Surfaces a missing
    contribution before its absence becomes a missing search hit.
+   Promote to a numbered milestone list when view 2 ships.
 4. **(future) `/admin/schedules`** — when the scheduled-task runner
    lands.
-
-Each view is small enough to fit in one PR.
 
 ---
 

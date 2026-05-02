@@ -13,21 +13,37 @@
     <script src="/js/htmx.min.js" defer></script>
 </head>
 <body>
-    <header class="container">
-        <nav>
-            <ul><li><strong>The Amateur Naturalist</strong></li></ul>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/chemistry">Chemistry</a></li>
-                <li><a href="/insects">Insects</a></li>
-                <li><a href="/plants">Plants</a></li>
-            </ul>
-            <ul>
-                <li>
-                    @template.components.searchBox(query = query)
-                </li>
-            </ul>
-        </nav>
+    <header class="site-header">
+        <div class="container site-header-bar">
+            <a class="site-brand" href="/">The Amateur Naturalist</a>
+            <div class="site-search">
+                @template.components.searchBox(query = query)
+            </div>
+        </div>
+        <div class="container site-nav-row">
+            <details class="primary-nav" aria-label="Primary navigation">
+                <summary class="primary-nav-toggle">
+                    <span class="primary-nav-toggle-icon" aria-hidden="true"></span>
+                    <span class="primary-nav-toggle-label">Menu</span>
+                </summary>
+                <ul class="primary-nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/chemistry">Chemistry</a></li>
+                    <li><a href="/insects">Insects</a></li>
+                    <li><a href="/plants">Plants</a></li>
+                    <li class="primary-nav-more">
+                        <details>
+                            <summary>More <span class="primary-nav-caret" aria-hidden="true">&#9662;</span></summary>
+                            <ul class="primary-nav-overflow">
+                                <%-- Add overflow domain links here as the catalog grows.
+                                     Items appear inside a parchment popover; the
+                                     "More" disclosure auto-hides while this list is empty. --%>
+                            </ul>
+                        </details>
+                    </li>
+                </ul>
+            </details>
+        </div>
     </header>
     <main class="container">
         ${content}

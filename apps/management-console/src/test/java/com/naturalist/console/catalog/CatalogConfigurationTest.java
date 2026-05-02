@@ -1,10 +1,6 @@
 package com.naturalist.console.catalog;
 
-import com.naturalist.catalog.Catalog;
-import com.naturalist.catalog.DomainId;
-import com.naturalist.catalog.EntityRefLinker;
-import com.naturalist.catalog.MatchKind;
-import com.naturalist.catalog.SearchResults;
+import com.naturalist.catalog.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

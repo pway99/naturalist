@@ -6,13 +6,13 @@ import com.naturalist.catalog.EntityReferences;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
-import com.naturalist.resilience.Resilient;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.PlantsDomain;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollections.PhytochemicalConstituentCollection;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
+import com.naturalist.resilience.Resilient;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

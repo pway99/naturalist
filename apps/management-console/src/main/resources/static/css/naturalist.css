@@ -93,9 +93,227 @@ main {
     padding: 2rem !important;
 }
 
-header nav strong {
+/* ---------------------------------------------------------------------------
+   Site header — Durrell parchment band. Two rows on wide viewports
+   (brand + search above, nav links below); collapses to a hamburger
+   disclosure below 720px so the banner stays single-row on phones.
+   --------------------------------------------------------------------------- */
+.site-header {
+    background: var(--parchment);
+    border-bottom: 2px solid var(--sepia-rule);
+    box-shadow: 0 2px 6px rgba(58, 42, 24, 0.18);
+    padding: 0 !important;
+    margin: 0 0 1.25rem 0;
+    position: relative;
+    z-index: 10;
+}
+/* The parchment surface owns its own typography — opt out of the
+   global "white text on photo" rules used elsewhere in the layout. */
+.site-header,
+.site-header a,
+.site-header summary,
+.site-header span,
+.site-header strong,
+.site-header li {
+    color: var(--sepia-ink) !important;
+    text-shadow: none !important;
+}
+
+.site-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.5rem;
+}
+.site-brand {
+    font-family: 'Georgia', 'Cambria', serif;
     font-style: italic;
-    letter-spacing: 0.05em;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 0;
+}
+.site-brand:hover { color: var(--pico-primary) !important; }
+
+.site-search { flex: 0 1 auto; min-width: 0; }
+.site-search form,
+.site-search .header-search {
+    display: flex;
+    gap: 0.4rem;
+    margin: 0;
+    align-items: center;
+}
+.site-search input[type="search"] {
+    margin: 0;
+    background: var(--parchment-deep);
+    border-color: var(--sepia-rule);
+    color: var(--sepia-ink);
+    min-width: 16rem;
+}
+.site-search button {
+    margin: 0;
+    width: auto;
+    flex: 0 0 auto;
+}
+
+/* Nav row sits flush under the brand bar, separated by a faint sepia rule. */
+.site-nav-row {
+    border-top: 1px solid rgba(139, 107, 61, 0.35);
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+/* The <details> wrapper exists for the mobile hamburger toggle.
+   On wide viewports it's collapsed away with display: contents so it
+   contributes nothing to layout. */
+.primary-nav { color: var(--sepia-ink); }
+.primary-nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--parchment-deep);
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 600;
+    list-style: none;
+    user-select: none;
+}
+.primary-nav-toggle::-webkit-details-marker,
+.primary-nav-toggle::marker { display: none; content: ''; }
+.primary-nav-toggle-icon {
+    display: inline-block;
+    width: 1rem;
+    height: 0.7rem;
+    background-image: linear-gradient(
+        to bottom,
+        var(--sepia-ink) 0, var(--sepia-ink) 2px,
+        transparent 2px, transparent 4px,
+        var(--sepia-ink) 4px, var(--sepia-ink) 6px,
+        transparent 6px, transparent 8px,
+        var(--sepia-ink) 8px, var(--sepia-ink) 10px
+    );
+}
+
+.primary-nav-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.15rem 0.25rem;
+}
+.primary-nav-links > li { margin: 0; padding: 0; }
+.primary-nav-links a,
+.primary-nav-links > li > details > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--sepia-ink) !important;
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    padding: 0.4rem 0.85rem;
+    border-radius: 0.25rem;
+    border-bottom: 0;
+    cursor: pointer;
+    list-style: none;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+.primary-nav-links > li > details > summary::-webkit-details-marker,
+.primary-nav-links > li > details > summary::marker { display: none; content: ''; }
+.primary-nav-links a:hover,
+.primary-nav-links > li > details > summary:hover {
+    background: var(--parchment-deep);
+    color: var(--sepia-ink) !important;
+}
+
+/* "More ▾" overflow disclosure — a parchment popover sitting below the
+   summary. Auto-hides while no overflow links have been added. */
+.primary-nav-more { position: relative; }
+.primary-nav-more details[open] > summary { background: var(--parchment-deep); }
+.primary-nav-caret { font-size: 0.8em; line-height: 1; }
+.primary-nav-overflow {
+    list-style: none;
+    margin: 0;
+    padding: 0.35rem 0;
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    min-width: 12rem;
+    background: var(--parchment);
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.25rem;
+    box-shadow: var(--plate-shadow);
+    z-index: 30;
+}
+.primary-nav-overflow > li { margin: 0; padding: 0; }
+.primary-nav-overflow a {
+    display: block;
+    padding: 0.4rem 0.85rem;
+    color: var(--sepia-ink) !important;
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 0;
+}
+.primary-nav-overflow a:hover { background: var(--parchment-deep); }
+/* Hide the entire "More ▾" disclosure while the overflow list has no items.
+   :has() is supported in all current evergreen browsers. Using :not(:has(li))
+   instead of :empty so template whitespace inside the <ul> doesn't keep it visible. */
+.primary-nav-more:not(:has(.primary-nav-overflow > li)) { display: none; }
+
+/* Wide viewports — the desktop layout. The outer <details> is dissolved with
+   display: contents so the toggle is hidden and the link list is always shown. */
+@media (min-width: 720px) {
+    .primary-nav { display: contents; }
+    .primary-nav-toggle { display: none; }
+    /* Override the UA rule that hides non-summary children of a closed
+       <details> element — the outer details box no longer participates
+       in layout, but the rule still applies to its children. */
+    .primary-nav-links { display: flex !important; }
+}
+
+/* Narrow viewports — collapse the whole nav into a hamburger. Search box
+   wraps onto its own row beneath the brand. */
+@media (max-width: 719.98px) {
+    .site-header-bar {
+        flex-wrap: wrap;
+        gap: 0.5rem 0.75rem;
+    }
+    .site-search { order: 3; flex: 1 1 100%; }
+    .site-search input[type="search"] { min-width: 0; width: 100%; }
+
+    .primary-nav[open] .primary-nav-links {
+        flex-direction: column;
+        align-items: stretch;
+        margin-top: 0.5rem;
+        gap: 0.1rem;
+    }
+    .primary-nav-links a,
+    .primary-nav-links > li > details > summary {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .primary-nav-more { width: 100%; }
+    .primary-nav-overflow {
+        position: static;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding-left: 1rem;
+    }
 }
 
 .background-opacity-control {

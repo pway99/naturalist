@@ -1,15 +1,10 @@
 package com.naturalist.resilience.resilience4j;
 
-import com.naturalist.resilience.Bulkhead;
-import com.naturalist.resilience.CircuitBreaker;
-import com.naturalist.resilience.Resilience;
-import com.naturalist.resilience.ResilienceConfig;
+import com.naturalist.resilience.*;
 import com.naturalist.resilience.ResilienceConfig.BulkheadConfig;
 import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
 import com.naturalist.resilience.ResilienceConfig.RetryConfig;
 import com.naturalist.resilience.ResilienceConfig.TimeoutConfig;
-import com.naturalist.resilience.Retry;
-import com.naturalist.resilience.Timeout;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import org.junit.jupiter.api.Test;
