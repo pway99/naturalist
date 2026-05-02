@@ -4,6 +4,7 @@ import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.EntityReferences;
 import com.naturalist.chemistry.compound.CompoundName;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.PlantsDomain;
@@ -59,6 +60,7 @@ import java.util.stream.Stream;
  * so this is purely defensive — calling the underlying query with {@code null}
  * would trip its argument observer and throw.
  */
+@DomainService
 public class PlantCompoundReferences implements EntityReferences<CompoundName> {
 
     private static final DomainId DOMAIN = new PlantsDomain();

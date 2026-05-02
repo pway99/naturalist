@@ -543,6 +543,26 @@ across all domains.
 Spring. The console boots with the same behaviour as before. Other
 domains' wiring remains manual until M7.
 
+**Status: Shipped.** `@DomainService` lives at
+`kernels/framework/src/main/java/com/naturalist/infrastructure/DomainService.java`
+with `RUNTIME` retention and `TYPE` target. `adapters/spring-runtime/`
+ships `DomainServiceScan` — an `ImportBeanDefinitionRegistrar` that
+runs `ClassPathScanningCandidateComponentProvider` filtered by the
+marker. The pilot scope is `com.naturalist.catalog` and
+`com.naturalist.plants` (M7 broadens to `com.naturalist`). Plants
+pilot classes carry the marker (`PlantsDomain`,
+`PlantCatalogContribution`, `PlantCompoundReferences`, the five
+`*EntityQueryImpl`s, the five repository mocks).
+`PlantsDataConfiguration` exposes `NaturalistDatabase` as a `@Bean`.
+`CatalogAssembly` gained a `from(domains, contributions, providers)`
+overload. `apps/management-console/`'s `CatalogConfiguration` now
+uses `@Import(DomainServiceScan.class)` and fans in
+`List<DomainId>`, `List<CatalogContribution>`,
+`List<EntityReferences<?>>`. Integration test
+`CatalogConfigurationTest` boots the Spring context and asserts the
+catalog resolves California pipevine by slug and Aristolochia by
+genus token.
+
 ### M7 — Roll `@DomainService` across all domains
 
 **Goal.** Replace every remaining manual `@Bean` declaration of a

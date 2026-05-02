@@ -4,6 +4,7 @@ import com.naturalist.catalog.CatalogContribution;
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.fieldnotes.CommonName;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantEntityCollections.PlantCollection;
@@ -48,6 +49,7 @@ import java.util.stream.Stream;
  * catalog after assembly are reflected automatically when the kernel iterates
  * the stream.
  */
+@DomainService
 public class PlantCatalogContribution implements CatalogContribution {
 
     private static final DomainId DOMAIN = new PlantsDomain();

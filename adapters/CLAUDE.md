@@ -38,10 +38,31 @@ A module belongs in `adapters/` when **all** of the following are true:
   (in `kernels/framework`) to `io.github.resilience4j.*`. Domain
   `*-core` imports the kernel facade only; only this adapter imports
   Resilience4j.
+- `spring-runtime/` — DI bridge. Ships
+  `DomainServiceScan`, an `ImportBeanDefinitionRegistrar` that scans the
+  classpath for classes carrying the
+  `com.naturalist.infrastructure.@DomainService` marker (defined in
+  `kernels/framework`) and registers them as Spring beans. Apps activate
+  the scan with `@Import(DomainServiceScan.class)` on a configuration
+  class. The marker carries no Spring meta-annotation; domain `*-core`
+  modules import the marker only.
+
+  M6 ships with the scan scoped to the pilot base packages
+  `com.naturalist.catalog` and `com.naturalist.plants`. M7 broadens
+  the scope to `com.naturalist` once the chemistry and insects chains
+  are fully wired.
+
+- `spring-test-data/` — Spring-side composition adapter that publishes
+  the `framework-test` `NaturalistDatabase` as a singleton bean. Holds
+  Spring out of `kernels/framework-test` and the `<domain>-repository-test`
+  modules. The adapter is on the classpath only while the app is
+  pre-RDBMS; once the production data adapter lands, this module is
+  excluded from the deployment artifact, the class disappears from the
+  classpath, and the bean simply does not exist — no profile checks
+  needed at consumer sites.
 
 Future members anticipated by the runtime architecture refactor plan
 (`docs/plans/runtime-architecture-refactor.md`):
-`spring-runtime/` (DI bridge that scans `@DomainService`),
 `catalog-solr/` (production Solr-backed catalog).
 
 ## Dependency rules

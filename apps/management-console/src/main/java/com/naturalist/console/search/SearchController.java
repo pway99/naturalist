@@ -1,10 +1,6 @@
 package com.naturalist.console.search;
 
-import com.naturalist.catalog.Catalog;
-import com.naturalist.catalog.DomainId;
-import com.naturalist.catalog.EntityRefLinker;
-import com.naturalist.catalog.SearchHit;
-import com.naturalist.catalog.SearchResults;
+import com.naturalist.catalog.*;
 import com.naturalist.chemistry.ChemistryDomain;
 import com.naturalist.insects.InsectsDomain;
 import com.naturalist.plants.PlantsDomain;

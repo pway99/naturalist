@@ -45,6 +45,16 @@
             <version>${jte.version}</version>
         </dependency>
 
+        <!-- ADAPTERS -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>spring-runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>spring-test-data</artifactId>
+        </dependency>
+
         <!-- DOMAIN CONSOLE MODULES -->
         <dependency>
             <groupId>com.naturalist</groupId>

@@ -40,6 +40,14 @@ import java.util.Map;
  * {@link #from(List)} overloads remain for callers that wire only the
  * forward direction (the M2 surface). Callers that also wire inverse
  * providers use {@link #from(List, List)}.
+ *
+ * <h2>Runtime-injected domain list</h2>
+ * The {@link #from(List, List, List)} overload accepts the registered
+ * {@link DomainId}s explicitly. Runtime adapters (e.g. {@code spring-runtime})
+ * collect every {@code DomainId} bean and pass them in directly, so the
+ * slug-uniqueness check covers domains whose contributions and providers
+ * haven't been wired yet — a misnamed domain is rejected at startup
+ * regardless of which sub-context happens to register a contribution first.
  */
 public final class CatalogAssembly {
 
@@ -78,7 +86,23 @@ public final class CatalogAssembly {
      */
     public static Catalog from(List<CatalogContribution> contributions,
                                List<EntityReferences<?>> providers) {
-        validateSlugUniqueness(contributions, providers);
+        return from(List.of(), contributions, providers);
+    }
+
+    /**
+     * Assemble a {@link Catalog} from an explicit list of registered
+     * {@link DomainId}s plus forward-direction contributions and
+     * inverse-direction providers. Every list may be empty.
+     * <p>
+     * The {@code domains} list participates in slug-uniqueness validation
+     * alongside the slugs reachable through {@code contributions} and
+     * {@code providers}, so a domain registered without any contribution
+     * still has its slug enforced.
+     */
+    public static Catalog from(List<DomainId> domains,
+                               List<CatalogContribution> contributions,
+                               List<EntityReferences<?>> providers) {
+        validateSlugUniqueness(domains, contributions, providers);
         return new InMemoryCatalog(contributions, providers);
     }
 
@@ -93,9 +117,13 @@ public final class CatalogAssembly {
      * normal case (a domain typically ships one {@code DomainId} record and
      * shares it between its forward and inverse wiring) and is allowed.
      */
-    private static void validateSlugUniqueness(List<CatalogContribution> contributions,
+    private static void validateSlugUniqueness(List<DomainId> domains,
+                                                List<CatalogContribution> contributions,
                                                 List<EntityReferences<?>> providers) {
         Map<String, DomainId> bySlug = new LinkedHashMap<>();
+        for (DomainId domain : domains) {
+            recordSlug(bySlug, domain);
+        }
         for (CatalogContribution contribution : contributions) {
             if (contribution == null) continue;
             recordSlug(bySlug, contribution.domain());

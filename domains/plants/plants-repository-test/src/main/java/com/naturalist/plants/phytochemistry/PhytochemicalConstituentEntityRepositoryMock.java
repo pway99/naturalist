@@ -3,10 +3,12 @@ package com.naturalist.plants.phytochemistry;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantName;
 
 import java.util.List;
 
+@DomainService
 public class PhytochemicalConstituentEntityRepositoryMock
         extends AbstractTestEntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent, PhytochemicalConstituentTestEntitySource>
         implements PhytochemicalConstituentRepository.PhytochemicalConstituentEntityRepository {

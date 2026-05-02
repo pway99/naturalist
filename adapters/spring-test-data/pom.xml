@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>naturalist-adapters</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>spring-test-data</artifactId>
+    <name>adapters :: spring-test-data</name>
+
+    <description>
+        Spring-side composition adapter that exposes the framework-test
+        NaturalistDatabase as a singleton bean for apps wired through a
+        Spring runtime. Lives behind the adapter boundary so no kernel,
+        api, or core module ever depends on Spring. Intended for use
+        only while the codebase is pre-RDBMS; the production data
+        adapter replaces this module on the app classpath.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-context-version}</version>
+        </dependency>
+    </dependencies>
+</project>
