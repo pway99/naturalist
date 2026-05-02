@@ -464,6 +464,28 @@ implementations carrying heavy or vendor-specific dependencies.
 `adapters/resilience-resilience4j/` lives there; subsequent adapters
 have a documented home.
 
+**Status: Shipped.** New `adapters/` parent pom landed
+(`naturalist-adapters`, packaging `pom`, sole child
+`resilience-resilience4j`); the parent owns the shared
+`resilience4j-version`, `junit-version`, and `assertj-version`
+properties so adapter modules inherit them without leaning on the
+kernels parent. `kernels/resilience-resilience4j/` moved via `git mv`
+to `adapters/resilience-resilience4j/` (history preserved); the moved
+pom now declares parent `naturalist-adapters`, artifactId
+`resilience-resilience4j`, name `adapters :: resilience-resilience4j`,
+and a refreshed description that drops the temporary-placement note.
+`kernels/pom.xml` no longer lists the module and no longer carries
+`resilience4j-version`. Root `pom.xml` modules now list `adapters`,
+`apps`, `domains`, `kernels` (alphabetical); the
+`resilience-resilience4j` dependencyManagement entry moved out of the
+KERNELS block into a new `<!-- ADAPTERS -->` block. `apps/management-console`
+does not yet depend on the adapter (that wiring lands in M8). New
+`adapters/CLAUDE.md` documents the placement rule (heavy/vendor
+dependencies only; per-domain repository adapters stay with their
+domain; no `main`). Root `CLAUDE.md` module-layout block now lists
+`adapters/` alongside `kernels/`, `domains/`, `apps/`. Build
+verification deferred to the user (per local convention).
+
 ### M6 — Marker annotations + `adapters/spring-runtime/` (pilot)
 
 **Goal.** Establish the annotation-driven DI bridge with one pilot

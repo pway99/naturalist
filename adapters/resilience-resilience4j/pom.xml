@@ -4,17 +4,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.naturalist</groupId>
-        <artifactId>kernels</artifactId>
+        <artifactId>naturalist-adapters</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>resilience-resilience4j</artifactId>
-    <name>kernels :: resilience-resilience4j</name>
+    <name>adapters :: resilience-resilience4j</name>
 
     <description>
         Production adapter that bridges the kernel Resilience facade to
-        Resilience4j primitives. Lives in kernels/ temporarily; moves to
-        adapters/resilience-resilience4j/ in M5 of the runtime architecture
-        refactor.
+        Resilience4j primitives. Domain core code references the kernel
+        facade only; this adapter is the only module that imports
+        io.github.resilience4j.*.
     </description>
 
     <dependencies>

@@ -37,14 +37,19 @@ Java (ADR-022, superseding ADR-021).
 ```
 kernels/
   framework/          — NamedEntity, Entity, EntityName, EntityId, Aggregate,
-                        ValueObject, Observable, Observer, BehavioralCollection
+                        ValueObject, Observable, Observer, BehavioralCollection,
+                        Resilience facade
   framework-test/     — NamedTestEntitySource, NamedTestEntitySourceTest, TestDataHelper
   field-notes/        — Description (four-level Durrell description)
   taxonomy/           — TaxonomicClassification (organism domains only)
+  catalog/            — cross-domain reference resolution (DomainId, Catalog)
+  catalog-inmem/      — in-memory reference adapter for catalog
 domains/
   identifiers/        — typed names (EntityName subclasses) and typed ids
                         (EntityId subclasses) only
   <domain>/<domain>-api, <domain>-core, <domain>-repository-test
+adapters/
+  resilience-resilience4j/ — bridges kernel Resilience facade to Resilience4j
 apps/
   management-console/ — composition-root deployment artifact (Spring Boot)
 ```
