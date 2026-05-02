@@ -39,3 +39,4 @@ jte-classes/
 
 ### Git worktrees ###
 .worktrees/
+.claude/worktrees/
