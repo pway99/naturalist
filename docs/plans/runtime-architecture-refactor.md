@@ -678,6 +678,74 @@ synthetic failure injected into the catalog fan-out triggers the
 expected retry-then-circuit-breaker behaviour observable in the
 console's metrics.
 
+**Status: Shipped (declarations + config wiring); runtime weaving deferred.**
+Three real cross-boundary call sites today carry `@Resilient`:
+`InMemoryCatalog.findReferencesTo` (method-level,
+`name = "catalog.fanout"`); `PlantCompoundReferences` (class-level,
+`name = "catalog.fanout"` — the one provider invoked in fan-out today);
+and `InsectsController.image` (method-level,
+`name = "image.conversion"` — `Files.copy` + `sips` subprocess).
+`apps/management-console`'s new `ResilienceConfiguration` registers the
+matching `ResilienceConfig` records as Spring beans and assembles a
+`Resilience` `@Bean` from `Resilience4jResilience`. The plan's
+"startup logs list every registered strategy by name" acceptance is
+satisfied instead by a secure `/admin/resilience` console page
+(forthcoming, separate commit) — keeping operational state behind
+authentication rather than pushing diagnostic data into a log
+aggregator. A `ResilienceConfigurationTest` (`@SpringBootTest`)
+asserts each name resolves and that an unregistered name throws
+`UnconfiguredResilienceException`. The console pom now depends on
+`adapters/resilience-resilience4j`.
+
+**Deferred — runtime application of the `@Resilient` marker.** The
+annotation has runtime retention but no AOP weaver intercepts it today;
+applying the configured strategy to an annotated method requires
+either (a) a small AOP module under `adapters/spring-runtime/` that
+weaves `@Resilient` like Spring weaves `@Transactional`, or (b)
+constructor-injecting `Resilience` into the relevant call sites
+(`InMemoryCatalog`, `InsectsController`) and using the facade
+programmatically. Path (b) is the cleaner short-term move for the
+catalog fan-out (`invokeQuietly` is already a single line that wants
+to become `resilience.timeout("catalog.fanout").execute(...)`). Path
+(a) is the long-term ergonomic story so domain authors keep declaring
+intent rather than threading a facade through constructors. The
+synthetic-failure-triggers-circuit-breaker acceptance criterion lands
+with whichever path ships first — open as **M8.5** below.
+
+**Deferred — in-process call sites that will become cross-boundary
+when their RDMS adapter ships.** The plants `*EntityQueryImpl` classes
+and the chemistry/insects/plants console controllers all delegate
+through repository ports that are in-memory mocks today. Per the
+policy, an in-process call is not cross-boundary, so they carry no
+annotation. When the first RDMS adapter lands (the soil module is the
+plan's named candidate), the adapter author annotates the
+boundary-crossing methods then. M9's ArchUnit gate is the safety net
+for missed sites.
+
+### M8.5 — Wire `Resilience` into cross-boundary call sites (deferred)
+
+**Goal.** Make the `@Resilient(name = "...")` declarations from M8
+behave at runtime — i.e. a hung provider in the catalog fan-out is
+actually time-bounded, and a wedged `sips` subprocess in
+`InsectsController.image` is actually cancelled at the timeout.
+
+**Read first.** M1, M8 outputs. `InMemoryCatalog.findReferencesTo` and
+`InsectsController.image`.
+
+**Build.** Path (b) from the M8 deferred note — programmatic facade
+use at the two call sites — is the smallest change that ships the
+acceptance criterion. Add a `Resilience` constructor parameter to
+`InMemoryCatalog` (defaulting to `Resilience.noOp()` in tests via the
+existing `CatalogAssembly.from` overloads); wrap each `invokeQuietly`
+call with `resilience.timeout("catalog.fanout").execute(...)` and
+`resilience.circuitBreaker("catalog.fanout").execute(...)`. Same shape
+for `InsectsController.image`. A synthetic-failure integration test
+proves the strategy fires.
+
+A subsequent M8.6 introduces the AOP weaver under
+`adapters/spring-runtime/` so future call sites need only the
+annotation.
+
 ### M9 — Resilience compliance gate
 
 **Goal.** Make resilience consideration a build-time requirement, not

@@ -4,6 +4,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.insects.*;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
+import com.naturalist.resilience.Resilient;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -94,6 +95,7 @@ public class InsectsController {
     }
 
     @GetMapping("/images/{filename}")
+    @Resilient(name = "image.conversion")
     ResponseEntity<byte[]> image(@PathVariable String filename) throws IOException {
         byte[] jpeg = jpegCache.get(filename);
         if (jpeg != null) {

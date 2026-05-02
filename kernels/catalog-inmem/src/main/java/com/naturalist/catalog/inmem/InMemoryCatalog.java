@@ -4,6 +4,7 @@ import com.naturalist.catalog.*;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Observer;
+import com.naturalist.resilience.Resilient;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -204,6 +205,7 @@ final class InMemoryCatalog implements Catalog {
     }
 
     @Override
+    @Resilient(name = "catalog.fanout")
     public Map<DomainId, List<EntityRef>> findReferencesTo(EntityName target) {
         if (target == null) {
             return Map.of();

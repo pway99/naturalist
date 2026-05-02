@@ -6,6 +6,7 @@ import com.naturalist.catalog.EntityReferences;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
+import com.naturalist.resilience.Resilient;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.PlantsDomain;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
@@ -61,6 +62,7 @@ import java.util.stream.Stream;
  * would trip its argument observer and throw.
  */
 @DomainService
+@Resilient(name = "catalog.fanout")
 public class PlantCompoundReferences implements EntityReferences<CompoundName> {
 
     private static final DomainId DOMAIN = new PlantsDomain();

@@ -69,8 +69,8 @@ watch.
 The facade lives in `kernels/framework` under
 `com.naturalist.resilience`; the exception lives in
 `com.naturalist.exception`. The production adapter lives in
-`kernels/resilience-resilience4j/` (planned move to
-`adapters/resilience-resilience4j/` in M5 of the runtime architecture
-refactor — see `docs/plans/runtime-architecture-refactor.md`).
+`adapters/resilience-resilience4j/`. The composition root that registers
+named strategies and exposes the assembled `Resilience` bean lives in
+`apps/management-console` under `com.naturalist.console.resilience`.
 
 Domain `*-core` code references only the facade — never Resilience4j directly.
