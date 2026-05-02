@@ -3,7 +3,7 @@
 The kernels are the foundation every other module builds on. Changes here ripple across
 the entire codebase — treat them as stable contracts, not convenient places to add things.
 
-## Four Kernels
+## Core Kernels
 
 ### framework
 DDD building blocks. `NamedEntity`, `Entity`, `Aggregate`, `ValueObject`,
@@ -15,6 +15,21 @@ Two entity branches sharing a `Named<KEY>` supertype (ADR-022):
 - `Entity<ID extends EntityId>` — surrogate UUIDv7 identity, generated at record
   construction. `EntityId` validates `UUID.version() == 7` and qualifies equality by
   concrete class.
+
+The framework also ships the **`Resilience` facade** (`com.naturalist.resilience`):
+`Retry`, `Timeout`, `CircuitBreaker`, `Bulkhead`, plus `@Resilient` and
+`@ResilienceExempt` annotations and a sealed `ResilienceConfig` record. Domain
+`*-core` code references the facade only — never Resilience4j directly. The
+production implementation lives in `adapters/resilience-resilience4j/`. Default
+`Resilience.noOp()` is used in unit tests and unwired composition roots. See
+ADR-026 and `docs/resilience-policy.md` for the cross-boundary policy and the
+M9 build-time compliance gate.
+
+The `@DomainService` marker (`com.naturalist.infrastructure.DomainService`)
+also lives here — a runtime-retention `TYPE` marker with no third-party
+meta-annotations. The `adapters/spring-runtime/` module discovers annotated
+classes and registers them as Spring beans without domain code importing
+Spring (ADR-025).
 
 ### framework-test
 Test infrastructure. `NamedTestEntitySource`, `NamedTestEntitySourceTest`,
@@ -44,6 +59,28 @@ plants. Chemistry, climate, soil, zone, and sensors have no use for Linnaean tax
 ```java
 import com.naturalist.taxonomy.TaxonomicClassification;
 ```
+
+### catalog  (`com.naturalist.catalog`)
+Cross-domain reference resolution. `Catalog`, `CatalogContribution`,
+`CatalogAssembly`, `EntityRef`, `EntityReferences`, and the open `DomainId`
+interface (ADR-023). Each domain ships its own `DomainId` subtype from its
+`*-api` module; the kernel knows the name of no domain. `CatalogAssembly`
+validates slug uniqueness across registered contributions and providers at
+startup and fails fast on collision. The catalog kernel was renamed from
+`atlas` in the runtime architecture refactor; the historical name appears
+only in narrative records.
+
+### catalog-inmem  (`com.naturalist.catalog.inmem`)
+Reference adapter for `Catalog` that fans out across registered
+`EntityReferences` providers in-process. Light dependencies (only the
+framework's existing third-party set) — that is why it lives in `kernels/`
+rather than in `adapters/`. Production catalog backends with heavy
+infrastructure dependencies (Solr) belong under `adapters/` per ADR-024.
+
+`InMemoryCatalog` carries `@Resilient(name = "catalog.fanout")` and wraps
+each provider invocation with `resilience.circuitBreaker(...)` over
+`resilience.timeout(...)`, so a wedged or failing provider degrades only
+that domain's slice of the response (ADR-026).
 
 ## DAG Position
 

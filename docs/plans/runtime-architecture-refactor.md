@@ -903,6 +903,64 @@ them from this plan.
 reflect the new structure. A fresh contributor reading
 `docs/adr/README.md` can locate the decisions captured in this plan.
 
+**Status: Shipped.** Four new ADRs landed:
+
+- **ADR-025 — DI via Marker Annotations** (active read path,
+  `docs/adr/ADR-025-di-via-marker-annotations.md`). Records the
+  kernel-resident `@DomainService` marker, the
+  `adapters/spring-runtime/` `ImportBeanDefinitionRegistrar`, and the
+  discipline that keeps domain `*-core` Spring-free; documents the
+  future-runtime swap path (`adapters/runtime-<x>/`).
+- **ADR-026 — Resilience as a First-Order Concern** (active read path,
+  `docs/adr/ADR-026-resilience-first-order-concern.md`). Records the
+  kernel `Resilience` facade, the `@Resilient` / `@ResilienceExempt`
+  annotations, the unconfigured-name contract, the PR-level
+  expectation, and the M9 ArchUnit compliance gate. Cross-references
+  `docs/resilience-policy.md` for the reviewer checklist.
+- **ADR-023 — Open `DomainId` — Slug Uniqueness via Assembly
+  Validation** (rationale-only,
+  `docs/adr/rationale/ADR-023-open-domainid.md`). Records the shift
+  from sealed kernel enum to per-domain open subtypes; documents the
+  `CatalogAssembly` slug-uniqueness check that preserves the
+  bounded-cardinality property the sealed shape gave for free.
+  Reference-on-demand: domains are added rarely.
+- **ADR-024 — `apps/` and `adapters/` Trees — Placement Rule**
+  (rationale-only, `docs/adr/rationale/ADR-024-apps-and-adapters-trees.md`).
+  Records the three-condition placement check for adapters, the
+  composition-root rule for apps, and the explicit carve-out keeping
+  per-domain `*-repository-rdms/` modules with their domain.
+  Reference-on-demand: adapters and apps are added rarely.
+
+ADR-023 and ADR-024 are filed in the "Archived (rationale only, not in
+active read path)" section of `docs/adr/README.md` to keep them out of
+the auto-loaded context on every Claude Code request — they are
+discoverable but not loaded by default. ADR-025 and ADR-026 remain in
+the active table because their rules apply on every PR that touches a
+runtime composition or a cross-boundary call.
+
+`docs/adr/README.md` was also updated to list ADR-022 (which had
+previously shipped only as a rationale-folder document and was missing
+from the index); ADR-005 and ADR-021 are now marked *Superseded by
+ADR-022*.
+
+`kernels/CLAUDE.md` was updated: the heading shifted from "Four
+Kernels" to "Core Kernels"; the `framework` section gained a paragraph
+on the `Resilience` facade and another on the `@DomainService` marker
+with the `adapters/spring-runtime/` boundary; and new sections for
+`catalog` and `catalog-inmem` (with the `InMemoryCatalog` resilience
+wrapping note) were added between `taxonomy` and the DAG diagram.
+
+`apps/CLAUDE.md` was added — modeled on `adapters/CLAUDE.md` —
+documenting the placement rule, what does not belong in `apps/`, the
+single member today (`management-console`), the dependency rules, the
+shared composition pattern (`@Import(DomainServiceScan.class)` + single
+`Catalog` `@Bean` + `ResilienceConfiguration`), and the
+fat-jar resource discipline from M4.
+
+The root `CLAUDE.md` already lists `apps/` and `adapters/` in its
+module-layout block (added in M4 and M5 respectively); no changes were
+needed there for M10.
+
 ---
 
 ## How to resume across sessions
