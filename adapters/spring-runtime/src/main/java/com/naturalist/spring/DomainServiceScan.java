@@ -29,18 +29,21 @@ import java.util.List;
  * {@link AnnotationTypeFilter} on the marker, side-stepping the stereotype
  * requirement.
  *
- * <h2>Pilot scope</h2>
- * The base packages are listed in {@link #BASE_PACKAGES}. M6 of the
- * runtime architecture refactor wires only the plants pilot through
- * Spring; M7 broadens the scope across every domain that ships a
- * {@code DomainId} subtype and its catalog wiring.
+ * <h2>Scan scope</h2>
+ * The base packages are listed in {@link #BASE_PACKAGES}. Post-M7 of the
+ * runtime architecture refactor the scan covers the full
+ * {@code com.naturalist} root: every domain that ships a {@code DomainId}
+ * subtype, an {@code EntityRefLinker}, a {@link
+ * com.naturalist.catalog.CatalogContribution}, or an {@link
+ * com.naturalist.catalog.EntityReferences} provider with the
+ * {@code @DomainService} marker is auto-discovered. When (or if) a
+ * third-party plugin model lands the scope narrows to a {@code META-INF}
+ * registration list — see the runtime architecture refactor plan's "Open
+ * questions" section.
  */
 public class DomainServiceScan implements ImportBeanDefinitionRegistrar {
 
-    static final List<String> BASE_PACKAGES = List.of(
-            "com.naturalist.catalog",
-            "com.naturalist.plants"
-    );
+    static final List<String> BASE_PACKAGES = List.of("com.naturalist");
 
     private final BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
 

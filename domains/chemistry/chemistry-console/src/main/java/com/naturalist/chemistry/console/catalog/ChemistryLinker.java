@@ -4,14 +4,14 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.product.ProductName;
-import org.springframework.stereotype.Component;
+import com.naturalist.infrastructure.DomainService;
 
 /**
  * Chemistry-domain {@link EntityRefLinker}: maps chemistry-owned
  * {@code EntityName} types to detail-page URLs. The single place to look
  * when adding a new chemistry entity or moving an existing one.
  */
-@Component
+@DomainService
 public class ChemistryLinker implements EntityRefLinker {
 
     @Override

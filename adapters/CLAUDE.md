@@ -47,10 +47,11 @@ A module belongs in `adapters/` when **all** of the following are true:
   class. The marker carries no Spring meta-annotation; domain `*-core`
   modules import the marker only.
 
-  M6 ships with the scan scoped to the pilot base packages
-  `com.naturalist.catalog` and `com.naturalist.plants`. M7 broadens
-  the scope to `com.naturalist` once the chemistry and insects chains
-  are fully wired.
+  Post-M7 the scan covers the full `com.naturalist` root: every domain
+  shipping a `DomainId` subtype, an `EntityRefLinker`, a
+  `CatalogContribution`, or an `EntityReferences` provider with the
+  `@DomainService` marker is auto-discovered. A new domain adding the
+  marker requires no change to either the scan or the assembly factory.
 
 - `spring-test-data/` — Spring-side composition adapter that publishes
   the `framework-test` `NaturalistDatabase` as a singleton bean. Holds

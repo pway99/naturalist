@@ -1,6 +1,7 @@
 package com.naturalist.chemistry;
 
 import com.naturalist.catalog.DomainId;
+import com.naturalist.infrastructure.DomainService;
 
 /**
  * The chemistry domain — see {@code domains/chemistry/}. Hosts
@@ -13,6 +14,7 @@ import com.naturalist.catalog.DomainId;
  * the names of no domains, and the catalog assembly enforces slug uniqueness
  * across registered subtypes at startup.
  */
+@DomainService
 public record ChemistryDomain() implements DomainId {
 
     @Override public String value() { return "chemistry"; }

@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.catalog.DomainId;
+import com.naturalist.infrastructure.DomainService;
 
 /**
  * The insects domain — see {@code domains/insects/}. Inverse references to
@@ -12,6 +13,7 @@ import com.naturalist.catalog.DomainId;
  * the names of no domains, and the catalog assembly enforces slug uniqueness
  * across registered subtypes at startup.
  */
+@DomainService
 public record InsectsDomain() implements DomainId {
 
     @Override public String value() { return "insects"; }

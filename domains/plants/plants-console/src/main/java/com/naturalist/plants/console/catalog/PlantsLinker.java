@@ -2,12 +2,12 @@ package com.naturalist.plants.console.catalog;
 
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.EntityRefLinker;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.heritage.SeedLineageName;
 import com.naturalist.plants.management.PlantProgramName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
-import org.springframework.stereotype.Component;
 
 /**
  * Plants-domain {@link EntityRefLinker}: maps every plants-owned
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * console. The single place to look when adding a new plants entity or
  * moving an existing one to a new route.
  */
-@Component
+@DomainService
 public class PlantsLinker implements EntityRefLinker {
 
     @Override

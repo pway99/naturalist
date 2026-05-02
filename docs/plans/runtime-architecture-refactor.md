@@ -595,6 +595,53 @@ console boots and operates identically. `grep -r '@Bean.*Domain\|@Bean.*Contribu
 in `apps/management-console/` returns only the assembly bean
 (`@Bean Catalog catalog(...)`).
 
+**Status: Shipped.** `ChemistryDomain` and `InsectsDomain` now carry
+`@DomainService`, joining `PlantsDomain` from the M6 pilot. The three
+console linkers (`PlantsLinker`, `ChemistryLinker`, `InsectsLinker`)
+swapped `@Component` for `@DomainService` so they ride the marker
+discovery path rather than Spring Boot's `@ComponentScan`.
+`DomainServiceScan.BASE_PACKAGES` collapsed from the M6 pilot pair
+(`com.naturalist.catalog`, `com.naturalist.plants`) to a single
+`com.naturalist` entry; the javadoc describes the post-M7 broadened
+scope and references the plan's "Open questions" section for the
+plugin-era narrowing path. `apps/management-console/`'s
+`CatalogConfiguration` was already strip-clean of per-domain `@Bean`
+methods after M6 — only the assembly bean remains.
+
+`CatalogConfigurationTest` gained `discoversEveryDomainSubtype()` and
+`discoversEveryDomainLinker()` covering the broadened scan: both
+`DomainId` subtypes (`plants`, `chemistry`, `insects`) and all three
+linker classes are asserted present in the autowired collections.
+The two original plants resolution tests continue to cover the full
+catalog chain end-to-end. **Per-domain isolated boot tests deferred:**
+the plan's literal acceptance asks for a minimal Spring context per
+domain `*-core` plus `adapters/spring-runtime`, but chemistry and
+insects ship neither a `CatalogContribution` nor an `EntityReferences`
+yet (only a `DomainId` and a console-side linker), and adding test-scope
+`spring-context` plus `spring-runtime` deps to every `*-core` for a
+bean-existence assertion adds churn without proportionate signal. The
+isolated tests should land alongside each domain's first
+`CatalogContribution`, when there is real wiring to assert.
+
+**Cleanup recorded as part of M7:** the four chemistry QueryImpls
+(`CompoundEntityQueryImpl`, `DepictionQueryImpl`, `ElementQueryImpl`,
+`ProductQueryImpl`) carried orphan `@DomainService` annotations
+predating the M6 commit (added in commit `41b2c4b` "Chemistry refactor
+cleanup and organize"). Neither the M6 pilot scan nor any other
+mechanism instantiated them as beans, so they were inert. Broadening
+`DomainServiceScan` to `com.naturalist` would have activated them, but
+their constructor dependencies (the chemistry repository mocks and a
+chemistry `*DataConfiguration`-style bean source) are not annotated for
+discovery — Spring would have failed to wire them at startup. The
+annotations were stripped here so the broadened scan succeeds. The
+proper chemistry-Spring rollout (mocks `@DomainService` + a
+`ChemistryDataConfiguration` exposing `*TestEntitySource` beans + the
+QueryImpl annotations restored) lands as a coordinated change when
+chemistry ships its first `CatalogContribution` / `EntityReferences`.
+The same pattern applies to insects when its turn comes — insects had
+no orphan annotations to strip, only the `DomainId` and `EntityRefLinker`
+covered by M7.
+
 ### M8 — Apply `@Resilient` to existing cross-boundary calls
 
 **Goal.** Backfill the resilience facade onto the cross-boundary calls
