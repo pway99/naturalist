@@ -36,3 +36,6 @@ jte-classes/
 
 ### Mac OS ###
 .DS_Store
+
+### Git worktrees ###
+.worktrees/

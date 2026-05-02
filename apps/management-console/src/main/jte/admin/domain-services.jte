@@ -4,6 +4,7 @@
 @param List<Domain> domains
 
 @template.layout.page(title = "Domain Services", content = @`
+    @template.admin.nav(current = "domain-services")
     <section class="admin-domain-services">
         <h1>Domain Services</h1>
         <p>Classes carrying the kernel <code>&#64;DomainService</code> marker that

@@ -174,6 +174,15 @@ beans contribute to which kernel ports (`CatalogContribution`,
 (`/admin/catalog`) and should be designed against view 3's milestones,
 not bolted onto view 2.
 
+**Status: Shipped.** M1 landed `AdminDomainServicesController` +
+`admin/domain-services.jte`, injecting `ApplicationContext` and grouping
+`@DomainService` beans by the second segment of their package. M2 added
+auth- and render-assertion tests and an `admin/nav.jte` partial linking
+both admin views (with `aria-current="page"` on the active one). Visual
+styling — the `.admin-nav` rules and any consolidation of the inner-group
+classes — is owned by the parallel `banner-styling` branch and is
+intentionally not part of this PR.
+
 ---
 
 ## Anticipated views (in likely landing order)
@@ -182,7 +191,7 @@ not bolted onto view 2.
    Lists strategy names grouped by primitive (retry / timeout /
    circuit-breaker / bulkhead). Future enhancement: per-strategy
    config values; per-strategy live state (Resilience4j-side).
-2. **`/admin/domain-services` — discovered beans.** Milestones above.
+2. **`/admin/domain-services` — discovered beans.** ✅ Shipped (M1–M2).
    Lists every class the Spring-runtime adapter registered from the
    `@DomainService` marker, grouped by domain package. Confirms that a
    new `@DomainService` actually got picked up.

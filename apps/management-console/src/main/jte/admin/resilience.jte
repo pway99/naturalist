@@ -4,6 +4,7 @@
 @param List<Group> groups
 
 @template.layout.page(title = "Resilience", content = @`
+    @template.admin.nav(current = "resilience")
     <section class="admin-resilience">
         <h1>Resilience</h1>
         <p>Strategies registered with the kernel <code>Resilience</code> facade,
