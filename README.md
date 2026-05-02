@@ -8,5 +8,5 @@ Oak Vista.
 - [Architecture Decision Records](docs/adr/README.md) — design rationale and
   system structure
 - [CLAUDE.md](CLAUDE.md) — contributor conventions (and AI-agent instructions)
-- [Naturalist Web Console](naturalist-web/console/README.md) — console module
+- [Management Console](apps/management-console/README.md) — console app
   docs (login, theming, layout)

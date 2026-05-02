@@ -25,8 +25,8 @@ import java.util.stream.Stream;
  *
  * <p>Two predictable parents are scanned:
  * <ul>
- *   <li>{@code naturalist-web/*}/src/main/jte — the application shell and
- *       any future application modules colocated under naturalist-web/.</li>
+ *   <li>{@code apps/*}/src/main/jte — the application shell and any other
+ *       deployment artifact colocated under apps/.</li>
  *   <li>{@code domains/<domain>/<domain>-console}/src/main/jte — every
  *       domain console module follows this path.</li>
  * </ul>
@@ -57,15 +57,15 @@ class JteConfiguration {
     }
 
     /**
-     * Walk the predictable console-host parents — {@code naturalist-web/*}
-     * and {@code domains/<domain>/*} — and collect every existing
-     * {@code <module>/src/main/jte} directory. Order is stable: web shell
+     * Walk the predictable console-host parents — {@code apps/*} and
+     * {@code domains/<domain>/*} — and collect every existing
+     * {@code <module>/src/main/jte} directory. Order is stable: app shell
      * roots first (so the layout templates resolve before any domain
      * shadows them), then domain consoles in directory iteration order.
      */
     private List<Path> discoverTemplateRoots(Path projectRoot) {
         var roots = new ArrayList<Path>();
-        addJteRootsUnder(projectRoot.resolve("naturalist-web"), roots);
+        addJteRootsUnder(projectRoot.resolve("apps"), roots);
         var domainsDir = projectRoot.resolve("domains");
         if (Files.isDirectory(domainsDir)) {
             for (var domain : list(domainsDir)) {

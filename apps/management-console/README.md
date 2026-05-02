@@ -1,7 +1,7 @@
-# Naturalist Web Console
+# Management Console
 
-The web console presents domain catalogs (insects, compounds, plants, etc.) with
-multi-level descriptions and observational tools.
+The management console presents domain catalogs (insects, compounds, plants,
+etc.) with multi-level descriptions and observational tools.
 
 ## Default Login Credentials
 
@@ -41,7 +41,7 @@ pages.
 
 3. **Rebuild the console module** (from the repository root):
    ```bash
-   mvn -pl naturalist-web/console clean package
+   mvn -pl apps/management-console clean package
    ```
 
 4. **Restart the application** — the new background will load on next page refresh.

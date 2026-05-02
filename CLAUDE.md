@@ -45,6 +45,8 @@ domains/
   identifiers/        — typed names (EntityName subclasses) and typed ids
                         (EntityId subclasses) only
   <domain>/<domain>-api, <domain>-core, <domain>-repository-test
+apps/
+  management-console/ — composition-root deployment artifact (Spring Boot)
 ```
 
 ## DAG (no cycles)

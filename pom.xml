@@ -20,9 +20,9 @@
     </licenses>
 
     <modules>
+        <module>apps</module>
         <module>domains</module>
         <module>kernels</module>
-        <module>naturalist-web</module>
     </modules>
 
     <properties>
@@ -403,10 +403,10 @@
                 <artifactId>worms-repository-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!-- WEB -->
+            <!-- APPS -->
             <dependency>
                 <groupId>com.naturalist</groupId>
-                <artifactId>console</artifactId>
+                <artifactId>management-console</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- ZONE -->

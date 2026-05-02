@@ -10,13 +10,13 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>naturalist-web</artifactId>
+    <artifactId>naturalist-apps</artifactId>
     <packaging>pom</packaging>
 
-    <name>amateur-naturalist :: web</name>
+    <name>amateur-naturalist :: apps</name>
 
     <modules>
-        <module>console</module>
+        <module>management-console</module>
     </modules>
 
 </project>

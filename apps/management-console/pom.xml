@@ -6,13 +6,13 @@
 
     <parent>
         <groupId>com.naturalist</groupId>
-        <artifactId>naturalist-web</artifactId>
+        <artifactId>naturalist-apps</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>console</artifactId>
+    <artifactId>management-console</artifactId>
 
-    <name>web :: console</name>
+    <name>apps :: management-console</name>
     <dependencyManagement>
         <dependencies>
             <dependency>

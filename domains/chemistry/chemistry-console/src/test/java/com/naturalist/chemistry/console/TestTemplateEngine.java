@@ -14,7 +14,7 @@ import java.util.List;
 final class TestTemplateEngine {
 
     private static final String[] TEMPLATE_ROOTS = {
-            "naturalist-web/console/src/main/jte",
+            "apps/management-console/src/main/jte",
             "domains/chemistry/chemistry-console/src/main/jte",
     };
 

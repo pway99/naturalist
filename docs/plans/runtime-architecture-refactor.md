@@ -420,6 +420,23 @@ Disambiguate its name from per-domain console contribution libraries.
 only the app's own resources; library jars sit independently in
 `BOOT-INF/lib/` with unique filenames.
 
+**Status: Shipped.** `apps/` parent pom landed (`naturalist-apps`,
+packaging `pom`, sole child `management-console`). `naturalist-web/console/`
+moved via `git mv` to `apps/management-console/` (history preserved); the
+moved pom now declares parent `naturalist-apps` and artifactId
+`management-console`, name `apps :: management-console`. The empty
+`naturalist-web/` parent pom was deleted. Root `pom.xml` modules now list
+`apps`, `domains`, `kernels` (alphabetical); the `WEB :: console`
+dependencyManagement entry became `APPS :: management-console`.
+`JteConfiguration` scans `apps/*/src/main/jte` instead of
+`naturalist-web/*`; the three per-domain `TestTemplateEngine`s
+(chemistry, insects, plants consoles) follow suit. README.md and the
+moved `apps/management-console/README.md` reflect the new path; the root
+`CLAUDE.md` module-layout block lists `apps/management-console/`. Build
+verification deferred to the user (per local convention). Remaining
+`naturalist-web` references appear only in this plan's narrative history
+and in `kernels/catalog/PLAN.md` / `PLAN-redirect.md`'s historical record.
+
 ### M5 — `adapters/` tree formalized
 
 **Goal.** Stand up the new top-level neighborhood for ports-and-adapters
