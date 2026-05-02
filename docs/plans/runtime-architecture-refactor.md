@@ -895,3 +895,12 @@ follow-up:
 - Per-domain repository rdms adapter rollout. The decision
   preserves them per-domain; growing them to more domains is
   domain work, not refactor work.
+- A secure `/admin/**` console surface for reviewing runtime
+  configuration (resilience strategies, registered
+  `@DomainService` beans, catalog assembly state, future
+  scheduled-task status). Driven by the operational need to
+  inspect configuration without a log aggregator or actuator
+  scrape. Tracked separately in
+  [`docs/plans/admin-console.md`](../plans/admin-console.md). The
+  kernel-side prerequisite (`Resilience.registeredNames()`) lands
+  with that plan, not here.
