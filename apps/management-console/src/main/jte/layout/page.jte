@@ -23,11 +23,7 @@
             </div>
         </div>
         <div class="container site-nav-row">
-            <details class="primary-nav" aria-label="Primary navigation">
-                <summary class="primary-nav-toggle">
-                    <span class="primary-nav-toggle-icon" aria-hidden="true"></span>
-                    <span class="primary-nav-toggle-label">Menu</span>
-                </summary>
+            <nav class="primary-nav" aria-label="Primary navigation">
                 <ul class="primary-nav-links">
                     <li><a href="/">Home</a></li>
                     <li><a href="/chemistry">Chemistry</a></li>
@@ -44,7 +40,7 @@
                         </details>
                     </li>
                 </ul>
-            </details>
+            </nav>
         </div>
     </header>
     <main class="container">
