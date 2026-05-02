@@ -722,7 +722,7 @@ plan's named candidate), the adapter author annotates the
 boundary-crossing methods then. M9's ArchUnit gate is the safety net
 for missed sites.
 
-### M8.5 — Wire `Resilience` into cross-boundary call sites (deferred)
+### M8.5 — Wire `Resilience` into cross-boundary call sites
 
 **Goal.** Make the `@Resilient(name = "...")` declarations from M8
 behave at runtime — i.e. a hung provider in the catalog fan-out is
@@ -745,6 +745,53 @@ proves the strategy fires.
 A subsequent M8.6 introduces the AOP weaver under
 `adapters/spring-runtime/` so future call sites need only the
 annotation.
+
+**Status: Shipped.** `InMemoryCatalog` now takes `Resilience` as its
+third constructor parameter and wraps each provider invocation with
+`resilience.circuitBreaker("catalog.fanout").execute(() ->
+resilience.timeout("catalog.fanout").execute(...))`. The breaker wraps
+the timeout so each timeout is counted as a failure against the same
+named breaker; the existing `catch (RuntimeException ignored)` swallow
+also catches `CallNotPermittedException` from a tripped breaker and
+`ResilienceTimeoutException` from a fired timeout, so a failing
+provider degrades the affected domain's slice of the response without
+poisoning the others. `CatalogAssembly` gained a new full overload
+`from(domains, contributions, providers, resilience)`; the existing
+overloads default to `Resilience.noOp()`, so kernel and per-domain
+tests keep their unprotected behaviour. The console's
+`CatalogConfiguration.catalog(...)` `@Bean` now autowires the
+`Resilience` bean exposed by `ResilienceConfiguration` and forwards it
+to the new overload. `InsectsController` gained a `Resilience`
+constructor parameter; `image(...)` extracts the `Files.copy` + `sips`
++ `Files.readAllBytes` block into a `convert(...)` helper wrapped by
+`resilience.timeout("image.conversion").execute(...)` so the configured
+2-second wall-clock cap actually cancels a wedged subprocess. Strategy
+names live as `private static final String` constants
+(`CATALOG_FANOUT`, `IMAGE_CONVERSION`) shared by the `@Resilient`
+annotation and the programmatic facade call to keep the two in sync.
+
+Synthetic-failure proof:
+`apps/management-console/src/test/java/com/naturalist/console/catalog/CatalogResilienceTest`
+wires `Resilience4jResilience` directly (no Spring boot context — the
+behaviour under test is the strategy firing, not Spring composition,
+which `CatalogConfigurationTest` already covers) and asserts two
+scenarios: (1) a provider that sleeps two seconds with the timeout
+configured at 50&nbsp;ms returns an empty fan-out result, with the
+synthetic provider's call counter proving it was invoked at least
+once before the timeout cancelled the wait; (2) a provider that
+always throws trips the breaker after the configured minimum-of-four
+calls, after which five additional fan-out requests leave the
+provider's call counter unchanged — the breaker is short-circuiting
+without invoking the supplier.
+
+**Deferred to M8.6 — AOP weaver.** Domain authors still must thread a
+`Resilience` instance into any class that needs runtime behaviour from
+the marker. Path (a) from the M8 status note (a Spring AOP weaver
+under `adapters/spring-runtime/` that intercepts `@Resilient` like
+Spring intercepts `@Transactional`) remains the long-term ergonomic
+target so future call sites need only the annotation; M8.5 establishes
+the programmatic shape and the synthetic-failure proof so the AOP work
+can be a pure ergonomic upgrade rather than a behaviour change.
 
 ### M9 — Resilience compliance gate
 

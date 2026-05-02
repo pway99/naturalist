@@ -5,6 +5,7 @@ import com.naturalist.catalog.CatalogContribution;
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityReferences;
 import com.naturalist.catalog.inmem.CatalogAssembly;
+import com.naturalist.resilience.Resilience;
 import com.naturalist.spring.DomainServiceScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +40,8 @@ public class CatalogConfiguration {
     @Bean
     Catalog catalog(List<DomainId> domains,
                     List<CatalogContribution> contributions,
-                    List<EntityReferences<?>> providers) {
-        return CatalogAssembly.from(domains, contributions, providers);
+                    List<EntityReferences<?>> providers,
+                    Resilience resilience) {
+        return CatalogAssembly.from(domains, contributions, providers, resilience);
     }
 }

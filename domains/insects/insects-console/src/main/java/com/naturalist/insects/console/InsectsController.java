@@ -4,6 +4,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.insects.*;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
+import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
@@ -26,15 +27,19 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @RequestMapping("/insects")
 public class InsectsController {
+    private static final String IMAGE_CONVERSION = "image.conversion";
+
     private final InsectQuery insectQuery;
     private final InsectLifeStageQuery insectLifeStageQuery;
+    private final Resilience resilience;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
-    InsectsController() {
+    InsectsController(Resilience resilience) {
         //TODO:: This will eventually be a spring managed bean
         InsectsTestContext context = InsectsTestContext.create(NaturalistDatabase.create());
         this.insectQuery = context.insectQuery();
         this.insectLifeStageQuery = context.insectLifeStageQuery();
+        this.resilience = resilience;
     }
 
     @GetMapping
@@ -95,7 +100,7 @@ public class InsectsController {
     }
 
     @GetMapping("/images/{filename}")
-    @Resilient(name = "image.conversion")
+    @Resilient(name = IMAGE_CONVERSION)
     ResponseEntity<byte[]> image(@PathVariable String filename) throws IOException {
         byte[] jpeg = jpegCache.get(filename);
         if (jpeg != null) {
@@ -110,6 +115,19 @@ public class InsectsController {
         Path heicTemp = Files.createTempFile("insect-", ".heic");
         Path jpegTemp = Files.createTempFile("insect-", ".jpg");
         try {
+            return resilience.timeout(IMAGE_CONVERSION).execute(() ->
+                    convert(filename, resource, heicTemp, jpegTemp));
+        } finally {
+            Files.deleteIfExists(heicTemp);
+            Files.deleteIfExists(jpegTemp);
+        }
+    }
+
+    private ResponseEntity<byte[]> convert(String filename,
+                                           ClassPathResource resource,
+                                           Path heicTemp,
+                                           Path jpegTemp) {
+        try {
             Files.copy(resource.getInputStream(), heicTemp, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             var process = new ProcessBuilder("sips", "-s", "format", "jpeg",
                     "-s", "formatOptions", "80",
@@ -120,15 +138,14 @@ public class InsectsController {
             if (exit != 0) {
                 return ResponseEntity.unprocessableEntity().build();
             }
-            jpeg = Files.readAllBytes(jpegTemp);
+            byte[] jpeg = Files.readAllBytes(jpegTemp);
             jpegCache.put(filename, jpeg);
             return jpegResponse(jpeg);
+        } catch (IOException e) {
+            throw new java.io.UncheckedIOException(e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return ResponseEntity.internalServerError().build();
-        } finally {
-            Files.deleteIfExists(heicTemp);
-            Files.deleteIfExists(jpegTemp);
+            throw new RuntimeException(e);
         }
     }
 

@@ -4,6 +4,7 @@ import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.CatalogContribution;
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityReferences;
+import com.naturalist.resilience.Resilience;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -98,12 +99,32 @@ public final class CatalogAssembly {
      * alongside the slugs reachable through {@code contributions} and
      * {@code providers}, so a domain registered without any contribution
      * still has its slug enforced.
+     * <p>
+     * The {@link Resilience} facade defaults to {@link Resilience#noOp()};
+     * tests and pre-production composition roots that have not yet wired a
+     * production adapter run inverse-direction fan-out unprotected. Apps
+     * that have wired a production adapter use
+     * {@link #from(List, List, List, Resilience)}.
      */
     public static Catalog from(List<DomainId> domains,
                                List<CatalogContribution> contributions,
                                List<EntityReferences<?>> providers) {
+        return from(domains, contributions, providers, Resilience.noOp());
+    }
+
+    /**
+     * Assemble a {@link Catalog} with a composition-root-supplied
+     * {@link Resilience}. The catalog's inverse-direction fan-out wraps each
+     * provider invocation with the {@code catalog.fanout} timeout and circuit
+     * breaker resolved from {@code resilience}; an unconfigured name fails
+     * fast at the first fan-out call (per the production adapter's contract).
+     */
+    public static Catalog from(List<DomainId> domains,
+                               List<CatalogContribution> contributions,
+                               List<EntityReferences<?>> providers,
+                               Resilience resilience) {
         validateSlugUniqueness(domains, contributions, providers);
-        return new InMemoryCatalog(contributions, providers);
+        return new InMemoryCatalog(contributions, providers, resilience);
     }
 
     /**

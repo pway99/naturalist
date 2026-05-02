@@ -4,7 +4,10 @@ import com.naturalist.catalog.*;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Observer;
+import com.naturalist.resilience.CircuitBreaker;
+import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
+import com.naturalist.resilience.Timeout;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -47,14 +50,20 @@ final class InMemoryCatalog implements Catalog {
 
     private static final Pattern TOKEN_SPLIT = Pattern.compile("[\\s\\p{Punct}]+");
 
+    private static final String CATALOG_FANOUT = "catalog.fanout";
+
     private final Map<String, Set<EntityRef>> tokenIndex;
     private final Set<String> slugTokens;
     private final Map<Class<? extends EntityName>, List<EntityReferences<?>>> providersByType;
+    private final Resilience resilience;
 
-    InMemoryCatalog(List<CatalogContribution> contributions, List<EntityReferences<?>> providers) {
+    InMemoryCatalog(List<CatalogContribution> contributions,
+                    List<EntityReferences<?>> providers,
+                    Resilience resilience) {
         observer.arguments("constructor", i -> i
                         .notNull(contributions, "contributions")
-                        .notNull(providers, "providers"))
+                        .notNull(providers, "providers")
+                        .notNull(resilience, "resilience"))
                 .throwWhenInvalid();
         Map<String, Set<EntityRef>> index = new HashMap<>();
         Set<String> slugs = new LinkedHashSet<>();
@@ -74,6 +83,7 @@ final class InMemoryCatalog implements Catalog {
         this.tokenIndex = freezeIndex(index);
         this.slugTokens = Set.copyOf(slugs);
         this.providersByType = indexProviders(providers);
+        this.resilience = resilience;
     }
 
     private static Map<Class<? extends EntityName>, List<EntityReferences<?>>> indexProviders(
@@ -205,15 +215,17 @@ final class InMemoryCatalog implements Catalog {
     }
 
     @Override
-    @Resilient(name = "catalog.fanout")
+    @Resilient(name = CATALOG_FANOUT)
     public Map<DomainId, List<EntityRef>> findReferencesTo(EntityName target) {
         if (target == null) {
             return Map.of();
         }
         List<EntityReferences<?>> handlers = providersByType.getOrDefault(target.getClass(), List.of());
+        Timeout timeout = resilience.timeout(CATALOG_FANOUT);
+        CircuitBreaker breaker = resilience.circuitBreaker(CATALOG_FANOUT);
         Map<DomainId, List<EntityRef>> grouped = new LinkedHashMap<>();
         for (EntityReferences<?> handler : handlers) {
-            List<EntityRef> refs = invokeQuietly(handler, target);
+            List<EntityRef> refs = invokeQuietly(handler, target, timeout, breaker);
             if (!refs.isEmpty()) {
                 grouped.computeIfAbsent(handler.domain(), k -> new ArrayList<>()).addAll(refs);
             }
@@ -223,9 +235,12 @@ final class InMemoryCatalog implements Catalog {
         return Collections.unmodifiableMap(immutable);
     }
 
-    private static List<EntityRef> invokeQuietly(EntityReferences<?> handler, EntityName target) {
+    private static List<EntityRef> invokeQuietly(EntityReferences<?> handler,
+                                                 EntityName target,
+                                                 Timeout timeout,
+                                                 CircuitBreaker breaker) {
         try {
-            return invoke(handler, target).toList();
+            return breaker.execute(() -> timeout.execute(() -> invoke(handler, target).toList()));
         } catch (RuntimeException ignored) {
             return List.of();
         }
