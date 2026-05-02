@@ -1,5 +1,6 @@
 package com.naturalist.resilience;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -22,6 +23,11 @@ final class NoOpResilience implements Resilience {
     @Override public Timeout timeout(String name) { return TimeoutDelegate.INSTANCE; }
     @Override public CircuitBreaker circuitBreaker(String name) { return CircuitBreakerDelegate.INSTANCE; }
     @Override public Bulkhead bulkhead(String name) { return BulkheadDelegate.INSTANCE; }
+
+    @Override public Set<String> retryNames() { return Set.of(); }
+    @Override public Set<String> timeoutNames() { return Set.of(); }
+    @Override public Set<String> circuitBreakerNames() { return Set.of(); }
+    @Override public Set<String> bulkheadNames() { return Set.of(); }
 
     private enum RetryDelegate implements Retry {
         INSTANCE;

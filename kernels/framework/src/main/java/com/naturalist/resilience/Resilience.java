@@ -1,5 +1,7 @@
 package com.naturalist.resilience;
 
+import java.util.Set;
+
 /**
  * Facade over the four resilience primitives the project standardises on.
  * Domain {@code *-core} code references this interface only — never a concrete
@@ -15,6 +17,14 @@ package com.naturalist.resilience;
  * registered with the implementation. Names that have no matching configuration
  * fall back to a no-op for that primitive — strict configuration validation is
  * the composition root's job, not a runtime concern at every call site.
+ *
+ * <h2>Diagnostics surface</h2>
+ * The four {@code *Names()} methods publish the set of strategy names the
+ * implementation has registered for each primitive. The admin console reads
+ * them to render the {@code /admin/resilience} view; a typo on either the
+ * configuration side or the {@code @Resilient(name = ...)} call site is then
+ * visible on demand instead of buried in startup logs. The returned sets are
+ * unmodifiable.
  */
 public interface Resilience {
 
@@ -25,6 +35,14 @@ public interface Resilience {
     CircuitBreaker circuitBreaker(String name);
 
     Bulkhead bulkhead(String name);
+
+    Set<String> retryNames();
+
+    Set<String> timeoutNames();
+
+    Set<String> circuitBreakerNames();
+
+    Set<String> bulkheadNames();
 
     /**
      * A no-op {@code Resilience} that runs every supplier unprotected. Returned

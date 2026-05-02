@@ -21,6 +21,7 @@ import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -112,6 +113,11 @@ public final class Resilience4jResilience implements Resilience {
         if (b == null) throw new UnconfiguredResilienceException("bulkhead", name);
         return b;
     }
+
+    @Override public Set<String> retryNames() { return retries.keySet(); }
+    @Override public Set<String> timeoutNames() { return timeouts.keySet(); }
+    @Override public Set<String> circuitBreakerNames() { return breakers.keySet(); }
+    @Override public Set<String> bulkheadNames() { return bulkheads.keySet(); }
 
     static io.github.resilience4j.retry.RetryConfig toR4j(RetryConfig c) {
         return io.github.resilience4j.retry.RetryConfig.custom()

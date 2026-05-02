@@ -63,6 +63,56 @@ ships with its own tests and its own auth assertion.
 
 ---
 
+## Milestones — `/admin/resilience` (view 1)
+
+The first view ships in four milestones, each its own PR and each a
+clean context-clear point. Each milestone names its acceptance criteria
+so the next session can pick up cold from the plan alone.
+
+**M1 — Kernel facade: registered-names accessors.**
+Add per-primitive `Set<String>` accessors to `Resilience` (`retryNames()`,
+`timeoutNames()`, `circuitBreakerNames()`, `bulkheadNames()`) — mirrors
+the existing four-method facade shape. `NoOpResilience` returns
+`Set.of()` for all four. `Resilience4jResilience` returns the keysets
+of its already-immutable registry maps. Adapter test covers a populated
+case per primitive. Acceptance: kernel + adapter tests green; no
+controller or security work in this milestone.
+
+**M2 — Security: ADMIN role and property-bound credentials.**
+Add `naturalist.admin.username` / `naturalist.admin.password` property
+binding with no defaults — the app refuses to start without both set.
+Wire `/admin/**` to require the `ADMIN` authority in
+`SecurityConfiguration`. Acceptance: app fails to boot when either
+property is missing or blank; anonymous `GET /admin/**` is rejected
+(401 or login redirect, whichever the existing security chain produces);
+ADMIN-authenticated traffic continues through the existing chain.
+
+**M3 — Controller + template: render registered strategies.**
+Add `AdminResilienceController` (`com.naturalist.console.admin`) and
+`admin/resilience.jte` under `apps/management-console/src/main/jte/`.
+Inject the kernel `Resilience` facade only — no Resilience4j imports
+in the controller. List names grouped by primitive (retry / timeout /
+circuit-breaker / bulkhead). Acceptance: ADMIN-authenticated
+`GET /admin/resilience` renders a 200 containing every currently
+registered strategy name (`catalog.fanout`, `image.conversion`) under
+its correct primitive heading.
+
+**M4 — Tests + polish.**
+Auth-assertion test (anonymous → reject, ADMIN → 200), render-assertion
+test (each registered strategy name appears under its primitive
+section), any styling that brings the page in line with existing
+console pages. Acceptance: full test suite green; manual smoke against
+a locally running console with the dev profile passes.
+
+Future enhancements (not part of view 1): per-strategy config values
+(retry attempts, timeout duration, breaker thresholds) and per-strategy
+live state (open/closed/half-open). Live state crosses the kernel
+facade boundary into Resilience4j-specific territory and justifies a
+small adapter-side extension rather than direct vendor imports in the
+controller.
+
+---
+
 ## Anticipated views (in likely landing order)
 
 1. **`/admin/resilience` — registered strategies.** First view, drives

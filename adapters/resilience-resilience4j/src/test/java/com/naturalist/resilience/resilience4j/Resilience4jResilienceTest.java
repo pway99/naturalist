@@ -112,6 +112,36 @@ class Resilience4jResilienceTest {
     }
 
     @Test
+    void registeredNames_groupedByPrimitive() {
+        Resilience resilience = new Resilience4jResilience(List.of(
+                new RetryConfig("flaky", 3, Duration.ofMillis(1)),
+                new TimeoutConfig("slow", Duration.ofMillis(50)),
+                new TimeoutConfig("snappy", Duration.ofMillis(50)),
+                new CircuitBreakerConfig("trippy",
+                        50.0f,
+                        Duration.ofSeconds(10),
+                        100.0f,
+                        Duration.ofSeconds(60),
+                        4),
+                new BulkheadConfig("narrow", 1, Duration.ZERO)));
+
+        assertThat(resilience.retryNames()).containsExactly("flaky");
+        assertThat(resilience.timeoutNames()).containsExactlyInAnyOrder("slow", "snappy");
+        assertThat(resilience.circuitBreakerNames()).containsExactly("trippy");
+        assertThat(resilience.bulkheadNames()).containsExactly("narrow");
+    }
+
+    @Test
+    void registeredNames_emptyWhenNothingRegistered() {
+        Resilience resilience = new Resilience4jResilience(List.of());
+
+        assertThat(resilience.retryNames()).isEmpty();
+        assertThat(resilience.timeoutNames()).isEmpty();
+        assertThat(resilience.circuitBreakerNames()).isEmpty();
+        assertThat(resilience.bulkheadNames()).isEmpty();
+    }
+
+    @Test
     void bulkhead_rejectsBeyondCapacity() throws Exception {
         Resilience resilience = new Resilience4jResilience(List.of(
                 new BulkheadConfig("narrow", 1, Duration.ZERO)));
