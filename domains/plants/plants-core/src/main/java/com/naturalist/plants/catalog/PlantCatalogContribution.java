@@ -8,6 +8,7 @@ import com.naturalist.observability.Observer;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantEntityCollections.PlantCollection;
 import com.naturalist.plants.PlantQuery;
+import com.naturalist.plants.PlantsDomain;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicSpecies;
@@ -49,7 +50,7 @@ import java.util.stream.Stream;
  */
 public class PlantCatalogContribution implements CatalogContribution {
 
-    private static final DomainId DOMAIN = new DomainId.Plants();
+    private static final DomainId DOMAIN = new PlantsDomain();
 
     private final PlantQuery.PlantEntityQuery plants;
 

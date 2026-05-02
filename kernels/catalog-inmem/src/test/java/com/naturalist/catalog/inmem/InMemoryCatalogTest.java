@@ -2,9 +2,6 @@ package com.naturalist.catalog.inmem;
 
 import com.naturalist.catalog.*;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
-import com.naturalist.catalog.DomainId.Chemistry;
-import com.naturalist.catalog.DomainId.Insects;
-import com.naturalist.catalog.DomainId.Plants;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.EntityName;
@@ -25,6 +22,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InMemoryCatalogTest {
+
+    // Test-local DomainId records — the kernel test stays decoupled from the
+    // production per-domain api modules (plants-api, chemistry-api,
+    // insects-api). The slug values match production for readability of
+    // assertions but the types are deliberately distinct.
+    private record Plants() implements DomainId {
+        @Override public String value() { return "plants"; }
+    }
+    private record Chemistry() implements DomainId {
+        @Override public String value() { return "chemistry"; }
+    }
+    private record Insects() implements DomainId {
+        @Override public String value() { return "insects"; }
+    }
 
     private static final EntityRef CALIFORNIA_PIPEVINE = new EntityRef(
             new Plants(), TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
@@ -408,6 +419,52 @@ class InMemoryCatalogTest {
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> result.get(new Plants()).add(BORAGE))
                 .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    // -----------------------------------------------------------------
+    // Open-DomainId slug uniqueness (M3)
+    // -----------------------------------------------------------------
+
+    @Test
+    void duplicateSlugAcrossDistinctDomainTypesFailsAtAssembly() {
+        record RoguePlants() implements DomainId {
+            @Override public String value() { return "plants"; }
+        }
+        var legitimate = contribution(new Plants(), entity(BORAGE, "borage"));
+        var rogue = contribution(new RoguePlants(), entity(CALIFORNIA_PIPEVINE, "shared"));
+
+        assertThatThrownBy(() -> CatalogAssembly.from(List.of(legitimate, rogue), List.of()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("plants")
+                .hasMessageContaining("RoguePlants");
+    }
+
+    @Test
+    void duplicateSlugBetweenContributionAndProviderFailsAtAssembly() {
+        record RoguePlants() implements DomainId {
+            @Override public String value() { return "plants"; }
+        }
+        var contribution = contribution(new Plants(), entity(BORAGE, "borage"));
+        EntityReferences<CompoundName> rogueProvider = provider(new RoguePlants(),
+                CompoundName.class, Map.of());
+
+        assertThatThrownBy(() -> CatalogAssembly.from(List.of(contribution), List.of(rogueProvider)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("plants");
+    }
+
+    @Test
+    void sameDomainAcrossMultipleContributionsAndProvidersIsLegal() {
+        var first = contribution(new Plants(), entity(BORAGE, "borage"));
+        var second = contribution(new Plants(), entity(CALIFORNIA_PIPEVINE, "pipevine"));
+        EntityReferences<CompoundName> refs = provider(new Plants(),
+                CompoundName.class, Map.of());
+
+        Catalog catalog = CatalogAssembly.from(List.of(first, second), List.of(refs));
+
+        assertThat(catalog.search("borage").stream())
+                .extracting(SearchHit::target)
+                .containsExactly(BORAGE);
     }
 
     @Test

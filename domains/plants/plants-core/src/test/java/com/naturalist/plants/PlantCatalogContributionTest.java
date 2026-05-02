@@ -34,7 +34,7 @@ class PlantCatalogContributionTest {
 
     @Test
     void domainIsPlants() {
-        assertThat(contribution.domain()).isEqualTo(new DomainId.Plants());
+        assertThat(contribution.domain()).isEqualTo(new PlantsDomain());
     }
 
     @Test
@@ -47,7 +47,7 @@ class PlantCatalogContributionTest {
     @Test
     void californiaPipevineIsReachableThroughSlugBinomialGenusAbbreviationAndCommonNames() {
         Catalog catalog = CatalogAssembly.from(contribution);
-        EntityRef expected = new EntityRef(new DomainId.Plants(), Plants.CaliforniaPipevine.name);
+        EntityRef expected = new EntityRef(new PlantsDomain(), Plants.CaliforniaPipevine.name);
 
         // Slug — strongest match.
         assertThat(catalog.search("california-pipevine").stream())
@@ -132,7 +132,7 @@ class PlantCatalogContributionTest {
     @Test
     void everySearchableEntityIsAttributedToThePlantsDomain() {
         contribution.searchableEntities().forEach(entity ->
-                assertThat(entity.target().domain()).isEqualTo(new DomainId.Plants()));
+                assertThat(entity.target().domain()).isEqualTo(new PlantsDomain()));
     }
 
     @Test

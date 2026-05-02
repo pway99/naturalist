@@ -368,6 +368,27 @@ duplicate slugs. No file under `kernels/` mentions a domain by name.
 ADR follow-up: append a note to ADR-022 (or open ADR-023) recording the
 shift from sealed to open `DomainId` and the slug-uniqueness invariant.
 
+**Status: Shipped.** `kernels/catalog/.../DomainId.java` is now a non-sealed
+interface — nested `Plants`/`Chemistry`/`Insects` records and the
+`of(String)` factory are gone, javadoc rewritten to describe the
+assembly-time slug-uniqueness invariant. Per-domain subtypes contributed by
+their api modules: `domains/plants/plants-api/.../PlantsDomain`,
+`domains/chemistry/chemistry-api/.../ChemistryDomain`,
+`domains/insects/insects-api/.../InsectsDomain` (each
+`*-api` pom now depends on `kernels/catalog`).
+`CatalogAssembly.from(...)` walks every contribution's and provider's
+`domain()` and throws `IllegalArgumentException` when two distinct
+`DomainId` instances share a `value()`; same-instance reuse across
+multiple contributions/providers is the normal case and is allowed.
+Consumer call sites (`PlantCatalogContribution`,
+`PlantCompoundReferences`, `BackReferencesViewModel`, `SearchController`,
+all four affected tests) use the per-domain records. Kernel-level
+`DomainIdTest`'s exhaustive-switch suite is removed; the new behaviour is
+covered by three slug-uniqueness tests in `InMemoryCatalogTest` plus
+test-local `DomainId` records in the surviving kernel tests so the
+catalog kernel still compiles and tests against no production domain api.
+Formal ADR (slug uniqueness via assembly validation) lands in M10.
+
 ### M4 — `apps/` tree introduction; `naturalist-web/console/` moves
 
 **Goal.** Hoist the management console into a first-class apps tree.

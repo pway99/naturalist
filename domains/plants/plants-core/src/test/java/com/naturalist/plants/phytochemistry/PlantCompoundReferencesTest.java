@@ -7,6 +7,7 @@ import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantsDomain;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
 import com.naturalist.plants.catalog.PlantCompoundReferences;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class PlantCompoundReferencesTest {
 
     @Test
     void domainIsPlants() {
-        assertThat(provider.domain()).isEqualTo(new DomainId.Plants());
+        assertThat(provider.domain()).isEqualTo(new PlantsDomain());
     }
 
     @Test
@@ -59,9 +60,9 @@ class PlantCompoundReferencesTest {
     void aristolochicAcidIResolvesToCaliforniaPipevineAndItsConstituent() {
         List<EntityRef> refs = provider.referencesTo(ARISTOLOCHIC_ACID_I).toList();
 
-        EntityRef plantRef = new EntityRef(new DomainId.Plants(), Plants.CaliforniaPipevine.name);
+        EntityRef plantRef = new EntityRef(new PlantsDomain(), Plants.CaliforniaPipevine.name);
         EntityRef constituentRef = new EntityRef(
-                new DomainId.Plants(),
+                new PlantsDomain(),
                 Plants.CaliforniaPipevine.Constituents.AristolochicAcidI);
 
         assertThat(refs).containsExactlyInAnyOrder(plantRef, constituentRef);
@@ -71,9 +72,9 @@ class PlantCompoundReferencesTest {
     void aristolochicAcidIIResolvesIndependentlyOfAristolochicAcidI() {
         List<EntityRef> refs = provider.referencesTo(ARISTOLOCHIC_ACID_II).toList();
 
-        EntityRef plantRef = new EntityRef(new DomainId.Plants(), Plants.CaliforniaPipevine.name);
+        EntityRef plantRef = new EntityRef(new PlantsDomain(), Plants.CaliforniaPipevine.name);
         EntityRef constituentRef = new EntityRef(
-                new DomainId.Plants(),
+                new PlantsDomain(),
                 Plants.CaliforniaPipevine.Constituents.AristolochicAcidII);
 
         // The plant ref recurs across both compounds, but each compound's
@@ -86,9 +87,9 @@ class PlantCompoundReferencesTest {
     void thymolResolvesToCreepingThymeAndItsConstituent() {
         List<EntityRef> refs = provider.referencesTo(Compounds.Thymol.name).toList();
 
-        EntityRef plantRef = new EntityRef(new DomainId.Plants(), Plants.CreepingThyme.name);
+        EntityRef plantRef = new EntityRef(new PlantsDomain(), Plants.CreepingThyme.name);
         EntityRef constituentRef = new EntityRef(
-                new DomainId.Plants(),
+                new PlantsDomain(),
                 Plants.CreepingThyme.Constituents.Thymol);
 
         assertThat(refs).containsExactlyInAnyOrder(plantRef, constituentRef);
@@ -126,8 +127,8 @@ class PlantCompoundReferencesTest {
 
         Map<DomainId, List<EntityRef>> result = catalog.findReferencesTo(ARISTOLOCHIC_ACID_I);
 
-        assertThat(result).containsOnlyKeys(new DomainId.Plants());
-        assertThat(result.get(new DomainId.Plants()))
+        assertThat(result).containsOnlyKeys(new PlantsDomain());
+        assertThat(result.get(new PlantsDomain()))
                 .extracting(EntityRef::name)
                 .containsExactlyInAnyOrder(
                         Plants.CaliforniaPipevine.name,
@@ -148,6 +149,6 @@ class PlantCompoundReferencesTest {
                 List.<EntityReferences<?>>of(provider));
 
         assertThat(catalog.domainsReferencing(CompoundName.class))
-                .containsExactly(new DomainId.Plants());
+                .containsExactly(new PlantsDomain());
     }
 }

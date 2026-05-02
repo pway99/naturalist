@@ -1,6 +1,5 @@
 package com.naturalist.catalog;
 
-import com.naturalist.catalog.DomainId.Plants;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.observability.InvariantObservation;
@@ -11,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UnresolvedReferenceObservationTest {
+
+    private record Plants() implements DomainId {
+        @Override public String value() { return "plants"; }
+    }
 
     private static final Observer observer = Observer.forClass(UnresolvedReferenceObservationTest.class);
 

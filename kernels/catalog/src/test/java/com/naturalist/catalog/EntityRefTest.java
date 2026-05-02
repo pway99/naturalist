@@ -1,6 +1,5 @@
 package com.naturalist.catalog;
 
-import com.naturalist.catalog.DomainId.Plants;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.PlantName;
@@ -10,6 +9,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EntityRefTest {
+
+    private record Plants() implements DomainId {
+        @Override public String value() { return "plants"; }
+    }
 
     private static final Observer observer = Observer.forClass(EntityRefTest.class);
 

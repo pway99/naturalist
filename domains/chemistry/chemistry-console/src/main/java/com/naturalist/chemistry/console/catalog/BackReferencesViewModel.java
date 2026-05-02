@@ -42,12 +42,14 @@ public record BackReferencesViewModel(List<Group> groups) {
     }
 
     private static String displayNameFor(DomainId domain) {
-        return switch (domain) {
-            case DomainId.Plants ignored -> "Plants";
-            case DomainId.Insects ignored -> "Insects";
-            case DomainId.Chemistry ignored -> "Chemistry";
-        };
+        return DISPLAY_NAMES.getOrDefault(domain.value(), domain.value());
     }
+
+    private static final Map<String, String> DISPLAY_NAMES = Map.of(
+            "plants", "Plants",
+            "insects", "Insects",
+            "chemistry", "Chemistry"
+    );
 
     public record Group(String domainDisplayName, List<Link> links) {}
 

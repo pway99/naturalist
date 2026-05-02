@@ -5,6 +5,9 @@ import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.catalog.SearchHit;
 import com.naturalist.catalog.SearchResults;
+import com.naturalist.chemistry.ChemistryDomain;
+import com.naturalist.insects.InsectsDomain;
+import com.naturalist.plants.PlantsDomain;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +29,9 @@ public class SearchController {
         this.catalog = catalog;
         this.linker = linker;
         this.domainDisplayNames = Map.of(
-                new DomainId.Plants(), "Plants",
-                new DomainId.Chemistry(), "Chemistry",
-                new DomainId.Insects(), "Insects"
+                new PlantsDomain(), "Plants",
+                new ChemistryDomain(), "Chemistry",
+                new InsectsDomain(), "Insects"
         );
     }
 

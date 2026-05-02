@@ -6,6 +6,7 @@ import com.naturalist.catalog.EntityReferences;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantsDomain;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollections.PhytochemicalConstituentCollection;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
@@ -31,7 +32,7 @@ import java.util.stream.Stream;
  *       record itself — the detail target, where the role / tissue / induction
  *       story lives.</li>
  * </ul>
- * The two refs share {@link DomainId.Plants} but are distinguishable by the
+ * The two refs share {@link PlantsDomain} but are distinguishable by the
  * runtime class of their underlying name. Consumers that only want
  * navigational anchors filter by {@code instanceof PlantName} on
  * {@link EntityRef#name()}; consumers rendering the full constituent
@@ -60,7 +61,7 @@ import java.util.stream.Stream;
  */
 public class PlantCompoundReferences implements EntityReferences<CompoundName> {
 
-    private static final DomainId DOMAIN = new DomainId.Plants();
+    private static final DomainId DOMAIN = new PlantsDomain();
 
     private final PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery constituents;
 
