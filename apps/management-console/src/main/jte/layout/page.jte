@@ -9,7 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title} — Console</title>
     <link rel="stylesheet" href="/css/pico.min.css">
-    <link rel="stylesheet" href="/css/naturalist.css">
+    <%-- Bump ?v= when naturalist.css ships visible changes so browsers
+         don't keep serving the previous cached version. --%>
+    <link rel="stylesheet" href="/css/naturalist.css?v=2">
     <script src="/js/htmx.min.js" defer></script>
 </head>
 <body>

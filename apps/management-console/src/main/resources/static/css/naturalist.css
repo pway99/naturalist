@@ -167,25 +167,18 @@ main {
     padding-bottom: 0.25rem;
 }
 
-/* The <details> wrapper exists for the mobile hamburger toggle.
-   On wide viewports it's collapsed away with display: contents so it
-   contributes nothing to layout. */
-.primary-nav { color: var(--sepia-ink); }
-.primary-nav-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.4rem 0.75rem;
-    background: var(--parchment-deep);
-    border: 1px solid var(--sepia-rule);
-    border-radius: 0.25rem;
-    cursor: pointer;
-    font-family: 'Georgia', 'Cambria', serif;
-    font-style: italic;
-    font-weight: 600;
-    list-style: none;
-    user-select: none;
-}
+/* The <details> wrapper exists for the mobile hamburger toggle. The
+   defaults below are the DESKTOP layout — the toggle is hidden and the
+   link list is always shown inline. The mobile media query at the bottom
+   re-enables the hamburger and stacks links vertically.
+
+   Desktop-first matters here because if the media query never matches —
+   browser narrower than expected, CSS not yet loaded, query string
+   ignored, etc. — the user still gets a usable inline nav rather than a
+   broken-looking hamburger. */
+.primary-nav { display: contents; color: var(--sepia-ink); }
+
+.primary-nav-toggle { display: none; }   /* desktop default */
 .primary-nav-toggle::-webkit-details-marker,
 .primary-nav-toggle::marker { display: none; content: ''; }
 .primary-nav-toggle-icon {
@@ -202,11 +195,15 @@ main {
     );
 }
 
+/* The UA stylesheet hides non-summary children of a closed <details>
+   with `display: none`. We need the inline link list to render even
+   though the outer .primary-nav <details> is closed, so use !important
+   to win against the UA rule. */
 .primary-nav-links {
-    list-style: none;
+    list-style: none !important;
     margin: 0;
     padding: 0;
-    display: flex;
+    display: flex !important;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.15rem 0.25rem;
@@ -274,19 +271,8 @@ main {
    instead of :empty so template whitespace inside the <ul> doesn't keep it visible. */
 .primary-nav-more:not(:has(.primary-nav-overflow > li)) { display: none; }
 
-/* Wide viewports — the desktop layout. The outer <details> is dissolved with
-   display: contents so the toggle is hidden and the link list is always shown. */
-@media (min-width: 720px) {
-    .primary-nav { display: contents; }
-    .primary-nav-toggle { display: none; }
-    /* Override the UA rule that hides non-summary children of a closed
-       <details> element — the outer details box no longer participates
-       in layout, but the rule still applies to its children. */
-    .primary-nav-links { display: flex !important; }
-}
-
-/* Narrow viewports — collapse the whole nav into a hamburger. Search box
-   wraps onto its own row beneath the brand. */
+/* Narrow viewports — flip on the hamburger and collapse links vertically.
+   Above this breakpoint the desktop defaults above apply. */
 @media (max-width: 719.98px) {
     .site-header-bar {
         flex-wrap: wrap;
@@ -295,6 +281,25 @@ main {
     .site-search { order: 3; flex: 1 1 100%; }
     .site-search input[type="search"] { min-width: 0; width: 100%; }
 
+    /* Re-engage the <details> wrapper as a real layout box so its
+       open/closed state controls the link list visibility. */
+    .primary-nav { display: block; }
+    .primary-nav-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        background: var(--parchment-deep);
+        border: 1px solid var(--sepia-rule);
+        border-radius: 0.25rem;
+        cursor: pointer;
+        font-family: 'Georgia', 'Cambria', serif;
+        font-style: italic;
+        font-weight: 600;
+        list-style: none;
+        user-select: none;
+    }
+    .primary-nav:not([open]) .primary-nav-links { display: none !important; }
     .primary-nav[open] .primary-nav-links {
         flex-direction: column;
         align-items: stretch;
