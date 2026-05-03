@@ -2,7 +2,9 @@ package com.naturalist.insects.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.insects.*;
+import com.naturalist.insects.console.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
@@ -32,6 +34,7 @@ public class InsectsController {
     private final InsectQuery insectQuery;
     private final InsectLifeStageQuery insectLifeStageQuery;
     private final Resilience resilience;
+    private final DescriptionRenderer descriptionRenderer;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
     InsectsController(Resilience resilience) {
@@ -40,6 +43,7 @@ public class InsectsController {
         this.insectQuery = context.insectQuery();
         this.insectLifeStageQuery = context.insectLifeStageQuery();
         this.resilience = resilience;
+        this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
     }
 
     @GetMapping
@@ -79,8 +83,13 @@ public class InsectsController {
             return "redirect:/insects";
         }
         InsectEntityCollections.ImageCollection images = insectQuery.images().forSpeciesName(speciesName);
+        var description = species.get().description();
         model.addAttribute("species", species.get());
         model.addAttribute("images", images.stream().toList());
+        model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
+        model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
+        model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
+        model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         return "insects/detail";
     }
 

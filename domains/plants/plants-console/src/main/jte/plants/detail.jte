@@ -28,25 +28,11 @@
         @endif
     </p>
 
-    <section>
-        <h2>Description</h2>
-        <details open>
-            <summary><strong>Preschool</strong></summary>
-            $unsafe{descriptionPreschool.isEmpty() ? "<p>" + plant.description().preschool() + "</p>" : descriptionPreschool}
-        </details>
-        <details>
-            <summary><strong>Elementary</strong></summary>
-            $unsafe{descriptionElementary.isEmpty() ? "<p>" + plant.description().elementary() + "</p>" : descriptionElementary}
-        </details>
-        <details>
-            <summary><strong>Secondary</strong></summary>
-            $unsafe{descriptionSecondary.isEmpty() ? "<p>" + plant.description().secondary() + "</p>" : descriptionSecondary}
-        </details>
-        <details>
-            <summary><strong>University</strong></summary>
-            $unsafe{descriptionUniversity.isEmpty() ? "<p>" + plant.description().university() + "</p>" : descriptionUniversity}
-        </details>
-    </section>
+    @template.components.description(
+    preschool = descriptionPreschool,
+    elementary = descriptionElementary,
+    secondary = descriptionSecondary,
+    university = descriptionUniversity)
 
     <section>
         <h2>Identity</h2>

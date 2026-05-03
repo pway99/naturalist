@@ -16,6 +16,7 @@ public final class PlantsParagraphCues {
 
     public static final List<String> CUES = List.of(
             "At Oak Vista",
+            "CRITICAL ",
             "Management constraint",
             "Practical significance",
             "Critical timing",

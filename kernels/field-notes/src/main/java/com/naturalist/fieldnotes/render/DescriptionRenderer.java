@@ -42,9 +42,22 @@ import java.util.regex.Pattern;
  *       period), that span is lifted out of the body and rendered as a
  *       {@code <header>} chip. Inputs without a leading header pass through
  *       unchanged.</li>
- *   <li><b>Paragraph splitting</b> &mdash; sentence breaks immediately
- *       followed by any cue phrase from the constructor-supplied cue list
- *       become paragraph breaks.</li>
+ *   <li><b>Authored paragraph breaks</b> &mdash; the body is split on blank
+ *       lines (one or more newlines surrounding whitespace). Each authored
+ *       paragraph is then independently scanned for cue-driven breaks and
+ *       numbered-list lifting. {@code \n\n} is the explicit lever an author
+ *       reaches for when prose needs a break the cue list cannot catch.</li>
+ *   <li><b>Cue-driven paragraph splitting</b> &mdash; within an authored
+ *       paragraph, a sentence break immediately followed by any cue phrase
+ *       from the constructor-supplied cue list becomes a paragraph
+ *       break.</li>
+ *   <li><b>Section-label auto-break</b> &mdash; a sentence break followed
+ *       by a Title-Case noun phrase ending in a colon
+ *       (e.g. {@code "Nesting biology:"}, {@code "Management relevance:"},
+ *       {@code "Functional response:"}) is treated as a paragraph break.
+ *       This is the recurring documentation pattern across the catalog;
+ *       no per-domain configuration required. The pattern requires 2&ndash;4
+ *       words total to reduce false positives on short discourse markers.</li>
  *   <li><b>Numbered enumeration lifting</b> &mdash; within a paragraph, a
  *       sequence of {@code (1) ... (2) ...} markers (separated by {@code ;}
  *       or {@code .}) is lifted into an {@code <ol>}.</li>
@@ -121,11 +134,41 @@ public final class DescriptionRenderer {
 
     // ── Body rendering ───────────────────────────────────────────────────
 
+    private static final Pattern AUTHORED_BREAK = Pattern.compile("\\s*\\n\\s*\\n\\s*");
+
     private void renderBody(String body, StringBuilder out) {
-        for (String paragraph : splitParagraphs(body)) {
-            renderParagraph(paragraph, out);
+        for (String authored : AUTHORED_BREAK.split(body)) {
+            if (authored.isBlank()) {
+                continue;
+            }
+            for (String paragraph : splitParagraphs(authored)) {
+                renderParagraph(paragraph, out);
+            }
         }
     }
+
+    /**
+     * Auto-detected section label: a Title-Case noun phrase ending in a colon
+     * + space, sentence-initial. Designed to catch the documentation
+     * convention used across the catalog ({@code "Nesting biology:"},
+     * {@code "Management relevance:"}, {@code "Functional response:"})
+     * without per-domain configuration.
+     *
+     * <p>Constraints chosen to reduce false positives:
+     * <ul>
+     *   <li>First word starts with an uppercase letter and at least one
+     *       lowercase letter (filters out single all-caps tokens and
+     *       discourse markers like {@code "OK:"} that aren't section
+     *       headers).</li>
+     *   <li>Total length is 2&ndash;4 words (filters out single-word
+     *       interjections like {@code "Note:"} and avoids matching
+     *       arbitrarily long prose ending in a colon).</li>
+     *   <li>Following words are lowercase &mdash; mid-clause acronyms
+     *       (e.g. {@code "Field DNA assay:"}) are out of scope.</li>
+     * </ul>
+     */
+    private static final Pattern SECTION_LABEL = Pattern.compile(
+            "[A-Z][a-z]+(?:-[a-z]+)?(?:\\s+[a-z][a-z-]+){1,3}:\\s");
 
     private List<String> splitParagraphs(String body) {
         List<String> paragraphs = new ArrayList<>();
@@ -134,7 +177,7 @@ public final class DescriptionRenderer {
         while (i < body.length()) {
             if (body.charAt(i) == '.' && i + 2 < body.length() && body.charAt(i + 1) == ' ') {
                 String tail = body.substring(i + 2);
-                if (matchesCue(tail)) {
+                if (matchesCue(tail) || matchesSectionLabel(tail)) {
                     paragraphs.add(body.substring(start, i + 1).trim());
                     start = i + 2;
                 }
@@ -155,6 +198,10 @@ public final class DescriptionRenderer {
             }
         }
         return false;
+    }
+
+    private boolean matchesSectionLabel(String tail) {
+        return SECTION_LABEL.matcher(tail).lookingAt();
     }
 
     private void renderParagraph(String paragraph, StringBuilder out) {

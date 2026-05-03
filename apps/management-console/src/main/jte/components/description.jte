@@ -1,6 +1,7 @@
-@import com.naturalist.fieldnotes.Description
-
-@param Description description
+@param String preschool
+@param String elementary
+@param String secondary
+@param String university
 
 <section class="description-tabs">
     <nav>
@@ -10,16 +11,16 @@
         <button class="tab" onclick="showTab(this, 'university')">University</button>
     </nav>
     <div class="tab-content active" id="tab-preschool">
-        <p>${description.preschool()}</p>
+        $unsafe{preschool}
     </div>
     <div class="tab-content" id="tab-elementary">
-        <p>${description.elementary()}</p>
+        $unsafe{elementary}
     </div>
     <div class="tab-content" id="tab-secondary">
-        <p>${description.secondary()}</p>
+        $unsafe{secondary}
     </div>
     <div class="tab-content" id="tab-university">
-        <p>${description.university()}</p>
+        $unsafe{university}
     </div>
 </section>
 

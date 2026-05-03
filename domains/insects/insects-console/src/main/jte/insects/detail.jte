@@ -4,6 +4,10 @@
 
 @param InsectSpecies species
 @param List<InsectImage> images
+@param String descriptionPreschool = ""
+@param String descriptionElementary = ""
+@param String descriptionSecondary = ""
+@param String descriptionUniversity = ""
 
 @template.layout.page(title = species.name().value(), content = @`
     <a href="/insects">&larr; Back to catalog</a>
@@ -28,7 +32,11 @@
         @endif
     </div>
 
-    @template.components.description(description = species.description())
+    @template.components.description(
+    preschool = descriptionPreschool,
+    elementary = descriptionElementary,
+    secondary = descriptionSecondary,
+    university = descriptionUniversity)
 
     @if(species.sightingNotes() != null)
         <section>

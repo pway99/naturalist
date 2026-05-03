@@ -83,6 +83,121 @@ class DescriptionRendererTest {
         assertThat(rendered).isEqualTo("<p>Some prose. With more prose.</p>\n");
     }
 
+    // ── Authored paragraph breaks (\n\n) ─────────────────────────────────
+
+    @Test
+    void blankLineAuthoredByCallerBecomesParagraphBreak() {
+        String rendered = renderer.render(
+                "First authored paragraph.\n\nSecond authored paragraph.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(2L);
+    }
+
+    @Test
+    void authoredBreakWorksEvenWhenNoCueWouldFire() {
+        // The classic case: short narrative prose with no domain cue
+        // applicable, but the author wants a break for readability.
+        DescriptionRenderer noCues = new DescriptionRenderer(List.of());
+        String rendered = noCues.render(
+                "Short narrative sentence.\n\nFollow-up narrative sentence.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(2L);
+    }
+
+    @Test
+    void cuesFireIndependentlyWithinEachAuthoredParagraph() {
+        // \n\n splits first; each authored chunk is then scanned for cues.
+        String rendered = renderer.render(
+                "Lead sentence. Management constraint applies."
+                        + "\n\n"
+                        + "Second authored paragraph. Practical significance follows.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(4L);
+    }
+
+    @Test
+    void multipleConsecutiveBlankLinesCollapseToASingleBreak() {
+        String rendered = renderer.render("First.\n\n\n\nSecond.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(2L);
+    }
+
+    // ── Auto-detected section labels ─────────────────────────────────────
+
+    @Test
+    void titleCaseNounPhraseEndingInColonBecomesParagraphBreak() {
+        DescriptionRenderer noCues = new DescriptionRenderer(List.of());
+        String rendered = noCues.render(
+                "Opening sentence about the species. Nesting biology: females excavate burrows.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(2L);
+    }
+
+    @Test
+    void hyphenatedSectionLabelMatches() {
+        DescriptionRenderer noCues = new DescriptionRenderer(List.of());
+        String rendered = noCues.render(
+                "Opening prose. Pollen-host specialisation varies: some are oligolectic.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(2L);
+    }
+
+    @Test
+    void multipleSectionLabelsProduceMultipleBreaks() {
+        DescriptionRenderer noCues = new DescriptionRenderer(List.of());
+        String rendered = noCues.render(
+                "Opening prose about the species. "
+                        + "Nesting biology: females excavate burrows. "
+                        + "Management relevance: bare soil patches are obligate. "
+                        + "Functional response: type II.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(4L);
+    }
+
+    @Test
+    void singleWordColonSuffixDoesNotTriggerBreak() {
+        // Common discourse markers like "Note:" or "However:" should not
+        // fragment paragraphs.
+        DescriptionRenderer noCues = new DescriptionRenderer(List.of());
+        String rendered = noCues.render(
+                "Opening sentence. Note: this is a footnote-style aside.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(1L);
+    }
+
+    @Test
+    void longTailingColonClauseDoesNotTriggerBreak() {
+        // A sentence-internal colon with five or more words preceding it is
+        // not a section label, just enumeration.
+        DescriptionRenderer noCues = new DescriptionRenderer(List.of());
+        String rendered = noCues.render(
+                "Opening sentence. The species exhibits the following key trait: "
+                        + "burrow construction.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(1L);
+    }
+
+    @Test
+    void sentenceCaseColonDoesNotTriggerBreak() {
+        // Lowercase-first noun phrase ending in a colon is a sentence-internal
+        // marker, not a section header.
+        DescriptionRenderer noCues = new DescriptionRenderer(List.of());
+        String rendered = noCues.render(
+                "Opening sentence. larval development: three instars over fifteen days.");
+
+        long paragraphs = rendered.lines().filter(line -> line.startsWith("<p>")).count();
+        assertThat(paragraphs).isEqualTo(1L);
+    }
+
     // ── Header extraction ────────────────────────────────────────────────
 
     @Test
