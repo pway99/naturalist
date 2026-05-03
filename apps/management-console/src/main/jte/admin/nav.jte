@@ -11,4 +11,9 @@
     @else
         <a href="/admin/domain-services">Domain Services</a>
     @endif
+    @if(current.equals("catalog"))
+        <a href="/admin/catalog" aria-current="page">Catalog</a>
+    @else
+        <a href="/admin/catalog">Catalog</a>
+    @endif
 </nav>
