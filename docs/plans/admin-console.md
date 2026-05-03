@@ -253,6 +253,16 @@ render); per-provider live invocation against a sample target;
 cross-linking from each row into `/admin/domain-services` for the
 contributing bean's `@DomainService` discovery state.
 
+**Status: Shipped.** M1 landed `AdminCatalogController` +
+`admin/catalog.jte`, injecting `List<DomainId>`, `List<CatalogContribution>`,
+and `List<EntityReferences<?>>` directly and grouping by
+`DomainId.value()`. M2 added `AdminCatalogControllerWebMvcTest`
+(auth, ordered-headings, plants contribution + provider with
+`CompoundName` referenceType, empty-section rendering for chemistry and
+insects, and nav `aria-current`) and extended `admin/nav.jte` with the
+Catalog link. Visual styling stays with the `banner-styling` lane that
+owns the `.admin-nav` and inner-group rules.
+
 ---
 
 ## Anticipated views (in likely landing order)
@@ -265,11 +275,11 @@ contributing bean's `@DomainService` discovery state.
    Lists every class the Spring-runtime adapter registered from the
    `@DomainService` marker, grouped by domain package. Confirms that a
    new `@DomainService` actually got picked up.
-3. **`/admin/catalog` — assembly state.** Milestones drafted (M1–M2,
-   above). Lists every `CatalogContribution` and `EntityReferences`
-   provider the assembled `Catalog` knows about, grouped by
-   `DomainId`. Surfaces a missing contribution before its absence
-   becomes a missing search hit.
+3. **`/admin/catalog` — assembly state.** ✅ Shipped (M1–M2). Lists
+   every `CatalogContribution` and `EntityReferences` provider the
+   assembled `Catalog` knows about, grouped by `DomainId`. Surfaces a
+   missing contribution before its absence becomes a missing search
+   hit.
 4. **(future) `/admin/schedules`** — when the scheduled-task runner
    lands.
 
