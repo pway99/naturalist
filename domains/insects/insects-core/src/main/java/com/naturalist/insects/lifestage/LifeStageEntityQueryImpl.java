@@ -1,6 +1,7 @@
 package com.naturalist.insects.lifestage;
 
 import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
@@ -8,6 +9,7 @@ import com.naturalist.insects.lifestage.InsectLifeStageQuery.LifeStageEntityQuer
 
 import java.util.Set;
 
+@DomainService
 class LifeStageEntityQueryImpl
         extends AbstractEntityQuery<
                         LifeStageName,

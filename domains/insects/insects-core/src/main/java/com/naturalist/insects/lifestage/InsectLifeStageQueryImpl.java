@@ -1,7 +1,9 @@
 package com.naturalist.insects.lifestage;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 
+@DomainService
 class InsectLifeStageQueryImpl implements InsectLifeStageQuery {
 
     private final LifeStageEntityQuery lifeStageEntityQuery;

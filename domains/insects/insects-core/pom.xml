@@ -18,10 +18,19 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>catalog</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>framework</artifactId>
         </dependency>
 
         <!-- TEST DEPENDENCIES -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>catalog-inmem</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>identifiers-test</artifactId>
