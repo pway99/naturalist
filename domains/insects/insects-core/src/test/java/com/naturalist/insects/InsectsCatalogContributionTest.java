@@ -64,17 +64,26 @@ class InsectsCatalogContributionTest {
 
         // Slug — strongest match.
         assertThat(catalog.search("convergent-ladybug").stream())
+                .as("slug 'convergent-ladybug' should resolve to %s as EXACT_SLUG", expected)
                 .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
 
         // Full binomial — case-insensitive.
-        assertThat(targetsOf(catalog.search("Hippodamia convergens"))).contains(expected);
-        assertThat(targetsOf(catalog.search("hippodamia convergens"))).contains(expected);
+        assertThat(targetsOf(catalog.search("Hippodamia convergens")))
+                .as("binomial 'Hippodamia convergens' should resolve to %s", expected)
+                .contains(expected);
+        assertThat(targetsOf(catalog.search("hippodamia convergens")))
+                .as("lowercase binomial 'hippodamia convergens' should resolve to %s", expected)
+                .contains(expected);
 
         // Genus alone.
-        assertThat(targetsOf(catalog.search("Hippodamia"))).contains(expected);
+        assertThat(targetsOf(catalog.search("Hippodamia")))
+                .as("genus 'Hippodamia' should resolve to %s", expected)
+                .contains(expected);
 
         // Abbreviated binomial — tokenises as "h" + "convergens".
-        assertThat(targetsOf(catalog.search("H. convergens"))).contains(expected);
+        assertThat(targetsOf(catalog.search("H. convergens")))
+                .as("abbreviated binomial 'H. convergens' should resolve to %s", expected)
+                .contains(expected);
     }
 
     @Test
@@ -90,8 +99,7 @@ class InsectsCatalogContributionTest {
     @Test
     void unknownTokenReturnsEmptyResults() {
         Catalog catalog = CatalogAssembly.from(contribution);
-
-        assertThat(catalog.search("not-an-insect-anywhere").isEmpty()).isTrue();
+        assertThat(catalog.search("qqqqxxxx").isEmpty()).isTrue();
         assertThat(catalog.search("zzzzzzz").isEmpty()).isTrue();
     }
 

@@ -315,6 +315,7 @@ class <Domain>CatalogContributionTest {
                 Test<Domain>Identifiers./* path to */.name);
 
         assertThat(catalog.search("<known-slug>").stream())
+                .as("slug '<known-slug>' should resolve to %s as EXACT_SLUG", expected)
                 .anyMatch(h -> h.target().equals(expected)
                         && h.kind() == MatchKind.EXACT_SLUG);
     }
@@ -322,8 +323,30 @@ class <Domain>CatalogContributionTest {
     // Add one test per token family the contribution emits — binomial,
     // common-name, formula, etc. Use real fixture data from the JSON
     // catalog; do not synthesise entities.
+    //
+    // Use AssertJ `.as("…should resolve to %s", expected)` on every
+    // search assertion. When a search returns the wrong target, the
+    // default failure message prints only the raw collection diff —
+    // useful for AND/OR debugging of token derivation but unhelpful
+    // for *which* entity the search resolved to. The description
+    // makes the expected EntityRef explicit in the message.
 }
 ```
+
+### Picking "unknown token" probes
+
+When the test asserts that an unknown token returns no hits, **avoid
+strings whose substrings are common English fragments**. The kernel
+tokenises on whitespace and hyphens, so probes like
+`"not-an-insect-anywhere"` decompose into `not`, `an`, `insect`,
+`anywhere` — and `an` is a token a real entity might emit (any
+binomial whose species epithet starts with `an`-, any common name
+containing the word "an"). The probe then matches a real entity and
+the assertion fails for the wrong reason.
+
+Use an opaque, alphabetic-only probe whose tokens cannot collide:
+`"qqqqxxxx"`, `"zzzzzzz"`. One word, no separators, no real-language
+fragment.
 
 POM updates for `<domain>-core/pom.xml`:
 

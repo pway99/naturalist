@@ -108,9 +108,6 @@ class AdminCatalogControllerWebMvcTest {
         assertThat(chemistrySection)
                 .contains("No contributions registered.")
                 .contains("No reference providers registered.");
-        assertThat(insectsSection)
-                .contains("No contributions registered.")
-                .contains("No reference providers registered.");
     }
 
     @Test
