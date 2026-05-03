@@ -30,15 +30,6 @@ If you're looking for work-tracking documents, see
 | [product-acquisition.md](product-acquisition.md)     | `.../chemistry/product/products-base.json` (+ compounds where new)                                       |
 | [insect-lifestage-task.md](insect-lifestage-task.md) | `domains/insects/.../insect-species.json` (populating `egg`/`larva`/`pupa`/`adult` for existing entries) |
 
-## Scratchpads
-
-Short-lived prompt material that may grow into a proper briefing or be
-discarded. Treat as draft.
-
-| File                                         | Notes                                                                           |
-|----------------------------------------------|---------------------------------------------------------------------------------|
-| [prompt-scratchpad.md](prompt-scratchpad.md) | Loose chat-prompt fragments (Metric/MetricRegistry follow-ups, refactor TODOs). |
-
 ## Convention
 
 - New briefing? Drop it here and add a row above.

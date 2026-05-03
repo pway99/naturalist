@@ -10,11 +10,10 @@ a row.
 
 ## Active
 
-| Plan                                                     | Status                                 | Scope                                                                                                                                                                                  |
-|----------------------------------------------------------|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [admin-console.md](admin-console.md)                     | active — view 4+ pending               | Secure `/admin/**` surface in `apps/management-console`. Views 1–3 (`resilience`, `domain-services`, `catalog`) shipped.                                                               |
-| [catalog-kernel.md](catalog-kernel.md)                   | active — superseded sections shipped   | Cross-domain reference resolution kernel. Routing-era milestones M0–M7 shipped; later milestones rewritten by the redirect.                                                            |
-| [catalog-kernel-redirect.md](catalog-kernel-redirect.md) | active — M9b / M10 / M11 / M12 pending | 2026-04-29 pivot of the catalog plan from exact-match routing to search-and-discovery. M1.5 / M2′ / M4′ / M7′ / M-Search-UI-A / M-Insects-Catalog / M-Chemistry-Catalog / M9a shipped. |
+| Plan                                   | Status                                 | Scope                                                                                                                                                              |
+|----------------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [admin-console.md](admin-console.md)   | active — view 4+ pending               | Secure `/admin/**` surface in `apps/management-console`. Views 1–3 (`resilience`, `domain-services`, `catalog`) shipped.                                           |
+| [catalog-kernel.md](catalog-kernel.md) | active — M9b / M10 / M11 / M12 pending | Cross-domain reference resolution kernel. Search + inverse-routing + URL-linker SPIs. The 2026-04-29 search-and-discovery redirect is folded into this single doc. |
 
 ## Archived
 
@@ -31,8 +30,9 @@ not loaded by default.
 Decisions and questions that don't fit the milestone shape live next door
 in [`../`](..):
 
-- [`../pending-implementation.md`](../pending-implementation.md) — prioritized backlog of work not yet planned.
-- [`../open-questions.md`](../open-questions.md) — design decisions in flight.
+- [`../notes/pending-implementation.md`](../notes/pending-implementation.md) — prioritized backlog of work not yet
+  planned.
+- [`../notes/open-questions.md`](../notes/open-questions.md) — design decisions in flight.
 - [`../briefings/`](../briefings/) — chat-prompt context documents (not plans).
 - [`../adr/`](../adr/) — Architecture Decision Records.
 

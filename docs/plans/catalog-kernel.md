@@ -1,91 +1,146 @@
 # Catalog Kernel — Effort Plan
 
-A naturalist's catalog is a cross-referenced body of knowledge that helps you navigate
-between species, ranges, and ecological relationships. The `catalog` kernel plays the
-same role inside this codebase: it is the cross-domain navigation surface the
-management console renders against, and the routing layer through which one domain
-discovers another's references to its entities.
+A naturalist's catalog is a cross-referenced body of knowledge that helps you
+navigate between species, ranges, and ecological relationships. The `catalog`
+kernel plays the same role inside this codebase: a cross-domain navigation
+surface the management console renders against, and a routing layer through
+which one domain discovers another's references to its entities.
 
-This document is the durable plan for building it. It is structured so that any one
-milestone can be picked up in a fresh session without reading prior chat history —
-the architectural decisions are stated declaratively at the top, and each milestone
-lists the exact files to read first before doing the work.
+This document is the durable plan. It is structured so any one milestone can
+be picked up in a fresh session without reading prior chat history — the
+architectural decisions are stated declaratively at the top, and each
+milestone lists the exact files to read first before doing the work.
+
+> **Plan history.** The original plan (M0–M12) framed the forward direction
+> as exact-match routing (`Catalog.resolveAlias`). On 2026-04-29 it pivoted
+> to search-and-discovery: the same contribution-and-assembly architecture,
+> but the assembled `Catalog` answers `search(text)` instead. Routing
+> milestones M2, M4, M7 shipped successfully and were superseded by M2′,
+> M4′, M7′. The inverse-direction work (M3, M5, M8) was unaffected. This
+> document is the post-merge canonical plan; the redirect was folded in
+> 2026-05-03.
 
 ---
 
 ## Why this exists
 
-Two concrete pains motivate the kernel.
+The plants console renders `Description.university()` as a wall of dense
+academic prose — Latin binomials, measurement units, parenthetical citations,
+inline numbered enumerations — with no internal landmarks. The reader cannot
+scan it. The text already carries latent structure (taxonomic header,
+quantitative claims, visitor list, management note) that a renderer can
+surface.
 
-The plants console renders `Description.university()` as a wall of dense academic
-prose — Latin binomials, measurement units, parenthetical citations, inline numbered
-enumerations — with no internal landmarks. The reader cannot scan it. The text
-already carries latent structure (taxonomic header, quantitative claims, visitor
-list, management note) that a renderer can surface.
+That same prose is dense with terms a young naturalist will not yet
+recognise: *Aristolochia californica*, *Bombus*, *aristolochic acid*,
+"pipevine swallowtail." Some of these have entries in the catalog already;
+some do not yet; some never will. The reader's question is the same in every
+case — *what is this thing, and is there anywhere I can go to find out
+more?* — and the catalog's job is to give an honest answer: a hit if there
+is one, an empty state with a path forward if there is not.
 
-That same prose is full of cross-domain entity references — `Aristolochia
-californica`, `Bombus`, `aristolochic acid` — which are conceptually `EntityName`s
-written in human form. The reader cannot click them. And on the inverse side, the
-`Compound` detail page for `aristolochic-acid` has no way to enumerate the plants
-or insects that reference it, because each domain knows its own outbound references
-but no domain owns the inverse index.
+On the inverse side, the `Compound` detail page for `aristolochic-acid` has
+no way to enumerate the plants or insects that reference it, because each
+domain knows its own outbound references but no domain owns the inverse
+index.
 
-Both problems share a shape: cross-domain entity-name resolution, contributed by
-each domain, assembled per app, queried by the console. That is the catalog.
+Both problems share a shape: cross-domain entity resolution, contributed by
+each domain, assembled per app, queried by the console. The forward
+direction is *search* — many possible answers, including none, with the
+empty state itself being a feature (it is the catalog's growth signal). The
+inverse direction is *routing* — a deterministic fan-out across domains
+that opt in to answering a particular reference type.
 
 ---
 
 ## Architectural decisions (declarative, do not re-derive)
 
 **Module placement.** `kernels/catalog/`, sibling to `kernels/field-notes` and
-`kernels/taxonomy`. Depends only on `framework` and `identifiers`. Nothing in the
-DAG depends on catalog except domain `<domain>-core` modules (which contribute) and
-console / app modules (which consume). The kernel itself contains contracts and a
-default in-memory assembly — no domain knowledge.
+`kernels/taxonomy`. Depends only on `framework` and `identifiers`. Nothing in
+the DAG depends on catalog except domain `<domain>-core` modules (which
+contribute) and console / app modules (which consume). The kernel itself
+contains contracts and a default in-memory assembly — no domain knowledge.
 
-**Two SPIs, one kernel.** Forward and inverse resolution are separate concepts that
-share the contribution-and-assembly pattern. Both live in `kernels/catalog/`:
+**Three SPIs, one kernel.** Search, inverse routing, and link resolution are
+separate concepts that share the contribution-and-assembly pattern. All three
+live in `kernels/catalog/`:
 
-- `CatalogContribution` — forward direction. A domain declares the aliases (surface
-  forms in prose) under which its own entities can be recognised. Used by the
-  console to convert "Aristolochia californica" in description text into a link to
-  the `california-pipevine` plant page.
-- `EntityReferences<T extends EntityName>` — inverse direction. A domain declares
-  it can answer "give me my entities that reference this foreign `EntityName`."
-  Used by the console to render "Found in: california-pipevine (plants),
-  pipevine-swallowtail (insects)" on the `aristolochic-acid` detail page.
+- `CatalogContribution` — search direction. A domain declares the searchable
+  entities it owns and the surface forms (tokens) under which each is
+  findable. Used by the console's search box to answer "what does the
+  catalog know about *aristolochia*?" with potentially many hits across
+  potentially many domains.
+- `EntityReferences<T extends EntityName>` — inverse direction. A domain
+  declares it can answer "give me my entities that reference this foreign
+  `EntityName`." Used by the console to render "Found in:
+  california-pipevine (plants), pipevine-swallowtail (insects)" on the
+  `aristolochic-acid` detail page.
+- `EntityRefLinker` — URL composition. Each console module ships one linker
+  that knows the route conventions for its own domain; a composite walks
+  every linker and returns the first non-null URL. Returns `null` for any
+  `EntityRef` whose name type the linker does not own.
 
-Each domain implements zero or more of each. Contributions are collected in each
-app's composition root — there is no shared module that depends on every domain.
+Each domain implements zero or more of each. Contributions are collected in
+each app's composition root.
 
-**Registry shape: routing, not graph.** The catalog is a routing table, not a
-knowledge graph. It does not ingest `(source, target, kind)` triples at startup.
-For inverse queries, it knows only that "domain X has an `EntityReferences<Y>`
-provider"; the actual lookup runs live against the domain's repository. This keeps
-the registry's surface tiny, removes any startup index to maintain, and makes
-domain data freshness automatic.
+**Search returns many. Routing returns one set per domain.** The two SPIs
+have intentionally different return shapes:
 
-**Derive aliases, do not register.** A domain's `CatalogContribution.aliases()`
-should be derived from the domain's own entity data — slug, scientific binomial,
-genus, abbreviated binomial — not authored as a parallel registration list.
-Non-derivable aliases (common names like "Pipevine Swallowtail" for *Battus
-philenor*) live as a `commonNames` field on the entity itself, in the same data
-file the entity is authored in. Adding an entity automatically contributes its
-derivable aliases; adding a common name is one edit in one place.
+- `Catalog.search(String)` returns a `SearchResults` collection. Zero, one,
+  or many hits, ordered by `MatchKind` (exact slug, exact token, prefix).
+  Each hit carries the matched token so the UI can explain *why* this
+  entity surfaced. Empty results are a first-class state — they fire an
+  `UnresolvedSearchObservation` at INFO and the search-results page renders
+  an empty-state copy that points the user toward adding the term to a
+  collection.
+- `Catalog.findReferencesTo(EntityName)` returns `Map<DomainId,
+  List<EntityRef>>`. The contract is exhaustive — every domain that opted
+  in to answering this reference type fans out concurrently — and the
+  result is grouped by domain because that is how the console renders it.
 
-**Soft validation via Observer, not exceptions.** Dangling cross-aggregate
-references (a `PhytochemicalConstituent` referencing a `CompoundName` that does
-not exist in the chemistry catalog) are observed, not thrown. The catalog emits an
-`UnresolvedReferenceObservation` through the existing kernel `Observable` /
-`Observer` pipeline. A `MicrometerObserver` translates these to a counter.
-Diagnostic context (`source_name`, `target_name`) ships in tags, not in the metric
-name, with a bounded LRU to defend against cardinality runaway.
+**Mock index, not Lucene.** The kernel ships an in-memory token index:
+lowercased whitespace-and-punctuation tokenisation, `Map<String,
+Set<EntityRef>>`, no scoring, no stemming, no analyzers. The mock proves
+the UX and the SPI shape. Production replaces the index implementation
+behind the `Catalog.search` interface with Lucene; no contributing domain
+or consuming console changes. The kernel never sees the implementation
+difference.
 
-**Per-app composition, not a shared registry module.** The assembled `Catalog`
-instance lives in each app's composition root (currently `naturalist-web/console`,
-later `apps/<each>`). Each app collects the contributions of the domains it
-includes. A registries-parent module that depends on every domain is explicitly
-rejected — that creates the fan-in point we want to avoid.
+**Derive search tokens, do not register.** A domain's
+`CatalogContribution.searchableEntities()` yields `(EntityRef, Stream<String>
+tokens)` per entity, derived from the entity's own data — slug, scientific
+binomial, genus, abbreviated binomial, common names. Adding an entity
+automatically contributes its tokens; adding a common name is one edit in
+one place (the entity's JSON record, the same file the entity is authored
+in).
+
+**Token collisions are a feature.** A search for `Trifolium` returns both
+species, the user picks. `InMemoryCatalog` indexes every contributed token
+without rejection; multiple `EntityRef`s per token is the normal case.
+
+**Common names are typed, not strings.** A `CommonName` value object lives in
+`kernels/field-notes` (same kernel as `Description` — both are vernacular
+field-naturalist vocabulary). Components are `(String label, Locale locale)`.
+Equality by value. `field-notes` continues to depend only on `framework`.
+
+**Soft validation via Observer at INFO/WARN.** Forward-direction misses (a
+search that returns nothing) are recorded as `UnresolvedSearchObservation`
+at INFO. This is the catalog's growth signal — aggregated over time, the
+most-searched terms with no hits are the entities most worth adding next.
+Inverse-direction dangling references (a `PhytochemicalConstituent`
+referencing a `CompoundName` the chemistry catalog does not have) are
+`UnresolvedReferenceObservation` at WARN. Two observation types, two
+severities, same pipeline.
+
+**`DomainId` is open** (per ADR-023). Each domain's `*-api` ships its own
+`DomainId` subtype carrying its slug; the catalog assembly validates slug
+uniqueness across registered subtypes at startup. The kernel knows the
+names of no domains.
+
+**Per-app composition, not a shared registry module.** The assembled
+`Catalog` instance lives in each app's composition root. Each app collects
+the contributions of the domains it includes; a registries-parent module
+that depends on every domain is explicitly rejected.
 
 ---
 
@@ -94,23 +149,29 @@ rejected — that creates the fan-in point we want to avoid.
 ```
 kernels/catalog/
   pom.xml
-  PLAN.md                       (this file)
   src/main/java/com/naturalist/catalog/
-    Catalog.java                — public-facing query interface
-    CatalogContribution.java      — forward-direction SPI (aliases)
-    EntityReferences.java       — inverse-direction SPI (back-references)
-    EntityRef.java              — typed reference to an entity in some domain
-    DomainId.java               — typed domain identifier (low-cardinality tag)
-    UnresolvedReferenceObservation.java — observable event
-    InMemoryCatalog.java           — in-memory assembly used by all apps
+    Catalog.java                          — public-facing query interface (search + inverse)
+    CatalogContribution.java              — search-direction SPI (searchable entities + tokens)
+    EntityReferences.java                 — inverse-direction SPI (back-references)
+    EntityRefLinker.java                  — URL-composition SPI
+    SearchResults.java                    — BehavioralCollection<SearchHit> (ADR-011)
+    SearchHit.java                        — ValueObject: target + matchedToken + matchKind
+    MatchKind.java                        — enum: EXACT_SLUG, EXACT_TOKEN, PREFIX
+    EntityRef.java                        — typed reference to an entity in some domain
+    DomainId.java                         — open interface (ADR-023)
+    UnresolvedSearchObservation.java      — INFO; forward-direction miss
+    UnresolvedReferenceObservation.java   — WARN; inverse-direction dangle
+    InMemoryCatalog.java                  — token index + provider routing
   src/test/java/com/naturalist/catalog/
     InMemoryCatalogTest.java
     ...
+
+kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
+  CommonName.java                         — ValueObject: (label, locale)
 ```
 
 Each domain that participates ships its providers in `<domain>-core` (where
-repository queries live). The chemistry domain only consumes — it queries the
-catalog; it implements no catalog SPIs of its own.
+repository queries live) and its linker in `<domain>-console`.
 
 ---
 
@@ -119,478 +180,318 @@ catalog; it implements no catalog SPIs of its own.
 ```
 catalog            →  framework, identifiers
 <domain>-core      →  ..., catalog      (when the domain contributes providers)
+<domain>-console   →  ..., catalog      (linker only — no api dependency)
 console / app      →  ..., catalog      (consumes the assembled Catalog)
 ```
 
-No new arrows from `<domain>-api`. No arrows from catalog to any domain. Any
-provider implementation that needs domain repository access lives in `-core`.
+No new arrows from `<domain>-api`. No arrows from catalog to any domain.
+Provider implementations that need domain repository access live in `-core`.
 
 ---
 
-## Milestones
+## Milestone status
 
-Each milestone is sized to fit a focused session with a small read-context. The
-"Read first" lists are exhaustive — a fresh session should not need to grep the
-codebase before starting.
+Shipped milestones below carry compressed "what shipped" notes; the full
+implementation is in code and git history. Pending milestones carry their
+full bodies — that is the working brief for the next session.
 
-### M0 — Scaffold the module ✅
+| Milestone                                         | Status    | Notes                                                         |
+|---------------------------------------------------|-----------|---------------------------------------------------------------|
+| M0 — Scaffold the module                          | ✅ shipped |                                                               |
+| M1 — Shared types (`EntityRef`, `DomainId`, …)    | ✅ shipped |                                                               |
+| M1.5 — `CommonName` value object                  | ✅ shipped |                                                               |
+| M2′ — `Catalog.search` and the token index        | ✅ shipped | supersedes the routing-era M2                                 |
+| M3 — Inverse SPI                                  | ✅ shipped |                                                               |
+| M4′ — Plants searchable contribution              | ✅ shipped | supersedes M4; emits all derivable tokens unconditionally     |
+| M5 — Plants `EntityReferences<CompoundName>`      | ✅ shipped |                                                               |
+| M6 — Description renderer (formatting only)       | ✅ shipped | M6a + M6b                                                     |
+| M7′ — Renderer search affordances                 | ✅ shipped | supersedes M7; binomials wrap as `/search?q=…` links          |
+| M-Search-UI-A — Persistent search box             | ✅ shipped |                                                               |
+| M-Search-UI-B — Search results page               | ✅ shipped |                                                               |
+| M-Insects-Catalog — Insects forward contribution  | ✅ shipped |                                                               |
+| M-Chemistry-Catalog — Chemistry forward + inverse | ✅ shipped | compound + product searchable; compound → product inverse     |
+| M8 — Chemistry detail back-references             | ✅ shipped | introduces `EntityRefLinker` SPI + `CompositeEntityRefLinker` |
+| M9a — Kernel `Level` tag on emitted metrics       | ✅ shipped |                                                               |
+| M9b — Typed observation types + console observers | ⏳ pending | full body below                                               |
+| M10 — Catalog coverage assertion                  | ⏳ pending | revised; full body below                                      |
+| M11 — ArchUnit guard for missing contributions    | ⏳ pending | full body below                                               |
+| M12 — Documentation and ADR                       | ⏳ pending | full body below                                               |
 
-**Done in the session that produced this plan.** Created `kernels/catalog/`,
-registered in `kernels/pom.xml` and root `pom.xml`'s `dependencyManagement`,
-empty `src/main/java/com/naturalist/catalog` and `src/test/java/com/naturalist/catalog`.
+### Shipped milestone notes (compressed)
 
-### M1 — Shared types: `EntityRef`, `DomainId`, `UnresolvedReferenceObservation`
+**M0** — `kernels/catalog/` registered in `kernels/pom.xml` and root pom's
+`dependencyManagement`; empty `src/main/java` and `src/test/java` trees.
 
-**Goal.** Establish the small set of value types that every later milestone
-depends on. No SPIs yet, no Catalog interface yet — just the types that flow
-through the SPIs.
+**M1** — `EntityRef` (`(DomainId, EntityName)`), `DomainId` (originally
+sealed; opened in ADR-023), `UnresolvedReferenceObservation` (later split;
+see M9a/M9b). Each with valid + invalid invariant unit tests.
 
-**Read first.**
+**M1.5** — `CommonName(String label, Locale locale)` in
+`kernels/field-notes/`. `@JsonCreator` on the two-arg `of(...)`. Invariants:
+`notBlank(label)`, `notNull(locale)`. `Locale` chosen over a custom
+`LanguageTag` value object so Jackson serialises BCP-47 natively.
 
-- `kernels/framework/src/main/java/com/naturalist/ddd/EntityName.java`
-- `kernels/framework/src/main/java/com/naturalist/observability/Observable.java`
-- `kernels/framework/src/main/java/com/naturalist/observability/Constraints.java`
-- one existing kernel value object: `kernels/field-notes/src/main/java/com/naturalist/fieldnotes/Description.java`
-- this PLAN.md (the "Architectural decisions" section)
+**M2′** — `Catalog.search(String) → SearchResults`. `MatchKind` enum
+(`EXACT_SLUG`, `EXACT_TOKEN`, `PREFIX`); `SearchHit` ValueObject;
+`SearchResults` `BehavioralCollection<SearchHit>` (ADR-011).
+`CatalogContribution.searchableEntities() → Stream<SearchableEntity>` where
+`SearchableEntity` is `(EntityRef target, Stream<String> tokens)`.
+`InMemoryCatalog` builds `Map<String, Set<EntityRef>>` at assembly,
+lowercased and split on `[\s\p{Punct}]+`. Case-insensitive throughout —
+genus capitalisation is a presentation concern.
 
-**Build.**
+**M3** — `EntityReferences<T extends EntityName>` with `domain()`,
+`referenceType()`, `referencesTo(T) → Stream<EntityRef>`. `Catalog` extended
+with `domainsReferencing(Class<? extends EntityName>)` and
+`findReferencesTo(EntityName) → Map<DomainId, List<EntityRef>>`.
+`InMemoryCatalog` indexes providers by `referenceType()`; fan-out runs live,
+no caching at the catalog layer.
 
-- `EntityRef` — record carrying `(DomainId domain, EntityName name)`. Implements
-  `ValueObject`. Invariants: both non-null. Provides `displayLabel()` returning
-  the slug.
-- `DomainId` — record wrapping a kebab-case string. Implements `ValueObject`.
-  Constants for known domains (`PLANTS`, `CHEMISTRY`, `INSECTS`, ...) declared as
-  static fields. Adding a new domain is a one-line addition; this list is the
-  closed set the metric `source_domain` tag draws from.
-- `UnresolvedReferenceObservation` — record carrying `(EntityRef source,
-  Class<? extends EntityName> targetType, String targetSlug, String reason)`.
-  Implements `Observable`. The producer of this observation is whichever catalog
-  call site detects the missing reference; the consumer is configured per app.
+**M4′** — `PlantCatalogContribution` rewritten against the M2′ SPI. Tokens
+per plant: slug, `genus + " " + species`, `genus`, `genus.charAt(0) + ". "
 
-**Acceptance.** Each type has a unit test with valid + invalid invariant cases
-following the pattern in any existing `*Test.java` in `kernels/framework-test/`
-or `kernels/field-notes/`. Module compiles. No domain code touched.
++ species`, plus one token per `CommonName` (label only). `Plant` carries
+`Set<CommonName>`; `plants.json` populated for the worked-example entries
+(`california-pipevine`, `crimson-clover`, `white-clover`).
 
-### M2 — Forward SPI: `CatalogContribution` and `Catalog.resolveAlias` ✅
+**M5** — `PlantCompoundReferences` at
+`plants-core/.../plants/catalog/`, takes
+`PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery` as its
+collaborator. Each match emits two `EntityRef`s — one `PlantName`-typed
+(navigation), one `PhytochemicalConstituentName`-typed (detail) —
+distinguishable by the runtime class of `EntityRef.name()`. Plants
+deduplicated via `LinkedHashSet`; constituents are unique by construction.
 
-**Goal.** Define the forward-direction contract and the kernel's default
-in-memory assembly. This is what the console's description renderer eventually
-calls when scanning prose.
+**M6** — `DescriptionRenderer` at
+`plants-console/.../console/render/DescriptionRenderer.java`. Pipeline:
+HTML escape → header extraction (leading binomial + em-dash + Family
+lifted into `<header class="description-taxonomy">`) → paragraph splitting
+on a documented closed-list of cue phrases → numbered-list lifting →
+binomial italics. Two-lens test coverage: catalog smoke (every plant ×
+every Durrell level) plus pinned worked-example assertions on
+`crimson-clover` and `white-clover`. Wired into `PlantsController.detail`
+and `plants/detail.jte`.
 
-**Read first.** M1 outputs (`EntityRef`, `DomainId`), `kernels/catalog/PLAN.md`
-sections "Two SPIs, one kernel" and "Derive aliases".
+**M7′** — `LinkResolver` removed. Every detected binomial wraps as
+`<a href="/search?q={url-encoded}" class="discover">` regardless of catalog
+membership. `URLEncoder.encode(term, UTF_8)` round-trips abbreviated forms
+(`A. californica`). `DescriptionRenderer` no longer takes a `Catalog`
+collaborator; `DescriptionRendererCatalogTest` folded into the single
+`DescriptionRendererTest`.
 
-**Build.**
+**M-Search-UI-A** — `_search-box.jte` partial (form GET, no JS) included in
+the base layout. Pre-fills from a `q` model attribute on the search results
+page.
 
-- `CatalogContribution` — interface. `DomainId domain()`, `Stream<Alias> aliases()`.
-  An `Alias` is a record `(String surfaceForm, EntityRef target)`.
-- `Catalog` — interface. Declares `Optional<EntityRef> resolveAlias(String text)`.
-  (The inverse method comes in M3.)
-- `InMemoryCatalog` — package-private constructor takes a list of contributions,
-  precomputes a `Map<String, EntityRef>` for resolution. Surface-form matching
-  is case-sensitive on the first character (genus capitalisation matters);
-  precise matching rules documented in javadoc and pinned by tests.
-- A small builder `CatalogAssembly.from(contributions...)` that constructs a
-  `InMemoryCatalog`. Used by app composition roots.
+**M-Search-UI-B** — `SearchController` at `apps/management-console`, single
+`@GetMapping("/search")` handler. Renders `search/results.jte`: heading
+echoes the query, sections per `DomainId` from
+`SearchResults.groupedByDomain()`, `matched: {token}` hint per hit when the
+matched token is not the slug, empty state with a collection-add stub when
+no hits. Wires `UnresolvedSearchObservation` through the console's observer
+pipeline.
 
-**Acceptance.** `InMemoryCatalogTest` covers: exact match resolves; case-mismatched
-match does not resolve; unknown surface form returns `Optional.empty()`;
-overlapping contributions from two domains are detected at assembly with a
-deterministic resolution rule (longest match wins; equal-length match is an
-assembly error). No domain wiring yet — tests use synthetic contributions.
+**M-Insects-Catalog** — `InsectsCatalogContribution` at
+`insects-core/.../insects/catalog/`. Tokens per `InsectSpecies`: slug,
+genus, full binomial, abbreviated binomial. Skips binomial/genus tokens
+when species is catalogued at family level (genus null). No common-name
+tokens yet — `InsectSpecies` does not carry `Set<CommonName>`.
 
-### M3 — Inverse SPI: `EntityReferences<T>` and `Catalog.findReferencesTo` ✅
+**M-Chemistry-Catalog** — `ChemistryCatalogContribution` concatenates
+compound + product `SearchableEntity` streams. Compound tokens: slug,
+`commonName`, chemical `formula`. Product tokens: slug, `displayName`.
+`ChemistryCompoundReferences` provides intra-domain compound → product
+back-references (same SPI as cross-domain providers; the kernel does not
+distinguish). Carries `@Resilient(name = "catalog.fanout")` per ADR-026.
 
-**Goal.** Define the inverse-direction contract. This is what the chemistry
-detail page eventually calls.
+**M8** — `Catalog` becomes a Spring `@Bean` in `CatalogConfiguration`. New
+`EntityRefLinker` SPI in `kernels/catalog`: third axis alongside
+`CatalogContribution` and `EntityReferences`. Per-domain `@DomainService`
+linkers (`PlantsLinker`, `ChemistryLinker`, `InsectsLinker`) live in their
+respective console modules under `…/console/catalog/`.
+`CompositeEntityRefLinker` (`@Component @Primary`) walks every discovered
+linker, returning the first non-null URL; self-injection guarded with
+`delegates.stream().filter(l -> l != this)`. `BackReferencesViewModel` in
+`chemistry-console` renders the "Found in" panel; refs with no URL are
+dropped (no dead anchors). Empty results render nothing.
 
-**Read first.** M1 + M2 outputs, this plan's "Registry shape: routing, not
-graph" section.
+**M9a** — `kernels/framework/.../observability/Level.java` — `enum
+Level { INFO, WARN, ERROR }` with `tagValue()` (lowercased constant name
+for Micrometer). `InvariantObservation.observe()` becomes
+`observe(Level level)`. `throwWhenInvalid()` always tags violation
+counters at `Level.ERROR`. Both metric counters
+(`naturalist.observation`, `naturalist.invariant.violation`) gained a
+`level` tag. `InMemoryCatalog.search` miss → `Level.INFO`;
+`InsectAggregateFactory` aggregate self-observation → `Level.WARN`.
 
-**Build.**
+---
 
-- `EntityReferences<T extends EntityName>` — interface. `DomainId domain()`,
-  `Class<T> referenceType()`, `Stream<EntityRef> referencesTo(T target)`.
-- Extend `Catalog` with `Set<DomainId> domainsReferencing(Class<? extends EntityName>)`
-  (the coarse routing answer) and `Map<DomainId, List<EntityRef>>
-  findReferencesTo(EntityName target)` (the fan-out answer).
-- `InMemoryCatalog` indexes providers by `referenceType()` at assembly. Fan-out runs
-  live against each provider; results are not cached at the catalog layer (each
-  domain is responsible for its own caching if any).
-- Extend `CatalogAssembly` to accept providers alongside contributions.
+## Pending milestones
 
-**Acceptance.** `InMemoryCatalogTest` covers: routing returns the set of domains
-whose providers handle a given target type; fan-out groups by `DomainId`;
-provider that throws is observed (next milestone) but does not break peer
-providers' results; empty providers yield empty result, not null.
+### M9b — Typed observation types and console observers
 
-### M4 — Plants `CatalogContribution` (derived aliases) ✅
+**Goal.** Translate both catalog observation kinds into the operational
+surface. Two counters, two log severities; the cardinality discipline is
+the same across both.
 
-**Goal.** First real producer. The plants domain contributes aliases for its own
-plants — slug, scientific binomial, genus, abbreviated binomial.
+**Read first.** M1's observation types as revised in M9a; the shipped
+`Level` machinery; existing observer infrastructure in
+`kernels/framework/observability/`; `kernels/framework`'s `Metric.java`.
 
-**Read first.**
+**State of inputs.**
 
-- `domains/plants/plants-api/src/main/java/com/naturalist/plants/Plant.java`
-  (and its taxonomy field — not yet read in this plan; locate during the session)
-- `domains/plants/plants-core` to identify the right place for the contribution
-- `domains/plants/CLAUDE.md`
-
-**Build.**
-
-- New file in `plants-core` (sub-context: probably `plants/catalog/`). A class
-  implementing `CatalogContribution`, taking the plants repository as a
-  collaborator, deriving aliases on each call to `aliases()` from the live plant
-  set. Aliases per plant: slug; `genus + " " + species`; `genus` alone;
-  `genus.charAt(0) + ". " + species`. Skip the binomial form when species is
-  null (some plants have genus-level identification).
-- A common-name pass-through: if the plant model has a `commonNames` field,
-  contribute each. (If not present yet, defer to M10 — note the deferral here.)
-
-**Acceptance.** Test against `PlantsTestEntitySource`: Aristolochia californica
-is recoverable through the contribution as `Aristolochia californica`,
-`Aristolochia`, `A. californica`, and `california-pipevine`. The plants
-contribution does not make the catalog depend on plants — assembled in plants-core
-test scope, consumed via the catalog SPI only.
-
-**Notes from execution.**
-
-- The `Plant` record does not yet carry a `commonNames` component; the
-  common-name pass-through is deferred per the plan's open question on
-  schema location. When `Plant` grows the field, extending
-  `PlantCatalogContribution.candidateForms` is a one-line addition.
-- The catalog naturally produces collisions on the genus-only surface form
-  (two `Trifolium` species, two `Passiflora` species). `InMemoryCatalog`
-  rejects equal-length surface-form conflicts at assembly, which is correct
-  for routing safety but fatal for a derived contribution. The contribution
-  defends the assembly itself: it collects every candidate form, then
-  emits only those that resolve to a single target — ambiguous genus or
-  abbreviated-binomial forms are silently dropped. This is the contribution's
-  rule, not the kernel's.
-
-### M5 — Plants `EntityReferences<CompoundName>` ✅
-
-**Goal.** First real inverse provider. Plants answers "who in plants references
-this compound?" by querying `PhytochemicalConstituentRepository`.
-
-**Read first.**
-
-- `domains/plants/plants-api/src/main/java/com/naturalist/plants/phytochemistry/PhytochemicalConstituent.java`
-- `domains/plants/plants-api/src/main/java/com/naturalist/plants/phytochemistry/PhytochemicalConstituentQuery.java`
-- `domains/plants/plants-core/src/main/java/com/naturalist/plants/phytochemistry/PhytochemicalConstituentQueryImpl.java`
-
-**Build.**
-
-- New file in `plants-core` `plants/catalog/` package. Implements
-  `EntityReferences<CompoundName>`. `referencesTo(CompoundName)` queries the
-  constituent repository and emits one `EntityRef` per matching constituent's
-  `plantName` (deduplicated; a plant with three constituents of the same compound
-  is one reference, not three).
-- Decide whether to also emit the constituent's own `EntityName` separately.
-  Recommendation: yes, both — the plant for navigation, the constituent for
-  detail. Use two `EntityRef` results per match, distinguishable by their
-  underlying name type. Document the choice in the provider's javadoc.
-
-**Acceptance.** With a populated `PhytochemicalConstituentTestEntitySource`,
-`catalog.findReferencesTo(aristolochicAcidName)` returns plants entries grouped
-under `DomainId.PLANTS`. Empty for an unknown compound. Provider's `domain()`
-returns `DomainId.PLANTS`; `referenceType()` returns `CompoundName.class`.
-
-**Notes from execution.**
-
-- The provider lives at `plants-core/.../plants/catalog/PlantCompoundReferences.java`
-  and takes `PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery`
-  as its public collaborator — the same pattern M4 used for the forward
-  contribution (public namespace query rather than the package-private
-  repository, so the provider can sit in the `catalog` sub-package).
-- Per the plan's recommendation each match emits two `EntityRef`s — one
-  `PlantName`-typed (the navigation target) and one `PhytochemicalConstituentName`-typed
-  (the detail target). The two share `DomainId.Plants` and are
-  distinguishable by the runtime class of `EntityRef.name()`. Plants are
-  deduplicated via a `LinkedHashSet<PlantName>`; constituents are unique by
-  construction (one record per `(plant, compound)` pair) and are not
-  deduplicated.
-- `null` target short-circuits to `Stream.empty()`. The `Catalog` surface
-  already maps `null` to an empty result, but the underlying query's
-  argument observer would throw on `null` — the guard is the cheap defence
-  against any direct caller.
-- Test class lives in `com.naturalist.plants.phytochemistry` (sibling to the
-  package-private `PhytochemicalConstituentEntityQueryImpl` and the
-  protected-constructor `PhytochemicalConstituentEntityRepositoryMock`). The
-  M4 forward-contribution test sits in `com.naturalist.plants` for the
-  analogous reason; the package choice is dictated by which mock the test
-  needs to instantiate.
-
-### M6 — Description renderer (formatting only, no catalog) — split mid-execution
-
-> **Status.** Mid-session split per the plan's "if a milestone proves bigger
-> than expected" guidance. The renderer code and the unit-test acceptance
-> (catalog smoke + worked-example assertions) shipped as M6a; the template
-> integration and visual-review acceptance remain in M6b.
-
-**Goal.** Address the legibility half independently. The renderer takes a
-`Description` level string and emits HTML with paragraph splits, italicised
-binomials, lifted numbered lists, and a typographic chip for the leading
-classification header. No linking yet.
-
-**Read first.**
-
-- `kernels/field-notes/src/main/java/com/naturalist/fieldnotes/Description.java`
-- `domains/plants/plants-console/src/main/jte/plants/detail.jte`
-- `domains/chemistry/chemistry-console/src/main/java/com/naturalist/chemistry/console/DepictionRenderer.java`
-  (analogous pattern)
+- `UnresolvedSearchObservation` exists and is fired from
+  `InMemoryCatalog.search` (M2′ wired the firing site behind the observer
+  pipeline; M9a tagged the emission `Level.INFO`).
+- `UnresolvedReferenceObservation` does **not** yet exist. Firing site for
+  the inverse direction is still open (kernel-side in
+  `InMemoryCatalog.findReferencesTo` after fan-out vs. inside each
+  `EntityReferences` provider vs. a separate validator). Current lean:
+  kernel-side, after the fan-out — providers stay logic-free, one firing
+  site, one place to test.
 
 **Build.**
 
-- `naturalist-web/console/src/main/java/com/naturalist/console/render/DescriptionRenderer.java`.
-  Single public method `String render(String level)`. Internal pipeline:
-  paragraph-split on semantic cues (sentence break followed by "At Oak Vista",
-  "Management constraint", "Practical significance", "Critical timing", "Bloom
-  period at", and a documented closed list); italicise binomials by regex;
-  lift `(1) ... (2) ...` enumerations; pull leading `Genus species (Authority) —
-  Family: Subfamily.` into a header chip.
-- Plug the renderer into the plants detail template via a small JTE helper.
-- The renderer does not yet call any catalog — catalog linking is M7.
+- `apps/management-console/.../console/catalog/MicrometerSearchMissObserver.java`
+  subscribing to `UnresolvedSearchObservation`. Increments counter
+  `naturalist.catalog.search_miss_total` with tags `(query)` (and only
+  `query`) — the search input is the only meaningful dimension. Bounded
+  LRU defends `query` cardinality with `__overflow__` fold-in. Default
+  cap 256, configurable.
+- `apps/management-console/.../console/catalog/MicrometerUnresolvedReferenceObserver.java`:
+  counter `naturalist.catalog.unresolved_reference_total`, tags
+  `(source_domain, source_name, target_type, target_name)`, same LRU
+  discipline.
+- A `LoggingSearchMissObserver` emitting one INFO log line per search
+  miss, with the query and the request path (where the search was issued
+  from, if available).
+- A `LoggingUnresolvedReferenceObserver` emitting one WARN log line per
+  inverse-direction dangle.
+- Wire all four observers in the console's composition root.
 
-**Acceptance.** Visual review of plants detail page in dev: the university
-description for `crimson-clover` (the worked example shown to the user) renders
-as ≥3 short paragraphs with the leading taxonomic header above the body and
-binomials italicised. Renderer is unit-tested with golden-file fixtures over
-all four levels of every plant in `plants.json` (no exceptions thrown, no
-content lost — character count of the input is conserved or strictly grows).
+**Acceptance.** Synthesise both kinds of observation in a test app
+context; verify each counter increments with the expected tags and the
+log line is emitted at the expected severity. Verify the cardinality cap
+on the search-miss counter by injecting 300 distinct queries and
+confirming the overflow tag captures the surplus.
 
-#### M6a — Renderer + unit tests ✅
+**Notes.**
 
-**What landed.**
+- The search-miss counter is the catalog's growth signal. A periodic
+  report sorted by counter value is the catalog's most valuable feedback
+  loop. Surfacing that report inside the app (an `/admin/search-misses`
+  page) is a natural follow-up but out of scope here.
+- The two observation types deliberately do not share a parent type. They
+  are different signals at different severities for different audiences;
+  collapsing them under a common abstract type is a unification that
+  saves no code and obscures the distinction.
 
-- `domains/plants/plants-console/src/main/java/com/naturalist/plants/console/render/DescriptionRenderer.java`.
-  Single public `render(String)` method. Pipeline: HTML escape → header
-  extraction (a leading binomial + em-dash + Family[: Subfamily[: Tribe]]
-  line is lifted into a `<header class="description-taxonomy">` chip) →
-  paragraph splitting on a documented closed-list of cue phrases (`At Oak
-  Vista`, `Management constraint`, `Bloom period at`, …) → numbered-list
-  lifting (`(1) ... (2) ...` becomes `<ol><li>…</li></ol>`) → binomial
-  italics (`Genus species`, `G. species`).
-- `domains/plants/plants-console/src/test/java/com/naturalist/plants/console/render/DescriptionRendererTest.java`.
-  Two-lens coverage: a catalog smoke test (every plant × every Durrell
-  level — no exceptions, output non-blank, char-count grows) plus pinned
-  worked-example assertions on `crimson-clover.university` (header chip,
-  ≥3 paragraphs, italicised binomials including `T. pratense`) and
-  `white-clover.university` (numbered list lifted to `<ol>` with four
-  `<li>`s, binomials italic inside list items). Plus HTML-escape and
-  null/blank-input cases.
+### M10 — Catalog coverage assertion
 
-**Placement deviation from plan.**
-The plan called for the renderer in `naturalist-web/console`. The plants
-detail template lives in `plants-console`, and the dependency direction
-runs `naturalist-web/console → plants-console` — so for M6 the renderer
-sits in `plants-console` next to the template it serves. When M7 wires
-the catalog (which is assembled in `naturalist-web/console`'s composition
-root), the LinkResolver collaborator can be passed in by the controller
-without moving the renderer; if cross-domain reuse later forces a
-shared location, the move is mechanical.
+**Goal.** At app startup (or as a scheduled task), verify that every
+entity in every contributing domain is reachable through the search index
+by at least its slug. Misses are not crashes; they are observations that a
+contribution is incomplete.
 
-#### M6b — Template integration + visual review
-
-**What landed (wiring).**
-
-- `PlantsController` now owns a `DescriptionRenderer` field, instantiated
-  in the constructor next to the queries (matching the
-  manual-instantiation pattern already in place — promotion to Spring DI
-  is out of scope). `PlantsController.detail(...)` pre-renders all four
-  Durrell levels and exposes them as `descriptionPreschool`,
-  `descriptionElementary`, `descriptionSecondary`,
-  `descriptionUniversity` model attributes.
-- `domains/plants/plants-console/src/main/jte/plants/detail.jte` declares
-  the four new `@param String descriptionX = ""` parameters (each
-  defaulted to empty so existing template tests that pass only the
-  `plant` attribute continue to render). The four `<details>` blocks
-  emit the pre-rendered HTML via `$unsafe{...}`, falling back to the
-  original `<p>${plant.description().X()}</p>` block when the param is
-  blank — that fallback keeps the smoke template test from regressing
-  while the controller is the only call site that supplies the new
-  params.
-
-**Acceptance — pending user visual review.** I can't drive a browser
-from here. The user should boot the console, navigate to
-`/plants/crimson-clover`, and verify the university description renders
-as ≥3 short paragraphs with the leading taxonomic header above the body
-and binomials italicised. A quick sweep of two or three other plants
-catches regressions. If the visual review surfaces issues, the renderer
-unit tests are the place to pin the regression before fixing it.
-
-### M7 — Description renderer catalog integration (forward linking) ✅
-
-**Goal.** Wire `Catalog.resolveAlias` into the renderer. Surface forms that
-resolve become anchor tags pointing at the target's console URL; surface forms
-that don't resolve stay as italicised text.
-
-**Read first.** M6 output, M2 output, the console's URL conventions
-(`PlantsController`, `ChemistryController` route definitions).
+**Read first.** M2′ output (the assembled `InMemoryCatalog` and its
+index), M9a/M9b, the contributing domains' `*TestEntitySource` classes.
 
 **Build.**
 
-- A `LinkResolver` collaborator inside the renderer. Given an `EntityRef`, it
-  produces the canonical URL for that entity's console page. Implementation
-  reads from a small `Map<Class<? extends EntityName>, Function<EntityName,
-  String>>` populated at composition time — each domain's console module
-  contributes the URL builder for its own EntityName types.
-- The renderer's binomial-italics pass becomes a binomial-italics-and-resolve
-  pass: italicise always; wrap in `<a>` only on `Optional.isPresent()`.
-
-**Acceptance.** Visual review: in `crimson-clover.university`, "T. pratense"
-remains italic with no link (no red clover entity exists), while "Apis
-mellifera" becomes a link to the apiary console once that domain's
-contribution is wired (or remains italic-only until then — graceful
-degradation is a tested behaviour).
-
-**Notes from execution.**
-
-- `LinkResolver` lives next to the renderer in
-  `domains/plants/plants-console/src/main/java/com/naturalist/plants/console/render/LinkResolver.java`,
-  for the same placement reason M6 documents (the renderer it serves
-  sits in `plants-console`). The class itself is domain-agnostic — it
-  imports nothing from `domains/plants`, only `kernels/catalog` and
-  `kernels/framework` (`EntityName`). When a future shared web module
-  centralises console rendering, both files move together.
-- The catalog dependency was added to `plants-console/pom.xml`. The
-  module's prior dependencies were `plants-api`, Spring web/context,
-  and the temporary `plants-test-context`; catalog joins them.
-- `DescriptionRenderer` keeps its no-arg constructor for graceful
-  degradation — unit tests that exercise pure formatting (the M6a
-  catalog smoke test class) construct the renderer with no catalog, and
-  the binomial pass produces italics only. The catalog-aware behaviour
-  has its own dedicated test class
-  (`DescriptionRendererCatalogTest`) covering: hit (anchor wraps the
-  italics), catalog miss (italics-only), resolver miss for an unmapped
-  `EntityName` subclass (italics-only), abbreviated binomial resolves
-  independently of the full form, and a mixed paragraph with a
-  resolved plant binomial, a resolved insect binomial, and two
-  unresolved binomials all in one input.
-- `PlantsController` assembles the catalog with a single
-  `PlantCatalogContribution` and a `LinkResolver` carrying URL
-  builders for `PlantName` (`/plants/{slug}`), `CompoundName`
-  (`/chemistry/{slug}`), and `InsectSpeciesName` (`/insects/{slug}`).
-  The chemistry and insects builders are wired now so a future
-  insects catalog contribution lights up automatically — no controller
-  change is required when M8/insects providers grow.
-- `htmlEscape` retained the M6 behaviour (escape `&`, `<`, `>`); a
-  new `attributeEscape` helper escapes `"` for the `href` value. URL
-  slugs from `EntityName` are kebab-case and therefore safe in
-  practice, but the escape is the cheapest defence against any
-  future builder that returns a path containing a double quote.
-
-### M8 — Chemistry detail page back-references
-
-**Goal.** Render the inverse panel on `CompoundDetails`. "Found in: plants
-(california-pipevine), insects (pipevine-swallowtail)."
-
-**Read first.** M3 + M5 outputs, `domains/chemistry/chemistry-console/`
-templates and controller.
-
-**Build.**
-
-- A small `BackReferencesViewModel` populated from `catalog.findReferencesTo(
-  compoundName)`. Grouped by `DomainId`, each `EntityRef` rendered as a link
-  via the same `LinkResolver` introduced in M7.
-- JTE include rendering the panel below the existing compound detail body.
-- If the result is empty, render nothing (not "no references found"). Empty
-  is the default state for most compounds and a banner per page is noise.
-
-**Acceptance.** Visual review: aristolochic acid detail page lists the plant
-and insect entries; an arbitrary compound with no plants/insects references
-shows no panel.
-
-### M9 — Observer wiring and metrics
-
-**Goal.** Translate `UnresolvedReferenceObservation` into the operational
-surface. Counter for monitoring; structured log line for forensics.
-
-**Read first.** M1's `UnresolvedReferenceObservation`, the existing observer
-infrastructure in `kernels/framework/observability/`, `kernels/framework`'s
-`Metric.java`.
-
-**Build.**
-
-- `naturalist-web/console/src/main/java/com/naturalist/console/catalog/MicrometerUnresolvedReferenceObserver.java`
-  subscribing to `UnresolvedReferenceObservation`. Increments counter
-  `naturalist.catalog.unresolved_reference_total` with tags
-  `(source_domain, source_name, target_type, target_name)`. Bounded-LRU
-  defends `source_name` and `target_name` cardinality, folding overflow
-  into `__overflow__`. Cap is configurable; default 256.
-- A parallel `LoggingUnresolvedReferenceObserver` emitting one structured log
-  per event with full context.
-- Wire both observers in the console's composition root.
-
-**Acceptance.** Synthesise an unresolved reference in a test app context;
-verify the counter increments with the expected tags and the log line is
-emitted. Verify cardinality cap by injecting 300 distinct unresolved
-references and confirming the overflow tag captures the surplus.
-
-### M10 — Eager startup validation pass
-
-(NOTE TO CLAUDE: Lets make this a scheduled task for continuos monitoring and fast startup)
-
-**Goal.** Surface deploy-time regressions early. At app startup, walk every
-known cross-aggregate reference once through the catalog; the observer
-infrastructure from M9 catches any unknowns.
-
-**Read first.** M5 output (the plants `EntityReferences<CompoundName>`
-provider), M9 output.
-
-**Build.**
-
-- An `CatalogStartupValidator` invoked from the app's composition root after the
-  catalog is assembled. Walks each `EntityReferences<T>` provider's *source side*
-  — i.e., for plants, every `PhytochemicalConstituent`'s `compoundName` — and
-  calls `catalog.exists(name)` to resolve. Misses fire
-  `UnresolvedReferenceObservation` through the same pipeline as runtime misses.
-- The walker requires each provider that wants startup validation to also
-  implement an `iterateOutboundReferences()` method (an extension interface
-  `ValidatableReferences extends EntityReferences<T>` keeps the base SPI
-  minimal). Providers that opt out remain runtime-only.
+- A `CatalogCoverageValidator` invoked from the app's composition root
+  after the catalog is assembled. For each contribution, walks each
+  contributed `SearchableEntity` and asserts that
+  `catalog.search(entity.target.name())` returns a `SearchResults`
+  containing the `target` under `EXACT_SLUG`. Misses fire a new
+  `IncompleteContributionObservation` (WARN) — distinct from
+  `UnresolvedSearchObservation` because the failure mode is "a
+  contribution emitted an entity but its tokens did not include the
+  slug," which is a programming error, not a user-experience signal.
+- The validator runs once at startup. Continuous monitoring is the user's
+  open question — a scheduled re-run on the same code path is a one-line
+  addition (`@Scheduled(fixedRate = ...)` in Spring) that would catch
+  drift between the catalog data files and the running index. The
+  validator class should be callable both ways.
+- The walker requires no new SPI extension —
+  `CatalogContribution.searchableEntities()` already enumerates
+  everything.
 
 **Acceptance.** Boot the console app with a deliberately broken
-`plants.json` referencing a non-existent compound; the metrics and log
-observers fire during startup; the app does not fail to boot. Restore the
-data and verify zero observations on a clean boot.
+`PlantCatalogContribution` that emits an entity without including its
+slug in the token stream; the WARN observation fires during startup; the
+app does not fail to boot. Restore the contribution and verify zero
+observations on a clean boot.
+
+**Note.** The user wanted continuous monitoring + fast startup. The split
+(validator runs at startup *and* on a schedule) gives both: the
+observations flow through the same pipeline, and a boot is never blocked
+on a coverage failure. A separate health-check endpoint that surfaces the
+last validator run's result is a natural follow-up.
 
 ### M11 — ArchUnit guard for missing contributions
 
-**Goal.** Build-time safety net for the registration step. A new `EntityName`
-subclass without an associated catalog contribution somewhere is a build error.
+**Goal.** Build-time safety net for the registration step. A new
+`EntityName` subclass without an associated catalog contribution somewhere
+is a build error.
 
-**Read first.** Existing ArchUnit tests in the project (search for usages of
-`com.tngtech.archunit`); `domains/identifiers/`.
+**Read first.** Existing ArchUnit tests in the project (search for usages
+of `com.tngtech.archunit`); `domains/identifiers/`; the post-M9
+`ResilienceComplianceTest` in `apps/management-console` as the structural
+template.
 
 **Build.**
 
-- An `CatalogCoverageTest` in a test-scope module the build can run. Discovers
-  all concrete `EntityName` subclasses in `identifiers/` and asserts that for
-  each, at least one `CatalogContribution` or `EntityReferences<T>`
-  implementation exists in some `<domain>-core` module. Failure message names
-  the missing class.
-- This test runs in app composition test scope (where everything is on the
+- `CatalogCoverageTest` in a test-scope module the build can run.
+  Discovers all concrete `EntityName` subclasses in `domains/identifiers/`
+  and asserts that for each, at least one `CatalogContribution` or
+  `EntityReferences<T>` implementation exists in some `<domain>-core`
+  module. Failure message names the missing class.
+- Runs in app composition test scope (where everything is on the
   classpath together), not in the kernel module.
 
-**Acceptance.** Add a synthetic `EntityName` subclass with no contribution;
-the build fails with the expected message. Remove the synthetic class; the
-build passes.
+**Acceptance.** Add a synthetic `EntityName` subclass with no
+contribution; the build fails with the expected message. Remove the
+synthetic class; the build passes.
 
 ### M12 — Documentation and ADR
 
 **Goal.** Capture the architectural decisions in a permanent ADR so future
-contributors find them in `docs/adr/` rather than re-deriving them.
+contributors find them in `docs/adr/` rather than re-deriving them from
+this plan.
 
 **Build.**
 
-- New ADR (next sequence number under `docs/adr/`). Records: the catalog kernel,
-  the two SPIs, the routing-not-graph decision, the soft-validation-via-observer
-  decision, the per-app composition decision.
-- Update `kernels/CLAUDE.md` to mention catalog alongside the other four kernels.
-- Update root `CLAUDE.md` module-layout section.
+- New ADR (next sequence number under `docs/adr/`). Records: the catalog
+  kernel, the three SPIs (`CatalogContribution`, `EntityReferences`,
+  `EntityRefLinker`), the search-not-routing decision, the
+  soft-validation-via-observer decision, the per-app composition decision.
+- Cross-references ADR-023 (open `DomainId`) and ADR-026 (resilience on
+  the catalog fan-out).
+- Update `kernels/CLAUDE.md`'s catalog section to reference the new ADR.
 
-**Acceptance.** ADR merged; kernel and root CLAUDE.md reflect the new module.
+**Acceptance.** ADR merged; `kernels/CLAUDE.md` references it.
+
+---
+
+## Open question — slug-shaped multi-token search input
+
+Surfaced while writing `InsectsCatalogContributionTest`. The M2′
+tokenisation rule (`[\s\p{Punct}]+`) splits hyphenated input the same way
+it splits whitespace, so a slug-shaped query like
+`not-an-insect-anywhere` becomes `["not", "an", "insect", "anywhere"]` and
+the per-token union returns spurious prefix hits.
+
+**Decision (provisional).** Do not introduce a slug-shape detector or
+conjunctive multi-token semantics yet. The catalog-inmem implementation is
+bare-minimum dev-time scaffolding, not a search engine; piling heuristics
+on it is the slippery slope toward re-implementing Lucene in Java. The
+negative test case `unknownTokenReturnsEmptyResults` was narrowed to a
+single nonsense token (`"zzzzzzz"`) and the slug-shaped assertion was
+removed.
+
+**Revisit when.** The Lucene drop-in lands (search semantics move out of
+the kernel entirely), or user behaviour shows real confusion from
+slug-shaped queries.
 
 ---
 
@@ -598,53 +499,64 @@ contributors find them in `docs/adr/` rather than re-deriving them.
 
 A fresh session picking up this work should:
 
-1. Read this PLAN.md in full (it is sized to fit easily).
-2. Run `git log --oneline kernels/catalog/` to see which milestones have shipped.
-3. Look at the `Read first` list of the next pending milestone and read only
-   those files.
-4. Do the milestone. Update the milestone's checkbox in this file as part of
-   the same commit. Do not edit milestones beyond the one being executed —
-   if a discovery during work changes a later milestone, append a note under
-   the relevant milestone, do not rewrite it.
+1. Read this PLAN in full (it is sized to fit easily).
+2. Run `git log --oneline kernels/catalog/` to see which milestones have
+   shipped.
+3. Look at the `Read first` list of the next pending milestone and read
+   only those files.
+4. Do the milestone. Update its row in the **Milestone status** table
+   from ⏳ pending to ✅ shipped, and append a compressed "what shipped"
+   note under **Shipped milestone notes**, as part of the same commit. Do
+   not edit milestones beyond the one being executed — if a discovery
+   during work changes a later milestone, append a note under it, do not
+   rewrite it.
 
-If a milestone proves bigger than expected mid-session, split it: leave the
-original milestone partially done, add a new milestone immediately after for
-the leftover, and surface the split in the commit message.
+If a milestone proves bigger than expected mid-session, split it: leave
+the original milestone partially done, add a new milestone immediately
+after for the leftover, and surface the split in the commit message.
 
 ---
 
 ## Open questions
 
-Worth deciding before M9, but not blocking earlier work:
+Worth deciding before M9b, but not blocking earlier work.
 
-- **Domain enumeration.** `DomainId` constants are defined in
-  `kernels/catalog/`. Adding a new domain requires editing the kernel.
-  Alternative: make `DomainId` an open value type and discover domains from
-  contributions at assembly time. The constant approach is simpler and gives
-  us a closed set for low-cardinality tags; the open approach is more
-  consistent with the kernel's "no domain knowledge" rule. **Tentative pick:**
-  closed constants, accept the small kernel edit when adding a domain.
-- **Provider exception policy.** When an `EntityReferences<T>` throws during
-  fan-out, do we fail the page render or render a partial result with an
-  observation? **Tentative pick:** partial render plus observation (graceful
-  degradation matches the soft-validation philosophy).
-- **`commonNames` schema location.** Adding `commonNames: string[]` to
-  `Plant`, `Insect`, `Compound`, etc. is a coordinated change across api
-  modules. **Tentative pick:** add it to each entity that wants it lazily,
-  driven by milestones M4 and successors as each domain wires its
-  contribution.
+- **`commonNames` schema location.** Settled by M1.5 + M4′. `CommonName` is
+  a `field-notes` value object; entities that want common names carry
+  `Set<CommonName>` directly. Each entity adds the field at its own pace
+  driven by the milestone that needs it.
+- **Provider exception policy.** Under search, a misbehaving contribution
+  shrinks the result set; under inverse routing, a misbehaving provider
+  shrinks a back-references panel. Both are graceful degradation. Both
+  fire an observation. Resolved in code: partial result plus observation,
+  both directions.
+- **Common-name detection inside description prose.** M7′ wraps detected
+  binomials as search affordances but does not wrap detected common
+  names. A second renderer pass that scans for harvested common-name
+  tokens is technically feasible but easy to get wrong (false positives
+  on ambiguous phrases like "clover" inside non-botanical contexts).
+  Defer until reader behaviour suggests it is wanted; revisit after the
+  search box has been live long enough.
 
 ---
 
 ## Out of scope
 
-These are explicitly *not* part of this effort. Each is a worthy follow-up:
+These are explicitly *not* part of this effort. Each is a worthy
+follow-up:
 
+- **Lucene-backed `Catalog` adapter.** The mock kernel index ships exact
+  token + prefix matching; everything beyond that (stemming, scoring,
+  fuzzy matching, query DSL) is the production adapter's responsibility.
+  The kernel SPI shape is stable enough that the swap is mechanical; the
+  adapter lives under `adapters/catalog-lucene/` (or
+  `adapters/catalog-solr/`) when it lands.
 - A graph-shaped query API (`catalog.shortestPath(a, b)` or similar). The
   routing model does not preclude this but does not deliver it.
-- Full-text search. The catalog resolves known surface forms, not free text.
-- Persistence. The catalog is a memory-resident projection; durable storage is
-  the responsibility of each domain's repository.
-- Cross-app eventing. Notifying domain A that domain B's reference set
-  changed is out of scope; the catalog re-reads on each query and accepts the
-  cost.
+- Persistence of the index. Memory-resident; rebuilt at app startup.
+- Cross-app eventing. Each app's catalog reads its own contributions at
+  assembly time and accepts staleness between deploys.
+- The `Naturalist` domain's personal collection aggregate. Its own
+  effort, not a catalog extension. The catalog needs no awareness that
+  collections exist; the console's controllers compose the two surfaces
+  at render time.
