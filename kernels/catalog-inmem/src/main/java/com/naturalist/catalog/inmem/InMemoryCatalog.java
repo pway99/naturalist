@@ -3,6 +3,7 @@ package com.naturalist.catalog.inmem;
 import com.naturalist.catalog.*;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.resilience.CircuitBreaker;
 import com.naturalist.resilience.Resilience;
@@ -151,7 +152,7 @@ final class InMemoryCatalog implements Catalog {
             // structured INFO log) onto the same construction site.
             UnresolvedSearchObservation miss = new UnresolvedSearchObservation(
                     text.trim().toLowerCase());
-            observer.observation(miss).observe();
+            observer.observation(miss).observe(Level.INFO);
             return SearchResults.empty();
         }
 

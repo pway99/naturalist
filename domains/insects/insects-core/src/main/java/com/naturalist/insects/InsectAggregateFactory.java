@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 
 import java.util.Optional;
@@ -37,7 +38,7 @@ class InsectAggregateFactory {
                 .map(species -> {
                     ImageCollection images = imageQuery.forSpeciesName(species.name());
                     InsectAggregate aggregate = InsectAggregate.of(species, images);
-                    observer.observable(aggregate, "insectAggregate").observe();
+                    observer.observable(aggregate, "insectAggregate").observe(Level.WARN);
                     return aggregate;
                 });
     }
