@@ -2,10 +2,12 @@ package com.naturalist.chemistry.compound;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
 import java.util.Optional;
 
+@DomainService
 class DepictionEntityRepositoryMock
         extends AbstractTestEntityRepository<DepictionId, CompoundDepiction, CompoundDepictionTestEntitySource>
         implements CompoundRepository.DepictionRepository {

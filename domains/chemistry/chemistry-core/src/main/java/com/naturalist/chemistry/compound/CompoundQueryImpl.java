@@ -1,7 +1,9 @@
 package com.naturalist.chemistry.compound;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 
+@DomainService
 class CompoundQueryImpl implements CompoundQuery {
 
     private final CompoundEntityQuery compoundEntityQuery;

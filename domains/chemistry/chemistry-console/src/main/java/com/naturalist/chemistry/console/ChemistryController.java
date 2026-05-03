@@ -4,6 +4,7 @@ import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.compound.Compound;
+import com.naturalist.chemistry.compound.CompoundDepiction;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.compound.CompoundQuery;
 import com.naturalist.chemistry.console.catalog.BackReferencesViewModel;
@@ -64,14 +65,10 @@ public class ChemistryController {
             return "redirect:/chemistry";
         }
         var depiction = compoundQuery.depictions().getByCompoundName(compoundName);
-        var products = productQuery.findByCompoundName(compoundName).stream()
-                .sorted(Comparator.comparing((Product p) -> p.name().value()))
-                .toList();
         var backReferences = BackReferencesViewModel.from(catalog.findReferencesTo(compoundName), linker);
         model.addAttribute("compound", compound.get());
         model.addAttribute("hasDepiction", depiction.isPresent());
-        model.addAttribute("depictionNote", depiction.map(d -> d.note()).orElse(null));
-        model.addAttribute("products", products);
+        model.addAttribute("depictionNote", depiction.map(CompoundDepiction::note).orElse(null));
         model.addAttribute("backReferences", backReferences);
         return "chemistry/detail";
     }

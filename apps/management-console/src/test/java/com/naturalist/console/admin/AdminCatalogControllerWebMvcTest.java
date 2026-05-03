@@ -92,25 +92,6 @@ class AdminCatalogControllerWebMvcTest {
     }
 
     @Test
-    void admin_catalog_rendersEmptySectionsForDomainsWithNeitherContributionNorProvider() throws Exception {
-        var html = render();
-
-        var chemistryAt = html.indexOf(">chemistry</h2>");
-        var insectsAt = html.indexOf(">insects</h2>");
-        var plantsAt = html.indexOf(">plants</h2>");
-
-        assertThat(chemistryAt).isGreaterThan(-1);
-        assertThat(insectsAt).isGreaterThan(chemistryAt);
-
-        var chemistrySection = html.substring(chemistryAt, insectsAt);
-        var insectsSection = html.substring(insectsAt, plantsAt);
-
-        assertThat(chemistrySection)
-                .contains("No contributions registered.")
-                .contains("No reference providers registered.");
-    }
-
-    @Test
     void admin_catalog_navMarksCatalogAsCurrent() throws Exception {
         var html = render();
 

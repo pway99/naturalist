@@ -1,12 +1,9 @@
 @import com.naturalist.chemistry.compound.Compound
 @import com.naturalist.chemistry.console.catalog.BackReferencesViewModel
-@import com.naturalist.chemistry.product.Product
-@import java.util.List
 
 @param Compound compound
 @param boolean hasDepiction = false
 @param String depictionNote = null
-@param List<Product> products = java.util.List.of()
 @param BackReferencesViewModel backReferences = new BackReferencesViewModel(java.util.List.of())
 
 @template.layout.page(title = compound.name().value(), content = @`
@@ -188,20 +185,6 @@
             <ul>
                 @for(var entry : compound.properties().entrySet())
                     <li><strong>${entry.getKey()}:</strong> ${entry.getValue()}</li>
-                @endfor
-            </ul>
-        </section>
-    @endif
-
-    @if(!products.isEmpty())
-        <section>
-            <h2>Products containing this compound</h2>
-            <ul>
-                @for(var product : products)
-                    <li>
-                        <a href="/chemistry/products/${product.name().value()}">${product.displayName()}</a>
-                        &middot; <code>${product.name().value()}</code>
-                    </li>
                 @endfor
             </ul>
         </section>
