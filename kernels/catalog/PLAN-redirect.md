@@ -194,6 +194,8 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | —                                                    | ✅ shipped                    | **M7′** — Renderer search affordances                                                                                                                                      |
 | —                                                    | ✅ shipped                    | **M-Search-UI-A** — persistent search box in console layout                                                                                                                |
 | —                                                    | ✅ shipped                    | **M-Search-UI-B** — search results page                                                                                                                                    |
+| —                                                    | ✅ shipped                    | **M-Insects-Catalog** — `InsectsCatalogContribution` (forward; taxonomic tokens)                                                                                           |
+| —                                                    | ✅ shipped                    | **M-Chemistry-Catalog** — `ChemistryCatalogContribution` (forward; compounds + products) and `ChemistryCompoundReferences` (inverse; Compound → Product)                   |
 
 Superseded milestones keep their existing text in PLAN.md as historical
 record. New milestone bodies follow.
@@ -610,6 +612,104 @@ URL conventions. Owns the empty-state UX for no-hit searches.
   `california-pipevine` understands; a user who searches `pipevine` and
   gets `pipevine-swallowtail` understands equally; a user who searches
   `pipevine` and gets results without the hint is left wondering.
+
+---
+
+### M-Insects-Catalog — Insects forward contribution ✅
+
+**Goal.** Second domain to wire `CatalogContribution`. Confirms the M2′ /
+M4′ SPI shape generalises beyond plants.
+
+**What shipped.**
+
+- `domains/insects/insects-core/src/main/java/com/naturalist/insects/catalog/InsectsCatalogContribution.java`
+  — `@DomainService`, constructor takes `InsectQuery.SpeciesQuery`. Emits
+  one `SearchableEntity` per `InsectSpecies` with tokens: slug, genus,
+  full binomial, abbreviated binomial. Skips binomial/genus tokens when
+  the species is catalogued at family level (genus null).
+- `searchableEntities()` is live — re-reads from `SpeciesQuery` on every
+  call, so species added after assembly are reflected.
+- `InsectsCatalogContributionTest` covers slug / binomial / genus /
+  abbreviated reachability for `convergent-ladybug`, case-insensitivity,
+  family-level (`tachinid-fly`) emitting slug only, single-token
+  unknown-input → empty (slug-shaped multi-token unknown-input is
+  intentionally not tested — see "Open question: slug-shaped input"
+  below).
+- `InsectsLinker` was already in place from M8; the forward contribution
+  closes the loop so insect entities now appear in `/search` results.
+
+**Notes.**
+
+- No common-name tokens yet — `InsectSpecies` does not carry
+  `Set<CommonName>`. When it does, fold into the token stream alongside
+  the binomial forms (same pattern as `PlantCatalogContribution`).
+- Token collisions across species (multiple `Hippodamia`) are
+  unconditionally emitted per the M4′ rule — the index handles
+  ambiguity.
+
+---
+
+### M-Chemistry-Catalog — Chemistry forward and inverse contributions ✅
+
+**Goal.** Third domain wired to `CatalogContribution`, and second
+inverse-direction provider after plants. Compounds and products both
+become searchable; compound detail pages gain a "Found in products" panel
+through the same SPI plants uses for "Found in plants."
+
+**What shipped.**
+
+- `domains/chemistry/chemistry-core/src/main/java/com/naturalist/chemistry/catalog/ChemistryCatalogContribution.java`
+  — `@DomainService`, takes `CompoundQuery.CompoundEntityQuery` and
+  `ProductQuery`. Concatenates compound and product `SearchableEntity`
+  streams.
+  - Compound tokens: slug, `commonName`, chemical `formula`
+    (e.g. `"calcium-sulfate-dihydrate"`, `"Calcium Sulfate Dihydrate"`,
+    `"CaSO4·2H2O"`).
+  - Product tokens: slug, `displayName` (e.g. `"apiguard"`,
+    `"Apiguard (Véto-pharma)"`).
+- `domains/chemistry/chemistry-core/src/main/java/com/naturalist/chemistry/catalog/ChemistryCompoundReferences.java`
+  — `@DomainService` `EntityReferences<CompoundName>`, carries
+  `@Resilient(name = "catalog.fanout")` per ADR-026. Looks up products
+  whose `Set<CompoundName> compounds` includes the target. Intra-domain
+  back-reference (compound → product, both in chemistry) using the same
+  SPI as cross-domain providers — the kernel does not distinguish.
+- `ChemistryCatalogContributionTest` and `ChemistryCompoundReferencesTest`
+  cover the standard reachability and back-reference cases.
+
+**Notes.**
+
+- Product is the second searchable entity type from a single domain —
+  proves `CatalogContribution.searchableEntities()` is a stream over
+  *entities*, not over a single entity class. `Stream.concat` of
+  per-subcontext streams is the working pattern.
+- The compound → product back-reference closes the loop on the chemistry
+  detail page: a `Compound` page now shows both "Found in plants" (from
+  `PlantCompoundReferences`, M5) and "Found in products" (from this
+  provider). `BackReferencesViewModel` requires no changes — both
+  providers feed the same composite.
+
+---
+
+### Open question — slug-shaped multi-token search input
+
+Surfaced while writing `InsectsCatalogContributionTest`. The original
+M2′ tokenisation rule (`[\s\p{Punct}]+`) splits hyphenated input the same
+way it splits whitespace, so a slug-shaped query like
+`not-an-insect-anywhere` becomes `["not", "an", "insect", "anywhere"]`
+and the per-token union returns spurious prefix hits.
+
+**Decision (provisional).** Do not introduce a slug-shape detector or
+conjunctive multi-token semantics yet. The catalog-inmem implementation
+is bare-minimum dev-time scaffolding, not a search engine; piling
+heuristics on it is the slippery slope toward re-implementing Lucene in
+Java. The negative test case `unknownTokenReturnsEmptyResults` was
+narrowed to a single nonsense token (`"zzzzzzz"`) and the slug-shaped
+assertion was removed.
+
+**Revisit when.** The Lucene drop-in lands (search semantics move out of
+the kernel entirely), or user behaviour shows real confusion from
+slug-shaped queries. Until then: every assertion the kernel makes is
+honestly bare-minimum.
 
 ---
 

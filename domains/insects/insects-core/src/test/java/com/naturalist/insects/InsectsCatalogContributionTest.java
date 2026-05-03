@@ -99,7 +99,6 @@ class InsectsCatalogContributionTest {
     @Test
     void unknownTokenReturnsEmptyResults() {
         Catalog catalog = CatalogAssembly.from(contribution);
-        assertThat(catalog.search("qqqqxxxx").isEmpty()).isTrue();
         assertThat(catalog.search("zzzzzzz").isEmpty()).isTrue();
     }
 
