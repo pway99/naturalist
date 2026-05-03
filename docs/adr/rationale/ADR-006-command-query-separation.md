@@ -50,9 +50,11 @@ A command mutates state and returns nothing.
 - Assumed potentially asynchronous — the caller must not depend on the command having
   completed before the next line executes. Today commands execute synchronously; tomorrow
   they may be dispatched to an event bus and processed on another VM
-- Never returns a result, including via exception for domain flow. The caller fires and
-  moves on
-- If the caller needs to know the state after a command, it issues a separate query
+- Never returns a result via exception for domain flow. Exceptions are the failure
+  channel — argument errors, persistence errors, adapter failures — not a substitute
+  for a return value
+- If the caller needs to know the state after a successful command, it issues a separate
+  query
 
 ```java
 // Command — void, no feedback, no domain exception
@@ -66,24 +68,49 @@ The no-exceptions-for-control-flow rule applies to domain flow — business outc
 "entity not found" or "update had no effect." It does not apply to programming errors.
 
 A null argument to any method is a programming error. The argument validation layer
-(`observer().arguments(...)`) throws `InvalidVariantException` for null or structurally
+(`observer().arguments(...)`) throws `InvariantViolationException` for null or structurally
 invalid inputs, collecting all violations in a single pass before throwing. This is
 enforced at the method boundary before any state access occurs, and it indicates a bug
 in the caller, not a domain condition. Collecting all violations rather than failing fast
 on the first one ensures the caller receives a complete error description — important at
 API and form boundaries where iterative error discovery degrades the user experience.
 
-### Consequence for Update-Not-Found
+### Failure Propagation — Fail-Fast, Layer by Layer
 
-Under this model, issuing an update command for an id that does not exist in the
-repository is a no-op. The command fires, nothing changes, the command returns. If the
-caller needs to verify the entity existed before updating, it must query first. If it
-needs to verify the update was applied, it must query after. The command itself is
-silent on the outcome.
+Each layer throws what it knows. A command that knows its repository call will fail
+throws; a repository that knows the adapter (in-memory mock, RDBMS) will fail
+throws. Errors propagate up rather than being swallowed.
 
-This is not a weakness — it is the correct positioning for async promotion. An event bus
-does not return results to producers. Designing commands to be result-free now means
-zero interface changes when they are promoted to async.
+- `update` for a non-existent name throws `EntityNotFoundException` from the
+  repository; the command lets it propagate.
+- `insert` of a duplicate name throws `PrimaryKeyConstraintException` from the
+  repository; the command lets it propagate.
+- Argument validation throws `InvariantViolationException` at the layer that
+  receives the bad argument (command at the api boundary, repository at the data
+  port — same constraint graph, defense-in-depth).
+
+Exceptions remain *failure channels*, not domain-flow channels — a successful
+command still returns `void`, and a caller that needs post-state issues a query.
+What exceptions communicate is "this command did not succeed at this layer," and
+that information is not a return value smuggled out through the exception type.
+
+#### Failure Routing: Synchronous vs Asynchronous
+
+How a failure surfaces depends on how the command was invoked.
+
+- **Synchronous (direct method reference)** — the exception surfaces to the caller
+  with the most context available, all the way to the end user
+  (controller → response). The void return is preserved on the success path; the
+  failure path uses the standard exception channel.
+- **Asynchronous (event / message bus)** — the failure is captured in a
+  dead-letter queue at the first point of failure, where a human can review and
+  reconcile. The void-return contract is preserved end-to-end; the bus owns
+  delivery, retry, and DLQ routing. Producers do not see the failure directly.
+
+Both routes are compatible with the same command signature — the caller does not
+change when a command is promoted from sync to async. What changes is *who*
+observes failures: the caller in the sync case, the operator (via DLQ) in the
+async case.
 
 ### Consequence for Insert-and-Retrieve
 
@@ -110,15 +137,15 @@ streaming or pagination concern, addressed separately.
 
 ## Consequences
 
-- `doInsert` and `doUpdate` return `void` — this is correct, not a gap
-- `EntityNotFoundException` is not needed and must not be added to the framework
-- The `doUpdate_unknownId` repository contract test asserts that the command completes
-  without throwing and that a subsequent query confirms no phantom state was created —
-  not that an exception was thrown
+- `doInsert` and `doUpdate` return `void` on success — this is correct, not a gap
+- `EntityNotFoundException` is the repository's signal that an `update` target does
+  not exist; the command lets it propagate. Synchronous callers see the exception;
+  asynchronous callers see a DLQ entry
+- Repository contract tests assert that `update` against a non-existent name throws
+  `EntityNotFoundException` (`update_unknownName_throwsEntityNotFoundException`).
+  Successful updates are confirmed by a subsequent query
 - Callers that need post-command state verification must issue a separate query — this
   is explicit in code and enforces the CQS boundary at every call site
 - The system is structurally ready for event bus promotion of any command with no
-  interface changes
-- ADR-002 §"Known Gap in TestEntitySource.update()" must be updated: the gap is not
-  a missing `EntityNotFoundException` but rather the `preSaveChecks` bug that prevents
-  valid updates from completing. The unknown-id case is intentionally a no-op.
+  interface changes. The signature is identical; the failure routing changes from
+  exception-to-caller to dead-letter-queue-to-operator

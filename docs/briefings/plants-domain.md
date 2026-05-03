@@ -7,14 +7,19 @@ and structural rules, see `CLAUDE.md` in this directory.
 
 The plants domain catalogs every species established or cultivated at the
 application's site of cultivation, plus the cultivars within those species,
-the seed lineages worth preserving across generations, and the management
-programs that govern how each plant is tended in the field.
+the seed lineages worth preserving across generations, the management
+programs that govern how each plant is tended in the field, and the
+phytochemical constituents that link each plant to specific compounds in
+the chemistry catalog.
 
 The botanical record is intentionally stable: taxonomy, growth form, ecological
 roles, native bioregions. Operational concerns — what to spray, what not to
 spray, when to inspect for larvae, how to save seed — live on `PlantProgram`
-records keyed off `PlantName`. The split keeps Plant a clean cross-site
-reference while letting management evolve season by season.
+records keyed off `PlantName`. Chemical concerns — what compound, what
+tissue, what role, induced or constitutive — live on `PhytochemicalConstituent`
+records that bridge `PlantName` and chemistry's `CompoundName`. The split
+keeps Plant a clean cross-site reference while letting management and
+phytochemistry evolve independently.
 
 ## Site context — Oak Vista (Chico, CA)
 
@@ -112,17 +117,62 @@ calcium transport and chelation belongs to the chemistry domain. When you see
 BER discussed in chat, expect a multi-domain conversation: plants (program),
 chemistry (compound, chelation), soil (Ca availability, FGL data).
 
+## Phytochemistry — the plant ↔ compound bridge
+
+`PhytochemicalConstituent` is the single point where the plants catalog meets
+the chemistry catalog. One record names one compound in one plant, with the
+role(s) that compound plays in *that* species. The same compound carries
+different stories in different plants — caffeine deters insects in coffee
+seed and (in trace amounts) attracts pollinators to citrus nectar — so the
+plant-specific story has its own home rather than being smeared onto either
+the species or the compound.
+
+The constituent record carries two orthogonal classification axes:
+
+- **Structural type** lives on the chemistry side (`CompoundInfo` / sealed
+  `StructuralType` permits) — carbon-skeleton facts independent of any plant.
+- **Ecological / use category** is `PhytochemicalCategory` on the constituent
+  — the coarse bucket a naturalist or phytochemistry textbook would group by
+  (alkaloid, terpenoid, glucosinolate, latex, …).
+
+Roles are a sealed `PhytochemicalRole` interface with stateless permits
+(`HerbivoreDeterrent`, `PollinatorAttractant`, `Pharmaceutical`, …). One
+constituent commonly carries several — caffeine is at once `INSECT_DETERRENT`,
+`PHARMACEUTICAL`, and `NUTRACEUTICAL`. Consumers do not pattern-match the
+sealed hierarchy at the call site; axis-level rollups on the record
+(`isDefensive()`, `isSignaling()`, `mediatesEnvironmentalStress()`,
+`hasMedicinalApplication()`, `hasCommercialApplication()`,
+`isToxicToMammals()`) are the stable surface, with `PlantTissue` and
+`InductionMode` queries (`isPresentIn`, `isInduced`, `isDevelopmental`)
+covering the where/when axes.
+
+Aristolochic acid I in California Pipevine is the canonical example — a
+defensive alkaloid that the Pipevine Swallowtail co-opts as larval
+sequestration, exactly the kind of cross-domain story the constituent
+record exists to capture.
+
+The cross-domain link is by slug only. `PhytochemicalConstituent.compoundName`
+is a `CompoundName` from the `identifiers` module; `plants-api` has no
+compile-time dependency on `chemistry-api`. Verifying that the referenced
+compound actually exists in the chemistry catalog is a service-layer rule,
+not a record invariant.
+
 ## Cross-domain references that already exist
 
 - `Plant.nativeBioregions` — `Set<Bioregion>` from the biogeography kernel.
 - `PlantProgram.plantName` — soft FK to `Plant`.
 - `Cultivar.plantName` — soft FK to `Plant` (species).
 - `SeedLineage.cultivarName` — soft FK to `Cultivar`.
+- `PhytochemicalConstituent.plantName` — soft FK to `Plant`.
+- `PhytochemicalConstituent.compoundName` — cross-domain soft FK to
+  chemistry's `Compound` (the only soft FK in this domain that crosses a
+  *domain* boundary rather than a sub-context boundary).
 - `Plant.isKeystoneHost()` — drives zero-pesticide constraints in the
   PestManagement module (consumer side, not yet modeled).
 
-All cross-domain references are by `EntityName` slug. No compile-time
-dependency from plants on insects, soil, or chemistry modules.
+All cross-domain references are by `EntityName` slug via the shared
+`identifiers` module. No compile-time dependency from `plants-api` on
+`insects-api`, `soil-api`, or `chemistry-api`.
 
 ## Open design questions
 
@@ -136,22 +186,28 @@ dependency from plants on insects, soil, or chemistry modules.
   it would just duplicate information already encoded in `PlantLifeForm` +
   `PlantRole`.
 
-- **Read-side query surface.** No `PlantQuery` interface yet — neither for
-  Plant nor for the cultivar/heritage/management sub-contexts. When read-side
-  queries materialize, the namespace pattern from `domains/CLAUDE.md` applies:
-  package-private `PlantRepository` (already in place), public `PlantQuery`
-  interface, public `PlantEntityCollections` for multi-result return types.
-
 - **Aggregate factory placement.** No `PlantAggregate` yet. If one materializes
-  (Plant + Cultivars + Programs assembled by name), the factory lives in
-  `plants-core` as a package-private concrete class — never in `plants-api`.
+  (Plant + Cultivars + Programs + Constituents assembled by name), the
+  factory lives in `plants-core` as a package-private concrete class — never
+  in `plants-api`. The aggregate query would join its sibling `*Query`
+  interfaces below into a single discoverable read surface.
 
 ## Reference points
 
 - Identifiers: `domains/identifiers/.../plants/`
   (`PlantName`, `cultivar/CultivarName`, `heritage/SeedLineageName`,
-  `management/PlantProgramName`).
+  `management/PlantProgramName`,
+  `phytochemistry/PhytochemicalConstituentName`).
+- Read-side surface: every sub-context now exposes a `*Query` namespace
+  interface (`PlantQuery`, `cultivar/CultivarQuery`,
+  `heritage/SeedLineageQuery`, `management/PlantProgramQuery`,
+  `phytochemistry/PhytochemicalConstituentQuery`) with paired
+  `*EntityCollections` for multi-result returns. Repositories remain
+  package-private classes per the namespace pattern in `domains/CLAUDE.md`.
 - Repository contracts: `plants-repository-test/`
-  (`PlantEntityRepositoryTest`, `PlantProgramEntityRepositoryTest`).
+  (`PlantEntityRepositoryTest`, `CultivarEntityRepositoryTest`,
+  `SeedLineageEntityRepositoryTest`, `PlantProgramEntityRepositoryTest`,
+  `PhytochemicalConstituentEntityRepositoryTest`).
 - Cross-domain anchors: `kernels/biogeography/Bioregion`,
-  `kernels/field-notes/Description`, `kernels/taxonomy/TaxonomicClassification`.
+  `kernels/field-notes/Description`, `kernels/taxonomy/TaxonomicClassification`,
+  and (soft FK only) `chemistry/CompoundName` via `identifiers`.

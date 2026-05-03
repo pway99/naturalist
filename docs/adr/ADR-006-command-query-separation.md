@@ -23,9 +23,28 @@ Every method is a **Command** or a **Query**. Never mixed.
   `observer().arguments(...)`. Programming error, not domain flow. All violations collected
   in a single pass before throwing.
 
-**Update-not-found is silent.** `update` for non-existent id is a no-op. No
-`EntityNotFoundException` in the framework. Contract test `doUpdate_unknownId` asserts
-no throw and no phantom state via subsequent query.
+**Failure propagation — fail-fast, layer by layer.** Each layer throws what it knows.
+A command that knows its repository call will fail throws; a repository that knows
+the adapter (in-memory mock, RDBMS) will fail throws. Errors propagate up rather
+than being swallowed. Concretely:
+
+- `update` for a non-existent name throws `EntityNotFoundException` from the
+  repository; the command lets it propagate.
+- `insert` of a duplicate name throws `PrimaryKeyConstraintException` from the
+  repository; the command lets it propagate.
+- Argument validation throws `InvariantViolationException` at the layer that
+  receives the bad argument (command at the api boundary, repository at the
+  data port — same constraint graph, defense-in-depth).
+
+Failure routing depends on how the command was invoked:
+
+- **Synchronous (direct method reference)** — the exception surfaces to the
+  caller with the most context available, all the way to the end user
+  (controller → response). The command's `void` return type is preserved; the
+  exception is the failure channel, never a domain-flow channel.
+- **Asynchronous (event / message bus)** — the failure is captured in a
+  dead-letter queue at the first point of failure, where a human can review
+  and reconcile. The void-return contract is preserved; the bus owns delivery.
 
 **Insert-and-retrieve.** `insert` assigns id and stores; id is not returned. Caller queries
 by `EntityName` slug to retrieve persisted entity + id.

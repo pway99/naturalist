@@ -10,10 +10,11 @@ a row.
 
 ## Active
 
-| Plan                                   | Status                                 | Scope                                                                                                                                                              |
-|----------------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [admin-console.md](admin-console.md)   | active — view 4+ pending               | Secure `/admin/**` surface in `apps/management-console`. Views 1–3 (`resilience`, `domain-services`, `catalog`) shipped.                                           |
-| [catalog-kernel.md](catalog-kernel.md) | active — M9b / M10 / M11 / M12 pending | Cross-domain reference resolution kernel. Search + inverse-routing + URL-linker SPIs. The 2026-04-29 search-and-discovery redirect is folded into this single doc. |
+| Plan                                         | Status                                 | Scope                                                                                                                                                              |
+|----------------------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [admin-console.md](admin-console.md)         | active — view 4+ pending               | Secure `/admin/**` surface in `apps/management-console`. Views 1–3 (`resilience`, `domain-services`, `catalog`) shipped.                                           |
+| [catalog-kernel.md](catalog-kernel.md)       | active — M9b / M10 / M11 / M12 pending | Cross-domain reference resolution kernel. Search + inverse-routing + URL-linker SPIs. The 2026-04-29 search-and-discovery redirect is folded into this single doc. |
+| [command-framework.md](command-framework.md) | active — pilot pending                 | Introduce `EntityCommand` / `AbstractEntityCommand` + `<Domain>Command` namespace pattern (ADR-020). Insects pilot only; no controller wiring.                     |
 
 ## Archived
 
