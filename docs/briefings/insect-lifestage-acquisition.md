@@ -1,24 +1,31 @@
-# Task — Generate Life-Stage JSON for Catalogued Insect Species
+# Insect Life Stage Acquisition Briefing
 
 **Your role.** You have rich ecological / entomological domain knowledge.
-This task uses that knowledge to produce structured life-stage data for the
-14 species already in the Oak Vista insect catalog.
+This task uses that knowledge to produce structured life-stage data for
+species in the Oak Vista insect catalog — either populating stages on
+existing species whose four stage fields are still `null`, or producing
+stage entries when new species are added to the catalog.
 
-**Inputs this readme assumes are attached to this conversation:**
+**Inputs this briefing assumes are attached to this conversation:**
 
-1. `framework.md` — framework, identity model, package locations, JSON
-   conventions, anti-patterns. Read that first.
-2. `insect-species.json` — the current 14-species catalog. Each entry has
-   `egg: null`, `larva: null`, `pupa: null`, `adult: null` — your job is
-   to populate those fields.
+1. `framework-briefing.md` — framework, identity model, package
+   locations, the complete `Constraints` API, JSON conventions,
+   anti-patterns. Read that first.
+2. `insects-domain.md` — insects-api shape and current catalog state. Pair
+   with this briefing.
+3. `insect-species.json` — the current insect-species catalog at
+   `domains/insects/insects-repository-test/src/main/resources/insects/insect-species.json`.
+   Each species entry exposes `egg`, `larva`, `pupa`, `adult` directly on
+   the record; your job is to populate the requested stage fields.
 
 **Deliverable.** A single zip file containing a drop-in replacement
 `insect-species.json` with the four stage fields populated per species.
 Do not rename the file; do not change any field other than the four stage
 fields. Do not modify other species-level fields
 (`taxonomy`, `description`, `guilds`, `beneficial`, `sightingNotes`,
-`chemicalDefense`, `voltinism`, `habitatRequirements`, `gardenConnections`,
-`beneficialProfile`, `ecologicalSignificance`) — they're already curated.
+`identificationFeatures`, `chemicalDefense`, `voltinism`, `habitatProfile`,
+`habitatRequirements`, `gardenConnections`, `beneficialProfile`,
+`ecologicalSignificance`) — they're already curated.
 
 ---
 
