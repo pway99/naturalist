@@ -1068,6 +1068,6 @@ follow-up:
   scheduled-task status). Driven by the operational need to
   inspect configuration without a log aggregator or actuator
   scrape. Tracked separately in
-  [`docs/plans/admin-console.md`](../plans/admin-console.md). The
+  [`docs/plans/admin-console.md`](../admin-console.md). The
   kernel-side prerequisite (`Resilience.registeredNames()`) lands
   with that plan, not here.

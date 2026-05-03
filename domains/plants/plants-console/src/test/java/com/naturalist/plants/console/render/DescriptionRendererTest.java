@@ -10,7 +10,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Acceptance for M6 and M7' ({@code kernels/catalog/PLAN-redirect.md}). The
+ * Acceptance for M6 and M7' ({@code docs/plans/catalog-kernel-redirect.md}). The
  * renderer is unit-tested with three complementary lenses:
  *
  * <ol>

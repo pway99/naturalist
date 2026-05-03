@@ -2,7 +2,7 @@
 
 Coding conventions and structural rules for the plants domain. Narrative,
 ecological, and historical context lives in
-[`plants-chat-briefing.md`](plants-chat-briefing.md) — load that file when the
+[`docs/briefings/plants-domain.md`](../../docs/briefings/plants-domain.md) — load that file when the
 conversation is about the *what* and *why* rather than the *how*.
 
 ## Sub-context layout
@@ -296,4 +296,4 @@ Each entry must include:
 
 - Domain-shared conventions: [`../CLAUDE.md`](../CLAUDE.md)
 - Narrative / ecological context, Oak Vista lineup, BER, heritage program,
-  open design questions: [`plants-chat-briefing.md`](plants-chat-briefing.md)
+  open design questions: [`docs/briefings/plants-domain.md`](../../docs/briefings/plants-domain.md)

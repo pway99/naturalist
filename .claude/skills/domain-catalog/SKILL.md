@@ -35,7 +35,7 @@ apply to this domain:
 
 Reference implementation: the plants stack — `PlantsDomain`,
 `PlantCatalogContribution`, `PlantCompoundReferences`, `PlantsLinker`.
-Plan and rationale: `kernels/catalog/PLAN-redirect.md`.
+Plan and rationale: `docs/plans/catalog-kernel-redirect.md`.
 
 ---
 
@@ -216,7 +216,7 @@ public class <Domain>CatalogContribution implements
                 }
         <Entity > Collection collection =
                         < entityPlural >.findByNameSet(names.stream().collect(Collectors.toSet()));
-                return collection.stream().map( < Domain > CatalogContribution::toSearchableEntity);
+                return collection.stream().map( < Domain > CatalogContribution::toSearchableEntity)
             }
 
             private static SearchableEntity toSearchableEntity ( < Entity > entity){
@@ -329,7 +329,7 @@ class
         Catalog catalog = CatalogAssembly.from(contribution);
         EntityRef expected = new EntityRef(
                 new <Domain>Domain(),
-                Test < Domain > Identifiers./* path to */.name);
+                Test < Domain > Identifiers./* path to */.name)
 
         assertThat(catalog.search("<known-slug>").stream())
                 .as("slug '<known-slug>' should resolve to %s as EXACT_SLUG", expected)
@@ -484,7 +484,7 @@ public class <Domain><Foreign>References implements EntityReferences<<Foreign>Na
             Stream.Builder<EntityRef> refs = Stream.builder();
             matches.stream().forEach(link -> {
                 if (seenOwners.add(link.<ownerNameAccessor> ())){
-                    refs.add(new EntityRef(DOMAIN, link.<ownerNameAccessor> ()));
+                    refs.add(new EntityRef(DOMAIN, link.<ownerNameAccessor> ()))
                 }
                 refs.add(new EntityRef(DOMAIN, link.name()));
             });
@@ -623,7 +623,7 @@ extend the allowlist if so).
 
 ## Cross-references
 
-- `kernels/catalog/PLAN-redirect.md` — the search-and-discovery reframe.
+- `docs/plans/catalog-kernel-redirect.md` — the search-and-discovery reframe.
   The whole rationale for token-based contributions, common-name
   harvesting, and the three-axis SPI lives here.
 - `kernels/catalog/src/main/java/com/naturalist/catalog/` — SPI

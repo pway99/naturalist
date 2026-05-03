@@ -77,7 +77,7 @@ Catalog file:
 `chemistry-repository-test/src/main/resources/chemistry/product/products-base.json`
 
 Schema and authoring rules are documented in
-`docs/chat-product-acquisition.md` at the repo root. New product entries
+`docs/briefings/product-acquisition.md` at the repo root. New product entries
 should be produced via that briefing so the file remains diff-friendly and
 field order stays canonical.
 

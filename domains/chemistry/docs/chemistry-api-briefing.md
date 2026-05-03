@@ -1,7 +1,7 @@
 # chemistry-api — Chat Briefing
 
 **Purpose.** Domain vocabulary and current shape of the `chemistry-api` module, sized
-for a chat Claude session. Pair with `docs/chat-briefing.md` (framework / structural
+for a chat Claude session. Pair with `docs/briefings/framework.md` (framework / structural
 glue). This briefing covers chemistry-api **only** — not chemistry-core, not
 chemistry-repository-test, not any future chemistry-repository-rdms.
 

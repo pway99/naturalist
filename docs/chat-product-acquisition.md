@@ -112,7 +112,7 @@ nothing existing fits.
 If a product references a compound that is **not** present in the existing
 `compounds.json`, you must produce a full compound entry for it in the
 same response under the `compounds` array. Use the schema and rules from
-**`docs/chat-compound-acquisition.md`** verbatim — that briefing is the
+**`docs/briefings/compound-acquisition.md`** verbatim — that briefing is the
 authoritative source of truth for compound JSON. The relevant constraints
 in summary:
 
@@ -190,7 +190,7 @@ populated:
     {
       "name": "hypothetical-acid",
       "commonName": "Hypothetical Acid",
-      "compoundInfo": { /* full schema per chat-compound-acquisition.md */ },
+      "compoundInfo": { /* full schema per compound-acquisition.md */ },
       "solubility":      { /* ... */ },
       "bioavailability": { /* ... */ },
       "volatilization":  null,

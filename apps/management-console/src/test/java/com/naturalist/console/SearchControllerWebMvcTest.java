@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * End-to-end smoke test for the {@code /search} discovery surface
- * (M-Search-UI-B in {@code kernels/catalog/PLAN-redirect.md}).
+ * (M-Search-UI-B in {@code docs/plans/catalog-kernel-redirect.md}).
  */
 @SpringBootTest
 class SearchControllerWebMvcTest {

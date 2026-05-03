@@ -6,7 +6,7 @@ This task uses that knowledge to produce structured life-stage data for the
 
 **Inputs this readme assumes are attached to this conversation:**
 
-1. `chat-briefing.md` — framework, identity model, package locations, JSON
+1. `framework.md` — framework, identity model, package locations, JSON
    conventions, anti-patterns. Read that first.
 2. `insect-species.json` — the current 14-species catalog. Each entry has
    `egg: null`, `larva: null`, `pupa: null`, `adult: null` — your job is
