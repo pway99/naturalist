@@ -1,11 +1,12 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.PlantQuery;
 import com.naturalist.plants.PlantsTestContext;
-import com.naturalist.plants.console.render.DescriptionRenderer;
+import com.naturalist.plants.console.render.PlantsParagraphCues;
 import com.naturalist.plants.cultivar.Cultivar;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.cultivar.CultivarQuery;
@@ -46,7 +47,7 @@ public class PlantsController {
         this.seedLineageQuery = context.seedLineageQuery();
         this.plantProgramQuery = context.plantProgramQuery();
         this.phytochemicalConstituentQuery = context.phytochemicalConstituentQuery();
-        this.descriptionRenderer = new DescriptionRenderer();
+        this.descriptionRenderer = new DescriptionRenderer(PlantsParagraphCues.CUES);
     }
 
     // ── Plant catalog ────────────────────────────────────────────────────

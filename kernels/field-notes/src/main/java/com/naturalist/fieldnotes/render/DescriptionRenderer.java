@@ -1,4 +1,4 @@
-package com.naturalist.plants.console.render;
+package com.naturalist.fieldnotes.render;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +22,15 @@ import java.util.regex.Pattern;
  * decision. The {@code discover} class lets the layout style the affordance
  * distinctly from regular links.
  *
+ * <h2>Per-domain configuration</h2>
+ * The paragraph-cue list is constructor-injected so each domain can express
+ * its own ubiquitous language. A botanical description carries cues like
+ * "Endophyte associations" and "Nitrogen fixation"; an entomological
+ * description carries cues like "Larval host" and "Overwintering"; a
+ * chemical description carries cues like "Application window" and
+ * "Hazard category". The renderer ships the regex / HTML / list-lifting
+ * machinery; the caller owns the vocabulary.
+ *
  * <h2>Pipeline</h2>
  * <ol>
  *   <li><b>HTML escape</b> &mdash; the input is treated as plain text and is
@@ -34,8 +43,8 @@ import java.util.regex.Pattern;
  *       {@code <header>} chip. Inputs without a leading header pass through
  *       unchanged.</li>
  *   <li><b>Paragraph splitting</b> &mdash; sentence breaks immediately
- *       followed by any cue phrase from {@link #PARAGRAPH_CUES} become
- *       paragraph breaks.</li>
+ *       followed by any cue phrase from the constructor-supplied cue list
+ *       become paragraph breaks.</li>
  *   <li><b>Numbered enumeration lifting</b> &mdash; within a paragraph, a
  *       sequence of {@code (1) ... (2) ...} markers (separated by {@code ;}
  *       or {@code .}) is lifted into an {@code <ol>}.</li>
@@ -51,25 +60,10 @@ import java.util.regex.Pattern;
  * {@code >}). The renderer never throws on real input.
  *
  * <h2>Thread-safety</h2>
- * The renderer is stateless; a single instance is safe for concurrent use.
+ * The renderer is stateless once constructed; a single instance is safe for
+ * concurrent use.
  */
 public final class DescriptionRenderer {
-
-    private static final List<String> PARAGRAPH_CUES = List.of(
-            "At Oak Vista",
-            "Management constraint",
-            "Practical significance",
-            "Critical timing",
-            "Bloom period at",
-            "Bloom time at",
-            "Florets are",
-            "Annual;",
-            "Endophyte associations",
-            "Nitrogen fixation",
-            "Root nodule symbiont",
-            "The low growth form",
-            "Management at non-standard"
-    );
 
     private static final Pattern HEADER_PATTERN = Pattern.compile(
             "^([A-Z][a-z]+\\s+[a-z]+(?:\\s+(?:L\\.|Schreb\\.|var\\.|subsp\\.|ssp\\.))?(?:\\s+\\([^)]+\\))?)"
@@ -85,7 +79,16 @@ public final class DescriptionRenderer {
     private static final Pattern NUMBERED_ITEM = Pattern.compile(
             "\\((\\d+)\\)\\s+((?:[^()]|\\([^()]*\\))+?)(?=(?:[;.]\\s+\\(\\d+\\))|(?:\\.\\s|$))");
 
-    public DescriptionRenderer() {
+    private final List<String> paragraphCues;
+
+    /**
+     * Construct a renderer with the given paragraph cues. An empty list is
+     * valid &mdash; the renderer falls back to a single paragraph per
+     * non-header span. The list is defensively copied; runtime mutations
+     * are not observed.
+     */
+    public DescriptionRenderer(List<String> paragraphCues) {
+        this.paragraphCues = paragraphCues == null ? List.of() : List.copyOf(paragraphCues);
     }
 
     public String render(String text) {
@@ -146,7 +149,7 @@ public final class DescriptionRenderer {
     }
 
     private boolean matchesCue(String tail) {
-        for (String cue : PARAGRAPH_CUES) {
+        for (String cue : paragraphCues) {
             if (tail.startsWith(cue)) {
                 return true;
             }
