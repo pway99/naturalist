@@ -184,7 +184,7 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | M6 — Description renderer (formatting only)          | ✅ shipped (M6a + M6b wiring) | unchanged                                                                                                                                                                  |
 | M7 — Renderer catalog integration (forward linking)  | ✅ shipped, **superseded**    | replaced by **M7′**                                                                                                                                                        |
 | M8 — Chemistry detail back-references                | ✅ shipped                    | revised — Catalog wired as Spring `@Bean`; URL contribution moved to per-domain `EntityRefLinker` SPI composed by `CompositeEntityRefLinker` (LinkResolver removed in M7′) |
-| M9 — Observer wiring and metrics                     | pending                      | revised — split into INFO and WARN observation types                                                                                                                       |
+| M9 — Observer wiring and metrics                     | in progress                  | revised — split into INFO and WARN observation types; **M9a** (kernel `Level` tag) shipped, **M9b** (typed observation types + console observers) pending                  |
 | M10 — Eager startup validation                       | pending                      | revised — coverage assertion, not dangle hunt                                                                                                                              |
 | M11 — ArchUnit guard                                 | pending                      | unchanged                                                                                                                                                                  |
 | M12 — Documentation and ADR                          | pending                      | unchanged in shape, content updated                                                                                                                                        |
@@ -196,6 +196,7 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 | —                                                    | ✅ shipped                    | **M-Search-UI-B** — search results page                                                                                                                                    |
 | —                                                    | ✅ shipped                    | **M-Insects-Catalog** — `InsectsCatalogContribution` (forward; taxonomic tokens)                                                                                           |
 | —                                                    | ✅ shipped                    | **M-Chemistry-Catalog** — `ChemistryCatalogContribution` (forward; compounds + products) and `ChemistryCompoundReferences` (inverse; Compound → Product)                   |
+| —                                                    | ✅ shipped                    | **M9a** — `Level` enum + `level` tag on emitted metrics; `throwWhenInvalid()` → ERROR; `observe(Level)` requires call-site choice                                          |
 
 Superseded milestones keep their existing text in PLAN.md as historical
 record. New milestone bodies follow.
@@ -792,16 +793,84 @@ honestly bare-minimum.
 
 ---
 
-## Revision: M9 — Observer wiring and metrics (split into two observation types)
+## Revision: M9 — Observer wiring and metrics (split: M9a kernel level + M9b typed observers)
 
-**Goal.** Translate both observation types into the operational surface.
-Two counters, two log severities; the cardinality discipline is the same
-across both.
+The original M9 has been split into two PR-sized chunks. M9a is the kernel-side
+prerequisite — every emitted metric has to carry a severity dimension before the
+typed observation types and their per-domain subscribers are worth wiring up.
+M9b is the original M9 minus that prerequisite.
+
+### M9a — Kernel `Level` tag on emitted metrics ✅
+
+**Goal.** Add a `level` (INFO/WARN/ERROR) dimension to every observation metric
+so dashboards and alerts can split severity from a single counter rather than
+one counter per severity.
+
+**What shipped.**
+
+- `kernels/framework/src/main/java/com/naturalist/observability/Level.java`
+  — `enum Level { INFO, WARN, ERROR }` with `tagValue()` (lowercased
+  constant name for Micrometer). Javadoc carries the call-site picker:
+  `WARN` = "something is wrong, triage required" (e.g. producer
+  self-observation that only fires on invariant failure); `INFO` =
+  "signal, not problem" (e.g. catalog search miss feeding the growth
+  signal); `ERROR` is framework-reserved (only fires on a throw).
+- `InvariantObservation`:
+  - `observe()` → `observe(Level level)`. Null-safe (defaults to
+    `INFO`) but every call site supplies one explicitly. The call site
+    is the only place that knows whether the observation is
+    informational or a warning, so the call site is where the choice
+    lives.
+  - `throwWhenInvalid()` signature unchanged. Always tags violation
+    counters at `Level.ERROR` — the throw is the trigger, the level
+    is fixed. The framework, not the call site, sets ERROR.
+  - Both metric counters (`naturalist.observation`,
+    `naturalist.invariant.violation`) gained a `level` tag.
+  - `MonitoringMode.ALWAYS` under `throwWhenInvalid()` tags valid
+    constraints `info` and invalid constraints `error` per-constraint
+    — the validity of the individual constraint, not the validity of
+    the batch.
+- Two existing `.observe()` call sites updated:
+  - `InMemoryCatalog.search` miss → `Level.INFO` (catalog growth
+    signal — surfacing what the catalog does not yet know is signal,
+    not defect).
+  - `InsectAggregateFactory` aggregate self-observation → `Level.WARN`
+    (producer is warning operators that the aggregate it just built
+    failed its own invariants — bad input or broken assembly logic;
+    operators should triage).
+
+**Notes.**
+
+- `MonitoringMode.ALWAYS` is documented but not currently used in the
+  codebase. The per-constraint level rule (valid → INFO, invalid →
+  ERROR under `throwWhenInvalid()`) is in place for when it gets wired
+  up.
+- The picker lives in the `Level` javadoc on purpose — call sites pick
+  the level once, future readers see the rationale next to the enum
+  rather than chasing a separate doc.
+
+### M9b — Typed observation types and console observers (pending)
+
+**Goal.** Translate both catalog observation kinds into the operational
+surface. Two counters, two log severities; the cardinality discipline is
+the same across both.
 
 **Read first.** M1's observation types as revised above
-(`UnresolvedSearchObservation`, `UnresolvedReferenceObservation`); existing
-observer infrastructure in `kernels/framework/observability/`;
-`kernels/framework`'s `Metric.java`.
+(`UnresolvedSearchObservation`, `UnresolvedReferenceObservation`); the
+shipped `Level` machinery from M9a; existing observer infrastructure in
+`kernels/framework/observability/`; `kernels/framework`'s `Metric.java`.
+
+**State of inputs.**
+
+- `UnresolvedSearchObservation` exists and is fired from
+  `InMemoryCatalog.search` (M2′ wired the firing site behind the
+  observer pipeline; M9a tagged the emission `Level.INFO`).
+- `UnresolvedReferenceObservation` does **not** yet exist. Firing site
+  for the inverse direction is still open (kernel-side in
+  `InMemoryCatalog.findReferencesTo` after fan-out vs. inside each
+  `EntityReferences` provider vs. a separate validator). My current
+  lean: kernel-side, after the fan-out — providers stay logic-free,
+  one firing site, one place to test.
 
 **Build.**
 
@@ -838,6 +907,14 @@ confirming the overflow tag captures the surplus.
   are different signals at different severities for different audiences;
   collapsing them under a common abstract type is a unification that
   saves no code and obscures the distinction.
+- M9a's `level` tag composes with these counters automatically (the tag
+  is emitted from `InvariantObservation.observe(Level)` regardless of
+  which counter the subscriber materialises). The dedicated
+  `naturalist.catalog.search_miss_total` and
+  `naturalist.catalog.unresolved_reference_total` counters are
+  domain-specific projections on top of the framework counters; they
+  carry the `level` dimension as a fixed tag (`info` and `warn`
+  respectively) since the subscriber is single-purpose.
 
 ---
 
