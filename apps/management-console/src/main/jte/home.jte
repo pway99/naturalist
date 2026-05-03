@@ -4,7 +4,7 @@
     <section>
         <h2>Domain Catalog</h2>
         <p>Fifteen domain modules cataloging the natural world — from soil chemistry
-           to vertebrate taxonomy, each with the same truth told at four levels
-           of understanding.</p>
+            to vertebrate taxonomy, each with the same truth told at four levels
+            of understanding.</p>
     </section>
 `)

@@ -8,8 +8,8 @@
     <section class="admin-resilience">
         <h1>Resilience</h1>
         <p>Strategies registered with the kernel <code>Resilience</code> facade,
-           grouped by primitive. A name listed here is one a
-           <code>&#64;Resilient(name = ...)</code> call site can reference.</p>
+            grouped by primitive. A name listed here is one a
+            <code>&#64;Resilient(name = ...)</code> call site can reference.</p>
 
         @for(var group : groups)
             <section class="admin-resilience-group">

@@ -146,6 +146,7 @@ depends on. No SPIs yet, no Catalog interface yet — just the types that flow
 through the SPIs.
 
 **Read first.**
+
 - `kernels/framework/src/main/java/com/naturalist/ddd/EntityName.java`
 - `kernels/framework/src/main/java/com/naturalist/observability/Observable.java`
 - `kernels/framework/src/main/java/com/naturalist/observability/Constraints.java`
@@ -153,6 +154,7 @@ through the SPIs.
 - this PLAN.md (the "Architectural decisions" section)
 
 **Build.**
+
 - `EntityRef` — record carrying `(DomainId domain, EntityName name)`. Implements
   `ValueObject`. Invariants: both non-null. Provides `displayLabel()` returning
   the slug.
@@ -179,6 +181,7 @@ calls when scanning prose.
 sections "Two SPIs, one kernel" and "Derive aliases".
 
 **Build.**
+
 - `CatalogContribution` — interface. `DomainId domain()`, `Stream<Alias> aliases()`.
   An `Alias` is a record `(String surfaceForm, EntityRef target)`.
 - `Catalog` — interface. Declares `Optional<EntityRef> resolveAlias(String text)`.
@@ -205,6 +208,7 @@ detail page eventually calls.
 graph" section.
 
 **Build.**
+
 - `EntityReferences<T extends EntityName>` — interface. `DomainId domain()`,
   `Class<T> referenceType()`, `Stream<EntityRef> referencesTo(T target)`.
 - Extend `Catalog` with `Set<DomainId> domainsReferencing(Class<? extends EntityName>)`
@@ -226,12 +230,14 @@ providers' results; empty providers yield empty result, not null.
 plants — slug, scientific binomial, genus, abbreviated binomial.
 
 **Read first.**
+
 - `domains/plants/plants-api/src/main/java/com/naturalist/plants/Plant.java`
   (and its taxonomy field — not yet read in this plan; locate during the session)
 - `domains/plants/plants-core` to identify the right place for the contribution
 - `domains/plants/CLAUDE.md`
 
 **Build.**
+
 - New file in `plants-core` (sub-context: probably `plants/catalog/`). A class
   implementing `CatalogContribution`, taking the plants repository as a
   collaborator, deriving aliases on each call to `aliases()` from the live plant
@@ -268,11 +274,13 @@ test scope, consumed via the catalog SPI only.
 this compound?" by querying `PhytochemicalConstituentRepository`.
 
 **Read first.**
+
 - `domains/plants/plants-api/src/main/java/com/naturalist/plants/phytochemistry/PhytochemicalConstituent.java`
 - `domains/plants/plants-api/src/main/java/com/naturalist/plants/phytochemistry/PhytochemicalConstituentQuery.java`
 - `domains/plants/plants-core/src/main/java/com/naturalist/plants/phytochemistry/PhytochemicalConstituentQueryImpl.java`
 
 **Build.**
+
 - New file in `plants-core` `plants/catalog/` package. Implements
   `EntityReferences<CompoundName>`. `referencesTo(CompoundName)` queries the
   constituent repository and emits one `EntityRef` per matching constituent's
@@ -326,12 +334,14 @@ binomials, lifted numbered lists, and a typographic chip for the leading
 classification header. No linking yet.
 
 **Read first.**
+
 - `kernels/field-notes/src/main/java/com/naturalist/fieldnotes/Description.java`
 - `domains/plants/plants-console/src/main/jte/plants/detail.jte`
 - `domains/chemistry/chemistry-console/src/main/java/com/naturalist/chemistry/console/DepictionRenderer.java`
   (analogous pattern)
 
 **Build.**
+
 - `naturalist-web/console/src/main/java/com/naturalist/console/render/DescriptionRenderer.java`.
   Single public method `String render(String level)`. Internal pipeline:
   paragraph-split on semantic cues (sentence break followed by "At Oak Vista",
@@ -352,6 +362,7 @@ content lost — character count of the input is conserved or strictly grows).
 #### M6a — Renderer + unit tests ✅
 
 **What landed.**
+
 - `domains/plants/plants-console/src/main/java/com/naturalist/plants/console/render/DescriptionRenderer.java`.
   Single public `render(String)` method. Pipeline: HTML escape → header
   extraction (a leading binomial + em-dash + Family[: Subfamily[: Tribe]]
@@ -382,6 +393,7 @@ shared location, the move is mechanical.
 #### M6b — Template integration + visual review
 
 **What landed (wiring).**
+
 - `PlantsController` now owns a `DescriptionRenderer` field, instantiated
   in the constructor next to the queries (matching the
   manual-instantiation pattern already in place — promotion to Spring DI
@@ -417,6 +429,7 @@ that don't resolve stay as italicised text.
 (`PlantsController`, `ChemistryController` route definitions).
 
 **Build.**
+
 - A `LinkResolver` collaborator inside the renderer. Given an `EntityRef`, it
   produces the canonical URL for that entity's console page. Implementation
   reads from a small `Map<Class<? extends EntityName>, Function<EntityName,
@@ -476,6 +489,7 @@ degradation is a tested behaviour).
 templates and controller.
 
 **Build.**
+
 - A small `BackReferencesViewModel` populated from `catalog.findReferencesTo(
   compoundName)`. Grouped by `DomainId`, each `EntityRef` rendered as a link
   via the same `LinkResolver` introduced in M7.
@@ -497,6 +511,7 @@ infrastructure in `kernels/framework/observability/`, `kernels/framework`'s
 `Metric.java`.
 
 **Build.**
+
 - `naturalist-web/console/src/main/java/com/naturalist/console/catalog/MicrometerUnresolvedReferenceObserver.java`
   subscribing to `UnresolvedReferenceObservation`. Increments counter
   `naturalist.catalog.unresolved_reference_total` with tags
@@ -524,6 +539,7 @@ infrastructure from M9 catches any unknowns.
 provider), M9 output.
 
 **Build.**
+
 - An `CatalogStartupValidator` invoked from the app's composition root after the
   catalog is assembled. Walks each `EntityReferences<T>` provider's *source side*
   — i.e., for plants, every `PhytochemicalConstituent`'s `compoundName` — and
@@ -548,6 +564,7 @@ subclass without an associated catalog contribution somewhere is a build error.
 `com.tngtech.archunit`); `domains/identifiers/`.
 
 **Build.**
+
 - An `CatalogCoverageTest` in a test-scope module the build can run. Discovers
   all concrete `EntityName` subclasses in `identifiers/` and asserts that for
   each, at least one `CatalogContribution` or `EntityReferences<T>`
@@ -566,6 +583,7 @@ build passes.
 contributors find them in `docs/adr/` rather than re-deriving them.
 
 **Build.**
+
 - New ADR (next sequence number under `docs/adr/`). Records: the catalog kernel,
   the two SPIs, the routing-not-graph decision, the soft-validation-via-observer
   decision, the per-app composition decision.

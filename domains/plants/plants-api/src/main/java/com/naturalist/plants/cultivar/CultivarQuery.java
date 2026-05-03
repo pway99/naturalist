@@ -17,7 +17,9 @@ public interface CultivarQuery {
 
         EntityNameSet<CultivarName> allCultivarNames();
 
-        /** All cultivars recorded for a given plant — the natural plant → cultivars rollup. */
+        /**
+         * All cultivars recorded for a given plant — the natural plant → cultivars rollup.
+         */
         CultivarCollection forPlantName(PlantName plantName);
     }
 }

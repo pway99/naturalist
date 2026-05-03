@@ -143,9 +143,9 @@ public sealed interface FunctionalRole {
 - **Remove:** `CompoundType type`.
 - **Add (in this order, as the last three components before any existing
   `constituentElements`):**
-  - `ChemicalNature chemicalNature`
-  - `PhysicalForm physicalForm`
-  - `Set<FunctionalRole> functionalRoles`
+    - `ChemicalNature chemicalNature`
+    - `PhysicalForm physicalForm`
+    - `Set<FunctionalRole> functionalRoles`
 
 The component order matters because the canonical record header determines JSON
 field order on serialization. Place them after the existing `phCharacter` /
@@ -252,9 +252,9 @@ For every entry, under `compoundInfo`:
 
 - **Remove** the `"type"` field.
 - **Add** three fields:
-  - `"chemicalNature": "ORGANIC" | "INORGANIC" | "ORGANOMETALLIC"`
-  - `"physicalForm": "ELEMENT" | "MINERAL" | "SALT" | "ACID" | "BASE" | "COMPLEX"`
-  - `"functionalRoles": [ { "kind": "CHELATOR" }, { "kind": "FUMIGANT" }, ... ]`
+    - `"chemicalNature": "ORGANIC" | "INORGANIC" | "ORGANOMETALLIC"`
+    - `"physicalForm": "ELEMENT" | "MINERAL" | "SALT" | "ACID" | "BASE" | "COMPLEX"`
+    - `"functionalRoles": [ { "kind": "CHELATOR" }, { "kind": "FUMIGANT" }, ... ]`
 
 ### 7.1 Mapping table for migration
 
@@ -405,25 +405,25 @@ Do **not** do any of the following in this refactor:
 
 - [x] `CompoundType` enum file deleted.
 - [x] `ChemicalNature`, `PhysicalForm` enums created in
-      `com.naturalist.chemistry.compound`.
+  `com.naturalist.chemistry.compound`.
 - [x] `FunctionalRole` sealed interface + permits created in
-      `com.naturalist.chemistry.compound.role`.
+  `com.naturalist.chemistry.compound.role`.
 - [x] `CompoundInfo` updated: `type` removed, three new components added,
-      `invariants()` updated.
+  `invariants()` updated.
 - [x] `Compound` updated: four behavioral predicates added
-      (`isFumigant`, `isHazardous`, `isChelated`, `playsRole`).
+  (`isFumigant`, `isHazardous`, `isChelated`, `playsRole`).
 - [x] `CompoundCollection` updated: two filtering methods added
-      (`withChemicalNature`, `withFunctionalRole`).
+  (`withChemicalNature`, `withFunctionalRole`).
 - [x] `compounds.json` migrated; deserialization passes.
 - [x] `CompoundTest`, `CompoundInfoTest`, and other affected tests updated.
 - [x] Repository contract test passes unchanged.
 - [x] New unit tests for predicates and collection filters added.
 - [x] `grep -r CompoundType domains/chemistry/` returns zero results in
-      production code (only this doc and the historical
-      `docs/chemistry-api-briefing.md` retain the name as historical context).
+  production code (only this doc and the historical
+  `docs/chemistry-api-briefing.md` retain the name as historical context).
 - [x] Console templates updated — `chemistry/detail.jte` renders
-      `chemicalNature`, `physicalForm`, and `functionalRoles` instead of
-      the deleted `type`.
+  `chemicalNature`, `physicalForm`, and `functionalRoles` instead of
+  the deleted `type`.
 - [x] No new dependencies introduced; DAG unchanged.
 
 **Status:** Refactor complete as of 2026-04-26.

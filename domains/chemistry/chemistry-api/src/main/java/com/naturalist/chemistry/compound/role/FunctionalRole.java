@@ -24,11 +24,11 @@ import java.util.function.Consumer;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "kind")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = FunctionalRole.Chelator.class,           name = "CHELATOR"),
-        @JsonSubTypes.Type(value = FunctionalRole.Fumigant.class,           name = "FUMIGANT"),
+        @JsonSubTypes.Type(value = FunctionalRole.Chelator.class, name = "CHELATOR"),
+        @JsonSubTypes.Type(value = FunctionalRole.Fumigant.class, name = "FUMIGANT"),
         @JsonSubTypes.Type(value = FunctionalRole.BiologicalCatalyst.class, name = "BIOLOGICAL_CATALYST"),
-        @JsonSubTypes.Type(value = FunctionalRole.Fertilizer.class,         name = "FERTILIZER"),
-        @JsonSubTypes.Type(value = FunctionalRole.Acaricide.class,          name = "ACARICIDE")
+        @JsonSubTypes.Type(value = FunctionalRole.Fertilizer.class, name = "FERTILIZER"),
+        @JsonSubTypes.Type(value = FunctionalRole.Acaricide.class, name = "ACARICIDE")
 })
 public sealed interface FunctionalRole extends ValueObject {
 
@@ -41,12 +41,22 @@ public sealed interface FunctionalRole extends ValueObject {
      */
     @Override
     default Consumer<? extends Constraints> invariants() {
-        return i -> {};
+        return i -> {
+        };
     }
 
-    record Chelator()           implements FunctionalRole {}
-    record Fumigant()           implements FunctionalRole {}
-    record BiologicalCatalyst() implements FunctionalRole {}
-    record Fertilizer()         implements FunctionalRole {}
-    record Acaricide()          implements FunctionalRole {}
+    record Chelator() implements FunctionalRole {
+    }
+
+    record Fumigant() implements FunctionalRole {
+    }
+
+    record BiologicalCatalyst() implements FunctionalRole {
+    }
+
+    record Fertilizer() implements FunctionalRole {
+    }
+
+    record Acaricide() implements FunctionalRole {
+    }
 }

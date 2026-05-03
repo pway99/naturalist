@@ -46,11 +46,11 @@ Find the entity class. Read it to determine:
 - The entity's package (e.g. `com.naturalist.plants`)
 - The domain module name (e.g. `plants`)
 - All record components — classify each as:
-  - **Immutable**: canonical `EntityName` (`name`) — never modified in update tests
-  - **FK EntityName**: an `EntityName` referencing another entity (e.g. `PlantName plantName`
-    on `Cultivar`) — the referenced entity must exist in test data when constructing
-    update/insert test instances
-  - **Mutable**: all other components — must be modified in the update expected-result test
+    - **Immutable**: canonical `EntityName` (`name`) — never modified in update tests
+    - **FK EntityName**: an `EntityName` referencing another entity (e.g. `PlantName plantName`
+      on `Cultivar`) — the referenced entity must exist in test data when constructing
+      update/insert test instances
+    - **Mutable**: all other components — must be modified in the update expected-result test
 
 Also locate:
 
@@ -95,6 +95,7 @@ interface <Package>Repository {
 ```
 
 Key rules:
+
 - **Package-private** — both the outer and nested interfaces
 - **One super-interface per package** — entities in different packages get their own
 - The `@Incubating` annotation is required while the pattern is under evaluation
@@ -266,10 +267,10 @@ results to the user.
 
 ## Naming Conventions Summary
 
-| Artifact | Name | Location |
-|---|---|---|
-| Super-interface | `<Package>Repository` | `<domain>-api/src/main/java/.../` |
-| Nested interface | `<Entity>EntityRepository` | nested inside super-interface |
-| Mock | `<Entity>EntityRepositoryMock` | `<domain>-repository-test/src/main/java/.../` |
-| Contract test | `<Entity>EntityRepositoryTest` | `<domain>-repository-test/src/main/java/.../` |
-| Mock test | `<Entity>EntityRepositoryMockTest` | `<domain>-repository-test/src/test/java/.../` |
+| Artifact         | Name                               | Location                                      |
+|------------------|------------------------------------|-----------------------------------------------|
+| Super-interface  | `<Package>Repository`              | `<domain>-api/src/main/java/.../`             |
+| Nested interface | `<Entity>EntityRepository`         | nested inside super-interface                 |
+| Mock             | `<Entity>EntityRepositoryMock`     | `<domain>-repository-test/src/main/java/.../` |
+| Contract test    | `<Entity>EntityRepositoryTest`     | `<domain>-repository-test/src/main/java/.../` |
+| Mock test        | `<Entity>EntityRepositoryMockTest` | `<domain>-repository-test/src/test/java/.../` |

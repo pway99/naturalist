@@ -16,11 +16,11 @@ Find the entity class. Read it to determine:
 - The domain module name (e.g. `chemistry`)
 - All record components — these become the JSON keys
 - Which fields need **secondary** unique constraints beyond the canonical `name()`:
-  - `@EntityIdentifier` on a field means it is a secondary unique `EntityName` field
-    (not a foreign key reference — those carry no annotation)
-  - `@UniqueValue` on a field means it is a unique plain-value field (`String`, `int`, enum)
-  - The canonical `name` component is **never** annotated `@EntityIdentifier`; its
-    uniqueness is enforced automatically by `NamedTestEntitySource`
+    - `@EntityIdentifier` on a field means it is a secondary unique `EntityName` field
+      (not a foreign key reference — those carry no annotation)
+    - `@UniqueValue` on a field means it is a unique plain-value field (`String`, `int`, enum)
+    - The canonical `name` component is **never** annotated `@EntityIdentifier`; its
+      uniqueness is enforced automatically by `NamedTestEntitySource`
 
 ## Step 2 — Verify EntityName Class Exists
 
@@ -146,7 +146,7 @@ Before finishing, confirm:
 - [ ] Entity class implements `NamedEntity<<Entity>Name>` (or `Entity<<Entity>Name>` for fact records)
 - [ ] The canonical `name` component is NOT annotated `@EntityIdentifier`
 - [ ] Secondary unique `EntityName` fields carry `@EntityIdentifier`; secondary unique plain
-      fields carry `@UniqueValue`; cross-domain FK `EntityName` fields carry neither
+  fields carry `@UniqueValue`; cross-domain FK `EntityName` fields carry neither
 - [ ] EntityName class exists in `domains/identifiers/` with `@JsonCreator`
 - [ ] JSON file field names match entity constructor parameter names exactly
 - [ ] JSON contains no `"id"` field

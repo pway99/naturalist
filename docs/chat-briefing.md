@@ -60,6 +60,7 @@ framework-test               →  framework
 ```
 
 **Hard rules.**
+
 1. `api` modules depend only on `framework`, `identifiers`, `field-notes`, and
    (organism only) `taxonomy`, `habitat`. Nothing else.
 2. `core` may import another domain's `api` only — never its core, repo-test,
@@ -76,12 +77,12 @@ framework-test               →  framework
 **Every domain class implements exactly one of four interfaces from
 `kernels/framework`:**
 
-| Interface | Identity | Usage |
-|-----------|----------|-------|
-| `NamedEntity<NAME extends EntityName>` | Natural-key slug | Catalog entries, stable cross-domain references |
-| `Entity<ID extends EntityId>` | Surrogate UUIDv7 | Events, observations, relationships with no natural key |
-| `Aggregate` | Via aggregate root's identity | Consistency boundaries |
-| `ValueObject` | None — equality by value | Immutable components |
+| Interface                              | Identity                      | Usage                                                   |
+|----------------------------------------|-------------------------------|---------------------------------------------------------|
+| `NamedEntity<NAME extends EntityName>` | Natural-key slug              | Catalog entries, stable cross-domain references         |
+| `Entity<ID extends EntityId>`          | Surrogate UUIDv7              | Events, observations, relationships with no natural key |
+| `Aggregate`                            | Via aggregate root's identity | Consistency boundaries                                  |
+| `ValueObject`                          | None — equality by value      | Immutable components                                    |
 
 Plus `BehavioralCollection<T extends Observable>` — `final class` (not a
 record) for multi-result query return types.
@@ -108,17 +109,17 @@ named after their home domain — NOT under `com.naturalist.identifiers`.**
 
 Canonical locations:
 
-| Type | Actual package | Module |
-|------|----------------|--------|
-| `InsectSpeciesName` | `com.naturalist.insects` | `identifiers` |
-| `InsectImageId` | `com.naturalist.insects` | `identifiers` |
-| `PlantName` | `com.naturalist.plants` | `identifiers` |
-| `CultivarName` | `com.naturalist.plants.cultivar` | `identifiers` |
-| `CompoundName` | `com.naturalist.chemistry.compound` | `identifiers` |
-| `ElementName` | `com.naturalist.chemistry.element` | `identifiers` |
-| `ZoneName` | `com.naturalist.zone` | `identifiers` |
-| `SoilProfileName` | `com.naturalist.soil` | `identifiers` |
-| `NaturalistName` | `com.naturalist.naturalist` | `identifiers` |
+| Type                | Actual package                      | Module        |
+|---------------------|-------------------------------------|---------------|
+| `InsectSpeciesName` | `com.naturalist.insects`            | `identifiers` |
+| `InsectImageId`     | `com.naturalist.insects`            | `identifiers` |
+| `PlantName`         | `com.naturalist.plants`             | `identifiers` |
+| `CultivarName`      | `com.naturalist.plants.cultivar`    | `identifiers` |
+| `CompoundName`      | `com.naturalist.chemistry.compound` | `identifiers` |
+| `ElementName`       | `com.naturalist.chemistry.element`  | `identifiers` |
+| `ZoneName`          | `com.naturalist.zone`               | `identifiers` |
+| `SoilProfileName`   | `com.naturalist.soil`               | `identifiers` |
+| `NaturalistName`    | `com.naturalist.naturalist`         | `identifiers` |
 
 **There is no `com.naturalist.identifiers` package.** A class at that path
 does not exist. The *module* is `identifiers`; the *package* tracks the home
@@ -126,15 +127,15 @@ domain.
 
 ### Framework types — canonical packages
 
-| Type | Package | Module |
-|------|---------|--------|
-| `NamedEntity`, `Entity`, `Aggregate`, `ValueObject`, `AggregateRoot`, `Observable`, `EntityName`, `EntityId`, `EntityNameSet`, `NamedValue`, `BehavioralCollection` | `com.naturalist.ddd` | `framework` |
-| `Constraints`, `Constraint`, `ConstraintCollection`, `Observer`, `MethodObserver`, `InvariantObservation`, `Metric` | `com.naturalist.observability` | `framework` |
-| Constraint records (`NotNullConstraint`, `NotBlankConstraint`, `NotEmptyConstraint`, `ObservableConstraint`, `ValueObjectOrNullConstraint`, `ValueObjectCollectionConstraint`, `EntityNameConstraints`, `EntityIdConstraints`, `IdentifierConstraints`, `NamedValueConstraints`) | `com.naturalist.observability.constraints` | `framework` |
-| `Description` | `com.naturalist.fieldnotes` | `field-notes` |
-| `TaxonomicClassification`, `TaxonomicOrder`, `TaxonomicFamily` | `com.naturalist.taxonomy` | `taxonomy` |
-| `HabitatProfile` | `com.naturalist.habitat` | `habitat` |
-| `NamedTestEntitySource`, `NamedEntityRepositoryContractTest`, `UniqueConstraint`, `TestDataHelper`, `RandomValue` | `com.naturalist` / `com.naturalist.data` | `framework-test` |
+| Type                                                                                                                                                                                                                                                                             | Package                                    | Module           |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|------------------|
+| `NamedEntity`, `Entity`, `Aggregate`, `ValueObject`, `AggregateRoot`, `Observable`, `EntityName`, `EntityId`, `EntityNameSet`, `NamedValue`, `BehavioralCollection`                                                                                                              | `com.naturalist.ddd`                       | `framework`      |
+| `Constraints`, `Constraint`, `ConstraintCollection`, `Observer`, `MethodObserver`, `InvariantObservation`, `Metric`                                                                                                                                                              | `com.naturalist.observability`             | `framework`      |
+| Constraint records (`NotNullConstraint`, `NotBlankConstraint`, `NotEmptyConstraint`, `ObservableConstraint`, `ValueObjectOrNullConstraint`, `ValueObjectCollectionConstraint`, `EntityNameConstraints`, `EntityIdConstraints`, `IdentifierConstraints`, `NamedValueConstraints`) | `com.naturalist.observability.constraints` | `framework`      |
+| `Description`                                                                                                                                                                                                                                                                    | `com.naturalist.fieldnotes`                | `field-notes`    |
+| `TaxonomicClassification`, `TaxonomicOrder`, `TaxonomicFamily`                                                                                                                                                                                                                   | `com.naturalist.taxonomy`                  | `taxonomy`       |
+| `HabitatProfile`                                                                                                                                                                                                                                                                 | `com.naturalist.habitat`                   | `habitat`        |
+| `NamedTestEntitySource`, `NamedEntityRepositoryContractTest`, `UniqueConstraint`, `TestDataHelper`, `RandomValue`                                                                                                                                                                | `com.naturalist` / `com.naturalist.data`   | `framework-test` |
 
 ---
 
@@ -209,28 +210,28 @@ when descending into a child from outside, or when the parent may be null
 
 ### Complete method list (canonical, as of the current kernel)
 
-| Method | Form | Behavior |
-|--------|------|----------|
-| `namedEntity(e, name)` | direct | Non-null NamedEntity, descends into child's invariants |
-| `namedEntity(o, fn, name)` | by-fn | Same, via parent |
-| `valueObject(v, name)` | direct | Non-null ValueObject, descends |
-| `valueObject(o, fn, name)` | by-fn | Same, via parent |
-| `valueObjectOrNull(o, fn, name)` | by-fn | Null permitted; descends only when present |
-| `valueObjectCollection(o, fn, name)` | by-fn | Non-null `Collection<V extends ValueObject>`, descends into each element with indexed path `[0]`, `[1]`, ... |
-| `observable(o, fn, name)` | by-fn | Any non-null Observable (e.g. BehavioralCollection) |
-| `entityName(e, name)` | direct | Validates EntityName |
-| `entityId(f, name)` | direct | Validates EntityId (UUIDv7) |
-| `identifier(v, name)` | direct | Polymorphic identifier (runtime dispatch) |
-| `identifierSet(set, name)` | direct | Polymorphic identifier set |
-| `entityNameCollection(c, name)` | direct | Collection of EntityName |
-| `entityNameSet(set, name)` | direct | EntityNameSet wrapper |
-| `entityNameSet(o, fn, name)` | by-fn | Same via parent |
-| `namedValue(o, fn, name)` | by-fn | NamedValue child |
-| `notBlank(value, name)` | direct | Rejects null, empty, whitespace-only |
-| `notBlank(t, fn, name)` | by-fn | Same via parent |
-| `notNull(value, name)` | direct | General null check |
-| `notNull(t, fn, name)` | by-fn | Same via parent |
-| `notEmpty(t, fn, name)` | by-fn | Rejects null + empty Collection/Map/CharSequence |
+| Method                               | Form   | Behavior                                                                                                     |
+|--------------------------------------|--------|--------------------------------------------------------------------------------------------------------------|
+| `namedEntity(e, name)`               | direct | Non-null NamedEntity, descends into child's invariants                                                       |
+| `namedEntity(o, fn, name)`           | by-fn  | Same, via parent                                                                                             |
+| `valueObject(v, name)`               | direct | Non-null ValueObject, descends                                                                               |
+| `valueObject(o, fn, name)`           | by-fn  | Same, via parent                                                                                             |
+| `valueObjectOrNull(o, fn, name)`     | by-fn  | Null permitted; descends only when present                                                                   |
+| `valueObjectCollection(o, fn, name)` | by-fn  | Non-null `Collection<V extends ValueObject>`, descends into each element with indexed path `[0]`, `[1]`, ... |
+| `observable(o, fn, name)`            | by-fn  | Any non-null Observable (e.g. BehavioralCollection)                                                          |
+| `entityName(e, name)`                | direct | Validates EntityName                                                                                         |
+| `entityId(f, name)`                  | direct | Validates EntityId (UUIDv7)                                                                                  |
+| `identifier(v, name)`                | direct | Polymorphic identifier (runtime dispatch)                                                                    |
+| `identifierSet(set, name)`           | direct | Polymorphic identifier set                                                                                   |
+| `entityNameCollection(c, name)`      | direct | Collection of EntityName                                                                                     |
+| `entityNameSet(set, name)`           | direct | EntityNameSet wrapper                                                                                        |
+| `entityNameSet(o, fn, name)`         | by-fn  | Same via parent                                                                                              |
+| `namedValue(o, fn, name)`            | by-fn  | NamedValue child                                                                                             |
+| `notBlank(value, name)`              | direct | Rejects null, empty, whitespace-only                                                                         |
+| `notBlank(t, fn, name)`              | by-fn  | Same via parent                                                                                              |
+| `notNull(value, name)`               | direct | General null check                                                                                           |
+| `notNull(t, fn, name)`               | by-fn  | Same via parent                                                                                              |
+| `notEmpty(t, fn, name)`              | by-fn  | Rejects null + empty Collection/Map/CharSequence                                                             |
 
 ### What does NOT exist (do not call)
 
@@ -284,11 +285,11 @@ when descending into a child from outside, or when the parent may be null
 
 Three coordinated namespace types per domain api:
 
-| Outer | Java type | Visibility | Nested |
-|-------|-----------|------------|--------|
-| `<DomainNoun>Repository` | `class` | package-private | `<EntitySubject>Repository` (`protected interface`) |
-| `<DomainNoun>Query` | `interface` | public | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
-| `<DomainNoun>EntityCollections` | `interface` | public | `<EntitySubject>Collection` (`final class`) |
+| Outer                           | Java type   | Visibility      | Nested                                                  |
+|---------------------------------|-------------|-----------------|---------------------------------------------------------|
+| `<DomainNoun>Repository`        | `class`     | package-private | `<EntitySubject>Repository` (`protected interface`)     |
+| `<DomainNoun>Query`             | `interface` | public          | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
+| `<DomainNoun>EntityCollections` | `interface` | public          | `<EntitySubject>Collection` (`final class`)             |
 
 `EntitySubject` drops the domain prefix: `InsectSpecies` → `Species`,
 `InsectImage` → `Image`.
@@ -442,6 +443,7 @@ mismatch. **Never mock the database in contract tests.**
 ## 10. Anti-Patterns — Specific Things Previous Chat Sessions Got Wrong
 
 **Do not invent package paths.**
+
 - ❌ `com.naturalist.identifiers.LifeStageKind`
 - ✅ `com.naturalist.insects.lifestage.LifeStageKind` (if in insects-api) or
   `com.naturalist.insects.LifeStageKind` (if in identifiers module)
@@ -449,42 +451,51 @@ mismatch. **Never mock the database in contract tests.**
   confirm."**
 
 **Do not invent methods on `Constraints`.**
+
 - Check the table in §4 before calling a method. If it's not in the table,
   it doesn't exist.
 - Historical invention: `.notEmpty(this, fn, name)` was called before the
   method was added. `namedEntityOrNull` is still NOT in the kernel.
 
 **Do not create interfaces for aggregate factories.**
+
 - Single concrete class, package-private, in `<domain>-core`. No interface,
   no `Impl` suffix.
 
 **Do not place `PersistenceId` anywhere.**
+
 - It does not exist in Java. Domain records carry `EntityName` (via
   `NamedEntity`) or `EntityId` (via `Entity`) — nothing else
   identity-shaped.
 
 **Do not call `UUID.randomUUID()` in domain or adapter code.**
+
 - Use the kernel's UUIDv7 generator only.
 
 **Do not nest an Entity or Aggregate inside a ValueObject.**
+
 - ADR-013 forbids it. The moment a nested type becomes an Entity, the
   wrapper must reclassify or be removed.
 
 **Do not add `@JsonCreator` to records.**
+
 - Jackson 2.19 handles records natively. `@JsonCreator` belongs on the
   `public static of(...)` factory of `EntityName` subclasses and
   `NamedValue<T>` implementations only.
 
 **Do not use raw `List<T>` at query port boundaries.**
+
 - Return `Optional<Entity>`, `Optional<Aggregate>`, or a
   `BehavioralCollection` subclass.
 
 **Do not add caching inside adapters.**
+
 - Caching is a last resort. Default to storage-layer resolution (RDBMS
   planner, indexed lookups). If caching is ever justified: Redis at
   infrastructure, never in-process inside an adapter.
 
 **Do not skip the "why" in feedback.**
+
 - Reasons behind conventions (prior incidents, architectural goals) matter
   for judgment calls at edges. The "why" is what lets chat extrapolate
   correctly.
@@ -493,21 +504,21 @@ mismatch. **Never mock the database in contract tests.**
 
 ## 11. Key ADRs — Quick Reference
 
-| ADR | Subject |
-|-----|---------|
-| ADR-001 | Repository architecture |
-| ADR-002 | Repository behavioral contract |
-| ADR-004 | Module DAG |
-| ADR-005 | EntityName slug format (regex, kebab-case) |
-| ADR-010 | Query design contract |
-| ADR-011 | BehavioralCollection as `final class` |
-| ADR-012 | Static factory conventions (`of`, `empty`, `from`) |
-| ADR-013 | ValueObject constraints (four-point test) |
-| ADR-014 | Tier-3 identifier placement |
-| ADR-017 | Observability — producer vs. consumer |
-| ADR-019 | PR size discipline |
-| ADR-020 | Namespace/interface pattern (Repository/Query/EntityCollections) |
-| ADR-021 | Persistence-id is adapter-internal (**superseded by ADR-022**) |
+| ADR     | Subject                                                                              |
+|---------|--------------------------------------------------------------------------------------|
+| ADR-001 | Repository architecture                                                              |
+| ADR-002 | Repository behavioral contract                                                       |
+| ADR-004 | Module DAG                                                                           |
+| ADR-005 | EntityName slug format (regex, kebab-case)                                           |
+| ADR-010 | Query design contract                                                                |
+| ADR-011 | BehavioralCollection as `final class`                                                |
+| ADR-012 | Static factory conventions (`of`, `empty`, `from`)                                   |
+| ADR-013 | ValueObject constraints (four-point test)                                            |
+| ADR-014 | Tier-3 identifier placement                                                          |
+| ADR-017 | Observability — producer vs. consumer                                                |
+| ADR-019 | PR size discipline                                                                   |
+| ADR-020 | Namespace/interface pattern (Repository/Query/EntityCollections)                     |
+| ADR-021 | Persistence-id is adapter-internal (**superseded by ADR-022**)                       |
 | ADR-022 | UUIDv7 / two identity branches (`NamedEntity`, `Entity`); no `PersistenceId` in Java |
 
 Full text: `docs/adr/` in the repo.

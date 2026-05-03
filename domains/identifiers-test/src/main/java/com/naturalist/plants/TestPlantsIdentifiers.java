@@ -23,13 +23,17 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
  */
 public class TestPlantsIdentifiers {
 
-    private TestPlantsIdentifiers() {}
+    private TestPlantsIdentifiers() {
+    }
 
     public static class Plants {
 
-        private Plants() {}
+        private Plants() {
+        }
 
-        /** Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog. */
+        /**
+         * Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog.
+         */
         public static class NotFound {
             public static final PlantName name = PlantName.of("unobtainium-vine");
             public static final PlantProgramName programName =
@@ -46,7 +50,9 @@ public class TestPlantsIdentifiers {
             public static final PlantName name = PlantName.of("california-pipevine");
 
             public static class Programs {
-                private Programs() {}
+                private Programs() {
+                }
+
                 public static final PlantProgramName PesticideExclusion =
                         PlantProgramName.of("pipevine-pesticide-exclusion");
                 public static final PlantProgramName LarvalMonitoring =
@@ -54,7 +60,9 @@ public class TestPlantsIdentifiers {
             }
 
             public static class Constituents {
-                private Constituents() {}
+                private Constituents() {
+                }
+
                 public static final PhytochemicalConstituentName AristolochicAcidI =
                         PhytochemicalConstituentName.of("california-pipevine-aristolochic-acid-i");
                 public static final PhytochemicalConstituentName AristolochicAcidII =
@@ -66,7 +74,9 @@ public class TestPlantsIdentifiers {
             public static final PlantName name = PlantName.of("borage");
 
             public static class Programs {
-                private Programs() {}
+                private Programs() {
+                }
+
                 public static final PlantProgramName VolunteerThinning =
                         PlantProgramName.of("borage-volunteer-thinning");
             }
@@ -76,7 +86,9 @@ public class TestPlantsIdentifiers {
             public static final PlantName name = PlantName.of("creeping-thyme");
 
             public static class Constituents {
-                private Constituents() {}
+                private Constituents() {
+                }
+
                 public static final PhytochemicalConstituentName Thymol =
                         PhytochemicalConstituentName.of("creeping-thyme-thymol");
             }
@@ -86,25 +98,34 @@ public class TestPlantsIdentifiers {
             public static final PlantName name = PlantName.of("tomato");
 
             public static class Cultivars {
-                private Cultivars() {}
+                private Cultivars() {
+                }
 
-                /** Cultivar with seed lineages — promoted to a nested class per the convention. */
+                /**
+                 * Cultivar with seed lineages — promoted to a nested class per the convention.
+                 */
                 public static class AmishPaste {
                     public static final CultivarName name = CultivarName.of("amish-paste");
 
                     public static class Lineages {
-                        private Lineages() {}
+                        private Lineages() {
+                        }
+
                         public static final SeedLineageName BakerCreek =
                                 SeedLineageName.of("amish-paste-baker-creek");
                     }
                 }
 
-                /** Cultivar with seed lineages — promoted to a nested class per the convention. */
+                /**
+                 * Cultivar with seed lineages — promoted to a nested class per the convention.
+                 */
                 public static class ItalianPearNicks {
                     public static final CultivarName name = CultivarName.of("italian-pear-nicks");
 
                     public static class Lineages {
-                        private Lineages() {}
+                        private Lineages() {
+                        }
+
                         public static final SeedLineageName Original =
                                 SeedLineageName.of("italian-pear-nicks");
                     }

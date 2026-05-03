@@ -45,6 +45,7 @@ class InsectRepository {
     protected interface SpeciesRepository
             extends EntityRepository<InsectSpeciesName, InsectSpecies> {
         List<InsectSpeciesName> getAllSpeciesNames();
+
         List<InsectSpecies> getByFunctionalGuild(FunctionalGuild functionalGuild);
     }
 

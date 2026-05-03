@@ -2,7 +2,9 @@
   {
     "name": "gypsum",
     "displayName": "Gypsum (Calcium Sulfate Dihydrate Amendment)",
-    "compounds": ["calcium-sulfate-dihydrate"],
+    "compounds": [
+      "calcium-sulfate-dihydrate"
+    ],
     "properties": {
       "safeRateLbsPer1000Sqft": "2-4",
       "oakVistaAppliedRate": "3.3 lbs/100sqft — April 1 2026",
@@ -13,7 +15,9 @@
   {
     "name": "bonide-rot-stop-rtu",
     "displayName": "Bonide Rot-Stop RTU",
-    "compounds": ["calcium-chloride"],
+    "compounds": [
+      "calcium-chloride"
+    ],
     "properties": {
       "concentration": "1.6% CaCl2",
       "applicationMethod": "RTU foliar spray",
@@ -24,7 +28,9 @@
   {
     "name": "down-to-earth-0-0-50",
     "displayName": "Down to Earth 0-0-50",
-    "compounds": ["potassium-sulfate"],
+    "compounds": [
+      "potassium-sulfate"
+    ],
     "properties": {
       "npk": "0-0-50",
       "densityCupsToLbs": "1 cup = 1 lb",
@@ -36,7 +42,9 @@
   {
     "name": "eb-stone-soil-sulfur-minerals",
     "displayName": "E.B. Stone Soil Sulfur Minerals",
-    "compounds": ["elemental-sulfur"],
+    "compounds": [
+      "elemental-sulfur"
+    ],
     "properties": {
       "box1AppliedRate": "7.7 lbs/1000sqft",
       "backyardAppliedRate": "1.2 lbs/1000sqft",
@@ -48,7 +56,9 @@
   {
     "name": "epsom-salt",
     "displayName": "Epsom Salt (Magnesium Sulfate Heptahydrate Amendment)",
-    "compounds": ["magnesium-sulfate"],
+    "compounds": [
+      "magnesium-sulfate"
+    ],
     "properties": {
       "drenchRate": "1 tbsp per gallon",
       "drenchVolume": "1 gallon per plant",
@@ -59,7 +69,9 @@
   {
     "name": "lime",
     "displayName": "Lime (Calcium Carbonate Amendment)",
-    "compounds": ["calcium-carbonate"],
+    "compounds": [
+      "calcium-carbonate"
+    ],
     "properties": {
       "oakVistaSource": "Native Chico Valley parent material + post-hole subsoil",
       "box1Percent": "1.7%",
@@ -72,7 +84,9 @@
   {
     "name": "tps-calmag-oac",
     "displayName": "TPS Nutrients CalMag OAC",
-    "compounds": ["organic-acid-chelate"],
+    "compounds": [
+      "organic-acid-chelate"
+    ],
     "properties": {
       "calciumPct": "4.5",
       "magnesiumPct": "1.1",
@@ -87,7 +101,9 @@
   {
     "name": "formic-acid-mite-treatment",
     "displayName": "Formic Acid Varroa Mite Treatment",
-    "compounds": ["formic-acid"],
+    "compounds": [
+      "formic-acid"
+    ],
     "properties": {
       "varroaEfficacy": "High — penetrates capped brood cells",
       "chicoRisk": "HIGH — summer temperatures exceed safe application window June-September",
@@ -98,7 +114,9 @@
   {
     "name": "oxalic-acid-mite-treatment",
     "displayName": "Oxalic Acid Varroa Mite Treatment",
-    "compounds": ["oxalic-acid"],
+    "compounds": [
+      "oxalic-acid"
+    ],
     "properties": {
       "bestApplicationTiming": "Broodless period — winter or post-swarm",
       "chicoWindow": "December-January during winter broodless period",
@@ -109,7 +127,9 @@
   {
     "name": "apiguard",
     "displayName": "Apiguard (Véto-pharma)",
-    "compounds": ["thymol"],
+    "compounds": [
+      "thymol"
+    ],
     "properties": {
       "concentration": "25% thymol in gel",
       "applicationWindow": "Late August through September — temperatures moderating from summer peak",
@@ -121,7 +141,9 @@
   {
     "name": "neem-oil",
     "displayName": "Neem Oil (Azadirachtin Amendment)",
-    "compounds": ["azadirachtin"],
+    "compounds": [
+      "azadirachtin"
+    ],
     "properties": {
       "applicationRate": "2 tbsp neem oil per gallon with 2 tbsp dish soap emulsifier",
       "targetPests": "Thrips, spider mites, aphids, whitefly, fungus gnats",
@@ -133,7 +155,9 @@
   {
     "name": "kirkland-ultra-shine",
     "displayName": "Kirkland Ultra Shine Dish Soap",
-    "compounds": ["potassium-fatty-acids"],
+    "compounds": [
+      "potassium-fatty-acids"
+    ],
     "properties": {
       "strawDrenchRate": "2 tbsp per gallon",
       "foliarRate": "1 tsp per quart",

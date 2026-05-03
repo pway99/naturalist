@@ -20,12 +20,18 @@ package com.naturalist.plants.phytochemistry;
  */
 public enum InductionMode {
 
-    /** Always present at a baseline concentration. */
+    /**
+     * Always present at a baseline concentration.
+     */
     CONSTITUTIVE,
 
-    /** Produced in response to herbivory, infection, wounding, drought, or other stress. */
+    /**
+     * Produced in response to herbivory, infection, wounding, drought, or other stress.
+     */
     INDUCED,
 
-    /** Tied to a developmental stage — flowering, ripening, senescence. */
+    /**
+     * Tied to a developmental stage — flowering, ripening, senescence.
+     */
     DEVELOPMENTAL
 }

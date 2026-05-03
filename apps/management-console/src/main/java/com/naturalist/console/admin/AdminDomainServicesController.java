@@ -53,7 +53,8 @@ public class AdminDomainServicesController {
         return "admin/domain-services";
     }
 
-    public record Domain(String name, List<Bean> beans) {}
+    public record Domain(String name, List<Bean> beans) {
+    }
 
     public record Bean(String domain, String simpleName, String fullyQualifiedName) {
 

@@ -17,39 +17,102 @@ final class NoOpResilience implements Resilience {
 
     static final NoOpResilience INSTANCE = new NoOpResilience();
 
-    private NoOpResilience() {}
+    private NoOpResilience() {
+    }
 
-    @Override public Retry retry(String name) { return RetryDelegate.INSTANCE; }
-    @Override public Timeout timeout(String name) { return TimeoutDelegate.INSTANCE; }
-    @Override public CircuitBreaker circuitBreaker(String name) { return CircuitBreakerDelegate.INSTANCE; }
-    @Override public Bulkhead bulkhead(String name) { return BulkheadDelegate.INSTANCE; }
+    @Override
+    public Retry retry(String name) {
+        return RetryDelegate.INSTANCE;
+    }
 
-    @Override public Set<String> retryNames() { return Set.of(); }
-    @Override public Set<String> timeoutNames() { return Set.of(); }
-    @Override public Set<String> circuitBreakerNames() { return Set.of(); }
-    @Override public Set<String> bulkheadNames() { return Set.of(); }
+    @Override
+    public Timeout timeout(String name) {
+        return TimeoutDelegate.INSTANCE;
+    }
+
+    @Override
+    public CircuitBreaker circuitBreaker(String name) {
+        return CircuitBreakerDelegate.INSTANCE;
+    }
+
+    @Override
+    public Bulkhead bulkhead(String name) {
+        return BulkheadDelegate.INSTANCE;
+    }
+
+    @Override
+    public Set<String> retryNames() {
+        return Set.of();
+    }
+
+    @Override
+    public Set<String> timeoutNames() {
+        return Set.of();
+    }
+
+    @Override
+    public Set<String> circuitBreakerNames() {
+        return Set.of();
+    }
+
+    @Override
+    public Set<String> bulkheadNames() {
+        return Set.of();
+    }
 
     private enum RetryDelegate implements Retry {
         INSTANCE;
-        @Override public <T> T execute(Supplier<T> supplier) { return supplier.get(); }
-        @Override public void execute(Runnable runnable) { runnable.run(); }
+
+        @Override
+        public <T> T execute(Supplier<T> supplier) {
+            return supplier.get();
+        }
+
+        @Override
+        public void execute(Runnable runnable) {
+            runnable.run();
+        }
     }
 
     private enum TimeoutDelegate implements Timeout {
         INSTANCE;
-        @Override public <T> T execute(Supplier<T> supplier) { return supplier.get(); }
-        @Override public void execute(Runnable runnable) { runnable.run(); }
+
+        @Override
+        public <T> T execute(Supplier<T> supplier) {
+            return supplier.get();
+        }
+
+        @Override
+        public void execute(Runnable runnable) {
+            runnable.run();
+        }
     }
 
     private enum CircuitBreakerDelegate implements CircuitBreaker {
         INSTANCE;
-        @Override public <T> T execute(Supplier<T> supplier) { return supplier.get(); }
-        @Override public void execute(Runnable runnable) { runnable.run(); }
+
+        @Override
+        public <T> T execute(Supplier<T> supplier) {
+            return supplier.get();
+        }
+
+        @Override
+        public void execute(Runnable runnable) {
+            runnable.run();
+        }
     }
 
     private enum BulkheadDelegate implements Bulkhead {
         INSTANCE;
-        @Override public <T> T execute(Supplier<T> supplier) { return supplier.get(); }
-        @Override public void execute(Runnable runnable) { runnable.run(); }
+
+        @Override
+        public <T> T execute(Supplier<T> supplier) {
+            return supplier.get();
+        }
+
+        @Override
+        public void execute(Runnable runnable) {
+            runnable.run();
+        }
     }
 }

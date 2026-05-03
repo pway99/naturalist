@@ -18,51 +18,83 @@ package com.naturalist.plants.phytochemistry;
  */
 public enum PlantTissue {
 
-    /** Below-ground absorbing/anchoring tissue. */
+    /**
+     * Below-ground absorbing/anchoring tissue.
+     */
     ROOT,
 
-    /** Underground horizontal stem — Iris, ginger, mint runners. */
+    /**
+     * Underground horizontal stem — Iris, ginger, mint runners.
+     */
     RHIZOME,
 
-    /** Underground storage organ derived from stem or modified leaves — onion, potato, garlic. */
+    /**
+     * Underground storage organ derived from stem or modified leaves — onion, potato, garlic.
+     */
     BULB_OR_TUBER,
 
-    /** Above-ground supporting structure. */
+    /**
+     * Above-ground supporting structure.
+     */
     STEM,
 
-    /** Outer woody-stem layer — cinchona quinine, salix salicin. */
+    /**
+     * Outer woody-stem layer — cinchona quinine, salix salicin.
+     */
     BARK,
 
-    /** Heartwood and xylem. */
+    /**
+     * Heartwood and xylem.
+     */
     WOOD,
 
-    /** Foliage. */
+    /**
+     * Foliage.
+     */
     LEAF,
 
-    /** Reproductive structure including petal pigments and fragrance. */
+    /**
+     * Reproductive structure including petal pigments and fragrance.
+     */
     FLOWER,
 
-    /** Floral nectar. */
+    /**
+     * Floral nectar.
+     */
     NECTAR,
 
-    /** Pollen grains. */
+    /**
+     * Pollen grains.
+     */
     POLLEN,
 
-    /** Fruit pulp / pericarp. */
+    /**
+     * Fruit pulp / pericarp.
+     */
     FRUIT,
 
-    /** Seeds — embryo and endosperm. */
+    /**
+     * Seeds — embryo and endosperm.
+     */
     SEED,
 
-    /** Latex exudate, where present (separate from "compound is in latex" bookkeeping). */
+    /**
+     * Latex exudate, where present (separate from "compound is in latex" bookkeeping).
+     */
     LATEX,
 
-    /** Resin canals or ducts. */
+    /**
+     * Resin canals or ducts.
+     */
     RESIN,
 
-    /** Trichomes / glandular hairs — site of many monoterpene-rich secretions. */
+    /**
+     * Trichomes / glandular hairs — site of many monoterpene-rich secretions.
+     */
     TRICHOME,
 
-    /** Reserved for compounds genuinely systemic — prefer explicit tissues where known. */
+    /**
+     * Reserved for compounds genuinely systemic — prefer explicit tissues where known.
+     */
     WHOLE_PLANT
 }

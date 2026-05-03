@@ -46,6 +46,7 @@ public interface DomainId extends ValueObject {
 
     @Override
     default Consumer<? extends Constraints> invariants() {
-        return i -> {};
+        return i -> {
+        };
     }
 }

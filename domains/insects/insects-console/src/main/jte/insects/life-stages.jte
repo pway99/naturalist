@@ -10,7 +10,8 @@
 @param List<LifeStage> stages
 
 @template.layout.page(title = species.name().value() + " — Life Stages", content = @`
-    <a href="/insects/${species.name().value()}" class="naturalist-backlink">&larr; Back to ${species.name().value()}</a>
+    <a href="/insects/${species.name().value()}" class="naturalist-backlink">&larr; Back
+        to ${species.name().value()}</a>
 
     <section class="life-stages">
         <header class="plate-heading">

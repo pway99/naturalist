@@ -18,7 +18,7 @@ public class ChemistryLinker implements EntityRefLinker {
     public String linkFor(EntityRef ref) {
         return switch (ref.name()) {
             case CompoundName n -> "/chemistry/" + n.value();
-            case ProductName n  -> "/chemistry/products/" + n.value();
+            case ProductName n -> "/chemistry/products/" + n.value();
             default -> null;
         };
     }

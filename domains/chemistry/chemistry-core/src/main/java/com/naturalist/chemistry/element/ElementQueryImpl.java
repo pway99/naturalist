@@ -15,7 +15,7 @@ class ElementQueryImpl
     @Override
     public ElementCollection findByNameSet(Set<ElementName> elementNames) {
         observer().arguments("findByNameSet", i -> i
-                .identifierSet(elementNames, "elementNames"))
+                        .identifierSet(elementNames, "elementNames"))
                 .throwWhenInvalid();
 
         return new ElementCollection(repository().getByEntityNameSet(elementNames));

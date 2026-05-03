@@ -32,6 +32,7 @@ Every decimal field in the domain model is currently `double` or `Double`. The a
 modules and fields are:
 
 **chemistry-api**
+
 - `SolubilityProfile` — `gramsPerLiterAt20C`, `ecContributionFactor`
 - `VolatilizationProfile` — `minEffectiveTempF`, `maxSafeTempF`, `optimalTempF`, `vaporPressureAt20C`
 - `SafetyProfile` — `maxSafeConcentrationPpm`
@@ -41,6 +42,7 @@ modules and fields are:
 - Behavior method parameters on `Compound`, `VolatilizationProfile`, `ReactionConditions`
 
 **soil-api**
+
 - `NutrientPanel` — `cecMeqPer100g`, `pH`, `ecDsPerMeter`, `limestonePct`, `saturationPct`
 - `NutrientReading` — `value`
 - `AmendmentEvent` — `amount`
@@ -50,16 +52,19 @@ modules and fields are:
 - `MulchLayer` — `depthInches`
 
 **sensors-api**
+
 - `SensorReading` — `moisturePercent`
 - `Sensor` — `depthInches`
 
 **zone-api**
+
 - `GeographicBoundary` — `areaSqft`
 - `Aspect` — `slopeDegrees`
 - `SubstrateCharacteristics` — `biologicalAmplificationFactor`
 - `ZonePrecipitationEvent` — `totalInches`, `peakIntensityInchesPerHour`
 
 **weather-api**
+
 - `PrecipitationEvent` — `totalInches`, `peakIntensityInchesPerHour`
 
 ## Decision
@@ -174,19 +179,19 @@ records the scale decisions for concepts identified at the time of this ADR. New
 `NumericNamedValue` types must add an entry here or in the implementing type's
 Javadoc.
 
-| Concept | Scale | Rounding | Notes |
-|---------|-------|----------|-------|
-| `TemperatureFahrenheit` | 1 | `HALF_UP` | Sensor precision; tenths sufficient |
-| `SoilPH` | 2 | `HALF_UP` | FGL reporting standard |
-| `ElectricalConductivity` (dS/m) | 2 | `HALF_UP` | FGL reporting standard |
-| `MolecularWeight` (g/mol) | 4 | `HALF_UP` | IUPAC significant figures |
-| `AtomicWeight` (g/mol) | 4 | `HALF_UP` | IUPAC standard values |
-| `Solubility` (g/L at 20°C) | 2 | `HALF_UP` | Practical measurement precision |
-| `AmendmentRate` (lbs/1000 sqft) | 2 | `HALF_UP` | FGL reporting standard |
-| `AreaSqft` | 1 | `HALF_UP` | Tape-measure precision |
-| `MoisturePercent` | 1 | `HALF_UP` | WH51 sensor resolution |
-| `DepthInches` | 2 | `HALF_UP` | Practical installation precision |
-| `PrecipitationInches` | 2 | `HALF_UP` | Weather station precision |
+| Concept                         | Scale | Rounding  | Notes                               |
+|---------------------------------|-------|-----------|-------------------------------------|
+| `TemperatureFahrenheit`         | 1     | `HALF_UP` | Sensor precision; tenths sufficient |
+| `SoilPH`                        | 2     | `HALF_UP` | FGL reporting standard              |
+| `ElectricalConductivity` (dS/m) | 2     | `HALF_UP` | FGL reporting standard              |
+| `MolecularWeight` (g/mol)       | 4     | `HALF_UP` | IUPAC significant figures           |
+| `AtomicWeight` (g/mol)          | 4     | `HALF_UP` | IUPAC standard values               |
+| `Solubility` (g/L at 20°C)      | 2     | `HALF_UP` | Practical measurement precision     |
+| `AmendmentRate` (lbs/1000 sqft) | 2     | `HALF_UP` | FGL reporting standard              |
+| `AreaSqft`                      | 1     | `HALF_UP` | Tape-measure precision              |
+| `MoisturePercent`               | 1     | `HALF_UP` | WH51 sensor resolution              |
+| `DepthInches`                   | 2     | `HALF_UP` | Practical installation precision    |
+| `PrecipitationInches`           | 2     | `HALF_UP` | Weather station precision           |
 
 ### Migration order
 

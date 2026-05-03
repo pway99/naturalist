@@ -4,7 +4,8 @@ import com.naturalist.data.NaturalistDatabase;
 
 public final class SeedLineageTestContext {
 
-    private SeedLineageTestContext() {}
+    private SeedLineageTestContext() {
+    }
 
     public static SeedLineageQuery createQuery(NaturalistDatabase db) {
         SeedLineageRepository.SeedLineageEntityRepository repository = new SeedLineageEntityRepositoryMock(db);

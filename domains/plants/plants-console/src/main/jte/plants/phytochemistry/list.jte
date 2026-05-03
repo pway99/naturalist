@@ -8,7 +8,7 @@
 
     <h1>Phytochemistry Catalog</h1>
     <p>${constituents.size()} plant-compound links documented. Each entry records
-    one compound in one plant and the role(s) it plays there.</p>
+        one compound in one plant and the role(s) it plays there.</p>
 
     <div class="entity-grid">
         @for(var c : constituents)

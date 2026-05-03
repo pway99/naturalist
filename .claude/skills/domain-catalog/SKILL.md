@@ -93,7 +93,9 @@ Skip if the file exists. Otherwise create
 `domains/<domain>/<domain>-api/src/main/java/com/naturalist/<domain>/<Domain>Domain.java`:
 
 ```java
-package com.naturalist.<domain>;
+package com.naturalist.
+
+<domain>;
 
 import com.naturalist.catalog.DomainId;
 import com.naturalist.infrastructure.DomainService;
@@ -107,11 +109,17 @@ import com.naturalist.infrastructure.DomainService;
  * uniqueness across registered subtypes at startup.
  */
 @DomainService
-public record <Domain>Domain() implements DomainId {
+public record<Domain> Domain() implements
 
-    @Override public String value() { return "<domain>"; }
+DomainId {
 
-    @Override public String toString() { return value(); }
+    @Override public String value () {
+        return "<domain>";
+    }
+
+    @Override public String toString () {
+        return value();
+    }
 }
 ```
 
@@ -122,6 +130,7 @@ POM update for `<domain>-api/pom.xml` — add (alphabetised within the
 `com.naturalist` block):
 
 ```xml
+
 <dependency>
     <groupId>com.naturalist</groupId>
     <artifactId>catalog</artifactId>
@@ -147,7 +156,9 @@ Create
 `domains/<domain>/<domain>-core/src/main/java/com/naturalist/<domain>/catalog/<Domain>CatalogContribution.java`:
 
 ```java
-package com.naturalist.<domain>.catalog;
+package com.naturalist.
+
+<domain>.catalog;
 
 import com.naturalist.catalog.CatalogContribution;
 import com.naturalist.catalog.DomainId;
@@ -177,47 +188,49 @@ import java.util.stream.Stream;
  * Entities added after assembly are reflected automatically.
  */
 @DomainService
-public class <Domain>CatalogContribution implements CatalogContribution {
+public class <Domain>CatalogContribution implements
 
-    private static final DomainId DOMAIN = new <Domain>Domain();
+        CatalogContribution {
 
-    private final <Package>Query.<Entity>EntityQuery <entityPlural>;
+            private static final DomainId DOMAIN = new <Domain>Domain();
 
-    public <Domain>CatalogContribution(<Package>Query.<Entity>EntityQuery <entityPlural>) {
-        Observer.forClass(<Domain>CatalogContribution.class)
-                .arguments("constructor", i -> i.notNull(<entityPlural>, "<entityPlural>"))
+            private final <Package > Query.<Entity>EntityQuery < entityPlural >;
+
+            public <Domain > CatalogContribution( < Package > Query.<Entity>EntityQuery < entityPlural >){
+                Observer.forClass( < Domain > CatalogContribution.class)
+                .arguments("constructor", i -> i.notNull( < entityPlural >, "<entityPlural>"))
                 .throwWhenInvalid();
-        this.<entityPlural> = <entityPlural>;
-    }
+                this.<entityPlural> = < entityPlural >;
+            }
 
-    @Override
-    public DomainId domain() {
-        return DOMAIN;
-    }
+            @Override
+            public DomainId domain () {
+                return DOMAIN;
+            }
 
-    @Override
-    public Stream<SearchableEntity> searchableEntities() {
-        var names = <entityPlural>.all<Entity>Names();
-        if (names.isEmpty()) {
-            return Stream.empty();
+            @Override
+            public Stream<SearchableEntity> searchableEntities () {
+                var names = <entityPlural >.all<Entity> Names ();
+                if (names.isEmpty()) {
+                    return Stream.empty();
+                }
+        <Entity > Collection collection =
+                        < entityPlural >.findByNameSet(names.stream().collect(Collectors.toSet()));
+                return collection.stream().map( < Domain > CatalogContribution::toSearchableEntity);
+            }
+
+            private static SearchableEntity toSearchableEntity ( < Entity > entity){
+                EntityRef target = new EntityRef(DOMAIN, entity.name());
+                return new SearchableEntity(target, tokensFor(entity));
+            }
+
+            private static Stream<String> tokensFor ( < Entity > entity){
+                Stream.Builder<String> tokens = Stream.builder();
+                tokens.add(entity.name().value());
+                // domain-specific tokens go here — see "Token derivation" below
+                return tokens.build();
+            }
         }
-        <Entity>Collection collection =
-                <entityPlural>.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(<Domain>CatalogContribution::toSearchableEntity);
-    }
-
-    private static SearchableEntity toSearchableEntity(<Entity> entity) {
-        EntityRef target = new EntityRef(DOMAIN, entity.name());
-        return new SearchableEntity(target, tokensFor(entity));
-    }
-
-    private static Stream<String> tokensFor(<Entity> entity) {
-        Stream.Builder<String> tokens = Stream.builder();
-        tokens.add(entity.name().value());
-        // domain-specific tokens go here — see "Token derivation" below
-        return tokens.build();
-    }
-}
 ```
 
 ### Token derivation
@@ -258,7 +271,9 @@ package-private repository mocks and query impls. Pattern after
 `PlantCatalogContributionTest`:
 
 ```java
-package com.naturalist.<domain>;
+package com.naturalist.
+
+<domain>;
 
 import com.naturalist.catalog.*;
 import com.naturalist.catalog.inmem.CatalogAssembly;
@@ -271,48 +286,50 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class <Domain>CatalogContributionTest {
+class
+
+<Domain> CatalogContributionTest {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    private final <Package>Repository.<Entity>EntityRepository repository =
+    private final <Package > Repository.<Entity>EntityRepository repository =
             new <Entity>EntityRepositoryMock(db);
-    private final <Package>Query.<Entity>EntityQuery entityQuery =
+    private final <Package > Query.<Entity>EntityQuery entityQuery =
             new <Entity>EntityQueryImpl(repository);
-    private final <Domain>CatalogContribution contribution =
+    private final <Domain > CatalogContribution contribution =
             new <Domain>CatalogContribution(entityQuery);
 
     @Test
-    void domainIs<Domain>() {
+    void domainIs<Domain > () {
         assertThat(contribution.domain()).isEqualTo(new <Domain>Domain());
     }
 
     @Test
-    void constructorRejectsNullEntityQuery() {
+    void constructorRejectsNullEntityQuery () {
         assertThatThrownBy(() -> new <Domain>CatalogContribution(null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("<entityPlural>");
     }
 
     @Test
-    void contributionEmitsOneSearchableEntityPerEntity() {
-        long count = entityQuery.all<Entity>Names().size();
+    void contributionEmitsOneSearchableEntityPerEntity () {
+        long count = entityQuery.all < Entity > Names().size();
         assertThat(contribution.searchableEntities().count()).isEqualTo(count);
     }
 
     @Test
-    void everySearchableEntityIsAttributedToThe<Domain>Domain() {
+    void everySearchableEntityIsAttributedToThe<Domain > Domain() {
         contribution.searchableEntities().forEach(e ->
                 assertThat(e.target().domain()).isEqualTo(new <Domain>Domain()));
     }
 
     @Test
-    void knownEntityIsReachableThroughItsSlug() {
+    void knownEntityIsReachableThroughItsSlug () {
         Catalog catalog = CatalogAssembly.from(contribution);
         EntityRef expected = new EntityRef(
                 new <Domain>Domain(),
-                Test<Domain>Identifiers./* path to */.name);
+                Test < Domain > Identifiers./* path to */.name);
 
         assertThat(catalog.search("<known-slug>").stream())
                 .as("slug '<known-slug>' should resolve to %s as EXACT_SLUG", expected)
@@ -357,11 +374,11 @@ POM updates for `<domain>-core/pom.xml`:
     <artifactId>catalog</artifactId>
 </dependency>
 
-<!-- test scope (for CatalogAssembly.from in tests) -->
+        <!-- test scope (for CatalogAssembly.from in tests) -->
 <dependency>
-    <groupId>com.naturalist</groupId>
-    <artifactId>catalog-inmem</artifactId>
-    <scope>test</scope>
+<groupId>com.naturalist</groupId>
+<artifactId>catalog-inmem</artifactId>
+<scope>test</scope>
 </dependency>
 ```
 
@@ -396,7 +413,9 @@ Create
 `domains/<domain>/<domain>-core/src/main/java/com/naturalist/<domain>/catalog/<Domain><Foreign>References.java`:
 
 ```java
-package com.naturalist.<domain>.catalog;
+package com.naturalist.
+
+<domain>.catalog;
 
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
@@ -427,46 +446,50 @@ import java.util.stream.Stream;
  */
 @DomainService
 @Resilient(name = "catalog.fanout")
-public class <Domain><Foreign>References implements EntityReferences<<Foreign>Name> {
+public class <Domain><Foreign>References implements EntityReferences<<Foreign>Name>{
 
-    private static final DomainId DOMAIN = new <Domain>Domain();
+        private static final DomainId DOMAIN = new <Domain>Domain();
 
-    private final <LinkPackage>Query.<LinkEntity>EntityQuery <linkPlural>;
+        private final <LinkPackage>Query .<LinkEntity>EntityQuery<linkPlural>;
 
-    public <Domain><Foreign>References(<LinkPackage>Query.<LinkEntity>EntityQuery <linkPlural>) {
-        Observer.forClass(<Domain><Foreign>References.class)
-                .arguments("constructor", i -> i.notNull(<linkPlural>, "<linkPlural>"))
+        public <Domain>
+
+        <Foreign> References(<LinkPackage>Query.<LinkEntity>EntityQuery<linkPlural>) {
+            Observer.forClass( < Domain > < Foreign > References.class)
+                .arguments("constructor", i -> i.notNull( < linkPlural >, "<linkPlural>"))
                 .throwWhenInvalid();
-        this.<linkPlural> = <linkPlural>;
-    }
-
-    @Override
-    public DomainId domain() {
-        return DOMAIN;
-    }
-
-    @Override
-    public Class<<Foreign>Name> referenceType() {
-        return <Foreign>Name.class;
-    }
-
-    @Override
-    public Stream<EntityRef> referencesTo(<Foreign>Name target) {
-        if (target == null) {
-            return Stream.empty();
+            this.<linkPlural> = < linkPlural >;
         }
-        <LinkEntity>Collection matches = <linkPlural>.for<Foreign>Name(target);
 
-        Set<<OwnerName>> seenOwners = new LinkedHashSet<>();
-        Stream.Builder<EntityRef> refs = Stream.builder();
-        matches.stream().forEach(link -> {
-            if (seenOwners.add(link.<ownerNameAccessor>())) {
-                refs.add(new EntityRef(DOMAIN, link.<ownerNameAccessor>()));
+        @Override
+        public DomainId domain() {
+            return DOMAIN;
+        }
+
+        @Override
+        public Class<<Foreign>Name>
+
+        referenceType() {
+            return <Foreign > Name.class;
+        }
+
+        @Override
+        public Stream<EntityRef> referencesTo(<Foreign>Name target) {
+            if (target == null) {
+                return Stream.empty();
             }
-            refs.add(new EntityRef(DOMAIN, link.name()));
-        });
-        return refs.build();
-    }
+        <LinkEntity > Collection matches = < linkPlural >.for<Foreign > Name(target);
+
+            Set << OwnerName >> seenOwners = new LinkedHashSet<>();
+            Stream.Builder<EntityRef> refs = Stream.builder();
+            matches.stream().forEach(link -> {
+                if (seenOwners.add(link.<ownerNameAccessor> ())){
+                    refs.add(new EntityRef(DOMAIN, link.<ownerNameAccessor> ()));
+                }
+                refs.add(new EntityRef(DOMAIN, link.name()));
+            });
+            return refs.build();
+        }
 }
 ```
 
@@ -511,12 +534,16 @@ Create
 `domains/<domain>/<domain>-console/src/main/java/com/naturalist/<domain>/console/catalog/<Domain>Linker.java`:
 
 ```java
-package com.naturalist.<domain>.console.catalog;
+package com.naturalist.
+
+<domain>.console.catalog;
 
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.<domain>.<Entity>Name;
+import com.naturalist.
+
+<domain>.<Entity>Name;
 // import every other <domain>-owned EntityName subclass
 
 /**
@@ -526,14 +553,16 @@ import com.naturalist.<domain>.<Entity>Name;
  * <domain> entity or moving an existing one to a new route.
  */
 @DomainService
-public class <Domain>Linker implements EntityRefLinker {
+public class <Domain>Linker implements
+
+EntityRefLinker {
 
     @Override
-    public String linkFor(EntityRef ref) {
+    public String linkFor (EntityRef ref){
         return switch (ref.name()) {
-            case <Entity>Name n -> "/<domain>/" + n.value();
-            // one case per <domain>-owned EntityName subclass
-            default -> null;
+            case <Entity > Name n -> "/<domain>/" + n.value();
+                // one case per <domain>-owned EntityName subclass
+                default -> null;
         };
     }
 }
@@ -547,6 +576,7 @@ do not invent routes.
 POM updates for `<domain>-console/pom.xml`:
 
 ```xml
+
 <dependency>
     <groupId>com.naturalist</groupId>
     <artifactId>catalog</artifactId>
@@ -580,14 +610,14 @@ extend the allowlist if so).
 
 ## Naming Conventions Summary
 
-| Artifact | Name | Location |
-|---|---|---|
-| Domain id | `<Domain>Domain` (record) | `<domain>-api/src/main/java/com/naturalist/<domain>/` |
-| Forward contribution | `<Domain>CatalogContribution` | `<domain>-core/src/main/java/com/naturalist/<domain>/catalog/` |
-| Forward test | `<Domain>CatalogContributionTest` | `<domain>-core/src/test/java/com/naturalist/<domain>/` |
-| Inverse provider | `<Domain><Foreign>References` (one per foreign type) | `<domain>-core/src/main/java/com/naturalist/<domain>/catalog/` |
-| Inverse test | `<Domain><Foreign>ReferencesTest` | `<domain>-core/src/test/java/com/naturalist/<domain>/<linkSubpackage>/` |
-| Console linker | `<Domain>Linker` | `<domain>-console/src/main/java/com/naturalist/<domain>/console/catalog/` |
+| Artifact             | Name                                                 | Location                                                                  |
+|----------------------|------------------------------------------------------|---------------------------------------------------------------------------|
+| Domain id            | `<Domain>Domain` (record)                            | `<domain>-api/src/main/java/com/naturalist/<domain>/`                     |
+| Forward contribution | `<Domain>CatalogContribution`                        | `<domain>-core/src/main/java/com/naturalist/<domain>/catalog/`            |
+| Forward test         | `<Domain>CatalogContributionTest`                    | `<domain>-core/src/test/java/com/naturalist/<domain>/`                    |
+| Inverse provider     | `<Domain><Foreign>References` (one per foreign type) | `<domain>-core/src/main/java/com/naturalist/<domain>/catalog/`            |
+| Inverse test         | `<Domain><Foreign>ReferencesTest`                    | `<domain>-core/src/test/java/com/naturalist/<domain>/<linkSubpackage>/`   |
+| Console linker       | `<Domain>Linker`                                     | `<domain>-console/src/main/java/com/naturalist/<domain>/console/catalog/` |
 
 ---
 

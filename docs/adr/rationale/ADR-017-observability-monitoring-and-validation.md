@@ -274,22 +274,22 @@ constraint names carry mixed case by design.
 
 ## Type Reference
 
-| Type                         | Package                                    | Role                                                                  |
-|------------------------------|--------------------------------------------|-----------------------------------------------------------------------|
-| `Observable`                 | `com.naturalist.observability`              | Interface declaring `invariants()` on every domain type               |
-| `Constraint<V>`              | `com.naturalist.observability`              | Reified invariant rule — named, evaluable, `source()`, `methodName()` |
-| `Constraints`                | `com.naturalist.observability`              | Fluent builder accumulating `Constraint<?>` instances                  |
-| `ConstraintCollection`       | `com.naturalist.observability`              | Composite node exposing child constraints for graph descent            |
-| `Observer`                   | `com.naturalist.observability`              | Entry point — `static final`, class-scoped, zero metric overhead       |
-| `MethodObserver`             | `com.naturalist.observability`              | Method-scoped observer with `ClassName.methodName.label` paths         |
-| `InvariantObservation`       | `com.naturalist.observability`              | Result of one graph walk — emits metrics, exposes `violations()`       |
-| `InvariantViolationException`| `com.naturalist.exception`                  | Carries all violations from a single observation pass                  |
-| `Metric`                     | `com.naturalist.observability`              | Fluent counter — `counter(name).tag(k,v).incrementCounter()`           |
-| `Metric.Tag`                 | `com.naturalist.observability`              | Immutable key-value pair, keys normalised to Micrometer convention     |
-| `MonitoringMode`             | `com.naturalist.observability`              | `ON_FAILURE` (default) or `ALWAYS` — controls metric emission          |
-| `ObservableConstraint`       | `com.naturalist.observability.constraints`  | Composite constraint for `Entity`/`Aggregate`/`ValueObject` members    |
-| `NotNullConstraint`          | `com.naturalist.observability.constraints`  | Null-check constraint                                                  |
-| `NotBlankConstraint`         | `com.naturalist.observability.constraints`  | Blank-string constraint                                                |
-| `PersistenceIdConstraints`   | `com.naturalist.observability.constraints`  | `PersistenceId` validation (single and collection)                     |
-| `EntityNameConstraints`      | `com.naturalist.observability.constraints`  | `EntityName` validation (single and collection)                        |
-| `NamedValueConstraints`      | `com.naturalist.observability.constraints`  | `NamedValue` validation                                                |
+| Type                          | Package                                    | Role                                                                  |
+|-------------------------------|--------------------------------------------|-----------------------------------------------------------------------|
+| `Observable`                  | `com.naturalist.observability`             | Interface declaring `invariants()` on every domain type               |
+| `Constraint<V>`               | `com.naturalist.observability`             | Reified invariant rule — named, evaluable, `source()`, `methodName()` |
+| `Constraints`                 | `com.naturalist.observability`             | Fluent builder accumulating `Constraint<?>` instances                 |
+| `ConstraintCollection`        | `com.naturalist.observability`             | Composite node exposing child constraints for graph descent           |
+| `Observer`                    | `com.naturalist.observability`             | Entry point — `static final`, class-scoped, zero metric overhead      |
+| `MethodObserver`              | `com.naturalist.observability`             | Method-scoped observer with `ClassName.methodName.label` paths        |
+| `InvariantObservation`        | `com.naturalist.observability`             | Result of one graph walk — emits metrics, exposes `violations()`      |
+| `InvariantViolationException` | `com.naturalist.exception`                 | Carries all violations from a single observation pass                 |
+| `Metric`                      | `com.naturalist.observability`             | Fluent counter — `counter(name).tag(k,v).incrementCounter()`          |
+| `Metric.Tag`                  | `com.naturalist.observability`             | Immutable key-value pair, keys normalised to Micrometer convention    |
+| `MonitoringMode`              | `com.naturalist.observability`             | `ON_FAILURE` (default) or `ALWAYS` — controls metric emission         |
+| `ObservableConstraint`        | `com.naturalist.observability.constraints` | Composite constraint for `Entity`/`Aggregate`/`ValueObject` members   |
+| `NotNullConstraint`           | `com.naturalist.observability.constraints` | Null-check constraint                                                 |
+| `NotBlankConstraint`          | `com.naturalist.observability.constraints` | Blank-string constraint                                               |
+| `PersistenceIdConstraints`    | `com.naturalist.observability.constraints` | `PersistenceId` validation (single and collection)                    |
+| `EntityNameConstraints`       | `com.naturalist.observability.constraints` | `EntityName` validation (single and collection)                       |
+| `NamedValueConstraints`       | `com.naturalist.observability.constraints` | `NamedValue` validation                                               |

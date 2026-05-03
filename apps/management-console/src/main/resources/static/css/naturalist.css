@@ -107,6 +107,7 @@ main {
     position: relative;
     z-index: 10;
 }
+
 /* The parchment surface owns its own typography — opt out of the
    global "white text on photo" rules used elsewhere in the layout. */
 .site-header,
@@ -127,6 +128,7 @@ main {
     padding-top: 0.6rem;
     padding-bottom: 0.5rem;
 }
+
 .site-brand {
     font-family: 'Georgia', 'Cambria', serif;
     font-style: italic;
@@ -137,9 +139,16 @@ main {
     white-space: nowrap;
     border-bottom: 0;
 }
-.site-brand:hover { color: var(--pico-primary) !important; }
 
-.site-search { flex: 0 1 auto; min-width: 0; }
+.site-brand:hover {
+    color: var(--pico-primary) !important;
+}
+
+.site-search {
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
 .site-search form,
 .site-search .header-search {
     display: flex;
@@ -147,6 +156,7 @@ main {
     margin: 0;
     align-items: center;
 }
+
 .site-search input[type="search"] {
     margin: 0;
     background: var(--parchment-deep);
@@ -154,6 +164,7 @@ main {
     color: var(--sepia-ink);
     min-width: 16rem;
 }
+
 .site-search button {
     margin: 0;
     width: auto;
@@ -176,22 +187,33 @@ main {
    browser narrower than expected, CSS not yet loaded, query string
    ignored, etc. — the user still gets a usable inline nav rather than a
    broken-looking hamburger. */
-.primary-nav { display: contents; color: var(--sepia-ink); }
+.primary-nav {
+    display: contents;
+    color: var(--sepia-ink);
+}
 
-.primary-nav-toggle { display: none; }   /* desktop default */
+.primary-nav-toggle {
+    display: none;
+}
+
+/* desktop default */
 .primary-nav-toggle::-webkit-details-marker,
-.primary-nav-toggle::marker { display: none; content: ''; }
+.primary-nav-toggle::marker {
+    display: none;
+    content: '';
+}
+
 .primary-nav-toggle-icon {
     display: inline-block;
     width: 1rem;
     height: 0.7rem;
     background-image: linear-gradient(
-        to bottom,
-        var(--sepia-ink) 0, var(--sepia-ink) 2px,
-        transparent 2px, transparent 4px,
-        var(--sepia-ink) 4px, var(--sepia-ink) 6px,
-        transparent 6px, transparent 8px,
-        var(--sepia-ink) 8px, var(--sepia-ink) 10px
+            to bottom,
+            var(--sepia-ink) 0, var(--sepia-ink) 2px,
+            transparent 2px, transparent 4px,
+            var(--sepia-ink) 4px, var(--sepia-ink) 6px,
+            transparent 6px, transparent 8px,
+            var(--sepia-ink) 8px, var(--sepia-ink) 10px
     );
 }
 
@@ -208,7 +230,12 @@ main {
     align-items: center;
     gap: 0.15rem 0.25rem;
 }
-.primary-nav-links > li { margin: 0; padding: 0; }
+
+.primary-nav-links > li {
+    margin: 0;
+    padding: 0;
+}
+
 .primary-nav-links a,
 .primary-nav-links > li > details > summary {
     display: inline-flex;
@@ -227,8 +254,13 @@ main {
     list-style: none;
     transition: background-color 0.12s ease, color 0.12s ease;
 }
+
 .primary-nav-links > li > details > summary::-webkit-details-marker,
-.primary-nav-links > li > details > summary::marker { display: none; content: ''; }
+.primary-nav-links > li > details > summary::marker {
+    display: none;
+    content: '';
+}
+
 .primary-nav-links a:hover,
 .primary-nav-links > li > details > summary:hover {
     background: var(--parchment-deep);
@@ -237,9 +269,19 @@ main {
 
 /* "More ▾" overflow disclosure — a parchment popover sitting below the
    summary. Auto-hides while no overflow links have been added. */
-.primary-nav-more { position: relative; }
-.primary-nav-more details[open] > summary { background: var(--parchment-deep); }
-.primary-nav-caret { font-size: 0.8em; line-height: 1; }
+.primary-nav-more {
+    position: relative;
+}
+
+.primary-nav-more details[open] > summary {
+    background: var(--parchment-deep);
+}
+
+.primary-nav-caret {
+    font-size: 0.8em;
+    line-height: 1;
+}
+
 .primary-nav-overflow {
     list-style: none;
     margin: 0;
@@ -254,7 +296,12 @@ main {
     box-shadow: var(--plate-shadow);
     z-index: 30;
 }
-.primary-nav-overflow > li { margin: 0; padding: 0; }
+
+.primary-nav-overflow > li {
+    margin: 0;
+    padding: 0;
+}
+
 .primary-nav-overflow a {
     display: block;
     padding: 0.4rem 0.85rem;
@@ -265,11 +312,17 @@ main {
     text-decoration: none;
     border-bottom: 0;
 }
-.primary-nav-overflow a:hover { background: var(--parchment-deep); }
+
+.primary-nav-overflow a:hover {
+    background: var(--parchment-deep);
+}
+
 /* Hide the entire "More ▾" disclosure while the overflow list has no items.
    :has() is supported in all current evergreen browsers. Using :not(:has(li))
    instead of :empty so template whitespace inside the <ul> doesn't keep it visible. */
-.primary-nav-more:not(:has(.primary-nav-overflow > li)) { display: none; }
+.primary-nav-more:not(:has(.primary-nav-overflow > li)) {
+    display: none;
+}
 
 /* Narrow viewports — flip on the hamburger and collapse links vertically.
    Above this breakpoint the desktop defaults above apply. */
@@ -278,12 +331,23 @@ main {
         flex-wrap: wrap;
         gap: 0.5rem 0.75rem;
     }
-    .site-search { order: 3; flex: 1 1 100%; }
-    .site-search input[type="search"] { min-width: 0; width: 100%; }
+
+    .site-search {
+        order: 3;
+        flex: 1 1 100%;
+    }
+
+    .site-search input[type="search"] {
+        min-width: 0;
+        width: 100%;
+    }
 
     /* Re-engage the <details> wrapper as a real layout box so its
        open/closed state controls the link list visibility. */
-    .primary-nav { display: block; }
+    .primary-nav {
+        display: block;
+    }
+
     .primary-nav-toggle {
         display: inline-flex;
         align-items: center;
@@ -299,19 +363,28 @@ main {
         list-style: none;
         user-select: none;
     }
-    .primary-nav:not([open]) .primary-nav-links { display: none !important; }
+
+    .primary-nav:not([open]) .primary-nav-links {
+        display: none !important;
+    }
+
     .primary-nav[open] .primary-nav-links {
         flex-direction: column;
         align-items: stretch;
         margin-top: 0.5rem;
         gap: 0.1rem;
     }
+
     .primary-nav-links a,
     .primary-nav-links > li > details > summary {
         width: 100%;
         justify-content: flex-start;
     }
-    .primary-nav-more { width: 100%; }
+
+    .primary-nav-more {
+        width: 100%;
+    }
+
     .primary-nav-overflow {
         position: static;
         box-shadow: none;
@@ -383,6 +456,7 @@ main > section:not(.life-stages):not(.bare),
     padding: 1.25rem 1.5rem;
     position: relative;
 }
+
 .plate p, .plate li, .plate span:not(.badge), .plate a, .plate em, .plate strong,
 .plate dt, .plate dd, .plate h2, .plate h3, .plate h4, .plate summary, .plate div,
 .plate code, .plate label, .plate small,
@@ -402,10 +476,12 @@ main > section:not(.life-stages) label, main > section:not(.life-stages) small,
     color: var(--sepia-ink) !important;
     text-shadow: none !important;
 }
+
 .entity-grid article em, main > section:not(.life-stages) em, .plate em {
     color: var(--sepia-ink-soft) !important;
     font-style: italic;
 }
+
 main > section:not(.life-stages) code,
 .entity-grid article code,
 .plate code {
@@ -423,12 +499,14 @@ main > section:not(.life-stages) code,
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.25rem;
 }
+
 .entity-grid article {
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
 }
+
 .entity-grid article header {
     display: flex;
     align-items: center;
@@ -439,17 +517,26 @@ main > section:not(.life-stages) code,
     margin: 0 !important;
     border-radius: 0.25rem 0.25rem 0 0;
 }
+
 .entity-grid article header strong {
     font-family: 'Georgia', 'Cambria', serif;
     font-style: italic;
     font-size: 1.05rem;
     letter-spacing: 0.01em;
 }
+
 .entity-grid article > *:not(header):not(footer) {
     padding: 0 1rem;
 }
-.entity-grid article > header + * { padding-top: 0.75rem; }
-.entity-grid article .description-preview { flex: 1 1 auto; }
+
+.entity-grid article > header + * {
+    padding-top: 0.75rem;
+}
+
+.entity-grid article .description-preview {
+    flex: 1 1 auto;
+}
+
 .entity-grid article footer {
     background: var(--parchment-deep) !important;
     border-top: 1px solid var(--sepia-rule);
@@ -458,6 +545,7 @@ main > section:not(.life-stages) code,
     margin: 0.75rem 0 0 0 !important;
     color: var(--sepia-ink) !important;
 }
+
 .entity-grid article footer a {
     color: var(--sepia-ink) !important;
     font-style: italic;
@@ -465,6 +553,7 @@ main > section:not(.life-stages) code,
     text-decoration: none;
     border-bottom: 1px dotted var(--sepia-rule);
 }
+
 .entity-grid article footer a:hover {
     color: var(--pico-primary) !important;
 }
@@ -474,6 +563,7 @@ main > section:not(.life-stages) code,
     margin-bottom: 0.5rem;
     font-style: italic;
 }
+
 .entity-grid article .taxonomy,
 main > section .taxonomy,
 .life-stages .plate-subtitle.taxonomy {
@@ -485,19 +575,23 @@ main > section .taxonomy,
 main > section:not(.life-stages) details {
     margin: 0.35rem 0;
 }
+
 main > section:not(.life-stages) details summary {
     cursor: pointer;
     font-style: italic;
     color: var(--sepia-ink-soft) !important;
 }
+
 main > section:not(.life-stages) details[open] summary {
     color: var(--sepia-ink) !important;
     margin-bottom: 0.35rem;
 }
+
 main > section:not(.life-stages) ul {
     margin: 0.35rem 0;
     padding-left: 1.25rem;
 }
+
 main > section:not(.life-stages) ul ul {
     margin: 0.25rem 0;
 }
@@ -511,6 +605,7 @@ main > section:not(.life-stages) ul ul {
 main > section:not(.life-stages) {
     margin: 1rem 0 1.5rem 0;
 }
+
 main > section:not(.life-stages) > h2 {
     font-family: 'Georgia', 'Cambria', serif;
     font-style: italic;
@@ -520,12 +615,14 @@ main > section:not(.life-stages) > h2 {
     padding-bottom: 0.35rem;
     margin-bottom: 0.75rem;
 }
+
 main > section:not(.life-stages) a {
     color: var(--pico-primary) !important;
     font-weight: 600;
     border-bottom: 1px dotted var(--pico-primary);
     text-decoration: none;
 }
+
 main > section:not(.life-stages) a:hover {
     color: var(--pico-primary-hover) !important;
     border-bottom-color: var(--pico-primary-hover);
@@ -539,13 +636,16 @@ main > section:not(.life-stages) a:hover {
     text-decoration: none;
     border-bottom: 1px dotted var(--pico-primary);
 }
+
 .entity-grid article .description-preview a:hover {
     color: var(--pico-primary-hover) !important;
     border-bottom-color: var(--pico-primary-hover);
 }
+
 .entity-grid article .description-preview a code {
     color: var(--pico-primary) !important;
 }
+
 .entity-grid article .description-preview a:hover code {
     color: var(--pico-primary-hover) !important;
 }
@@ -561,10 +661,12 @@ main > section:not(.life-stages) a:hover {
     letter-spacing: 0.04em;
     white-space: nowrap;
 }
+
 .badge.beneficial {
     background: #5B7553;
     color: #FAF8F5;
 }
+
 .badge.stage {
     background: var(--parchment-deep);
     border: 1px solid var(--sepia-rule);
@@ -573,32 +675,67 @@ main > section:not(.life-stages) a:hover {
     font-style: italic;
     text-transform: capitalize;
 }
+
 .guilds {
     display: flex;
     flex-wrap: wrap;
     gap: 0.3rem;
     margin-bottom: 0.75rem;
 }
-.guild-parasitoid  { background: #8B6B4A; color: #FAF8F5; }
-.guild-predator    { background: #A0522D; color: #FAF8F5; }
-.guild-apex_predator { background: #6B3A2A; color: #FAF8F5; }
-.guild-pollinator  { background: #C9A83E; color: #3B3228; }
-.guild-decomposer  { background: #7B6E5D; color: #FAF8F5; }
-.guild-food_web    { background: #8B7D6B; color: #FAF8F5; }
-.guild-migratory   { background: #5B7FA5; color: #FAF8F5; }
-.guild-keystone    { background: #7A3B5E; color: #FAF8F5; }
+
+.guild-parasitoid {
+    background: #8B6B4A;
+    color: #FAF8F5;
+}
+
+.guild-predator {
+    background: #A0522D;
+    color: #FAF8F5;
+}
+
+.guild-apex_predator {
+    background: #6B3A2A;
+    color: #FAF8F5;
+}
+
+.guild-pollinator {
+    background: #C9A83E;
+    color: #3B3228;
+}
+
+.guild-decomposer {
+    background: #7B6E5D;
+    color: #FAF8F5;
+}
+
+.guild-food_web {
+    background: #8B7D6B;
+    color: #FAF8F5;
+}
+
+.guild-migratory {
+    background: #5B7FA5;
+    color: #FAF8F5;
+}
+
+.guild-keystone {
+    background: #7A3B5E;
+    color: #FAF8F5;
+}
 
 /* Description tabs — parchment plate with sepia ink. */
 .description-tabs {
     margin: 1.25rem 0;
     padding: 1.25rem 1.5rem;
 }
+
 .description-tabs nav {
     display: flex;
     gap: 0;
     border-bottom: 1px solid var(--sepia-rule);
     margin-bottom: 0;
 }
+
 .description-tabs .tab {
     background: none;
     border: none;
@@ -612,25 +749,33 @@ main > section:not(.life-stages) a:hover {
     color: var(--sepia-ink-soft) !important;
     text-shadow: none !important;
 }
+
 .description-tabs .tab:hover {
     color: var(--sepia-ink) !important;
 }
+
 .description-tabs .tab.active {
     color: var(--sepia-ink) !important;
     border-bottom-color: var(--sepia-rule);
     font-weight: 700;
 }
+
 .tab-content {
     display: none;
     padding: 1rem 0 0.25rem 0;
     line-height: 1.75;
     font-family: 'Georgia', 'Cambria', serif;
 }
-.tab-content.active { display: block; }
+
+.tab-content.active {
+    display: block;
+}
+
 .tab-content p {
     color: var(--sepia-ink) !important;
     text-shadow: none !important;
 }
+
 .tab-content a {
     color: var(--pico-primary) !important;
     font-weight: 600;
@@ -645,6 +790,7 @@ main > section:not(.life-stages) a:hover {
     text-shadow: var(--text-shadow-subtle);
     font-style: italic;
 }
+
 .life-stages .plate-heading {
     text-align: center;
     border-top: 2px solid var(--sepia-rule);
@@ -653,6 +799,7 @@ main > section:not(.life-stages) a:hover {
     margin: 0 0 2rem 0;
     background: transparent;
 }
+
 .life-stages .plate-heading h1 {
     color: var(--text-light-color);
     text-shadow: var(--text-shadow-strong);
@@ -662,6 +809,7 @@ main > section:not(.life-stages) a:hover {
     letter-spacing: 0.02em;
     margin: 0.25rem 0;
 }
+
 .life-stages .plate-eyebrow {
     color: var(--text-light-color);
     text-shadow: var(--text-shadow-subtle);
@@ -670,12 +818,14 @@ main > section:not(.life-stages) a:hover {
     font-size: 0.75rem;
     margin: 0;
 }
+
 .life-stages .plate-subtitle {
     color: var(--text-light-color);
     text-shadow: var(--text-shadow-subtle);
     font-style: italic;
     margin: 0;
 }
+
 .life-stages .plate-note {
     color: var(--text-light-color);
     text-shadow: var(--text-shadow-subtle);
@@ -693,10 +843,14 @@ main > section:not(.life-stages) a:hover {
     margin: 0 0 2rem 0;
     position: relative;
 }
+
 .life-stages .stage-plate::before {
     content: '';
     position: absolute;
-    top: 0.35rem; left: 0.35rem; right: 0.35rem; bottom: 0.35rem;
+    top: 0.35rem;
+    left: 0.35rem;
+    right: 0.35rem;
+    bottom: 0.35rem;
     border: 1px solid rgba(139, 107, 61, 0.35);
     border-radius: 0.15rem;
     pointer-events: none;
@@ -719,6 +873,7 @@ main > section:not(.life-stages) a:hover {
     color: var(--sepia-ink);
     text-shadow: none;
 }
+
 .life-stages .stage-plate em {
     color: var(--sepia-ink-soft);
     font-style: italic;
@@ -733,6 +888,7 @@ main > section:not(.life-stages) a:hover {
     margin-bottom: 1rem;
     background: transparent !important;
 }
+
 .life-stages .stage-header h2 {
     margin: 0;
     font-family: 'Georgia', 'Cambria', serif;
@@ -742,6 +898,7 @@ main > section:not(.life-stages) a:hover {
     color: var(--sepia-ink) !important;
     text-shadow: none !important;
 }
+
 .life-stages .stage-slug {
     margin: 0.1rem 0 0 0;
     font-size: 0.8rem;
@@ -750,6 +907,7 @@ main > section:not(.life-stages) a:hover {
     color: var(--sepia-ink-soft) !important;
     font-family: 'Courier New', monospace;
 }
+
 .life-stages .stage-ordinal {
     display: inline-flex;
     align-items: center;
@@ -773,6 +931,7 @@ main > section:not(.life-stages) a:hover {
     margin: 0 0 0.75rem 0;
     font-family: 'Georgia', 'Cambria', serif;
 }
+
 .life-stages .stage-description details {
     margin-top: 0.5rem;
     padding: 0.75rem 1rem;
@@ -780,11 +939,13 @@ main > section:not(.life-stages) a:hover {
     border-left: 3px solid var(--sepia-rule);
     border-radius: 0.15rem;
 }
+
 .life-stages .stage-description details summary {
     cursor: pointer;
     font-style: italic;
     color: var(--sepia-ink-soft) !important;
 }
+
 .life-stages .stage-description details p {
     margin: 0.5rem 0 0 0;
     font-size: 0.95rem;
@@ -799,6 +960,7 @@ main > section:not(.life-stages) a:hover {
     padding-top: 1rem;
     border-top: 1px dashed var(--sepia-rule);
 }
+
 .life-stages .stage-facts dt {
     font-family: 'Georgia', serif;
     font-style: italic;
@@ -809,16 +971,19 @@ main > section:not(.life-stages) a:hover {
     border-right: 1px solid rgba(139, 107, 61, 0.35);
     padding-right: 1rem;
 }
+
 .life-stages .stage-facts dd {
     margin: 0;
     line-height: 1.6;
 }
+
 .life-stages .stage-facts .aside {
     margin: 0.35rem 0 0 0;
     font-style: italic;
     color: var(--sepia-ink-soft) !important;
     font-size: 0.9rem;
 }
+
 .life-stages .stage-facts .token {
     display: inline-block;
     margin: 0.1rem 0.35rem 0.1rem 0;
@@ -832,16 +997,28 @@ main > section:not(.life-stages) a:hover {
 }
 
 /* Stage kind accent — a slim coloured edge echoing field-guide plates */
-.life-stages .stage-egg    { border-left: 6px solid #C9A83E; }
-.life-stages .stage-larva  { border-left: 6px solid #7B8C3E; }
-.life-stages .stage-pupa   { border-left: 6px solid #8B6B4A; }
-.life-stages .stage-adult  { border-left: 6px solid #A0522D; }
+.life-stages .stage-egg {
+    border-left: 6px solid #C9A83E;
+}
+
+.life-stages .stage-larva {
+    border-left: 6px solid #7B8C3E;
+}
+
+.life-stages .stage-pupa {
+    border-left: 6px solid #8B6B4A;
+}
+
+.life-stages .stage-adult {
+    border-left: 6px solid #A0522D;
+}
 
 @media (max-width: 640px) {
     .life-stages .stage-facts {
         grid-template-columns: 1fr;
         gap: 0.15rem 0;
     }
+
     .life-stages .stage-facts dt {
         text-align: left;
         border-right: none;
@@ -858,9 +1035,11 @@ main > section:not(.life-stages) a:hover {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1rem;
 }
+
 .image-gallery figure {
     margin: 0;
 }
+
 .image-gallery img {
     width: 100%;
     height: auto;
@@ -874,6 +1053,7 @@ main > section:not(.life-stages) a:hover {
     width: 100%;
     margin: 0.75rem 0;
 }
+
 .compound-depiction-thumb {
     display: block;
     width: 100%;
@@ -885,10 +1065,12 @@ main > section:not(.life-stages) a:hover {
     border-radius: 0.25rem;
     padding: 0.25rem;
 }
+
 figure.compound-depiction {
     margin: 1rem 0 1.5rem 0;
     text-align: center;
 }
+
 figure.compound-depiction img {
     display: block;
     width: 100%;
@@ -908,6 +1090,7 @@ figure.compound-depiction img {
 .admin-resilience-group {
     margin: 1.25rem 0;
 }
+
 .admin-resilience-group h2 {
     font-family: 'Georgia', 'Cambria', serif;
     font-style: italic;
@@ -919,11 +1102,13 @@ figure.compound-depiction img {
     padding-bottom: 0.25rem;
     margin-bottom: 0.5rem;
 }
+
 .admin-resilience-group ul {
     list-style: none;
     padding-left: 0;
     margin: 0.25rem 0;
 }
+
 .admin-resilience-group li {
     padding: 0.15rem 0;
 }
@@ -936,32 +1121,40 @@ figure.compound-depiction img {
     gap: 0.75rem;
     margin: 1rem 0 1.5rem;
 }
+
 .search-form label {
     font-weight: 600;
     margin: 0;
 }
+
 .search-form input[type="search"] {
     margin: 0;
 }
+
 .search-form button {
     margin: 0;
     width: auto;
 }
+
 .search-domain-group {
     margin-top: 1.25rem;
 }
+
 .search-domain-group ul {
     list-style: none;
     padding-left: 0;
 }
+
 .search-domain-group li {
     padding: 0.25rem 0;
 }
+
 .search-matched-hint {
     margin-left: 0.5rem;
     opacity: 0.75;
     font-style: italic;
 }
+
 .search-empty-state {
     margin-top: 1.25rem;
 }

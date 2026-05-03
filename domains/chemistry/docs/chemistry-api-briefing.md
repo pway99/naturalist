@@ -61,10 +61,10 @@ com.naturalist.chemistry/
 
 ### Identifier locations (in the `identifiers` module, not in chemistry-api)
 
-| Type | Package |
-|------|---------|
+| Type           | Package                             |
+|----------------|-------------------------------------|
 | `CompoundName` | `com.naturalist.chemistry.compound` |
-| `ElementName`  | `com.naturalist.chemistry.element` |
+| `ElementName`  | `com.naturalist.chemistry.element`  |
 | `ReactionName` | `com.naturalist.chemistry.reaction` |
 
 There is no `com.naturalist.identifiers.*`. The *module* is `identifiers`; the *package*
@@ -76,11 +76,11 @@ mirrors the home domain.
 
 Chemistry has three `NamedEntity` types. Only one is an aggregate.
 
-| Entity | Identity | Aggregate? | Owns |
-|--------|----------|------------|------|
-| `Element` | `ElementName` | No | `AtomicWeight`, symbol, ionic form/charge |
-| `Compound` | `CompoundName` | **Yes** (`@AggregateRoot`) | `CompoundInfo`, four profiles, `Map<String,String> properties` |
-| `ReactionProfile` | `ReactionName` | No | `ReactionConditions`, reactant/product `List<CompoundName>` |
+| Entity            | Identity       | Aggregate?                 | Owns                                                           |
+|-------------------|----------------|----------------------------|----------------------------------------------------------------|
+| `Element`         | `ElementName`  | No                         | `AtomicWeight`, symbol, ionic form/charge                      |
+| `Compound`        | `CompoundName` | **Yes** (`@AggregateRoot`) | `CompoundInfo`, four profiles, `Map<String,String> properties` |
+| `ReactionProfile` | `ReactionName` | No                         | `ReactionConditions`, reactant/product `List<CompoundName>`    |
 
 Compound is the consistency boundary; `Element` and `ReactionProfile` stand alone. There
 is no `Reaction` aggregate — `ReactionProfile` carries the data directly.
@@ -341,12 +341,12 @@ Four `NumericNamedValue` records in chemistry-api. All implement
 `com.naturalist.ddd.NumericNamedValue`, all carry a single `BigDecimal value`, all
 declare `@JsonCreator public static of(BigDecimal)`, all use `RoundingMode.HALF_UP`.
 
-| Type | Scale | Sign rule | Notes |
-|------|-------|-----------|-------|
-| `TemperatureFahrenheit` | 1 | any sign valid | Helpers: `isBelow`, `isAbove`, `isWithin(delta, other)` |
-| `Solubility` | 2 | `value >= 0` | `isHighlySoluble()` = `> 100 g/L` |
-| `MolecularWeight` | 4 | `value > 0` | g/mol, IUPAC sig-fig convention |
-| `AtomicWeight` | 4 | `value > 0` | g/mol, IUPAC sig-fig; for synthetic elements carries longest-lived isotope mass number |
+| Type                    | Scale | Sign rule      | Notes                                                                                  |
+|-------------------------|-------|----------------|----------------------------------------------------------------------------------------|
+| `TemperatureFahrenheit` | 1     | any sign valid | Helpers: `isBelow`, `isAbove`, `isWithin(delta, other)`                                |
+| `Solubility`            | 2     | `value >= 0`   | `isHighlySoluble()` = `> 100 g/L`                                                      |
+| `MolecularWeight`       | 4     | `value > 0`    | g/mol, IUPAC sig-fig convention                                                        |
+| `AtomicWeight`          | 4     | `value > 0`    | g/mol, IUPAC sig-fig; for synthetic elements carries longest-lived isotope mass number |
 
 `TemperatureFahrenheit` lives at the chemistry-api root (not under any subpackage) so
 all three sub-packages can use it without an upward-looking import.
@@ -402,6 +402,7 @@ repository-test defines instances.
 ## 11. Current State — What's Built, What's Not
 
 **Built and stable.**
+
 - `Compound` aggregate with all four profiles.
 - `Element` entity + `ElementCollection` + `ElementQuery`.
 - `PeriodicElement` enum (118 elements).
@@ -409,10 +410,12 @@ repository-test defines instances.
 - All four `NumericNamedValue` types.
 
 **Built but explicitly experimental.**
+
 - `ElementRepository` — `@Incubating`, deviates from ADR-020 namespace shape (declared
   as an `interface`, not a `class`). Do not normalize it without confirmation.
 
 **Missing on the api surface.**
+
 - No `CompoundRepository`, `CompoundQuery`, or `CompoundCollection` exist yet. A
   consumer cannot fetch a compound through chemistry-api today; only the repository-test
   catalog provides instances.
@@ -421,6 +424,7 @@ repository-test defines instances.
 - `ReactionType` is package-private; not part of the cross-module surface.
 
 **Known invariant gap.**
+
 - `ReactionProfile.invariants()` enforces only `name` and `title`. Six other
   components are unguarded.
 

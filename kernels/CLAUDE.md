@@ -6,11 +6,13 @@ the entire codebase — treat them as stable contracts, not convenient places to
 ## Core Kernels
 
 ### framework
+
 DDD building blocks. `NamedEntity`, `Entity`, `Aggregate`, `ValueObject`,
 `BehavioralCollection`, `Observable`, `Constraints`, `EntityName`, `EntityId`, `Observer`.
 No domain knowledge — pure structural vocabulary. Everything else depends on this.
 
 Two entity branches sharing a `Named<KEY>` supertype (ADR-022):
+
 - `NamedEntity<NAME extends EntityName>` — natural-key slug identity.
 - `Entity<ID extends EntityId>` — surrogate UUIDv7 identity, generated at record
   construction. `EntityId` validates `UUID.version() == 7` and qualifies equality by
@@ -32,11 +34,13 @@ classes and registers them as Spring beans without domain code importing
 Spring (ADR-025).
 
 ### framework-test
+
 Test infrastructure. `NamedTestEntitySource`, `NamedTestEntitySourceTest`,
 `NamedEntityRepositoryContractTest`, `UniqueConstraint`. Used by all
 `<domain>-repository-test` modules. Never a compile-scope dependency.
 
 ### field-notes  (`com.naturalist.fieldnotes`)
+
 The Durrell principle in code. `Description` carries the same truth at four levels of
 understanding — preschool, elementary, secondary, university — for any entity the system
 can describe. Chemistry compounds, climate thresholds, plants, organisms: all of them.
@@ -49,6 +53,7 @@ import com.naturalist.fieldnotes.Description;
 ```
 
 ### taxonomy  (`com.naturalist.taxonomy`)
+
 Linnaean classification. `TaxonomicClassification` holds order, family, genus, and species
 with `binomialName()` and `isSpeciesLevel()` convenience methods. Nullable genus and species
 accommodate family-level field identifications where species cannot be confirmed.
@@ -61,6 +66,7 @@ import com.naturalist.taxonomy.TaxonomicClassification;
 ```
 
 ### catalog  (`com.naturalist.catalog`)
+
 Cross-domain reference resolution. `Catalog`, `CatalogContribution`,
 `CatalogAssembly`, `EntityRef`, `EntityReferences`, and the open `DomainId`
 interface (ADR-023). Each domain ships its own `DomainId` subtype from its
@@ -71,6 +77,7 @@ startup and fails fast on collision. The catalog kernel was renamed from
 only in narrative records.
 
 ### catalog-inmem  (`com.naturalist.catalog.inmem`)
+
 Reference adapter for `Catalog` that fans out across registered
 `EntityReferences` providers in-process. Light dependencies (only the
 framework's existing third-party set) — that is why it lives in `kernels/`
@@ -109,15 +116,18 @@ taxonomy     →  framework
 
 ## Observability Framework
 
-All domain types implement `Observable`, which requires `Consumer<? extends Constraints> invariants()`. `Constraints` is a fluent builder with constraint methods in two forms:
+All domain types implement `Observable`, which requires `Consumer<? extends Constraints> invariants()`. `Constraints` is
+a fluent builder with constraint methods in two forms:
 
-**Direct-value form** — pass the component value directly. Use this inside `invariants()` on the record that owns the field (when `this` is the enclosing record):
+**Direct-value form** — pass the component value directly. Use this inside `invariants()` on the record that owns the
+field (when `this` is the enclosing record):
 
 - `notNull(value, name)` — general null check
 - `notBlank(value, name)` — rejects null, empty, and whitespace-only Strings (`StringUtils.isNotBlank`)
 - `entityName(e, name)` — validates `EntityName`
 
-**By-function form** — pass the parent object and a method reference. Use this only when evaluating a child property from outside the parent (e.g. `namedEntity(this, FooAggregate::fooInfo, "fooInfo")` to descend into a child Observable):
+**By-function form** — pass the parent object and a method reference. Use this only when evaluating a child property
+from outside the parent (e.g. `namedEntity(this, FooAggregate::fooInfo, "fooInfo")` to descend into a child Observable):
 
 - `namedEntity(o, fn, name)` — validates a `NamedEntity` child and descends into its invariants
 - `valueObject(o, fn, name)` — validates a `ValueObject` child and descends into its invariants
@@ -126,9 +136,15 @@ All domain types implement `Observable`, which requires `Consumer<? extends Cons
 - `notBlank(o, fn, name)` — not-blank check on a child String property
 - `namedValue(o, fn, name)` — validates a `NamedValue<?>` child property
 
-Do not use the by-function form when the direct-value form suffices — the functional indirection adds no value when `this` can never be null.
+Do not use the by-function form when the direct-value form suffices — the functional indirection adds no value when
+`this` can never be null.
 
-`Observer` validates entities at insertion points — `NamedTestEntitySource.insert()` calls `observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid()`. Insertion is an argument-validation site: the producer refuses bad input at its boundary. For method-body observation of *produced* state, the producer uses `.observe()` (metrics only) and hands the value to the consumer, which chooses the terminal operation. See ADR-017's *Producer vs. consumer* section. Use `@Nullable` from JSpecify (`org.jspecify`) for nullable field documentation.
+`Observer` validates entities at insertion points — `NamedTestEntitySource.insert()` calls
+`observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid()`. Insertion is an
+argument-validation site: the producer refuses bad input at its boundary. For method-body observation of *produced*
+state, the producer uses `.observe()` (metrics only) and hands the value to the consumer, which chooses the terminal
+operation. See ADR-017's *Producer vs. consumer* section. Use `@Nullable` from JSpecify (`org.jspecify`) for nullable
+field documentation.
 
 ## Testing Observables
 
@@ -150,6 +166,7 @@ test-infrastructure prefix, then assert the exact set of domain-relative invaria
 with `containsExactlyInAnyOrder`.
 
 Key rules:
+
 - `mo.forMethod(...)` must match the test method name exactly — it scopes the observation
 - `mo.namedEntity(e, label)` for `NamedEntity`/`Aggregate`; `mo.observable(o, label)` for any `Observable`
 - Invalid-case assertions use `containsExactlyInAnyOrder` — exact set, no extras, no missing

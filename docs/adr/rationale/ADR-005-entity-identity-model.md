@@ -176,11 +176,11 @@ None of these require an RDBMS table. The fact that a law *was derived* from obs
 
 ### Classification
 
-| Category | Type | Name kind | Identity | Persistent |
-|---|---|---|---|---|
-| Named stable classification | `CatalogEntity` | `EntityName` (slug) | `PersistenceId` + slug | Yes |
-| Singular occurrence | `FactEntity` | `FactName` (GUID) | `PersistenceId` + GUID | Yes |
-| Domain law, rule, or constant | `ValueObject` / constant | None | None | No |
+| Category                      | Type                     | Name kind           | Identity               | Persistent |
+|-------------------------------|--------------------------|---------------------|------------------------|------------|
+| Named stable classification   | `CatalogEntity`          | `EntityName` (slug) | `PersistenceId` + slug | Yes        |
+| Singular occurrence           | `FactEntity`             | `FactName` (GUID)   | `PersistenceId` + GUID | Yes        |
+| Domain law, rule, or constant | `ValueObject` / constant | None                | None                   | No         |
 
 ### Unified infrastructure
 

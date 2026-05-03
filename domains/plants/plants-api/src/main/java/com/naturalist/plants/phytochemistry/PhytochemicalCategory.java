@@ -33,51 +33,83 @@ package com.naturalist.plants.phytochemistry;
  */
 public enum PhytochemicalCategory {
 
-    /** Nitrogenous bases — caffeine, nicotine, aristolochic acid, morphine. */
+    /**
+     * Nitrogenous bases — caffeine, nicotine, aristolochic acid, morphine.
+     */
     ALKALOID,
 
-    /** Isoprenoid backbone — limonene, menthol, pyrethrin, taxol. */
+    /**
+     * Isoprenoid backbone — limonene, menthol, pyrethrin, taxol.
+     */
     TERPENOID,
 
-    /** Aromatic phenol-ring compounds not otherwise specialised. */
+    /**
+     * Aromatic phenol-ring compounds not otherwise specialised.
+     */
     PHENOLIC,
 
-    /** Phenolic pigments and signaling molecules — anthocyanins, flavonols. */
+    /**
+     * Phenolic pigments and signaling molecules — anthocyanins, flavonols.
+     */
     FLAVONOID,
 
-    /** Polyphenolic astringents — condensed and hydrolysable tannins. */
+    /**
+     * Polyphenolic astringents — condensed and hydrolysable tannins.
+     */
     TANNIN,
 
-    /** Sugar-linked compounds — cardiac, cyanogenic, and salicin glycosides. */
+    /**
+     * Sugar-linked compounds — cardiac, cyanogenic, and salicin glycosides.
+     */
     GLYCOSIDE,
 
-    /** Glycosidic foaming triterpenoids/steroids — yucca, soapwort, soyasapogenols. */
+    /**
+     * Glycosidic foaming triterpenoids/steroids — yucca, soapwort, soyasapogenols.
+     */
     SAPONIN,
 
-    /** Sulphur-containing brassica metabolites — sinigrin, glucotropaeolin. */
+    /**
+     * Sulphur-containing brassica metabolites — sinigrin, glucotropaeolin.
+     */
     GLUCOSINOLATE,
 
-    /** Non-protein amino acids — canavanine, mimosine, β-N-oxalyl-L-α,β-diaminopropionic acid. */
+    /**
+     * Non-protein amino acids — canavanine, mimosine, β-N-oxalyl-L-α,β-diaminopropionic acid.
+     */
     NON_PROTEIN_AMINO_ACID,
 
-    /** Volatile aromatic mixture pressed or distilled from tissue — lavender, thyme oils. */
+    /**
+     * Volatile aromatic mixture pressed or distilled from tissue — lavender, thyme oils.
+     */
     ESSENTIAL_OIL,
 
-    /** Viscous secretion, often terpenoid — pine resin, frankincense. */
+    /**
+     * Viscous secretion, often terpenoid — pine resin, frankincense.
+     */
     RESIN,
 
-    /** Milky exudate — Asclepias cardenolides, Papaver opium, dandelion latex. */
+    /**
+     * Milky exudate — Asclepias cardenolides, Papaver opium, dandelion latex.
+     */
     LATEX,
 
-    /** Low-molecular-weight organic acids — citric, oxalic, salicylic, malic. */
+    /**
+     * Low-molecular-weight organic acids — citric, oxalic, salicylic, malic.
+     */
     ORGANIC_ACID,
 
-    /** Mucilage and gum polysaccharides — okra mucilage, gum arabic. */
+    /**
+     * Mucilage and gum polysaccharides — okra mucilage, gum arabic.
+     */
     POLYSACCHARIDE,
 
-    /** Sugars, common amino acids — included for completeness when a primary metabolite carries notable ecological role. */
+    /**
+     * Sugars, common amino acids — included for completeness when a primary metabolite carries notable ecological role.
+     */
     PRIMARY_METABOLITE,
 
-    /** Fallback while a new category is being agreed upon. Never a permanent home. */
+    /**
+     * Fallback while a new category is being agreed upon. Never a permanent home.
+     */
     OTHER
 }

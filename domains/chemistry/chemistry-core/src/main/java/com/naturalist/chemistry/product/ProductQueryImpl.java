@@ -17,7 +17,7 @@ class ProductQueryImpl
     @Override
     public ProductCollection findByNameSet(Set<ProductName> productNames) {
         observer().arguments("findByNameSet", i -> i
-                .identifierSet(productNames, "productNames"))
+                        .identifierSet(productNames, "productNames"))
                 .throwWhenInvalid();
 
         return new ProductCollection(repository().getByEntityNameSet(productNames));
@@ -26,7 +26,7 @@ class ProductQueryImpl
     @Override
     public ProductCollection findByCompoundName(CompoundName compoundName) {
         observer().arguments("findByCompoundName", i -> i
-                .identifier(compoundName, "compoundName"))
+                        .identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
 
         return new ProductCollection(repository().getByCompoundName(compoundName));

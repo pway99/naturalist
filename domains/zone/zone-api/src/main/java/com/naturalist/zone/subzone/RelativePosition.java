@@ -25,16 +25,24 @@ package com.naturalist.zone.subzone;
  */
 public enum RelativePosition {
 
-    /** The northernmost section of the Zone. */
+    /**
+     * The northernmost section of the Zone.
+     */
     NORTH_END,
 
-    /** The southernmost section of the Zone. */
+    /**
+     * The southernmost section of the Zone.
+     */
     SOUTH_END,
 
-    /** The easternmost section of the Zone. */
+    /**
+     * The easternmost section of the Zone.
+     */
     EAST_END,
 
-    /** The westernmost section of the Zone. */
+    /**
+     * The westernmost section of the Zone.
+     */
     WEST_END,
 
     /**
@@ -47,15 +55,23 @@ public enum RelativePosition {
      */
     CENTER,
 
-    /** Northwest quadrant — for larger zones with meaningful diagonal divisions. */
+    /**
+     * Northwest quadrant — for larger zones with meaningful diagonal divisions.
+     */
     NORTHWEST,
 
-    /** Northeast quadrant. */
+    /**
+     * Northeast quadrant.
+     */
     NORTHEAST,
 
-    /** Southwest quadrant. */
+    /**
+     * Southwest quadrant.
+     */
     SOUTHWEST,
 
-    /** Southeast quadrant. */
+    /**
+     * Southeast quadrant.
+     */
     SOUTHEAST
 }

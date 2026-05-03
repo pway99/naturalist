@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  *   <li>{@link #observe()} — emit metrics only; no throw regardless of validity.
  *       Returns {@code this} so callers can inspect {@link #violations()} after.</li>
  * </ul>
- *
+ * <p>
  * Metric emission behaviour depends on the {@link Observer.MonitoringMode} supplied at
  * construction. With {@link Observer.MonitoringMode#ON_FAILURE}, only failing constraints
  * produce a metric. With {@link Observer.MonitoringMode#ALWAYS}, every inspected constraint

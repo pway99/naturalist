@@ -11,13 +11,13 @@ event when crossed. Referenced by all domain modules — thresholds are domain f
 here, not in the consuming module.
 
 Current Oak Vista thresholds:
-| Name                          | Trigger | Domain significance                          |
+| Name | Trigger | Domain significance |
 |-------------------------------|---------|----------------------------------------------|
-| thiobacillus-activation       | 77°F    | Sulfur oxidation rate increases (Q10 ~2)     |
-| thrips-emergence              | 65°F    | Thrips become active                         |
-| formic-acid-contraindication  | 85°F    | Formic acid Varroa treatment excluded above  |
-| thymol-minimum-efficacy       | 59°F    | Apiguard minimum effective temperature       |
-| tomato-pollen-viability-risk  | 95°F    | Pollen viability drops                       |
+| thiobacillus-activation | 77°F | Sulfur oxidation rate increases (Q10 ~2)     |
+| thrips-emergence | 65°F | Thrips become active |
+| formic-acid-contraindication | 85°F | Formic acid Varroa treatment excluded above |
+| thymol-minimum-efficacy | 59°F | Apiguard minimum effective temperature |
+| tomato-pollen-viability-risk | 95°F | Pollen viability drops |
 
 **SeasonalProfile** — ValueObject. Monthly normals — temperature, precipitation, sun hours,
 humidity. Includes precipitation pattern and season character descriptions.

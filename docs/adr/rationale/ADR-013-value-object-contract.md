@@ -92,12 +92,12 @@ public record SolubilityProfile(
 
 ## Reclassification Guide
 
-| Symptom | Correct classification |
-|---------|----------------------|
-| Contains `Entity` or `Aggregate` members | `Aggregate` |
-| Can serve as a natural key for an entity | `EntityName` subclass |
+| Symptom                                              | Correct classification               |
+|------------------------------------------------------|--------------------------------------|
+| Contains `Entity` or `Aggregate` members             | `Aggregate`                          |
+| Can serve as a natural key for an entity             | `EntityName` subclass                |
 | Only makes sense in the context of a specific entity | Projection / DTO (not a domain type) |
-| Is a subset of an entity's fields | Projection / DTO (not a domain type) |
+| Is a subset of an entity's fields                    | Projection / DTO (not a domain type) |
 
 ## Consequences
 

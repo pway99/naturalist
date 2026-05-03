@@ -88,12 +88,12 @@ The canonical constructor remains accessible but is not the idiomatic path.
 
 ### Factory Method Naming
 
-| Intent | Method name |
-|--------|-------------|
-| Primary construction from arguments | `of(...)` |
-| Empty / zero-element instance | `empty()` |
-| Construction from a related type | `from(...)` |
-| Named domain concept construction | descriptive (`withSolubilityAbove(...)`) |
+| Intent                              | Method name                              |
+|-------------------------------------|------------------------------------------|
+| Primary construction from arguments | `of(...)`                                |
+| Empty / zero-element instance       | `empty()`                                |
+| Construction from a related type    | `from(...)`                              |
+| Named domain concept construction   | descriptive (`withSolubilityAbove(...)`) |
 
 `of` is the default. Deviate only when domain clarity demands it.
 

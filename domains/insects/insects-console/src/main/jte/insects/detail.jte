@@ -113,7 +113,8 @@
                     <p><strong>Appearance:</strong> ${species.pupa().appearance()}</p>
                 @endif
                 @if(species.pupa().diapauseRegulation() != null)
-                    <p><strong>Diapause regulation:</strong> ${species.pupa().diapauseRegulation().getClass().getSimpleName()}</p>
+                    <p><strong>Diapause
+                            regulation:</strong> ${species.pupa().diapauseRegulation().getClass().getSimpleName()}</p>
                 @endif
                 @if(species.pupa().adaptiveSignificance() != null)
                     <p><strong>Adaptive significance:</strong> ${species.pupa().adaptiveSignificance()}</p>

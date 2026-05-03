@@ -196,8 +196,8 @@ public record Zone(
 
         List<SubZone> newSubZones = replaced
                 ? subZones.stream()
-                        .map(s -> s.name().equals(updated.name()) ? updated : s)
-                        .toList()
+                  .map(s -> s.name().equals(updated.name()) ? updated : s)
+                  .toList()
                 : Stream.concat(subZones.stream(), Stream.of(updated)).toList();
 
         return withSubZones(newSubZones);

@@ -66,48 +66,48 @@ exact `isValid()` semantics in `kernels/framework/src/main/java/com/naturalist/o
 
 ### NamedEntity / Observable descent
 
-| Method | Form | Backing record | Behaviour |
-|--------|------|----------------|-----------|
-| `namedEntity(E entity, String name)` | direct | `ObservableConstraint` | Non-null `Named<?>`. Acts as leaf (presence) **and** `ConstraintCollection` (descend). |
-| `namedEntity(O o, Function<O,E> fn, String name)` | by-fn | `ObservableConstraint` | Same, via parent. Null parent → null value → fails. |
-| `valueObject(V vo, String name)` | direct | `ObservableConstraint` | Non-null `ValueObject`. Descends into child invariants. |
-| `valueObject(O o, Function<O,V> fn, String name)` | by-fn | `ObservableConstraint` | Same, via parent. |
-| `valueObjectOrNull(O o, Function<O,V> fn, String name)` | by-fn **only** | `ValueObjectOrNullConstraint` | Null permitted. Descends only when present. `isValid()` is hard-coded `true` — meaningfulness is the **child's** responsibility. |
+| Method                                                                  | Form           | Backing record                    | Behaviour                                                                                                                                                                  |
+|-------------------------------------------------------------------------|----------------|-----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `namedEntity(E entity, String name)`                                    | direct         | `ObservableConstraint`            | Non-null `Named<?>`. Acts as leaf (presence) **and** `ConstraintCollection` (descend).                                                                                     |
+| `namedEntity(O o, Function<O,E> fn, String name)`                       | by-fn          | `ObservableConstraint`            | Same, via parent. Null parent → null value → fails.                                                                                                                        |
+| `valueObject(V vo, String name)`                                        | direct         | `ObservableConstraint`            | Non-null `ValueObject`. Descends into child invariants.                                                                                                                    |
+| `valueObject(O o, Function<O,V> fn, String name)`                       | by-fn          | `ObservableConstraint`            | Same, via parent.                                                                                                                                                          |
+| `valueObjectOrNull(O o, Function<O,V> fn, String name)`                 | by-fn **only** | `ValueObjectOrNullConstraint`     | Null permitted. Descends only when present. `isValid()` is hard-coded `true` — meaningfulness is the **child's** responsibility.                                           |
 | `valueObjectCollection(O o, Function<O,Collection<V>> fn, String name)` | by-fn **only** | `ValueObjectCollectionConstraint` | Non-null `Collection<V extends ValueObject>`. Each element walked under indexed path `[0]`, `[1]`, … . Empty collection passes — pair with `notEmpty` if empty is illegal. |
-| `observable(O o, Function<O,V> fn, String name)` | by-fn **only** | `ObservableConstraint` | Any non-null `Observable` — typically a `BehavioralCollection` held by an `Aggregate`. |
+| `observable(O o, Function<O,V> fn, String name)`                        | by-fn **only** | `ObservableConstraint`            | Any non-null `Observable` — typically a `BehavioralCollection` held by an `Aggregate`.                                                                                     |
 
 ### Identifier validation
 
-| Method | Form | Backing record | Behaviour |
-|--------|------|----------------|-----------|
-| `entityName(E e, String name)` | direct | `EntityNameConstraints.EntityNameConstraint` | `EntityName.isValid(value)` — non-null + slug regex. |
-| `entityId(F f, String name)` | direct | `EntityIdConstraints.EntityIdConstraint` | `EntityId.isValid(value)` — non-null + UUID `version()==7`. |
-| `identifier(V value, String name)` | direct | `IdentifierConstraints.IdentifierConstraint` | Polymorphic — runtime dispatch on `EntityName` vs `EntityId`. Used at boundaries (`AbstractEntityQuery`, `AbstractEntityRepository`) where the branch isn't fixed at compile time. |
-| `identifierSet(Set<V> value, String name)` | direct | `IdentifierConstraints.IdentifierSetConstraint` | Null set fails. Each element validated by runtime type. |
-| `entityNameCollection(Collection<E> names, String name)` | direct | `EntityNameConstraints.EntityNameCollectionConstraint` | Null collection fails; null or invalid element fails. |
-| `entityNameSet(EntityNameSet<E> set, String name)` | direct | `EntityNameConstraints.EntityNameSetConstraint` | Null set fails; every element must be non-null and valid. |
-| `entityNameSet(O o, Function<O,EntityNameSet<E>> fn, String name)` | by-fn | `EntityNameConstraints.EntityNameSetConstraint` | Same via parent. Null parent → null set → fails. |
+| Method                                                             | Form   | Backing record                                         | Behaviour                                                                                                                                                                          |
+|--------------------------------------------------------------------|--------|--------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `entityName(E e, String name)`                                     | direct | `EntityNameConstraints.EntityNameConstraint`           | `EntityName.isValid(value)` — non-null + slug regex.                                                                                                                               |
+| `entityId(F f, String name)`                                       | direct | `EntityIdConstraints.EntityIdConstraint`               | `EntityId.isValid(value)` — non-null + UUID `version()==7`.                                                                                                                        |
+| `identifier(V value, String name)`                                 | direct | `IdentifierConstraints.IdentifierConstraint`           | Polymorphic — runtime dispatch on `EntityName` vs `EntityId`. Used at boundaries (`AbstractEntityQuery`, `AbstractEntityRepository`) where the branch isn't fixed at compile time. |
+| `identifierSet(Set<V> value, String name)`                         | direct | `IdentifierConstraints.IdentifierSetConstraint`        | Null set fails. Each element validated by runtime type.                                                                                                                            |
+| `entityNameCollection(Collection<E> names, String name)`           | direct | `EntityNameConstraints.EntityNameCollectionConstraint` | Null collection fails; null or invalid element fails.                                                                                                                              |
+| `entityNameSet(EntityNameSet<E> set, String name)`                 | direct | `EntityNameConstraints.EntityNameSetConstraint`        | Null set fails; every element must be non-null and valid.                                                                                                                          |
+| `entityNameSet(O o, Function<O,EntityNameSet<E>> fn, String name)` | by-fn  | `EntityNameConstraints.EntityNameSetConstraint`        | Same via parent. Null parent → null set → fails.                                                                                                                                   |
 
 ### NamedValue
 
-| Method | Form | Backing record | Behaviour |
-|--------|------|----------------|-----------|
+| Method                                                                 | Form           | Backing record                               | Behaviour                                                                                                                                     |
+|------------------------------------------------------------------------|----------------|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
 | `namedValue(O o, Function<O,V extends NamedValue<?>> fn, String name)` | by-fn **only** | `NamedValueConstraints.NamedValueConstraint` | Delegates to `NamedValue.isValid()`. The `NamedValue` is **not** an `Observable` — it has no `invariants()` to descend; this is a leaf check. |
 
 ### Primitive / scalar checks
 
-| Method | Form | Backing record | Behaviour |
-|--------|------|----------------|-----------|
-| `notNull(R value, String name)` | direct | `NotNullConstraint` | General null check. |
-| `notNull(T t, Function<T,R> fn, String name)` | by-fn | `NotNullConstraint` | Same via parent. |
-| `notBlank(String value, String name)` | direct | `NotBlankConstraint` | `StringUtils.isNotBlank` — rejects null, empty, whitespace-only. |
-| `notBlank(T t, Function<T,String> fn, String name)` | by-fn | `NotBlankConstraint` | Same via parent. **`notBlank` is String-only** — there is no `notBlank` for non-String types. |
-| `notEmpty(T t, Function<T,R> fn, String name)` | **by-fn only** | `NotEmptyConstraint` | Rejects null + empty `Collection`, `Map`, `CharSequence`. Non-collection non-null values pass. **No direct-value `notEmpty(value, name)` overload exists.** |
+| Method                                              | Form           | Backing record       | Behaviour                                                                                                                                                   |
+|-----------------------------------------------------|----------------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `notNull(R value, String name)`                     | direct         | `NotNullConstraint`  | General null check.                                                                                                                                         |
+| `notNull(T t, Function<T,R> fn, String name)`       | by-fn          | `NotNullConstraint`  | Same via parent.                                                                                                                                            |
+| `notBlank(String value, String name)`               | direct         | `NotBlankConstraint` | `StringUtils.isNotBlank` — rejects null, empty, whitespace-only.                                                                                            |
+| `notBlank(T t, Function<T,String> fn, String name)` | by-fn          | `NotBlankConstraint` | Same via parent. **`notBlank` is String-only** — there is no `notBlank` for non-String types.                                                               |
+| `notEmpty(T t, Function<T,R> fn, String name)`      | **by-fn only** | `NotEmptyConstraint` | Rejects null + empty `Collection`, `Map`, `CharSequence`. Non-collection non-null values pass. **No direct-value `notEmpty(value, name)` overload exists.** |
 
 ### Terminal
 
-| Method | Returns |
-|--------|---------|
+| Method        | Returns                                                                                    |
+|---------------|--------------------------------------------------------------------------------------------|
 | `collected()` | `List<Constraint<?>>` — unmodifiable; the accumulated raw constraints (not yet flattened). |
 
 ---

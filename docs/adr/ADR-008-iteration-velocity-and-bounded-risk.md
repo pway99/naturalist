@@ -1,4 +1,5 @@
 # ADR-008: Iteration Velocity and Bounded Risk
+
 > [rationale](rationale/ADR-008-iteration-velocity-and-bounded-risk.md)
 
 - Capture thoughts immediately — ADR draft, TODO, CLAUDE.md note — enough signal for a

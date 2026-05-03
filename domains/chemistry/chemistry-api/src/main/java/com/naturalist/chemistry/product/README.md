@@ -27,12 +27,12 @@ to accumulate.
 
 ## Components
 
-| Component | Type | Notes |
-|---|---|---|
-| `name` | `ProductName` | kebab-case slug, the canonical identity |
-| `displayName` | `@UniqueValue String` | human-readable label, globally unique |
-| `compounds` | `Set<CompoundName>` | non-empty; the formulation. Cross-`NamedEntity` reference by slug |
-| `properties` | `Map<String, String>` | open-ended SKU-scoped attributes (concentration, application window, NPK, etc.) |
+| Component     | Type                  | Notes                                                                           |
+|---------------|-----------------------|---------------------------------------------------------------------------------|
+| `name`        | `ProductName`         | kebab-case slug, the canonical identity                                         |
+| `displayName` | `@UniqueValue String` | human-readable label, globally unique                                           |
+| `compounds`   | `Set<CompoundName>`   | non-empty; the formulation. Cross-`NamedEntity` reference by slug               |
+| `properties`  | `Map<String, String>` | open-ended SKU-scoped attributes (concentration, application window, NPK, etc.) |
 
 `property(String)` returns `Optional<String>` for ergonomic single-key reads.
 
@@ -52,12 +52,12 @@ namespace patterns): exactly one entity in the package, so there is no
 private interface) and top-level `ProductQuery` (public interface) are the
 correct shape.
 
-| Type | Visibility | Purpose |
-|---|---|---|
-| `Product` | public record | Entity |
-| `ProductRepository` | package-private interface | Persistence port |
-| `ProductQuery` | public interface | Read-side api |
-| `ProductCollection` | public final class | `BehavioralCollection<Product>` return type |
+| Type                | Visibility                | Purpose                                     |
+|---------------------|---------------------------|---------------------------------------------|
+| `Product`           | public record             | Entity                                      |
+| `ProductRepository` | package-private interface | Persistence port                            |
+| `ProductQuery`      | public interface          | Read-side api                               |
+| `ProductCollection` | public final class        | `BehavioralCollection<Product>` return type |
 
 `ProductQuery` exposes:
 

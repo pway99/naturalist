@@ -52,23 +52,41 @@ public record PestPressureRecord(
      * The pest or pathogen responsible for observed pressure in a SubZone.
      */
     public enum Pathogen {
-        /** Tomato Spotted Wilt Virus — transmitted by western flower thrips. No cure. */
+        /**
+         * Tomato Spotted Wilt Virus — transmitted by western flower thrips. No cure.
+         */
         TSWV,
-        /** Western flower thrips — {@code Frankliniella occidentalis}. Primary TSWV vector. */
+        /**
+         * Western flower thrips — {@code Frankliniella occidentalis}. Primary TSWV vector.
+         */
         THRIPS,
-        /** Early blight — {@code Alternaria solani}. */
+        /**
+         * Early blight — {@code Alternaria solani}.
+         */
         EARLY_BLIGHT,
-        /** Late blight — {@code Phytophthora infestans}. */
+        /**
+         * Late blight — {@code Phytophthora infestans}.
+         */
         LATE_BLIGHT,
-        /** Fusarium crown and root rot — soil-persistent. Multi-season rotation required. */
+        /**
+         * Fusarium crown and root rot — soil-persistent. Multi-season rotation required.
+         */
         FUSARIUM_WILT,
-        /** Broad mite — {@code Polyphagotarsonemus latus}. */
+        /**
+         * Broad mite — {@code Polyphagotarsonemus latus}.
+         */
         BROAD_MITE,
-        /** Twospotted spider mite — {@code Tetranychus urticae}. */
+        /**
+         * Twospotted spider mite — {@code Tetranychus urticae}.
+         */
         SPIDER_MITE,
-        /** Aphid species — multiple genera. */
+        /**
+         * Aphid species — multiple genera.
+         */
         APHID,
-        /** Cutworm — larvae of various noctuid moths. */
+        /**
+         * Cutworm — larvae of various noctuid moths.
+         */
         CUTWORM,
         /**
          * Small hive beetle — {@code Aethina tumida}.

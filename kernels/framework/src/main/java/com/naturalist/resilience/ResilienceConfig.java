@@ -24,22 +24,28 @@ import java.util.function.Consumer;
  */
 public sealed interface ResilienceConfig extends Observable {
 
-    /** Hard ceiling for a synchronous request-path timeout. Anything longer
-     *  blocks a user-facing thread past the point where retries or a polite
-     *  error response would be the better answer — those calls belong on an
-     *  async worker, not in the request path. */
+    /**
+     * Hard ceiling for a synchronous request-path timeout. Anything longer
+     * blocks a user-facing thread past the point where retries or a polite
+     * error response would be the better answer — those calls belong on an
+     * async worker, not in the request path.
+     */
     Duration MAX_TIMEOUT = Duration.ofSeconds(2);
 
-    /** Hard ceiling for the narrow class of synchronous calls that ship a
-     *  binary payload (image upload to Claude vision, S3 PUT). Generous enough
-     *  for a few-MB JPEG on a slow connection; anything longer should be
-     *  fire-and-forget on an event handler, not a blocking call. */
+    /**
+     * Hard ceiling for the narrow class of synchronous calls that ship a
+     * binary payload (image upload to Claude vision, S3 PUT). Generous enough
+     * for a few-MB JPEG on a slow connection; anything longer should be
+     * fire-and-forget on an event handler, not a blocking call.
+     */
     Duration MAX_UPLOAD_TIMEOUT = Duration.ofSeconds(30);
 
-    /** Hard ceiling for circuit-breaker recovery wait. An hour is already
-     *  long enough to bridge most upstream incidents; anything longer is
-     *  almost always a typo. Distinct from request timeout — this measures
-     *  how long the breaker stays open, not how long any one call may run. */
+    /**
+     * Hard ceiling for circuit-breaker recovery wait. An hour is already
+     * long enough to bridge most upstream incidents; anything longer is
+     * almost always a typo. Distinct from request timeout — this measures
+     * how long the breaker stays open, not how long any one call may run.
+     */
     Duration MAX_OPEN_WAIT = Duration.ofHours(1);
 
     String name();

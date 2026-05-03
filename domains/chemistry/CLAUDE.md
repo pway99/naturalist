@@ -72,7 +72,8 @@ stateless permits inherit it without ceremony, but the validation pipeline is wi
 now so promoting a permit to a stateful record (e.g. a future `IndoleAlkaloid(RingSubstitution
 substitution)`) does not require chasing down validation call sites. `CompoundInfo` already
 validates `structuralType` via `valueObject(...)`, walking whatever invariants the concrete
-permit declares — when a future permit overrides the default, it is automatically picked up. Top-level family membership is also surfaced as behavioral predicates on
+permit declares — when a future permit overrides the default, it is automatically picked up. Top-level family membership
+is also surfaced as behavioral predicates on
 `Compound`: `isAlkaloid()`, `isTerpenoid()`, `isPhenolic()`, `isGlycoside()`,
 `isGlucosinolate()`. These are one-liner rollups over `category()` — `isPhenolic()`
 spans `PHENOLIC`, `FLAVONOID`, `TANNIN`; `isGlycoside()` spans `GLYCOSIDE`, `SAPONIN`.
@@ -196,6 +197,7 @@ current authoritative catalog is `chemistry-repository-test/src/main/resources/c
 which is loaded by `CompoundTestEntitySource` at test time.
 
 Each entry in `compounds.json` must include:
+
 - `"name": "<compound-slug>"` — the `CompoundName` natural key (no `id` field; ADR-022)
 - `"commonName": "<display name>"` — the human-readable common name (`@UniqueValue String`)
 - `"compoundInfo": { ... }` — nested `CompoundInfo` ValueObject (formula, molecularWeight,

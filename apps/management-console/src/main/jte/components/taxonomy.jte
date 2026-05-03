@@ -9,6 +9,6 @@
         @if(taxonomy.species() != null)
             ${taxonomy.species().value()}
         @endif
-        </em>
+    </em>
     @endif
 </p>

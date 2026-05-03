@@ -8,10 +8,10 @@
     <section class="admin-catalog">
         <h1>Catalog</h1>
         <p>Domains, <code>CatalogContribution</code>s, and
-           <code>EntityReferences</code> providers the assembled
-           <code>Catalog</code> bean was built from. A heading present here
-           is one the composition root registered; absence on a domain you
-           expected is a wiring defect.</p>
+            <code>EntityReferences</code> providers the assembled
+            <code>Catalog</code> bean was built from. A heading present here
+            is one the composition root registered; absence on a domain you
+            expected is a wiring defect.</p>
 
         @if(groups.isEmpty())
             <p><em>No domains registered.</em></p>

@@ -1,4 +1,5 @@
 # ADR-002: Repository Behavioral Contract via Test Interface
+
 > [rationale](rationale/ADR-002-repository-behavioral-contract.md)
 
 - Module name is `<domain>-repository-test` (named for purpose).
@@ -21,6 +22,7 @@ Set-based select methods require **≥ 2 known + 1 not-found** in the input to d
 partial-match from single-entity lookup.
 
 Each write method (`insert`, `update`) has three:
+
 - `insert`: arg validation, constraint violation (dup id → `PrimaryKeyConstraintException`,
   dup unique → `UniqueConstraintException`), expected result (retrievable by id and name,
   observed via Observer).

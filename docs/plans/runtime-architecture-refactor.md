@@ -191,6 +191,7 @@ apps/management-console       →  everything it composes + spring-boot     (the
 ```
 
 Rules preserved:
+
 1. `*-api` modules depend only on `framework`, `identifiers`, `field-notes`,
    (organism only) `taxonomy`. Nothing else.
 2. `*-core` may import another domain's **api** only.
@@ -224,6 +225,7 @@ implementation before anything else moves. Subsequent milestones — and
 all subsequent feature work — can then evaluate themselves against it.
 
 **Read first.**
+
 - `kernels/framework/src/main/java/com/naturalist/observability/Observable.java`
   (the existing facade-with-adapter pattern)
 - `docs/adr/rationale/ADR-018-third-party-dependency-policy.md`
@@ -231,32 +233,33 @@ all subsequent feature work — can then evaluate themselves against it.
 - this PLAN.md ("Architectural decisions")
 
 **Build.**
+
 - `kernels/framework/src/main/java/com/naturalist/resilience/`:
-  - `Resilience` — facade interface aggregating the four primitives.
-  - `Retry`, `Timeout`, `CircuitBreaker`, `Bulkhead` — small per-primitive
-    interfaces. Each takes a `Supplier<T>` (or `Runnable`) and returns the
-    protected execution.
-  - `ResilienceConfig` — value-object configuration record per primitive
-    (max attempts, backoff, slow-call thresholds, queue depth).
-  - `@Resilient` — runtime-retention annotation taking a config name.
-    Pure marker, no Spring meta-annotation.
-  - `NoOpResilience` — package-private default that runs the supplier
-    unprotected; used in tests and by any composition root that has not
-    yet wired the production adapter.
+    - `Resilience` — facade interface aggregating the four primitives.
+    - `Retry`, `Timeout`, `CircuitBreaker`, `Bulkhead` — small per-primitive
+      interfaces. Each takes a `Supplier<T>` (or `Runnable`) and returns the
+      protected execution.
+    - `ResilienceConfig` — value-object configuration record per primitive
+      (max attempts, backoff, slow-call thresholds, queue depth).
+    - `@Resilient` — runtime-retention annotation taking a config name.
+      Pure marker, no Spring meta-annotation.
+    - `NoOpResilience` — package-private default that runs the supplier
+      unprotected; used in tests and by any composition root that has not
+      yet wired the production adapter.
 - `adapters/resilience-resilience4j/`:
-  - New module under the new `adapters/` tree (creating the tree itself
-    is part of M5; for M1, the module sits temporarily at
-    `kernels/resilience-resilience4j/` and moves in M5 — or, if M5 ships
-    first, it lands directly in `adapters/`. Sequencing decision deferred
-    to the executor.)
-  - `Resilience4jResilience` — bridges the facade to
-    `io.github.resilience4j.retry.*`, `.circuitbreaker.*`, `.timelimiter.*`,
-    `.bulkhead.*`. Reads `ResilienceConfig` records and constructs the
-    corresponding r4j primitives.
-  - Unit tests covering: retry executes N attempts on transient failure;
-    timeout fires after configured duration; circuit breaker opens after
-    threshold; bulkhead rejects beyond capacity. All tests use the
-    adapter directly — no Spring.
+    - New module under the new `adapters/` tree (creating the tree itself
+      is part of M5; for M1, the module sits temporarily at
+      `kernels/resilience-resilience4j/` and moves in M5 — or, if M5 ships
+      first, it lands directly in `adapters/`. Sequencing decision deferred
+      to the executor.)
+    - `Resilience4jResilience` — bridges the facade to
+      `io.github.resilience4j.retry.*`, `.circuitbreaker.*`, `.timelimiter.*`,
+      `.bulkhead.*`. Reads `ResilienceConfig` records and constructs the
+      corresponding r4j primitives.
+    - Unit tests covering: retry executes N attempts on transient failure;
+      timeout fires after configured duration; circuit breaker opens after
+      threshold; bulkhead rejects beyond capacity. All tests use the
+      adapter directly — no Spring.
 - `kernels/framework`'s `pom.xml` does NOT add Resilience4j. The facade
   is implementation-free at the kernel level.
 - A short CONTRIBUTING-style note in `docs/` that captures the PR-level
@@ -284,6 +287,7 @@ retry+timeout+circuit-breaker worked example. Policy note at
 session because half-completed renames are toxic.
 
 **Read first.**
+
 - `kernels/atlas/PLAN.md` (the entire atlas plan — this rename is its
   natural conclusion)
 - `kernels/atlas/src/main/java/com/naturalist/atlas/` (every file)
@@ -291,6 +295,7 @@ session because half-completed renames are toxic.
 - All grep hits for `atlas` (case-insensitive) across the repo.
 
 **Build.**
+
 - Directory rename: `kernels/atlas/` → `kernels/catalog/`,
   `kernels/atlas-inmem/` → `kernels/catalog-inmem/`.
 - Package rename: `com.naturalist.atlas` → `com.naturalist.catalog`,
@@ -335,6 +340,7 @@ subtypes. Preserve the bounded-cardinality property via assembly-time
 validation.
 
 **Read first.**
+
 - `kernels/catalog/src/main/java/com/naturalist/catalog/DomainId.java`
   (post-M2)
 - `kernels/catalog-inmem/src/main/java/com/naturalist/catalog/inmem/InMemoryCatalog.java`
@@ -343,17 +349,18 @@ validation.
 - This PLAN.md ("Open DomainId" decision).
 
 **Build.**
+
 - `kernels/catalog/DomainId.java` becomes a non-sealed interface:
   `String value()` and the default no-op `invariants()`. Nested records
   removed. `of(String)` factory removed.
 - Each `domains/<d>/<d>-api/` ships a record:
-  - `domains/plants/plants-api/.../PlantsDomain.java` —
-    `record PlantsDomain() implements DomainId { value() = "plants"; }`
-  - `domains/chemistry/chemistry-api/.../ChemistryDomain.java`
-  - `domains/insects/insects-api/.../InsectsDomain.java`
-  - (Subtypes for the other scaffolded domains are added when those
-    domains land their first catalog contribution; do not preemptively
-    create empty domain subtypes for modules that do not yet contribute.)
+    - `domains/plants/plants-api/.../PlantsDomain.java` —
+      `record PlantsDomain() implements DomainId { value() = "plants"; }`
+    - `domains/chemistry/chemistry-api/.../ChemistryDomain.java`
+    - `domains/insects/insects-api/.../InsectsDomain.java`
+    - (Subtypes for the other scaffolded domains are added when those
+      domains land their first catalog contribution; do not preemptively
+      create empty domain subtypes for modules that do not yet contribute.)
 - `CatalogAssembly.from(...)` validates uniqueness of `domain.value()`
   across all registered `CatalogContribution`s and `EntityReferences`.
   Duplicate slug throws `IllegalArgumentException` at assembly time.
@@ -395,6 +402,7 @@ Formal ADR (slug uniqueness via assembly validation) lands in M10.
 Disambiguate its name from per-domain console contribution libraries.
 
 **Read first.**
+
 - `naturalist-web/pom.xml`
 - `naturalist-web/console/pom.xml`
 - `naturalist-web/console/src/main/java/com/naturalist/console/`
@@ -402,6 +410,7 @@ Disambiguate its name from per-domain console contribution libraries.
 - Root `pom.xml` modules section.
 
 **Build.**
+
 - Create `apps/` directory at the repo root with a parent `pom.xml`
   (artifactId `naturalist-apps`, packaging `pom`).
 - Move `naturalist-web/console/` → `apps/management-console/`. Update
@@ -443,11 +452,13 @@ and in `kernels/catalog/PLAN.md` / `PLAN-redirect.md`'s historical record.
 implementations carrying heavy or vendor-specific dependencies.
 
 **Read first.**
+
 - This PLAN.md ("Architectural decisions" — adapters tree).
 - M1 output (the resilience adapter, wherever it temporarily landed).
 - M4 output (the apps tree, which is the symmetric sibling).
 
 **Build.**
+
 - Create `adapters/` directory at the repo root with a parent `pom.xml`
   (artifactId `naturalist-adapters`, packaging `pom`).
 - If M1's `resilience-resilience4j` landed in `kernels/`, move it now to
@@ -493,6 +504,7 @@ domain wired through it. Prove the boundary holds before rolling
 across all domains.
 
 **Read first.**
+
 - `kernels/framework/src/main/java/com/naturalist/` (sample
   to confirm the marker annotation has a natural home alongside other
   framework types).
@@ -505,6 +517,7 @@ across all domains.
   `ImportBeanDefinitionRegistrar` javadoc.
 
 **Build.**
+
 - `kernels/framework/src/main/java/com/naturalist/framework/DomainService.java`:
   ```java
   @Retention(RUNTIME) @Target(TYPE)
@@ -512,14 +525,14 @@ across all domains.
   ```
   No meta-annotations. No third-party imports.
 - `adapters/spring-runtime/`:
-  - New module. Depends on `kernels/framework` and `spring-context`
-    (NOT `spring-boot`).
-  - `DomainServiceScan` — `@Configuration` implementing
-    `ImportBeanDefinitionRegistrar`. Runs
-    `ClassPathScanningCandidateComponentProvider` filtered by
-    `AnnotationTypeFilter(DomainService.class)`, base package
-    `com.naturalist`. Registers each candidate with the
-    `BeanDefinitionRegistry`.
+    - New module. Depends on `kernels/framework` and `spring-context`
+      (NOT `spring-boot`).
+    - `DomainServiceScan` — `@Configuration` implementing
+      `ImportBeanDefinitionRegistrar`. Runs
+      `ClassPathScanningCandidateComponentProvider` filtered by
+      `AnnotationTypeFilter(DomainService.class)`, base package
+      `com.naturalist`. Registers each candidate with the
+      `BeanDefinitionRegistry`.
 - Pilot wiring: annotate `PlantCatalogContribution` and
   `PlantCompoundReferences` with `@DomainService`. The
   `PlantsDomain` record (from M3) gets `@DomainService` too.
@@ -569,6 +582,7 @@ genus token.
 catalog contribution / provider / linker / DomainId with the marker.
 
 **Read first.**
+
 - `apps/management-console/src/main/java/com/naturalist/console/catalog/CatalogConfiguration.java`
   (post-M6) and any other configuration class that hand-wires
   domain-owned beans.
@@ -577,6 +591,7 @@ catalog contribution / provider / linker / DomainId with the marker.
 - M6 output (the established pattern).
 
 **Build.**
+
 - Annotate each domain's `CatalogContribution`, `EntityReferences`,
   `EntityRefLinker` (where present), and `DomainId` subtype with
   `@DomainService`.
@@ -649,24 +664,26 @@ that exist today. This is the bridge from "facade exists" (M1) to
 "resilience is enforced" (M9).
 
 **Read first.**
+
 - M1 output (`Resilience` facade and adapter).
 - An audit pass: every call site in `*-core` that crosses a boundary
   the facade should protect. Initial candidates:
-  - Catalog fan-out to `EntityReferences.referencesTo(...)` — each
-    provider call is a candidate for individual timeout + retry.
-  - Repository reads in `*-repository-rdms/` (currently only
-    `soil-repository-rdms/`).
-  - The console's HTTP controllers, where downstream domain calls form
-    a request boundary.
+    - Catalog fan-out to `EntityReferences.referencesTo(...)` — each
+      provider call is a candidate for individual timeout + retry.
+    - Repository reads in `*-repository-rdms/` (currently only
+      `soil-repository-rdms/`).
+    - The console's HTTP controllers, where downstream domain calls form
+      a request boundary.
 
 **Build.**
+
 - For each identified call site, either:
-  - Wrap with `@Resilient(name = "...")` (or programmatic `Resilience`
-    facade call) and document the chosen primitive set, or
-  - Annotate with `@ResilienceExempt(reason = "...")` if the call is
-    in-process, side-effect-free, and not subject to timeout (the
-    annotation, also in `kernels/framework`, exists precisely so M9's
-    enforcement test has a deliberate exemption path).
+    - Wrap with `@Resilient(name = "...")` (or programmatic `Resilience`
+      facade call) and document the chosen primitive set, or
+    - Annotate with `@ResilienceExempt(reason = "...")` if the call is
+      in-process, side-effect-free, and not subject to timeout (the
+      annotation, also in `kernels/framework`, exists precisely so M9's
+      enforcement test has a deliberate exemption path).
 - Configuration for each named resilience strategy lives in
   `apps/management-console/`'s `application.yml` (or a sibling
   `resilience.yml`), keyed by the names referenced in `@Resilient`.
@@ -763,12 +780,13 @@ tests keep their unprotected behaviour. The console's
 `Resilience` bean exposed by `ResilienceConfiguration` and forwards it
 to the new overload. `InsectsController` gained a `Resilience`
 constructor parameter; `image(...)` extracts the `Files.copy` + `sips`
+
 + `Files.readAllBytes` block into a `convert(...)` helper wrapped by
-`resilience.timeout("image.conversion").execute(...)` so the configured
-2-second wall-clock cap actually cancels a wedged subprocess. Strategy
-names live as `private static final String` constants
-(`CATALOG_FANOUT`, `IMAGE_CONVERSION`) shared by the `@Resilient`
-annotation and the programmatic facade call to keep the two in sync.
+  `resilience.timeout("image.conversion").execute(...)` so the configured
+  2-second wall-clock cap actually cancels a wedged subprocess. Strategy
+  names live as `private static final String` constants
+  (`CATALOG_FANOUT`, `IMAGE_CONVERSION`) shared by the `@Resilient`
+  annotation and the programmatic facade call to keep the two in sync.
 
 Synthetic-failure proof:
 `apps/management-console/src/test/java/com/naturalist/console/catalog/CatalogResilienceTest`
@@ -799,11 +817,13 @@ can be a pure ergonomic upgrade rather than a behaviour change.
 a reviewer-discipline-only requirement.
 
 **Read first.**
+
 - M1, M8 outputs.
 - Existing ArchUnit tests in the project (search
   `com.tngtech.archunit`) — pattern to follow.
 
 **Build.**
+
 - New ArchUnit test in a test-scope module the build runs:
   `ResilienceComplianceTest`. Discovers every concrete class in `*-core`
   and `apps/*` modules that has a constructor parameter implementing a
@@ -872,6 +892,7 @@ future contributors find them in `docs/adr/` rather than re-deriving
 them from this plan.
 
 **Read first.**
+
 - `docs/adr/README.md`
 - `docs/adr/ADR-018-third-party-dependency-policy.md` (closest
   philosophical neighbour for the resilience and DI boundary
@@ -880,6 +901,7 @@ them from this plan.
   material).
 
 **Build.**
+
 - ADR-023: "Open DomainId — slug uniqueness via assembly validation."
   Records the shift from sealed kernel enum to per-domain open subtypes
   and the mechanism that preserves bounded metric tag cardinality.

@@ -7,10 +7,10 @@ import java.util.Set;
 
 class ImageQueryImpl
         extends AbstractEntityQuery<
-                        InsectImageId,
-                        InsectImage,
-                        ImageCollection,
-                        InsectRepository.ImageRepository>
+        InsectImageId,
+        InsectImage,
+        ImageCollection,
+        InsectRepository.ImageRepository>
         implements InsectQuery.ImageQuery {
 
     ImageQueryImpl(InsectRepository.ImageRepository repository) {

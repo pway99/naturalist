@@ -269,11 +269,17 @@ public record InsectSpecies(
          * The qualitative pattern of annual generation count.
          */
         public enum VoltinismPattern {
-            /** One generation per year. */
+            /**
+             * One generation per year.
+             */
             UNIVOLTINE,
-            /** Two generations per year. */
+            /**
+             * Two generations per year.
+             */
             BIVOLTINE,
-            /** Three or more generations per year. */
+            /**
+             * Three or more generations per year.
+             */
             MULTIVOLTINE,
             /**
              * Generation count varies within a site and cannot be reduced to a
@@ -329,7 +335,8 @@ public record InsectSpecies(
 
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> {};
+            return i -> {
+            };
         }
     }
 
@@ -429,7 +436,8 @@ public record InsectSpecies(
 
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> {};
+            return i -> {
+            };
         }
     }
 }

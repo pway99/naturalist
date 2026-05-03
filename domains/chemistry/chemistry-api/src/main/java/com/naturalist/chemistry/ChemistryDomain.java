@@ -17,7 +17,13 @@ import com.naturalist.infrastructure.DomainService;
 @DomainService
 public record ChemistryDomain() implements DomainId {
 
-    @Override public String value() { return "chemistry"; }
+    @Override
+    public String value() {
+        return "chemistry";
+    }
 
-    @Override public String toString() { return value(); }
+    @Override
+    public String toString() {
+        return value();
+    }
 }

@@ -173,27 +173,27 @@ kernels/field-notes/src/main/java/com/naturalist/fieldnotes/
 
 ## Milestone supersession table
 
-| Original | Status | Supersedes / Replaced by |
-|----------|--------|-------------------------|
-| M0 — Scaffold | ✅ shipped | unchanged |
-| M1 — Shared types | ✅ shipped | unchanged |
-| M2 — Forward SPI: CatalogContribution + resolveAlias | ✅ shipped, **superseded** | replaced by **M2′** |
-| M3 — Inverse SPI | ✅ shipped | unchanged |
-| M4 — Plants CatalogContribution (derived aliases) | ✅ shipped, **superseded** | replaced by **M4′** |
-| M5 — Plants EntityReferences\<CompoundName\> | ✅ shipped | unchanged |
-| M6 — Description renderer (formatting only) | ✅ shipped (M6a + M6b wiring) | unchanged |
-| M7 — Renderer catalog integration (forward linking) | ✅ shipped, **superseded** | replaced by **M7′** |
-| M8 — Chemistry detail back-references | ✅ shipped | revised — Catalog wired as Spring `@Bean`; URL contribution moved to per-domain `EntityRefLinker` SPI composed by `CompositeEntityRefLinker` (LinkResolver removed in M7′) |
-| M9 — Observer wiring and metrics | pending | revised — split into INFO and WARN observation types |
-| M10 — Eager startup validation | pending | revised — coverage assertion, not dangle hunt |
-| M11 — ArchUnit guard | pending | unchanged |
-| M12 — Documentation and ADR | pending | unchanged in shape, content updated |
-| — | ✅ shipped | **M1.5** — `CommonName` value object in field-notes |
-| — | ✅ shipped | **M2′** — Catalog.search + token index |
-| — | ✅ shipped | **M4′** — Plants searchable contribution (with common names) |
-| — | ✅ shipped | **M7′** — Renderer search affordances |
-| — | ✅ shipped | **M-Search-UI-A** — persistent search box in console layout |
-| — | ✅ shipped | **M-Search-UI-B** — search results page |
+| Original                                             | Status                       | Supersedes / Replaced by                                                                                                                                                   |
+|------------------------------------------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| M0 — Scaffold                                        | ✅ shipped                    | unchanged                                                                                                                                                                  |
+| M1 — Shared types                                    | ✅ shipped                    | unchanged                                                                                                                                                                  |
+| M2 — Forward SPI: CatalogContribution + resolveAlias | ✅ shipped, **superseded**    | replaced by **M2′**                                                                                                                                                        |
+| M3 — Inverse SPI                                     | ✅ shipped                    | unchanged                                                                                                                                                                  |
+| M4 — Plants CatalogContribution (derived aliases)    | ✅ shipped, **superseded**    | replaced by **M4′**                                                                                                                                                        |
+| M5 — Plants EntityReferences\<CompoundName\>         | ✅ shipped                    | unchanged                                                                                                                                                                  |
+| M6 — Description renderer (formatting only)          | ✅ shipped (M6a + M6b wiring) | unchanged                                                                                                                                                                  |
+| M7 — Renderer catalog integration (forward linking)  | ✅ shipped, **superseded**    | replaced by **M7′**                                                                                                                                                        |
+| M8 — Chemistry detail back-references                | ✅ shipped                    | revised — Catalog wired as Spring `@Bean`; URL contribution moved to per-domain `EntityRefLinker` SPI composed by `CompositeEntityRefLinker` (LinkResolver removed in M7′) |
+| M9 — Observer wiring and metrics                     | pending                      | revised — split into INFO and WARN observation types                                                                                                                       |
+| M10 — Eager startup validation                       | pending                      | revised — coverage assertion, not dangle hunt                                                                                                                              |
+| M11 — ArchUnit guard                                 | pending                      | unchanged                                                                                                                                                                  |
+| M12 — Documentation and ADR                          | pending                      | unchanged in shape, content updated                                                                                                                                        |
+| —                                                    | ✅ shipped                    | **M1.5** — `CommonName` value object in field-notes                                                                                                                        |
+| —                                                    | ✅ shipped                    | **M2′** — Catalog.search + token index                                                                                                                                     |
+| —                                                    | ✅ shipped                    | **M4′** — Plants searchable contribution (with common names)                                                                                                               |
+| —                                                    | ✅ shipped                    | **M7′** — Renderer search affordances                                                                                                                                      |
+| —                                                    | ✅ shipped                    | **M-Search-UI-A** — persistent search box in console layout                                                                                                                |
+| —                                                    | ✅ shipped                    | **M-Search-UI-B** — search results page                                                                                                                                    |
 
 Superseded milestones keep their existing text in PLAN.md as historical
 record. New milestone bodies follow.
@@ -209,6 +209,7 @@ search tokens. Lands before the search-direction work because every
 downstream milestone wants it.
 
 **Read first.**
+
 - `kernels/field-notes/src/main/java/com/naturalist/fieldnotes/Description.java`
   — the existing field-notes value object; new file mirrors its style.
 - `kernels/framework/src/main/java/com/naturalist/ddd/ValueObject.java`
@@ -216,6 +217,7 @@ downstream milestone wants it.
 - `chat-briefing.md` §3 (record conventions) and §4 (Constraints API).
 
 **Build.**
+
 - `kernels/field-notes/src/main/java/com/naturalist/fieldnotes/CommonName.java`
   — record `CommonName(String label, Locale locale)` implementing
   `ValueObject`. Static factory `CommonName.of(String label)` defaults
@@ -237,6 +239,7 @@ downstream milestone wants it.
 only on `framework`. No domain code touched.
 
 **Notes.**
+
 - The `Locale` choice over a custom `LanguageTag` value object is
   deliberate — `java.util.Locale` covers the regional-variant use case
   (`en-US`, `en-GB`, `es-MX`) without inventing a parallel type. Jackson
@@ -257,6 +260,7 @@ contribution's job becomes feeding a token index; `Catalog`'s forward-direction
 method becomes `search(String) -> SearchResults`.
 
 **Read first.**
+
 - The shipped M2 code in `kernels/catalog/` — `CatalogContribution.java`,
   `Catalog.java`, `InMemoryCatalog.java`, `CatalogAssembly.java`. The supersession
   rewrites these in place.
@@ -266,6 +270,7 @@ method becomes `search(String) -> SearchResults`.
 - `chat-briefing.md` §7 (BehavioralCollection conventions).
 
 **Build.**
+
 - `MatchKind` enum: `EXACT_SLUG`, `EXACT_TOKEN`, `PREFIX`. Order is the
   intended display order — `EXACT_SLUG` first, `PREFIX` last. Adding a
   fourth kind later (e.g. `FUZZY` once Lucene lands) is an enum extension.
@@ -298,6 +303,7 @@ method becomes `search(String) -> SearchResults`.
   is still indexed by `referenceType()`.
 
 **Acceptance.** `InMemoryCatalogTest` covers:
+
 - Exact slug match (`"california-pipevine"`) returns one hit, `EXACT_SLUG`.
 - Exact token match against a derived token (`"aristolochia"`) returns one
   or more hits, `EXACT_TOKEN`.
@@ -317,6 +323,7 @@ method becomes `search(String) -> SearchResults`.
 Tests use synthetic contributions only — no domain wiring at this milestone.
 
 **Notes.**
+
 - Case sensitivity inverts from M2's "case-sensitive on the first character
   (genus capitalisation matters)" to "case-insensitive throughout." Genus
   capitalisation is a presentation concern, not a search concern — a young
@@ -341,6 +348,7 @@ drop-on-collision).
 derivable surface forms unconditionally; harvest authored common names.
 
 **Read first.**
+
 - The shipped M4 code in
   `domains/plants/plants-core/src/main/java/com/naturalist/plants/catalog/PlantCatalogContribution.java`
   and its test. The supersession rewrites these in place.
@@ -351,6 +359,7 @@ derivable surface forms unconditionally; harvest authored common names.
   (planned in this milestone if not).
 
 **Build.**
+
 - If `Plant` does not yet carry `commonNames: Set<CommonName>`, add the
   component. Update `PlantTestEntitySource` and `plants.json` so at least
   the worked-example entries (`california-pipevine`, `crimson-clover`,
@@ -388,6 +397,7 @@ contribution does not make the catalog depend on plants — assembled in
 plants-core test scope, consumed via the catalog SPI only (unchanged from M4).
 
 **Notes.**
+
 - Adding `commonNames` to `Plant` is technically an api-module change, not
   a core-module change. Per `chat-briefing.md` §1 the api module's
   dependencies (`framework`, `identifiers`, `field-notes`, `taxonomy`)
@@ -414,6 +424,7 @@ with the term as the query. The detail-page-anchor behaviour from M7 goes
 away.
 
 **Read first.**
+
 - The shipped M7 code:
   `domains/plants/plants-console/src/main/java/com/naturalist/plants/console/render/DescriptionRenderer.java`,
   `LinkResolver.java`, `DescriptionRendererCatalogTest.java`.
@@ -422,6 +433,7 @@ away.
 - M-Search-UI-B output if it lands first (the search results URL contract).
 
 **Build.**
+
 - Remove `LinkResolver` and the `Map<Class<? extends EntityName>,
   Function<EntityName, String>>` URL builder machinery. The renderer no
   longer needs to know which domain a term belongs to — the search page
@@ -447,6 +459,7 @@ away.
   deleted; a single `DescriptionRendererTest` covers everything.
 
 **Acceptance.** Visual review on `crimson-clover`'s university level:
+
 - `Trifolium pratense` is italicised and wrapped in a search link.
 - `T. pratense` (abbreviated) is italicised and wrapped in a search link
   pointing at the abbreviated form (round-trip-safe URL encoding).
@@ -462,6 +475,7 @@ away.
   extraction are unchanged.
 
 **Notes.**
+
 - The "graceful degradation" tested in M7 (italics-only when the catalog
   cannot resolve) is no longer a feature — it was a workaround for the
   routing model's binary state. Under search, the empty-state *is* the
@@ -486,6 +500,7 @@ discovery affordance is one keystroke away regardless of where the
 naturalist is reading.
 
 **Read first.**
+
 - `naturalist-web/console/src/main/jte/layout.jte` (or whatever the base
   layout template is — locate during the session).
 - `domains/plants/plants-console/src/main/jte/plants/detail.jte` to confirm
@@ -493,6 +508,7 @@ naturalist is reading.
 - M-Search-UI-B output, since the form action target lives there.
 
 **Build.**
+
 - A new JTE include `naturalist-web/console/src/main/jte/_search-box.jte`
   rendering a `<form action="/search" method="get">` with a single
   `<input name="q" type="search">` and a submit button. No JavaScript —
@@ -512,6 +528,7 @@ the search box; navigate to `/chemistry/aristolochic-acid`, see the search
 box; submit `aristolochia` from either page, land on `/search?q=aristolochia`.
 
 **Notes.**
+
 - Pre-filling the search box on the search page is a layout-parameter
   pass-through, not a session-scoped concern. Each request carries `q`;
   the controller exposes it as a model attribute; the layout reads it.
@@ -527,6 +544,7 @@ groups hits by domain, and renders each group with the existing per-domain
 URL conventions. Owns the empty-state UX for no-hit searches.
 
 **Read first.**
+
 - M2′ outputs (`Catalog.search`, `SearchResults`, `SearchHit`).
 - The console's existing URL conventions (`PlantsController`,
   `ChemistryController`, `InsectsController` route definitions) — the
@@ -536,6 +554,7 @@ URL conventions. Owns the empty-state UX for no-hit searches.
   `SearchController`.
 
 **Build.**
+
 - `naturalist-web/console/src/main/java/com/naturalist/console/search/SearchController.java`.
   One handler `@GetMapping("/search")` taking `@RequestParam("q") String q`.
   Body: trim and reject blank → render empty-state with no observation;
@@ -567,6 +586,7 @@ URL conventions. Owns the empty-state UX for no-hit searches.
   milestone confirms it is wired through the console's observer).
 
 **Acceptance.**
+
 - `/search?q=aristolochia` returns one or more plant hits and renders the
   Plants domain section.
 - `/search?q=trifolium` returns both Trifolium species under Plants,
@@ -579,6 +599,7 @@ URL conventions. Owns the empty-state UX for no-hit searches.
   with the expected results.
 
 **Notes.**
+
 - The URL builder map's home is debatable. It currently sits in the
   console's composition root because that is where domain-to-URL
   knowledge naturally accumulates. If a second consumer ever needs the
@@ -598,6 +619,7 @@ URL conventions. Owns the empty-state UX for no-hit searches.
 `LinkResolver` was still around).
 
 **What shipped.**
+
 - `naturalist-web/console/src/main/java/com/naturalist/console/catalog/CatalogConfiguration.java`
   — first Spring `@Bean Catalog`, replacing the inline `CatalogAssembly.from(...)`
   call SearchController used to make. Wires `PlantCatalogContribution` (forward)
@@ -639,6 +661,7 @@ URL conventions. Owns the empty-state UX for no-hit searches.
   param and includes the partial below the products section.
 
 **Notes.**
+
 - The view-model lives in `chemistry-console`, not in
   `naturalist-web/console`, even though the URL conventions span domains.
   Rationale: a future Lucene swap or RSS-feed consumer is more likely to
@@ -660,6 +683,7 @@ URL conventions. Owns the empty-state UX for no-hit searches.
   needed.
 
 **Acceptance.** Visual review (run `naturalist-web/console`):
+
 - Navigate to `/chemistry/aristolochic-acid-i` — the "Found in" section
   shows a Plants subsection with `california-pipevine` and the
   corresponding constituent.
@@ -680,6 +704,7 @@ observer infrastructure in `kernels/framework/observability/`;
 `kernels/framework`'s `Metric.java`.
 
 **Build.**
+
 - `naturalist-web/console/src/main/java/com/naturalist/console/catalog/MicrometerSearchMissObserver.java`
   subscribing to `UnresolvedSearchObservation`. Increments counter
   `naturalist.catalog.search_miss_total` with tags `(query)` (and only
@@ -704,6 +729,7 @@ on the search-miss counter by injecting 300 distinct queries and
 confirming the overflow tag captures the surplus.
 
 **Notes.**
+
 - The search-miss counter is the catalog's growth signal. A periodic
   report sorted by counter value is the catalog's most valuable feedback
   loop. Surfacing that report inside the app (an `/admin/search-misses`
@@ -726,6 +752,7 @@ that a contribution is incomplete.
 M9-revised, the contributing domains' `*TestEntitySource` classes.
 
 **Build.**
+
 - An `CatalogCoverageValidator` invoked from the app's composition root after
   the catalog is assembled. For each contribution, walks each contributed
   `SearchableEntity` and asserts that `catalog.search(entity.target.name())`

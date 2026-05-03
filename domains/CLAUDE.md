@@ -41,6 +41,7 @@ Reference implementations: `Compound` (NamedEntity), `InsectSpecies` (NamedEntit
 source is faster than a spec.
 
 Rules:
+
 - Accessor names match component names exactly: `name()`, `someField()` — never
   `getName()`
 - Boolean components use plain names: `active`, `beneficial`. Predicate methods use `is*`
@@ -112,6 +113,7 @@ Use `/test-entity-source <EntityClassName> in <domain> module` to scaffold all t
   unique `EntityName` fields) or `@UniqueValue` (plain value fields).
 
 Conventions for JSON catalog files:
+
 - `"name": "<slug>"` — the `EntityName` natural key (e.g. `"calcium-sulfate-dihydrate"`)
 - No `id` field — domain records carry no `PersistenceId` (ADR-021)
 - Remaining fields match the record component names exactly
@@ -128,6 +130,7 @@ See [ADR-001](../docs/adr/ADR-001-repository-architecture.md) and
 [ADR-002](../docs/adr/ADR-002-repository-behavioral-contract.md).
 
 Quick-reference constraints:
+
 - Repository interfaces are **package-private** in `<domain>-api`
 - A repository has exactly four responsibilities: entity cache, referential integrity,
   unique constraints, transactional consistency — no logic
@@ -155,15 +158,15 @@ framework (ADR-017), walking its full constraint graph to catch adapter serializ
 
 Concrete test interface hooks:
 
-| Hook | Purpose |
-|------|---------|
-| `repository()` | The repository under test |
-| `source()` | The `NamedTestEntitySource` backing the test data |
-| `notFoundName()` | A fictitious `NAME` guaranteed absent from the catalog |
-| `knownEntityNames()` | At least two known `NAME` constants from the test data |
-| `newEntity()` | A valid entity with a unique name, using `RandomValue` where field constraints permit |
-| `ghostEntity()` | An entity with a name absent from the catalog, using `RandomValue` where field constraints permit |
-| `modifiedEntity(original)` | The original with every mutable field changed via `RandomValue` |
+| Hook                       | Purpose                                                                                           |
+|----------------------------|---------------------------------------------------------------------------------------------------|
+| `repository()`             | The repository under test                                                                         |
+| `source()`                 | The `NamedTestEntitySource` backing the test data                                                 |
+| `notFoundName()`           | A fictitious `NAME` guaranteed absent from the catalog                                            |
+| `knownEntityNames()`       | At least two known `NAME` constants from the test data                                            |
+| `newEntity()`              | A valid entity with a unique name, using `RandomValue` where field constraints permit             |
+| `ghostEntity()`            | An entity with a name absent from the catalog, using `RandomValue` where field constraints permit |
+| `modifiedEntity(original)` | The original with every mutable field changed via `RandomValue`                                   |
 
 `assertEntityEquals` defaults to recursive comparison — override for entities with custom
 equality semantics. There is no `id` field to ignore (ADR-021).
@@ -193,11 +196,11 @@ rationale.
 Three coordinated namespace types organize a domain api around discoverability and
 visibility:
 
-| Outer | Java type | Visibility | Nested types |
-|-------|-----------|------------|--------------|
-| `<DomainNoun>Repository` | `class` | package-private | `<EntitySubject>Repository` (`protected interface`) |
-| `<DomainNoun>Query` | `interface` | public | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
-| `<DomainNoun>EntityCollections` | `interface` | public | `<EntitySubject>Collection` (`final class`) |
+| Outer                           | Java type   | Visibility      | Nested types                                            |
+|---------------------------------|-------------|-----------------|---------------------------------------------------------|
+| `<DomainNoun>Repository`        | `class`     | package-private | `<EntitySubject>Repository` (`protected interface`)     |
+| `<DomainNoun>Query`             | `interface` | public          | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
+| `<DomainNoun>EntityCollections` | `interface` | public          | `<EntitySubject>Collection` (`final class`)             |
 
 `EntitySubject` drops the domain prefix — `InsectSpecies` → `Species`, `InsectImage`
 → `Image`. The outer namespace carries the prefix.
@@ -255,27 +258,27 @@ model error or a real-world change.
 When creating a new domain or kernel module:
 
 1. **Directory structure and pom.xml:**
-   - `kernels/<module>/pom.xml` (parent `<artifactId>kernels</artifactId>`) or
-     `domains/<domain>/<domain>-<type>/pom.xml` (parent `<artifactId><domain></artifactId>`)
-   - Create `src/main/java/com/naturalist/<module>/`
-   - Specify dependencies (framework, identifiers, etc. for kernels; framework, identifiers
-     for apis; nothing for cores/tests)
+    - `kernels/<module>/pom.xml` (parent `<artifactId>kernels</artifactId>`) or
+      `domains/<domain>/<domain>-<type>/pom.xml` (parent `<artifactId><domain></artifactId>`)
+    - Create `src/main/java/com/naturalist/<module>/`
+    - Specify dependencies (framework, identifiers, etc. for kernels; framework, identifiers
+      for apis; nothing for cores/tests)
 
 2. **Add to parent module pom.xml:**
-   - Kernel: add `<module><name></module>` to `kernels/pom.xml` in `<modules>`, alphabetical
-   - Domain: add `<module><type></module>` to `domains/<domain>/pom.xml` in `<modules>`
+    - Kernel: add `<module><name></module>` to `kernels/pom.xml` in `<modules>`, alphabetical
+    - Domain: add `<module><type></module>` to `domains/<domain>/pom.xml` in `<modules>`
 
 3. **CRITICAL — add dependency-management entry to root pom.xml:**
-   - Add a `<dependency>` entry to root `<dependencyManagement>`
-   - Kernels: KERNELS section (first in file), alphabetical
-   - Domains: appropriate DOMAIN section, alphabetical within that section
-   - **Version must always be `${project.version}`**
-   - Required — all other modules depend on this entry for consistent versioning.
-     Forgetting this step causes build failures when other modules reference the new module.
+    - Add a `<dependency>` entry to root `<dependencyManagement>`
+    - Kernels: KERNELS section (first in file), alphabetical
+    - Domains: appropriate DOMAIN section, alphabetical within that section
+    - **Version must always be `${project.version}`**
+    - Required — all other modules depend on this entry for consistent versioning.
+      Forgetting this step causes build failures when other modules reference the new module.
 
 4. **Update pom.xml files that depend on the new module:**
-   - Add as a dependency in `<dependencies>` (no version tag — inherited from
-     dependencyManagement), alphabetical within the section
+    - Add as a dependency in `<dependencies>` (no version tag — inherited from
+      dependencyManagement), alphabetical within the section
 
 ## Pull Request Size Discipline
 

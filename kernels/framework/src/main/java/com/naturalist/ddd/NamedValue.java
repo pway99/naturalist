@@ -60,6 +60,7 @@ package com.naturalist.ddd;
  */
 public interface NamedValue<T> {
     T value();
+
     boolean isValid();
 
     default boolean isNotValid() {

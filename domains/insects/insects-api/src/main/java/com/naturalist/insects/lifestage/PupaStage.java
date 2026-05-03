@@ -51,9 +51,9 @@ public record PupaStage(
      */
     public sealed interface DiapauseRegulation extends ValueObject
             permits PhotoperiodRegulated,
-                    FoodWaterContentRegulated,
-                    TemperatureRegulated,
-                    NonDiapausing {
+            FoodWaterContentRegulated,
+            TemperatureRegulated,
+            NonDiapausing {
     }
 
     public record PhotoperiodRegulated(
@@ -62,7 +62,8 @@ public record PupaStage(
     ) implements DiapauseRegulation {
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> {};
+            return i -> {
+            };
         }
     }
 
@@ -76,7 +77,8 @@ public record PupaStage(
     ) implements DiapauseRegulation {
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> {};
+            return i -> {
+            };
         }
     }
 
@@ -86,7 +88,8 @@ public record PupaStage(
     ) implements DiapauseRegulation {
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> {};
+            return i -> {
+            };
         }
     }
 
@@ -97,7 +100,8 @@ public record PupaStage(
     public record NonDiapausing() implements DiapauseRegulation {
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> {};
+            return i -> {
+            };
         }
     }
 }

@@ -8,11 +8,20 @@
       "phCharacter": "ACIDIC",
       "chemicalNature": "ORGANIC",
       "physicalForm": "ACID",
-      "structuralType": { "kind": "OTHER_ALKALOID" },
+      "structuralType": {
+        "kind": "OTHER_ALKALOID"
+      },
       "functionalRoles": [
-        { "kind": "BIOLOGICAL_CATALYST" }
+        {
+          "kind": "BIOLOGICAL_CATALYST"
+        }
       ],
-      "constituentElements": ["C", "H", "N", "O"]
+      "constituentElements": [
+        "C",
+        "H",
+        "N",
+        "O"
+      ]
     },
     "solubility": {
       "gramsPerLiterAt20C": 0.05,
@@ -64,11 +73,20 @@
       "phCharacter": "ACIDIC",
       "chemicalNature": "ORGANIC",
       "physicalForm": "ACID",
-      "structuralType": { "kind": "OTHER_ALKALOID" },
+      "structuralType": {
+        "kind": "OTHER_ALKALOID"
+      },
       "functionalRoles": [
-        { "kind": "BIOLOGICAL_CATALYST" }
+        {
+          "kind": "BIOLOGICAL_CATALYST"
+        }
       ],
-      "constituentElements": ["C", "H", "N", "O"]
+      "constituentElements": [
+        "C",
+        "H",
+        "N",
+        "O"
+      ]
     },
     "solubility": {
       "gramsPerLiterAt20C": 0.02,

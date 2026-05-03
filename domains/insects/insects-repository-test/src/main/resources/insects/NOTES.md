@@ -84,21 +84,21 @@ Source text drawn from the species's `voltinism.notes` and
 Not emitted; candidates flagged for future work once species-level
 curation fills in `voltinism` fields. Tentative guidance:
 
-| Species | Likely DiapauseRegulation subtype | Reasoning |
-|---|---|---|
-| `tachinid-fly` | `PhotoperiodRegulated` or `TemperatureRegulated` | Family-level variable; overwinters as puparium. |
-| `braconid-wasp` | `PhotoperiodRegulated` | Standard Aphidiinae / Microgastrinae overwintering. |
-| `hoverfly` | `PhotoperiodRegulated` | Syrphinae typically photoperiod-cued at prepupal / pupal stage. |
-| `convergent-ladybug` | `NonDiapausing()` (at pupal stage) | Hippodamia overwinters as adults in aggregations — pupal stage itself does not diapause. |
-| `ground-beetle` | `PhotoperiodRegulated` or `TemperatureRegulated` | Family-level variable; many Carabidae overwinter as adults, not pupae. |
-| `crane-fly` | `TemperatureRegulated` | Overwintering dominated by larval stage; short pupal window. |
-| `native-sweat-bee` | `NonDiapausing()` (at pupal stage) | Halictus overwinter as mated foundresses, not pupae. |
-| `grey-mining-bee` | `TemperatureRegulated` | Late-winter pupation cued by accumulated soil warmth. |
-| `valley-carpenter-bee` | `NonDiapausing()` (at pupal stage) | Xylocopa overwinter as adults in galleries. |
-| `skipper-butterfly` | `PhotoperiodRegulated` | Family-level pattern; larval overwintering is the norm — pupal diapause where it occurs is photoperiod-cued. |
-| `painted-lady` | `NonDiapausing()` | Vanessa cardui has no documented diapause at any life stage; seasonal dynamics driven by migration. |
-| `green-lacewing` | `PhotoperiodRegulated` or `NonDiapausing()` | Chrysoperla carnea group typically overwinters as adults; some species with pupal diapause. Genus-level resolution needed. |
-| `orange-sulphur` | `NonDiapausing()` | Colias eurytheme has no robust pupal diapause at Central Valley temperatures; seasonal dynamics driven by migration/reimmigration. |
+| Species                | Likely DiapauseRegulation subtype                | Reasoning                                                                                                                          |
+|------------------------|--------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| `tachinid-fly`         | `PhotoperiodRegulated` or `TemperatureRegulated` | Family-level variable; overwinters as puparium.                                                                                    |
+| `braconid-wasp`        | `PhotoperiodRegulated`                           | Standard Aphidiinae / Microgastrinae overwintering.                                                                                |
+| `hoverfly`             | `PhotoperiodRegulated`                           | Syrphinae typically photoperiod-cued at prepupal / pupal stage.                                                                    |
+| `convergent-ladybug`   | `NonDiapausing()` (at pupal stage)               | Hippodamia overwinters as adults in aggregations — pupal stage itself does not diapause.                                           |
+| `ground-beetle`        | `PhotoperiodRegulated` or `TemperatureRegulated` | Family-level variable; many Carabidae overwinter as adults, not pupae.                                                             |
+| `crane-fly`            | `TemperatureRegulated`                           | Overwintering dominated by larval stage; short pupal window.                                                                       |
+| `native-sweat-bee`     | `NonDiapausing()` (at pupal stage)               | Halictus overwinter as mated foundresses, not pupae.                                                                               |
+| `grey-mining-bee`      | `TemperatureRegulated`                           | Late-winter pupation cued by accumulated soil warmth.                                                                              |
+| `valley-carpenter-bee` | `NonDiapausing()` (at pupal stage)               | Xylocopa overwinter as adults in galleries.                                                                                        |
+| `skipper-butterfly`    | `PhotoperiodRegulated`                           | Family-level pattern; larval overwintering is the norm — pupal diapause where it occurs is photoperiod-cued.                       |
+| `painted-lady`         | `NonDiapausing()`                                | Vanessa cardui has no documented diapause at any life stage; seasonal dynamics driven by migration.                                |
+| `green-lacewing`       | `PhotoperiodRegulated` or `NonDiapausing()`      | Chrysoperla carnea group typically overwinters as adults; some species with pupal diapause. Genus-level resolution needed.         |
+| `orange-sulphur`       | `NonDiapausing()`                                | Colias eurytheme has no robust pupal diapause at Central Valley temperatures; seasonal dynamics driven by migration/reimmigration. |
 
 Hemimetabolous species (`field-roach`, `potato-leafhopper`) have no pupa
 stage and therefore no `DiapauseRegulation` field to populate.

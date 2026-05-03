@@ -101,6 +101,7 @@ Example invocation: *"Acquire `aristolochic-acid-i` and
 ### Enumerations
 
 `phCharacter` (`PhCharacter`)
+
 - `STRONGLY_ACIDIC` (pH < 3)
 - `ACIDIC` (pH 3–6)
 - `NEUTRAL` (pH 6–8)
@@ -108,15 +109,18 @@ Example invocation: *"Acquire `aristolochic-acid-i` and
 - `STRONGLY_ALKALINE` (pH > 10)
 
 `chemicalNature` (`ChemicalNature`)
+
 - `ORGANIC` — characterised by C–H bonds
 - `INORGANIC` — includes carbonates, oxides, cyanides, pure carbon
 - `ORGANOMETALLIC` — at least one carbon-to-metal bond
 
 `physicalForm` (`PhysicalForm`)
+
 - `ELEMENT`, `MINERAL`, `SALT`, `ACID`, `BASE`, `COMPLEX`
 - Independent of `chemicalNature` — NaCl is `INORGANIC` + `SALT`.
 
 `functionalRoles[].kind` (`FunctionalRole`)
+
 - `CHELATOR`
 - `FUMIGANT`
 - `BIOLOGICAL_CATALYST`
@@ -131,6 +135,7 @@ Example invocation: *"Acquire `aristolochic-acid-i` and
 (`Ca`, not `CA`).
 
 `solubility.category` (`SolubilityProfile.SolubilityCategory`)
+
 - `INSOLUBLE`         (< 0.1 g/L)
 - `SPARINGLY_SOLUBLE` (0.1 – 2.4 g/L)
 - `SLIGHTLY_SOLUBLE`  (2.4 – 10 g/L)
@@ -139,6 +144,7 @@ Example invocation: *"Acquire `aristolochic-acid-i` and
 - `MISCIBLE`          (fully miscible)
 
 `bioavailability.primaryPathway` (`BioavailabilityProfile.AbsorptionPathway`)
+
 - `ROOT_MASS_FLOW` — carried to roots in transpiration stream
 - `ROOT_DIFFUSION` — diffuses along concentration gradient
 - `FOLIAR_STOMATAL` — enters through stomata
@@ -148,6 +154,7 @@ Example invocation: *"Acquire `aristolochic-acid-i` and
 - `CONTACT` — kills/acts on contact, no systemic absorption
 
 `safety.hazardLevel` (`SafetyProfile.HazardLevel`)
+
 - `NONE`     — completely safe (gypsum, Epsom salt)
 - `LOW`      — mild irritant (neem oil, insecticidal soap)
 - `MODERATE` — irritant, harmful if ingested (oxalic acid)
@@ -156,15 +163,15 @@ Example invocation: *"Acquire `aristolochic-acid-i` and
 
 ### Numeric / units conventions
 
-| Field | Unit | Scale |
-|---|---|---|
-| `molecularWeight` | g/mol | 4 |
-| `gramsPerLiterAt20C` | g/L at 20 °C | 2 |
-| `ecContributionFactor` | dS/m per g/L (approx) | flexible |
-| `relativeAbsorptionRate` | unitless 0.0 – 1.0 | flexible |
-| `vaporPressureAt20C` | mmHg or kPa — note unit in `efficacyNotes` | flexible |
-| `*TempF` | degrees Fahrenheit | flexible |
-| `maxSafeConcentrationPpm` | ppm | flexible |
+| Field                     | Unit                                       | Scale    |
+|---------------------------|--------------------------------------------|----------|
+| `molecularWeight`         | g/mol                                      | 4        |
+| `gramsPerLiterAt20C`      | g/L at 20 °C                               | 2        |
+| `ecContributionFactor`    | dS/m per g/L (approx)                      | flexible |
+| `relativeAbsorptionRate`  | unitless 0.0 – 1.0                         | flexible |
+| `vaporPressureAt20C`      | mmHg or kPa — note unit in `efficacyNotes` | flexible |
+| `*TempF`                  | degrees Fahrenheit                         | flexible |
+| `maxSafeConcentrationPpm` | ppm                                        | flexible |
 
 ### When to use `null`
 

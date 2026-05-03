@@ -3,7 +3,8 @@
 @param SeedLineage lineage
 
 @template.layout.page(title = lineage.name().value(), content = @`
-    <a href="/plants/cultivars/${lineage.cultivarName().value()}" class="naturalist-backlink">&larr; Back to cultivar</a>
+    <a href="/plants/cultivars/${lineage.cultivarName().value()}" class="naturalist-backlink">&larr; Back to
+        cultivar</a>
 
     <h1>${lineage.name().value()}</h1>
     <p>

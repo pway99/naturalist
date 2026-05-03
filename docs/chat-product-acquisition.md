@@ -89,21 +89,21 @@ These keys appear repeatedly in the existing catalog — reuse them when
 applicable so consumers can look up consistently. Add new keys freely when
 nothing existing fits.
 
-| Key | Meaning |
-|---|---|
-| `concentration` | Active-ingredient concentration as labeled (e.g. `"1.6% CaCl2"`) |
-| `npk` | Nitrogen-Phosphorus-Potassium ratio for fertilizers (e.g. `"0-0-50"`) |
-| `applicationMethod` | RTU foliar spray, soil drench, broadcast granular, etc. |
-| `applicationRate` | Per-area or per-volume rate as labeled |
-| `optimumRange` | Manufacturer-recommended rate band |
-| `epaRegistered` | `"true"` / `"false"` |
-| `omriListed` | `"true"` / `"false"` — OMRI organic certification |
-| `cdfaRegistered` | `"true"` / `"false"` — California CDFA registration |
-| `varroaTreatment` | `"true"` for Varroa mite acaricide products |
-| `targetPest` | Free-text — `"Varroa destructor"`, `"Tetranychus urticae"` |
-| `treatmentDurationDays` | Integer number of days for in-hive treatments |
-| `manufacturer` | Brand owner (e.g. `"Véto-pharma"`, `"Bonide"`) |
-| `dataSheet` | URL of the canonical product datasheet |
+| Key                     | Meaning                                                               |
+|-------------------------|-----------------------------------------------------------------------|
+| `concentration`         | Active-ingredient concentration as labeled (e.g. `"1.6% CaCl2"`)      |
+| `npk`                   | Nitrogen-Phosphorus-Potassium ratio for fertilizers (e.g. `"0-0-50"`) |
+| `applicationMethod`     | RTU foliar spray, soil drench, broadcast granular, etc.               |
+| `applicationRate`       | Per-area or per-volume rate as labeled                                |
+| `optimumRange`          | Manufacturer-recommended rate band                                    |
+| `epaRegistered`         | `"true"` / `"false"`                                                  |
+| `omriListed`            | `"true"` / `"false"` — OMRI organic certification                     |
+| `cdfaRegistered`        | `"true"` / `"false"` — California CDFA registration                   |
+| `varroaTreatment`       | `"true"` for Varroa mite acaricide products                           |
+| `targetPest`            | Free-text — `"Varroa destructor"`, `"Tetranychus urticae"`            |
+| `treatmentDurationDays` | Integer number of days for in-hive treatments                         |
+| `manufacturer`          | Brand owner (e.g. `"Véto-pharma"`, `"Bonide"`)                        |
+| `dataSheet`             | URL of the canonical product datasheet                                |
 
 ---
 
@@ -225,16 +225,16 @@ where allowed and note the omission in `properties` with
 Before finalising the response, verify:
 
 - [ ] Every entry in `products[*].compounds` either exists in the current
-      `compounds.json` or is present in `compounds[*].name` of this
-      response.
+  `compounds.json` or is present in `compounds[*].name` of this
+  response.
 - [ ] Every `products[*].name` and `compounds[*].name` is a kebab-case
-      slug, unique within its array.
+  slug, unique within its array.
 - [ ] Every `products[*].displayName` and `compounds[*].commonName` is
-      unique within the existing catalog. Disambiguate with manufacturer
-      or qualifier where needed.
+  unique within the existing catalog. Disambiguate with manufacturer
+  or qualifier where needed.
 - [ ] No `id` fields on either products or compounds.
 - [ ] Field order matches the schemas in §1 (products) and the compound
-      briefing (compounds).
+  briefing (compounds).
 
 ---
 

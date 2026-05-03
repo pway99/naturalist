@@ -28,13 +28,24 @@ class InMemoryCatalogTest {
     // insects-api). The slug values match production for readability of
     // assertions but the types are deliberately distinct.
     private record Plants() implements DomainId {
-        @Override public String value() { return "plants"; }
+        @Override
+        public String value() {
+            return "plants";
+        }
     }
+
     private record Chemistry() implements DomainId {
-        @Override public String value() { return "chemistry"; }
+        @Override
+        public String value() {
+            return "chemistry";
+        }
     }
+
     private record Insects() implements DomainId {
-        @Override public String value() { return "insects"; }
+        @Override
+        public String value() {
+            return "insects";
+        }
     }
 
     private static final EntityRef CALIFORNIA_PIPEVINE = new EntityRef(
@@ -55,8 +66,15 @@ class InMemoryCatalogTest {
 
     private static CatalogContribution contribution(DomainId domain, SearchableEntity... entities) {
         return new CatalogContribution() {
-            @Override public DomainId domain() { return domain; }
-            @Override public Stream<SearchableEntity> searchableEntities() { return Stream.of(entities); }
+            @Override
+            public DomainId domain() {
+                return domain;
+            }
+
+            @Override
+            public Stream<SearchableEntity> searchableEntities() {
+                return Stream.of(entities);
+            }
         };
     }
 
@@ -67,9 +85,18 @@ class InMemoryCatalogTest {
     private static <T extends EntityName> EntityReferences<T> provider(
             DomainId domain, Class<T> referenceType, Map<T, List<EntityRef>> table) {
         return new EntityReferences<T>() {
-            @Override public DomainId domain() { return domain; }
-            @Override public Class<T> referenceType() { return referenceType; }
-            @Override public Stream<EntityRef> referencesTo(T target) {
+            @Override
+            public DomainId domain() {
+                return domain;
+            }
+
+            @Override
+            public Class<T> referenceType() {
+                return referenceType;
+            }
+
+            @Override
+            public Stream<EntityRef> referencesTo(T target) {
                 return table.getOrDefault(target, List.of()).stream();
             }
         };
@@ -78,9 +105,18 @@ class InMemoryCatalogTest {
     private static <T extends EntityName> EntityReferences<T> throwingProvider(
             DomainId domain, Class<T> referenceType) {
         return new EntityReferences<T>() {
-            @Override public DomainId domain() { return domain; }
-            @Override public Class<T> referenceType() { return referenceType; }
-            @Override public Stream<EntityRef> referencesTo(T target) {
+            @Override
+            public DomainId domain() {
+                return domain;
+            }
+
+            @Override
+            public Class<T> referenceType() {
+                return referenceType;
+            }
+
+            @Override
+            public Stream<EntityRef> referencesTo(T target) {
                 throw new RuntimeException("simulated provider failure");
             }
         };
@@ -428,7 +464,10 @@ class InMemoryCatalogTest {
     @Test
     void duplicateSlugAcrossDistinctDomainTypesFailsAtAssembly() {
         record RoguePlants() implements DomainId {
-            @Override public String value() { return "plants"; }
+            @Override
+            public String value() {
+                return "plants";
+            }
         }
         var legitimate = contribution(new Plants(), entity(BORAGE, "borage"));
         var rogue = contribution(new RoguePlants(), entity(CALIFORNIA_PIPEVINE, "shared"));
@@ -442,7 +481,10 @@ class InMemoryCatalogTest {
     @Test
     void duplicateSlugBetweenContributionAndProviderFailsAtAssembly() {
         record RoguePlants() implements DomainId {
-            @Override public String value() { return "plants"; }
+            @Override
+            public String value() {
+                return "plants";
+            }
         }
         var contribution = contribution(new Plants(), entity(BORAGE, "borage"));
         EntityReferences<CompoundName> rogueProvider = provider(new RoguePlants(),

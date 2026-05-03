@@ -16,7 +16,13 @@ import com.naturalist.infrastructure.DomainService;
 @DomainService
 public record InsectsDomain() implements DomainId {
 
-    @Override public String value() { return "insects"; }
+    @Override
+    public String value() {
+        return "insects";
+    }
 
-    @Override public String toString() { return value(); }
+    @Override
+    public String toString() {
+        return value();
+    }
 }

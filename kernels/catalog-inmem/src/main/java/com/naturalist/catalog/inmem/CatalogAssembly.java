@@ -139,8 +139,8 @@ public final class CatalogAssembly {
      * shares it between its forward and inverse wiring) and is allowed.
      */
     private static void validateSlugUniqueness(List<DomainId> domains,
-                                                List<CatalogContribution> contributions,
-                                                List<EntityReferences<?>> providers) {
+                                               List<CatalogContribution> contributions,
+                                               List<EntityReferences<?>> providers) {
         Map<String, DomainId> bySlug = new LinkedHashMap<>();
         for (DomainId domain : domains) {
             recordSlug(bySlug, domain);

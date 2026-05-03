@@ -26,6 +26,7 @@ public record Infrastructure(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> {};
+        return i -> {
+        };
     }
 }

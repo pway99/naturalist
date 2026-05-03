@@ -1,4 +1,5 @@
 # ADR-005: Entity Identity Model — CatalogEntity and FactEntity
+
 > [rationale](rationale/ADR-005-entity-identity-model.md)
 
 - Every entity has a non-nullable `name()`. No `@Nullable` default returning null.
@@ -23,11 +24,11 @@
 - Single `EntityRepository`, `TestEntitySource`, `AbstractTestEntityRepository` —
   Catalog/Fact are semantic markers, not separate infrastructure.
 
-| Category | Type | Name kind |
-|---|---|---|
-| Named stable classification | `CatalogEntity` | slug |
-| Singular occurrence | `FactEntity` | UUID |
-| Domain law / constant | `ValueObject` / static / service | none |
+| Category                    | Type                             | Name kind |
+|-----------------------------|----------------------------------|-----------|
+| Named stable classification | `CatalogEntity`                  | slug      |
+| Singular occurrence         | `FactEntity`                     | UUID      |
+| Domain law / constant       | `ValueObject` / static / service | none      |
 
 ## Name uniqueness & annotations (Amendment 2)
 

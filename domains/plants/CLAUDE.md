@@ -23,13 +23,13 @@ sub-context; `public` crosses the boundary.
 
 ## Identity model
 
-| Type | Location | Identity | Identifier class |
-|------|----------|----------|------------------|
-| `Plant` | `plants/` | `NamedEntity<PlantName>` | `identifiers/.../plants/PlantName` |
-| `Cultivar` | `cultivar/` | `NamedEntity<CultivarName>` | `identifiers/.../plants/cultivar/CultivarName` |
-| `SeedLineage` | `heritage/` | `NamedEntity<SeedLineageName>` | `identifiers/.../plants/heritage/SeedLineageName` |
-| `Provenance` | `heritage/` | `ValueObject` | — |
-| `PlantProgram` | `management/` | `NamedEntity<PlantProgramName>` | `identifiers/.../plants/management/PlantProgramName` |
+| Type                       | Location          | Identity                                    | Identifier class                                                     |
+|----------------------------|-------------------|---------------------------------------------|----------------------------------------------------------------------|
+| `Plant`                    | `plants/`         | `NamedEntity<PlantName>`                    | `identifiers/.../plants/PlantName`                                   |
+| `Cultivar`                 | `cultivar/`       | `NamedEntity<CultivarName>`                 | `identifiers/.../plants/cultivar/CultivarName`                       |
+| `SeedLineage`              | `heritage/`       | `NamedEntity<SeedLineageName>`              | `identifiers/.../plants/heritage/SeedLineageName`                    |
+| `Provenance`               | `heritage/`       | `ValueObject`                               | —                                                                    |
+| `PlantProgram`             | `management/`     | `NamedEntity<PlantProgramName>`             | `identifiers/.../plants/management/PlantProgramName`                 |
 | `PhytochemicalConstituent` | `phytochemistry/` | `NamedEntity<PhytochemicalConstituentName>` | `identifiers/.../plants/phytochemistry/PhytochemicalConstituentName` |
 
 No `Aggregate` or `Entity<UUIDv7>` records in this domain yet.
@@ -170,7 +170,8 @@ Repository contract tests live in `plants-repository-test/`:
 - `CultivarEntityRepositoryTest`, `CultivarEntityRepositoryMock`, `CultivarEntityRepositoryMockTest`
 - `SeedLineageEntityRepositoryTest`, `SeedLineageEntityRepositoryMock`, `SeedLineageEntityRepositoryMockTest`
 - `PlantProgramEntityRepositoryTest`, `PlantProgramEntityRepositoryMock`, `PlantProgramEntityRepositoryMockTest`
-- `PhytochemicalConstituentEntityRepositoryTest`, `PhytochemicalConstituentEntityRepositoryMock`, `PhytochemicalConstituentEntityRepositoryMockTest`
+- `PhytochemicalConstituentEntityRepositoryTest`, `PhytochemicalConstituentEntityRepositoryMock`,
+  `PhytochemicalConstituentEntityRepositoryMockTest`
 
 When adding a new entity to the domain, scaffold via the standard skills
 (`/test-entity-source`, `/entity-repository`, `/entity-query`) — see
@@ -183,12 +184,12 @@ Authoritative catalogs live under
 corresponding `NamedTestEntitySource` at test time. The resource sub-directory
 mirrors the Java sub-package.
 
-| Catalog | Path | Loaded by |
-|---------|------|-----------|
-| Plants | `plants/plants.json` | `PlantTestEntitySource` |
-| Cultivars | `plants/cultivar/cultivars.json` | `CultivarTestEntitySource` |
-| Seed lineages | `plants/heritage/seed-lineages.json` | `SeedLineageTestEntitySource` |
-| Plant programs | `plants/management/plant-programs.json` | `PlantProgramTestEntitySource` |
+| Catalog                    | Path                                                    | Loaded by                                  |
+|----------------------------|---------------------------------------------------------|--------------------------------------------|
+| Plants                     | `plants/plants.json`                                    | `PlantTestEntitySource`                    |
+| Cultivars                  | `plants/cultivar/cultivars.json`                        | `CultivarTestEntitySource`                 |
+| Seed lineages              | `plants/heritage/seed-lineages.json`                    | `SeedLineageTestEntitySource`              |
+| Plant programs             | `plants/management/plant-programs.json`                 | `PlantProgramTestEntitySource`             |
 | Phytochemical constituents | `plants/phytochemistry/phytochemical-constituents.json` | `PhytochemicalConstituentTestEntitySource` |
 
 ### `plants.json`

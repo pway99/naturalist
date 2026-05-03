@@ -12,10 +12,10 @@ import java.util.Set;
 @DomainService
 class LifeStageEntityQueryImpl
         extends AbstractEntityQuery<
-                        LifeStageName,
-                        LifeStage,
-                        LifeStageCollection,
-                        LifeStageRepository.LifeStageEntityRepository>
+        LifeStageName,
+        LifeStage,
+        LifeStageCollection,
+        LifeStageRepository.LifeStageEntityRepository>
         implements LifeStageEntityQuery {
 
     LifeStageEntityQueryImpl(LifeStageRepository.LifeStageEntityRepository repository) {

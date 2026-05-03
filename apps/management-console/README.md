@@ -11,6 +11,7 @@ etc.) with multi-level descriptions and observational tools.
 ## Background Image and Opacity
 
 The background image and opacity slider are automatically applied to:
+
 - **All authenticated pages** — using the `page.jte` layout template (home page,
   insect catalog, detail pages, etc.)
 - **Login page** — custom login template with the same background and opacity
@@ -49,6 +50,7 @@ pages.
 ### Adjusting Image Transparency
 
 The image opacity slider is located at the bottom center of the page:
+
 - **0% (left)** — image fully hidden (tan overlay only)
 - **100% (right, default)** — image fully visible
 
@@ -68,15 +70,18 @@ All styling variables are defined in the `:root` block of
 `src/main/resources/static/css/naturalist.css` and can be adjusted in one place:
 
 **Background Image:**
+
 - `--image-opacity` — insect background image opacity (0 = hidden, 1 = fully
   visible). Controlled dynamically by the slider.
 
 **Overlay:**
+
 - `--bg-overlay-opacity` — tan overlay opacity (0 = hidden, 1 = fully opaque;
   default: 0.3)
 - `--pico-background-color` — overlay color (default: tan `#EDE8DF`)
 
 **Text and Content:**
+
 - `--text-light-color` — text color for all paragraphs, links, and list items
   (default: `#FAF8F5`)
 - `--text-shadow-strong` — shadow for headings (h1–h3)
@@ -85,6 +90,7 @@ All styling variables are defined in the `:root` block of
   (default: semi-transparent dark `rgba(59, 50, 40, 0.6)`)
 
 **Cards (Insect Species):**
+
 - `--card-background` — card background color (default: earth brown `#A0826D`)
 - `--card-header-background` — card header background color (default: dark
   earth `#6B5D52`)

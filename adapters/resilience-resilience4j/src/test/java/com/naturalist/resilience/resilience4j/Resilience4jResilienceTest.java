@@ -96,7 +96,9 @@ class Resilience4jResilienceTest {
 
         for (int i = 0; i < 4; i++) {
             try {
-                breaker.execute(() -> { throw new IllegalStateException("fail"); });
+                breaker.execute(() -> {
+                    throw new IllegalStateException("fail");
+                });
             } catch (IllegalStateException ignored) {
                 // expected — counts toward the breaker's failure rate
             }

@@ -25,7 +25,7 @@ class SpeciesRepositoryMock
     @Override
     public List<InsectSpecies> getByFunctionalGuild(FunctionalGuild functionalGuild) {
         observer().arguments("getByFunctionalGuild", i -> i
-                .notNull(functionalGuild, "functionalGuild"))
+                        .notNull(functionalGuild, "functionalGuild"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(s -> s.guilds().contains(functionalGuild))

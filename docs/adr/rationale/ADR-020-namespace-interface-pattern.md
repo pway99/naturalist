@@ -67,10 +67,12 @@ interface ElementRepository extends EntityRepository<ElementId, ElementName, Ele
 ```
 
 Why a class for the namespace and not an interface:
+
 - Nested types in an `interface` are implicitly `public static` — visibility cannot be restricted
 - Nested types in a `class` honor their declared access modifier
 - The class is non-instantiable (private constructor) and stateless — purely a namespace
-- `protected` on the nested interfaces yields package-private + subclass access; package-private (no modifier) is also acceptable when no subclass implementation is anticipated
+- `protected` on the nested interfaces yields package-private + subclass access; package-private (no modifier) is also
+  acceptable when no subclass implementation is anticipated
 
 ### 2. Public Contracts: Namespace Interface (Queries)
 
@@ -146,6 +148,7 @@ public record InsectSpecies(
 ```
 
 **Eligibility:**
+
 - The value object has no independent lifecycle (never persisted standalone, no `EntityName`)
 - It is not referenced cross-domain by name
 - It appears in only one entity's component graph
@@ -156,11 +159,11 @@ default until ownership becomes plural.
 
 ### Naming Conventions
 
-| Outer | Type | Visibility | Nested |
-|-------|------|------------|--------|
-| `<DomainNoun>Repository` | `class` | package-private | `<EntitySubject>Repository` (`protected` interface) |
-| `<DomainNoun>Query` | `interface` | public | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
-| `<DomainNoun>EntityCollections` | `interface` | public | `<EntitySubject>Collection` (final class) |
+| Outer                           | Type        | Visibility      | Nested                                                  |
+|---------------------------------|-------------|-----------------|---------------------------------------------------------|
+| `<DomainNoun>Repository`        | `class`     | package-private | `<EntitySubject>Repository` (`protected` interface)     |
+| `<DomainNoun>Query`             | `interface` | public          | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
+| `<DomainNoun>EntityCollections` | `interface` | public          | `<EntitySubject>Collection` (final class)               |
 
 `EntitySubject` is the distinctive part of the entity's class name with the
 domain prefix dropped — `InsectSpecies` → `Species`, `InsectImage` → `Image`.
@@ -194,12 +197,12 @@ declaration: `interface <Entity>Repository extends EntityRepository<...>`.
 
 `domains/insects/insects-api/src/main/java/com/naturalist/insects/`:
 
-| File | Pattern |
-|------|---------|
-| `InsectQuery.java` | namespace interface (queries, public) |
-| `InsectRepository.java` | namespace class (repositories, package-private) |
-| `InsectEntityCollections.java` | namespace interface (collections, public) |
-| `InsectSpecies.java` | aggregate root + nested value-object graph |
+| File                           | Pattern                                         |
+|--------------------------------|-------------------------------------------------|
+| `InsectQuery.java`             | namespace interface (queries, public)           |
+| `InsectRepository.java`        | namespace class (repositories, package-private) |
+| `InsectEntityCollections.java` | namespace interface (collections, public)       |
+| `InsectSpecies.java`           | aggregate root + nested value-object graph      |
 
 ## Revisitation
 

@@ -28,7 +28,7 @@
                     <a href="/chemistry/${c.name().value()}" class="compound-depiction-link">
                         <img src="/chemistry/${c.name().value()}/depiction.svg"
                              alt="2D structural depiction of ${c.commonName()}"
-                             class="compound-depiction-thumb" />
+                             class="compound-depiction-thumb"/>
                     </a>
                 @endif
                 <p class="taxonomy">

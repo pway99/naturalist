@@ -35,10 +35,10 @@ classes, never through direct repository access.
 
 Every entity carries two identity values:
 
-| Key | Type | Purpose |
-|-----|------|---------|
-| `PersistenceId<Long>` | Numeric surrogate | Intra-domain joins, RDBMS index performance |
-| `EntityName` | Slug natural key | Cross-domain references, external APIs, stable identity |
+| Key                   | Type              | Purpose                                                 |
+|-----------------------|-------------------|---------------------------------------------------------|
+| `PersistenceId<Long>` | Numeric surrogate | Intra-domain joins, RDBMS index performance             |
+| `EntityName`          | Slug natural key  | Cross-domain references, external APIs, stable identity |
 
 `PersistenceId<Long>` is null in JSON catalog data — assigned by `TestEntitySource` or the RDBMS
 on insert. It never crosses a domain boundary in application code.
@@ -91,6 +91,7 @@ the single-database production strategy. It is the **only** object permitted to 
 `TestEntitySource` instances.
 
 Responsibilities:
+
 - Constructs and owns **all** `TestEntitySource` instances across **all domains**
 - Wires intra-domain reference constraints between sources at construction time
 - Implements `BeforeEachCallback` — resets all sources before each test method
@@ -119,4 +120,5 @@ NaturalistDatabase       ← all TestEntitySources, data layer
 - Domain logic is completely decoupled from persistence infrastructure
 - Repositories are not visible outside their domain — cross-domain coupling is structurally impossible
 - The in-memory adapter is sufficient for all development until the RDBMS adapter is needed
-- Cross-domain FK integrity is deferred to the infrastructure layer, which is the only layer that can enforce it without violating the module DAG
+- Cross-domain FK integrity is deferred to the infrastructure layer, which is the only layer that can enforce it without
+  violating the module DAG

@@ -18,7 +18,8 @@ final class TestTemplateEngine {
             "domains/plants/plants-console/src/main/jte",
     };
 
-    private TestTemplateEngine() {}
+    private TestTemplateEngine() {
+    }
 
     static TemplateEngine create() {
         Path projectRoot = findProjectRoot();

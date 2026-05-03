@@ -9,10 +9,10 @@ import java.util.Set;
 @DomainService
 class SpeciesQueryImpl
         extends AbstractEntityQuery<
-                        InsectSpeciesName,
-                        InsectSpecies,
-                        InsectEntityCollections.SpeciesCollection,
-                        InsectRepository.SpeciesRepository>
+        InsectSpeciesName,
+        InsectSpecies,
+        InsectEntityCollections.SpeciesCollection,
+        InsectRepository.SpeciesRepository>
         implements InsectQuery.SpeciesQuery {
 
     SpeciesQueryImpl(InsectRepository.SpeciesRepository repository) {
@@ -34,7 +34,7 @@ class SpeciesQueryImpl
     @Override
     public InsectEntityCollections.SpeciesCollection getByFunctionalGuild(FunctionalGuild functionalGuild) {
         observer().arguments("getByFunctionalGuild", i -> i
-                .notNull(functionalGuild, "functionalGuild"))
+                        .notNull(functionalGuild, "functionalGuild"))
                 .throwWhenInvalid();
         return InsectEntityCollections.SpeciesCollection.of(repository().getByFunctionalGuild(functionalGuild));
     }

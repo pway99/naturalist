@@ -1,4 +1,5 @@
 # ADR-003: Java Records for Domain Types
+
 > [rationale](rationale/ADR-003-java-records-no-lombok.md)
 
 - Entity, Aggregate, ValueObject are Java records.

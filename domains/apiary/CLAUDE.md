@@ -33,11 +33,11 @@ April 8 2026 observed: IMPRESSIVE pollen intake, colony establishing strongly.
 
 These are hard constraints encoded as domain rules — not configurable:
 
-| Treatment       | Window                   | Constraint                                      |
-|-----------------|--------------------------|------------------------------------------------|
-| Formic acid     | EXCLUDED June–September  | Contraindicated above 85°F                     |
-| Thymol (Apiguard) | Late August–September  | Effective range 59–105°F                       |
-| Oxalic acid     | December–January         | Broodless period only                          |
+| Treatment         | Window                  | Constraint                 |
+|-------------------|-------------------------|----------------------------|
+| Formic acid       | EXCLUDED June–September | Contraindicated above 85°F |
+| Thymol (Apiguard) | Late August–September   | Effective range 59–105°F   |
+| Oxalic acid       | December–January        | Broodless period only      |
 
 Formic acid contraindication threshold is defined in Climate module as `ClimateThreshold`.
 Peak temperature April 6 2026: 84.8°F — just below formic acid limit.

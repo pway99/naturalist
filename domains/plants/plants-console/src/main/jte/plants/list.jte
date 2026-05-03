@@ -5,7 +5,8 @@
 
 @template.layout.page(title = "Plant Catalog", content = @`
     <h1>Plant Catalog</h1>
-    <p>${plants.size()} plants documented at Oak Vista. <a href="/plants/phytochemistry">View phytochemistry &rarr;</a></p>
+    <p>${plants.size()} plants documented at Oak Vista. <a href="/plants/phytochemistry">View phytochemistry &rarr;</a>
+    </p>
 
     <div class="entity-grid">
         @for(var p : plants)

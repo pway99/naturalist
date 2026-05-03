@@ -34,7 +34,7 @@ import java.util.Objects;
  */
 public sealed interface TreatmentTarget
         permits TreatmentTarget.ZoneTreatmentTarget,
-                TreatmentTarget.SubZoneTreatmentTarget {
+        TreatmentTarget.SubZoneTreatmentTarget {
 
     /**
      * The Zone that this target belongs to.

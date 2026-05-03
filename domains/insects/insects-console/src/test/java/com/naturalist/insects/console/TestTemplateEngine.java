@@ -18,7 +18,8 @@ final class TestTemplateEngine {
             "domains/insects/insects-console/src/main/jte",
     };
 
-    private TestTemplateEngine() {}
+    private TestTemplateEngine() {
+    }
 
     static TemplateEngine create() {
         Path projectRoot = findProjectRoot();

@@ -4,7 +4,8 @@ import com.naturalist.data.NaturalistDatabase;
 
 public final class PlantProgramTestContext {
 
-    private PlantProgramTestContext() {}
+    private PlantProgramTestContext() {
+    }
 
     public static PlantProgramQuery createQuery(NaturalistDatabase db) {
         PlantProgramRepository.PlantProgramEntityRepository repository = new PlantProgramEntityRepositoryMock(db);

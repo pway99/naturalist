@@ -45,7 +45,10 @@ class CatalogResilienceTest {
     private static final String STRATEGY = "catalog.fanout";
 
     private record TestDomain() implements DomainId {
-        @Override public String value() { return "resilience-test"; }
+        @Override
+        public String value() {
+            return "resilience-test";
+        }
     }
 
     @Test
@@ -111,9 +114,18 @@ class CatalogResilienceTest {
 
     private static EntityReferences<CompoundName> sleepingProvider(AtomicInteger calls, Duration sleep) {
         return new EntityReferences<>() {
-            @Override public DomainId domain() { return new TestDomain(); }
-            @Override public Class<CompoundName> referenceType() { return CompoundName.class; }
-            @Override public Stream<EntityRef> referencesTo(CompoundName target) {
+            @Override
+            public DomainId domain() {
+                return new TestDomain();
+            }
+
+            @Override
+            public Class<CompoundName> referenceType() {
+                return CompoundName.class;
+            }
+
+            @Override
+            public Stream<EntityRef> referencesTo(CompoundName target) {
                 calls.incrementAndGet();
                 try {
                     Thread.sleep(sleep.toMillis());
@@ -127,9 +139,18 @@ class CatalogResilienceTest {
 
     private static EntityReferences<CompoundName> throwingProvider(AtomicInteger calls) {
         return new EntityReferences<>() {
-            @Override public DomainId domain() { return new TestDomain(); }
-            @Override public Class<CompoundName> referenceType() { return CompoundName.class; }
-            @Override public Stream<EntityRef> referencesTo(CompoundName target) {
+            @Override
+            public DomainId domain() {
+                return new TestDomain();
+            }
+
+            @Override
+            public Class<CompoundName> referenceType() {
+                return CompoundName.class;
+            }
+
+            @Override
+            public Stream<EntityRef> referencesTo(CompoundName target) {
                 calls.incrementAndGet();
                 throw new RuntimeException("simulated provider failure");
             }

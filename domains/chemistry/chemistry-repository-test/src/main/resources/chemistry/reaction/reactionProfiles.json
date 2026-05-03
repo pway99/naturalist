@@ -3,8 +3,12 @@
     "name": "gypsum-dissolution-in-soil-water",
     "title": "Gypsum Dissolution in Soil Water",
     "equation": "CaSO4·2H2O → Ca2+ + SO4 2- + 2H2O",
-    "reactants": ["calcium-sulfate-dihydrate"],
-    "products": ["calcium-pectate"],
+    "reactants": [
+      "calcium-sulfate-dihydrate"
+    ],
+    "products": [
+      "calcium-pectate"
+    ],
     "type": "DISSOLUTION",
     "conditions": {
       "requiresMoisture": true,
@@ -23,8 +27,13 @@
     "name": "calcium-displacing-potassium-from-coir-exchange-sites",
     "title": "Calcium Displacing Potassium from Coir Exchange Sites",
     "equation": "Ca2+ (solution) + 2K+ (exchange) → Ca2+ (exchange) + 2K+ (solution)",
-    "reactants": ["calcium-sulfate-dihydrate", "potassium-sulfate"],
-    "products": ["potassium-sulfate"],
+    "reactants": [
+      "calcium-sulfate-dihydrate",
+      "potassium-sulfate"
+    ],
+    "products": [
+      "potassium-sulfate"
+    ],
     "type": "CATION_EXCHANGE",
     "conditions": {
       "requiresMoisture": true,
@@ -43,8 +52,12 @@
     "name": "bacterial-sulfur-oxidation-to-sulfate",
     "title": "Bacterial Sulfur Oxidation to Sulfate",
     "equation": "2S + 3O2 + 2H2O → 2H2SO4",
-    "reactants": ["elemental-sulfur"],
-    "products": ["calcium-sulfate-dihydrate"],
+    "reactants": [
+      "elemental-sulfur"
+    ],
+    "products": [
+      "calcium-sulfate-dihydrate"
+    ],
     "type": "BIOLOGICAL",
     "conditions": {
       "requiresMoisture": true,
@@ -63,8 +76,13 @@
     "name": "limestone-neutralization-of-sulfuric-acid",
     "title": "Limestone Neutralization of Sulfuric Acid",
     "equation": "H2SO4 + CaCO3 → CaSO4 + H2O + CO2",
-    "reactants": ["elemental-sulfur", "calcium-carbonate"],
-    "products": ["calcium-sulfate-dihydrate"],
+    "reactants": [
+      "elemental-sulfur",
+      "calcium-carbonate"
+    ],
+    "products": [
+      "calcium-sulfate-dihydrate"
+    ],
     "type": "ACID_BASE",
     "conditions": {
       "requiresMoisture": true,
@@ -83,8 +101,14 @@
     "name": "calcium-pectate-cell-wall-formation",
     "title": "Calcium Pectate Cell Wall Formation",
     "equation": "Ca2+ + pectin chains → calcium pectate (cell wall)",
-    "reactants": ["calcium-sulfate-dihydrate", "organic-acid-chelate", "calcium-chloride"],
-    "products": ["calcium-pectate"],
+    "reactants": [
+      "calcium-sulfate-dihydrate",
+      "organic-acid-chelate",
+      "calcium-chloride"
+    ],
+    "products": [
+      "calcium-pectate"
+    ],
     "type": "BIOLOGICAL",
     "conditions": {
       "requiresMoisture": true,
@@ -103,8 +127,12 @@
     "name": "organic-acid-chelate-foliar-cuticular-absorption",
     "title": "Organic Acid Chelate Foliar Cuticular Absorption",
     "equation": "Ca-chelate (foliar) → Ca2+ (apoplast) → calcium pectate",
-    "reactants": ["organic-acid-chelate"],
-    "products": ["calcium-pectate"],
+    "reactants": [
+      "organic-acid-chelate"
+    ],
+    "products": [
+      "calcium-pectate"
+    ],
     "type": "BIOLOGICAL",
     "conditions": {
       "requiresMoisture": false,
@@ -123,7 +151,9 @@
     "name": "thymol-volatilization-for-varroa-control",
     "title": "Thymol Volatilization for Varroa Control",
     "equation": "C10H14O (gel) → C10H14O (vapor) → Varroa mite mortality",
-    "reactants": ["thymol"],
+    "reactants": [
+      "thymol"
+    ],
     "products": [],
     "type": "VOLATILIZATION",
     "conditions": {
@@ -143,7 +173,9 @@
     "name": "formic-acid-vapor-varroa-fumigation",
     "title": "Formic Acid Vapor Varroa Fumigation",
     "equation": "HCOOH (liquid) → HCOOH (vapor) → Varroa mite mortality",
-    "reactants": ["formic-acid"],
+    "reactants": [
+      "formic-acid"
+    ],
     "products": [],
     "type": "VOLATILIZATION",
     "conditions": {

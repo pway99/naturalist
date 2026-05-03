@@ -18,7 +18,8 @@ final class TestTemplateEngine {
             "domains/chemistry/chemistry-console/src/main/jte",
     };
 
-    private TestTemplateEngine() {}
+    private TestTemplateEngine() {
+    }
 
     static TemplateEngine create() {
         Path projectRoot = findProjectRoot();

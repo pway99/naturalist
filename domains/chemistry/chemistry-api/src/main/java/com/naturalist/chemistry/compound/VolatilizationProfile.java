@@ -39,8 +39,8 @@ public record VolatilizationProfile(
 
     public TemperatureAssessment assess(TemperatureFahrenheit temp) {
         if (temp.isBelow(minEffectiveTempF)) return TemperatureAssessment.TOO_COLD_INEFFECTIVE;
-        if (temp.isAbove(maxSafeTempF))      return TemperatureAssessment.TOO_HOT_DANGEROUS;
-        if (isOptimalAt(temp))               return TemperatureAssessment.OPTIMAL;
+        if (temp.isAbove(maxSafeTempF)) return TemperatureAssessment.TOO_HOT_DANGEROUS;
+        if (isOptimalAt(temp)) return TemperatureAssessment.OPTIMAL;
         return TemperatureAssessment.ACCEPTABLE;
     }
 

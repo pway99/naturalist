@@ -28,7 +28,8 @@ class InsectQueryImplTest {
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("functionalGuild");
     }
-        @Test
+
+    @Test
     void getByFunctionalGuild() {
         InsectEntityCollections.SpeciesCollection predatorCollection = insectQuery.species().getByFunctionalGuild(FunctionalGuild.PREDATOR);
 

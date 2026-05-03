@@ -16,7 +16,8 @@ import java.util.Map;
 public class NaturalistDatabase {
     final Map<Class<?>, Object> sourceMap = new HashMap<>();
 
-    protected NaturalistDatabase() {}
+    protected NaturalistDatabase() {
+    }
 
     public static NaturalistDatabase create() {
         return new NaturalistDatabase();
@@ -27,7 +28,7 @@ public class NaturalistDatabase {
     }
 
     @SuppressWarnings("unchecked")
-    public <NTS extends TestEntitySource<?,?>> NTS getNamed(Class<? extends TestEntitySource<?,?>> namedTestEntitySourceClass) {
+    public <NTS extends TestEntitySource<?, ?>> NTS getNamed(Class<? extends TestEntitySource<?, ?>> namedTestEntitySourceClass) {
         NTS nts = (NTS) sourceMap.get(namedTestEntitySourceClass);
         if (nts == null) {
             try {

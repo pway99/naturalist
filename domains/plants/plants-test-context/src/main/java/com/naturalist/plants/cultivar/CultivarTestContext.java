@@ -4,7 +4,8 @@ import com.naturalist.data.NaturalistDatabase;
 
 public final class CultivarTestContext {
 
-    private CultivarTestContext() {}
+    private CultivarTestContext() {
+    }
 
     public static CultivarQuery createQuery(NaturalistDatabase db) {
         CultivarRepository.CultivarEntityRepository repository = new CultivarEntityRepositoryMock(db);

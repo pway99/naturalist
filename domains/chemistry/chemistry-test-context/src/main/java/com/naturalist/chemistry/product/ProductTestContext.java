@@ -11,7 +11,8 @@ import com.naturalist.data.NaturalistDatabase;
  */
 public final class ProductTestContext {
 
-    private ProductTestContext() {}
+    private ProductTestContext() {
+    }
 
     public static ProductQuery createQuery(NaturalistDatabase db) {
         ProductRepository repository = new ProductEntityRepositoryMock(db);

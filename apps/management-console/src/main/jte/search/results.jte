@@ -16,10 +16,12 @@
             <div class="search-empty-state">
                 <h2>The catalog doesn't know <em>${query}</em> yet.</h2>
                 <p>If this is something you've observed in the field, add it to your collection &mdash;
-                   a future naturalist will thank you.</p>
-                <p><button type="button" disabled title="Personal collections coming soon">
-                    Add to my collection
-                </button></p>
+                    a future naturalist will thank you.</p>
+                <p>
+                    <button type="button" disabled title="Personal collections coming soon">
+                        Add to my collection
+                    </button>
+                </p>
             </div>
         @else
             <p>${totalHits} hit${totalHits == 1 ? "" : "s"} for <strong>${query}</strong>.</p>

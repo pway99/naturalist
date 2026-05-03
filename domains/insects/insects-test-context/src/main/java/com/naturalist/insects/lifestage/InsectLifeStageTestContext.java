@@ -11,7 +11,8 @@ import com.naturalist.data.NaturalistDatabase;
  */
 public final class InsectLifeStageTestContext {
 
-    private InsectLifeStageTestContext() {}
+    private InsectLifeStageTestContext() {
+    }
 
     public static InsectLifeStageQuery createQuery(NaturalistDatabase db) {
         LifeStageEntityRepositoryMock repository = new LifeStageEntityRepositoryMock(db);

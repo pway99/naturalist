@@ -66,12 +66,16 @@ public class Observer {
         this.monitoringMode = monitoringMode == null ? MonitoringMode.ON_FAILURE : monitoringMode;
     }
 
-    /** Construct an observer in {@link MonitoringMode#ON_FAILURE} mode. */
+    /**
+     * Construct an observer in {@link MonitoringMode#ON_FAILURE} mode.
+     */
     public static Observer forClass(Class<?> referenceClass) {
         return new Observer(referenceClass, MonitoringMode.ON_FAILURE);
     }
 
-    /** Construct an observer with an explicit monitoring mode. */
+    /**
+     * Construct an observer with an explicit monitoring mode.
+     */
     public static Observer forClass(Class<?> referenceClass, MonitoringMode monitoringMode) {
         return new Observer(referenceClass, monitoringMode);
     }

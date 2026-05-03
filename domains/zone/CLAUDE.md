@@ -42,7 +42,9 @@ SubZone was introduced as a named sub-division within a Zone when TSWV managemen
 required tracking pest pressure at a finer granularity than the whole Zone.
 
 Key SubZone fields:
-- `@Nullable SoilProfileName soilProfileName` — links to a SoilProfile (nullable: not all sub-zones have a dedicated soil profile)
+
+- `@Nullable SoilProfileName soilProfileName` — links to a SoilProfile (nullable: not all sub-zones have a dedicated
+  soil profile)
 - `ThripsHabitatRisk surfaceHabitatRisk` — driven by `MulchType`
 - `List<PestPressureRecord> pestPressureHistory` — immutable historical records
 
@@ -60,13 +62,13 @@ applies to either an entire Zone or a specific SubZone.
 
 ## MulchType and Thrips Habitat Risk
 
-| MulchType     | ThripsHabitatRisk | Notes                              |
-|---------------|-------------------|------------------------------------|
-| STRAW         | HIGH              | High thrips overwintering habitat  |
-| PINE_NEEDLE   | LOW               |                                    |
-| WOOL          | VERY_LOW          | Lanolin deters insects             |
-| BURLAP_COLLAR | —                 |                                    |
-| BARE          | —                 |                                    |
+| MulchType     | ThripsHabitatRisk | Notes                             |
+|---------------|-------------------|-----------------------------------|
+| STRAW         | HIGH              | High thrips overwintering habitat |
+| PINE_NEEDLE   | LOW               |                                   |
+| WOOL          | VERY_LOW          | Lanolin deters insects            |
+| BURLAP_COLLAR | —                 |                                   |
+| BARE          | —                 |                                   |
 
 ## SubstrateType
 

@@ -48,7 +48,9 @@ public interface EntityRepositoryTest<
     // Identity hooks — concrete tests supply these
     // =========================================================================
 
-    /** A fictitious name guaranteed absent from the catalog. */
+    /**
+     * A fictitious name guaranteed absent from the catalog.
+     */
     NAME notFoundName();
 
     /**

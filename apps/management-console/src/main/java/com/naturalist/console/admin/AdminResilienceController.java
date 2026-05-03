@@ -43,5 +43,6 @@ public class AdminResilienceController {
         return List.copyOf(new TreeSet<>(names));
     }
 
-    public record Group(String primitive, List<String> names) {}
+    public record Group(String primitive, List<String> names) {
+    }
 }

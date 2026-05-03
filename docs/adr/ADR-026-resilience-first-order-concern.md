@@ -1,10 +1,12 @@
 # ADR-026: Resilience as a First-Order Concern
+
 > [rationale](rationale/ADR-026-resilience-first-order-concern.md)
 
 Every cross-boundary call declares its resilience strategy. Reviewer discipline
 catches it; an ArchUnit test catches the rest.
 
 ### Facade in the kernel; vendor in an adapter
+
 - `kernels/framework`'s `com.naturalist.resilience` ships `Resilience`,
   `Retry`, `Timeout`, `CircuitBreaker`, `Bulkhead`, the sealed
   `ResilienceConfig`, `@Resilient(name)`, `@ResilienceExempt(reason)`, and
@@ -13,6 +15,7 @@ catches it; an ArchUnit test catches the rest.
   domain or kernel module imports `io.github.resilience4j.*`.
 
 ### Three acceptable declarations (per call site)
+
 1. `@Resilient(name = "...")` — class- or method-level. The composition root
    registers `ResilienceConfig` records under that name.
 2. **Programmatic facade use** — constructor-inject `Resilience` and call
@@ -21,11 +24,13 @@ catches it; an ArchUnit test catches the rest.
    in-process, side-effect-free, and not subject to timeout.
 
 ### Unconfigured-name contract
+
 Production adapters throw `UnconfiguredResilienceException` on a missing
 config name. Silent fall-back is forbidden. `Resilience.noOp()` is the one
 exception — it is the explicit "no resilience wired" default.
 
 ### Build-time gate (M9)
+
 `apps/management-console/.../ResilienceComplianceTest` (ArchUnit) fails the
 build when a class on a known cross-boundary path declares neither
 `@Resilient` nor `@ResilienceExempt`. Rules cover concrete `Catalog`
@@ -34,11 +39,13 @@ implementations, concrete `EntityReferences<?>`, classes depending on
 an `rdms` segment.
 
 ### PR expectation
+
 Every PR that touches a cross-boundary call site answers the question
 *"What resilience strategy does this introduce or rely on?"*. Full policy
 and reviewer checklist: [`docs/resilience-policy.md`](../resilience-policy.md).
 
 ### Review flags
+
 - New cross-boundary class with neither `@Resilient` nor `@ResilienceExempt`.
 - Domain module importing `io.github.resilience4j.*`.
 - A `Resilience` adapter falling back to no-op on an unconfigured name.

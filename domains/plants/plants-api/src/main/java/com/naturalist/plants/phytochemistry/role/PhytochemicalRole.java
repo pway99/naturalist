@@ -46,34 +46,34 @@ import java.util.function.Consumer;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "kind")
 @JsonSubTypes({
         // ── Defense ──────────────────────────────────────────────────────
-        @JsonSubTypes.Type(value = PhytochemicalRole.HerbivoreDeterrent.class,    name = "HERBIVORE_DETERRENT"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.InsectDeterrent.class,       name = "INSECT_DETERRENT"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.AntiFungal.class,            name = "ANTI_FUNGAL"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.AntiMicrobial.class,         name = "ANTI_MICROBIAL"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.Allelopathic.class,          name = "ALLELOPATHIC"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.HerbivoreDeterrent.class, name = "HERBIVORE_DETERRENT"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.InsectDeterrent.class, name = "INSECT_DETERRENT"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.AntiFungal.class, name = "ANTI_FUNGAL"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.AntiMicrobial.class, name = "ANTI_MICROBIAL"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.Allelopathic.class, name = "ALLELOPATHIC"),
 
         // ── Signaling ────────────────────────────────────────────────────
         @JsonSubTypes.Type(value = PhytochemicalRole.InducedVolatileSignal.class, name = "INDUCED_VOLATILE_SIGNAL"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.PollinatorAttractant.class,  name = "POLLINATOR_ATTRACTANT"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.PollinatorAttractant.class, name = "POLLINATOR_ATTRACTANT"),
         @JsonSubTypes.Type(value = PhytochemicalRole.SeedDisperserAttractant.class, name = "SEED_DISPERSER_ATTRACTANT"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.MycorrhizalSignal.class,     name = "MYCORRHIZAL_SIGNAL"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.MycorrhizalSignal.class, name = "MYCORRHIZAL_SIGNAL"),
 
         // ── Environmental interaction ───────────────────────────────────
-        @JsonSubTypes.Type(value = PhytochemicalRole.UVProtectant.class,          name = "UV_PROTECTANT"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.StressTolerance.class,       name = "STRESS_TOLERANCE"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.HeavyMetalChelator.class,    name = "HEAVY_METAL_CHELATOR"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.UVProtectant.class, name = "UV_PROTECTANT"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.StressTolerance.class, name = "STRESS_TOLERANCE"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.HeavyMetalChelator.class, name = "HEAVY_METAL_CHELATOR"),
 
         // ── Medicinal and commercial ─────────────────────────────────────
-        @JsonSubTypes.Type(value = PhytochemicalRole.Pharmaceutical.class,        name = "PHARMACEUTICAL"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.Nutraceutical.class,         name = "NUTRACEUTICAL"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.DyeSource.class,             name = "DYE_SOURCE"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.FragranceSource.class,       name = "FRAGRANCE_SOURCE"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.FlavorSource.class,          name = "FLAVOR_SOURCE"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.FiberSource.class,           name = "FIBER_SOURCE"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.InsecticideSource.class,     name = "INSECTICIDE_SOURCE"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.IndustrialFeedstock.class,   name = "INDUSTRIAL_FEEDSTOCK"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.HumanToxin.class,            name = "HUMAN_TOXIN"),
-        @JsonSubTypes.Type(value = PhytochemicalRole.LivestockToxin.class,        name = "LIVESTOCK_TOXIN")
+        @JsonSubTypes.Type(value = PhytochemicalRole.Pharmaceutical.class, name = "PHARMACEUTICAL"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.Nutraceutical.class, name = "NUTRACEUTICAL"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.DyeSource.class, name = "DYE_SOURCE"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.FragranceSource.class, name = "FRAGRANCE_SOURCE"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.FlavorSource.class, name = "FLAVOR_SOURCE"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.FiberSource.class, name = "FIBER_SOURCE"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.InsecticideSource.class, name = "INSECTICIDE_SOURCE"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.IndustrialFeedstock.class, name = "INDUSTRIAL_FEEDSTOCK"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.HumanToxin.class, name = "HUMAN_TOXIN"),
+        @JsonSubTypes.Type(value = PhytochemicalRole.LivestockToxin.class, name = "LIVESTOCK_TOXIN")
 })
 public sealed interface PhytochemicalRole extends ValueObject {
 
@@ -86,58 +86,147 @@ public sealed interface PhytochemicalRole extends ValueObject {
      */
     @Override
     default Consumer<? extends Constraints> invariants() {
-        return i -> {};
+        return i -> {
+        };
     }
 
     // ── Defense ──────────────────────────────────────────────────────────
-    /** Deters mammalian or vertebrate herbivores — bitter alkaloids, tannins. */
-    record HerbivoreDeterrent()      implements PhytochemicalRole {}
-    /** Deters insect herbivores — pyrethrins, nicotinoids, glucosinolate breakdown products. */
-    record InsectDeterrent()         implements PhytochemicalRole {}
-    /** Suppresses fungal pathogens or epiphytes. */
-    record AntiFungal()              implements PhytochemicalRole {}
-    /** Suppresses bacterial or other microbial pathogens. */
-    record AntiMicrobial()           implements PhytochemicalRole {}
-    /** Released to soil or air to suppress competing plants — juglone, sorgoleone. */
-    record Allelopathic()            implements PhytochemicalRole {}
+
+    /**
+     * Deters mammalian or vertebrate herbivores — bitter alkaloids, tannins.
+     */
+    record HerbivoreDeterrent() implements PhytochemicalRole {
+    }
+
+    /**
+     * Deters insect herbivores — pyrethrins, nicotinoids, glucosinolate breakdown products.
+     */
+    record InsectDeterrent() implements PhytochemicalRole {
+    }
+
+    /**
+     * Suppresses fungal pathogens or epiphytes.
+     */
+    record AntiFungal() implements PhytochemicalRole {
+    }
+
+    /**
+     * Suppresses bacterial or other microbial pathogens.
+     */
+    record AntiMicrobial() implements PhytochemicalRole {
+    }
+
+    /**
+     * Released to soil or air to suppress competing plants — juglone, sorgoleone.
+     */
+    record Allelopathic() implements PhytochemicalRole {
+    }
 
     // ── Signaling ────────────────────────────────────────────────────────
-    /** Volatile organic signal released on damage, recruiting parasitoids or alerting neighbours. */
-    record InducedVolatileSignal()   implements PhytochemicalRole {}
-    /** Attracts pollinators — floral pigments, fragrance volatiles, nectar secondary metabolites. */
-    record PollinatorAttractant()    implements PhytochemicalRole {}
-    /** Attracts seed dispersers — fruit pigments, fruit volatiles. */
-    record SeedDisperserAttractant() implements PhytochemicalRole {}
-    /** Recruits mycorrhizal partners — strigolactones, root flavonoids. */
-    record MycorrhizalSignal()       implements PhytochemicalRole {}
+
+    /**
+     * Volatile organic signal released on damage, recruiting parasitoids or alerting neighbours.
+     */
+    record InducedVolatileSignal() implements PhytochemicalRole {
+    }
+
+    /**
+     * Attracts pollinators — floral pigments, fragrance volatiles, nectar secondary metabolites.
+     */
+    record PollinatorAttractant() implements PhytochemicalRole {
+    }
+
+    /**
+     * Attracts seed dispersers — fruit pigments, fruit volatiles.
+     */
+    record SeedDisperserAttractant() implements PhytochemicalRole {
+    }
+
+    /**
+     * Recruits mycorrhizal partners — strigolactones, root flavonoids.
+     */
+    record MycorrhizalSignal() implements PhytochemicalRole {
+    }
 
     // ── Environmental interaction ───────────────────────────────────────
-    /** Absorbs or quenches UV radiation — flavonoids in epidermal layers. */
-    record UVProtectant()            implements PhytochemicalRole {}
-    /** Protects against drought, heat, or cold — proline, glycine betaine, sugars. */
-    record StressTolerance()         implements PhytochemicalRole {}
-    /** Sequesters heavy metals — phytochelatins, metallothioneins. */
-    record HeavyMetalChelator()      implements PhytochemicalRole {}
+
+    /**
+     * Absorbs or quenches UV radiation — flavonoids in epidermal layers.
+     */
+    record UVProtectant() implements PhytochemicalRole {
+    }
+
+    /**
+     * Protects against drought, heat, or cold — proline, glycine betaine, sugars.
+     */
+    record StressTolerance() implements PhytochemicalRole {
+    }
+
+    /**
+     * Sequesters heavy metals — phytochelatins, metallothioneins.
+     */
+    record HeavyMetalChelator() implements PhytochemicalRole {
+    }
 
     // ── Medicinal and commercial ────────────────────────────────────────
-    /** Documented pharmaceutical activity — taxol, salicin, artemisinin, digitalin. */
-    record Pharmaceutical()          implements PhytochemicalRole {}
-    /** Health-promoting compound consumed in food — resveratrol, lycopene. */
-    record Nutraceutical()           implements PhytochemicalRole {}
-    /** Source of textile or food-grade dye — indigo, madder anthraquinones. */
-    record DyeSource()               implements PhytochemicalRole {}
-    /** Source of perfumery or cosmetic fragrance — rose otto, lavender oil. */
-    record FragranceSource()         implements PhytochemicalRole {}
-    /** Source of culinary flavour — vanilla vanillin, citrus limonene. */
-    record FlavorSource()            implements PhytochemicalRole {}
-    /** Source of textile or paper fibre — flax lignin, hemp bast. */
-    record FiberSource()             implements PhytochemicalRole {}
-    /** Source of commercial insecticide — pyrethrum daisies, neem azadirachtin. */
-    record InsecticideSource()       implements PhytochemicalRole {}
-    /** Industrial feedstock — gum arabic, rubber latex, taxol biosynthesis precursors. */
-    record IndustrialFeedstock()     implements PhytochemicalRole {}
-    /** Toxic to humans on ingestion or contact — aristolochic acid, ricin. */
-    record HumanToxin()              implements PhytochemicalRole {}
-    /** Toxic to livestock — pyrrolizidine alkaloids in Senecio, taxine in Taxus. */
-    record LivestockToxin()          implements PhytochemicalRole {}
+
+    /**
+     * Documented pharmaceutical activity — taxol, salicin, artemisinin, digitalin.
+     */
+    record Pharmaceutical() implements PhytochemicalRole {
+    }
+
+    /**
+     * Health-promoting compound consumed in food — resveratrol, lycopene.
+     */
+    record Nutraceutical() implements PhytochemicalRole {
+    }
+
+    /**
+     * Source of textile or food-grade dye — indigo, madder anthraquinones.
+     */
+    record DyeSource() implements PhytochemicalRole {
+    }
+
+    /**
+     * Source of perfumery or cosmetic fragrance — rose otto, lavender oil.
+     */
+    record FragranceSource() implements PhytochemicalRole {
+    }
+
+    /**
+     * Source of culinary flavour — vanilla vanillin, citrus limonene.
+     */
+    record FlavorSource() implements PhytochemicalRole {
+    }
+
+    /**
+     * Source of textile or paper fibre — flax lignin, hemp bast.
+     */
+    record FiberSource() implements PhytochemicalRole {
+    }
+
+    /**
+     * Source of commercial insecticide — pyrethrum daisies, neem azadirachtin.
+     */
+    record InsecticideSource() implements PhytochemicalRole {
+    }
+
+    /**
+     * Industrial feedstock — gum arabic, rubber latex, taxol biosynthesis precursors.
+     */
+    record IndustrialFeedstock() implements PhytochemicalRole {
+    }
+
+    /**
+     * Toxic to humans on ingestion or contact — aristolochic acid, ricin.
+     */
+    record HumanToxin() implements PhytochemicalRole {
+    }
+
+    /**
+     * Toxic to livestock — pyrrolizidine alkaloids in Senecio, taxine in Taxus.
+     */
+    record LivestockToxin() implements PhytochemicalRole {
+    }
 }

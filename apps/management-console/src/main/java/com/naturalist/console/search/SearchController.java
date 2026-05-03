@@ -64,7 +64,9 @@ public class SearchController {
         return domainDisplayNames.getOrDefault(domain, domain.value());
     }
 
-    public record Group(String domainDisplayName, List<Link> links) {}
+    public record Group(String domainDisplayName, List<Link> links) {
+    }
 
-    public record Link(String label, String url, String matchedHint) {}
+    public record Link(String label, String url, String matchedHint) {
+    }
 }

@@ -17,13 +17,17 @@ import java.util.UUID;
  */
 public class TestInsectsIdentifiers {
 
-    private TestInsectsIdentifiers() {}
+    private TestInsectsIdentifiers() {
+    }
 
     public static class InsectSpecies {
 
-        private InsectSpecies() {}
+        private InsectSpecies() {
+        }
 
-        /** Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog. */
+        /**
+         * Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog.
+         */
         public static class NotFound {
             public static final InsectSpeciesName name = InsectSpeciesName.of("unobtainium-beetle");
             public static final InsectImageId imageName = InsectImageId.of(
@@ -36,7 +40,9 @@ public class TestInsectsIdentifiers {
             public static final InsectSpeciesName name = InsectSpeciesName.of("tachinid-fly");
 
             public static class LifeStages {
-                private LifeStages() {}
+                private LifeStages() {
+                }
+
                 public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
                 public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
                 public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
@@ -48,7 +54,9 @@ public class TestInsectsIdentifiers {
             public static final InsectSpeciesName name = InsectSpeciesName.of("braconid-wasp");
 
             public static class LifeStages {
-                private LifeStages() {}
+                private LifeStages() {
+                }
+
                 public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
                 public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
                 public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
@@ -61,7 +69,8 @@ public class TestInsectsIdentifiers {
 
             public static class Images {
 
-                private Images() {}
+                private Images() {
+                }
 
                 public static class Img9047 {
                     public static final InsectImageId name = InsectImageId.of(

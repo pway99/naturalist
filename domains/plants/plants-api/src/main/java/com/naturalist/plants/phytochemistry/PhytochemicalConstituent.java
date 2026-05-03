@@ -91,7 +91,9 @@ public record PhytochemicalConstituent(
 
     // ── Role queries ────────────────────────────────────────────────────
 
-    /** Whether the compound plays the given role in this plant. */
+    /**
+     * Whether the compound plays the given role in this plant.
+     */
     public boolean playsRole(PhytochemicalRole role) {
         return roles.contains(role);
     }
@@ -104,10 +106,10 @@ public record PhytochemicalConstituent(
     public boolean isDefensive() {
         return roles.stream().anyMatch(r ->
                 r instanceof PhytochemicalRole.HerbivoreDeterrent ||
-                r instanceof PhytochemicalRole.InsectDeterrent ||
-                r instanceof PhytochemicalRole.AntiFungal ||
-                r instanceof PhytochemicalRole.AntiMicrobial ||
-                r instanceof PhytochemicalRole.Allelopathic);
+                        r instanceof PhytochemicalRole.InsectDeterrent ||
+                        r instanceof PhytochemicalRole.AntiFungal ||
+                        r instanceof PhytochemicalRole.AntiMicrobial ||
+                        r instanceof PhytochemicalRole.Allelopathic);
     }
 
     /**
@@ -118,9 +120,9 @@ public record PhytochemicalConstituent(
     public boolean isSignaling() {
         return roles.stream().anyMatch(r ->
                 r instanceof PhytochemicalRole.InducedVolatileSignal ||
-                r instanceof PhytochemicalRole.PollinatorAttractant ||
-                r instanceof PhytochemicalRole.SeedDisperserAttractant ||
-                r instanceof PhytochemicalRole.MycorrhizalSignal);
+                        r instanceof PhytochemicalRole.PollinatorAttractant ||
+                        r instanceof PhytochemicalRole.SeedDisperserAttractant ||
+                        r instanceof PhytochemicalRole.MycorrhizalSignal);
     }
 
     /**
@@ -131,8 +133,8 @@ public record PhytochemicalConstituent(
     public boolean mediatesEnvironmentalStress() {
         return roles.stream().anyMatch(r ->
                 r instanceof PhytochemicalRole.UVProtectant ||
-                r instanceof PhytochemicalRole.StressTolerance ||
-                r instanceof PhytochemicalRole.HeavyMetalChelator);
+                        r instanceof PhytochemicalRole.StressTolerance ||
+                        r instanceof PhytochemicalRole.HeavyMetalChelator);
     }
 
     /**
@@ -142,7 +144,7 @@ public record PhytochemicalConstituent(
     public boolean hasMedicinalApplication() {
         return roles.stream().anyMatch(r ->
                 r instanceof PhytochemicalRole.Pharmaceutical ||
-                r instanceof PhytochemicalRole.Nutraceutical);
+                        r instanceof PhytochemicalRole.Nutraceutical);
     }
 
     /**
@@ -153,11 +155,11 @@ public record PhytochemicalConstituent(
     public boolean hasCommercialApplication() {
         return roles.stream().anyMatch(r ->
                 r instanceof PhytochemicalRole.DyeSource ||
-                r instanceof PhytochemicalRole.FragranceSource ||
-                r instanceof PhytochemicalRole.FlavorSource ||
-                r instanceof PhytochemicalRole.FiberSource ||
-                r instanceof PhytochemicalRole.InsecticideSource ||
-                r instanceof PhytochemicalRole.IndustrialFeedstock);
+                        r instanceof PhytochemicalRole.FragranceSource ||
+                        r instanceof PhytochemicalRole.FlavorSource ||
+                        r instanceof PhytochemicalRole.FiberSource ||
+                        r instanceof PhytochemicalRole.InsecticideSource ||
+                        r instanceof PhytochemicalRole.IndustrialFeedstock);
     }
 
     /**
@@ -167,22 +169,28 @@ public record PhytochemicalConstituent(
     public boolean isToxicToMammals() {
         return roles.stream().anyMatch(r ->
                 r instanceof PhytochemicalRole.HumanToxin ||
-                r instanceof PhytochemicalRole.LivestockToxin);
+                        r instanceof PhytochemicalRole.LivestockToxin);
     }
 
     // ── Tissue / induction queries ──────────────────────────────────────
 
-    /** Whether this constituent is recorded as present in the given tissue. */
+    /**
+     * Whether this constituent is recorded as present in the given tissue.
+     */
     public boolean isPresentIn(PlantTissue tissue) {
         return tissues.contains(tissue);
     }
 
-    /** Whether the compound is produced only on stress / damage / pathogen exposure. */
+    /**
+     * Whether the compound is produced only on stress / damage / pathogen exposure.
+     */
     public boolean isInduced() {
         return induction == InductionMode.INDUCED;
     }
 
-    /** Whether the compound is tied to a developmental stage (e.g. ripening). */
+    /**
+     * Whether the compound is tied to a developmental stage (e.g. ripening).
+     */
     public boolean isDevelopmental() {
         return induction == InductionMode.DEVELOPMENTAL;
     }

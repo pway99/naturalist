@@ -64,45 +64,45 @@ import java.util.function.Consumer;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "kind")
 @JsonSubTypes({
         // ── Non-organic — explicit "axis does not apply" permits ────────
-        @JsonSubTypes.Type(value = StructuralType.Element.class,               name = "ELEMENT"),
-        @JsonSubTypes.Type(value = StructuralType.Inorganic.class,             name = "INORGANIC"),
+        @JsonSubTypes.Type(value = StructuralType.Element.class, name = "ELEMENT"),
+        @JsonSubTypes.Type(value = StructuralType.Inorganic.class, name = "INORGANIC"),
 
         // ── Alkaloids (nitrogen-containing) ──────────────────────────────
-        @JsonSubTypes.Type(value = StructuralType.IndoleAlkaloid.class,        name = "INDOLE_ALKALOID"),
-        @JsonSubTypes.Type(value = StructuralType.TropaneAlkaloid.class,       name = "TROPANE_ALKALOID"),
-        @JsonSubTypes.Type(value = StructuralType.PurineAlkaloid.class,        name = "PURINE_ALKALOID"),
+        @JsonSubTypes.Type(value = StructuralType.IndoleAlkaloid.class, name = "INDOLE_ALKALOID"),
+        @JsonSubTypes.Type(value = StructuralType.TropaneAlkaloid.class, name = "TROPANE_ALKALOID"),
+        @JsonSubTypes.Type(value = StructuralType.PurineAlkaloid.class, name = "PURINE_ALKALOID"),
         @JsonSubTypes.Type(value = StructuralType.PyrrolizidineAlkaloid.class, name = "PYRROLIZIDINE_ALKALOID"),
-        @JsonSubTypes.Type(value = StructuralType.QuinolineAlkaloid.class,     name = "QUINOLINE_ALKALOID"),
-        @JsonSubTypes.Type(value = StructuralType.IsoquinolineAlkaloid.class,  name = "ISOQUINOLINE_ALKALOID"),
-        @JsonSubTypes.Type(value = StructuralType.OtherAlkaloid.class,         name = "OTHER_ALKALOID"),
+        @JsonSubTypes.Type(value = StructuralType.QuinolineAlkaloid.class, name = "QUINOLINE_ALKALOID"),
+        @JsonSubTypes.Type(value = StructuralType.IsoquinolineAlkaloid.class, name = "ISOQUINOLINE_ALKALOID"),
+        @JsonSubTypes.Type(value = StructuralType.OtherAlkaloid.class, name = "OTHER_ALKALOID"),
 
         // ── Terpenoids (isoprenoid by carbon count) ──────────────────────
-        @JsonSubTypes.Type(value = StructuralType.Monoterpene.class,           name = "MONOTERPENE"),
-        @JsonSubTypes.Type(value = StructuralType.Sesquiterpene.class,         name = "SESQUITERPENE"),
-        @JsonSubTypes.Type(value = StructuralType.Diterpene.class,             name = "DITERPENE"),
-        @JsonSubTypes.Type(value = StructuralType.Triterpene.class,            name = "TRITERPENE"),
-        @JsonSubTypes.Type(value = StructuralType.Tetraterpene.class,          name = "TETRATERPENE"),
+        @JsonSubTypes.Type(value = StructuralType.Monoterpene.class, name = "MONOTERPENE"),
+        @JsonSubTypes.Type(value = StructuralType.Sesquiterpene.class, name = "SESQUITERPENE"),
+        @JsonSubTypes.Type(value = StructuralType.Diterpene.class, name = "DITERPENE"),
+        @JsonSubTypes.Type(value = StructuralType.Triterpene.class, name = "TRITERPENE"),
+        @JsonSubTypes.Type(value = StructuralType.Tetraterpene.class, name = "TETRATERPENE"),
 
         // ── Phenolic family ──────────────────────────────────────────────
-        @JsonSubTypes.Type(value = StructuralType.SimplePhenolic.class,        name = "SIMPLE_PHENOLIC"),
-        @JsonSubTypes.Type(value = StructuralType.Flavonoid.class,             name = "FLAVONOID"),
-        @JsonSubTypes.Type(value = StructuralType.Anthocyanin.class,           name = "ANTHOCYANIN"),
-        @JsonSubTypes.Type(value = StructuralType.Tannin.class,                name = "TANNIN"),
+        @JsonSubTypes.Type(value = StructuralType.SimplePhenolic.class, name = "SIMPLE_PHENOLIC"),
+        @JsonSubTypes.Type(value = StructuralType.Flavonoid.class, name = "FLAVONOID"),
+        @JsonSubTypes.Type(value = StructuralType.Anthocyanin.class, name = "ANTHOCYANIN"),
+        @JsonSubTypes.Type(value = StructuralType.Tannin.class, name = "TANNIN"),
 
         // ── Glycosides (sugar-linked) ────────────────────────────────────
-        @JsonSubTypes.Type(value = StructuralType.CardiacGlycoside.class,      name = "CARDIAC_GLYCOSIDE"),
-        @JsonSubTypes.Type(value = StructuralType.CyanogenicGlycoside.class,   name = "CYANOGENIC_GLYCOSIDE"),
-        @JsonSubTypes.Type(value = StructuralType.Saponin.class,               name = "SAPONIN"),
-        @JsonSubTypes.Type(value = StructuralType.OtherGlycoside.class,        name = "OTHER_GLYCOSIDE"),
+        @JsonSubTypes.Type(value = StructuralType.CardiacGlycoside.class, name = "CARDIAC_GLYCOSIDE"),
+        @JsonSubTypes.Type(value = StructuralType.CyanogenicGlycoside.class, name = "CYANOGENIC_GLYCOSIDE"),
+        @JsonSubTypes.Type(value = StructuralType.Saponin.class, name = "SAPONIN"),
+        @JsonSubTypes.Type(value = StructuralType.OtherGlycoside.class, name = "OTHER_GLYCOSIDE"),
 
         // ── Sulfur-containing ────────────────────────────────────────────
-        @JsonSubTypes.Type(value = StructuralType.Glucosinolate.class,         name = "GLUCOSINOLATE"),
+        @JsonSubTypes.Type(value = StructuralType.Glucosinolate.class, name = "GLUCOSINOLATE"),
 
         // ── Other organic ────────────────────────────────────────────────
-        @JsonSubTypes.Type(value = StructuralType.OrganicAcid.class,           name = "ORGANIC_ACID"),
-        @JsonSubTypes.Type(value = StructuralType.FattyAcidLipid.class,        name = "FATTY_ACID_LIPID"),
-        @JsonSubTypes.Type(value = StructuralType.Polysaccharide.class,        name = "POLYSACCHARIDE"),
-        @JsonSubTypes.Type(value = StructuralType.OtherOrganic.class,          name = "OTHER_ORGANIC")
+        @JsonSubTypes.Type(value = StructuralType.OrganicAcid.class, name = "ORGANIC_ACID"),
+        @JsonSubTypes.Type(value = StructuralType.FattyAcidLipid.class, name = "FATTY_ACID_LIPID"),
+        @JsonSubTypes.Type(value = StructuralType.Polysaccharide.class, name = "POLYSACCHARIDE"),
+        @JsonSubTypes.Type(value = StructuralType.OtherOrganic.class, name = "OTHER_ORGANIC")
 })
 public sealed interface StructuralType extends ValueObject {
 
@@ -118,7 +118,8 @@ public sealed interface StructuralType extends ValueObject {
      */
     @Override
     default Consumer<? extends Constraints> invariants() {
-        return i -> {};
+        return i -> {
+        };
     }
 
     /**
@@ -133,56 +134,59 @@ public sealed interface StructuralType extends ValueObject {
     default CompoundCategory category() {
         return switch (this) {
             // ── Non-organic ──────────────────────────────────────────
-            case Element x               -> CompoundCategory.ELEMENT;
-            case Inorganic x             -> CompoundCategory.INORGANIC;
+            case Element x -> CompoundCategory.ELEMENT;
+            case Inorganic x -> CompoundCategory.INORGANIC;
 
             // ── Alkaloids ────────────────────────────────────────────
-            case IndoleAlkaloid x        -> CompoundCategory.ALKALOID;
-            case TropaneAlkaloid x       -> CompoundCategory.ALKALOID;
-            case PurineAlkaloid x        -> CompoundCategory.ALKALOID;
+            case IndoleAlkaloid x -> CompoundCategory.ALKALOID;
+            case TropaneAlkaloid x -> CompoundCategory.ALKALOID;
+            case PurineAlkaloid x -> CompoundCategory.ALKALOID;
             case PyrrolizidineAlkaloid x -> CompoundCategory.ALKALOID;
-            case QuinolineAlkaloid x     -> CompoundCategory.ALKALOID;
-            case IsoquinolineAlkaloid x  -> CompoundCategory.ALKALOID;
-            case OtherAlkaloid x         -> CompoundCategory.ALKALOID;
+            case QuinolineAlkaloid x -> CompoundCategory.ALKALOID;
+            case IsoquinolineAlkaloid x -> CompoundCategory.ALKALOID;
+            case OtherAlkaloid x -> CompoundCategory.ALKALOID;
 
             // ── Terpenoids ──────────────────────────────────────────
-            case Monoterpene x           -> CompoundCategory.TERPENOID;
-            case Sesquiterpene x         -> CompoundCategory.TERPENOID;
-            case Diterpene x             -> CompoundCategory.TERPENOID;
-            case Triterpene x            -> CompoundCategory.TERPENOID;
-            case Tetraterpene x          -> CompoundCategory.TERPENOID;
+            case Monoterpene x -> CompoundCategory.TERPENOID;
+            case Sesquiterpene x -> CompoundCategory.TERPENOID;
+            case Diterpene x -> CompoundCategory.TERPENOID;
+            case Triterpene x -> CompoundCategory.TERPENOID;
+            case Tetraterpene x -> CompoundCategory.TERPENOID;
 
             // ── Phenolic family ─────────────────────────────────────
-            case SimplePhenolic x        -> CompoundCategory.PHENOLIC;
-            case Flavonoid x             -> CompoundCategory.FLAVONOID;
-            case Anthocyanin x           -> CompoundCategory.FLAVONOID;  // anthocyanins are flavonoids
-            case Tannin x                -> CompoundCategory.TANNIN;
+            case SimplePhenolic x -> CompoundCategory.PHENOLIC;
+            case Flavonoid x -> CompoundCategory.FLAVONOID;
+            case Anthocyanin x -> CompoundCategory.FLAVONOID;  // anthocyanins are flavonoids
+            case Tannin x -> CompoundCategory.TANNIN;
 
             // ── Glycosides ──────────────────────────────────────────
-            case CardiacGlycoside x      -> CompoundCategory.GLYCOSIDE;
-            case CyanogenicGlycoside x   -> CompoundCategory.GLYCOSIDE;
-            case Saponin x               -> CompoundCategory.SAPONIN;
-            case OtherGlycoside x        -> CompoundCategory.GLYCOSIDE;
+            case CardiacGlycoside x -> CompoundCategory.GLYCOSIDE;
+            case CyanogenicGlycoside x -> CompoundCategory.GLYCOSIDE;
+            case Saponin x -> CompoundCategory.SAPONIN;
+            case OtherGlycoside x -> CompoundCategory.GLYCOSIDE;
 
             // ── Sulfur-containing ───────────────────────────────────
-            case Glucosinolate x         -> CompoundCategory.GLUCOSINOLATE;
+            case Glucosinolate x -> CompoundCategory.GLUCOSINOLATE;
 
             // ── Other organic ───────────────────────────────────────
-            case OrganicAcid x           -> CompoundCategory.ORGANIC_ACID;
-            case FattyAcidLipid x        -> CompoundCategory.FATTY_ACID_LIPID;
-            case Polysaccharide x        -> CompoundCategory.POLYSACCHARIDE;
-            case OtherOrganic x          -> CompoundCategory.OTHER_ORGANIC;
+            case OrganicAcid x -> CompoundCategory.ORGANIC_ACID;
+            case FattyAcidLipid x -> CompoundCategory.FATTY_ACID_LIPID;
+            case Polysaccharide x -> CompoundCategory.POLYSACCHARIDE;
+            case OtherOrganic x -> CompoundCategory.OTHER_ORGANIC;
         };
     }
 
     // ── Non-organic — explicit "axis does not apply" permits ───────────
+
     /**
      * Pure elemental compound — sulfur, copper, boron in unbonded form.
      * Carries no carbon-skeleton family because the compound is monatomic
      * or homonuclear at the molecular level. Use this rather than
      * {@link Inorganic} for compounds with {@code PhysicalForm.ELEMENT}.
      */
-    record Element()               implements StructuralType {}
+    record Element() implements StructuralType {
+    }
+
     /**
      * Inorganic salt, mineral, oxide, or simple inorganic acid — calcium
      * sulfate, calcium carbonate, magnesium sulfate, calcium chloride.
@@ -190,67 +194,168 @@ public sealed interface StructuralType extends ValueObject {
      * for these compounds; this permit names that absence explicitly so
      * a naturalist never has to infer it from a null value.
      */
-    record Inorganic()             implements StructuralType {}
+    record Inorganic() implements StructuralType {
+    }
 
     // ── Alkaloids ────────────────────────────────────────────────────────
-    /** Indole-ring alkaloid — psilocybin, reserpine, vinblastine, strychnine. */
-    record IndoleAlkaloid()        implements StructuralType {}
-    /** Tropane bicycle — atropine, scopolamine, cocaine. */
-    record TropaneAlkaloid()       implements StructuralType {}
-    /** Purine-derived methylxanthines — caffeine, theobromine, theophylline. */
-    record PurineAlkaloid()        implements StructuralType {}
-    /** Pyrrolizidine ring system — senecionine, monocrotaline (Senecio, Crotalaria). */
-    record PyrrolizidineAlkaloid() implements StructuralType {}
-    /** Quinoline ring — quinine, camptothecin. */
-    record QuinolineAlkaloid()     implements StructuralType {}
-    /** Isoquinoline ring — morphine, codeine, berberine. */
-    record IsoquinolineAlkaloid() implements StructuralType {}
-    /** Nitrogenous secondary metabolites not in a more specific family — phenanthrenoid alkaloids (e.g. aristolochic acids). */
-    record OtherAlkaloid()         implements StructuralType {}
+
+    /**
+     * Indole-ring alkaloid — psilocybin, reserpine, vinblastine, strychnine.
+     */
+    record IndoleAlkaloid() implements StructuralType {
+    }
+
+    /**
+     * Tropane bicycle — atropine, scopolamine, cocaine.
+     */
+    record TropaneAlkaloid() implements StructuralType {
+    }
+
+    /**
+     * Purine-derived methylxanthines — caffeine, theobromine, theophylline.
+     */
+    record PurineAlkaloid() implements StructuralType {
+    }
+
+    /**
+     * Pyrrolizidine ring system — senecionine, monocrotaline (Senecio, Crotalaria).
+     */
+    record PyrrolizidineAlkaloid() implements StructuralType {
+    }
+
+    /**
+     * Quinoline ring — quinine, camptothecin.
+     */
+    record QuinolineAlkaloid() implements StructuralType {
+    }
+
+    /**
+     * Isoquinoline ring — morphine, codeine, berberine.
+     */
+    record IsoquinolineAlkaloid() implements StructuralType {
+    }
+
+    /**
+     * Nitrogenous secondary metabolites not in a more specific family — phenanthrenoid alkaloids (e.g. aristolochic acids).
+     */
+    record OtherAlkaloid() implements StructuralType {
+    }
 
     // ── Terpenoids ──────────────────────────────────────────────────────
-    /** C10 isoprenoid — limonene, menthol, thymol, pinene. */
-    record Monoterpene()           implements StructuralType {}
-    /** C15 isoprenoid — farnesene, gossypol, parthenolide. */
-    record Sesquiterpene()         implements StructuralType {}
-    /** C20 isoprenoid — taxol, gibberellins, abietic acid. */
-    record Diterpene()             implements StructuralType {}
-    /** C30 isoprenoid — saponin aglycones, cardenolide aglycones, azadirachtin (tetranortriterpenoid). */
-    record Triterpene()            implements StructuralType {}
-    /** C40 isoprenoid — carotenoids, lycopene, β-carotene. */
-    record Tetraterpene()          implements StructuralType {}
+
+    /**
+     * C10 isoprenoid — limonene, menthol, thymol, pinene.
+     */
+    record Monoterpene() implements StructuralType {
+    }
+
+    /**
+     * C15 isoprenoid — farnesene, gossypol, parthenolide.
+     */
+    record Sesquiterpene() implements StructuralType {
+    }
+
+    /**
+     * C20 isoprenoid — taxol, gibberellins, abietic acid.
+     */
+    record Diterpene() implements StructuralType {
+    }
+
+    /**
+     * C30 isoprenoid — saponin aglycones, cardenolide aglycones, azadirachtin (tetranortriterpenoid).
+     */
+    record Triterpene() implements StructuralType {
+    }
+
+    /**
+     * C40 isoprenoid — carotenoids, lycopene, β-carotene.
+     */
+    record Tetraterpene() implements StructuralType {
+    }
 
     // ── Phenolic family ─────────────────────────────────────────────────
-    /** Single phenol-ring compounds — salicylic acid, vanillin, eugenol. */
-    record SimplePhenolic()        implements StructuralType {}
-    /** C6-C3-C6 flavonoid skeleton — quercetin, rutin, hesperidin. */
-    record Flavonoid()             implements StructuralType {}
-    /** Glycosylated flavylium pigments — cyanidin, delphinidin, pelargonidin. */
-    record Anthocyanin()           implements StructuralType {}
-    /** Polyphenolic astringent — gallic-acid-derived hydrolysable, proanthocyanidin condensed. */
-    record Tannin()                implements StructuralType {}
+
+    /**
+     * Single phenol-ring compounds — salicylic acid, vanillin, eugenol.
+     */
+    record SimplePhenolic() implements StructuralType {
+    }
+
+    /**
+     * C6-C3-C6 flavonoid skeleton — quercetin, rutin, hesperidin.
+     */
+    record Flavonoid() implements StructuralType {
+    }
+
+    /**
+     * Glycosylated flavylium pigments — cyanidin, delphinidin, pelargonidin.
+     */
+    record Anthocyanin() implements StructuralType {
+    }
+
+    /**
+     * Polyphenolic astringent — gallic-acid-derived hydrolysable, proanthocyanidin condensed.
+     */
+    record Tannin() implements StructuralType {
+    }
 
     // ── Glycosides ──────────────────────────────────────────────────────
-    /** Steroidal glycosides acting on Na/K-ATPase — digitoxin, oleandrin. */
-    record CardiacGlycoside()      implements StructuralType {}
-    /** Glycosides releasing HCN on hydrolysis — amygdalin, linamarin, prunasin. */
-    record CyanogenicGlycoside()   implements StructuralType {}
-    /** Glycosylated triterpene or steroid with surfactant action — glycyrrhizin, ginsenosides. */
-    record Saponin()               implements StructuralType {}
-    /** Sugar-linked compounds outside the major sub-classes — salicin, arbutin. */
-    record OtherGlycoside()        implements StructuralType {}
+
+    /**
+     * Steroidal glycosides acting on Na/K-ATPase — digitoxin, oleandrin.
+     */
+    record CardiacGlycoside() implements StructuralType {
+    }
+
+    /**
+     * Glycosides releasing HCN on hydrolysis — amygdalin, linamarin, prunasin.
+     */
+    record CyanogenicGlycoside() implements StructuralType {
+    }
+
+    /**
+     * Glycosylated triterpene or steroid with surfactant action — glycyrrhizin, ginsenosides.
+     */
+    record Saponin() implements StructuralType {
+    }
+
+    /**
+     * Sugar-linked compounds outside the major sub-classes — salicin, arbutin.
+     */
+    record OtherGlycoside() implements StructuralType {
+    }
 
     // ── Sulfur-containing ──────────────────────────────────────────────
-    /** β-thioglucoside-N-hydroxysulfates — sinigrin, glucotropaeolin, glucoraphanin. */
-    record Glucosinolate()         implements StructuralType {}
+
+    /**
+     * β-thioglucoside-N-hydroxysulfates — sinigrin, glucotropaeolin, glucoraphanin.
+     */
+    record Glucosinolate() implements StructuralType {
+    }
 
     // ── Other organic ──────────────────────────────────────────────────
-    /** Low-molecular-weight organic acids — formic, oxalic, citric, malic, salicylic. */
-    record OrganicAcid()           implements StructuralType {}
-    /** Fatty acids, fatty-acid salts, glycerolipids — potassium soaps, jojoba waxes. */
-    record FattyAcidLipid()        implements StructuralType {}
-    /** Sugar polymer chains — pectin, cellulose, gum arabic, plant mucilages. */
-    record Polysaccharide()        implements StructuralType {}
-    /** Fallback while a new permit is being agreed upon. Never a permanent home. */
-    record OtherOrganic()          implements StructuralType {}
+
+    /**
+     * Low-molecular-weight organic acids — formic, oxalic, citric, malic, salicylic.
+     */
+    record OrganicAcid() implements StructuralType {
+    }
+
+    /**
+     * Fatty acids, fatty-acid salts, glycerolipids — potassium soaps, jojoba waxes.
+     */
+    record FattyAcidLipid() implements StructuralType {
+    }
+
+    /**
+     * Sugar polymer chains — pectin, cellulose, gum arabic, plant mucilages.
+     */
+    record Polysaccharide() implements StructuralType {
+    }
+
+    /**
+     * Fallback while a new permit is being agreed upon. Never a permanent home.
+     */
+    record OtherOrganic() implements StructuralType {
+    }
 }

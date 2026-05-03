@@ -12,7 +12,8 @@ import com.naturalist.data.NaturalistDatabase;
  */
 public final class CompoundTestContext {
 
-    private CompoundTestContext() {}
+    private CompoundTestContext() {
+    }
 
     public static CompoundQuery createQuery(NaturalistDatabase db) {
         CompoundRepository repository = CompoundRepository.create(

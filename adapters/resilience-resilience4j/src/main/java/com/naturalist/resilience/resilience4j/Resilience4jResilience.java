@@ -109,10 +109,25 @@ public final class Resilience4jResilience implements Resilience {
         return b;
     }
 
-    @Override public Set<String> retryNames() { return retries.keySet(); }
-    @Override public Set<String> timeoutNames() { return timeouts.keySet(); }
-    @Override public Set<String> circuitBreakerNames() { return breakers.keySet(); }
-    @Override public Set<String> bulkheadNames() { return bulkheads.keySet(); }
+    @Override
+    public Set<String> retryNames() {
+        return retries.keySet();
+    }
+
+    @Override
+    public Set<String> timeoutNames() {
+        return timeouts.keySet();
+    }
+
+    @Override
+    public Set<String> circuitBreakerNames() {
+        return breakers.keySet();
+    }
+
+    @Override
+    public Set<String> bulkheadNames() {
+        return bulkheads.keySet();
+    }
 
     static io.github.resilience4j.retry.RetryConfig toR4j(RetryConfig c) {
         return io.github.resilience4j.retry.RetryConfig.custom()

@@ -1,4 +1,5 @@
 # ADR-004: Modular Monolith
+
 > [rationale](rationale/ADR-004-modular-monolith.md)
 
 - Modular monolith with hexagonal (ports and adapters) structure. No microservices.

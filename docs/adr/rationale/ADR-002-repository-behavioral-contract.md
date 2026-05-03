@@ -258,8 +258,10 @@ entity to retain its current name and unique values during an update.
 - No test-containers, no database connections, no infrastructure overhead during development
 - The `repository-test` module name correctly describes purpose, not implementation
 - Developers maintain complete focus on the domain model — the database is an implementation detail that arrives last
-- Every select and write method has a documented minimum of three test cases — argument validation, the no-match/conflict case, and the expected result — enforced by the abstract contract, not convention
-- Argument validation is enforced structurally via `EntityRepository.observer().arguments(...)` — every public method validates before delegating to its `do*` implementation
+- Every select and write method has a documented minimum of three test cases — argument validation, the
+  no-match/conflict case, and the expected result — enforced by the abstract contract, not convention
+- Argument validation is enforced structurally via `EntityRepository.observer().arguments(...)` — every public method
+  validates before delegating to its `do*` implementation
 
 ---
 
@@ -303,16 +305,16 @@ and supply only identity constants and entity construction hooks.
 
 The concrete test interface provides:
 
-| Hook | Purpose |
-|------|---------|
-| `repository()` | The repository under test |
-| `source()` | The `TestEntitySource` backing the test data |
-| `notFoundName()` | A fictitious `NAME` guaranteed absent from the catalog |
-| `knownEntityNames()` | At least two known `NAME` constants from the test data |
-| `notFoundId()` | An `ID` guaranteed absent (typically `XxxId.of(Long.MAX_VALUE)`) |
-| `newEntity()` | A valid entity with null id and unique name, using `RandomValue` where field constraints permit |
-| `ghostEntity()` | An entity with a non-existent id, using `RandomValue` where field constraints permit |
-| `modifiedEntity(original)` | The original with every mutable field changed via `RandomValue` |
+| Hook                       | Purpose                                                                                         |
+|----------------------------|-------------------------------------------------------------------------------------------------|
+| `repository()`             | The repository under test                                                                       |
+| `source()`                 | The `TestEntitySource` backing the test data                                                    |
+| `notFoundName()`           | A fictitious `NAME` guaranteed absent from the catalog                                          |
+| `knownEntityNames()`       | At least two known `NAME` constants from the test data                                          |
+| `notFoundId()`             | An `ID` guaranteed absent (typically `XxxId.of(Long.MAX_VALUE)`)                                |
+| `newEntity()`              | A valid entity with null id and unique name, using `RandomValue` where field constraints permit |
+| `ghostEntity()`            | An entity with a non-existent id, using `RandomValue` where field constraints permit            |
+| `modifiedEntity(original)` | The original with every mutable field changed via `RandomValue`                                 |
 
 The `assertEntityEquals` method defaults to recursive comparison ignoring `"id"` and is
 overridable for entities with custom equality semantics.

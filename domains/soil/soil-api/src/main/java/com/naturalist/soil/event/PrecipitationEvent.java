@@ -59,7 +59,9 @@ public record PrecipitationEvent(
         @Nullable String notes
 ) implements Entity<SoilPrecipitationEventId> {
 
-    /** 1 inch of rain over 1 square foot ≈ 0.623 US gallons. */
+    /**
+     * 1 inch of rain over 1 square foot ≈ 0.623 US gallons.
+     */
     private static final BigDecimal GALLONS_PER_INCH_PER_SQFT = new BigDecimal("0.623");
     private static final BigDecimal LEACHING_THRESHOLD_INCHES = new BigDecimal("0.5");
     private static final BigDecimal LEACHING_MAX_INTENSITY = new BigDecimal("0.3");

@@ -39,34 +39,54 @@ package com.naturalist.chemistry.compound;
  */
 public enum CompoundCategory {
 
-    /** Nitrogenous bases — caffeine, nicotine, aristolochic acid, morphine. */
+    /**
+     * Nitrogenous bases — caffeine, nicotine, aristolochic acid, morphine.
+     */
     ALKALOID,
 
-    /** Isoprenoid backbone — limonene, menthol, taxol, carotenoids. */
+    /**
+     * Isoprenoid backbone — limonene, menthol, taxol, carotenoids.
+     */
     TERPENOID,
 
-    /** Aromatic phenol-ring compounds not otherwise specialised — salicylic acid, vanillin, eugenol. */
+    /**
+     * Aromatic phenol-ring compounds not otherwise specialised — salicylic acid, vanillin, eugenol.
+     */
     PHENOLIC,
 
-    /** C6-C3-C6 flavonoid skeleton including anthocyanin pigments — quercetin, rutin, cyanidin. */
+    /**
+     * C6-C3-C6 flavonoid skeleton including anthocyanin pigments — quercetin, rutin, cyanidin.
+     */
     FLAVONOID,
 
-    /** Polyphenolic astringents — gallic-acid hydrolysable, proanthocyanidin condensed. */
+    /**
+     * Polyphenolic astringents — gallic-acid hydrolysable, proanthocyanidin condensed.
+     */
     TANNIN,
 
-    /** Sugar-linked compounds outside the saponin sub-class — cardiac, cyanogenic, salicin glycosides. */
+    /**
+     * Sugar-linked compounds outside the saponin sub-class — cardiac, cyanogenic, salicin glycosides.
+     */
     GLYCOSIDE,
 
-    /** Glycosylated triterpene or steroid surfactants — glycyrrhizin, ginsenosides, soapwort. */
+    /**
+     * Glycosylated triterpene or steroid surfactants — glycyrrhizin, ginsenosides, soapwort.
+     */
     SAPONIN,
 
-    /** Sulfur-containing brassica metabolites — sinigrin, glucotropaeolin, glucoraphanin. */
+    /**
+     * Sulfur-containing brassica metabolites — sinigrin, glucotropaeolin, glucoraphanin.
+     */
     GLUCOSINOLATE,
 
-    /** Low-molecular-weight organic acids — formic, oxalic, citric, malic, salicylic. */
+    /**
+     * Low-molecular-weight organic acids — formic, oxalic, citric, malic, salicylic.
+     */
     ORGANIC_ACID,
 
-    /** Sugar polymer chains — pectin, cellulose, gum arabic, plant mucilages. */
+    /**
+     * Sugar polymer chains — pectin, cellulose, gum arabic, plant mucilages.
+     */
     POLYSACCHARIDE,
 
     /**
@@ -75,7 +95,9 @@ public enum CompoundCategory {
      */
     FATTY_ACID_LIPID,
 
-    /** Organic compounds outside the major sub-classes; matches {@code PhytochemicalCategory.OTHER}. */
+    /**
+     * Organic compounds outside the major sub-classes; matches {@code PhytochemicalCategory.OTHER}.
+     */
     OTHER_ORGANIC,
 
     /**

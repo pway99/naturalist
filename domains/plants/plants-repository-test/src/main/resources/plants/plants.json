@@ -23,9 +23,18 @@
       "coast-ranges"
     ],
     "commonNames": [
-      {"label": "California Pipevine", "locale": "en"},
-      {"label": "Pipevine", "locale": "en"},
-      {"label": "California Dutchman's pipe", "locale": "en"}
+      {
+        "label": "California Pipevine",
+        "locale": "en"
+      },
+      {
+        "label": "Pipevine",
+        "locale": "en"
+      },
+      {
+        "label": "California Dutchman's pipe",
+        "locale": "en"
+      }
     ]
   },
   {
@@ -49,8 +58,14 @@
     "lifeForm": "SHRUB",
     "nativeBioregions": [],
     "commonNames": [
-      {"label": "Scented geranium", "locale": "en"},
-      {"label": "Rose geranium", "locale": "en"}
+      {
+        "label": "Scented geranium",
+        "locale": "en"
+      },
+      {
+        "label": "Rose geranium",
+        "locale": "en"
+      }
     ]
   },
   {
@@ -75,8 +90,14 @@
     "lifeForm": "ANNUAL",
     "nativeBioregions": [],
     "commonNames": [
-      {"label": "Crimson clover", "locale": "en"},
-      {"label": "Italian clover", "locale": "en"}
+      {
+        "label": "Crimson clover",
+        "locale": "en"
+      },
+      {
+        "label": "Italian clover",
+        "locale": "en"
+      }
     ]
   },
   {
@@ -103,9 +124,18 @@
     "lifeForm": "PERENNIAL",
     "nativeBioregions": [],
     "commonNames": [
-      {"label": "White clover", "locale": "en"},
-      {"label": "Dutch clover", "locale": "en"},
-      {"label": "Ladino clover", "locale": "en"}
+      {
+        "label": "White clover",
+        "locale": "en"
+      },
+      {
+        "label": "Dutch clover",
+        "locale": "en"
+      },
+      {
+        "label": "Ladino clover",
+        "locale": "en"
+      }
     ]
   },
   {

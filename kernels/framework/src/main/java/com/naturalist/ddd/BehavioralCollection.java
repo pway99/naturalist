@@ -52,7 +52,9 @@ public abstract class BehavioralCollection<T extends Observable> implements Obse
         this.elements = List.copyOf(elements);
     }
 
-    /** Primary content-access point. Consumers compose further operations via {@link Stream}. */
+    /**
+     * Primary content-access point. Consumers compose further operations via {@link Stream}.
+     */
     public Stream<T> stream() {
         return elements.stream();
     }

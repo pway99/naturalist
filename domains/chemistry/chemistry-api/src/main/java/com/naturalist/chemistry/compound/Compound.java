@@ -96,12 +96,16 @@ public record Compound(
     // co-located with the predicate so a consumer never has to know which
     // categories make up "the phenolic family" or "the glycoside family".
 
-    /** Whether this compound is in the alkaloid structural family. */
+    /**
+     * Whether this compound is in the alkaloid structural family.
+     */
     public boolean isAlkaloid() {
         return category() == CompoundCategory.ALKALOID;
     }
 
-    /** Whether this compound is in the terpenoid (isoprenoid) structural family. */
+    /**
+     * Whether this compound is in the terpenoid (isoprenoid) structural family.
+     */
     public boolean isTerpenoid() {
         return category() == CompoundCategory.TERPENOID;
     }
@@ -126,7 +130,9 @@ public record Compound(
         return c == CompoundCategory.GLYCOSIDE || c == CompoundCategory.SAPONIN;
     }
 
-    /** Whether this compound is a glucosinolate (sulfur-containing brassica metabolite). */
+    /**
+     * Whether this compound is a glucosinolate (sulfur-containing brassica metabolite).
+     */
     public boolean isGlucosinolate() {
         return category() == CompoundCategory.GLUCOSINOLATE;
     }

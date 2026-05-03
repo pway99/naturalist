@@ -13,6 +13,7 @@ public record SunExposure(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> {};
+        return i -> {
+        };
     }
 }

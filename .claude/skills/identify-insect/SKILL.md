@@ -31,12 +31,12 @@ before writing any JSON. You will need it.
 
 ## Arguments
 
-| Argument | Description | Example |
-|---|---|---|
-| `imageFolder` | Path to the directory containing the images | `domains/insects/insects-repository-test/src/main/resources/insects/images/` |
-| `fileNames` | Images to **read via vision** for identification. These are converted, visually analysed, and also cataloged as `InsectImage` records. | `[IMG_9047.HEIC, IMG_9048.HEIC]` |
-| `catalogOnly` | Images of the **same insect** that should be cataloged as `InsectImage` records **without** reading them through vision. Saves resources when the user already knows multiple photos show the same species. | `[IMG_9049.HEIC, IMG_9050.HEIC]` |
-| `observationTimestamp` | Local date-time of the observation in `America/Los_Angeles` timezone. Convert to UTC for the JSON `dateAdded` field. | `2026-04-17T15:39` |
+| Argument               | Description                                                                                                                                                                                                 | Example                                                                      |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| `imageFolder`          | Path to the directory containing the images                                                                                                                                                                 | `domains/insects/insects-repository-test/src/main/resources/insects/images/` |
+| `fileNames`            | Images to **read via vision** for identification. These are converted, visually analysed, and also cataloged as `InsectImage` records.                                                                      | `[IMG_9047.HEIC, IMG_9048.HEIC]`                                             |
+| `catalogOnly`          | Images of the **same insect** that should be cataloged as `InsectImage` records **without** reading them through vision. Saves resources when the user already knows multiple photos show the same species. | `[IMG_9049.HEIC, IMG_9050.HEIC]`                                             |
+| `observationTimestamp` | Local date-time of the observation in `America/Los_Angeles` timezone. Convert to UTC for the JSON `dateAdded` field.                                                                                        | `2026-04-17T15:39`                                                           |
 
 **Resource conservation:** Only `fileNames` images go through HEIC conversion and vision
 analysis. `catalogOnly` images are assumed to be the same species as the `fileNames` images
@@ -53,11 +53,11 @@ default to midnight.
 
 All paths relative to the project root (`amateur-naturalist/`):
 
-| File | Path |
-|---|---|
-| Species catalog | `domains/insects/insects-repository-test/src/main/resources/insects/insects.json` |
-| Image catalog | `domains/insects/insects-repository-test/src/main/resources/insects/insect-images.json` |
-| Images dir | `domains/insects/insects-repository-test/src/main/resources/insects/images/` |
+| File            | Path                                                                                    |
+|-----------------|-----------------------------------------------------------------------------------------|
+| Species catalog | `domains/insects/insects-repository-test/src/main/resources/insects/insects.json`       |
+| Image catalog   | `domains/insects/insects-repository-test/src/main/resources/insects/insect-images.json` |
+| Images dir      | `domains/insects/insects-repository-test/src/main/resources/insects/images/`            |
 
 ---
 
@@ -127,11 +127,11 @@ levels of understanding. A child reading the preschool description and a researc
 reading the university description should both come away with an accurate picture;
 neither should feel talked down to or lost:
 
-| Level | Tone & length | What it covers |
-|---|---|---|
-| `preschool` | Wonder-first, 2–3 sentences | Appearance, what it does in plain words, why it matters to "our garden" |
-| `elementary` | Mechanism, 3–5 sentences | How it eats/hunts/helps, concrete numbers where available (aphids per day, etc.) |
-| `secondary` | Biological accuracy, 4–6 sentences | Family taxonomy, scientific mechanism, host specificity, ecological role, correct terminology |
+| Level        | Tone & length                          | What it covers                                                                                                                |
+|--------------|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| `preschool`  | Wonder-first, 2–3 sentences            | Appearance, what it does in plain words, why it matters to "our garden"                                                       |
+| `elementary` | Mechanism, 3–5 sentences               | How it eats/hunts/helps, concrete numbers where available (aphids per day, etc.)                                              |
+| `secondary`  | Biological accuracy, 4–6 sentences     | Family taxonomy, scientific mechanism, host specificity, ecological role, correct terminology                                 |
 | `university` | Full scientific context, 5–8 sentences | Binomial + authority + year, morphological/behavioral detail, chemical ecology if relevant, Oak Vista management implications |
 
 For `sightingNotes`: always include the observation date (today's date), location (Oak
@@ -190,6 +190,7 @@ print(f'insect-images.json: {len(images)} images — valid')
 ```
 
 Report back to the user:
+
 - Whether the species was **new** (added) or **existing** (already in catalog)
 - Species identified (common name + binomial if known)
 - Number of images added

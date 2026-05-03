@@ -1,4 +1,5 @@
 # ADR-010: Query Design Contract
+
 > [rationale](rationale/ADR-010-query-design-contract.md)
 
 - Query is a public interface (port) in `<domain>-api`.

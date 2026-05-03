@@ -53,15 +53,15 @@ Use AD values for custom calibration on non-mineral soils.
 
 ## FGL Optimum Ranges (domain facts — encode as `OptimumRanges`)
 
-| Nutrient    | Optimum             |
-|-------------|---------------------|
-| Ca          | 16–26 lbs/1000 sqft |
-| K           | 6.5–19 lbs/1000 sqft|
-| Mg          | 2.8–9.0 lbs/1000 sqft|
-| P           | 8–12 lbs/1000 sqft  |
-| EC          | below 2.0 dS/m      |
-| pH          | 6.5–7.5             |
-| Limestone   | below 0.50%         |
+| Nutrient  | Optimum               |
+|-----------|-----------------------|
+| Ca        | 16–26 lbs/1000 sqft   |
+| K         | 6.5–19 lbs/1000 sqft  |
+| Mg        | 2.8–9.0 lbs/1000 sqft |
+| P         | 8–12 lbs/1000 sqft    |
+| EC        | below 2.0 dS/m        |
+| pH        | 6.5–7.5               |
+| Limestone | below 0.50%           |
 
 **Oak Vista pH is ~7.2 — already optimal. Never recommend lime.**
 
@@ -75,6 +75,7 @@ Must account for this factor in `NitrogenStatus` computation (see pending Q3 in 
 ## Oak Vista Baseline Values (April 2026 FGL test CH 2671853)
 
 These are real measured values — use them as test fixture data:
+
 - Soluble Ca: very low (BER risk elevated)
 - Limestone: 2.9% in backyard bed (in-situ gypsum formation from sulfur amendment)
 - pH: ~7.2 (optimal — no lime)

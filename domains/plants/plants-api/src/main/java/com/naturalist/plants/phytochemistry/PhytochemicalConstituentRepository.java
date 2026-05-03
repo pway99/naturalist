@@ -12,7 +12,9 @@ class PhytochemicalConstituentRepository {
 
         List<PhytochemicalConstituentName> getAllPhytochemicalConstituentNames();
 
-        /** All constituents recorded for a given plant. */
+        /**
+         * All constituents recorded for a given plant.
+         */
         List<PhytochemicalConstituent> getByPlantName(PlantName plantName);
 
         /**

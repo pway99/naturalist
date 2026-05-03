@@ -4,10 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 public final class InsectSpeciesName extends EntityName {
-    private InsectSpeciesName(String value) { super(value); }
+    private InsectSpeciesName(String value) {
+        super(value);
+    }
 
     @JsonCreator
-    public static InsectSpeciesName of(String value) { return new InsectSpeciesName(value); }
+    public static InsectSpeciesName of(String value) {
+        return new InsectSpeciesName(value);
+    }
 
     @Override
     protected int maxLength() {

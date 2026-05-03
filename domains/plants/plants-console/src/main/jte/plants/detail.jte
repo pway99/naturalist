@@ -130,7 +130,8 @@
                 @for(var c : constituents)
                     <li>
                         <a href="/plants/phytochemistry/${c.name().value()}"><strong>${c.name().value()}</strong></a>
-                        &middot; compound: <a href="/chemistry/${c.compoundName().value()}"><code>${c.compoundName().value()}</code></a>
+                        &middot; compound: <a
+                                href="/chemistry/${c.compoundName().value()}"><code>${c.compoundName().value()}</code></a>
                         &middot; <span class="badge">${c.category().name()}</span>
                         &middot; ${c.induction().name()}
                         <br><small>

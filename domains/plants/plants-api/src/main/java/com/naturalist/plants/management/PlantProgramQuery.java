@@ -17,7 +17,9 @@ public interface PlantProgramQuery {
 
         EntityNameSet<PlantProgramName> allPlantProgramNames();
 
-        /** All programs recorded for a given plant — the natural plant → programs rollup. */
+        /**
+         * All programs recorded for a given plant — the natural plant → programs rollup.
+         */
         PlantProgramCollection forPlantName(PlantName plantName);
     }
 }

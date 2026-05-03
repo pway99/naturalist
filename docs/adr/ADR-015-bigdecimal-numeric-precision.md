@@ -1,4 +1,5 @@
 # ADR-015: BigDecimal for Decimal Domain Values
+
 > [rationale](rationale/ADR-015-bigdecimal-numeric-precision.md)
 
 `double`/`float` prohibited for decimal domain values. All decimal record components,

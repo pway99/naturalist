@@ -17,7 +17,9 @@ public interface SeedLineageQuery {
 
         EntityNameSet<SeedLineageName> allSeedLineageNames();
 
-        /** All lineages recorded for a given cultivar — the natural cultivar → lineages rollup. */
+        /**
+         * All lineages recorded for a given cultivar — the natural cultivar → lineages rollup.
+         */
         SeedLineageCollection forCultivarName(CultivarName cultivarName);
     }
 }

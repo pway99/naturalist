@@ -31,7 +31,8 @@ import java.util.UUID;
  */
 public class TestChemistryIdentifiers {
 
-    private TestChemistryIdentifiers() {}
+    private TestChemistryIdentifiers() {
+    }
 
     // -------------------------------------------------------------------------
     // Elements — single source of truth for all element name constants
@@ -39,18 +40,21 @@ public class TestChemistryIdentifiers {
 
     public static class Elements {
 
-        private Elements() {}
+        private Elements() {
+        }
 
-        public static final ElementName C  = ElementName.of("carbon");
+        public static final ElementName C = ElementName.of("carbon");
         public static final ElementName Ca = ElementName.of("calcium");
         public static final ElementName Cl = ElementName.of("chlorine");
-        public static final ElementName H  = ElementName.of("hydrogen");
-        public static final ElementName K  = ElementName.of("potassium");
+        public static final ElementName H = ElementName.of("hydrogen");
+        public static final ElementName K = ElementName.of("potassium");
         public static final ElementName Mg = ElementName.of("magnesium");
-        public static final ElementName O  = ElementName.of("oxygen");
-        public static final ElementName S  = ElementName.of("sulfur");
+        public static final ElementName O = ElementName.of("oxygen");
+        public static final ElementName S = ElementName.of("sulfur");
 
-        /** Fictitious element name — guaranteed absent from the catalog. */
+        /**
+         * Fictitious element name — guaranteed absent from the catalog.
+         */
         public static class NotFound {
             public static final ElementName name = ElementName.of("unobtainium");
         }
@@ -62,9 +66,12 @@ public class TestChemistryIdentifiers {
 
     public static class Compounds {
 
-        private Compounds() {}
+        private Compounds() {
+        }
 
-        /** Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog. */
+        /**
+         * Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog.
+         */
         public static class NotFound {
             public static final CompoundName name = CompoundName.of("unobtainium-oxide");
             public static final String commonName = "Unobtainium Oxide";
@@ -80,9 +87,9 @@ public class TestChemistryIdentifiers {
 
             public static class Elements {
                 public static final ElementName Ca = TestChemistryIdentifiers.Elements.Ca;
-                public static final ElementName S  = TestChemistryIdentifiers.Elements.S;
-                public static final ElementName O  = TestChemistryIdentifiers.Elements.O;
-                public static final ElementName H  = TestChemistryIdentifiers.Elements.H;
+                public static final ElementName S = TestChemistryIdentifiers.Elements.S;
+                public static final ElementName O = TestChemistryIdentifiers.Elements.O;
+                public static final ElementName H = TestChemistryIdentifiers.Elements.H;
             }
         }
 
@@ -122,9 +129,9 @@ public class TestChemistryIdentifiers {
 
             public static class Elements {
                 public static final ElementName Mg = TestChemistryIdentifiers.Elements.Mg;
-                public static final ElementName S  = TestChemistryIdentifiers.Elements.S;
-                public static final ElementName O  = TestChemistryIdentifiers.Elements.O;
-                public static final ElementName H  = TestChemistryIdentifiers.Elements.H;
+                public static final ElementName S = TestChemistryIdentifiers.Elements.S;
+                public static final ElementName O = TestChemistryIdentifiers.Elements.O;
+                public static final ElementName H = TestChemistryIdentifiers.Elements.H;
             }
         }
 
@@ -134,8 +141,8 @@ public class TestChemistryIdentifiers {
 
             public static class Elements {
                 public static final ElementName Ca = TestChemistryIdentifiers.Elements.Ca;
-                public static final ElementName C  = TestChemistryIdentifiers.Elements.C;
-                public static final ElementName O  = TestChemistryIdentifiers.Elements.O;
+                public static final ElementName C = TestChemistryIdentifiers.Elements.C;
+                public static final ElementName O = TestChemistryIdentifiers.Elements.O;
             }
         }
 
@@ -145,9 +152,9 @@ public class TestChemistryIdentifiers {
 
             public static class Elements {
                 public static final ElementName Ca = TestChemistryIdentifiers.Elements.Ca;
-                public static final ElementName C  = TestChemistryIdentifiers.Elements.C;
-                public static final ElementName O  = TestChemistryIdentifiers.Elements.O;
-                public static final ElementName H  = TestChemistryIdentifiers.Elements.H;
+                public static final ElementName C = TestChemistryIdentifiers.Elements.C;
+                public static final ElementName O = TestChemistryIdentifiers.Elements.O;
+                public static final ElementName H = TestChemistryIdentifiers.Elements.H;
             }
         }
 
@@ -158,9 +165,9 @@ public class TestChemistryIdentifiers {
             public static class Elements {
                 public static final ElementName Ca = TestChemistryIdentifiers.Elements.Ca;
                 public static final ElementName Mg = TestChemistryIdentifiers.Elements.Mg;
-                public static final ElementName C  = TestChemistryIdentifiers.Elements.C;
-                public static final ElementName O  = TestChemistryIdentifiers.Elements.O;
-                public static final ElementName H  = TestChemistryIdentifiers.Elements.H;
+                public static final ElementName C = TestChemistryIdentifiers.Elements.C;
+                public static final ElementName O = TestChemistryIdentifiers.Elements.O;
+                public static final ElementName H = TestChemistryIdentifiers.Elements.H;
             }
         }
 
@@ -229,9 +236,12 @@ public class TestChemistryIdentifiers {
 
     public static class Products {
 
-        private Products() {}
+        private Products() {
+        }
 
-        /** Fictitious identifier — guaranteed absent from any catalog. */
+        /**
+         * Fictitious identifier — guaranteed absent from any catalog.
+         */
         public static class NotFound {
             public static final ProductName name = ProductName.of("unobtainium-rtu");
             public static final String displayName = "Unobtainium RTU";

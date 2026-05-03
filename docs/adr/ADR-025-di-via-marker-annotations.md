@@ -1,4 +1,5 @@
 # ADR-025: DI via Marker Annotations
+
 > [rationale](rationale/ADR-025-di-via-marker-annotations.md)
 
 Domain code is wired into Spring through a kernel marker, not Spring stereotypes.
@@ -22,6 +23,7 @@ Domain code is wired into Spring through a kernel marker, not Spring stereotypes
   under `adapters/runtime-<x>/`. Domain code does not change.
 
 ### Review flags
+
 - Domain `*-core` `pom.xml` declaring a Spring dependency.
 - Domain class carrying `@Component`, `@Service`, `@Repository`, or any
   Spring stereotype.

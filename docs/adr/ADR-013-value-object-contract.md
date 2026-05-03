@@ -1,4 +1,5 @@
 # ADR-013: Value Object Contract
+
 > [rationale](rationale/ADR-013-value-object-contract.md)
 
 A type may implement `ValueObject` only if all four hold. Failing any → reclassify.
@@ -14,9 +15,9 @@ A type may implement `ValueObject` only if all four hold. Failing any → reclas
 4. **Collective meaning, not a projection.** Members meaningful as a whole. A subset of
    an entity's fields (even reordered/renamed) is a projection/DTO.
 
-| Symptom | Correct classification |
-|---|---|
-| Contains `Entity`/`Aggregate` members | `Aggregate` |
-| Can serve as natural key | `EntityName` subclass |
-| Only makes sense in one entity's context | projection/DTO |
-| Subset of an entity's fields | projection/DTO |
+| Symptom                                  | Correct classification |
+|------------------------------------------|------------------------|
+| Contains `Entity`/`Aggregate` members    | `Aggregate`            |
+| Can serve as natural key                 | `EntityName` subclass  |
+| Only makes sense in one entity's context | projection/DTO         |
+| Subset of an entity's fields             | projection/DTO         |

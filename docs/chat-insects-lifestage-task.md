@@ -5,6 +5,7 @@ This task uses that knowledge to produce structured life-stage data for the
 14 species already in the Oak Vista insect catalog.
 
 **Inputs this readme assumes are attached to this conversation:**
+
 1. `chat-briefing.md` — framework, identity model, package locations, JSON
    conventions, anti-patterns. Read that first.
 2. `insect-species.json` — the current 14-species catalog. Each entry has
@@ -29,10 +30,10 @@ identity and rich structured content.
 
 ### Which stages each species has — biology rules
 
-| Metamorphosis | Orders | Fields populated |
-|---------------|--------|------------------|
-| **Holometabolous** (complete) | Lepidoptera, Coleoptera, Diptera, Hymenoptera, Neuroptera | `egg`, `larva`, `pupa`, `adult` |
-| **Hemimetabolous** (incomplete) | Blattodea, Orthoptera, Hemiptera | `egg`, `adult`. **`larva` and `pupa` stay null.** Nymphs are not modelled as a stage. |
+| Metamorphosis                   | Orders                                                    | Fields populated                                                                      |
+|---------------------------------|-----------------------------------------------------------|---------------------------------------------------------------------------------------|
+| **Holometabolous** (complete)   | Lepidoptera, Coleoptera, Diptera, Hymenoptera, Neuroptera | `egg`, `larva`, `pupa`, `adult`                                                       |
+| **Hemimetabolous** (incomplete) | Blattodea, Orthoptera, Hemiptera                          | `egg`, `adult`. **`larva` and `pupa` stay null.** Nymphs are not modelled as a stage. |
 
 Apply this strictly. A `larva` entry for a hemimetabolous species (e.g.
 `field-roach`, `potato-leafhopper`) is a domain-model error.
@@ -268,6 +269,7 @@ Narrative fields capture: colour shift through development
 #### `diapauseRegulation` — polymorphic sealed type (KNOWN JACKSON ISSUE)
 
 The `DiapauseRegulation` sealed interface has four permitted records:
+
 - `PhotoperiodRegulated(criticalDaylength, chillRequirement)`
 - `FoodWaterContentRegulated(mechanism, cohortSplitNotes)` ← the *Battus
   philenor* case
@@ -323,20 +325,20 @@ This keeps the deliverable loadable today and flags the follow-on work.
 Enforce these when composing multi-stage data for one species:
 
 1. **Metabolous-type consistency.**
-   - Holometabolous species (Coleoptera, Diptera, Hymenoptera, Lepidoptera,
-     Neuroptera): `larva` and `pupa` are populated (or explicitly null with
-     a reason flagged).
-   - Hemimetabolous species (Blattodea, Orthoptera, Hemiptera): `larva` and
-     `pupa` MUST be null. Never emit them.
+    - Holometabolous species (Coleoptera, Diptera, Hymenoptera, Lepidoptera,
+      Neuroptera): `larva` and `pupa` are populated (or explicitly null with
+      a reason flagged).
+    - Hemimetabolous species (Blattodea, Orthoptera, Hemiptera): `larva` and
+      `pupa` MUST be null. Never emit them.
 
 2. **Chemistry-story coherence.**
-   - `EXPRESSION` (adult) requires upstream `ACQUISITION` in the larva or
-     `MATERNAL_TRANSFER` into the egg.
-   - `RETENTION` (pupa) requires upstream `ACQUISITION` in the larva.
-   - `MATERNAL_TRANSFER` (egg) requires `EXPRESSION` in the parent's adult
-     generation.
-   - If the chemistry story is documented partially, leave stages `null`
-     rather than breaking coherence.
+    - `EXPRESSION` (adult) requires upstream `ACQUISITION` in the larva or
+      `MATERNAL_TRANSFER` into the egg.
+    - `RETENTION` (pupa) requires upstream `ACQUISITION` in the larva.
+    - `MATERNAL_TRANSFER` (egg) requires `EXPRESSION` in the parent's adult
+      generation.
+    - If the chemistry story is documented partially, leave stages `null`
+      rather than breaking coherence.
 
 3. **Species-level `chemicalDefense.protectedStages` must equal the set
    of stages carrying a non-null `chemistryRole`.** If they disagree, the
@@ -355,24 +357,24 @@ Enforce these when composing multi-stage data for one species:
 
 Skim `insect-species.json` for full context. Summary:
 
-| Slug | Order | Metabolous | Notes for stage generation |
-|------|-------|------------|----------------------------|
-| `tachinid-fly` | Diptera | Holo | Family-level; endoparasitoid larva on lepidopteran hosts. Populate `parasitoidHosts` with general categories or leave empty and use narrative. |
-| `braconid-wasp` | Hymenoptera | Holo | Aphidiinae + Microgastrinae. Larva parasitizes aphids (`parasitoidHosts: ["aphid"]` is NOT a real slug — flag as needing catalog entries; empty list is acceptable). |
-| `hoverfly` | Diptera | Holo | Aphidophagous larva; nectar/pollen adult. Classic dual-guild species. |
-| `convergent-ladybug` | Coleoptera | Holo | Hippodamia convergens. Breeds at Oak Vista April 2026. Full life cycle documented. |
-| `ground-beetle` | Coleoptera | Holo | Family-level; larva predatory, soil-dwelling. Pupa in soil chamber. |
-| `crane-fly` | Diptera | Holo | Tipulidae; larvae are saprophagous leatherjackets in soil. Adults non- or minimally-feeding. |
-| `field-roach` | Blattodea | **Hemi** | `larva: null`, `pupa: null`. Only `egg` and `adult`. Oothecal egg-carrying. |
-| `native-sweat-bee` | Hymenoptera | Holo | Halictus sp. Solitary ground-nester. |
-| `grey-mining-bee` | Hymenoptera | Holo | Andrena sp. Early-spring solitary bee. |
-| `valley-carpenter-bee` | Hymenoptera | Holo | Xylocopa varipuncta. Nests in dead wood. Sexually dimorphic adults. |
-| `skipper-butterfly` | Lepidoptera | Holo | Hesperiidae family-level. Larval host: Poaceae. |
-| `painted-lady` | Lepidoptera | Holo | Vanessa cardui. Migratory — Oak Vista adults are spring migrants, not residents. Adjust `phenology` accordingly. |
-| `green-lacewing` | Neuroptera | Holo | Chrysoperla sp. Silk-stalked eggs (notable). Predatory aphid-lion larva. |
-| `pipevine-swallowtail` | Lepidoptera | Holo | **Full treatment required.** Battus philenor. Keystone. Aristolochic acid chemistry across all four stages. Split diapause. Host-plant monophagy: `hostPlants: ["aristolochia-californica"]`. |
-| `potato-leafhopper` | Hemiptera | **Hemi** | `larva: null`, `pupa: null`. Only `egg` and `adult`. |
-| `orange-sulphur` | Lepidoptera | Holo | Colias eurytheme. Larval host: Fabaceae (crimson clover at Oak Vista → `trifolium-incarnatum`, alfalfa → `medicago-sativa`). |
+| Slug                   | Order       | Metabolous | Notes for stage generation                                                                                                                                                                    |
+|------------------------|-------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `tachinid-fly`         | Diptera     | Holo       | Family-level; endoparasitoid larva on lepidopteran hosts. Populate `parasitoidHosts` with general categories or leave empty and use narrative.                                                |
+| `braconid-wasp`        | Hymenoptera | Holo       | Aphidiinae + Microgastrinae. Larva parasitizes aphids (`parasitoidHosts: ["aphid"]` is NOT a real slug — flag as needing catalog entries; empty list is acceptable).                          |
+| `hoverfly`             | Diptera     | Holo       | Aphidophagous larva; nectar/pollen adult. Classic dual-guild species.                                                                                                                         |
+| `convergent-ladybug`   | Coleoptera  | Holo       | Hippodamia convergens. Breeds at Oak Vista April 2026. Full life cycle documented.                                                                                                            |
+| `ground-beetle`        | Coleoptera  | Holo       | Family-level; larva predatory, soil-dwelling. Pupa in soil chamber.                                                                                                                           |
+| `crane-fly`            | Diptera     | Holo       | Tipulidae; larvae are saprophagous leatherjackets in soil. Adults non- or minimally-feeding.                                                                                                  |
+| `field-roach`          | Blattodea   | **Hemi**   | `larva: null`, `pupa: null`. Only `egg` and `adult`. Oothecal egg-carrying.                                                                                                                   |
+| `native-sweat-bee`     | Hymenoptera | Holo       | Halictus sp. Solitary ground-nester.                                                                                                                                                          |
+| `grey-mining-bee`      | Hymenoptera | Holo       | Andrena sp. Early-spring solitary bee.                                                                                                                                                        |
+| `valley-carpenter-bee` | Hymenoptera | Holo       | Xylocopa varipuncta. Nests in dead wood. Sexually dimorphic adults.                                                                                                                           |
+| `skipper-butterfly`    | Lepidoptera | Holo       | Hesperiidae family-level. Larval host: Poaceae.                                                                                                                                               |
+| `painted-lady`         | Lepidoptera | Holo       | Vanessa cardui. Migratory — Oak Vista adults are spring migrants, not residents. Adjust `phenology` accordingly.                                                                              |
+| `green-lacewing`       | Neuroptera  | Holo       | Chrysoperla sp. Silk-stalked eggs (notable). Predatory aphid-lion larva.                                                                                                                      |
+| `pipevine-swallowtail` | Lepidoptera | Holo       | **Full treatment required.** Battus philenor. Keystone. Aristolochic acid chemistry across all four stages. Split diapause. Host-plant monophagy: `hostPlants: ["aristolochia-californica"]`. |
+| `potato-leafhopper`    | Hemiptera   | **Hemi**   | `larva: null`, `pupa: null`. Only `egg` and `adult`.                                                                                                                                          |
+| `orange-sulphur`       | Lepidoptera | Holo       | Colias eurytheme. Larval host: Fabaceae (crimson clover at Oak Vista → `trifolium-incarnatum`, alfalfa → `medicago-sativa`).                                                                  |
 
 Count verify: 16 rows above. Cross-check against `insect-species.json`
 when you write the zip — if the catalog has diverged, follow the catalog.
@@ -412,13 +414,13 @@ A single zip file named `insect-lifestage-data.zip` containing:
    entries preserved; only the four stage fields populated (or justified
    nulls).
 2. `NOTES.md` — a brief (≤2 page) companion document listing:
-   - Species where you emitted partial or null stages and why.
-   - Species needing `diapauseRegulation` once Jackson polymorphic wiring
-     is added (with the intended content for each).
-   - Plant / insect slugs you referenced but were unable to verify are
-     real catalog entries.
-   - Any cross-stage invariant tension surfaced by the biology that the
-     user should know about.
+    - Species where you emitted partial or null stages and why.
+    - Species needing `diapauseRegulation` once Jackson polymorphic wiring
+      is added (with the intended content for each).
+    - Plant / insect slugs you referenced but were unable to verify are
+      real catalog entries.
+    - Any cross-stage invariant tension surfaced by the biology that the
+      user should know about.
 
 The user imports the zip. The `insect-species.json` replaces the catalog
 file; `NOTES.md` is triage input for the follow-on PR.

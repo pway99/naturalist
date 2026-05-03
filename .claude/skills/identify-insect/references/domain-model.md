@@ -65,16 +65,16 @@
 
 ## FunctionalGuild Reference
 
-| Constant | Ecological role | Typical beneficial value |
-|---|---|---|
-| `PARASITOID` | Lays eggs in/on host; larva consumes host and kills it. Parasitic wasps, tachinid flies. | true |
-| `PREDATOR` | Directly consumes other insects. Ladybugs, lacewing larvae, assassin bugs, hoverfly larvae. | true |
-| `APEX_PREDATOR` | Generalist top-of-food-web predator. Ground beetles (Carabidae). | true |
-| `POLLINATOR` | Transfers pollen; critical for fruit set. Bees, butterflies, adult hoverflies. | true |
-| `DECOMPOSER` | Breaks down organic matter; feeds the soil food web. Crane flies, field roaches. | true |
-| `FOOD_WEB` | Basal prey supporting vertebrate and arachnid predators; also used for plant-feeding insects that are controlled by natural enemies. Aphids, leafhoppers, scale insects. | false (typically) |
-| `MIGRATORY` | Seasonal visitor; population regulated at landscape scale, not locally. Painted lady. | true |
-| `KEYSTONE` | Disproportionate ecological impact beyond what guild membership implies. Use sparingly. Pipevine swallowtail (Battus philenor). | true |
+| Constant        | Ecological role                                                                                                                                                          | Typical beneficial value |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
+| `PARASITOID`    | Lays eggs in/on host; larva consumes host and kills it. Parasitic wasps, tachinid flies.                                                                                 | true                     |
+| `PREDATOR`      | Directly consumes other insects. Ladybugs, lacewing larvae, assassin bugs, hoverfly larvae.                                                                              | true                     |
+| `APEX_PREDATOR` | Generalist top-of-food-web predator. Ground beetles (Carabidae).                                                                                                         | true                     |
+| `POLLINATOR`    | Transfers pollen; critical for fruit set. Bees, butterflies, adult hoverflies.                                                                                           | true                     |
+| `DECOMPOSER`    | Breaks down organic matter; feeds the soil food web. Crane flies, field roaches.                                                                                         | true                     |
+| `FOOD_WEB`      | Basal prey supporting vertebrate and arachnid predators; also used for plant-feeding insects that are controlled by natural enemies. Aphids, leafhoppers, scale insects. | false (typically)        |
+| `MIGRATORY`     | Seasonal visitor; population regulated at landscape scale, not locally. Painted lady.                                                                                    | true                     |
+| `KEYSTONE`      | Disproportionate ecological impact beyond what guild membership implies. Use sparingly. Pipevine swallowtail (Battus philenor).                                          | true                     |
 
 ### Assignment guidance
 

@@ -11,12 +11,24 @@
     },
     "category": "ALKALOID",
     "roles": [
-      { "kind": "HERBIVORE_DETERRENT" },
-      { "kind": "INSECT_DETERRENT" },
-      { "kind": "HUMAN_TOXIN" },
-      { "kind": "LIVESTOCK_TOXIN" }
+      {
+        "kind": "HERBIVORE_DETERRENT"
+      },
+      {
+        "kind": "INSECT_DETERRENT"
+      },
+      {
+        "kind": "HUMAN_TOXIN"
+      },
+      {
+        "kind": "LIVESTOCK_TOXIN"
+      }
     ],
-    "tissues": ["LEAF", "STEM", "ROOT"],
+    "tissues": [
+      "LEAF",
+      "STEM",
+      "ROOT"
+    ],
     "induction": "CONSTITUTIVE",
     "notes": "Sequestered by Pipevine Swallowtail (Battus philenor hirsuta) larvae for chemical defense. Concentration in foliage rises with new leaf flush in spring. Handle the plant only with gloves; do not compost prunings near food crops."
   },
@@ -32,12 +44,24 @@
     },
     "category": "ALKALOID",
     "roles": [
-      { "kind": "HERBIVORE_DETERRENT" },
-      { "kind": "INSECT_DETERRENT" },
-      { "kind": "HUMAN_TOXIN" },
-      { "kind": "LIVESTOCK_TOXIN" }
+      {
+        "kind": "HERBIVORE_DETERRENT"
+      },
+      {
+        "kind": "INSECT_DETERRENT"
+      },
+      {
+        "kind": "HUMAN_TOXIN"
+      },
+      {
+        "kind": "LIVESTOCK_TOXIN"
+      }
     ],
-    "tissues": ["LEAF", "STEM", "ROOT"],
+    "tissues": [
+      "LEAF",
+      "STEM",
+      "ROOT"
+    ],
     "induction": "CONSTITUTIVE",
     "notes": "Co-occurs with aristolochic acid I but at lower titer. Same handling precautions apply — toxicity is additive in mammalian systems."
   },
@@ -53,11 +77,20 @@
     },
     "category": "ORGANIC_ACID",
     "roles": [
-      { "kind": "HERBIVORE_DETERRENT" },
-      { "kind": "HUMAN_TOXIN" },
-      { "kind": "LIVESTOCK_TOXIN" }
+      {
+        "kind": "HERBIVORE_DETERRENT"
+      },
+      {
+        "kind": "HUMAN_TOXIN"
+      },
+      {
+        "kind": "LIVESTOCK_TOXIN"
+      }
     ],
-    "tissues": ["LEAF", "RHIZOME"],
+    "tissues": [
+      "LEAF",
+      "RHIZOME"
+    ],
     "induction": "CONSTITUTIVE",
     "notes": "Stored as bundled calcium oxalate raphides in idioblast cells. Visible under polarised light as bright needle-cluster inclusions. Fresh foliage is more potent than dried; cooking reduces but does not eliminate the deterrent effect."
   },
@@ -73,15 +106,32 @@
     },
     "category": "TERPENOID",
     "roles": [
-      { "kind": "ANTI_FUNGAL" },
-      { "kind": "ANTI_MICROBIAL" },
-      { "kind": "INSECT_DETERRENT" },
-      { "kind": "PHARMACEUTICAL" },
-      { "kind": "FLAVOR_SOURCE" },
-      { "kind": "FRAGRANCE_SOURCE" },
-      { "kind": "INSECTICIDE_SOURCE" }
+      {
+        "kind": "ANTI_FUNGAL"
+      },
+      {
+        "kind": "ANTI_MICROBIAL"
+      },
+      {
+        "kind": "INSECT_DETERRENT"
+      },
+      {
+        "kind": "PHARMACEUTICAL"
+      },
+      {
+        "kind": "FLAVOR_SOURCE"
+      },
+      {
+        "kind": "FRAGRANCE_SOURCE"
+      },
+      {
+        "kind": "INSECTICIDE_SOURCE"
+      }
     ],
-    "tissues": ["LEAF", "TRICHOME"],
+    "tissues": [
+      "LEAF",
+      "TRICHOME"
+    ],
     "induction": "CONSTITUTIVE",
     "notes": "Concentration peaks in summer foliage. Stored in peltate glandular trichomes on the abaxial leaf surface — visible as small reflective dots under low magnification. Crushing or warming the leaf releases the volatile."
   }

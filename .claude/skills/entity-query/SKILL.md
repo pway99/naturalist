@@ -61,13 +61,13 @@ Find the entity class. Read it to determine:
 - The domain module name (e.g. `insects`)
 - Whether an existing namespace query interface already lives in the same
   package:
-  - `find <domain>-api/src/main/java/.../<package>/ -name "*Query.java"`
+    - `find <domain>-api/src/main/java/.../<package>/ -name "*Query.java"`
 - Whether an existing entity-collections namespace already lives in the same
   package:
-  - `find <domain>-api/src/main/java/.../<package>/ -name "*EntityCollections.java"`
+    - `find <domain>-api/src/main/java/.../<package>/ -name "*EntityCollections.java"`
 - Whether an existing namespace query impl lives in `<domain>-core` in the
   same package:
-  - `find <domain>-core/src/main/java/.../<package>/ -name "*QueryImpl.java"`
+    - `find <domain>-core/src/main/java/.../<package>/ -name "*QueryImpl.java"`
 
 **Namespace naming.** `<Package>Query` is the domain noun for the package:
 `com.naturalist.insects` → `InsectQuery`; `com.naturalist.insects.lifestage` →
@@ -179,6 +179,7 @@ public interface <Package>Query {
 ```
 
 Key rules:
+
 - **Always a `public interface`** — ADR-020: nested types inside an interface
   are implicitly `public static`, which is what queries want
 - **N=1 collapse**: if the package has exactly one entity and no existing
@@ -224,6 +225,7 @@ class <Entity>EntityQueryImpl
 ```
 
 Rules:
+
 - **Package-private** — the adapter is visible only to the namespace impl in
   the same package
 - `getByName` is inherited from `AbstractEntityQuery`; override only to add
@@ -388,14 +390,14 @@ domain-specific tests must pass.
 
 ## Naming Conventions Summary
 
-| Artifact | Name | Location |
-|---|---|---|
-| Collection | `<Entity>Collection` nested in `<Package>EntityCollections` | `<domain>-api/src/main/java/.../<package>/` |
-| Query contract | `<Entity>EntityQuery` nested in `<Package>Query` | `<domain>-api/src/main/java/.../<package>/` |
-| Query adapter | `<Entity>EntityQueryImpl` | `<domain>-core/src/main/java/.../<package>/` |
-| Namespace impl | `<Package>QueryImpl` | `<domain>-core/src/main/java/.../<package>/` |
-| Contract test | `<Entity>EntityQueryImplTest` | `<domain>-core/src/test/java/.../<package>/` |
-| Namespace test | `<Package>QueryImplTest` | `<domain>-core/src/test/java/.../<package>/` |
+| Artifact       | Name                                                        | Location                                     |
+|----------------|-------------------------------------------------------------|----------------------------------------------|
+| Collection     | `<Entity>Collection` nested in `<Package>EntityCollections` | `<domain>-api/src/main/java/.../<package>/`  |
+| Query contract | `<Entity>EntityQuery` nested in `<Package>Query`            | `<domain>-api/src/main/java/.../<package>/`  |
+| Query adapter  | `<Entity>EntityQueryImpl`                                   | `<domain>-core/src/main/java/.../<package>/` |
+| Namespace impl | `<Package>QueryImpl`                                        | `<domain>-core/src/main/java/.../<package>/` |
+| Contract test  | `<Entity>EntityQueryImplTest`                               | `<domain>-core/src/test/java/.../<package>/` |
+| Namespace test | `<Package>QueryImplTest`                                    | `<domain>-core/src/test/java/.../<package>/` |
 
 ---
 

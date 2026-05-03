@@ -52,16 +52,16 @@
 
         <!-- TEST -->
         <!-- these can be uncommented when the rdmbs adapter is available -->
-<!--        <dependency>-->
-<!--            <groupId>com.naturalist</groupId>-->
-<!--            <artifactId>framework-test</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.naturalist</groupId>-->
-<!--            <artifactId>insects-repository-test</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.naturalist</groupId>-->
+        <!--            <artifactId>framework-test</artifactId>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.naturalist</groupId>-->
+        <!--            <artifactId>insects-repository-test</artifactId>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>gg.jte</groupId>
             <artifactId>jte</artifactId>

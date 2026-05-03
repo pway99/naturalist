@@ -37,11 +37,11 @@ import com.naturalist.fieldnotes.Description;
  */
 public sealed interface Bioregion
         permits SacramentoValley,
-                SouthernCascades,
-                KlamathMountains,
-                CoastRanges,
-                SierraNevada,
-                ModocPlateau {
+        SouthernCascades,
+        KlamathMountains,
+        CoastRanges,
+        SierraNevada,
+        ModocPlateau {
 
     @JsonValue
     String slug();
@@ -56,9 +56,9 @@ public sealed interface Bioregion
             case "sacramento-valley" -> new SacramentoValley();
             case "southern-cascades" -> new SouthernCascades();
             case "klamath-mountains" -> new KlamathMountains();
-            case "coast-ranges"      -> new CoastRanges();
-            case "sierra-nevada"     -> new SierraNevada();
-            case "modoc-plateau"     -> new ModocPlateau();
+            case "coast-ranges" -> new CoastRanges();
+            case "sierra-nevada" -> new SierraNevada();
+            case "modoc-plateau" -> new ModocPlateau();
             default -> throw new IllegalArgumentException("Unknown bioregion: " + slug);
         };
     }

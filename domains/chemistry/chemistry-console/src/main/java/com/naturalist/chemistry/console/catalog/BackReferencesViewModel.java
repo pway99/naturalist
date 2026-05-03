@@ -51,7 +51,9 @@ public record BackReferencesViewModel(List<Group> groups) {
             "chemistry", "Chemistry"
     );
 
-    public record Group(String domainDisplayName, List<Link> links) {}
+    public record Group(String domainDisplayName, List<Link> links) {
+    }
 
-    public record Link(String label, String url) {}
+    public record Link(String label, String url) {
+    }
 }

@@ -21,10 +21,10 @@ public class PlantsLinker implements EntityRefLinker {
     @Override
     public String linkFor(EntityRef ref) {
         return switch (ref.name()) {
-            case PlantName n                    -> "/plants/" + n.value();
-            case CultivarName n                 -> "/plants/cultivars/" + n.value();
-            case SeedLineageName n              -> "/plants/lineages/" + n.value();
-            case PlantProgramName n             -> "/plants/programs/" + n.value();
+            case PlantName n -> "/plants/" + n.value();
+            case CultivarName n -> "/plants/cultivars/" + n.value();
+            case SeedLineageName n -> "/plants/lineages/" + n.value();
+            case PlantProgramName n -> "/plants/programs/" + n.value();
             case PhytochemicalConstituentName n -> "/plants/phytochemistry/" + n.value();
             default -> null;
         };
