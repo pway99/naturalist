@@ -20,6 +20,16 @@ final class TaxonomicSlugs {
     private TaxonomicSlugs() {
     }
 
+    static String familySlug(TaxonomicFamily family) {
+        Objects.requireNonNull(family, "family");
+        return kebab(family.value());
+    }
+
+    static String genusSlug(TaxonomicGenus genus) {
+        Objects.requireNonNull(genus, "genus");
+        return kebab(genus.value());
+    }
+
     static String binomial(TaxonomicGenus genus, TaxonomicSpecies species) {
         Objects.requireNonNull(genus, "genus");
         Objects.requireNonNull(species, "species");

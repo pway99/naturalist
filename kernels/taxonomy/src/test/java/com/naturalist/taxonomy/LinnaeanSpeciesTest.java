@@ -1,5 +1,6 @@
 package com.naturalist.taxonomy;
 
+import com.naturalist.ddd.EntityName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,13 +10,13 @@ class LinnaeanSpeciesTest {
 
     @Test
     void binomialSlugDerivesFromGenusAndSpeciesEpithets() {
-        LinnaeanSpecies pipevine = species("Aristolochia", "californica");
+        LinnaeanSpecies<TestGenusName> pipevine = species("aristolochia", "Aristolochia", "californica");
         assertThat(pipevine.binomialSlug()).isEqualTo("aristolochia-californica");
     }
 
     @Test
     void binomialSlugLowerCasesGenusKeepingTheKebabConvention() {
-        LinnaeanSpecies swallowtail = species("Battus", "philenor");
+        LinnaeanSpecies<TestGenusName> swallowtail = species("battus", "Battus", "philenor");
         assertThat(swallowtail.binomialSlug()).isEqualTo("battus-philenor");
     }
 
@@ -23,26 +24,65 @@ class LinnaeanSpeciesTest {
     void binomialSlugCollapsesInternalWhitespaceToHyphens() {
         // No real-world Linnaean epithet contains whitespace, but the helper
         // is robust to data oddities — confirm the rule.
-        LinnaeanSpecies oddity = species("Genus name", "species_epithet");
+        LinnaeanSpecies<TestGenusName> oddity = species("genus-name", "Genus name", "species_epithet");
         assertThat(oddity.binomialSlug()).isEqualTo("genus-name-species-epithet");
     }
 
     @Test
     void binomialSlugRejectsNullGenus() {
-        LinnaeanSpecies broken = new TestSpecies(null, new TaxonomicSpecies("californica"));
+        LinnaeanSpecies<TestGenusName> broken = new TestSpecies(
+                new TestGenusName("aristolochia"),
+                null,
+                new TaxonomicSpecies("californica"));
         assertThatThrownBy(broken::binomialSlug).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void binomialSlugRejectsNullSpecies() {
-        LinnaeanSpecies broken = new TestSpecies(new TaxonomicGenus("Aristolochia"), null);
+        LinnaeanSpecies<TestGenusName> broken = new TestSpecies(
+                new TestGenusName("aristolochia"),
+                new TaxonomicGenus("Aristolochia"),
+                null);
         assertThatThrownBy(broken::binomialSlug).isInstanceOf(NullPointerException.class);
     }
 
-    private static LinnaeanSpecies species(String genus, String species) {
-        return new TestSpecies(new TaxonomicGenus(genus), new TaxonomicSpecies(species));
+    @Test
+    void genusNameIsCarriedAsTheUpwardTypedReference() {
+        LinnaeanSpecies<TestGenusName> pipevine = species("aristolochia", "Aristolochia", "californica");
+        assertThat(pipevine.genusName()).isEqualTo(new TestGenusName("aristolochia"));
     }
 
-    private record TestSpecies(TaxonomicGenus genus, TaxonomicSpecies species) implements LinnaeanSpecies {
+    @Test
+    void genusNameSlugMatchesGenusEpithetKebab() {
+        // The cross-rank invariant the catalog relies on: a species' genusName slug
+        // equals lowerKebab(genus epithet). This is a record-time check, independent
+        // of whether the genus aggregate exists.
+        LinnaeanSpecies<TestGenusName> pipevine = species("aristolochia", "Aristolochia", "californica");
+        assertThat(pipevine.genusName().value()).isEqualTo(TaxonomicSlugs.genusSlug(pipevine.genus()));
+    }
+
+    private static LinnaeanSpecies<TestGenusName> species(String genusSlug, String genusEpithet, String speciesEpithet) {
+        return new TestSpecies(
+                new TestGenusName(genusSlug),
+                new TaxonomicGenus(genusEpithet),
+                speciesEpithet == null ? null : new TaxonomicSpecies(speciesEpithet));
+    }
+
+    private record TestSpecies(
+            TestGenusName genusName,
+            TaxonomicGenus genus,
+            TaxonomicSpecies species
+    ) implements LinnaeanSpecies<TestGenusName> {
+    }
+
+    private static final class TestGenusName extends EntityName {
+        TestGenusName(String value) {
+            super(value);
+        }
+
+        @Override
+        protected int maxLength() {
+            return 64;
+        }
     }
 }
