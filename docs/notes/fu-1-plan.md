@@ -34,18 +34,21 @@ graph end-to-end.
 
 **Kernel (`kernels/taxonomy`).**
 
-- New `LinnaeanFamily` interface, generic over `<FAMILY_NAME extends EntityName>`.
-  Exposes `family() : TaxonomicFamily` (non-null) and `familyName() : FAMILY_NAME`.
-  Default `slug() = lowerKebab(family)`.
-- New `LinnaeanGenus` interface, generic over `<FAMILY_NAME extends EntityName,
-  GENUS_NAME extends EntityName>`. Exposes `genus() : TaxonomicGenus` (non-null),
-  `genusName() : GENUS_NAME`, and `familyName() : FAMILY_NAME` (the upward reference,
-  non-null). Default `slug() = lowerKebab(genus)`.
-- **`LinnaeanSpecies` narrows** — adds a `GENUS_NAME` type parameter and a
-  `genusName() : GENUS_NAME` member (non-null), the upward typed reference to the
-  parent genus aggregate. Existing `genus() : TaxonomicGenus`, `species() :
-  TaxonomicSpecies`, and `binomialSlug()` are unchanged. The narrowing is purely the
-  added upward reference.
+- New `LinnaeanFamily` interface, no type parameter. Exposes `family() :
+  TaxonomicFamily` (non-null). Default `familySlug() = lowerKebab(family)`. The
+  implementing aggregate's typed name is exposed via its `NamedEntity` binding —
+  the rank interface itself does not redundantly re-expose it.
+- New `LinnaeanGenus<FAMILY_NAME extends EntityName>` interface. Exposes the upward
+  typed reference `familyName() : FAMILY_NAME` (non-null), the redundant
+  `family() : TaxonomicFamily` epithet (for catalog-assembly chain consistency),
+  and `genus() : TaxonomicGenus` (non-null). Default `genusSlug() =
+  lowerKebab(genus)`. The implementing aggregate's own typed name comes from its
+  `NamedEntity<*GenusName>` binding.
+- **`LinnaeanSpecies` narrows** — gains a `<GENUS_NAME extends EntityName>` type
+  parameter and a `genusName() : GENUS_NAME` member (non-null), the upward typed
+  reference to the parent genus aggregate. Existing `genus() : TaxonomicGenus`,
+  `species() : TaxonomicSpecies`, and `binomialSlug()` are unchanged. The narrowing
+  is purely the added upward reference.
 - `LinnaeanSubspecies` reviewed for consistency with the new graph. Expected
   unchanged (already references parent species via typed name); this PR documents
   the contract relative to the rest of the graph.
@@ -72,11 +75,48 @@ interface) leaves the kernel expressive of a state we explicitly don't want.
 
 ---
 
-## PR-2 — Refactor the entities
+## PR-2 series — Refactor the entities (per-entity slices)
 
-**Ships.** Domain side, end-to-end. After PR-2 every catalog record exists at the
-right rank, the cross-rank reference chain is mandatory and resolves at startup,
-the swallowtail bundle re-emits under fully-binomial catalog, and A1-F1 closes.
+The original "single PR-2" is too much to review in one pass. Slice by entity:
+each PR introduces one new aggregate end-to-end (record + identifier +
+TestEntitySource + repository stack + JSON catalog), small enough that a
+reviewer holds the whole thing in working memory. Catalog wiring and queries
+follow as separate slices once the foundation is in place. Species record
+narrowing and the A1-F1 closure happen in the final slice once all four new
+aggregates exist.
+
+**Slice order:**
+
+- **PR-2a** — `InsectFamily` aggregate + `InsectFamilyName` identifier +
+  `TestInsectFamilySource` + repository stack + `insect-families.json`.
+  No catalog wiring, no query, no species changes.
+- **PR-2b** — `PlantFamily` aggregate, same shape.
+- **PR-2c** — `InsectGenus` aggregate, same shape (depends on `InsectFamilyName`
+  for the upward reference).
+- **PR-2d** — `PlantGenus` aggregate, same shape.
+- **PR-2e** — Catalog wiring for the four new aggregates (DomainIds,
+  CatalogContributions, EntityReferences providers) + queries
+  (`InsectFamilyQuery`, `PlantFamilyQuery`, `InsectGenusQuery`, `PlantGenusQuery`)
+  + their adapters in `*-core`.
+- **PR-2f** — Species narrowing: `Plant` and `InsectSpecies` gain typed
+  `genusName` reference, JSON migration adds the field per record, pending
+  records move out of the species JSONs into their family/genus homes.
+- **PR-2g** — A1-F1 closure: bundle JSON re-emit, `TestInsectsIdentifiers` /
+  `TestPlantsIdentifiers` cleanups, `99-followups.md` FU-1 retirement,
+  `01-findings.md` A1-F1 CONTINGENT → CLOSED, cross-rank catalog validation
+  activation.
+
+The original "PR-2 — Refactor the entities" specification below remains the
+reference for what eventually lands across the slices.
+
+---
+
+### Original PR-2 specification (reference for the slice series)
+
+**Ships.** Domain side, end-to-end. After the slice series every catalog record
+exists at the right rank, the cross-rank reference chain is mandatory and
+resolves at startup, the swallowtail bundle re-emits under fully-binomial
+catalog, and A1-F1 closes.
 
 **Identifiers (`domains/identifiers`).**
 

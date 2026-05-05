@@ -5,7 +5,6 @@ import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
-import com.naturalist.taxonomy.LinnaeanSpecies;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicSpecies;
@@ -55,14 +54,22 @@ public record Plant(
         PlantLifeForm lifeForm,
         Set<Bioregion> nativeBioregions,
         Set<CommonName> commonNames
-) implements NamedEntity<PlantName>, LinnaeanSpecies {
+) implements NamedEntity<PlantName> {
 
-    @Override
+    /**
+     * Convenience accessor for the genus epithet from {@link #taxonomy()}. Will
+     * be re-anchored to {@code LinnaeanSpecies} once the typed {@code PlantGenusName}
+     * upward reference and per-record migration land in PR-2f of FU-1.
+     */
     public TaxonomicGenus genus() {
         return taxonomy.genus();
     }
 
-    @Override
+    /**
+     * Convenience accessor for the species epithet from {@link #taxonomy()}. Will
+     * be re-anchored to {@code LinnaeanSpecies} once the typed {@code PlantGenusName}
+     * upward reference and per-record migration land in PR-2f of FU-1.
+     */
     public TaxonomicSpecies species() {
         return taxonomy.species();
     }

@@ -12,6 +12,7 @@ import java.util.List;
  * <ul>
  *   <li>{@link SpeciesRepository} — {@link InsectSpecies} entities.</li>
  *   <li>{@link ImageRepository} — {@link InsectImage} entities.</li>
+ *   <li>{@link FamilyRepository} — {@link InsectFamily} entities.</li>
  * </ul>
  *
  * <p>This is a {@code class}, not an {@code interface}, so the nested repository
@@ -24,14 +25,22 @@ import java.util.List;
 class InsectRepository {
     final SpeciesRepository speciesRepository;
     final ImageRepository imageRepository;
+    final FamilyRepository familyRepository;
 
-    private InsectRepository(SpeciesRepository speciesRepository, ImageRepository imageRepository) {
+    private InsectRepository(
+            SpeciesRepository speciesRepository,
+            ImageRepository imageRepository,
+            FamilyRepository familyRepository) {
         this.speciesRepository = speciesRepository;
         this.imageRepository = imageRepository;
+        this.familyRepository = familyRepository;
     }
 
-    static InsectRepository create(SpeciesRepository speciesRepository, ImageRepository imageRepository) {
-        return new InsectRepository(speciesRepository, imageRepository);
+    static InsectRepository create(
+            SpeciesRepository speciesRepository,
+            ImageRepository imageRepository,
+            FamilyRepository familyRepository) {
+        return new InsectRepository(speciesRepository, imageRepository, familyRepository);
     }
 
     SpeciesRepository speciesRepository() {
@@ -40,6 +49,10 @@ class InsectRepository {
 
     ImageRepository imageRepository() {
         return imageRepository;
+    }
+
+    FamilyRepository familyRepository() {
+        return familyRepository;
     }
 
     protected interface SpeciesRepository
@@ -53,5 +66,9 @@ class InsectRepository {
             extends EntityRepository<InsectImageId, InsectImage> {
 
         List<InsectImage> getBySpeciesName(InsectSpeciesName speciesName);
+    }
+
+    protected interface FamilyRepository
+            extends EntityRepository<InsectFamilyName, InsectFamily> {
     }
 }

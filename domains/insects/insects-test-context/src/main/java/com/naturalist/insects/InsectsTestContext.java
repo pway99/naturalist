@@ -29,7 +29,8 @@ public class InsectsTestContext {
     private InsectsTestContext(NaturalistDatabase db) {
         InsectRepository repository = InsectRepository.create(
                 new SpeciesRepositoryMock(db),
-                new InsectImageRepositoryMock(db));
+                new InsectImageRepositoryMock(db),
+                new FamilyRepositoryMock(db));
         InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository.speciesRepository);
         InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(repository.imageRepository);
         this.insectQuery = new InsectQueryImpl(speciesQuery, imageQuery);

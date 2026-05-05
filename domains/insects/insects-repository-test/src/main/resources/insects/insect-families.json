@@ -1,0 +1,104 @@
+[
+  {
+    "name": "tachinidae",
+    "order": "Diptera",
+    "family": "Tachinidae",
+    "description": {
+      "preschool": "This fuzzy fly is a garden helper. It looks like a housefly with extra bristles, and it lays its tiny eggs on caterpillars and other insects that eat our plants. Once the eggs hatch, they protect the garden from the inside.",
+      "elementary": "Tachinid flies are parasites of caterpillars, beetles, and bugs that damage vegetable plants. The mother fly glues her eggs onto a pest insect or hides them on leaves where the pest will eat them. The fly larva hatches inside the pest and slowly eats it, which kills the pest before it can do much more damage.",
+      "secondary": "Tachinidae is the largest family of parasitoid flies (Diptera). Most species are koinobiont parasitoids — the host continues feeding and growing while the endoparasitic larva develops inside it. The female deposits eggs directly on the host cuticle, in host tissue via ovipositor, or on foliage as microtype eggs consumed by feeding hosts. The larva pupates inside the host or in the soil after killing it. Tachinids collectively parasitise lepidopteran, coleopteran, hemipteran, and orthopteran pests; several species are important biocontrol agents for tobacco hornworm, armyworm, and imported cabbageworm.",
+      "university": "Family Tachinidae (Diptera) — over 10,000 described species worldwide; the dominant parasitoid family at Oak Vista based on April 2026 sweep-net transects. Primary host guilds at Oak Vista: Lepidoptera larvae (Noctuidae, Sphingidae), with secondary records on Hemiptera and Coleoptera. Most are koinobiont endoparasitoids; the larva undergoes three instars inside the living host, emerging to pupate in soil following host death. Adults are nectarivores requiring open-structured flowers for mandibular access — Apiaceae, Asteraceae, and Lamiaceae support adult foraging at Oak Vista. No pesticide treatment of flowering Apiaceae border plantings during tachinid flight periods (April–October)."
+    },
+    "commonNames": [
+      {
+        "label": "tachinid fly",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "braconidae",
+    "order": "Hymenoptera",
+    "family": "Braconidae",
+    "description": {
+      "preschool": "This tiny wasp is smaller than your fingernail and it is one of the garden's best protectors. It finds caterpillars and aphids and lays eggs inside them or on them. The babies that hatch eat the pest and protect our tomatoes.",
+      "elementary": "Braconid wasps are tiny insects that lay their eggs inside or on pest insects like aphids and caterpillars. When the eggs hatch, the wasp larvae eat the pest from the inside out, eventually killing it. You can sometimes find caterpillars covered with little white cocoons — those are the braconid pupae, and the caterpillar is already dying. Braconid wasps help protect our tomato plants without any sprays.",
+      "secondary": "Braconidae is the second-largest family of parasitoid Hymenoptera. Oak Vista species are primarily endoparasitoids of lepidopteran and aphid hosts. The Aphidiinae subfamily (formerly a separate family) are primary parasitoids of aphids — a single female can parasitise hundreds of aphids per day, and mummified aphids (round, papery, and darker than live aphids) are the visible field indicator of Aphidiinae activity. Microgastrinae are specialist caterpillar parasitoids; eggs are laid inside the host larva and the gregarious larvae emerge to spin white silk cocoons externally before pupation. Adults require nectar sources; Apiaceae and Asteraceae floral resources are critical for braconid retention in the garden system.",
+      "university": "Family Braconidae (Hymenoptera: Ichneumonoidea). Approximately 17,000 described species. Primary functional role at Oak Vista: suppression of aphid populations (Aphidiinae) and lepidopteran larvae (Microgastrinae). Aphidiinae females detect host-infested plants via volatile semiochemicals (E-β-farnesene and host-plant VOCs induced by aphid feeding). The parasitoid egg is laid into the aphid haemocoele; the larva develops through 4 instars consuming host tissues progressively, with the host dying as the final instar larva spins its cocoon within the aphid cuticle (mummification). Ichnoviruses in Microgastrinae venom suppress host immune encapsulation response. Retention strategy: maintain Apiaceae (dill, fennel, coriander) and Asteraceae flowering border adjacent to tomato beds throughout the season."
+    },
+    "commonNames": [
+      {
+        "label": "braconid wasp",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "syrphidae",
+    "order": "Diptera",
+    "family": "Syrphidae",
+    "description": {
+      "preschool": "Hoverflies look like tiny bees or wasps with yellow and black stripes, but they cannot sting. Watch them hover in one spot in the air — they can fly perfectly still! Their babies eat the aphids that hurt our tomatoes.",
+      "elementary": "Hoverflies trick birds into leaving them alone by looking like bees, but they are actually flies and cannot sting. The adult hoverflies drink nectar from flowers and help pollinate them. But the hoverfly larvae — the babies — hunt aphids and eat them one by one. A single hoverfly larva can eat hundreds of aphids before it grows up. They are both pollinators and pest controllers.",
+      "secondary": "Syrphidae (hoverflies) exhibit Batesian mimicry of stinging Hymenoptera, deterring avian predators through visual warning coloration. Adults are important pollinators of Apiaceae and Asteraceae; many species require pollen as a protein source for egg development. Most Oak Vista species are aphidophagous at the larval stage — larvae are eyeless, legless maggots that hunt aphids by chemosensory detection and consume them by piercing and ingesting haemolymph. The degree of aphid suppression per larva varies by species: Episyrphus balteatus (not yet confirmed at Oak Vista) can consume 400+ aphids per larval instar. Adults frequent open flowers and are a reliable indicator of garden ecological health.",
+      "university": "Family Syrphidae (Diptera) — approximately 6,000 species in 200 genera. At Oak Vista, adults documented as abundant floral visitors on Apiaceae (dill, fennel) and Asteraceae in April 2026. Larval ecology: aphidophagous species (subfamilies Syrphinae) oviposit directly into aphid colonies; eggs are translucent white, elongate, laid singly on or near aphid aggregations. Larvae are obligate predators — chemoreceptors on the mouthparts detect aphid cuticular hydrocarbons. Larval-stage aphid consumption rate: 30–50 aphids per day (species-dependent). Pupal stage occurs in soil or plant litter. Adult feeding biology: pollen protein drives ovarian development; floral constancy documented in foraging bouts. Management: Apiaceae border plantings are essential for adult retention and egg-laying site selection."
+    },
+    "commonNames": [
+      {
+        "label": "hoverfly",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "carabidae",
+    "order": "Coleoptera",
+    "family": "Carabidae",
+    "description": {
+      "preschool": "Ground beetles are shiny black beetles that live under rocks and in the soil. They run very fast at night hunting for insects, slugs, and other pests that eat our plants. They are nocturnal garden helpers — they work while we sleep.",
+      "elementary": "Ground beetles are fast, shiny black beetles that hide under rocks and mulch during the day and hunt at night. They eat cutworms, slugs, snails, weed seeds, and many other garden pests. One ground beetle can eat many hundreds of pest insects and eggs in a season. They need places to hide during the day — rocks, boards, and thick mulch give them shelter. The Oak Vista garden has confirmed resident ground beetles.",
+      "secondary": "Carabidae is one of the most species-rich beetle families, with over 40,000 described species globally. Oak Vista representatives are in the subfamily Carabinae — large, fast, flightless (or flight-reduced) cursorial predators that occupy the apex of the soil-surface invertebrate food web. Diet is opportunistic: lepidopteran larvae (cutworms), dipteran pupae, slug eggs, weed seeds (many carabids are omnivores with granivorous behaviour supplementing predation). Nocturnal activity reduces overlap with diurnal parasitoid wasps. Confirmed resident at Oak Vista — ground beetles require undisturbed soil refugia and will abandon heavily tilled beds. The 21-day macropore recovery period post-rototilling applies equally to carabid population displacement.",
+      "university": "Family Carabidae (Coleoptera) — confirmed resident apex invertebrate predator at Oak Vista, April 2026 ecological assessment. Functional role: top-down regulation of soil-surface prey including lepidopteran larvae, dipteran pupae, and slug populations. Foraging mode: olfactory detection of prey cuticle and movement vibration; stridulatory communication documented in some species. Habitat requirements: coarse soil refugia or surface debris for diurnal concealment; absence of broad-spectrum soil insecticide. Key management interaction: soil rototilling disrupts carabid refugia and eliminates pupal chambers — tillage event documentation in the soil domain enables recovery-period modelling. Granivory supplements predation: Carabidae consume weed seeds at rates up to 1,200 seeds/individual/day, providing measurable weed suppression where populations are maintained at high density."
+    },
+    "commonNames": [
+      {
+        "label": "ground beetle",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "tipulidae",
+    "order": "Diptera",
+    "family": "Tipulidae",
+    "description": {
+      "preschool": "A crane fly looks like a giant mosquito with very long legs, but it is harmless. It cannot bite you. Its babies live in the soil and help break down old leaves and roots into food for the plants.",
+      "elementary": "Crane flies look like enormous mosquitoes but they do not bite and they do not drink blood. The adults live only a few days and do not even eat much. Their larvae live in the soil for months and break down dead plant material — old leaves, roots, and compost — into nutrients that feed the garden. They are decomposers, like nature's recyclers.",
+      "secondary": "Tipulidae larvae (leatherjackets) are saprophagous decomposers — they feed primarily on decomposing organic matter in the soil, shredding dead roots, leaf litter, and compost into smaller fragments and inoculating material with gut bacteria that accelerate decomposition. In agricultural contexts with monocultures, leatherjacket density can occasionally exceed levels at which root feeding damage occurs, but in diverse garden settings with adequate organic matter the species occupies a benign decomposer niche. Adults are short-lived (3–5 days), feeding minimally if at all; their ecological service is to transfer soil organic matter nutrients into the aerial food web as prey for birds (especially robins and thrushes) and arachnids.",
+      "university": "Family Tipulidae (Diptera) — one of the largest dipteran families. At Oak Vista, larvae function as saprophagous decomposers in the soil food web, contributing to litter comminution and nutrient cycling. Larval ecology: Tipula spp. leatherjackets are univoltine or bivoltine; larvae overwinter in soil, pupate in spring, and adults emerge April–June in California. The larval gut microbiome (Enterobacteriaceae, Bacteroidetes) degrades lignocellulosic material via enzymatic pathways — each larva represents a concentrated microbial bioreactor for cellulose degradation. Population density at Oak Vista is consistent with decomposer function (not pest-level root feeding). Adult phenology aligns with spring emergence of avian insectivore breeding season, making crane flies a significant food web transfer node from soil organic matter to vertebrate biomass."
+    },
+    "commonNames": [
+      {
+        "label": "crane fly",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "hesperiidae",
+    "order": "Lepidoptera",
+    "family": "Hesperiidae",
+    "description": {
+      "preschool": "Skippers are small butterflies that skip and dart through the air very fast instead of floating slowly like bigger butterflies. They have chunky fuzzy bodies and little hooked antennae. They drink nectar from flowers and help the garden while they eat.",
+      "elementary": "Skippers are small, fast-flying butterflies with thick bodies. They visit flowers to drink nectar and carry pollen from plant to plant, making them pollinators. Their caterpillars eat grasses and some plants but do not damage vegetable crops. Skippers are part of a healthy garden community and their presence shows that the garden has plenty of flowers for wildlife.",
+      "secondary": "Hesperiidae (skippers) are a basal lineage of Lepidoptera intermediate between true butterflies and moths — their robust, hairy thorax and hooked antennae reflect this transitional position. Adults are nectarivores and incidental pollinators of a wide range of garden flowers; their rapid, dart-and-hover flight makes them effective at visiting many flower types. Caterpillars feed on grasses and select forb species but are not recorded as vegetable crop pests. Several California species are partial to Asteraceae and Lamiaceae nectar sources. Skipper presence reflects broad-based nectar resource availability and low pesticide loading in the garden landscape.",
+      "university": "Family Hesperiidae (Lepidoptera) — approximately 3,500 species in 8 subfamilies. At Oak Vista, multiple species documented as floral visitors, April 2026. Taxonomic position: phylogenetically sister to Papilionoidea but traditionally treated separately; adult morphology (hooked antennal clubs, crochet-bearing tornal region on hindwing) distinguishes them from 'true' butterflies. Pollination ecology: adults exhibit legitimate floral visitation (proboscis insertion into nectary) across Asteraceae, Lamiaceae, and Boraginaceae; incidental pollen transfer efficiency is lower than specialist bee pollinators but contributes to cross-pollination of border plantings. Larval host plants at Oak Vista: grasses (Poaceae) and some Fabaceae — no threat to Solanaceae crops. Indicator function: skipper diversity is a reliable proxy for floral resource diversity and low-pesticide management history in landscape context."
+    },
+    "commonNames": [
+      {
+        "label": "skipper butterfly",
+        "locale": "en"
+      }
+    ]
+  }
+]

@@ -20,6 +20,44 @@ public class TestInsectsIdentifiers {
     private TestInsectsIdentifiers() {
     }
 
+    public static class InsectFamily {
+
+        private InsectFamily() {
+        }
+
+        /**
+         * Fictitious identifier for the {@link com.naturalist.insects.InsectFamily}
+         * scope — guaranteed absent from any catalog.
+         */
+        public static class NotFound {
+            public static final InsectFamilyName name = InsectFamilyName.of("unobtainium-flyidae");
+        }
+
+        public static class Tachinidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("tachinidae");
+        }
+
+        public static class Braconidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("braconidae");
+        }
+
+        public static class Syrphidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("syrphidae");
+        }
+
+        public static class Carabidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("carabidae");
+        }
+
+        public static class Tipulidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("tipulidae");
+        }
+
+        public static class Hesperiidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("hesperiidae");
+        }
+    }
+
     public static class InsectSpecies {
 
         private InsectSpecies() {

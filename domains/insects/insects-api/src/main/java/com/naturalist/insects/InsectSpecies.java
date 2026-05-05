@@ -11,7 +11,6 @@ import com.naturalist.insects.lifestage.EggStage;
 import com.naturalist.insects.lifestage.LarvaStage;
 import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
-import com.naturalist.taxonomy.LinnaeanSpecies;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicSpecies;
@@ -120,14 +119,22 @@ public record InsectSpecies(
         @Nullable GardenConnections gardenConnections,
         @Nullable BeneficialProfile beneficialProfile,
         @Nullable EcologicalSignificance ecologicalSignificance
-) implements NamedEntity<InsectSpeciesName>, LinnaeanSpecies {
+) implements NamedEntity<InsectSpeciesName> {
 
-    @Override
+    /**
+     * Convenience accessor for the genus epithet from {@link #taxonomy()}. Will
+     * be re-anchored to {@code LinnaeanSpecies} once the typed {@code InsectGenusName}
+     * upward reference and per-record migration land in PR-2f of FU-1.
+     */
     public TaxonomicGenus genus() {
         return taxonomy.genus();
     }
 
-    @Override
+    /**
+     * Convenience accessor for the species epithet from {@link #taxonomy()}. Will
+     * be re-anchored to {@code LinnaeanSpecies} once the typed {@code InsectGenusName}
+     * upward reference and per-record migration land in PR-2f of FU-1.
+     */
     public TaxonomicSpecies species() {
         return taxonomy.species();
     }
