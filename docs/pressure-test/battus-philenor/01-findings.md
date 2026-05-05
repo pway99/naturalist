@@ -247,24 +247,30 @@ What did **not** ship in this session, and why:
 - **Cultivar / SeedLineage / PlantProgram slug forms** stay as today.
   These will be owned by a future `Naturalist` entity (separate
   modeling task); their slugs rebase when that entity arrives.
-- **`commonNames` not yet wired into catalog search tokens.** The
-  binomial-slug commitment regresses common-name search: a naturalist
-  typing "California Pipevine" or "borage" no longer hits any slug.
-  Common-name labels now exist on every `Plant` and `InsectSpecies`
-  record, but each domain's `CatalogContribution.searchableEntities()`
-  must lift those labels into the token stream for vernacular search to
-  resolve. Four `InMemoryCatalogTest` cases that depended on the old
-  vernacular slugs (`exactSlugMatchYieldsExactSlugHit`,
-  `exactMatchPreferredOverPrefix`, `hitsOrderedByKindThenSlug`,
-  `groupedByDomainPreservesWithinDomainOrdering`) are `@Disabled` with
-  pointers back to this finding's fast-follow. Re-enable once the
-  per-domain contributions emit `CommonName.label()` as tokens — at
-  which point those tests can be rewritten to query against vernacular
-  forms (which will then carry EXACT_TOKEN match) while binomial slugs
-  carry EXACT_SLUG match. This is a fast-follow on `A1-F1`, not its own
-  finding; the regression is the natural cost of the slug commitment
-  and was anticipated in `structural-commitments.md` §3 ("vernacular
-  forms are findable but not authoritative").
+- **`commonNames` wired into catalog search tokens (fast-follow shipped
+  in the same session).** The binomial-slug commitment threatened to
+  regress common-name search ("California Pipevine", "borage" no
+  longer slug-match anything). The fast-follow:
+  `InsectsCatalogContribution.tokensFor` now lifts every
+  `CommonName.label()` into the per-entity token stream — the same
+  pattern `PlantCatalogContribution` already followed.
+  `InsectsCatalogContributionTest` and `PlantCatalogContributionTest`
+  re-aligned to the new binomial slugs and gained explicit assertions
+  that vernacular search resolves through `commonNames`. Auto-seeded
+  insect labels (mechanical capitalisation of the prior vernacular
+  slug — "Tachinid Fly", "Convergent Ladybug") preserve search until
+  Pat curates richer multi-locale labels.
+- **`InMemoryCatalogTest` deleted in the A1-F1 commit.** Several of
+  the kernel-level test cases assumed single-token slugs ("borage",
+  "california-pipevine") and demonstrated kind-priority ordering using
+  multi-token queries that exact-slug-matched. Under hyphenated
+  binomial slugs the kernel's tokeniser splits on the hyphen, so a
+  multi-token query cannot reach the EXACT_SLUG path through the
+  per-token loop (only the whole-input fast-path resolves a hyphenated
+  slug). Pat dropped the entire test class rather than incrementally
+  patch around the regression. Re-establishing kernel-level coverage
+  for `InMemoryCatalog` under binomial slugs is a separate kernel
+  concern outside this finding's scope.
 
 ---
 

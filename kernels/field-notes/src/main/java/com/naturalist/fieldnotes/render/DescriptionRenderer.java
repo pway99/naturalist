@@ -245,6 +245,16 @@ public final class DescriptionRenderer {
     // ── Binomial italics & search wrap ───────────────────────────────────
 
     private String decorateBinomials(String text) {
+        // The binomial regex is permissive enough to false-positive on
+        // ordinary "Capitalised lowercase" prose ("Some prose", "With more").
+        // Decoration is opt-in: callers that pass a non-empty cue list are
+        // signalling structured domain prose where Linnaean binomials are
+        // expected; callers that pass null or an empty list are rendering
+        // freeform text and should not be subjected to false-positive
+        // discover anchors.
+        if (paragraphCues.isEmpty()) {
+            return text;
+        }
         String afterFull = BINOMIAL_PATTERN.matcher(text).replaceAll(matchResult -> {
             String genus = matchResult.group(1);
             String species = matchResult.group(2);

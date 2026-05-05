@@ -56,15 +56,15 @@ class InsectsCatalogContributionTest {
     }
 
     @Test
-    void convergentLadybugIsReachableThroughSlugBinomialGenusAndAbbreviation() {
+    void convergentLadybugIsReachableThroughSlugBinomialGenusAbbreviationAndCommonName() {
         Catalog catalog = CatalogAssembly.from(contribution);
         EntityRef expected = new EntityRef(
                 new InsectsDomain(),
-                InsectSpeciesName.of("convergent-ladybug"));
+                InsectSpeciesName.of("hippodamia-convergens"));
 
         // Slug — strongest match.
-        assertThat(catalog.search("convergent-ladybug").stream())
-                .as("slug 'convergent-ladybug' should resolve to %s as EXACT_SLUG", expected)
+        assertThat(catalog.search("hippodamia-convergens").stream())
+                .as("slug 'hippodamia-convergens' should resolve to %s as EXACT_SLUG", expected)
                 .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
 
         // Full binomial — case-insensitive.
@@ -84,6 +84,13 @@ class InsectsCatalogContributionTest {
         assertThat(targetsOf(catalog.search("H. convergens")))
                 .as("abbreviated binomial 'H. convergens' should resolve to %s", expected)
                 .contains(expected);
+
+        // Common name harvested from the JSON catalog — the binomial slug
+        // commitment makes vernacular search load-bearing rather than
+        // duplicative.
+        assertThat(targetsOf(catalog.search("Convergent Ladybug")))
+                .as("common name 'Convergent Ladybug' should resolve to %s", expected)
+                .contains(expected);
     }
 
     @Test
@@ -92,8 +99,8 @@ class InsectsCatalogContributionTest {
 
         assertThat(catalog.search("HIPPODAMIA").size())
                 .isEqualTo(catalog.search("hippodamia").size());
-        assertThat(catalog.search("CONVERGENT-LADYBUG").size())
-                .isEqualTo(catalog.search("convergent-ladybug").size());
+        assertThat(catalog.search("HIPPODAMIA-CONVERGENS").size())
+                .isEqualTo(catalog.search("hippodamia-convergens").size());
     }
 
     @Test
@@ -103,18 +110,20 @@ class InsectsCatalogContributionTest {
     }
 
     @Test
-    void speciesWithoutGenusContributesSlugButNoBinomial() {
+    void speciesWithoutGenusContributesSlugAndCommonNamesButNoBinomial() {
         // tachinid-fly is catalogued at family level (Tachinidae) — both
-        // genus and species are null. The token stream should include the
-        // slug only and skip every binomial form — no NullPointerException,
-        // no malformed token.
+        // genus and species are null, so no "Genus species" or "G. species"
+        // token is emitted. The slug and every common-name label still
+        // appear. tachinid-fly remains on its vernacular slug pending the
+        // FU-1 pending-organism mechanism; the auto-seeded common name
+        // ("Tachinid Fly") preserves vernacular search until then.
         SearchableEntity tachinidFly = contribution.searchableEntities()
                 .filter(e -> e.target().name().equals(InsectSpeciesName.of("tachinid-fly")))
                 .findFirst()
                 .orElseThrow();
         List<String> tokens = tachinidFly.tokens().toList();
 
-        assertThat(tokens).containsExactly("tachinid-fly");
+        assertThat(tokens).containsExactly("tachinid-fly", "Tachinid Fly");
     }
 
     private static List<EntityRef> targetsOf(SearchResults results) {

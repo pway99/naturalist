@@ -50,7 +50,7 @@ class PlantCatalogContributionTest {
         EntityRef expected = new EntityRef(new PlantsDomain(), Plants.CaliforniaPipevine.name);
 
         // Slug — strongest match.
-        assertThat(catalog.search("california-pipevine").stream())
+        assertThat(catalog.search("aristolochia-californica").stream())
                 .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
 
         // Full binomial — case-insensitive.
@@ -74,8 +74,8 @@ class PlantCatalogContributionTest {
 
         assertThat(catalog.search("ARISTOLOCHIA").size())
                 .isEqualTo(catalog.search("aristolochia").size());
-        assertThat(catalog.search("CALIFORNIA-PIPEVINE").size())
-                .isEqualTo(catalog.search("california-pipevine").size());
+        assertThat(catalog.search("ARISTOLOCHIA-CALIFORNICA").size())
+                .isEqualTo(catalog.search("aristolochia-californica").size());
     }
 
     @Test
@@ -88,9 +88,9 @@ class PlantCatalogContributionTest {
 
     @Test
     void genusTokenReturnsBothTrifoliumSpecies() {
-        // The catalog includes two Trifolium species (crimson-clover and
-        // white-clover). Under search-and-discovery this is a feature, not a
-        // collision — both species surface, and the reader picks.
+        // The catalog includes two Trifolium species (trifolium-incarnatum
+        // and trifolium-repens). Under search-and-discovery this is a feature,
+        // not a collision — both species surface, and the reader picks.
         Catalog catalog = CatalogAssembly.from(contribution);
 
         Set<PlantName> trifoliumHits = catalog.search("Trifolium").stream()
@@ -100,25 +100,25 @@ class PlantCatalogContributionTest {
                 .collect(Collectors.toSet());
 
         assertThat(trifoliumHits).contains(
-                PlantName.of("crimson-clover"),
-                PlantName.of("white-clover"));
+                PlantName.of("trifolium-incarnatum"),
+                PlantName.of("trifolium-repens"));
     }
 
     @Test
     void commonNameSearchHitsBothCloverSpeciesIndependently() {
         Catalog catalog = CatalogAssembly.from(contribution);
 
-        // Crimson clover has "Crimson clover" / "Italian clover" — "italian"
-        // disambiguates from white clover.
+        // trifolium-incarnatum carries "Crimson clover" / "Italian clover" —
+        // "italian" disambiguates from white clover.
         assertThat(targetsOf(catalog.search("Italian clover")))
                 .map(EntityRef::name)
-                .contains(PlantName.of("crimson-clover"));
+                .contains(PlantName.of("trifolium-incarnatum"));
 
-        // White clover has "Dutch clover" / "Ladino clover" — both unique to
-        // the white-clover entry.
+        // trifolium-repens carries "Dutch clover" / "Ladino clover" — both
+        // unique to the white-clover entry.
         assertThat(targetsOf(catalog.search("Ladino clover")))
                 .map(EntityRef::name)
-                .contains(PlantName.of("white-clover"));
+                .contains(PlantName.of("trifolium-repens"));
     }
 
     @Test

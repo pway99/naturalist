@@ -37,7 +37,10 @@ public class TestInsectsIdentifiers {
         }
 
         public static class TachinidFly {
-            public static final InsectSpeciesName name = InsectSpeciesName.of("trichopoda-pennipes");
+            // tachinid-fly remains on its vernacular slug — catalog record is
+            // pending (family-level, no genus/species). Migrates to binomial
+            // when FU-1 ships the pending-organism mechanism.
+            public static final InsectSpeciesName name = InsectSpeciesName.of("tachinid-fly");
 
             public static class LifeStages {
                 private LifeStages() {
@@ -51,7 +54,10 @@ public class TestInsectsIdentifiers {
         }
 
         public static class BraconidWasp {
-            public static final InsectSpeciesName name = InsectSpeciesName.of("cotesia-congregata");
+            // braconid-wasp remains on its vernacular slug — catalog record is
+            // pending (family-level, no genus/species). Migrates to binomial
+            // when FU-1 ships the pending-organism mechanism.
+            public static final InsectSpeciesName name = InsectSpeciesName.of("braconid-wasp");
 
             public static class LifeStages {
                 private LifeStages() {
@@ -65,7 +71,10 @@ public class TestInsectsIdentifiers {
         }
 
         public static class PotatoLeafhopper {
-            public static final InsectSpeciesName name = InsectSpeciesName.of("empoasca-fabae");
+            // potato-leafhopper remains on its vernacular slug — catalog record
+            // is pending (genus-level, no species). Migrates to binomial when
+            // FU-1 ships the pending-organism mechanism.
+            public static final InsectSpeciesName name = InsectSpeciesName.of("potato-leafhopper");
 
             public static class Images {
 

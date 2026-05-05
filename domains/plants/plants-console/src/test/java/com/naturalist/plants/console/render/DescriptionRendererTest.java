@@ -83,7 +83,7 @@ class DescriptionRendererTest {
 
     @Test
     void crimsonCloverUniversityEmitsTaxonomicHeaderChip() {
-        String input = plantByName("crimson-clover").description().university();
+        String input = plantByName("trifolium-incarnatum").description().university();
 
         String rendered = renderer.render(input);
 
@@ -94,7 +94,7 @@ class DescriptionRendererTest {
 
     @Test
     void crimsonCloverUniversityRendersAtLeastThreeParagraphs() {
-        String input = plantByName("crimson-clover").description().university();
+        String input = plantByName("trifolium-incarnatum").description().university();
 
         String rendered = renderer.render(input);
 
@@ -104,7 +104,7 @@ class DescriptionRendererTest {
 
     @Test
     void crimsonCloverUniversityItalicisesBinomials() {
-        String input = plantByName("crimson-clover").description().university();
+        String input = plantByName("trifolium-incarnatum").description().university();
 
         String rendered = renderer.render(input);
 
@@ -117,7 +117,7 @@ class DescriptionRendererTest {
 
     @Test
     void whiteCloverUniversityLiftsNumberedEnumerationIntoOrderedList() {
-        String input = plantByName("white-clover").description().university();
+        String input = plantByName("trifolium-repens").description().university();
 
         String rendered = renderer.render(input);
 
@@ -129,7 +129,7 @@ class DescriptionRendererTest {
 
     @Test
     void whiteCloverUniversityKeepsBinomialItalicsInsideListItems() {
-        String input = plantByName("white-clover").description().university();
+        String input = plantByName("trifolium-repens").description().university();
 
         String rendered = renderer.render(input);
 

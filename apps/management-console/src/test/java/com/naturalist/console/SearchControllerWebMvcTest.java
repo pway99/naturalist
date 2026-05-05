@@ -52,7 +52,7 @@ class SearchControllerWebMvcTest {
                         .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Plants")))
-                .andExpect(content().string(containsString("/plants/california-pipevine")));
+                .andExpect(content().string(containsString("/plants/aristolochia-californica")));
     }
 
     @Test
@@ -60,8 +60,8 @@ class SearchControllerWebMvcTest {
         mockMvc.perform(get("/search").param("q", "trifolium")
                         .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("/plants/crimson-clover")))
-                .andExpect(content().string(containsString("/plants/white-clover")));
+                .andExpect(content().string(containsString("/plants/trifolium-incarnatum")))
+                .andExpect(content().string(containsString("/plants/trifolium-repens")));
     }
 
     @Test

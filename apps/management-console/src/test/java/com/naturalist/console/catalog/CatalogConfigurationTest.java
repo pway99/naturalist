@@ -44,10 +44,10 @@ class CatalogConfigurationTest {
 
     @Test
     void resolvesPlantBySlug() {
-        SearchResults results = catalog.search("california-pipevine");
+        SearchResults results = catalog.search("aristolochia-californica");
         assertThat(results.stream())
                 .anySatisfy(hit -> {
-                    assertThat(hit.target().name().value()).isEqualTo("california-pipevine");
+                    assertThat(hit.target().name().value()).isEqualTo("aristolochia-californica");
                     assertThat(hit.kind()).isEqualTo(MatchKind.EXACT_SLUG);
                 });
     }
@@ -57,7 +57,7 @@ class CatalogConfigurationTest {
         SearchResults results = catalog.search("Aristolochia");
         assertThat(results.stream())
                 .anySatisfy(hit ->
-                        assertThat(hit.target().name().value()).isEqualTo("california-pipevine"));
+                        assertThat(hit.target().name().value()).isEqualTo("aristolochia-californica"));
     }
 
     @Test
