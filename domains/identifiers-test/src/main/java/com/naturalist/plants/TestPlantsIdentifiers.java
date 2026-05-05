@@ -27,6 +27,76 @@ public class TestPlantsIdentifiers {
     private TestPlantsIdentifiers() {
     }
 
+    public static class PlantFamilies {
+
+        private PlantFamilies() {
+        }
+
+        /**
+         * Fictitious identifier for the {@link com.naturalist.plants.PlantFamily}
+         * scope — guaranteed absent from any catalog.
+         */
+        public static class NotFound {
+            public static final PlantFamilyName name = PlantFamilyName.of("unobtainium-aceae");
+        }
+
+        public static class Apiaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("apiaceae");
+        }
+
+        public static class Aristolochiaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("aristolochiaceae");
+        }
+
+        public static class Boraginaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("boraginaceae");
+        }
+
+        public static class Brassicaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("brassicaceae");
+        }
+
+        public static class Caryophyllaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("caryophyllaceae");
+        }
+
+        public static class Fabaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("fabaceae");
+        }
+
+        public static class Geraniaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("geraniaceae");
+        }
+
+        public static class Lamiaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("lamiaceae");
+        }
+
+        public static class Passifloraceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("passifloraceae");
+        }
+
+        public static class Poaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("poaceae");
+        }
+
+        public static class Rosaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("rosaceae");
+        }
+
+        public static class Rutaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("rutaceae");
+        }
+
+        public static class Solanaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("solanaceae");
+        }
+
+        public static class Violaceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("violaceae");
+        }
+    }
+
     public static class Plants {
 
         private Plants() {

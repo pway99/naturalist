@@ -1,0 +1,284 @@
+[
+  {
+    "name": "apiaceae",
+    "order": "Apiales",
+    "family": "Apiaceae",
+    "description": {
+      "preschool": "Plants in the carrot family have lots of tiny white flowers gathered into flat lacy umbrellas. Dill, parsley, and fennel are all in this family — they smell good and the bees and helpful flies love them.",
+      "elementary": "The carrot family is one of the gardener's best friends. The flat clusters of small flowers — called umbels — give parasitoid wasps and tachinid flies easy places to drink nectar. These tiny insects then go and protect the tomatoes from caterpillars and aphids. So planting dill or fennel near vegetables means more garden helpers.",
+      "secondary": "Apiaceae (Apiales) is a globally significant family of about 3,700 species, defined by its compound-umbel inflorescence. The flat, open architecture exposes nectar to small-mouthed parasitoids — Braconidae and Tachinidae cannot reach nectar in tubular flowers but readily feed at Apiaceae umbels. At Oak Vista, dill (Anethum graveolens) is the keystone Apiaceae representative; fennel and coriander are companion candidates. Many species also produce essential oils with herbivore-deterrent activity.",
+      "university": "Family Apiaceae (Apiales) — approximately 3,700 species in 466 genera, distributed worldwide. Inflorescence architecture: compound umbels with proximal involucral bracts, nectar exposed at the gynoecium base for short-tongued visitors. Functional role at Oak Vista: critical infrastructure for parasitoid Hymenoptera and Diptera retention; April–October flowering window aligns with Tachinidae and Braconidae adult emergence. Phytochemistry: rich in monoterpene essential oils (limonene, anethole, carvone) with documented oviposition-deterrent and antimicrobial activity. Border planting of Apiaceae adjacent to Solanaceae beds provides measurable improvement in parasitoid recruitment and aphid suppression."
+    },
+    "commonNames": [
+      {
+        "label": "Carrot Family",
+        "locale": "en"
+      },
+      {
+        "label": "Parsley Family",
+        "locale": "en"
+      },
+      {
+        "label": "Umbellifers",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "aristolochiaceae",
+    "order": "Piperales",
+    "family": "Aristolochiaceae",
+    "description": {
+      "preschool": "These special plants have flowers shaped like little pipes. California pipevine has dark, curly pipe-shaped flowers, and one special butterfly — the pipevine swallowtail — only lives on this plant family.",
+      "elementary": "Aristolochiaceae is the pipevine family. Its plants make a strong chemical that most insects cannot eat — but the pipevine swallowtail caterpillar can eat it and store it inside its body. That makes the caterpillar (and the butterfly) taste bad to birds, so birds leave them alone. The plant and the butterfly need each other.",
+      "secondary": "Aristolochiaceae are a small but ecologically distinctive family producing aristolochic acids — nephrotoxic alkaloids that deter most herbivores. A handful of specialist Lepidoptera, most notably Battus philenor in California, have evolved tolerance and sequester the toxins for their own defense. The family includes around 600 species worldwide; Aristolochia californica is the only Oak Vista representative, anchoring the keystone-host story for the pipevine swallowtail.",
+      "university": "Family Aristolochiaceae (Piperales) — approximately 600 species in 7 genera, mostly tropical and subtropical. At Oak Vista, Aristolochia californica is the sole representative and the only catalogued keystone larval host plant. Phytochemistry: aristolochic acids I and II accumulate in vegetative tissue throughout the season; concentration is highest in young leaves. Sequestration biology: Battus philenor larvae actively sequester aristolochic acids without metabolic detoxification, retaining the toxin load through pupation and adult emergence. Conservation implication: the entire pipevine swallowtail life cycle depends on Aristolochiaceae presence — no surrogate host plant family substitutes. Pesticide treatment of any Aristolochia californica plant breaks the keystone interaction."
+    },
+    "commonNames": [
+      {
+        "label": "Birthwort Family",
+        "locale": "en"
+      },
+      {
+        "label": "Pipevine Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "boraginaceae",
+    "order": "Boraginales",
+    "family": "Boraginaceae",
+    "description": {
+      "preschool": "Borage flowers are bright blue stars that hang upside down, and the leaves are fuzzy and prickly. Bees love these blue flowers, and you can sometimes eat the tiny flowers — they taste a little like cucumber.",
+      "elementary": "The borage family is famous for fuzzy leaves and bright star-shaped flowers, often blue or purple. Bees need a lot of nectar, and Boraginaceae plants make more nectar than most flowers, so the garden bees can drink and drink. They also have special nectar that helps bees produce more honey.",
+      "secondary": "Boraginaceae are characterised by scorpioid cymes — the flower clusters unfurl from a tightly coiled tip, opening blossoms one at a time. Most species are heavily pollen-bearing and prolific nectar producers. Borago officinalis at Oak Vista provides continuous nectar from May through October and is a critical resource for Apidae pollinators. Many Boraginaceae also produce pyrrolizidine alkaloids as a defense, but the alkaloids are sequestered separately from the nectar and pose no risk to garden visitors.",
+      "university": "Family Boraginaceae (Boraginales) — approximately 2,000 species in 146 genera. Inflorescence: scorpioid cyme; corolla typically rotate, salverform, or campanulate. Pollination biology: most species exhibit synchronous nectar production cued by daily temperature rise, with peak bee visitation in mid-morning. Phytochemistry: hepatotoxic pyrrolizidine alkaloids in vegetative tissue (a livestock concern in Echium and Symphytum; minimal in Borago officinalis foliage at culinary use rates). Functional role at Oak Vista: Borago officinalis underwrites apian foraging during midsummer when other floral resources transition; volunteer regeneration is encouraged."
+    },
+    "commonNames": [
+      {
+        "label": "Borage Family",
+        "locale": "en"
+      },
+      {
+        "label": "Forget-me-not Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "brassicaceae",
+    "order": "Brassicales",
+    "family": "Brassicaceae",
+    "description": {
+      "preschool": "These plants have four-petal flowers shaped like little crosses. Mustard, cabbage, broccoli, and radishes are all in this family. The flowers are usually yellow or white, and the leaves often taste a little spicy.",
+      "elementary": "Brassicaceae plants have a special chemical called mustard oil that makes them taste sharp and protects them from many bugs. Some pests have learned to live on Brassicaceae anyway — like cabbage moth caterpillars and aphids — but lots of beneficial insects come to the flowers for nectar. Sweet alyssum is a small low-growing Brassicaceae that flowers all year and supports hoverflies.",
+      "secondary": "Brassicaceae produce glucosinolates and the corresponding myrosinase enzyme — the 'mustard oil bomb' that releases biting isothiocyanates when plant tissue is damaged. The chemistry is a powerful generalist herbivore deterrent and a specialist herbivore attractant: Pieris butterflies, Plutella xylostella, and other Brassicaceae specialists use glucosinolates as host-finding cues. At Oak Vista, Lobularia maritima (sweet alyssum) flowers continuously and is an important hoverfly nectar resource.",
+      "university": "Family Brassicaceae (Brassicales) — approximately 4,000 species in 372 genera. Defining synapomorphy: glucosinolate–myrosinase defense system, biosynthetically linked to amino-acid precursors. Inflorescence: terminal raceme, typical four-petal cruciform corolla, distinctive siliqua/silicula fruit. Functional role at Oak Vista: Lobularia maritima provides year-round nectar at low height, supporting Syrphidae and small Hymenoptera; Raphanus sativus contributes within the cover-crop rotation. Specialist pest pressure (Pieris rapae, Plutella xylostella) is documented; the overall ecosystem balance remains positive given hoverfly recruitment from alyssum borders."
+    },
+    "commonNames": [
+      {
+        "label": "Mustard Family",
+        "locale": "en"
+      },
+      {
+        "label": "Cabbage Family",
+        "locale": "en"
+      },
+      {
+        "label": "Crucifers",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "caryophyllaceae",
+    "order": "Caryophyllales",
+    "family": "Caryophyllaceae",
+    "description": {
+      "preschool": "The pink family has flowers with five pretty notched petals, like little fringed dresses. Carnations and dianthus are in this family — they smell sweet and many of them are bright pink, white, or red.",
+      "elementary": "The pink family has lots of garden flowers that we grow for their colour and scent. Bees and butterflies visit the flowers for nectar. Some Caryophyllaceae plants in the wild are tiny, low-growing weeds; some in the garden are tall, fancy carnations. The family name comes from the notched 'pinked' shape of the petals — like pinking shears cut paper.",
+      "secondary": "Caryophyllaceae are recognised by opposite leaves, swollen stem nodes, and apopetalous flowers with characteristically notched petals. The family contains both showy ornamentals (Dianthus, Silene) and weedy species. At Oak Vista, Dianthus is the catalogued representative — primarily ornamental but contributing to floral diversity. The family is not a strong nectar producer and contributes more to ecosystem aesthetics than to pollinator support.",
+      "university": "Family Caryophyllaceae (Caryophyllales) — approximately 2,200 species in 86 genera. Morphology: opposite leaves, decussate phyllotaxy, swollen articulated nodes, calyx connate or distinct. Phytochemistry: triterpenoid saponins (some species), anthocyanin pigmentation in petals. Functional role at Oak Vista: Dianthus contributes to ornamental border floral display and minor pollinator support. The family does not warrant the keystone or biocontrol-infrastructure designation accorded to Apiaceae or Lamiaceae."
+    },
+    "commonNames": [
+      {
+        "label": "Pink Family",
+        "locale": "en"
+      },
+      {
+        "label": "Carnation Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "fabaceae",
+    "order": "Fabales",
+    "family": "Fabaceae",
+    "description": {
+      "preschool": "Pea and bean plants have funny pea-shaped flowers and leaves that fold up at night. Their roots have little bumps that put nutrients back into the soil — they help the soil get richer for the other plants growing nearby.",
+      "elementary": "Plants in the pea family work with tiny soil bacteria called rhizobia. The bacteria live in little bumps on the plant's roots and pull nitrogen out of the air, turning it into food the plant — and other plants nearby — can use. That is why we plant clover and peas as cover crops between vegetable seasons: the soil gets richer for free.",
+      "secondary": "Fabaceae form symbiotic associations with Rhizobium bacteria in root nodules, biologically fixing atmospheric N₂ into ammonium and ultimately plant-available nitrogen. The keel-and-banner papilionaceous corolla is a bee-pollinated structure across most Oak Vista representatives. Trifolium spp. (clover) function as nitrogen-fixing cover crops; Lathyrus odoratus (sweet pea) is ornamental. The family's role in low-input garden management is foundational.",
+      "university": "Family Fabaceae (Fabales) — approximately 19,500 species in 765 genera; third-largest plant family globally. Defining feature: symbiotic nitrogen fixation via Rhizobiales bacteria in root nodules; biological N₂ inputs at Oak Vista supplement compost and reduce fertiliser requirements. Inflorescence: papilionaceous corolla in subfamily Faboideae; characteristic legume fruit. Functional role at Oak Vista: cover-crop rotation between vegetable cycles relies on Trifolium incarnatum and T. repens for soil-N restoration; Lathyrus odoratus contributes ornamental and pollinator value. Inoculation with appropriate Rhizobium strains is recommended in beds where Fabaceae have not previously grown."
+    },
+    "commonNames": [
+      {
+        "label": "Pea Family",
+        "locale": "en"
+      },
+      {
+        "label": "Legume Family",
+        "locale": "en"
+      },
+      {
+        "label": "Bean Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "geraniaceae",
+    "order": "Geraniales",
+    "family": "Geraniaceae",
+    "description": {
+      "preschool": "Geranium leaves smell wonderful when you brush them — like roses, lemons, or mint. The flowers are pretty pink or white. People grow scented geraniums for the smell of their leaves more than for the flowers.",
+      "elementary": "Geranium leaves give off scents that some pest insects do not like — that is why they are often planted as a hedge near vegetables. The leaves contain natural oils that bother mosquitoes and certain beetles, so a row of scented geraniums can act as a soft barrier. The flowers also bring in pollinators.",
+      "secondary": "Geraniaceae include the scented Pelargonium species cultivated worldwide for essential-oil chemistry. Pelargonium graveolens at Oak Vista produces geraniol, citronellol, and linalool in glandular trichomes — semiochemicals with documented insect-repellent activity. The family is morphologically distinctive: actinomorphic flowers, palmate or pinnate leaves with prominent veining, and a beaked schizocarp fruit that releases seeds with hygroscopic awns.",
+      "university": "Family Geraniaceae (Geraniales) — approximately 800 species in 7 genera. Pelargonium is the dominant ornamental and essential-oil genus. Phytochemistry: monoterpene biosynthesis in glandular trichomes; geraniol/citronellol/linalool composition varies by cultivar and growing conditions. Functional role at Oak Vista: Pelargonium graveolens hedge planted along the southern border of the herb garden as ornamental and soft pest-deterrent infrastructure. Pollinator value is moderate — flowers visited by bees but not as a primary nectar source."
+    },
+    "commonNames": [
+      {
+        "label": "Geranium Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "lamiaceae",
+    "order": "Lamiales",
+    "family": "Lamiaceae",
+    "description": {
+      "preschool": "The mint family has square stems and leaves that smell delicious when you crush them — basil, oregano, sage, lavender, mint, and thyme are all part of this family. Bees love the flowers, and we love the leaves for cooking.",
+      "elementary": "Lamiaceae is the herb family — almost every cooking herb you can think of comes from it. The family has square stems (try feeling the corners on a basil or mint plant), opposite leaves, and aromatic oils that protect the plant from pests. Bees, hoverflies, and butterflies all visit Lamiaceae flowers for nectar.",
+      "secondary": "Lamiaceae are characterised by square stems, opposite-decussate leaves, bilabiate corollas, and rich aromatic chemistry. Glandular trichomes on stems and leaves produce monoterpenes (thymol, carvacrol, menthol, linalool, eucalyptol) with herbivore-deterrent and antimicrobial properties. The family's economic importance — culinary herbs, essential oils, ornamentals — is matched by ecological importance: continuous-bloom species like Salvia and Thymus underwrite mid-summer pollinator nutrition at Oak Vista.",
+      "university": "Family Lamiaceae (Lamiales) — approximately 7,200 species in 236 genera. Defining synapomorphies: tetragonal stem, opposite-decussate phyllotaxy, gynobasic style, four-lobed ovary. Phytochemistry: monoterpene biosynthesis dominates secondary metabolism; thymol from Thymus, carvacrol from Origanum, salvinorin and rosmarinic acid from Salvia. Functional role at Oak Vista: keystone family for pollinator infrastructure during the May–October flowering window; Thymus serpyllum carpets supply nectar to Apidae and Halictidae from spring through late summer; Salvia spp. extend the bloom into autumn."
+    },
+    "commonNames": [
+      {
+        "label": "Mint Family",
+        "locale": "en"
+      },
+      {
+        "label": "Sage Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "passifloraceae",
+    "order": "Malpighiales",
+    "family": "Passifloraceae",
+    "description": {
+      "preschool": "Passion flowers look like alien spaceships — they have bright wheels of petals and threads, and they climb up fences and trees on long curly tendrils. Some passion flowers grow into delicious fruit called passion fruit.",
+      "elementary": "Passifloraceae are climbing vines famous for their elaborate, complicated flowers. Each flower has multiple rings of structures — petals, sepals, threadlike filaments, and a central column — that act like a flag for specific pollinators. Big carpenter bees and hummingbirds are the main pollinators of large passion flowers. Some Passifloraceae produce edible fruit; others are grown just for the flower.",
+      "secondary": "Passifloraceae are tropical and subtropical climbing vines (mostly Passiflora) with morphologically elaborate flowers — perianths with 5 sepals plus 5 petals plus 1–5 series of corona filaments — and complex pollination ecologies often involving large bees, hummingbirds, or bats. At Oak Vista, Passiflora edulis (edible passion fruit) is the food-producing cultivar; ornamental Passiflora species are also grown. The family is the obligate larval host for Heliconius butterflies (not present at Oak Vista) — a textbook coevolution case study.",
+      "university": "Family Passifloraceae (Malpighiales) — approximately 750 species in 27 genera, mostly Passiflora; pantropical with Neotropical center of diversity. Floral architecture: extrapetalous corona filaments are a synapomorphy supporting specialised pollination; UV-reflective coloration directs visitor approach. Phytochemistry: cyanogenic glycosides in foliage are a documented herbivore defense and the basis for the Passiflora–Heliconius coevolutionary system. Functional role at Oak Vista: P. edulis as food crop with secondary ornamental and pollinator value; ornamental cultivars contribute large-flowered diversity to the trellised garden walls."
+    },
+    "commonNames": [
+      {
+        "label": "Passion Flower Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "poaceae",
+    "order": "Poales",
+    "family": "Poaceae",
+    "description": {
+      "preschool": "Grass is the most common plant in the world! Lawns are made of grass, and so are wheat, rice, and corn. Grasses do not have showy flowers — the wind carries their pollen, not insects.",
+      "elementary": "Poaceae is the grass family. Wind carries pollen from grass flowers, so the flowers do not need bright colors or sweet nectar. Grasses also have strong, fibrous root systems that hold soil together — that is why we plant them on slopes and use them as ground cover. At the garden, tall fescue covers the lawn and provides habitat for ground-nesting bees and beetles.",
+      "secondary": "Poaceae are the most economically important plant family — wheat, rice, maize, barley, and oats together feed most of humanity. Anatomy: parallel venation, sheathing leaves, jointed culms, reduced wind-pollinated flowers gathered into spikes or panicles. At Oak Vista, Festuca arundinacea (tall fescue) provides the lawn matrix, contributing ground cover, soil retention, and below-canopy habitat for ground-active arthropods including Carabidae and Lycosidae spiders.",
+      "university": "Family Poaceae (Poales) — approximately 12,000 species in 770 genera. Defining features: distichous leaves with ligule, hollow internodes, anemophilous (wind-pollinated) flowers in spikelets aggregated into spikes/panicles. Functional role at Oak Vista: Festuca arundinacea provides ground-cover lawn structure, supports Carabidae habitat through dense surface litter, and serves as the larval host for several Hesperiidae skippers. C3 photosynthetic pathway with cool-season activity peak; mowing height 75–100 mm preserves crown carbohydrate reserves through summer dormancy."
+    },
+    "commonNames": [
+      {
+        "label": "Grass Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "rosaceae",
+    "order": "Rosales",
+    "family": "Rosaceae",
+    "description": {
+      "preschool": "The rose family has lots of flowers we love — roses, apples, plums, peaches, strawberries, and cherries. Most have five petals, and many become delicious fruit after the flower fades.",
+      "elementary": "Rosaceae is the family of roses, apples, peaches, and strawberries — almost every fruit you eat (besides citrus and tropical ones) is in this family. The flowers feed bees in spring and the fruit feeds birds, mammals, and us in summer and fall. Stone fruits like peaches and plums are some of the earliest spring flowers in the garden.",
+      "secondary": "Rosaceae are a globally important family for orchard fruits — pomes (apples, pears), drupes (peaches, plums, cherries, almonds), and aggregate fruits (strawberries, raspberries). Most species have radially symmetrical 5-petalled flowers that are heavily bee-pollinated; spring bloom is a critical resource for emerging Apidae. Many Rosaceae produce cyanogenic glycosides in seeds and bark, expressed in the kernel as benzaldehyde. At Oak Vista, Prunus persica is the catalogued representative — a stone-fruit anchor of the spring pollinator calendar.",
+      "university": "Family Rosaceae (Rosales) — approximately 4,800 species in 91 genera. Floral architecture: hypanthium-bearing perigynous or epigynous flowers, typically pentamerous, abundant nectar production. Phytochemistry: cyanogenic glycosides (amygdalin, prunasin) in seeds and bark of Prunus and related genera — a herbivore deterrent and a regulatory consideration in commercial nut and seed handling. Functional role at Oak Vista: Prunus persica provides early-season pollinator nectar and stone-fruit harvest; orchard pruning cadence and disease management are documented in the orchard sub-context."
+    },
+    "commonNames": [
+      {
+        "label": "Rose Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "rutaceae",
+    "order": "Sapindales",
+    "family": "Rutaceae",
+    "description": {
+      "preschool": "Citrus trees give us oranges, lemons, limes, and grapefruit. The leaves and peels smell wonderfully fresh because they have tiny oil glands — try crushing a leaf or peeling an orange and breathing in!",
+      "elementary": "Rutaceae is the citrus family. The leaves and fruit peels are full of fragrant oils that protect the plant from insects. The flowers smell sweet and bring in lots of bees, and the fruit is full of vitamin C. Many citrus trees can flower and fruit at the same time, so they keep providing food for pollinators and people across the year.",
+      "secondary": "Rutaceae are dominated economically by Citrus species — orange, lemon, lime, grapefruit, mandarin — and define an aromatic family characterised by oil-gland punctations visible against the leaves and peel. Limonene, citral, linalool, and a host of other terpenoids accumulate in the schizolysigenous oil cavities. Citrus species at Oak Vista provide multi-season fruit production, year-round structural greenery, and sweet floral nectar that supports honey bees and native pollinators. Frost protection is the major management concern in northern Central Valley sites.",
+      "university": "Family Rutaceae (Sapindales) — approximately 1,800 species in 154 genera. Defining feature: schizolysigenous oil cavities in leaf parenchyma and fruit pericarp, producing characteristic citrus-aromatic monoterpenes. Phytochemistry: limonoid bitter principles, furanocoumarins (psoralens) in some species — a phototoxic concern in handling. At Oak Vista, Citrus species (cultivar identification deferred to the cultivar sub-context) provide perennial structural plantings, multi-season fruit yield, and mid-spring floral nectar. Microclimate considerations: Citrus tolerates Sacramento Valley summers without irrigation stress when sited on the warm south aspect; winter low-temperature exposure dictates protective covering during frost events."
+    },
+    "commonNames": [
+      {
+        "label": "Citrus Family",
+        "locale": "en"
+      },
+      {
+        "label": "Rue Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "solanaceae",
+    "order": "Solanales",
+    "family": "Solanaceae",
+    "description": {
+      "preschool": "The nightshade family includes tomatoes, peppers, potatoes, eggplant, and tobacco. Some nightshades — like tomatoes — are wonderful to eat. Others have plants with poisonous leaves, so we only eat the parts the plant says are safe (the ripe fruit, not the green leaves).",
+      "elementary": "Solanaceae plants have an interesting trick: the unripe parts (green leaves and stems) often have poisons in them, but the ripe fruit is safe and delicious. That is because the plant wants animals to eat the ripe fruit and spread the seeds, but does not want anyone chewing on the leaves before the fruit ripens. Tomatoes, peppers, and potatoes are all in this family.",
+      "secondary": "Solanaceae include some of the most consumed food crops worldwide alongside several of the most toxic ornamental and wild plants. The defining alkaloid chemistry — solanine in potato, tomatine in tomato leaves, capsaicin in chillies, atropine in deadly nightshade, nicotine in tobacco — provides species-specific herbivore defenses concentrated in vegetative tissue. Solanum lycopersicum at Oak Vista is the central food crop and the focal point of the entire pipevine pesticide-exclusion narrative: tomato yield depends on pollinators that depend on uncontaminated flowering borders.",
+      "university": "Family Solanaceae (Solanales) — approximately 2,700 species in 100 genera. Phytochemistry: tropane and steroidal alkaloids segregated by genus (atropine in Atropa, solasodine glycosides in Solanum, capsaicinoids in Capsicum). Solanum lycopersicum at Oak Vista anchors the food-production sub-system and is the dominant Solanaceae representative; cultivar diversity (Amish Paste, San Marzano, Sungold) is documented in the cultivar sub-context. Pollination biology: buzz-pollination by Bombus and Halictus bees significantly improves fruit set over wind-driven self-pollination; native bee retention via Lamiaceae and Apiaceae flowering borders is a load-bearing management decision."
+    },
+    "commonNames": [
+      {
+        "label": "Nightshade Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "violaceae",
+    "order": "Malpighiales",
+    "family": "Violaceae",
+    "description": {
+      "preschool": "Violets are tiny, sweet-smelling flowers usually purple, blue, or white that grow close to the ground. The flowers and leaves are sometimes used to flavour candy and decorate cakes. Some violets bloom in the early spring before most other flowers.",
+      "elementary": "Violaceae is the violet family. The little nodding purple flowers are some of the first to bloom in spring, giving early-emerging bees something to eat. Some Viola species also produce hidden flowers underground or under leaves that pollinate themselves — an extra way to make seeds even when the weather is bad.",
+      "secondary": "Violaceae are characterised by zygomorphic flowers with a distinctive nectar-bearing spur, often producing both showy chasmogamous (open) flowers and cleistogamous (closed, self-pollinating) flowers as insurance against pollination failure. Viola odorata blooms in late winter to early spring, providing nectar to early-emerging Apidae before most other flowering plants are active. Several Viola species are hosts to fritillary butterflies (Speyeria, Boloria) — not currently documented at Oak Vista but a candidate for habitat enhancement.",
+      "university": "Family Violaceae (Malpighiales) — approximately 800 species in 23 genera. Floral architecture: zygomorphic flower with spurred lower petal, often with nectar guides; cleistogamous reproductive insurance is widespread in Viola. Phytochemistry: cyclotides — small disulfide-bonded cyclic peptides — are a Violaceae synapomorphy with documented insect deterrence and emerging pharmaceutical interest. Functional role at Oak Vista: Viola odorata extends pollinator nectar availability into late winter, bridging the gap between earliest Pelargonium activity and full spring bloom; potential as a fritillary larval host warrants future ecological survey."
+    },
+    "commonNames": [
+      {
+        "label": "Violet Family",
+        "locale": "en"
+      }
+    ]
+  }
+]

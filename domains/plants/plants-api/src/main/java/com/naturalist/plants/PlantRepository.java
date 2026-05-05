@@ -8,4 +8,8 @@ class PlantRepository {
     protected interface PlantEntityRepository extends EntityRepository<PlantName, Plant> {
         List<PlantName> getAllPlantNames();
     }
+
+    protected interface PlantFamilyEntityRepository
+            extends EntityRepository<PlantFamilyName, PlantFamily> {
+    }
 }
