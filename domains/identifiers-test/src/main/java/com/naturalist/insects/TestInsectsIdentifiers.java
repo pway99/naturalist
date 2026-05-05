@@ -56,6 +56,52 @@ public class TestInsectsIdentifiers {
         public static class Hesperiidae {
             public static final InsectFamilyName name = InsectFamilyName.of("hesperiidae");
         }
+
+        public static class Halictidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("halictidae");
+        }
+
+        public static class Andrenidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("andrenidae");
+        }
+
+        public static class Chrysopidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("chrysopidae");
+        }
+
+        public static class Cicadellidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("cicadellidae");
+        }
+    }
+
+    public static class InsectGenus {
+
+        private InsectGenus() {
+        }
+
+        /**
+         * Fictitious identifier for the {@link com.naturalist.insects.InsectGenus}
+         * scope — guaranteed absent from any catalog.
+         */
+        public static class NotFound {
+            public static final InsectGenusName name = InsectGenusName.of("unobtainium-genus");
+        }
+
+        public static class Halictus {
+            public static final InsectGenusName name = InsectGenusName.of("halictus");
+        }
+
+        public static class Andrena {
+            public static final InsectGenusName name = InsectGenusName.of("andrena");
+        }
+
+        public static class Chrysoperla {
+            public static final InsectGenusName name = InsectGenusName.of("chrysoperla");
+        }
+
+        public static class Empoasca {
+            public static final InsectGenusName name = InsectGenusName.of("empoasca");
+        }
     }
 
     public static class InsectSpecies {

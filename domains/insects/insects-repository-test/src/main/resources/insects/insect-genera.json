@@ -1,0 +1,90 @@
+[
+  {
+    "name": "halictus",
+    "familyName": "halictidae",
+    "order": "Hymenoptera",
+    "family": "Halictidae",
+    "genus": "Halictus",
+    "description": {
+      "preschool": "Sweat bees are tiny shiny green or black bees. They love flowers and carry pollen from one flower to another, which helps our vegetables and fruit trees make seeds and fruit. They are gentle and very helpful.",
+      "elementary": "Sweat bees are small native bees named because some species are attracted to the salt in human sweat. In the garden, they are important pollinators — they carry pollen from flower to flower, which tomatoes and other plants need to make fruit. Unlike honey bees, sweat bees are solitary or live in small groups and nest in the soil. They are gentle and rarely sting. Seeing many sweat bees means the garden has healthy soil and good flowers.",
+      "secondary": "Halictus spp. (sweat bees) are primitively eusocial bees — colonies consist of a mated queen and a small number of female workers, persisting only through one season. They are ground-nesting, excavating burrows in bare or sparsely vegetated soil. As pollinators, Halictus are polylectic (broad flower generalists) and effective cross-pollinators of Solanaceae, Asteraceae, and Cucurbitaceae. They carry pollen in scopae on the hind legs rather than in corbiculae (as honey bees do), releasing more pollen during foraging, which improves cross-pollination efficiency. In tomato cultivation, buzz pollination (sonication) — vibrational pollen release — is performed by native bees including Halictus, but not by honey bees, making native bee communities essential for tomato yield.",
+      "university": "Genus Halictus (Hymenoptera: Halictidae) — primitively eusocial, ground-nesting pollinators. At Oak Vista, confirmed floral visitor to tomato, dill, and Asteraceae flowers, April 2026. Pollination ecology: Halictus performs buzz pollination (sonication) on tomato flowers — thoracic muscles decouple from wings and vibrate at 200–400 Hz, releasing pollen from poricidal anthers; honey bees are incapable of this behaviour. Nesting habitat: bare mineral soil or sparsely vegetated areas adjacent to flower sources — management implication: retain unvegetated soil patches at bed margins. Pesticide sensitivity: ground nests concentrate topically applied systemic insecticides; imidacloprid soil drenches are contraindicated in sweat bee habitat. Population density tracks floral resource availability — diversity of bloom periods across the season sustains populations."
+    },
+    "commonNames": [
+      {
+        "label": "Sweat Bee",
+        "locale": "en"
+      },
+      {
+        "label": "Native Sweat Bee",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "andrena",
+    "familyName": "andrenidae",
+    "order": "Hymenoptera",
+    "family": "Andrenidae",
+    "genus": "Andrena",
+    "description": {
+      "preschool": "Mining bees dig little tunnels in the ground to make their nests. They are fuzzy and carry pollen on their back legs to feed their babies. Each mother bee builds her own tunnel and is a gentle garden helper.",
+      "elementary": "Mining bees are solitary native bees that dig small burrows in the ground for nests. Each female works alone to build her nest, lay eggs, and collect pollen to feed her larva. Unlike honey bees, mining bees do not live in colonies or make honey. They are excellent pollinators for vegetable gardens, fruit trees, and flowering plants. Their burrows in bare soil look like tiny anthills — a sign of a healthy garden.",
+      "secondary": "Andrena spp. (mining bees) are solitary ground-nesting bees with one of the earliest spring flight periods of any California bee genus, making them critical pollinators for early-season crops and flowering plants when colony-founding queens of social species are not yet active. Females excavate vertical burrows 10–30 cm deep with lateral cells provisioned with pollen-nectar masses (bee bread). Andrena are oligolectic — some species are highly specialised on particular plant families, though many Oak Vista residents are generalist pollinators of Rosaceae, Solanaceae, and Asteraceae. The male emergence (often 1–2 weeks before females) and nuptial flight create a brief but visible spring emergence spectacle.",
+      "university": "Genus Andrena (Hymenoptera: Andrenidae) — solitary ground-nesting bees; >300 California species. At Oak Vista, documented in April 2026 foraging on early-season flowers and tomato blooms. Nesting biology: females excavate individual burrows in compacted bare soil; nest provisions consist of pollen-nectar masses (bee bread) oviposited directly and sealed per cell — no progressive provisioning. Pollen-host specialisation varies: some Andrena spp. are strictly oligolectic on Apiaceae or Asteraceae; generalist species forage across multiple plant families. Management relevance: bare soil patches are obligate nesting habitat — mulch coverage over the entire garden surface would eliminate nesting substrate and drive local population collapse. Andrena are strongly temperature-sensitive: flight activity ceases below 10°C; optimal foraging temperature 18–25°C."
+    },
+    "commonNames": [
+      {
+        "label": "Mining Bee",
+        "locale": "en"
+      },
+      {
+        "label": "Grey Mining Bee",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "chrysoperla",
+    "familyName": "chrysopidae",
+    "order": "Neuroptera",
+    "family": "Chrysopidae",
+    "genus": "Chrysoperla",
+    "description": {
+      "preschool": "The green lacewing is one of the most beautiful insects in the garden — a brilliant lime green body, long feathery antennae, and enormous wings that look like lace. Its babies, called Aphid Lions, eat the tiny green bugs that hurt our tomatoes. The mother lays her eggs on magical little silk stalks standing up like lollipops from the leaf.",
+      "elementary": "Green lacewings are delicate green insects with large net-veined wings and golden eyes. They are attracted to lights at night, which is how we first noticed one at Oak Vista. Their larvae are called Aphid Lions — fierce, spiky hunters that eat over 200 aphids per week. The larva even disguises itself by carrying dead insects and debris on its back. Adults drink nectar and pollen from flowers, making them both pest controllers as larvae and pollinators as adults — a rare double role.",
+      "secondary": "Chrysoperla (green lacewings) are neuropteran insects exhibiting one of the most striking examples of complete metamorphosis in beneficial insects. The adult is a polyphagous nectarivore and incidental pollinator; the larva (colloquially Aphid Lion) is a voracious generalist predator of soft-bodied arthropods — aphids, mites, thrips, whitefly, and small caterpillars — consuming 200+ prey items per week. Eggs are laid on silk stalks 10–15 mm tall, a remarkable adaptive structure: newly hatched larvae are themselves predatory, and the stalk delays sibling encounters until dispersal reduces cannibalism. Adults are attracted to artificial lights and to shallow open flowers — umbellifers (Apiaceae) and alyssum are the primary nectar sources at Oak Vista. The genus arrived at Oak Vista naturally, indicating habitat quality sufficient to support the adult nectar requirements.",
+      "university": "Genus Chrysoperla (Neuroptera: Chrysopidae) — confirmed natural colonist at Oak Vista, Spring 2026 (census observation #17). Larval ecology: obligate predator with suctorial mandibles delivering proteolytic saliva; prey includes Aphididae, Tetranychidae, Thysanoptera, Aleyrodidae, and lepidopteran eggs. Larval consumption rate: 200+ aphids/week (3 larval instars); camouflage behaviour — carrying debris and prey remains on dorsal setae-lined trough — is unique among Neuroptera and reduces predation risk from ants guarding aphid colonies. Egg morphology: stalked oviposition on silk pedicels prevents hatching larvae from consuming unhatched siblings before dispersal. Adult guild assignment: POLLINATOR (nectarivore visiting Apiaceae, Alyssum, Trifolium, Pelargonium) and PREDATOR (larval stage). Commercial release for IPM is well established; natural arrival to Oak Vista confirms habitat criterion satisfaction without augmentation. Warm Central Valley climate (Chico) supports multiple voltine cycles per season."
+    },
+    "commonNames": [
+      {
+        "label": "Green Lacewing",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "empoasca",
+    "familyName": "cicadellidae",
+    "order": "Hemiptera",
+    "family": "Cicadellidae",
+    "genus": "Empoasca",
+    "description": {
+      "preschool": "This tiny bright green insect is called a leafhopper. It jumps away very quickly if you get too close — faster than a flea! It drinks sap from plant leaves the way you drink through a straw. Too many of them can make the edges of leaves turn yellow and brown, which means the plant is not feeling well.",
+      "elementary": "Leafhoppers are named for the way they jump sideways in a flash when disturbed — up to 150 times their own body length in a single leap. The potato leafhopper is one of the most common garden pests on legumes and vegetables. It pierces plant stems and leaves to drink sap, and it also injects saliva that blocks the plant's plumbing, causing the edges of leaves to yellow and brown — gardeners call this hopperburn. A healthy garden with spiders, lacewings, and tiny parasitic wasps can keep leafhopper numbers under control without any sprays.",
+      "secondary": "Empoasca spp. (Cicadellidae: Typhlocybinae) are phloem-feeding hemipterans common on legumes, Solanaceae, and other broadleaf crops. Damage occurs through two mechanisms: direct removal of phloem contents during feeding, and salivary toxicosis — injection of enzymatic compounds that disrupt phloem sieve tube function and cause systemic chlorosis with marginal leaf necrosis (hopperburn). Adults jump or fly explosively on disturbance, making contact insecticide application largely ineffective. At population densities typical in a diverse garden supporting natural enemies, impact usually remains below economic threshold. Eggs are endophytically inserted into leaf and stem tissue; nymphs are wingless and pale green, easily mistaken for aphid crawlers. Primary natural enemies at Oak Vista are likely Anagrus spp. (Mymaridae) egg parasitoids, which are conserved by the crimson clover cover crop reservoir.",
+      "university": "Empoasca spp. (Hemiptera: Cicadellidae: Typhlocybinae) — photo-identified to genus by the characteristic wedge-shaped body profile and uniform bright-green coloration at Oak Vista, April 2026. Species determination requires specimen examination or COI barcoding; the California Central Valley hosts multiple Empoasca species including E. fabae (potato leafhopper) and E. filamenta. Feeding biology: stylet penetration targets phloem sieve elements via intercellular salivary sheath; saliva contains pectinase, cellulase, and proteinase activities that degrade middle lamella and trigger callose deposition in sieve plates, producing systemic hopperburn symptomatology independent of plant water status. Biological control: Anagrus spp. (Mymaridae) are obligate egg parasitoids of Cicadellidae achieving up to 80% parasitism in vineyards where floral resources support adult parasitoid nutrition — the crimson clover cover crop at Oak Vista provides equivalent habitat function. Population presence on Trifolium incarnatum is ecologically expected; the cover crop acts as a reservoir for both Empoasca and its natural enemies, with net food-web value exceeding suppression benefit of elimination."
+    },
+    "commonNames": [
+      {
+        "label": "Leafhopper",
+        "locale": "en"
+      },
+      {
+        "label": "Potato Leafhopper",
+        "locale": "en"
+      }
+    ]
+  }
+]

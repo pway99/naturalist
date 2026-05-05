@@ -30,7 +30,8 @@ public class InsectsTestContext {
         InsectRepository repository = InsectRepository.create(
                 new SpeciesRepositoryMock(db),
                 new InsectImageRepositoryMock(db),
-                new FamilyRepositoryMock(db));
+                new FamilyRepositoryMock(db),
+                new GenusRepositoryMock(db));
         InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository.speciesRepository);
         InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(repository.imageRepository);
         this.insectQuery = new InsectQueryImpl(speciesQuery, imageQuery);

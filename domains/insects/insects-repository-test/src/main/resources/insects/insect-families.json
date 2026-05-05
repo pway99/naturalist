@@ -100,5 +100,73 @@
         "locale": "en"
       }
     ]
+  },
+  {
+    "name": "halictidae",
+    "order": "Hymenoptera",
+    "family": "Halictidae",
+    "description": {
+      "preschool": "Sweat bees are small bees in this family — sometimes shiny green, sometimes plain black. They live in tunnels in the ground and visit flowers for pollen. Most are very gentle and rarely sting, even though one or two species are attracted to the salt in human sweat.",
+      "elementary": "Halictidae is a family of mostly small native bees. Many species nest in the ground in little tunnels, and some live in small social groups while others live alone. Halictid bees are some of the most important pollinators in the garden — they perform a special trick called buzz pollination that releases pollen from tomato and pepper flowers, something honey bees cannot do.",
+      "secondary": "Halictidae (sweat bees) is the second-largest family of bees globally, with social organization ranging from strictly solitary to primitively eusocial within a single genus. The family is dominated by ground-nesting species. Crucially for vegetable gardens, many Halictidae are buzz-pollination capable — thoracic vibration releases pollen from poricidal anthers in Solanaceae, a behaviour absent in honey bees. Maintaining bare-soil patches at bed margins preserves the obligate nesting substrate.",
+      "university": "Family Halictidae (Hymenoptera: Apoidea) — approximately 4,500 species globally. Defining synapomorphy: strongly recurved basal vein of the forewing. Social organization within Halictidae spans the entire spectrum from strict solitary nesting to primitively eusocial (queen plus seasonal female workers), with intra-generic variation in Halictus, Lasioglossum, and Augochlora. Buzz-pollination capability is widespread, making Halictidae infrastructure-critical for Solanum lycopersicum yield at Oak Vista. Pesticide management: ground nests aggregate systemic-insecticide residues; soil-applied imidacloprid is contraindicated within 5 m of bare-soil nesting aggregations."
+    },
+    "commonNames": [
+      {
+        "label": "Sweat Bee Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "andrenidae",
+    "order": "Hymenoptera",
+    "family": "Andrenidae",
+    "description": {
+      "preschool": "Mining bees in this family dig little tunnels in the ground to make their nests. Their entrances look like tiny anthills with a hole in the middle. They are some of the very first bees to fly in springtime when the early flowers open.",
+      "elementary": "Andrenidae is the family of mining bees — solitary native bees that nest in the soil. Each female digs her own burrow and works alone. They are early-spring pollinators, emerging when fruit trees and the first wildflowers bloom. The family does not produce honey and does not live in colonies, but it is one of the most important pollinator families for early-season gardens.",
+      "secondary": "Andrenidae are obligate ground-nesting solitary bees with characteristic facial fovea (depressed grooves between the eyes). Approximately 3,000 species globally, with Andrena dominating the diversity. Spring emergence often precedes Apidae and Halictidae by 2–3 weeks, making the family critical for early-season pollination of stone fruits (Rosaceae) and early Brassicaceae bloom. Pollen-host specialisation is widespread — some species are strictly oligolectic on a single plant family, others are broad generalists. Bare-soil patches with low compaction are obligate nesting habitat.",
+      "university": "Family Andrenidae (Hymenoptera: Apoidea) — approximately 3,000 species in 41 genera. Andrena is the dominant genus globally and at Oak Vista. Defining feature: facial fovea bordered with appressed pubescence in females, used in nest construction. Phenology: early-season activity (March–May at Oak Vista latitude) precedes most other bee families; flight cessation below 10°C ambient. Nesting biology: deep vertical burrows (10–30 cm) with lateral pollen-provisioned cells; mass-provisioning oviposition. Conservation relevance: bare mineral soil at bed margins must be retained — uniform mulch coverage eliminates nesting substrate."
+    },
+    "commonNames": [
+      {
+        "label": "Mining Bee Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "chrysopidae",
+    "order": "Neuroptera",
+    "family": "Chrysopidae",
+    "description": {
+      "preschool": "Green lacewings are delicate insects with see-through wings shaped like lace. The grown-up lacewing eats nectar from flowers, but its babies — called Aphid Lions — eat hundreds of aphids and other tiny pests that hurt our plants.",
+      "elementary": "Chrysopidae is the family of green lacewings. Adults are bright green with golden eyes and beautiful net-veined wings, and they drink nectar from flowers. Their larvae, called Aphid Lions, are fast little hunters that eat aphids, mites, thrips, and small caterpillars. The mother lacewing lays each egg on a thin silk stalk so the babies do not eat each other when they hatch.",
+      "secondary": "Chrysopidae (green lacewings) are neuropteran insects with a textbook example of complete metamorphosis driving a guild shift between life stages: adults are nectarivorous and incidentally pollinating, while larvae are voracious generalist predators consuming 200+ aphids per week. Egg morphology is diagnostic — long silk stalks elevate eggs above the leaf surface, an adaptive structure that delays sibling encounters at hatching and reduces cannibalism. Adults are attracted to artificial light and to flat, open flowers (Apiaceae, Brassicaceae) where the proboscis can reach exposed nectar.",
+      "university": "Family Chrysopidae (Neuroptera) — approximately 2,000 species in 90 genera; cosmopolitan distribution. Larval predation guild: generalist predators of soft-bodied arthropods (Aphididae, Tetranychidae, Thysanoptera, Aleyrodidae, lepidopteran eggs) using suctorial mandibles and proteolytic saliva. Adult guild: polyphagous nectarivore, occasional pollen-feeder; many species exhibit pollinator behaviour at open umbellate flowers. Stalked egg morphology is a family-defining ovipositional adaptation. At Oak Vista, Chrysoperla is the documented genus; natural colonisation indicates floral resource availability adequate for adult retention without commercial release. The family supports ecosystem stability through inter-stage dietary partitioning and is among the most reliable indicators of low-pesticide garden management."
+    },
+    "commonNames": [
+      {
+        "label": "Green Lacewing Family",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "cicadellidae",
+    "order": "Hemiptera",
+    "family": "Cicadellidae",
+    "description": {
+      "preschool": "Leafhoppers are tiny insects that jump away in a flash if you get too close. They drink sap from plant leaves like drinking through a straw. Some are bright green, some are striped, and a few are even patterned with bright colors.",
+      "elementary": "Cicadellidae is the family of leafhoppers — small jumping insects that drink plant sap. There are thousands of species, most of which feed on grasses, weeds, or wild plants and never come near vegetable gardens. A few species cause damage to crops, but a healthy garden with spiders, lacewings, and tiny parasitic wasps usually keeps leafhopper numbers under control without any pest sprays.",
+      "secondary": "Cicadellidae are the largest family of phloem-feeding hemipterans, with approximately 22,000 described species globally. Most species are host-specialist or oligophagous on grasses, herbaceous perennials, or specific shrubs; relatively few rise to economic pest status in vegetable production. The family includes important agricultural pests in Empoasca, Erythroneura, and Circulifer, but the overwhelming majority of species are food-web participants without significant management concern. Egg parasitoids (Anagrus spp., Mymaridae) provide robust natural control where adult parasitoid nutrition is supported by floral resources.",
+      "university": "Family Cicadellidae (Hemiptera: Membracoidea) — approximately 22,000 species in 40+ subfamilies. Defining feature: numerous stout setae on the hind tibiae arranged in two longitudinal rows. Feeding biology: stylet penetration to phloem sieve elements, salivary sheath formation; saliva enzymatic activity (pectinases, cellulases, proteinases) varies by subfamily and drives differential plant pathology. Vector competence: many Cicadellidae transmit phytoplasmas and plant viruses; vector species at Oak Vista latitude include Circulifer tenellus (beet leafhopper) and Macrosteles spp. Biological control infrastructure: Anagrus egg parasitoids achieve high parasitism rates where Apiaceae and Asteraceae floral borders provide adult parasitoid nectar."
+    },
+    "commonNames": [
+      {
+        "label": "Leafhopper Family",
+        "locale": "en"
+      }
+    ]
   }
 ]

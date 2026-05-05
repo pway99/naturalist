@@ -13,6 +13,7 @@ import java.util.List;
  *   <li>{@link SpeciesRepository} — {@link InsectSpecies} entities.</li>
  *   <li>{@link ImageRepository} — {@link InsectImage} entities.</li>
  *   <li>{@link FamilyRepository} — {@link InsectFamily} entities.</li>
+ *   <li>{@link GenusRepository} — {@link InsectGenus} entities.</li>
  * </ul>
  *
  * <p>This is a {@code class}, not an {@code interface}, so the nested repository
@@ -26,21 +27,25 @@ class InsectRepository {
     final SpeciesRepository speciesRepository;
     final ImageRepository imageRepository;
     final FamilyRepository familyRepository;
+    final GenusRepository genusRepository;
 
     private InsectRepository(
             SpeciesRepository speciesRepository,
             ImageRepository imageRepository,
-            FamilyRepository familyRepository) {
+            FamilyRepository familyRepository,
+            GenusRepository genusRepository) {
         this.speciesRepository = speciesRepository;
         this.imageRepository = imageRepository;
         this.familyRepository = familyRepository;
+        this.genusRepository = genusRepository;
     }
 
     static InsectRepository create(
             SpeciesRepository speciesRepository,
             ImageRepository imageRepository,
-            FamilyRepository familyRepository) {
-        return new InsectRepository(speciesRepository, imageRepository, familyRepository);
+            FamilyRepository familyRepository,
+            GenusRepository genusRepository) {
+        return new InsectRepository(speciesRepository, imageRepository, familyRepository, genusRepository);
     }
 
     SpeciesRepository speciesRepository() {
@@ -53,6 +58,10 @@ class InsectRepository {
 
     FamilyRepository familyRepository() {
         return familyRepository;
+    }
+
+    GenusRepository genusRepository() {
+        return genusRepository;
     }
 
     protected interface SpeciesRepository
@@ -70,5 +79,9 @@ class InsectRepository {
 
     protected interface FamilyRepository
             extends EntityRepository<InsectFamilyName, InsectFamily> {
+    }
+
+    protected interface GenusRepository
+            extends EntityRepository<InsectGenusName, InsectGenus> {
     }
 }
