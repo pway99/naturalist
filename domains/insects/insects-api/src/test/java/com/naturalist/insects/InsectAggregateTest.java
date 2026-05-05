@@ -4,9 +4,7 @@ import com.naturalist.RandomValue;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicOrder;
+import com.naturalist.taxonomy.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -43,13 +41,14 @@ class InsectAggregateTest {
                 new TaxonomicClassification(
                         TaxonomicOrder.of("Coleoptera"),
                         TaxonomicFamily.of("Coccinellidae"),
-                        null,
-                        null),
+                        TaxonomicGenus.of("Hippodamia"),
+                        TaxonomicSpecies.of("convergens")),
                 new Description(
                         RandomValue.string(),
                         RandomValue.string(),
                         RandomValue.string(),
                         RandomValue.string()),
+                Set.of(),
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
                 null, null,

@@ -37,7 +37,7 @@ public class TestInsectsIdentifiers {
         }
 
         public static class TachinidFly {
-            public static final InsectSpeciesName name = InsectSpeciesName.of("tachinid-fly");
+            public static final InsectSpeciesName name = InsectSpeciesName.of("trichopoda-pennipes");
 
             public static class LifeStages {
                 private LifeStages() {
@@ -51,7 +51,7 @@ public class TestInsectsIdentifiers {
         }
 
         public static class BraconidWasp {
-            public static final InsectSpeciesName name = InsectSpeciesName.of("braconid-wasp");
+            public static final InsectSpeciesName name = InsectSpeciesName.of("cotesia-congregata");
 
             public static class LifeStages {
                 private LifeStages() {
@@ -65,7 +65,7 @@ public class TestInsectsIdentifiers {
         }
 
         public static class PotatoLeafhopper {
-            public static final InsectSpeciesName name = InsectSpeciesName.of("potato-leafhopper");
+            public static final InsectSpeciesName name = InsectSpeciesName.of("empoasca-fabae");
 
             public static class Images {
 

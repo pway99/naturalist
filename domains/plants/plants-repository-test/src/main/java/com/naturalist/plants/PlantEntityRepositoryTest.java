@@ -69,7 +69,8 @@ interface PlantEntityRepositoryTest
                 new TaxonomicClassification(
                         TaxonomicOrder.of("Order" + RandomValue.string()),
                         TaxonomicFamily.of("Family" + RandomValue.string()),
-                        null, null
+                        TaxonomicGenus.of("Genus" + RandomValue.string()),
+                        TaxonomicSpecies.of("species" + RandomValue.string())
                 ),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),

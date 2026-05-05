@@ -1,7 +1,7 @@
 [
   {
     "name": "pipevine-pesticide-exclusion",
-    "plantName": "california-pipevine",
+    "plantName": "aristolochia-californica",
     "description": {
       "preschool": "Big special caterpillars live on this vine. We never spray near it so the caterpillars stay safe.",
       "elementary": "California Pipevine is the only food the Pipevine Swallowtail caterpillars eat. If anything that kills bugs gets on this plant, the caterpillars die and we lose our butterflies.",
@@ -13,7 +13,7 @@
   },
   {
     "name": "pipevine-larval-monitoring",
-    "plantName": "california-pipevine",
+    "plantName": "aristolochia-californica",
     "description": {
       "preschool": "Every week we look under the leaves for tiny orange dots and dark fuzzy caterpillars.",
       "elementary": "Once a week we check the Pipevine for butterfly eggs and caterpillars so we know if any garden work nearby has to wait.",
@@ -25,7 +25,7 @@
   },
   {
     "name": "borage-volunteer-thinning",
-    "plantName": "borage",
+    "plantName": "borago-officinalis",
     "description": {
       "preschool": "Borage makes lots of baby plants by itself. We pull some out so the others have room.",
       "elementary": "Borage drops seeds and grows back next year. We thin out the extras so each plant has space to bloom big and feed bees.",
@@ -37,7 +37,7 @@
   },
   {
     "name": "tomato-blossom-end-rot-prevention",
-    "plantName": "tomato",
+    "plantName": "solanum-lycopersicum",
     "description": {
       "preschool": "Tomato fruit can get a black bottom if it gets thirsty. We water carefully so that doesn't happen.",
       "elementary": "Blossom end rot is when the bottom of a tomato turns black because the plant couldn't get enough calcium. Steady watering and mulch keep the calcium flowing.",
@@ -49,7 +49,7 @@
   },
   {
     "name": "peach-leaf-curl-dormant-copper",
-    "plantName": "oh-henry-peach",
+    "plantName": "prunus-persica",
     "description": {
       "preschool": "In winter, when the peach tree is asleep, we paint it with copper to keep the leaves from getting curly and red.",
       "elementary": "Peach leaf curl is a fungus. We spray copper on the bare tree in winter, before any buds open, and that stops the fungus before it can reach new leaves.",
@@ -61,7 +61,7 @@
   },
   {
     "name": "tall-fescue-low-mow-protocol",
-    "plantName": "tall-fescue",
+    "plantName": "festuca-arundinacea",
     "description": {
       "preschool": "We let our grass grow tall so the tiny grass-bugs and butterflies can hide and grow up in it.",
       "elementary": "We never cut the lawn shorter than four inches. Long grass keeps skipper butterfly babies safe and helps the grass eat the leafhopper bugs that hurt the tomatoes.",

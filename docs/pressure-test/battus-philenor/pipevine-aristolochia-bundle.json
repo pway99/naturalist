@@ -23,7 +23,7 @@
   "insects": {
     "insectSpecies": [
       {
-        "name": "pipevine-swallowtail",
+        "name": "battus-philenor",
         "taxonomy": {
           "order": "Lepidoptera",
           "family": "Papilionidae",
@@ -285,7 +285,7 @@
         "gardenConnections": {
           "supportingPlants": [
             "aristolochia-californica",
-            "wild-radish",
+            "raphanus-sativus",
             "california-buckeye",
             "blue-dicks",
             "ithuriels-spear",
@@ -521,7 +521,7 @@
   "plants": {
     "plants": [
       {
-        "name": "california-pipevine",
+        "name": "aristolochia-californica",
         "taxonomy": {
           "order": "Piperales",
           "family": "Aristolochiaceae",
@@ -562,7 +562,7 @@
     "phytochemicalConstituents": [
       {
         "name": "california-pipevine-aristolochic-acid-i",
-        "plantName": "california-pipevine",
+        "plantName": "aristolochia-californica",
         "compoundName": "aristolochic-acid-i",
         "description": {
           "preschool": "The pipevine makes a special bitter chemical. It tastes terrible to most animals so they leave the leaves alone. The pipevine swallowtail caterpillar is the only one who can eat it, and it borrows the bitterness as armor.",
@@ -595,7 +595,7 @@
       },
       {
         "name": "california-pipevine-aristolochic-acid-ii",
-        "plantName": "california-pipevine",
+        "plantName": "aristolochia-californica",
         "compoundName": "aristolochic-acid-ii",
         "description": {
           "preschool": "Pipevine makes a second bitter chemical too, almost the same as the first one but a little weaker.",

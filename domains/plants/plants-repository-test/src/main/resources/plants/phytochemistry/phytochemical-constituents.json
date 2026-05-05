@@ -1,7 +1,7 @@
 [
   {
-    "name": "california-pipevine-aristolochic-acid-i",
-    "plantName": "california-pipevine",
+    "name": "aristolochia-californica-aristolochic-acid-i",
+    "plantName": "aristolochia-californica",
     "compoundName": "aristolochic-acid-i",
     "description": {
       "preschool": "The pipevine makes a special bitter chemical. It tastes terrible to most animals so they leave the leaves alone. The pipevine swallowtail caterpillar is the only one who can eat it, and it borrows the bitterness as armor.",
@@ -33,8 +33,8 @@
     "notes": "Sequestered by Pipevine Swallowtail (Battus philenor hirsuta) larvae for chemical defense. Concentration in foliage rises with new leaf flush in spring. Handle the plant only with gloves; do not compost prunings near food crops."
   },
   {
-    "name": "california-pipevine-aristolochic-acid-ii",
-    "plantName": "california-pipevine",
+    "name": "aristolochia-californica-aristolochic-acid-ii",
+    "plantName": "aristolochia-californica",
     "compoundName": "aristolochic-acid-ii",
     "description": {
       "preschool": "Pipevine makes a second bitter chemical too, almost the same as the first one but a little weaker.",
@@ -66,8 +66,8 @@
     "notes": "Co-occurs with aristolochic acid I but at lower titer. Same handling precautions apply — toxicity is additive in mammalian systems."
   },
   {
-    "name": "wild-violet-oxalic-acid",
-    "plantName": "wild-violet",
+    "name": "viola-odorata-oxalic-acid",
+    "plantName": "viola-odorata",
     "compoundName": "oxalic-acid",
     "description": {
       "preschool": "Wild violet leaves have tiny invisible needles inside them. The needles taste bad and can hurt an animal's mouth, so most animals leave the violets alone.",

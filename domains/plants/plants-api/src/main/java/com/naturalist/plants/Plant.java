@@ -5,7 +5,10 @@ import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
+import com.naturalist.taxonomy.LinnaeanSpecies;
 import com.naturalist.taxonomy.TaxonomicClassification;
+import com.naturalist.taxonomy.TaxonomicGenus;
+import com.naturalist.taxonomy.TaxonomicSpecies;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -52,7 +55,17 @@ public record Plant(
         PlantLifeForm lifeForm,
         Set<Bioregion> nativeBioregions,
         Set<CommonName> commonNames
-) implements NamedEntity<PlantName> {
+) implements NamedEntity<PlantName>, LinnaeanSpecies {
+
+    @Override
+    public TaxonomicGenus genus() {
+        return taxonomy.genus();
+    }
+
+    @Override
+    public TaxonomicSpecies species() {
+        return taxonomy.species();
+    }
 
     /**
      * Whether this plant is a confirmed keystone host — an obligate larval

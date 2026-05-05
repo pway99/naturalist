@@ -197,7 +197,13 @@
       "ecologicalRole": "Lepidopteran parasitoid; garden biological pest-control agent.",
       "lifespan": "Approximately two to four weeks.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Tachinid Fly",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "braconid-wasp",
@@ -394,7 +400,13 @@
       "ecologicalRole": "Aphid and caterpillar parasitoid; keystone biological-control group.",
       "lifespan": "Adults typically one to three weeks.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Braconid Wasp",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "hoverfly",
@@ -596,10 +608,16 @@
       "ecologicalRole": "Pollinator (adult) and aphid-predator (larva) — dual-guild keystone.",
       "lifespan": "Two to four weeks.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Hoverfly",
+        "locale": "en"
+      }
+    ]
   },
   {
-    "name": "convergent-ladybug",
+    "name": "hippodamia-convergens",
     "taxonomy": {
       "order": "Coleoptera",
       "family": "Coccinellidae",
@@ -618,7 +636,7 @@
     "beneficial": true,
     "sightingNotes": "Adults and larvae confirmed at Oak Vista April 2026. Breeding population established — do not release purchased overwintered adults. Preserve aphid refugia on border plants to maintain prey base.",
     "egg": {
-      "name": "convergent-ladybug-egg",
+      "name": "hippodamia-convergens-egg",
       "phenology": {
         "windows": [
           {
@@ -659,7 +677,7 @@
       "kind": "EGG"
     },
     "larva": {
-      "name": "convergent-ladybug-larva",
+      "name": "hippodamia-convergens-larva",
       "phenology": {
         "windows": [
           {
@@ -702,7 +720,7 @@
       "kind": "LARVA"
     },
     "pupa": {
-      "name": "convergent-ladybug-pupa",
+      "name": "hippodamia-convergens-pupa",
       "phenology": {
         "windows": [
           {
@@ -743,7 +761,7 @@
       "kind": "PUPA"
     },
     "adult": {
-      "name": "convergent-ladybug-adult",
+      "name": "hippodamia-convergens-adult",
       "phenology": {
         "windows": [
           {
@@ -790,7 +808,13 @@
       "ecologicalRole": "Aphid predator; keystone garden biological-control species.",
       "lifespan": "Approximately 4–8 weeks active; overwintering adults live 6–9 months total.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Convergent Ladybug",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "ground-beetle",
@@ -984,7 +1008,13 @@
       "ecologicalRole": "Ground-surface generalist predator; in some genera also a weed-seed consumer. Keystone soil-surface invertebrate community member.",
       "lifespan": "Many species 1–3 years; unusually long for beetles.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Ground Beetle",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "crane-fly",
@@ -1183,10 +1213,16 @@
       "ecologicalRole": "Adult is primarily reproductive stage; substantial prey base for bats, birds, and predatory invertebrates.",
       "lifespan": "Typically 3–10 days.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Crane Fly",
+        "locale": "en"
+      }
+    ]
   },
   {
-    "name": "field-roach",
+    "name": "blattella-vaga",
     "taxonomy": {
       "order": "Blattodea",
       "family": "Ectobiidae",
@@ -1206,7 +1242,7 @@
     "beneficial": true,
     "sightingNotes": "Confirmed Oak Vista resident; found under flat stones and straw mulch. Strictly outdoor species — no indoor control warranted. Population supports garden lizard and toad activity.",
     "egg": {
-      "name": "field-roach-egg",
+      "name": "blattella-vaga-egg",
       "phenology": {
         "windows": [
           {
@@ -1251,7 +1287,7 @@
     "larva": null,
     "pupa": null,
     "adult": {
-      "name": "field-roach-adult",
+      "name": "blattella-vaga-adult",
       "phenology": {
         "windows": [
           {
@@ -1293,7 +1329,13 @@
       "ecologicalRole": "Ground-surface detritivore; nutrient cycling; invertebrate-community prey base for Carabidae and spiders.",
       "lifespan": "Adults typically 2–6 months; some overwintering adults up to a year.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Field Roach",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "native-sweat-bee",
@@ -1492,7 +1534,13 @@
       "ecologicalRole": "Native generalist pollinator; cool-weather and small-flower specialist complement to Apis.",
       "lifespan": "Foundress adults overwinter (8–10 months including diapause); worker caste adults 4–8 weeks.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Native Sweat Bee",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "grey-mining-bee",
@@ -1690,10 +1738,16 @@
       "ecologicalRole": "Early-spring pollinator specialist; critical for early-flowering wild and orchard plants before Apis activity peaks.",
       "lifespan": "Adult females 4–6 weeks; males shorter.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Grey Mining Bee",
+        "locale": "en"
+      }
+    ]
   },
   {
-    "name": "valley-carpenter-bee",
+    "name": "xylocopa-varipuncta",
     "taxonomy": {
       "order": "Hymenoptera",
       "family": "Apidae",
@@ -1712,7 +1766,7 @@
     "beneficial": true,
     "sightingNotes": "Abundant at Oak Vista April 2026 — multiple males and females observed foraging on tomato, sage, and dill flowers. Nesting in old fence post at property edge confirmed. Key pollinator for tomato buzz pollination.",
     "egg": {
-      "name": "valley-carpenter-bee-egg",
+      "name": "xylocopa-varipuncta-egg",
       "phenology": {
         "windows": [
           {
@@ -1755,7 +1809,7 @@
       "kind": "EGG"
     },
     "larva": {
-      "name": "valley-carpenter-bee-larva",
+      "name": "xylocopa-varipuncta-larva",
       "phenology": {
         "windows": [
           {
@@ -1800,7 +1854,7 @@
       "kind": "LARVA"
     },
     "pupa": {
-      "name": "valley-carpenter-bee-pupa",
+      "name": "xylocopa-varipuncta-pupa",
       "phenology": {
         "windows": [
           {
@@ -1843,7 +1897,7 @@
       "kind": "PUPA"
     },
     "adult": {
-      "name": "valley-carpenter-bee-adult",
+      "name": "xylocopa-varipuncta-adult",
       "phenology": {
         "windows": [
           {
@@ -1893,7 +1947,13 @@
       "ecologicalRole": "Large-bodied pollinator specialist — deep-corolla flowers, heat-tolerant foraging when smaller bees are thermally limited.",
       "lifespan": "Adults long-lived: 3–10 months including overwintering.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Valley Carpenter Bee",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "skipper-butterfly",
@@ -2092,10 +2152,16 @@
       "ecologicalRole": "Grassland pollinator; keystone lepidopteran indicator of intact grassland ecology.",
       "lifespan": "Typically 2–4 weeks.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Skipper Butterfly",
+        "locale": "en"
+      }
+    ]
   },
   {
-    "name": "painted-lady",
+    "name": "vanessa-cardui",
     "taxonomy": {
       "order": "Lepidoptera",
       "family": "Nymphalidae",
@@ -2115,7 +2181,7 @@
     "beneficial": true,
     "sightingNotes": "Observed Oak Vista April 2026 during exceptional Central Valley spring migration event. Adults feeding on dill, sage, and Asteraceae border flowers. Migratory population — not a breeding resident.",
     "egg": {
-      "name": "painted-lady-egg",
+      "name": "vanessa-cardui-egg",
       "phenology": {
         "windows": [
           {
@@ -2158,7 +2224,7 @@
       "kind": "EGG"
     },
     "larva": {
-      "name": "painted-lady-larva",
+      "name": "vanessa-cardui-larva",
       "phenology": {
         "windows": [
           {
@@ -2209,7 +2275,7 @@
       "kind": "LARVA"
     },
     "pupa": {
-      "name": "painted-lady-pupa",
+      "name": "vanessa-cardui-pupa",
       "phenology": {
         "windows": [
           {
@@ -2252,7 +2318,7 @@
       "kind": "PUPA"
     },
     "adult": {
-      "name": "painted-lady-adult",
+      "name": "vanessa-cardui-adult",
       "phenology": {
         "windows": [
           {
@@ -2303,7 +2369,13 @@
       "ecologicalRole": "Migratory pollinator and keystone migrational-lepidopteran ecosystem-connector across continents.",
       "lifespan": "Migratory adults 4–6 weeks; summer-generation adults 2–4 weeks.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Painted Lady",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "green-lacewing",
@@ -2506,10 +2578,16 @@
       "ecologicalRole": "Adult pollinator and pollen-feeder; reproductive stage of a keystone predatory family.",
       "lifespan": "Typically 4–6 weeks; overwintering adults longer.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Green Lacewing",
+        "locale": "en"
+      }
+    ]
   },
   {
-    "name": "pipevine-swallowtail",
+    "name": "battus-philenor",
     "taxonomy": {
       "order": "Lepidoptera",
       "family": "Papilionidae",
@@ -2538,7 +2616,7 @@
       ]
     },
     "egg": {
-      "name": "pipevine-swallowtail-egg",
+      "name": "battus-philenor-egg",
       "phenology": {
         "windows": [
           {
@@ -2583,7 +2661,7 @@
       "kind": "EGG"
     },
     "larva": {
-      "name": "pipevine-swallowtail-larva",
+      "name": "battus-philenor-larva",
       "phenology": {
         "windows": [
           {
@@ -2632,7 +2710,7 @@
       "kind": "LARVA"
     },
     "pupa": {
-      "name": "pipevine-swallowtail-pupa",
+      "name": "battus-philenor-pupa",
       "phenology": {
         "windows": [
           {
@@ -2684,7 +2762,7 @@
       "kind": "PUPA"
     },
     "adult": {
-      "name": "pipevine-swallowtail-adult",
+      "name": "battus-philenor-adult",
       "phenology": {
         "windows": [
           {
@@ -2790,7 +2868,13 @@
       "indicatorValue": "A breeding population indicates intact Aristolochia californica with sufficient young, tender growing shoots for oviposition and an adequate adult nectar community carrying the species from late winter through summer.",
       "foodWebPosition": "Primary consumer highly specialised to a single host-plant genus (Aristolochia); chemically defended at every life stage, occupying a near-predator-free position in the vertebrate food web. Functions as a Müllerian/Batesian model across much of its range, though no mimics have evolved in California.",
       "regionalContext": "California populations are treated as subspecies hirsuta, isolated from the nearest populations in the desert Southwest and not currently exchanging genes with them. Molecular-genetic evidence refutes the hypothesis of ancient Tertiary relict status — Battus philenor arrived in California relatively recently (late Quaternary), probably from farther east. The absence of local mimics in the California range, despite its being the species' most abundant portion of range, is further evidence of recent arrival — there has not been time for mimics to evolve here. Resident and sedentary rather than migratory. Host plant typically stops growing in June and ceases providing oviposition sites thereafter; off-season breeding is triggered only by post-catastrophe host regeneration."
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Pipevine Swallowtail",
+        "locale": "en"
+      }
+    ]
   },
   {
     "name": "potato-leafhopper",
@@ -2895,10 +2979,16 @@
       "ecologicalRole": "Herbaceous phloem-feeding hemipteran; agronomically significant pest on alfalfa, beans, potato, and many garden vegetables.",
       "lifespan": "Adults 2–4 weeks.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Potato Leafhopper",
+        "locale": "en"
+      }
+    ]
   },
   {
-    "name": "orange-sulphur",
+    "name": "colias-eurytheme",
     "taxonomy": {
       "order": "Lepidoptera",
       "family": "Pieridae",
@@ -2917,7 +3007,7 @@
     "beneficial": true,
     "sightingNotes": "Single individual photographed nectaring on wild radish (Raphanus sativus) flowers at Oak Vista, April 17 2026. Species-level identification confident based on orange-yellow wing coloration, dark forewing borders, and dark discal spot on hindwing — diagnostic for C. eurytheme. Crimson clover cover crop provides potential larval host plant (Fabaceae). Six photos taken from multiple angles.",
     "egg": {
-      "name": "orange-sulphur-egg",
+      "name": "colias-eurytheme-egg",
       "phenology": {
         "windows": [
           {
@@ -2958,7 +3048,7 @@
       "kind": "EGG"
     },
     "larva": {
-      "name": "orange-sulphur-larva",
+      "name": "colias-eurytheme-larva",
       "phenology": {
         "windows": [
           {
@@ -3006,7 +3096,7 @@
       "kind": "LARVA"
     },
     "pupa": {
-      "name": "orange-sulphur-pupa",
+      "name": "colias-eurytheme-pupa",
       "phenology": {
         "windows": [
           {
@@ -3047,7 +3137,7 @@
       "kind": "PUPA"
     },
     "adult": {
-      "name": "orange-sulphur-adult",
+      "name": "colias-eurytheme-adult",
       "phenology": {
         "windows": [
           {
@@ -3095,6 +3185,12 @@
       "ecologicalRole": "Fabaceae-dependent pollinator; abundant generalist herbaceous visitor.",
       "lifespan": "Adults 2–4 weeks.",
       "kind": "ADULT"
-    }
+    },
+    "commonNames": [
+      {
+        "label": "Orange Sulphur",
+        "locale": "en"
+      }
+    ]
   }
 ]

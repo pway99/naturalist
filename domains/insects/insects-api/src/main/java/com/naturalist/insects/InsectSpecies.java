@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.ddd.AggregateRoot;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.ValueObject;
+import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.habitat.HabitatProfile;
 import com.naturalist.insects.lifestage.AdultStage;
@@ -10,7 +11,10 @@ import com.naturalist.insects.lifestage.EggStage;
 import com.naturalist.insects.lifestage.LarvaStage;
 import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
+import com.naturalist.taxonomy.LinnaeanSpecies;
 import com.naturalist.taxonomy.TaxonomicClassification;
+import com.naturalist.taxonomy.TaxonomicGenus;
+import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -100,6 +104,7 @@ public record InsectSpecies(
         InsectSpeciesName name,
         TaxonomicClassification taxonomy,
         Description description,
+        Set<CommonName> commonNames,
         Set<FunctionalGuild> guilds,
         boolean beneficial,
         @Nullable String sightingNotes,
@@ -115,7 +120,17 @@ public record InsectSpecies(
         @Nullable GardenConnections gardenConnections,
         @Nullable BeneficialProfile beneficialProfile,
         @Nullable EcologicalSignificance ecologicalSignificance
-) implements NamedEntity<InsectSpeciesName> {
+) implements NamedEntity<InsectSpeciesName>, LinnaeanSpecies {
+
+    @Override
+    public TaxonomicGenus genus() {
+        return taxonomy.genus();
+    }
+
+    @Override
+    public TaxonomicSpecies species() {
+        return taxonomy.species();
+    }
 
     /**
      * Whether this species performs pollination services at Oak Vista.
@@ -152,6 +167,7 @@ public record InsectSpecies(
             i.entityName(name, "name")
                     .valueObject(taxonomy, "taxonomy")
                     .valueObject(description, "description")
+                    .notNull(commonNames, "commonNames")
                     .notNull(this, InsectSpecies::guilds, "guilds")
                     .valueObjectOrNull(this, InsectSpecies::identificationFeatures, "identificationFeatures")
                     .valueObjectOrNull(this, InsectSpecies::chemicalDefense, "chemicalDefense")

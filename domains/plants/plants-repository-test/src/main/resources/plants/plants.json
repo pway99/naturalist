@@ -1,6 +1,6 @@
 [
   {
-    "name": "california-pipevine",
+    "name": "aristolochia-californica",
     "taxonomy": {
       "order": "Piperales",
       "family": "Aristolochiaceae",
@@ -38,7 +38,7 @@
     ]
   },
   {
-    "name": "scented-geranium",
+    "name": "pelargonium-graveolens",
     "taxonomy": {
       "order": "Geraniales",
       "family": "Geraniaceae",
@@ -69,7 +69,7 @@
     ]
   },
   {
-    "name": "crimson-clover",
+    "name": "trifolium-incarnatum",
     "taxonomy": {
       "order": "Fabales",
       "family": "Fabaceae",
@@ -101,7 +101,7 @@
     ]
   },
   {
-    "name": "white-clover",
+    "name": "trifolium-repens",
     "taxonomy": {
       "order": "Fabales",
       "family": "Fabaceae",
@@ -139,7 +139,7 @@
     ]
   },
   {
-    "name": "sweet-alyssum",
+    "name": "lobularia-maritima",
     "taxonomy": {
       "order": "Brassicales",
       "family": "Brassicaceae",
@@ -161,7 +161,7 @@
     "commonNames": []
   },
   {
-    "name": "dill",
+    "name": "anethum-graveolens",
     "taxonomy": {
       "order": "Apiales",
       "family": "Apiaceae",
@@ -183,7 +183,7 @@
     "commonNames": []
   },
   {
-    "name": "borage",
+    "name": "borago-officinalis",
     "taxonomy": {
       "order": "Boraginales",
       "family": "Boraginaceae",
@@ -204,7 +204,7 @@
     "commonNames": []
   },
   {
-    "name": "wild-violet",
+    "name": "viola-odorata",
     "taxonomy": {
       "order": "Malpighiales",
       "family": "Violaceae",
@@ -249,7 +249,7 @@
     "commonNames": []
   },
   {
-    "name": "sweet-pea",
+    "name": "lathyrus-odoratus",
     "taxonomy": {
       "order": "Fabales",
       "family": "Fabaceae",
@@ -272,7 +272,7 @@
     "commonNames": []
   },
   {
-    "name": "tall-fescue",
+    "name": "festuca-arundinacea",
     "taxonomy": {
       "order": "Poales",
       "family": "Poaceae",
@@ -294,7 +294,7 @@
     "commonNames": []
   },
   {
-    "name": "tomato",
+    "name": "solanum-lycopersicum",
     "taxonomy": {
       "order": "Solanales",
       "family": "Solanaceae",
@@ -404,7 +404,7 @@
     "commonNames": []
   },
   {
-    "name": "oh-henry-peach",
+    "name": "prunus-persica",
     "taxonomy": {
       "order": "Rosales",
       "family": "Rosaceae",
@@ -448,7 +448,7 @@
     "commonNames": []
   },
   {
-    "name": "wild-radish",
+    "name": "raphanus-sativus",
     "taxonomy": {
       "order": "Brassicales",
       "family": "Brassicaceae",

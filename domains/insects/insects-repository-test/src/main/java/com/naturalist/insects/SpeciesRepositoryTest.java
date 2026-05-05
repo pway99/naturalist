@@ -4,9 +4,7 @@ import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicOrder;
+import com.naturalist.taxonomy.*;
 
 import java.util.List;
 import java.util.Set;
@@ -46,6 +44,7 @@ interface SpeciesRepositoryTest
                 InsectSpeciesName.of("test-species-xx"),
                 taxonomy(),
                 description(),
+                Set.of(),
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
                 null, null,
@@ -59,6 +58,7 @@ interface SpeciesRepositoryTest
                 InsectSpeciesName.of("test-ghost-xx"),
                 taxonomy(),
                 description(),
+                Set.of(),
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
                 null, null,
@@ -72,6 +72,7 @@ interface SpeciesRepositoryTest
                 original.name(),
                 taxonomy(),
                 description(),
+                Set.of(),
                 Set.of(FunctionalGuild.POLLINATOR, FunctionalGuild.DECOMPOSER),
                 true,
                 RandomValue.string(),
@@ -98,7 +99,8 @@ interface SpeciesRepositoryTest
         return new TaxonomicClassification(
                 TaxonomicOrder.of("Coleoptera"),
                 TaxonomicFamily.of("Carabidae"),
-                null, null);
+                TaxonomicGenus.of("Carabus"),
+                TaxonomicSpecies.of("nemoralis"));
     }
 
     private static Description description() {

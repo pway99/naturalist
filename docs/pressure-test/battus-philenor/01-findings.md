@@ -206,21 +206,65 @@ shape.
 }
 ```
 
-**Closure status.** OPEN.
+**Closure status.** CONTINGENT (depends on FU-1 — pending-organism mechanism).
 
-Closure requires three things, in order:
+Closure work delivered in this session:
 
-1. `kernels/taxonomy` grows `LinnaeanSpecies` and `LinnaeanSubspecies`
-   interfaces, with the slug-derivation default methods.
-2. `Plant` and `InsectSpecies` implement `LinnaeanSpecies`. `InsectSpecies`
-   gains `Set<CommonName>`.
-3. The migration runs in a single batch; bundle JSON and catalog JSON
-   express the swallowtail story under the new slugs without referential
-   breaks.
+1. `kernels/taxonomy` grew `LinnaeanSpecies` and `LinnaeanSubspecies`
+   interfaces with slug-derivation default methods. Supporting type
+   `TaxonomicSubspecies` and helper `TaxonomicSlugs` ship alongside.
+2. `Plant` and `InsectSpecies` implement `LinnaeanSpecies`.
+   `InsectSpecies` gained `Set<CommonName> commonNames` as a new
+   record component.
+3. The migration ran as a single batch over the catalog data. Six insect
+   species (`battus-philenor` and five others with species-level taxonomy)
+   and 13 plants migrated to binomial slugs. Cross-references in
+   `LarvaStage.hostPlants`, `AdultStage.nectarSources`,
+   `PhytochemicalConstituent.plantName`, `Cultivar.plantName`, and
+   `PlantProgram.plantName` updated in lockstep.
 
-This finding is closed when (a) language is proposed (done above),
-(b) Pat materializes 1–2 in Java, and (c) the bundle and catalog data
-satisfy 3.
+What did **not** ship in this session, and why:
+
+- **Genus/species non-null invariant tightening on `Plant` and
+  `InsectSpecies`** is deferred. Ten insect species and five plants in
+  the catalog carry partial taxonomy (genus-only, family-only, or fully
+  unresolved) — `green-lacewing`, `tachinid-fly`, `creeping-thyme`, and
+  the others identified during the Phase 1b sweep. Per Pat's session
+  decision (under-identified organisms become "pending organisms"),
+  these records continue to load with their original vernacular slugs
+  and partial taxonomy. Tightening the contract here would orphan them
+  before the pending-organism mechanism (`FU-1`) lands. Closure of
+  `A1-F1` therefore waits on `FU-1` — at which point the invariant
+  tightens and either (a) pending records migrate to a separate
+  aggregate or (b) `LinnaeanSpecies` accepts a provisional epithet form.
+- **Slug↔name consistency invariant** (`name.value().equals(binomialSlug())`)
+  is not enforced at the record level. The fluent `Constraints` builder
+  has no boolean-expression form (per `kernels/framework/docs/constraints-ubl.md`),
+  and inventing one was outside this batch's scope. Consistency is
+  guaranteed by construction during the migration; if drift appears
+  later it surfaces as a new finding and motivates an
+  `expression`-form constraint addition.
+- **Cultivar / SeedLineage / PlantProgram slug forms** stay as today.
+  These will be owned by a future `Naturalist` entity (separate
+  modeling task); their slugs rebase when that entity arrives.
+- **`commonNames` not yet wired into catalog search tokens.** The
+  binomial-slug commitment regresses common-name search: a naturalist
+  typing "California Pipevine" or "borage" no longer hits any slug.
+  Common-name labels now exist on every `Plant` and `InsectSpecies`
+  record, but each domain's `CatalogContribution.searchableEntities()`
+  must lift those labels into the token stream for vernacular search to
+  resolve. Four `InMemoryCatalogTest` cases that depended on the old
+  vernacular slugs (`exactSlugMatchYieldsExactSlugHit`,
+  `exactMatchPreferredOverPrefix`, `hitsOrderedByKindThenSlug`,
+  `groupedByDomainPreservesWithinDomainOrdering`) are `@Disabled` with
+  pointers back to this finding's fast-follow. Re-enable once the
+  per-domain contributions emit `CommonName.label()` as tokens — at
+  which point those tests can be rewritten to query against vernacular
+  forms (which will then carry EXACT_TOKEN match) while binomial slugs
+  carry EXACT_SLUG match. This is a fast-follow on `A1-F1`, not its own
+  finding; the regression is the natural cost of the slug commitment
+  and was anticipated in `structural-commitments.md` §3 ("vernacular
+  forms are findable but not authoritative").
 
 ---
 
@@ -245,3 +289,69 @@ entry.
   `A1-F1` migration (closing the finding) or starts node-by-node Phase 1b
   on `Compound` or `PhytochemicalConstituent` per orientation §11. Per
   charter §6, Pat decides at start of next session.
+
+### Session N+1 — `A1-F1` migration (2026-05-04)
+
+- **Node(s) worked on.** `A1-F1` closure work — kernel interfaces in
+  `kernels/taxonomy`, `Plant` and `InsectSpecies` aggregates, test
+  identifiers, and the catalog JSON migration in a single coordinated
+  batch.
+- **Decided.** Loose-derivation enforcement chosen over strict (slug
+  remains assignable; derivation is a default method). `LinnaeanSpecies`
+  is unparameterized — `binomialSlug()` returns `String`, and
+  implementing entities still declare `NamedEntity<NAME>` independently.
+  Decision context: a typed `NAME`-returning default would force every
+  implementation to override (no kernel-side generic factory on
+  `EntityName`), defeating the kernel-default's purpose. If the
+  ergonomics start mattering at consumer sites, a one-commit refactor
+  to `LinnaeanSpecies<NAME extends EntityName> extends Named<NAME>`
+  remains available.
+- **In flight.** `A1-F1` is now CONTINGENT on `FU-1`. The
+  pending-organism mechanism is the closure dependency — once it lands,
+  the genus/species non-null invariant tightens and `A1-F1` can move to
+  CLOSED.
+- **Java changes.**
+  - `kernels/taxonomy` — added `LinnaeanSpecies`, `LinnaeanSubspecies`,
+    `TaxonomicSubspecies`, package-private `TaxonomicSlugs`, with unit
+    tests. `pom.xml` gained `framework-test` (test scope) for the new
+    test classes.
+  - `Plant` (plants-api) — implements `LinnaeanSpecies`; `genus()` and
+    `species()` accessors forward to `taxonomy`. Invariants unchanged
+    (tightening deferred).
+  - `InsectSpecies` (insects-api) — gained `Set<CommonName> commonNames`
+    component; implements `LinnaeanSpecies`. Invariants gained
+    `notNull(commonNames, ...)`. Constructor call sites in
+    `InsectAggregateTest`, `SpeciesRepositoryTest` updated; their
+    fixture taxonomies promoted from family-level to species-rank to
+    keep the Observer green under the new component.
+  - `Plant` ghost-entity fixture in `PlantEntityRepositoryTest`
+    promoted to species-rank for the same reason.
+  - `TestPlantsIdentifiers` and `TestInsectsIdentifiers` — six insect
+    species and 13 plant constants migrated to binomial slugs.
+    Composite constituent constants now use the programmatic
+    `PhytochemicalConstituentName.of(plantName, compoundName)` factory
+    so they rederive from their inputs. Cultivar / seed-lineage /
+    plant-program slugs untouched — those entities move to a future
+    Naturalist domain.
+- **Catalog changes.** `plants.json`, `insect-species.json`,
+  `life-stages.json`, `phytochemistry/phytochemical-constituents.json`,
+  `cultivars.json`, `plant-programs.json`, and the bundle migrated in
+  one batch. Pending records (10 insects, 5 plants) keep their
+  vernacular slugs and original taxonomies. Six insect species and 13
+  plants migrated to binomial. All cross-references (`hostPlants`,
+  `nectarSources`, `parasitoidHosts`, `plantName`) followed their
+  targets. Every `InsectSpecies` record now carries a `commonNames`
+  array seeded from its previous vernacular slug — Pat to curate as
+  needed.
+- **Observation worth recording.** The swallowtail's
+  `adult.nectarSources` carries five plant slugs that already had
+  binomial form pre-migration but reference plants not yet in the
+  catalog (`aesculus-californica`, `dichelostemma-capitatum`,
+  `triteleia-laxa`, `eriodictyon-californicum`, `centaurea-solstitialis`).
+  This is a pre-existing dangling-reference gap, not introduced by the
+  migration — flag for a future Axis-4 finding when the relevant nodes
+  are evaluated.
+- **Next session.** Pat decides whether to start node-by-node Phase 1b
+  on `Compound` or `PhytochemicalConstituent` per orientation §11, or
+  to take up `FU-1` (pending-organism mechanism) so `A1-F1` can move to
+  CLOSED.

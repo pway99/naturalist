@@ -538,7 +538,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "convergent-ladybug-egg",
+    "name": "hippodamia-convergens-egg",
     "phenology": {
       "windows": [
         {
@@ -579,7 +579,7 @@
     "kind": "EGG"
   },
   {
-    "name": "convergent-ladybug-larva",
+    "name": "hippodamia-convergens-larva",
     "phenology": {
       "windows": [
         {
@@ -622,7 +622,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "convergent-ladybug-pupa",
+    "name": "hippodamia-convergens-pupa",
     "phenology": {
       "windows": [
         {
@@ -663,7 +663,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "convergent-ladybug-adult",
+    "name": "hippodamia-convergens-adult",
     "phenology": {
       "windows": [
         {
@@ -1065,7 +1065,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "field-roach-egg",
+    "name": "blattella-vaga-egg",
     "phenology": {
       "windows": [
         {
@@ -1108,7 +1108,7 @@
     "kind": "EGG"
   },
   {
-    "name": "field-roach-adult",
+    "name": "blattella-vaga-adult",
     "phenology": {
       "windows": [
         {
@@ -1509,7 +1509,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "valley-carpenter-bee-egg",
+    "name": "xylocopa-varipuncta-egg",
     "phenology": {
       "windows": [
         {
@@ -1552,7 +1552,7 @@
     "kind": "EGG"
   },
   {
-    "name": "valley-carpenter-bee-larva",
+    "name": "xylocopa-varipuncta-larva",
     "phenology": {
       "windows": [
         {
@@ -1597,7 +1597,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "valley-carpenter-bee-pupa",
+    "name": "xylocopa-varipuncta-pupa",
     "phenology": {
       "windows": [
         {
@@ -1640,7 +1640,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "valley-carpenter-bee-adult",
+    "name": "xylocopa-varipuncta-adult",
     "phenology": {
       "windows": [
         {
@@ -1871,7 +1871,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "painted-lady-egg",
+    "name": "vanessa-cardui-egg",
     "phenology": {
       "windows": [
         {
@@ -1914,7 +1914,7 @@
     "kind": "EGG"
   },
   {
-    "name": "painted-lady-larva",
+    "name": "vanessa-cardui-larva",
     "phenology": {
       "windows": [
         {
@@ -1965,7 +1965,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "painted-lady-pupa",
+    "name": "vanessa-cardui-pupa",
     "phenology": {
       "windows": [
         {
@@ -2008,7 +2008,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "painted-lady-adult",
+    "name": "vanessa-cardui-adult",
     "phenology": {
       "windows": [
         {
@@ -2243,7 +2243,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "pipevine-swallowtail-egg",
+    "name": "battus-philenor-egg",
     "phenology": {
       "windows": [
         {
@@ -2288,7 +2288,7 @@
     "kind": "EGG"
   },
   {
-    "name": "pipevine-swallowtail-larva",
+    "name": "battus-philenor-larva",
     "phenology": {
       "windows": [
         {
@@ -2337,7 +2337,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "pipevine-swallowtail-pupa",
+    "name": "battus-philenor-pupa",
     "phenology": {
       "windows": [
         {
@@ -2389,7 +2389,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "pipevine-swallowtail-adult",
+    "name": "battus-philenor-adult",
     "phenology": {
       "windows": [
         {
@@ -2534,7 +2534,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "orange-sulphur-egg",
+    "name": "colias-eurytheme-egg",
     "phenology": {
       "windows": [
         {
@@ -2575,7 +2575,7 @@
     "kind": "EGG"
   },
   {
-    "name": "orange-sulphur-larva",
+    "name": "colias-eurytheme-larva",
     "phenology": {
       "windows": [
         {
@@ -2623,7 +2623,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "orange-sulphur-pupa",
+    "name": "colias-eurytheme-pupa",
     "phenology": {
       "windows": [
         {
@@ -2664,7 +2664,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "orange-sulphur-adult",
+    "name": "colias-eurytheme-adult",
     "phenology": {
       "windows": [
         {

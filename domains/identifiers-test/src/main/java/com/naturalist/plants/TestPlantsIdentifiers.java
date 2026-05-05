@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.heritage.SeedLineageName;
 import com.naturalist.plants.management.PlantProgramName;
@@ -47,7 +48,7 @@ public class TestPlantsIdentifiers {
         }
 
         public static class CaliforniaPipevine {
-            public static final PlantName name = PlantName.of("california-pipevine");
+            public static final PlantName name = PlantName.of("aristolochia-californica");
 
             public static class Programs {
                 private Programs() {
@@ -64,14 +65,14 @@ public class TestPlantsIdentifiers {
                 }
 
                 public static final PhytochemicalConstituentName AristolochicAcidI =
-                        PhytochemicalConstituentName.of("california-pipevine-aristolochic-acid-i");
+                        PhytochemicalConstituentName.of(name, CompoundName.of("aristolochic-acid-i"));
                 public static final PhytochemicalConstituentName AristolochicAcidII =
-                        PhytochemicalConstituentName.of("california-pipevine-aristolochic-acid-ii");
+                        PhytochemicalConstituentName.of(name, CompoundName.of("aristolochic-acid-ii"));
             }
         }
 
         public static class Borage {
-            public static final PlantName name = PlantName.of("borage");
+            public static final PlantName name = PlantName.of("borago-officinalis");
 
             public static class Programs {
                 private Programs() {
@@ -90,12 +91,12 @@ public class TestPlantsIdentifiers {
                 }
 
                 public static final PhytochemicalConstituentName Thymol =
-                        PhytochemicalConstituentName.of("creeping-thyme-thymol");
+                        PhytochemicalConstituentName.of(name, CompoundName.of("thymol"));
             }
         }
 
         public static class Tomato {
-            public static final PlantName name = PlantName.of("tomato");
+            public static final PlantName name = PlantName.of("solanum-lycopersicum");
 
             public static class Cultivars {
                 private Cultivars() {

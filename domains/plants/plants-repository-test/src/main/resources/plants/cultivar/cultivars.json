@@ -1,7 +1,7 @@
 [
   {
     "name": "amish-paste",
-    "plantName": "tomato",
+    "plantName": "solanum-lycopersicum",
     "commonName": "Amish Paste",
     "description": {
       "preschool": "Amish Paste tomatoes are big, heart-shaped red tomatoes that are very thick and meaty inside. They have hardly any watery seeds, which makes them perfect for cooking into thick, delicious pasta sauce. We grow lots of them so we can make jars and jars of sauce to eat all year.",
@@ -17,7 +17,7 @@
   },
   {
     "name": "italian-pear-nicks",
-    "plantName": "tomato",
+    "plantName": "solanum-lycopersicum",
     "commonName": "Italian Pear (Nick's)",
     "description": {
       "preschool": "Nick's Italian Pear tomato is a very special tomato that has been grown by the same family for over fifty years. The original grower saved seeds from the very best tomatoes every single year. Now we are growing them here in Chico and saving the seeds every single year so this special tomato is never lost.",
@@ -33,7 +33,7 @@
   },
   {
     "name": "sungold-cherry",
-    "plantName": "tomato",
+    "plantName": "solanum-lycopersicum",
     "commonName": "Sungold Cherry Tomato",
     "description": {
       "preschool": "Sungold is a little orange cherry tomato that is one of the sweetest things you can eat straight from the garden. The tiny fruits are like little orange jewels hanging in clusters, and they taste like candy made from sunshine. We grow just one plant and it makes hundreds and hundreds of little tomatoes.",
@@ -49,7 +49,7 @@
   },
   {
     "name": "san-marzano-f2",
-    "plantName": "tomato",
+    "plantName": "solanum-lycopersicum",
     "commonName": "San Marzano (Saved Seeds — F2)",
     "description": {
       "preschool": "These San Marzano tomato plants were grown from seeds we saved from last year's tomatoes. But those tomatoes were a special kind called a hybrid, so the babies might not look or taste like their parents — it is a surprise what they will do. Some of the plants are not feeling very well, so we are watching them carefully.",
