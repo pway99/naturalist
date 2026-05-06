@@ -12,4 +12,8 @@ class PlantRepository {
     protected interface PlantFamilyEntityRepository
             extends EntityRepository<PlantFamilyName, PlantFamily> {
     }
+
+    protected interface PlantGenusEntityRepository
+            extends EntityRepository<PlantGenusName, PlantGenus> {
+    }
 }

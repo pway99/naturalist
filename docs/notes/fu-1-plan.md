@@ -6,8 +6,103 @@ aggregates; `PlantFamily`, `PlantGenus`, `Plant` are the three plant peers. Iden
 adds entities — never mutates them. Every catalogued species implies its genus and family
 are also catalogued.
 
-This is too large for one PR. Three sequenced PRs, each independently shippable, each
-ending with the console reflecting the new tier.
+This is too large for one PR. Sliced into per-entity PRs so each is reviewable in one
+sitting; main stays buildable at every PR boundary.
+
+---
+
+## RESUME HERE — current state (snapshot for next-chat handoff)
+
+**Landed / pushed:**
+
+- **PR-1** kernel object model — `LinnaeanFamily`, `LinnaeanGenus<FAMILY_NAME>`,
+  narrowed `LinnaeanSpecies<GENUS_NAME>`. Build-green ride-along: `Plant` and
+  `InsectSpecies` temporarily drop `implements LinnaeanSpecies` (re-anchored in
+  PR-2f).
+- **PR-2a** `InsectFamily` aggregate + `InsectFamilyName` identifier + repository
+  stack + `insect-families.json` (6 currently-pending family-only insects).
+- **PR-2b** `PlantFamily` aggregate + `PlantFamilyName` identifier + repository
+  stack + `plant-families.json` (14 entries — every distinct family epithet
+  backfilled from `plants.json`).
+- **PR-2c** `InsectGenus` aggregate + `InsectGenusName` identifier + repository
+  stack + `insect-genera.json` (4 currently-pending genus-only insects). Extended
+  `insect-families.json` by 4 (Halictidae, Andrenidae, Chrysopidae, Cicadellidae)
+  so the genus records' upward `familyName` references resolve to actual family
+  records. Total: **10 insect family records, 4 insect genus records.**
+
+**Catalog records present today:**
+
+| Domain  | Family | Genus | Species |
+|---------|--------|-------|---------|
+| Insects | 10 ✓  | 4 ✓  | 16 (existing, no `genusName`, doesn't implement `LinnaeanSpecies`) |
+| Plants  | 14 ✓  | —    | 19 (existing, no `genusName`, doesn't implement `LinnaeanSpecies`) |
+
+**Up next: PR-2d (PlantGenus).** Mirror of PR-2c. Scope: `PlantGenus` aggregate,
+repository stack, `plant-genera.json` with the 5 currently-pending plant-genus
+records (Thymus, Passiflora, Dianthus, Salvia, Citrus). All five reference
+families already present in `plant-families.json` — no family backfill needed in
+PR-2d. The 5 genus descriptions can largely lift from the existing pending
+records in `plants.json` (they describe genera, not species).
+
+After PR-2d the four new aggregates exist; the catalog tip looks like the
+"Catalog records present today" table above with `PlantGenus` populated to 5.
+Species records still don't reference their genus — that comes in PR-2f.
+
+**Suggested resume command:** open this file, jump to "PR-2d — PlantGenus" below,
+follow the same shape PR-2c used. Good models for the per-entity stack:
+- aggregate record: `domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantFamily.java`
+- repository nested interface pattern for plants: `domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantRepository.java`
+- mock + contract test pair: `PlantFamilyEntityRepositoryMock.java` and
+  `PlantFamilyEntityRepositoryTest.java` in `plants-repository-test`
+- JSON catalog: `domains/plants/plants-repository-test/src/main/resources/plants/plant-families.json`
+
+### PR-2d shopping list (tomorrow's first slice)
+
+**Files to create:**
+
+- `domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantGenus.java` —
+  record. Components: `name : PlantGenusName`, `familyName : PlantFamilyName`,
+  `order : TaxonomicOrder`, `family : TaxonomicFamily`, `genus : TaxonomicGenus`,
+  `description : Description`, `commonNames : Set<CommonName>`. Implements
+  `NamedEntity<PlantGenusName>`, `LinnaeanGenus<PlantFamilyName>`.
+- `domains/plants/plants-repository-test/src/main/java/com/naturalist/plants/PlantGenusTestEntitySource.java`
+- `domains/plants/plants-repository-test/src/main/java/com/naturalist/plants/PlantGenusEntityRepositoryMock.java`
+  (note plants pattern uses `EntityRepository` suffix)
+- `domains/plants/plants-repository-test/src/main/java/com/naturalist/plants/PlantGenusEntityRepositoryTest.java`
+- `domains/plants/plants-repository-test/src/test/java/com/naturalist/plants/PlantGenusEntityRepositoryMockTest.java`
+- `domains/plants/plants-repository-test/src/test/java/com/naturalist/plants/PlantGenusTestEntitySourceTest.java`
+- `domains/plants/plants-repository-test/src/main/resources/plants/plant-genera.json` —
+  5 entries (one per pending plant-genus record):
+
+  | Slug | Order | Family | Genus | Source description |
+  |---|---|---|---|---|
+  | `thymus` | Lamiales | Lamiaceae | Thymus | lift from `creeping-thyme` in plants.json |
+  | `passiflora` | Malpighiales | Passifloraceae | Passiflora | lift from `ornamental-passiflora` |
+  | `dianthus` | Caryophyllales | Caryophyllaceae | Dianthus | lift from `dianthus` |
+  | `salvia` | Lamiales | Lamiaceae | Salvia | lift from `sage` |
+  | `citrus` | Sapindales | Rutaceae | Citrus | lift from `citrus` |
+
+  All five `familyName` references resolve to families already present in
+  `plant-families.json` from PR-2b — no family backfill needed.
+
+**Files to modify:**
+
+- `domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantRepository.java` —
+  add `protected interface PlantGenusEntityRepository extends EntityRepository<PlantGenusName, PlantGenus>`
+  alongside existing nested interfaces. (No `create()` factory in this namespace
+  to extend — `PlantsTestContext` instantiates the family/genus mocks per-query.)
+- `domains/identifiers-test/src/main/java/com/naturalist/plants/TestPlantsIdentifiers.java` —
+  add a `PlantGenera` top-level nested class with `NotFound` plus 5 genus
+  identifier constants (`Thymus`, `Passiflora`, `Dianthus`, `Salvia`, `Citrus`).
+- `domains/plants/plants-test-context/src/main/java/com/naturalist/plants/PlantsTestContext.java` —
+  no change needed yet (queries land in PR-2e).
+
+**Already on disk from earlier turn (uncommitted):**
+
+- `domains/identifiers/src/main/java/com/naturalist/plants/PlantGenusName.java` —
+  ready, just needs git-add with PR-2d.
+
+---
 
 **Out of scope (deferred):**
 
@@ -25,7 +120,7 @@ ending with the console reflecting the new tier.
 
 ---
 
-## PR-1 — Object model (kernel/taxonomy interfaces)
+## PR-1 — Object model (kernel/taxonomy interfaces)  — **LANDED**
 
 **Ships.** The Linnaean type graph at the kernel level. Pure-kernel PR — no
 identifiers, no domain entities, no JSON, no console. After PR-1 a reader can open
@@ -87,24 +182,39 @@ aggregates exist.
 
 **Slice order:**
 
-- **PR-2a** — `InsectFamily` aggregate + `InsectFamilyName` identifier +
-  `TestInsectFamilySource` + repository stack + `insect-families.json`.
-  No catalog wiring, no query, no species changes.
-- **PR-2b** — `PlantFamily` aggregate, same shape.
-- **PR-2c** — `InsectGenus` aggregate, same shape (depends on `InsectFamilyName`
-  for the upward reference).
-- **PR-2d** — `PlantGenus` aggregate, same shape.
+- **PR-2a — LANDED.** `InsectFamily` aggregate + `InsectFamilyName` +
+  `InsectFamilyTestEntitySource` + repository stack + `insect-families.json`
+  (6 entries: tachinidae, braconidae, syrphidae, carabidae, tipulidae,
+  hesperiidae).
+- **PR-2b — LANDED.** `PlantFamily` aggregate + `PlantFamilyName` +
+  `PlantFamilyTestEntitySource` + repository stack + `plant-families.json`
+  (14 entries — every distinct family epithet from `plants.json`, with full
+  Durrell descriptions).
+- **PR-2c — LANDED.** `InsectGenus` aggregate + `InsectGenusName` +
+  `InsectGenusTestEntitySource` + repository stack + `insect-genera.json`
+  (4 entries: halictus, andrena, chrysoperla, empoasca). Extended
+  `insect-families.json` by 4 (halictidae, andrenidae, chrysopidae,
+  cicadellidae) to keep upward `familyName` references resolvable.
+- **PR-2d — NEXT.** `PlantGenus` aggregate, same shape as PR-2c.
 - **PR-2e** — Catalog wiring for the four new aggregates (DomainIds,
   CatalogContributions, EntityReferences providers) + queries
   (`InsectFamilyQuery`, `PlantFamilyQuery`, `InsectGenusQuery`, `PlantGenusQuery`)
-  + their adapters in `*-core`.
+  + their adapters in `*-core`. Cross-rank validation activates at catalog
+  assembly.
 - **PR-2f** — Species narrowing: `Plant` and `InsectSpecies` gain typed
-  `genusName` reference, JSON migration adds the field per record, pending
-  records move out of the species JSONs into their family/genus homes.
-- **PR-2g** — A1-F1 closure: bundle JSON re-emit, `TestInsectsIdentifiers` /
-  `TestPlantsIdentifiers` cleanups, `99-followups.md` FU-1 retirement,
-  `01-findings.md` A1-F1 CONTINGENT → CLOSED, cross-rank catalog validation
-  activation.
+  `genusName` reference and re-implement `LinnaeanSpecies<*GenusName>`. JSON
+  migration adds `genusName` to every species record. Backfill the 6 species-
+  derived insect genera (Battus, Blattella, Colias, Hippodamia, Vanessa,
+  Xylocopa) and their parent families (Papilionidae, Ectobiidae, Pieridae,
+  Coccinellidae, Nymphalidae, Apidae). Backfill species-derived plant genera
+  (~17 distinct genera across `plants.json`). The 15 currently-pending records
+  removed from species JSONs since they're now in family/genus JSONs.
+  **Editorial heaviest slice** — ~6 new insect families + ~6 new insect genera
+  + ~17 plant genera × 4 description levels.
+- **PR-2g** — A1-F1 closure: bundle JSON re-emit under fully-binomial catalog,
+  `TestInsectsIdentifiers` / `TestPlantsIdentifiers` cleanups,
+  `99-followups.md` FU-1 retirement, `01-findings.md` A1-F1 CONTINGENT →
+  CLOSED.
 
 The original "PR-2 — Refactor the entities" specification below remains the
 reference for what eventually lands across the slices.

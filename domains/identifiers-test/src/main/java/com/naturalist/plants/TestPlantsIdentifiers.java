@@ -97,6 +97,40 @@ public class TestPlantsIdentifiers {
         }
     }
 
+    public static class PlantGenera {
+
+        private PlantGenera() {
+        }
+
+        /**
+         * Fictitious identifier for the {@link com.naturalist.plants.PlantGenus}
+         * scope — guaranteed absent from any catalog.
+         */
+        public static class NotFound {
+            public static final PlantGenusName name = PlantGenusName.of("unobtainium-genus");
+        }
+
+        public static class Thymus {
+            public static final PlantGenusName name = PlantGenusName.of("thymus");
+        }
+
+        public static class Passiflora {
+            public static final PlantGenusName name = PlantGenusName.of("passiflora");
+        }
+
+        public static class Dianthus {
+            public static final PlantGenusName name = PlantGenusName.of("dianthus");
+        }
+
+        public static class Salvia {
+            public static final PlantGenusName name = PlantGenusName.of("salvia");
+        }
+
+        public static class Citrus {
+            public static final PlantGenusName name = PlantGenusName.of("citrus");
+        }
+    }
+
     public static class Plants {
 
         private Plants() {

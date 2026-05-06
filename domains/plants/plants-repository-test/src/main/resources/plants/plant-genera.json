@@ -1,0 +1,109 @@
+[
+  {
+    "name": "thymus",
+    "familyName": "lamiaceae",
+    "order": "Lamiales",
+    "family": "Lamiaceae",
+    "genus": "Thymus",
+    "description": {
+      "preschool": "Creeping thyme grows flat along the ground and is covered in tiny pink-purple flowers when it blooms. It smells wonderful when you step on it or brush against it. Bees love the flowers very much.",
+      "elementary": "Creeping thyme is a low, spreading herb that forms a mat close to the soil surface. When it flowers in spring and summer it turns purple with tiny blooms, and bees cover it in large numbers — it is one of the best bee plants at Oak Vista for its size. The aromatic oils in the leaves are the same thyme you use in cooking. It is very tough, tolerates some foot traffic, and protects the soil surface from erosion.",
+      "secondary": "Thymus sp. (Lamiaceae) — mat-forming perennial subshrub growing 2–5 cm tall and spreading 30–60 cm wide via woody decumbent stems. Flowers are bilabiate (two-lipped), produced in dense verticillasters along the upper stem; the floral tube depth accommodates short-tongued bees and long-tongued bees equally. The aromatic essential oil profile (thymol, carvacrol) deters some herbivores. At Oak Vista, creeping thyme fills the ground cover role in sunny, well-drained areas — suppressing weeds through dense mat formation, retaining soil moisture, and providing concentrated floral resources for bees during the May–July bloom peak. It tolerates light foot traffic and regrows vigorously after hard cutting.",
+      "university": "Thymus sp. L. — Lamiaceae: Nepetoideae. The genus Thymus comprises ~350 species and numerous cultivars; the Oak Vista planting is provisionally identified to genus level. Essential oil production occurs in secretory peltate glandular trichomes on leaves and stems; principal monoterpenes thymol and carvacrol have documented antimicrobial and antifeedant properties. Floral reward chemistry: nectar sugar concentration 20–40%, accessible to the full bee guild from small Halictidae to Bombus. The dense vegetative mat creates refugial microhabitat at the soil-atmosphere interface — elevated relative humidity, stable diurnal temperature range — used by Carabidae, Staphylinidae, and overwintering pupae of ground-pupating Lepidoptera. Long-term ground cover with minimal management inputs after establishment."
+    },
+    "commonNames": [
+      {
+        "label": "Thyme",
+        "locale": "en"
+      },
+      {
+        "label": "Creeping Thyme",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "passiflora",
+    "familyName": "passifloraceae",
+    "order": "Malpighiales",
+    "family": "Passifloraceae",
+    "genus": "Passiflora",
+    "description": {
+      "preschool": "The ornamental passion flower vine has beautiful blue and white flowers with the most amazing rings in the middle. Gulf Fritillary butterflies lay their eggs on this vine, so it is a special home for orange butterfly caterpillars.",
+      "elementary": "Passiflora is a genus of climbing vines with extraordinarily elaborate flowers — multiple rings of petals, sepals, and threadlike filaments arranged like an alien spaceship. The genus is the obligate larval host for Gulf Fritillary butterflies — adult females seek out Passiflora specifically to lay eggs, and the orange-and-black caterpillars eat only Passiflora leaves. Some species produce edible passion fruit; others are grown as ornamentals. Both kinds at Oak Vista support the Gulf Fritillary breeding population.",
+      "secondary": "Passiflora sp. (Passifloraceae) — pantropical genus of ~550 climbing vines and a few shrubs and trees. Flowers exhibit morphologically elaborate radial symmetry with extrapetalous corona filaments — a synapomorphy supporting specialised pollination by large bees, hummingbirds, or bats. The cyanogenic-glycoside foliar chemistry deters generalist herbivores while serving as a host-finding cue for the obligate Heliconiinae specialists (Agraulis, Heliconius). At Oak Vista, both Passiflora edulis (food crop) and an ornamental Passiflora are grown on the trellised wall; the genus-level catalog record sits above both species and supports Gulf Fritillary larval habitat as a genus-level resource.",
+      "university": "Passiflora sp. L. — Passifloraceae. ~550 species, mostly Neotropical; pantropical center of diversity in lowland Central and South America. Floral architecture: hypanthium-based, actinomorphic, with extrapetalous corona filaments banded for visitor recognition; androgynophore lifts five stamens above three reflexed stigmas, requiring a pollinator of sufficient body size to contact both anther and stigma simultaneously. Phytochemistry: cyanogenic glycosides (passicapsin, epipassicapsin) and flavone C-glycosides (vitexin, orientin) — the latter serve as host-recognition cues for Agraulis vanillae oviposition. Extrafloral nectaries on petioles and stipules recruit ant attendants providing incidental herbivore deterrence. At Oak Vista, the genus-level resource pool supports a self-sustaining Gulf Fritillary breeding population across both catalogued species."
+    },
+    "commonNames": [
+      {
+        "label": "Passion Flower",
+        "locale": "en"
+      },
+      {
+        "label": "Passion Vine",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "dianthus",
+    "familyName": "caryophyllaceae",
+    "order": "Caryophyllales",
+    "family": "Caryophyllaceae",
+    "genus": "Dianthus",
+    "description": {
+      "preschool": "Dianthus has bright pink and red fringed flowers that look like little suns with jagged edges. They smell spicy and sweet. Bees and butterflies visit the flowers, and the plant blooms for many months.",
+      "elementary": "Dianthus is a low-growing perennial or annual with fringed, brilliantly coloured flowers in shades of pink, red, and white. The flowers are richly fragrant and attract butterflies and bees. At Oak Vista, Dianthus is grown for its colour and scent, but it also contributes as a pollinator plant — its open flower structure is accessible to many types of visitors. It is one of the most cheerful plants in the garden.",
+      "secondary": "Dianthus sp. (Caryophyllaceae) — genus-level identification. Cultivated pinks and carnations, grown primarily as ornamentals at Oak Vista. The flower structure is actinomorphic with fringed petals and a tubular calyx; floral tube depth varies by species and cultivar. Fragrance profile includes eugenol, benzyl benzoate, and methyl salicylate. Many ornamental Dianthus cultivars provide accessible nectar and pollen to butterflies (especially Nymphalidae and Papilionidae with their long proboscises) and some bee species. Grown in the ornamental border for aesthetic contribution; the ecological value is secondary but real.",
+      "university": "Dianthus sp. L. — Caryophyllaceae: Caryophylloideae: Caryophylleae. Genus of ~300 species and innumerable horticultural cultivars. Floral volatile chemistry: eugenol, methyl eugenol, benzyl benzoate, methyl salicylate — a characteristic Caryophyllaceae fragrance profile. Nectar accessibility varies substantially by cultivar: single-flowered, open-tubed varieties (e.g., D. barbatus, D. deltoides) are broadly accessible; double-flowered cultivars with reduced or absent nectaries provide minimal pollinator value. At Oak Vista, single-flowered or semi-double varieties are preferred for the ornamental border. Documented butterfly visitors include Vanessa cardui (Painted Lady) and Papilio spp. using the long proboscis to access narrow tubular nectaries inaccessible to short-tongued bees."
+    },
+    "commonNames": [
+      {
+        "label": "Pink",
+        "locale": "en"
+      },
+      {
+        "label": "Carnation",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "salvia",
+    "familyName": "lamiaceae",
+    "order": "Lamiales",
+    "family": "Lamiaceae",
+    "genus": "Salvia",
+    "description": {
+      "preschool": "Sage has soft, silvery-grey leaves that smell wonderful and tall stems of purple-blue flowers. Bumblebees love sage flowers so much — they push right inside the flower to get to the nectar. You can use the leaves in cooking too.",
+      "elementary": "Sage is an aromatic perennial shrub in the mint family with grey-green leaves and tall spikes of blue-purple flowers. Bumblebees are the expert pollinators of sage — the flower is designed like a lever, and when a bumblebee pushes in to reach the nectar, the lever tips and dusts the bee's back with pollen. Honeybees visit too, but bumblebees are more effective. Sage also provides the grey-green foliage texture that gives the herb garden its distinctive look.",
+      "secondary": "Salvia sp. (Lamiaceae: Nepetoideae) — genus-level identification; one of the largest flowering plant genera (~1000 species). Salvia flowers have a specialised pollination mechanism: two modified stamens form a lever system. When a bee presses on the lower lip to access the nectary, the connective (elongated stamen filament) levers the fertile anther lobes down to contact the bee's thorax. The mechanism rewards heavier pollinators (Bombus, Xylocopa) more effectively than lighter bees. Essential oil profile (thujone, camphor, 1,8-cineole) in leaves deters many herbivores. At Oak Vista, sage extends the pollinator forage season into late summer and autumn when other plants are past bloom.",
+      "university": "Salvia sp. L. — Lamiaceae: Nepetoideae: Mentheae. Bilabiate flowers with the characteristic Salvia stamen lever mechanism: the fertile anther lobe is positioned above the corolla entrance on an elongated connective; the sterile lobe forms a platform blocking the corolla tube entrance. Visitor weight on the sterile lobe deflects the connective, bringing the fertile anther into contact with the visitor's dorsum. This mechanism selectively rewards pollinators of sufficient mass (Bombus, Xylocopa, Anthophora) over smaller visitors. The essential oil monoterpene profile (thujone, camphor, borneol, 1,8-cineole) functions in herbivore deterrence via toxic and antifeedant mechanisms. Salvia officinalis and related culinary sages are semi-hardy perennial subshrubs; bloom period at Oak Vista extends April–October with peaks in May and August."
+    },
+    "commonNames": [
+      {
+        "label": "Sage",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "citrus",
+    "familyName": "rutaceae",
+    "order": "Sapindales",
+    "family": "Rutaceae",
+    "genus": "Citrus",
+    "description": {
+      "preschool": "The citrus trees at Oak Vista make fruit like oranges and lemons. When they flower, the whole garden smells wonderful — the white flowers have the sweetest smell. Bees love citrus flowers and visit them all day when they are open.",
+      "elementary": "The citrus trees at Oak Vista include several varieties that produce fruit through winter and spring. The white flowers have an extraordinary sweet scent and are intensely attractive to honeybees, bumblebees, and many other insects. Citrus bloom is one of the most important events in the Oak Vista pollinator calendar — the entire beneficial insect community responds to it. The trees are evergreen, providing year-round structure to the orchard.",
+      "secondary": "Citrus sp. (Rutaceae) — genus-level identification; multiple species or hybrid cultivars present at Oak Vista. Citrus flowers are heavily nectariferous and produce linalool-dominant fragrance volatiles among the most attractive to honeybees of any cultivated plant. Bloom typically occurs March–April (main flush) with occasional off-season flushes. The trees are evergreen and provide year-round structural habitat — bark crevices for overwintering insects, dense canopy for temperature buffering. Primary pest at Oak Vista: Coccidae (soft scales) and Coccus hesperidum (brown soft scale) managed through beneficial insect pressure rather than chemical intervention where possible.",
+      "university": "Citrus sp. L. — Rutaceae: Aurantioideae. Genus of hybrid complexity; most cultivated citrus are interspecific hybrids of Citrus maxima, C. reticulata, and C. medica. Flower fragrance dominated by linalool (30–60% of volatile profile), with secondary monoterpenes (α-terpineol, geraniol) and sesquiterpenes; the linalool-bee attractant relationship is well-documented — linalool activates olfactory receptor neurons associated with floral tracking in Apis mellifera. Nectar production is among the highest of cultivated tree crops per flower: 1–3 mg sucrose equivalent per flower per day, accessible via shallow open nectary at base of petals. Primary pest: Planococcus citri (citrus mealybug), Coccus hesperidum (brown soft scale), and Phyllocoptruta oleivora (citrus rust mite) in hot dry years. Biological control via Coccophagus scutellaris (Encyrtidae) and Metaphycus helvolus (Encyrtidae) parasitoids maintained by the adjacent beneficial insect infrastructure. Evergreen habit at Sacramento Valley temperatures."
+    },
+    "commonNames": [
+      {
+        "label": "Citrus",
+        "locale": "en"
+      }
+    ]
+  }
+]
