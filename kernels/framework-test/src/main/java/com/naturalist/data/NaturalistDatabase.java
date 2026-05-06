@@ -27,19 +27,20 @@ public class NaturalistDatabase {
         sourceMap.clear();
     }
 
-    @SuppressWarnings("unchecked")
-    public <NTS extends TestEntitySource<?, ?>> NTS getNamed(Class<? extends TestEntitySource<?, ?>> namedTestEntitySourceClass) {
-        NTS nts = (NTS) sourceMap.get(namedTestEntitySourceClass);
-        if (nts == null) {
-            try {
-                nts = (NTS) namedTestEntitySourceClass
-                        .getDeclaredConstructor(NaturalistDatabase.class)
-                        .newInstance(this);
-                sourceMap.put(namedTestEntitySourceClass, nts);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+    public <NTS extends TestEntitySource<?, ?>> NTS getNamed(Class<NTS> sourceClass) {
+        @SuppressWarnings("unchecked")
+        NTS cached = (NTS) sourceMap.get(sourceClass);
+        if (cached != null) {
+            return cached;
         }
-        return nts;
+        try {
+            NTS nts = sourceClass
+                    .getDeclaredConstructor(NaturalistDatabase.class)
+                    .newInstance(this);
+            sourceMap.put(sourceClass, nts);
+            return nts;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
