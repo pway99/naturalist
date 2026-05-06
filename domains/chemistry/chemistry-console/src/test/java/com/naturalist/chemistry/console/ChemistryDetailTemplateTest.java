@@ -2,10 +2,13 @@ package com.naturalist.chemistry.console;
 
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundTestEntitySource;
+import com.naturalist.data.NaturalistDatabase;
+
 import gg.jte.output.StringOutput;
-import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +22,7 @@ class ChemistryDetailTemplateTest {
     @Test
     void detail_rendersEveryCompoundWithoutError() {
         var template = TestTemplateEngine.create();
-        for (Compound compound : new CompoundTestEntitySource().entityStream().toList()) {
+        for (Compound compound : new CompoundTestEntitySource(NaturalistDatabase.create()).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("chemistry/detail.jte", Map.of("compound", compound), output);
             assertThat(output.toString())

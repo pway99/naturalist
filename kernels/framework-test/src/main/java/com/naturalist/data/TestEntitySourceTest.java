@@ -13,14 +13,14 @@ public abstract class TestEntitySourceTest<
         DS extends TestEntitySource<NAME, ENTITY>> {
 
     @Test
-    void dataLoads() throws InstantiationException, IllegalAccessException {
-        TestEntitySource<NAME, ENTITY> testSource = entityClass().newInstance();
+    void dataLoads() {
+        TestEntitySource<NAME, ENTITY> testSource = NaturalistDatabase.create().getNamed(entityClass());
         assertThat(testSource.isEmpty()).isFalse();
     }
 
     @Test
-    void hasAtLeastFourEntities() throws InstantiationException, IllegalAccessException {
-        TestEntitySource<NAME, ENTITY> testSource = entityClass().newInstance();
+    void hasAtLeastFourEntities() {
+        TestEntitySource<NAME, ENTITY> testSource = NaturalistDatabase.create().getNamed(entityClass());
         assertThat(testSource.entityStream().count())
                 .as("TestEntitySource must contain at least 4 entities for meaningful repository contract coverage")
                 .isGreaterThanOrEqualTo(4);

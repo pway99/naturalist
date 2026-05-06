@@ -1,5 +1,6 @@
 package com.naturalist.plants.phytochemistry;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 
 /**
@@ -22,7 +23,8 @@ import com.naturalist.data.TestEntitySource;
 public class PhytochemicalConstituentTestEntitySource
         extends TestEntitySource<PhytochemicalConstituentName, PhytochemicalConstituent> {
 
-    public PhytochemicalConstituentTestEntitySource() {
+    public PhytochemicalConstituentTestEntitySource(NaturalistDatabase database) {
+        super(database);
         loadFile("plants/phytochemistry/phytochemical-constituents.json");
     }
 }

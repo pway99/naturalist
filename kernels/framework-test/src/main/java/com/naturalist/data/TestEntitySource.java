@@ -20,6 +20,13 @@ import java.util.stream.Stream;
  * additional {@link UniqueConstraint}s declared by the subclass are enforced
  * alongside it.
  *
+ * <p>Every subclass receives the surrounding {@link NaturalistDatabase} via
+ * its constructor so that intra-domain referential-integrity checks (added
+ * in subsequent work) can resolve foreign {@code TestEntitySource} peers
+ * through {@link NaturalistDatabase#getNamed}. The reference is held even
+ * for sources that declare no foreign-key constraints today — the wiring
+ * is uniform.
+ *
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
  */
@@ -27,6 +34,11 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     private static final Observer observer = Observer.forClass(TestEntitySource.class);
     private final Map<NAME, ENTITY> entityMap = new HashMap<>();
+    protected final NaturalistDatabase database;
+
+    protected TestEntitySource(NaturalistDatabase database) {
+        this.database = database;
+    }
 
     protected List<UniqueConstraint<ENTITY>> uniqueConstraints() {
         return List.of();

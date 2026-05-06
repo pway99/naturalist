@@ -1,12 +1,15 @@
 package com.naturalist.insects.console;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.InsectSpeciesTestEntitySource;
+
 import gg.jte.output.StringOutput;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +23,7 @@ class InsectsListTemplateTest {
 
     @Test
     void list_rendersWithoutError() {
-        List<InsectSpecies> species = new InsectSpeciesTestEntitySource().entityStream().toList();
+        List<InsectSpecies> species = new InsectSpeciesTestEntitySource(NaturalistDatabase.create()).entityStream().toList();
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render("insects/list.jte", Map.of("species", species), output);

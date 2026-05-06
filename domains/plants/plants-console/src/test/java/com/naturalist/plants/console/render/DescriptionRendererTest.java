@@ -1,11 +1,13 @@
 package com.naturalist.plants.console.render;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantTestEntitySource;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
+
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DescriptionRendererTest {
 
     private final DescriptionRenderer renderer = new DescriptionRenderer(PlantsParagraphCues.CUES);
-    private final List<Plant> plants = new PlantTestEntitySource().entityStream().toList();
+    private final List<Plant> plants = new PlantTestEntitySource(NaturalistDatabase.create()).entityStream().toList();
 
     // ── Catalog smoke test ───────────────────────────────────────────────
 

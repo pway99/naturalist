@@ -1,5 +1,6 @@
 package com.naturalist.chemistry.compound;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
 
@@ -7,7 +8,8 @@ import java.util.List;
 import java.util.function.Function;
 
 public class CompoundTestEntitySource extends TestEntitySource<CompoundName, Compound> {
-    public CompoundTestEntitySource() {
+    public CompoundTestEntitySource(NaturalistDatabase database) {
+        super(database);
         loadFiles("chemistry/compound/compounds-%s.json", "base", "aristolochic-acid");
     }
 

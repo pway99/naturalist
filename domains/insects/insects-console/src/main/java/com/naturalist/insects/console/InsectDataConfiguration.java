@@ -1,7 +1,9 @@
 package com.naturalist.insects.console;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.insects.InsectImageTestEntitySource;
 import com.naturalist.insects.InsectSpeciesTestEntitySource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,12 +11,12 @@ import org.springframework.context.annotation.Configuration;
 public class InsectDataConfiguration {
 
     @Bean
-    InsectSpeciesTestEntitySource insectSpeciesSource() {
-        return new InsectSpeciesTestEntitySource();
+    InsectSpeciesTestEntitySource insectSpeciesSource(NaturalistDatabase database) {
+        return new InsectSpeciesTestEntitySource(database);
     }
 
     @Bean
-    InsectImageTestEntitySource insectImageSource() {
-        return new InsectImageTestEntitySource();
+    InsectImageTestEntitySource insectImageSource(NaturalistDatabase database) {
+        return new InsectImageTestEntitySource(database);
     }
 }

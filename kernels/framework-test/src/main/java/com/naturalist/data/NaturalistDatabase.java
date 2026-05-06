@@ -32,7 +32,9 @@ public class NaturalistDatabase {
         NTS nts = (NTS) sourceMap.get(namedTestEntitySourceClass);
         if (nts == null) {
             try {
-                nts = (NTS) namedTestEntitySourceClass.getDeclaredConstructor().newInstance();
+                nts = (NTS) namedTestEntitySourceClass
+                        .getDeclaredConstructor(NaturalistDatabase.class)
+                        .newInstance(this);
                 sourceMap.put(namedTestEntitySourceClass, nts);
             } catch (Exception e) {
                 throw new RuntimeException(e);

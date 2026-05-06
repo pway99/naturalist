@@ -1,5 +1,6 @@
 package com.naturalist.chemistry.product;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
 
@@ -7,7 +8,8 @@ import java.util.List;
 import java.util.function.Function;
 
 public class ProductTestEntitySource extends TestEntitySource<ProductName, Product> {
-    public ProductTestEntitySource() {
+    public ProductTestEntitySource(NaturalistDatabase database) {
+        super(database);
         loadFiles("chemistry/product/products-%s.json", "base");
     }
 

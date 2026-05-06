@@ -1,10 +1,12 @@
 package com.naturalist.plants.console;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.PlantTestEntitySource;
 import com.naturalist.plants.cultivar.CultivarTestEntitySource;
 import com.naturalist.plants.heritage.SeedLineageTestEntitySource;
 import com.naturalist.plants.management.PlantProgramTestEntitySource;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentTestEntitySource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,27 +14,27 @@ import org.springframework.context.annotation.Configuration;
 public class PlantsDataConfiguration {
 
     @Bean
-    PlantTestEntitySource plantSource() {
-        return new PlantTestEntitySource();
+    PlantTestEntitySource plantSource(NaturalistDatabase database) {
+        return new PlantTestEntitySource(database);
     }
 
     @Bean
-    CultivarTestEntitySource cultivarSource() {
-        return new CultivarTestEntitySource();
+    CultivarTestEntitySource cultivarSource(NaturalistDatabase database) {
+        return new CultivarTestEntitySource(database);
     }
 
     @Bean
-    SeedLineageTestEntitySource seedLineageSource() {
-        return new SeedLineageTestEntitySource();
+    SeedLineageTestEntitySource seedLineageSource(NaturalistDatabase database) {
+        return new SeedLineageTestEntitySource(database);
     }
 
     @Bean
-    PlantProgramTestEntitySource plantProgramSource() {
-        return new PlantProgramTestEntitySource();
+    PlantProgramTestEntitySource plantProgramSource(NaturalistDatabase database) {
+        return new PlantProgramTestEntitySource(database);
     }
 
     @Bean
-    PhytochemicalConstituentTestEntitySource phytochemicalConstituentSource() {
-        return new PhytochemicalConstituentTestEntitySource();
+    PhytochemicalConstituentTestEntitySource phytochemicalConstituentSource(NaturalistDatabase database) {
+        return new PhytochemicalConstituentTestEntitySource(database);
     }
 }

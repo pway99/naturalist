@@ -1,5 +1,6 @@
 package com.naturalist.chemistry.compound;
 
+import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
 
@@ -8,7 +9,8 @@ import java.util.function.Function;
 
 public class CompoundDepictionTestEntitySource extends TestEntitySource<DepictionId, CompoundDepiction> {
 
-    public CompoundDepictionTestEntitySource() {
+    public CompoundDepictionTestEntitySource(NaturalistDatabase database) {
+        super(database);
         loadFile("chemistry/compound/depictions.json");
     }
 
