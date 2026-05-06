@@ -85,8 +85,12 @@ public class PlantsTestContext {
      * in the same namespace.
      */
     private static PlantQuery createPlantQuery(NaturalistDatabase db) {
-        PlantRepository.PlantEntityRepository repository = new PlantEntityRepositoryMock(db);
-        PlantQuery.PlantEntityQuery entityQuery = new PlantEntityQueryImpl(repository);
-        return new PlantQueryImpl(entityQuery);
+        PlantQuery.PlantEntityQuery entityQuery =
+                new PlantEntityQueryImpl(new PlantEntityRepositoryMock(db));
+        PlantQuery.PlantFamilyEntityQuery familyQuery =
+                new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
+        PlantQuery.PlantGenusEntityQuery genusQuery =
+                new PlantGenusEntityQueryImpl(new PlantGenusEntityRepositoryMock(db));
+        return new PlantQueryImpl(entityQuery, familyQuery, genusQuery);
     }
 }

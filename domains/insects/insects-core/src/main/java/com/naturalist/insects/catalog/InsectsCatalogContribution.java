@@ -5,7 +5,11 @@ import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
+import com.naturalist.insects.InsectEntityCollections.FamilyCollection;
+import com.naturalist.insects.InsectEntityCollections.GenusCollection;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
+import com.naturalist.insects.InsectFamily;
+import com.naturalist.insects.InsectGenus;
 import com.naturalist.insects.InsectQuery;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.InsectsDomain;
@@ -52,12 +56,21 @@ public class InsectsCatalogContribution implements CatalogContribution {
     private static final DomainId DOMAIN = new InsectsDomain();
 
     private final InsectQuery.SpeciesQuery species;
+    private final InsectQuery.FamilyQuery families;
+    private final InsectQuery.GenusQuery genera;
 
-    public InsectsCatalogContribution(InsectQuery.SpeciesQuery species) {
+    public InsectsCatalogContribution(InsectQuery.SpeciesQuery species,
+                                      InsectQuery.FamilyQuery families,
+                                      InsectQuery.GenusQuery genera) {
         Observer.forClass(InsectsCatalogContribution.class)
-                .arguments("constructor", i -> i.notNull(species, "species"))
+                .arguments("constructor", i -> i
+                        .notNull(species, "species")
+                        .notNull(families, "families")
+                        .notNull(genera, "genera"))
                 .throwWhenInvalid();
         this.species = species;
+        this.families = families;
+        this.genera = genera;
     }
 
     @Override
@@ -67,16 +80,51 @@ public class InsectsCatalogContribution implements CatalogContribution {
 
     @Override
     public Stream<SearchableEntity> searchableEntities() {
+        return Stream.of(speciesEntities(), familyEntities(), genusEntities())
+                .flatMap(s -> s);
+    }
+
+    private Stream<SearchableEntity> speciesEntities() {
         var names = species.allSpeciesNames();
         if (names.isEmpty()) {
             return Stream.empty();
         }
         SpeciesCollection collection =
                 species.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(InsectsCatalogContribution::toSearchableEntity);
+        return collection.stream().map(InsectsCatalogContribution::toSearchableSpecies);
     }
 
-    private static SearchableEntity toSearchableEntity(InsectSpecies entity) {
+    private Stream<SearchableEntity> familyEntities() {
+        var names = families.allFamilyNames();
+        if (names.isEmpty()) {
+            return Stream.empty();
+        }
+        FamilyCollection collection =
+                families.findByNameSet(names.stream().collect(Collectors.toSet()));
+        return collection.stream().map(InsectsCatalogContribution::toSearchableFamily);
+    }
+
+    private Stream<SearchableEntity> genusEntities() {
+        var names = genera.allGenusNames();
+        if (names.isEmpty()) {
+            return Stream.empty();
+        }
+        GenusCollection collection =
+                genera.findByNameSet(names.stream().collect(Collectors.toSet()));
+        return collection.stream().map(InsectsCatalogContribution::toSearchableGenus);
+    }
+
+    private static SearchableEntity toSearchableSpecies(InsectSpecies entity) {
+        EntityRef target = new EntityRef(DOMAIN, entity.name());
+        return new SearchableEntity(target, tokensFor(entity));
+    }
+
+    private static SearchableEntity toSearchableFamily(InsectFamily entity) {
+        EntityRef target = new EntityRef(DOMAIN, entity.name());
+        return new SearchableEntity(target, tokensFor(entity));
+    }
+
+    private static SearchableEntity toSearchableGenus(InsectGenus entity) {
         EntityRef target = new EntityRef(DOMAIN, entity.name());
         return new SearchableEntity(target, tokensFor(entity));
     }
@@ -94,6 +142,22 @@ public class InsectsCatalogContribution implements CatalogContribution {
                 tokens.add(genus.value().charAt(0) + ". " + speciesEpithet.value());
             }
         }
+        entity.commonNames().forEach(commonName -> tokens.add(commonName.label()));
+        return tokens.build();
+    }
+
+    private static Stream<String> tokensFor(InsectFamily entity) {
+        Stream.Builder<String> tokens = Stream.builder();
+        tokens.add(entity.name().value());
+        tokens.add(entity.family().value());
+        entity.commonNames().forEach(commonName -> tokens.add(commonName.label()));
+        return tokens.build();
+    }
+
+    private static Stream<String> tokensFor(InsectGenus entity) {
+        Stream.Builder<String> tokens = Stream.builder();
+        tokens.add(entity.name().value());
+        tokens.add(entity.genus().value());
         entity.commonNames().forEach(commonName -> tokens.add(commonName.label()));
         return tokens.build();
     }

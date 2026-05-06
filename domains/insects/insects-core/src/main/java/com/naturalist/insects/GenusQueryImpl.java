@@ -1,0 +1,34 @@
+package com.naturalist.insects;
+
+import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.ddd.EntityNameSet;
+import com.naturalist.infrastructure.DomainService;
+import com.naturalist.insects.InsectEntityCollections.GenusCollection;
+
+import java.util.Set;
+
+@DomainService
+class GenusQueryImpl
+        extends AbstractEntityQuery<
+        InsectGenusName,
+        InsectGenus,
+        GenusCollection,
+        InsectRepository.GenusRepository>
+        implements InsectQuery.GenusQuery {
+
+    GenusQueryImpl(InsectRepository.GenusRepository repository) {
+        super(repository);
+    }
+
+    @Override
+    public GenusCollection findByNameSet(Set<InsectGenusName> names) {
+        observer().arguments("findByNameSet", i -> i.entityNameCollection(names, "names"))
+                .throwWhenInvalid();
+        return GenusCollection.of(repository().getByEntityNameSet(names));
+    }
+
+    @Override
+    public EntityNameSet<InsectGenusName> allGenusNames() {
+        return EntityNameSet.of(repository().getAllGenusNames());
+    }
+}

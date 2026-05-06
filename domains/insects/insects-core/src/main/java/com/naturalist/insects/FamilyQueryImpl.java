@@ -1,0 +1,34 @@
+package com.naturalist.insects;
+
+import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.ddd.EntityNameSet;
+import com.naturalist.infrastructure.DomainService;
+import com.naturalist.insects.InsectEntityCollections.FamilyCollection;
+
+import java.util.Set;
+
+@DomainService
+class FamilyQueryImpl
+        extends AbstractEntityQuery<
+        InsectFamilyName,
+        InsectFamily,
+        FamilyCollection,
+        InsectRepository.FamilyRepository>
+        implements InsectQuery.FamilyQuery {
+
+    FamilyQueryImpl(InsectRepository.FamilyRepository repository) {
+        super(repository);
+    }
+
+    @Override
+    public FamilyCollection findByNameSet(Set<InsectFamilyName> names) {
+        observer().arguments("findByNameSet", i -> i.entityNameCollection(names, "names"))
+                .throwWhenInvalid();
+        return FamilyCollection.of(repository().getByEntityNameSet(names));
+    }
+
+    @Override
+    public EntityNameSet<InsectFamilyName> allFamilyNames() {
+        return EntityNameSet.of(repository().getAllFamilyNames());
+    }
+}

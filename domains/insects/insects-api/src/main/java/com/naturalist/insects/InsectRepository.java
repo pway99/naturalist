@@ -79,9 +79,13 @@ class InsectRepository {
 
     protected interface FamilyRepository
             extends EntityRepository<InsectFamilyName, InsectFamily> {
+
+        List<InsectFamilyName> getAllFamilyNames();
     }
 
     protected interface GenusRepository
             extends EntityRepository<InsectGenusName, InsectGenus> {
+
+        List<InsectGenusName> getAllGenusNames();
     }
 }

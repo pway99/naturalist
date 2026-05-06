@@ -8,6 +8,10 @@ import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantEntityCollections.PlantCollection;
+import com.naturalist.plants.PlantEntityCollections.PlantFamilyCollection;
+import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
+import com.naturalist.plants.PlantFamily;
+import com.naturalist.plants.PlantGenus;
 import com.naturalist.plants.PlantQuery;
 import com.naturalist.plants.PlantsDomain;
 import com.naturalist.taxonomy.TaxonomicClassification;
@@ -55,12 +59,21 @@ public class PlantCatalogContribution implements CatalogContribution {
     private static final DomainId DOMAIN = new PlantsDomain();
 
     private final PlantQuery.PlantEntityQuery plants;
+    private final PlantQuery.PlantFamilyEntityQuery families;
+    private final PlantQuery.PlantGenusEntityQuery genera;
 
-    public PlantCatalogContribution(PlantQuery.PlantEntityQuery plants) {
+    public PlantCatalogContribution(PlantQuery.PlantEntityQuery plants,
+                                    PlantQuery.PlantFamilyEntityQuery families,
+                                    PlantQuery.PlantGenusEntityQuery genera) {
         Observer.forClass(PlantCatalogContribution.class)
-                .arguments("constructor", i -> i.notNull(plants, "plants"))
+                .arguments("constructor", i -> i
+                        .notNull(plants, "plants")
+                        .notNull(families, "families")
+                        .notNull(genera, "genera"))
                 .throwWhenInvalid();
         this.plants = plants;
+        this.families = families;
+        this.genera = genera;
     }
 
     @Override
@@ -70,17 +83,52 @@ public class PlantCatalogContribution implements CatalogContribution {
 
     @Override
     public Stream<SearchableEntity> searchableEntities() {
+        return Stream.of(plantEntities(), familyEntities(), genusEntities())
+                .flatMap(s -> s);
+    }
+
+    private Stream<SearchableEntity> plantEntities() {
         var names = plants.allPlantNames();
         if (names.isEmpty()) {
             return Stream.empty();
         }
         PlantCollection collection = plants.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(PlantCatalogContribution::toSearchableEntity);
+        return collection.stream().map(PlantCatalogContribution::toSearchablePlant);
     }
 
-    private static SearchableEntity toSearchableEntity(Plant plant) {
+    private Stream<SearchableEntity> familyEntities() {
+        var names = families.allFamilyNames();
+        if (names.isEmpty()) {
+            return Stream.empty();
+        }
+        PlantFamilyCollection collection =
+                families.findByNameSet(names.stream().collect(Collectors.toSet()));
+        return collection.stream().map(PlantCatalogContribution::toSearchableFamily);
+    }
+
+    private Stream<SearchableEntity> genusEntities() {
+        var names = genera.allGenusNames();
+        if (names.isEmpty()) {
+            return Stream.empty();
+        }
+        PlantGenusCollection collection =
+                genera.findByNameSet(names.stream().collect(Collectors.toSet()));
+        return collection.stream().map(PlantCatalogContribution::toSearchableGenus);
+    }
+
+    private static SearchableEntity toSearchablePlant(Plant plant) {
         EntityRef target = new EntityRef(DOMAIN, plant.name());
         return new SearchableEntity(target, tokensFor(plant));
+    }
+
+    private static SearchableEntity toSearchableFamily(PlantFamily family) {
+        EntityRef target = new EntityRef(DOMAIN, family.name());
+        return new SearchableEntity(target, tokensFor(family));
+    }
+
+    private static SearchableEntity toSearchableGenus(PlantGenus genusEntity) {
+        EntityRef target = new EntityRef(DOMAIN, genusEntity.name());
+        return new SearchableEntity(target, tokensFor(genusEntity));
     }
 
     private static Stream<String> tokensFor(Plant plant) {
@@ -97,6 +145,22 @@ public class PlantCatalogContribution implements CatalogContribution {
             }
         }
         plant.commonNames().forEach(commonName -> tokens.add(commonName.label()));
+        return tokens.build();
+    }
+
+    private static Stream<String> tokensFor(PlantFamily family) {
+        Stream.Builder<String> tokens = Stream.builder();
+        tokens.add(family.name().value());
+        tokens.add(family.family().value());
+        family.commonNames().forEach(commonName -> tokens.add(commonName.label()));
+        return tokens.build();
+    }
+
+    private static Stream<String> tokensFor(PlantGenus genusEntity) {
+        Stream.Builder<String> tokens = Stream.builder();
+        tokens.add(genusEntity.name().value());
+        tokens.add(genusEntity.genus().value());
+        genusEntity.commonNames().forEach(commonName -> tokens.add(commonName.label()));
         return tokens.build();
     }
 }

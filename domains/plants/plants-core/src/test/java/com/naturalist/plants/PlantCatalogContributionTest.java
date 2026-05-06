@@ -28,9 +28,14 @@ class PlantCatalogContributionTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    private final PlantRepository.PlantEntityRepository repository = new PlantEntityRepositoryMock(db);
-    private final PlantQuery.PlantEntityQuery entityQuery = new PlantEntityQueryImpl(repository);
-    private final PlantCatalogContribution contribution = new PlantCatalogContribution(entityQuery);
+    private final PlantQuery.PlantEntityQuery entityQuery =
+            new PlantEntityQueryImpl(new PlantEntityRepositoryMock(db));
+    private final PlantQuery.PlantFamilyEntityQuery familyQuery =
+            new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
+    private final PlantQuery.PlantGenusEntityQuery genusQuery =
+            new PlantGenusEntityQueryImpl(new PlantGenusEntityRepositoryMock(db));
+    private final PlantCatalogContribution contribution =
+            new PlantCatalogContribution(entityQuery, familyQuery, genusQuery);
 
     @Test
     void domainIsPlants() {
@@ -38,10 +43,24 @@ class PlantCatalogContributionTest {
     }
 
     @Test
-    void constructorRejectsNullEntityQuery() {
-        assertThatThrownBy(() -> new PlantCatalogContribution(null))
+    void constructorRejectsNullPlantQuery() {
+        assertThatThrownBy(() -> new PlantCatalogContribution(null, familyQuery, genusQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("plants");
+    }
+
+    @Test
+    void constructorRejectsNullFamilyQuery() {
+        assertThatThrownBy(() -> new PlantCatalogContribution(entityQuery, null, genusQuery))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("families");
+    }
+
+    @Test
+    void constructorRejectsNullGenusQuery() {
+        assertThatThrownBy(() -> new PlantCatalogContribution(entityQuery, familyQuery, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("genera");
     }
 
     @Test
@@ -82,7 +101,7 @@ class PlantCatalogContributionTest {
     void unknownTokenReturnsEmptyResults() {
         Catalog catalog = CatalogAssembly.from(contribution);
 
-        assertThat(catalog.search("not-a-plant-anywhere").isEmpty()).isTrue();
+        assertThat(catalog.search("qwzxv-unobtainium-flarble").isEmpty()).isTrue();
         assertThat(catalog.search("zzzzzzz").isEmpty()).isTrue();
     }
 
@@ -122,11 +141,33 @@ class PlantCatalogContributionTest {
     }
 
     @Test
-    void contributionEmitsOneSearchableEntityPerPlant() {
+    void contributionEmitsOneSearchableEntityPerCatalogEntry() {
         long plantCount = entityQuery.allPlantNames().size();
+        long familyCount = familyQuery.allFamilyNames().size();
+        long genusCount = genusQuery.allGenusNames().size();
         long entityCount = contribution.searchableEntities().count();
 
-        assertThat(entityCount).isEqualTo(plantCount);
+        assertThat(entityCount).isEqualTo(plantCount + familyCount + genusCount);
+    }
+
+    @Test
+    void familiesAreSearchableBySlugAndEpithet() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+        EntityRef expected = new EntityRef(new PlantsDomain(), PlantFamilyName.of("aristolochiaceae"));
+
+        assertThat(catalog.search("aristolochiaceae").stream())
+                .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
+        assertThat(targetsOf(catalog.search("Aristolochiaceae"))).contains(expected);
+    }
+
+    @Test
+    void generaAreSearchableBySlugAndEpithet() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+        EntityRef expected = new EntityRef(new PlantsDomain(), PlantGenusName.of("thymus"));
+
+        assertThat(catalog.search("thymus").stream())
+                .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
+        assertThat(targetsOf(catalog.search("Thymus"))).contains(expected);
     }
 
     @Test

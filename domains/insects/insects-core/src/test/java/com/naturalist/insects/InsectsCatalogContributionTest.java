@@ -25,9 +25,14 @@ class InsectsCatalogContributionTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    private final SpeciesRepositoryMock repository = new SpeciesRepositoryMock(db);
-    private final InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository);
-    private final InsectsCatalogContribution contribution = new InsectsCatalogContribution(speciesQuery);
+    private final InsectQuery.SpeciesQuery speciesQuery =
+            new SpeciesQueryImpl(new SpeciesRepositoryMock(db));
+    private final InsectQuery.FamilyQuery familyQuery =
+            new FamilyQueryImpl(new FamilyRepositoryMock(db));
+    private final InsectQuery.GenusQuery genusQuery =
+            new GenusQueryImpl(new GenusRepositoryMock(db));
+    private final InsectsCatalogContribution contribution =
+            new InsectsCatalogContribution(speciesQuery, familyQuery, genusQuery);
 
     @Test
     void domainIsInsects() {
@@ -35,18 +40,54 @@ class InsectsCatalogContributionTest {
     }
 
     @Test
-    void constructorRejectsNullEntityQuery() {
-        assertThatThrownBy(() -> new InsectsCatalogContribution(null))
+    void constructorRejectsNullSpeciesQuery() {
+        assertThatThrownBy(() -> new InsectsCatalogContribution(null, familyQuery, genusQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("species");
     }
 
     @Test
-    void contributionEmitsOneSearchableEntityPerSpecies() {
+    void constructorRejectsNullFamilyQuery() {
+        assertThatThrownBy(() -> new InsectsCatalogContribution(speciesQuery, null, genusQuery))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("families");
+    }
+
+    @Test
+    void constructorRejectsNullGenusQuery() {
+        assertThatThrownBy(() -> new InsectsCatalogContribution(speciesQuery, familyQuery, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("genera");
+    }
+
+    @Test
+    void contributionEmitsOneSearchableEntityPerCatalogEntry() {
         long speciesCount = speciesQuery.allSpeciesNames().size();
+        long familyCount = familyQuery.allFamilyNames().size();
+        long genusCount = genusQuery.allGenusNames().size();
         long entityCount = contribution.searchableEntities().count();
 
-        assertThat(entityCount).isEqualTo(speciesCount);
+        assertThat(entityCount).isEqualTo(speciesCount + familyCount + genusCount);
+    }
+
+    @Test
+    void familiesAreSearchableBySlugAndEpithet() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+        EntityRef expected = new EntityRef(new InsectsDomain(), InsectFamilyName.of("halictidae"));
+
+        assertThat(catalog.search("halictidae").stream())
+                .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
+        assertThat(targetsOf(catalog.search("Halictidae"))).contains(expected);
+    }
+
+    @Test
+    void generaAreSearchableBySlugAndEpithet() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+        EntityRef expected = new EntityRef(new InsectsDomain(), InsectGenusName.of("halictus"));
+
+        assertThat(catalog.search("halictus").stream())
+                .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
+        assertThat(targetsOf(catalog.search("Halictus"))).contains(expected);
     }
 
     @Test

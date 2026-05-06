@@ -25,4 +25,34 @@ public interface PlantEntityCollections {
             return new PlantCollection(List.of());
         }
     }
+
+    final class PlantFamilyCollection extends BehavioralCollection<PlantFamily> {
+
+        PlantFamilyCollection(Collection<PlantFamily> families) {
+            super(families);
+        }
+
+        public static PlantFamilyCollection of(Collection<PlantFamily> families) {
+            return new PlantFamilyCollection(families);
+        }
+
+        public static PlantFamilyCollection empty() {
+            return new PlantFamilyCollection(List.of());
+        }
+    }
+
+    final class PlantGenusCollection extends BehavioralCollection<PlantGenus> {
+
+        PlantGenusCollection(Collection<PlantGenus> genera) {
+            super(genera);
+        }
+
+        public static PlantGenusCollection of(Collection<PlantGenus> genera) {
+            return new PlantGenusCollection(genera);
+        }
+
+        public static PlantGenusCollection empty() {
+            return new PlantGenusCollection(List.of());
+        }
+    }
 }
