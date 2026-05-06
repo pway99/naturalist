@@ -23,6 +23,6 @@ public record Aspect(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .notNull(this, Aspect::primaryDirection, "primaryDirection")
-                .namedValue(this, Aspect::slopeDegrees, "slopeDegrees");
+                .namedValue(slopeDegrees, "slopeDegrees");
     }
 }

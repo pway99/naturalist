@@ -45,9 +45,9 @@ public record InsectGenus(
         return i -> i
                 .entityName(name, "name")
                 .entityName(familyName, "familyName")
-                .namedValue(this, InsectGenus::order, "order")
-                .namedValue(this, InsectGenus::family, "family")
-                .namedValue(this, InsectGenus::genus, "genus")
+                .namedValue(order, "order")
+                .namedValue(family, "family")
+                .namedValue(genus, "genus")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames");
     }

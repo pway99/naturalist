@@ -123,7 +123,7 @@ public record SubZone(
                 .entityName(parentZoneName, "parentZoneName")
                 .entityNameOrNull(soilProfileName, "soilProfileName")
                 .notNull(this, SubZone::position, "position")
-                .namedValue(this, SubZone::areaSqft, "areaSqft")
+                .namedValue(areaSqft, "areaSqft")
                 .notNull(this, SubZone::surfaceHabitatRisk, "surfaceHabitatRisk");
     }
 }

@@ -101,6 +101,10 @@ public class Constraints {
         return add(new EntityNameConstraints.EntityNameSetConstraint<>(o == null ? null : valueFunction.apply(o), name));
     }
 
+    public <V extends NamedValue<?>> Constraints namedValue(V namedValue, String name) {
+        return namedValue(namedValue, Function.identity(), name);
+    }
+
     public <O, V extends NamedValue<?>> Constraints namedValue(O o, Function<O, V> valueFunction, String name) {
         return add(new NamedValueConstraints.NamedValueConstraint<>(o, valueFunction, name));
     }

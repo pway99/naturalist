@@ -120,7 +120,7 @@ public record PrecipitationEvent(
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(this, PrecipitationEvent::startDate, "startDate")
                 .notNull(this, PrecipitationEvent::endDate, "endDate")
-                .namedValue(this, PrecipitationEvent::totalInches, "totalInches")
+                .namedValue(totalInches, "totalInches")
                 .notNull(this, PrecipitationEvent::totalDuration, "totalDuration")
                 .notNull(this, PrecipitationEvent::peakIntensityInchesPerHour, "peakIntensityInchesPerHour");
     }

@@ -54,6 +54,6 @@ public record Element(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .namedValue(this, Element::atomicWeight, "atomicWeight");
+                .namedValue(atomicWeight, "atomicWeight");
     }
 }

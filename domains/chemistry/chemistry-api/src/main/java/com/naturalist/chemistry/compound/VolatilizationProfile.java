@@ -47,9 +47,9 @@ public record VolatilizationProfile(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .namedValue(this, VolatilizationProfile::minEffectiveTempF, "minEffectiveTempF")
-                .namedValue(this, VolatilizationProfile::maxSafeTempF, "maxSafeTempF")
-                .namedValue(this, VolatilizationProfile::optimalTempF, "optimalTempF")
+                .namedValue(minEffectiveTempF, "minEffectiveTempF")
+                .namedValue(maxSafeTempF, "maxSafeTempF")
+                .namedValue(optimalTempF, "optimalTempF")
                 .notNull(this, VolatilizationProfile::vaporPressureAt20C, "vaporPressureAt20C")
                 .notNull(this, VolatilizationProfile::efficacyNotes, "efficacyNotes")
                 .notNull(this, VolatilizationProfile::safetyNotes, "safetyNotes");

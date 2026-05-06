@@ -40,8 +40,8 @@ public record PlantFamily(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .namedValue(this, PlantFamily::order, "order")
-                .namedValue(this, PlantFamily::family, "family")
+                .namedValue(order, "order")
+                .namedValue(family, "family")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames");
     }

@@ -65,10 +65,10 @@ public record NutrientPanel(
                 .valueObject(magnesiumSoluble, "magnesiumSoluble")
                 .valueObject(sulfate, "sulfate")
                 .valueObject(boron, "boron")
-                .namedValue(this, NutrientPanel::cecMeqPer100g, "cecMeqPer100g")
-                .namedValue(this, NutrientPanel::pH, "pH")
-                .namedValue(this, NutrientPanel::ecDsPerMeter, "ecDsPerMeter")
-                .namedValue(this, NutrientPanel::limestonePct, "limestonePct")
-                .namedValue(this, NutrientPanel::saturationPct, "saturationPct");
+                .namedValue(cecMeqPer100g, "cecMeqPer100g")
+                .namedValue(pH, "pH")
+                .namedValue(ecDsPerMeter, "ecDsPerMeter")
+                .namedValue(limestonePct, "limestonePct")
+                .namedValue(saturationPct, "saturationPct");
     }
 }

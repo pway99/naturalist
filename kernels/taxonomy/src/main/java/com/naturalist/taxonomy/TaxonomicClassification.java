@@ -52,7 +52,7 @@ public record TaxonomicClassification(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .namedValue(this, TaxonomicClassification::order, "order")
-                .namedValue(this, TaxonomicClassification::family, "family");
+                .namedValue(order, "order")
+                .namedValue(family, "family");
     }
 }

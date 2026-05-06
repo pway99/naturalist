@@ -17,6 +17,6 @@ public record SubstrateCharacteristics(
         return i -> i
                 .notNull(this, SubstrateCharacteristics::category, "category")
                 .notNull(this, SubstrateCharacteristics::drainageCharacteristic, "drainageCharacteristic")
-                .namedValue(this, SubstrateCharacteristics::biologicalAmplificationFactor, "biologicalAmplificationFactor");
+                .namedValue(biologicalAmplificationFactor, "biologicalAmplificationFactor");
     }
 }

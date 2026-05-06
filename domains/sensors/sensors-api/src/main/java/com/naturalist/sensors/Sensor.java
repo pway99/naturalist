@@ -109,7 +109,7 @@ public record Sensor(
                 .notNull(this, Sensor::model, "model")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
-                .namedValue(this, Sensor::depthInches, "depthInches")
+                .namedValue(depthInches, "depthInches")
                 .notNull(this, Sensor::installedDate, "installedDate");
     }
 

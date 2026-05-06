@@ -84,7 +84,7 @@ public record TillageEvent(
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(this, TillageEvent::tillageDate, "tillageDate")
-                .namedValue(this, TillageEvent::depthInches, "depthInches")
+                .namedValue(depthInches, "depthInches")
                 .notNull(this, TillageEvent::tillageType, "tillageType");
     }
 
