@@ -2,6 +2,7 @@ package com.naturalist.data;
 
 import com.naturalist.ddd.Named;
 import com.naturalist.exception.EntityNotFoundException;
+import com.naturalist.exception.ForeignKeyConstraintException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.exception.UniqueConstraintException;
 import com.naturalist.observability.Observer;
@@ -44,6 +45,10 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         return List.of();
     }
 
+    protected List<ForeignKeyConstraint<ENTITY, ?>> foreignKeyConstraints() {
+        return List.of();
+    }
+
     public Stream<ENTITY> entityStream() {
         return entityMap.values().stream();
     }
@@ -67,6 +72,20 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
                     .anyMatch(entityValue::equals)) {
                 throw new UniqueConstraintException(entity, uniqueConstraint.name(), entityValue);
             }
+        }
+        for (ForeignKeyConstraint<ENTITY, ?> foreignKeyConstraint : foreignKeyConstraints()) {
+            checkForeignKey(foreignKeyConstraint, entity);
+        }
+    }
+
+    private <FK_NAME> void checkForeignKey(ForeignKeyConstraint<ENTITY, FK_NAME> fk, ENTITY entity) {
+        FK_NAME foreignValue = fk.value(entity);
+        if (foreignValue == null) {
+            return;
+        }
+        TestEntitySource<FK_NAME, ?> foreignSource = database.getNamed(fk.foreignSourceClass());
+        if (foreignSource.getByName(foreignValue).isEmpty()) {
+            throw new ForeignKeyConstraintException(entity, fk.name(), foreignValue);
         }
     }
 

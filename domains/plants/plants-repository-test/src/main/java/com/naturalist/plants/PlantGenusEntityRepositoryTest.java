@@ -45,7 +45,7 @@ interface PlantGenusEntityRepositoryTest
     default PlantGenus newEntity() {
         return new PlantGenus(
                 PlantGenusName.of("test-genus-xx"),
-                PlantFamilyName.of("test-family-xx"),
+                PlantFamilyName.of("apiaceae"),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
@@ -55,6 +55,8 @@ interface PlantGenusEntityRepositoryTest
 
     @Override
     default PlantGenus ghostEntity() {
+        // FK check is skipped because EntityNotFoundException fires first on
+        // update; familyName slug here does not need to resolve.
         return new PlantGenus(
                 PlantGenusName.of("test-ghost-xx"),
                 PlantFamilyName.of("test-ghost-family-xx"),
@@ -69,7 +71,7 @@ interface PlantGenusEntityRepositoryTest
     default PlantGenus modifiedEntity(PlantGenus original) {
         return new PlantGenus(
                 original.name(),
-                PlantFamilyName.of("alt-family-" + RandomValue.string()),
+                PlantFamilyName.of("boraginaceae"),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),

@@ -45,7 +45,7 @@ interface GenusRepositoryTest
     default InsectGenus newEntity() {
         return new InsectGenus(
                 InsectGenusName.of("test-genus-xx"),
-                InsectFamilyName.of("test-family-xx"),
+                InsectFamilyName.of("tachinidae"),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
@@ -55,6 +55,8 @@ interface GenusRepositoryTest
 
     @Override
     default InsectGenus ghostEntity() {
+        // FK check is skipped because EntityNotFoundException fires first on
+        // update; familyName slug here does not need to resolve.
         return new InsectGenus(
                 InsectGenusName.of("test-ghost-xx"),
                 InsectFamilyName.of("test-ghost-family-xx"),
@@ -69,7 +71,7 @@ interface GenusRepositoryTest
     default InsectGenus modifiedEntity(InsectGenus original) {
         return new InsectGenus(
                 original.name(),
-                InsectFamilyName.of("alt-family-" + RandomValue.string()),
+                InsectFamilyName.of("braconidae"),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
