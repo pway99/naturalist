@@ -43,3 +43,6 @@ jte-classes/
 ### Git worktrees ###
 .worktrees/
 .claude/worktrees/
+
+### Claude Code runtime ###
+.claude/scheduled_tasks.lock

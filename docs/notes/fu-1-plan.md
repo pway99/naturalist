@@ -11,96 +11,50 @@ sitting; main stays buildable at every PR boundary.
 
 ---
 
-## RESUME HERE — current state (snapshot for next-chat handoff)
+## RESUME HERE — current state (snapshot for next-chat handoff, 2026-05-06)
 
-**Landed / pushed:**
+**Landed / pushed (`git log --oneline -10`):**
 
-- **PR-1** kernel object model — `LinnaeanFamily`, `LinnaeanGenus<FAMILY_NAME>`,
-  narrowed `LinnaeanSpecies<GENUS_NAME>`. Build-green ride-along: `Plant` and
-  `InsectSpecies` temporarily drop `implements LinnaeanSpecies` (re-anchored in
-  PR-2f).
-- **PR-2a** `InsectFamily` aggregate + `InsectFamilyName` identifier + repository
-  stack + `insect-families.json` (6 currently-pending family-only insects).
-- **PR-2b** `PlantFamily` aggregate + `PlantFamilyName` identifier + repository
-  stack + `plant-families.json` (14 entries — every distinct family epithet
-  backfilled from `plants.json`).
-- **PR-2c** `InsectGenus` aggregate + `InsectGenusName` identifier + repository
-  stack + `insect-genera.json` (4 currently-pending genus-only insects). Extended
-  `insect-families.json` by 4 (Halictidae, Andrenidae, Chrysopidae, Cicadellidae)
-  so the genus records' upward `familyName` references resolve to actual family
-  records. Total: **10 insect family records, 4 insect genus records.**
+- **`9f6aed6`** PR-2e — read-side queries (`InsectQuery.FamilyQuery/GenusQuery`,
+  `PlantQuery.PlantFamilyEntityQuery/PlantGenusEntityQuery`) + adapters in
+  `*-core`, catalog contributions extended to emit family + genus, test contexts
+  rewired.
+- **`ba00948`** `ForeignKeyConstraint` kernel — sibling of `UniqueConstraint`,
+  resolves intra-domain FKs via `NaturalistDatabase.getNamed`. Wired:
+  `InsectGenus.familyName → InsectFamily`, `PlantGenus.familyName → PlantFamily`.
+- **`194e3f2`** `NaturalistDatabase.getNamed(Class<NTS>)` generics tightened —
+  return type now bound to the requested class; FK resolver compiles without
+  unchecked cast.
+- **`d9873ae`** `TestEntitySource` constructor migration — every subclass now
+  receives `NaturalistDatabase` via constructor; primer for FK resolution.
+- **`26ac0db`** PR-2d (PlantGenus) + earlier PR-2a/b/c (families and insect genus).
+- **`841ab92`** PR-1 kernel object model (`LinnaeanFamily`,
+  `LinnaeanGenus<FAMILY_NAME>`, narrowed `LinnaeanSpecies<GENUS_NAME>`).
 
 **Catalog records present today:**
 
-| Domain  | Family | Genus | Species |
-|---------|--------|-------|---------|
-| Insects | 10 ✓  | 4 ✓  | 16 (existing, no `genusName`, doesn't implement `LinnaeanSpecies`) |
-| Plants  | 14 ✓  | —    | 19 (existing, no `genusName`, doesn't implement `LinnaeanSpecies`) |
+| Domain  | Family | Genus | Species                                                            |
+|---------|--------|-------|--------------------------------------------------------------------|
+| Insects | 10 ✓   | 4 ✓   | 16 (existing, no `genusName`, doesn't implement `LinnaeanSpecies`) |
+| Plants  | 14 ✓   | 5 ✓   | 19 (existing, no `genusName`, doesn't implement `LinnaeanSpecies`) |
 
-**Up next: PR-2d (PlantGenus).** Mirror of PR-2c. Scope: `PlantGenus` aggregate,
-repository stack, `plant-genera.json` with the 5 currently-pending plant-genus
-records (Thymus, Passiflora, Dianthus, Salvia, Citrus). All five reference
-families already present in `plant-families.json` — no family backfill needed in
-PR-2d. The 5 genus descriptions can largely lift from the existing pending
-records in `plants.json` (they describe genera, not species).
+`mvn verify` is green across the modulith.
 
-After PR-2d the four new aggregates exist; the catalog tip looks like the
-"Catalog records present today" table above with `PlantGenus` populated to 5.
-Species records still don't reference their genus — that comes in PR-2f.
+**Up next — paged-queries gate (NOT PR-2f).** Per Pat's call on 2026-05-06,
+unbounded queries (`getAllSpeciesNames`, `getAllFamilyNames`, `entityStream`,
+`forSpeciesName`, etc.) are a production-availability hazard. Before PR-2f or
+PR-3 grows the read surface further, the kernel needs a `Page<T>` /
+cursor-based contract and the existing query/repository ports need to migrate.
+See `docs/notes/paged-queries-plan.md` for the design sketch and rollout
+strategy.
 
-**Suggested resume command:** open this file, jump to "PR-2d — PlantGenus" below,
-follow the same shape PR-2c used. Good models for the per-entity stack:
-- aggregate record: `domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantFamily.java`
-- repository nested interface pattern for plants: `domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantRepository.java`
-- mock + contract test pair: `PlantFamilyEntityRepositoryMock.java` and
-  `PlantFamilyEntityRepositoryTest.java` in `plants-repository-test`
-- JSON catalog: `domains/plants/plants-repository-test/src/main/resources/plants/plant-families.json`
+After paged-queries lands, the FU-1 series resumes at PR-2f (Species
+narrowing). PR-2f is unchanged in shape but will use the paged read surface
+for any bulk migration helpers it needs.
 
-### PR-2d shopping list (tomorrow's first slice)
-
-**Files to create:**
-
-- `domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantGenus.java` —
-  record. Components: `name : PlantGenusName`, `familyName : PlantFamilyName`,
-  `order : TaxonomicOrder`, `family : TaxonomicFamily`, `genus : TaxonomicGenus`,
-  `description : Description`, `commonNames : Set<CommonName>`. Implements
-  `NamedEntity<PlantGenusName>`, `LinnaeanGenus<PlantFamilyName>`.
-- `domains/plants/plants-repository-test/src/main/java/com/naturalist/plants/PlantGenusTestEntitySource.java`
-- `domains/plants/plants-repository-test/src/main/java/com/naturalist/plants/PlantGenusEntityRepositoryMock.java`
-  (note plants pattern uses `EntityRepository` suffix)
-- `domains/plants/plants-repository-test/src/main/java/com/naturalist/plants/PlantGenusEntityRepositoryTest.java`
-- `domains/plants/plants-repository-test/src/test/java/com/naturalist/plants/PlantGenusEntityRepositoryMockTest.java`
-- `domains/plants/plants-repository-test/src/test/java/com/naturalist/plants/PlantGenusTestEntitySourceTest.java`
-- `domains/plants/plants-repository-test/src/main/resources/plants/plant-genera.json` —
-  5 entries (one per pending plant-genus record):
-
-  | Slug | Order | Family | Genus | Source description |
-  |---|---|---|---|---|
-  | `thymus` | Lamiales | Lamiaceae | Thymus | lift from `creeping-thyme` in plants.json |
-  | `passiflora` | Malpighiales | Passifloraceae | Passiflora | lift from `ornamental-passiflora` |
-  | `dianthus` | Caryophyllales | Caryophyllaceae | Dianthus | lift from `dianthus` |
-  | `salvia` | Lamiales | Lamiaceae | Salvia | lift from `sage` |
-  | `citrus` | Sapindales | Rutaceae | Citrus | lift from `citrus` |
-
-  All five `familyName` references resolve to families already present in
-  `plant-families.json` from PR-2b — no family backfill needed.
-
-**Files to modify:**
-
-- `domains/plants/plants-api/src/main/java/com/naturalist/plants/PlantRepository.java` —
-  add `protected interface PlantGenusEntityRepository extends EntityRepository<PlantGenusName, PlantGenus>`
-  alongside existing nested interfaces. (No `create()` factory in this namespace
-  to extend — `PlantsTestContext` instantiates the family/genus mocks per-query.)
-- `domains/identifiers-test/src/main/java/com/naturalist/plants/TestPlantsIdentifiers.java` —
-  add a `PlantGenera` top-level nested class with `NotFound` plus 5 genus
-  identifier constants (`Thymus`, `Passiflora`, `Dianthus`, `Salvia`, `Citrus`).
-- `domains/plants/plants-test-context/src/main/java/com/naturalist/plants/PlantsTestContext.java` —
-  no change needed yet (queries land in PR-2e).
-
-**Already on disk from earlier turn (uncommitted):**
-
-- `domains/identifiers/src/main/java/com/naturalist/plants/PlantGenusName.java` —
-  ready, just needs git-add with PR-2d.
+**Suggested resume command:** open `docs/notes/paged-queries-plan.md`, agree on
+the kernel `Page<T>` shape and port migration order, then start with the kernel
+contract change.
 
 ---
 
