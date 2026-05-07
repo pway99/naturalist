@@ -154,7 +154,7 @@ aggregates exist.
   CatalogContributions, EntityReferences providers) + queries
   (`InsectFamilyQuery`, `PlantFamilyQuery`, `InsectGenusQuery`, `PlantGenusQuery`)
   + their adapters in `*-core`. Cross-rank validation activates at catalog
-  assembly.
+    assembly.
 - **PR-2f** — Species narrowing: `Plant` and `InsectSpecies` gain typed
   `genusName` reference and re-implement `LinnaeanSpecies<*GenusName>`. JSON
   migration adds `genusName` to every species record. Backfill the 6 species-

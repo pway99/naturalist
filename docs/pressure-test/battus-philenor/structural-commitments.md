@@ -9,6 +9,7 @@ before per-node evaluation begins. Without this document, every Phase 1b
 finding that touches identity would have to re-derive these decisions.
 
 **Sibling documents.**
+
 - `00-charter.md` — governance, the five evaluation axes, workflow rhythm.
 - `phase-1a-orientation.md` — the shared map of nodes and edges the
   swallowtail story exercises.
@@ -61,13 +62,13 @@ during the Phase 1a review:
 `PlantName`, `InsectSpeciesName`, and any future living-organism slug type
 encode the **binomial name in lowercase kebab form**: `genus-species`.
 
-| Domain  | Old (vernacular)        | New (binomial)              |
-|---------|-------------------------|-----------------------------|
-| Plant   | `california-pipevine`   | `aristolochia-californica`  |
-| Plant   | `tomato`                | `solanum-lycopersicum`      |
-| Insect  | `pipevine-swallowtail`  | `battus-philenor`           |
-| Insect  | `green-lacewing`        | `chrysoperla-rufilabris`*   |
-| Insect  | `braconid-wasp`         | (binomial of catalogued species) |
+| Domain | Old (vernacular)       | New (binomial)                   |
+|--------|------------------------|----------------------------------|
+| Plant  | `california-pipevine`  | `aristolochia-californica`       |
+| Plant  | `tomato`               | `solanum-lycopersicum`           |
+| Insect | `pipevine-swallowtail` | `battus-philenor`                |
+| Insect | `green-lacewing`       | `chrysoperla-rufilabris`*        |
+| Insect | `braconid-wasp`        | (binomial of catalogued species) |
 
 *Specific binomial pending — `green-lacewing` may catalog at family or
 genus level; see Commitment 5 about under-identified organisms.
@@ -199,13 +200,13 @@ Composite-key slugs (`LifeStageName`, `PlantProgramName`, `CultivarName`,
 binomial-derived inputs. The factory pattern is unchanged; the resulting
 slugs change because their inputs change.
 
-| Composite slug                  | Old form                                            | New form                                                |
-|---------------------------------|-----------------------------------------------------|---------------------------------------------------------|
-| `LifeStageName`                 | `pipevine-swallowtail-larva`                        | `battus-philenor-larva`                                 |
-| `PhytochemicalConstituentName`  | `california-pipevine-aristolochic-acid-i`           | `aristolochia-californica-aristolochic-acid-i`          |
-| `PlantProgramName`              | `pipevine-pesticide-exclusion`                      | (no change — program names are activity-named, not plant-named) |
-| `CultivarName`                  | `tomato-amish-paste`                                | `solanum-lycopersicum-amish-paste`                      |
-| `SeedLineageName`               | (depends on cultivar)                               | (depends on cultivar)                                   |
+| Composite slug                 | Old form                                  | New form                                                        |
+|--------------------------------|-------------------------------------------|-----------------------------------------------------------------|
+| `LifeStageName`                | `pipevine-swallowtail-larva`              | `battus-philenor-larva`                                         |
+| `PhytochemicalConstituentName` | `california-pipevine-aristolochic-acid-i` | `aristolochia-californica-aristolochic-acid-i`                  |
+| `PlantProgramName`             | `pipevine-pesticide-exclusion`            | (no change — program names are activity-named, not plant-named) |
+| `CultivarName`                 | `tomato-amish-paste`                      | `solanum-lycopersicum-amish-paste`                              |
+| `SeedLineageName`              | (depends on cultivar)                     | (depends on cultivar)                                           |
 
 Plant programs are an interesting case worth flagging: the briefing
 says programs are "named after the activity, not the plant." If
@@ -249,15 +250,15 @@ This assumption holds for the production data we have read.
 
 Adopting these commitments requires a one-time migration touching:
 
-| Catalog file                                              | Records affected | Type of change                              |
-|-----------------------------------------------------------|------------------|---------------------------------------------|
-| `plants/plants.json`                                      | 19               | Slug changes from vernacular to binomial    |
-| `insect-species.json`                                     | 16               | Slug changes from vernacular to binomial    |
-| `life-stages.json`                                        | 60               | Composite slug rederives                    |
-| `plants/phytochemistry/phytochemical-constituents.json`   | 4                | Composite slug rederives                    |
-| `plants/cultivar/cultivars.json`                          | 4                | Composite slug rederives (if composite)     |
-| `plants/heritage/seed-lineages.json`                      | 6                | Composite slug rederives (if composite)     |
-| `plants/management/plant-programs.json`                   | 8                | May or may not rederive (verify pattern)    |
+| Catalog file                                            | Records affected | Type of change                           |
+|---------------------------------------------------------|------------------|------------------------------------------|
+| `plants/plants.json`                                    | 19               | Slug changes from vernacular to binomial |
+| `insect-species.json`                                   | 16               | Slug changes from vernacular to binomial |
+| `life-stages.json`                                      | 60               | Composite slug rederives                 |
+| `plants/phytochemistry/phytochemical-constituents.json` | 4                | Composite slug rederives                 |
+| `plants/cultivar/cultivars.json`                        | 4                | Composite slug rederives (if composite)  |
+| `plants/heritage/seed-lineages.json`                    | 6                | Composite slug rederives (if composite)  |
+| `plants/management/plant-programs.json`                 | 8                | May or may not rederive (verify pattern) |
 
 Plus every cross-domain reference field carrying old slugs is updated.
 
@@ -300,9 +301,9 @@ For traceability, the alternatives we considered and explicitly rejected:
 
 - **Sealed-supertype hierarchy** (`InsectTaxon` sealed over `InsectSpecies`
   + `InsectSubspecies`). Rejected in favor of interface contracts
-  (`LinnaeanSpecies`, `LinnaeanSubspecies`) because interfaces compose
-  additively without forcing existing consumers to handle a sealed
-  family.
+    (`LinnaeanSpecies`, `LinnaeanSubspecies`) because interfaces compose
+    additively without forcing existing consumers to handle a sealed
+    family.
 
 - **Rank-as-data on a unified `Taxon` aggregate.** Rejected because it
   collapses meaningful distinctions into nullability patterns, and

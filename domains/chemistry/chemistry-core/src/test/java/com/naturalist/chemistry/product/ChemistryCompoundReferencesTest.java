@@ -1,6 +1,8 @@
 package com.naturalist.chemistry.product;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.chemistry.ChemistryDomain;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;

@@ -7,6 +7,7 @@ resolved within it. Each entry is a self-contained record of what was
 raised, when, why it was deferred, and what would resolve it.
 
 **Sibling documents.**
+
 - `00-charter.md` — governance, evaluation axes, severity tiers.
 - `phase-1a-orientation.md` — Phase 1a output (shared map).
 - `structural-commitments.md` — pre-Phase-1b architectural commitments.

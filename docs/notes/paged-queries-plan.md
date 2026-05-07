@@ -103,9 +103,13 @@ gracefully — "showing page 2 of N" becomes "showing page 2".
 
 ```java
 public record PageRequest(int pageNumber, int pageSize) implements ValueObject {
-    public static PageRequest of(int pageNumber, int pageSize) { ... }
-    public static PageRequest first(int pageSize) { ... }
-    public int offset() { return pageNumber * pageSize; }
+    public static PageRequest of(int pageNumber, int pageSize) { ...}
+
+    public static PageRequest first(int pageSize) { ...}
+
+    public int offset() {
+        return pageNumber * pageSize;
+    }
 }
 ```
 
@@ -126,6 +130,7 @@ Page<E> findPage(PageRequest pageRequest);
 
 ```java
 Page<E> getPage(PageRequest pageRequest);
+
 List<E> getByEntityNameSet(Set<NAME> nameSet);  // unchanged — input-bounded
 ```
 

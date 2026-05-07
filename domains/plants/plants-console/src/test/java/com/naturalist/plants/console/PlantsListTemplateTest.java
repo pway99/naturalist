@@ -3,14 +3,12 @@ package com.naturalist.plants.console;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantTestEntitySource;
-
 import gg.jte.output.StringOutput;
+import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

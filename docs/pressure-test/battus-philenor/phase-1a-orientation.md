@@ -550,7 +550,9 @@ files in the codebase. Paths are relative to the repo root.
 - `domains/insects/insects-api/.../InsectSpecies.java` (with nested
   `ChemicalDefense`, `Voltinism`, etc.).
 -
+
 `domains/insects/insects-api/.../lifestage/{LifeStage,EggStage,LarvaStage,PupaStage,AdultStage,StageChemistryRole}.java`.
+
 - `domains/insects/insects-api/.../lifestage/LifeStage.md` — design notes.
   This is *gold* for context: §8 (prey deferred to ecology domain),
   §9 (vertices vs. edges identity discipline), §10 (cross-stage chemistry
