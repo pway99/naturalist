@@ -38,7 +38,7 @@ public record InsectImage(
         return i -> i
                 .entityId(name, "name")
                 .entityName(insectSpeciesName(), "insectSpeciesName")
-                .notNull(this, InsectImage::dateAdded, "dateAdded")
+                .notNull(dateAdded, "dateAdded")
                 .namedValue(resourceName, "resourceName");
     }
 }
