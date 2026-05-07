@@ -39,6 +39,8 @@ public abstract class AbstractEntityRepository<
 
     protected abstract List<ENTITY> doGetByNameSet(Set<NAME> nameSet);
 
+    protected abstract Page<ENTITY> doGetPage(PageRequest pageRequest);
+
     protected abstract void doInsert(ENTITY entity);
 
     protected abstract void doUpdate(ENTITY entity);
@@ -57,6 +59,12 @@ public abstract class AbstractEntityRepository<
     public final List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
         observer.arguments("getByEntityNameSet", i -> i.identifierSet(nameSet, "nameSet")).throwWhenInvalid();
         return doGetByNameSet(nameSet);
+    }
+
+    @Override
+    public final Page<ENTITY> getPage(PageRequest pageRequest) {
+        observer.arguments("getPage", i -> i.valueObject(pageRequest, "pageRequest")).throwWhenInvalid();
+        return doGetPage(pageRequest);
     }
 
     @Override

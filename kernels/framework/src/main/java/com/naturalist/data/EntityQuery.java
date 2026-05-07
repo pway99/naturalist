@@ -24,4 +24,6 @@ public interface EntityQuery<NAME, E extends Named<NAME>, EC extends BehavioralC
     Optional<E> getByName(NAME name);
 
     EC findByNameSet(Set<NAME> nameSet);
+
+    Page<E> findPage(PageRequest pageRequest);
 }

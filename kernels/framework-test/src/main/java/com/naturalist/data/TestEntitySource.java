@@ -63,6 +63,52 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
                 .toList();
     }
 
+    /**
+     * Read a page of entities ordered ascending by {@code name().toString()}. The
+     * in-memory adapter sorts on read — the entity map is a {@link HashMap} whose
+     * iteration order is unstable, so a deterministic comparator is applied per
+     * call. Cost is negligible at fixture scale; a production rdbms adapter would
+     * delegate the ordering to {@code ORDER BY} on an indexed column.
+     *
+     * <p>Lookahead is honoured directly off the sorted list: when
+     * {@link PageRequest#lookahead()} is positive, {@code pagesAheadKnown} is the
+     * ceiling division of the remaining-row count by {@code pageSize}, capped at
+     * {@code lookahead}; {@code moreBeyondLookahead} is set when at least one row
+     * exists past the lookahead window. When lookahead is zero, only the cheap
+     * "more exists?" signal is populated. The contract observed here matches what
+     * the rdbms adapter must produce via its {@code LIMIT pageSize+1} page query
+     * plus optional thin probe (see {@code docs/plans/paged-queries-plan.md}
+     * Section 2).
+     */
+    public Page<ENTITY> pageOf(PageRequest pageRequest) {
+        List<ENTITY> sorted = entityMap.values().stream()
+                .sorted(Comparator.comparing(e -> e.name().toString()))
+                .toList();
+        int total = sorted.size();
+        int offset = pageRequest.offset();
+        int pageSize = pageRequest.pageSize();
+        int lookahead = pageRequest.lookahead();
+
+        if (offset >= total) {
+            return new Page<>(List.of(), pageRequest.pageNumber(), pageSize, 0, false);
+        }
+        int end = Math.min(offset + pageSize, total);
+        List<ENTITY> content = sorted.subList(offset, end);
+        int remaining = total - end;
+
+        int pagesAheadKnown;
+        boolean moreBeyondLookahead;
+        if (lookahead == 0) {
+            pagesAheadKnown = 0;
+            moreBeyondLookahead = remaining > 0;
+        } else {
+            int pagesNeededForRemaining = (remaining + pageSize - 1) / pageSize;
+            pagesAheadKnown = Math.min(pagesNeededForRemaining, lookahead);
+            moreBeyondLookahead = remaining > lookahead * pageSize;
+        }
+        return new Page<>(content, pageRequest.pageNumber(), pageSize, pagesAheadKnown, moreBeyondLookahead);
+    }
+
     void preSaveChecks(ENTITY entity, NAME excludeName) {
         for (UniqueConstraint<ENTITY> uniqueConstraint : uniqueConstraints()) {
             Object entityValue = uniqueConstraint.value(entity);

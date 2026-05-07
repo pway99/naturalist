@@ -8,6 +8,7 @@ import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -184,6 +185,90 @@ public interface EntityRepositoryTest<
 
         assertThat(result).hasSize(2);
         assertEntityListEquals(result, expected);
+    }
+
+    // =========================================================================
+    // getPage — page size defaults to 2 to exercise multi-page boundaries
+    // against the typical NamedTestEntitySource fixture (≥4 entities).
+    // Lookahead-saturation semantics are covered at the kernel level by
+    // {@code TestEntitySourcePageTest}; the contract test focuses on
+    // boundary correctness and round-trip completeness.
+    // =========================================================================
+
+    /**
+     * Page size used by the paging contract tests. Override to pick a different
+     * size — the default of 2 forces multi-page behaviour for typical fixtures
+     * without requiring extra test data.
+     */
+    default int pageSize() {
+        return 2;
+    }
+
+    @Test
+    default void getPage_nullArgument_throwsInvariantViolationException() {
+        assertThatThrownBy(() -> repository().getPage(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("pageRequest");
+    }
+
+    @Test
+    default void getPage_firstPage_returnsContentWithinPageSize() {
+        Page<ENTITY> page = repository().getPage(PageRequest.first(pageSize()));
+
+        assertThat(page).isNotNull();
+        assertThat(page.pageNumber()).isZero();
+        assertThat(page.pageSize()).isEqualTo(pageSize());
+        assertThat(page.content()).hasSizeLessThanOrEqualTo(pageSize());
+    }
+
+    @Test
+    default void getPage_pastEnd_returnsEmptyPage() {
+        Page<ENTITY> page = repository().getPage(PageRequest.of(10_000, pageSize()));
+
+        assertThat(page.content()).isEmpty();
+        assertThat(page.hasNext()).isFalse();
+    }
+
+    @Test
+    default void getPage_consistentOrderingAcrossCalls() {
+        Page<ENTITY> first = repository().getPage(PageRequest.first(pageSize()));
+        Page<ENTITY> second = repository().getPage(PageRequest.first(pageSize()));
+
+        assertThat(first.content().stream().map(Named::name).toList())
+                .isEqualTo(second.content().stream().map(Named::name).toList());
+    }
+
+    @Test
+    default void getPage_streamingThroughAllPagesYieldsEverySourceEntity() {
+        List<ENTITY> walked = new ArrayList<>();
+        int pageNumber = 0;
+        int safetyBound = 10_000;
+        while (pageNumber < safetyBound) {
+            Page<ENTITY> page = repository().getPage(PageRequest.of(pageNumber, pageSize()));
+            walked.addAll(page.content());
+            if (!page.hasNext()) {
+                break;
+            }
+            pageNumber++;
+        }
+
+        List<ENTITY> all = source().entityStream().toList();
+        assertEntityListEqualsInAnyOrder(walked, all);
+    }
+
+    @Test
+    default void getPage_lookaheadPopulatesPagesAheadKnownWhenMoreExist() {
+        Page<ENTITY> page = repository().getPage(
+                PageRequest.of(0, pageSize(), PageRequest.DEFAULT_LOOKAHEAD));
+
+        long total = source().entityStream().count();
+        if (total > pageSize()) {
+            // At least one more page exists; the contract is that lookahead
+            // surfaces it as either pagesAheadKnown > 0 or moreBeyondLookahead.
+            assertThat(page.hasNext()).isTrue();
+        }
+        // pagesAheadKnown is bounded by lookahead regardless of total size.
+        assertThat(page.pagesAheadKnown()).isLessThanOrEqualTo(PageRequest.DEFAULT_LOOKAHEAD);
     }
 
     // =========================================================================

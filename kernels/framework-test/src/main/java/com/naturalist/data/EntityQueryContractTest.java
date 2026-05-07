@@ -116,4 +116,28 @@ public interface EntityQueryContractTest<
         assertThat(collection.stream().map(e -> e.name()))
                 .containsExactlyInAnyOrder(known.get(0), known.get(1));
     }
+
+    // ---------------------------------------------------------------------------------
+    // findPage — query-side delegation to the repository's paged read.
+    // Boundary and round-trip correctness are covered by
+    // {@code EntityRepositoryTest#getPage_*}; this contract verifies argument
+    // validation and that the query forwards rather than swallowing.
+    // ---------------------------------------------------------------------------------
+
+    @Test
+    default void findPage_nullArgument_throwsInvariantViolationException() {
+        assertThatThrownBy(() -> query().findPage(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("pageRequest");
+    }
+
+    @Test
+    default void findPage_firstPage_returnsNonNullPage() {
+        Page<E> page = query().findPage(PageRequest.first(2));
+
+        assertThat(page).isNotNull();
+        assertThat(page.content()).isNotNull();
+        assertThat(page.pageNumber()).isZero();
+        assertThat(page.pageSize()).isEqualTo(2);
+    }
 }

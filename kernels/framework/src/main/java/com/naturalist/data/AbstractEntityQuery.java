@@ -54,4 +54,12 @@ public abstract class AbstractEntityQuery<
                 .throwWhenInvalid();
         return repository.getByName(name);
     }
+
+    @Override
+    public Page<E> findPage(PageRequest pageRequest) {
+        observer.arguments("findPage", i -> i
+                        .valueObject(pageRequest, "pageRequest"))
+                .throwWhenInvalid();
+        return repository.getPage(pageRequest);
+    }
 }

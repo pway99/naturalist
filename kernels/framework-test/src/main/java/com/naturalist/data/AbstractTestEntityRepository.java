@@ -57,6 +57,11 @@ public abstract class AbstractTestEntityRepository<
                 .toList();
     }
 
+    @Override
+    protected Page<ENTITY> doGetPage(PageRequest pageRequest) {
+        return testEntitySource().pageOf(pageRequest);
+    }
+
     @SuppressWarnings("unchecked")
     Class<NTS> ntsClass() {
         return (Class<NTS>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];

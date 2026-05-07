@@ -31,6 +31,8 @@ public interface EntityRepository<NAME, ENTITY extends Named<NAME>> {
 
     List<ENTITY> getByEntityNameSet(Set<NAME> nameSet);
 
+    Page<ENTITY> getPage(PageRequest pageRequest);
+
     void insert(ENTITY entity);
 
     void update(ENTITY entity);
