@@ -3,18 +3,15 @@ package com.naturalist.plants.catalog;
 import com.naturalist.catalog.CatalogContribution;
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
+import com.naturalist.data.Pages;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.*;
-import com.naturalist.plants.PlantEntityCollections.PlantCollection;
-import com.naturalist.plants.PlantEntityCollections.PlantFamilyCollection;
-import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -54,6 +51,13 @@ public class PlantCatalogContribution implements CatalogContribution {
 
     private static final DomainId DOMAIN = new PlantsDomain();
 
+    /**
+     * Page size for catalog assembly — bulk read, no horizon needed.
+     * The pager is lookahead-0 (single page query, no probe), so the cost
+     * per page is one round trip with bounded payload.
+     */
+    private static final int ASSEMBLY_PAGE_SIZE = 1000;
+
     private final PlantQuery.PlantEntityQuery plants;
     private final PlantQuery.PlantFamilyEntityQuery families;
     private final PlantQuery.PlantGenusEntityQuery genera;
@@ -84,32 +88,18 @@ public class PlantCatalogContribution implements CatalogContribution {
     }
 
     private Stream<SearchableEntity> plantEntities() {
-        var names = plants.allPlantNames();
-        if (names.isEmpty()) {
-            return Stream.empty();
-        }
-        PlantCollection collection = plants.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(PlantCatalogContribution::toSearchablePlant);
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, plants::findPage)
+                .map(PlantCatalogContribution::toSearchablePlant);
     }
 
     private Stream<SearchableEntity> familyEntities() {
-        var names = families.allFamilyNames();
-        if (names.isEmpty()) {
-            return Stream.empty();
-        }
-        PlantFamilyCollection collection =
-                families.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(PlantCatalogContribution::toSearchableFamily);
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, families::findPage)
+                .map(PlantCatalogContribution::toSearchableFamily);
     }
 
     private Stream<SearchableEntity> genusEntities() {
-        var names = genera.allGenusNames();
-        if (names.isEmpty()) {
-            return Stream.empty();
-        }
-        PlantGenusCollection collection =
-                genera.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(PlantCatalogContribution::toSearchableGenus);
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
+                .map(PlantCatalogContribution::toSearchableGenus);
     }
 
     private static SearchableEntity toSearchablePlant(Plant plant) {

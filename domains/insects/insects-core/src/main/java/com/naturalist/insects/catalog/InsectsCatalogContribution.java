@@ -3,18 +3,15 @@ package com.naturalist.insects.catalog;
 import com.naturalist.catalog.CatalogContribution;
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
+import com.naturalist.data.Pages;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.insects.InsectEntityCollections.FamilyCollection;
-import com.naturalist.insects.InsectEntityCollections.GenusCollection;
-import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 import com.naturalist.insects.*;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -51,6 +48,11 @@ public class InsectsCatalogContribution implements CatalogContribution {
 
     private static final DomainId DOMAIN = new InsectsDomain();
 
+    /**
+     * Page size for catalog assembly — bulk read, no horizon needed.
+     */
+    private static final int ASSEMBLY_PAGE_SIZE = 1000;
+
     private final InsectQuery.SpeciesQuery species;
     private final InsectQuery.FamilyQuery families;
     private final InsectQuery.GenusQuery genera;
@@ -81,33 +83,18 @@ public class InsectsCatalogContribution implements CatalogContribution {
     }
 
     private Stream<SearchableEntity> speciesEntities() {
-        var names = species.allSpeciesNames();
-        if (names.isEmpty()) {
-            return Stream.empty();
-        }
-        SpeciesCollection collection =
-                species.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(InsectsCatalogContribution::toSearchableSpecies);
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, species::findPage)
+                .map(InsectsCatalogContribution::toSearchableSpecies);
     }
 
     private Stream<SearchableEntity> familyEntities() {
-        var names = families.allFamilyNames();
-        if (names.isEmpty()) {
-            return Stream.empty();
-        }
-        FamilyCollection collection =
-                families.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(InsectsCatalogContribution::toSearchableFamily);
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, families::findPage)
+                .map(InsectsCatalogContribution::toSearchableFamily);
     }
 
     private Stream<SearchableEntity> genusEntities() {
-        var names = genera.allGenusNames();
-        if (names.isEmpty()) {
-            return Stream.empty();
-        }
-        GenusCollection collection =
-                genera.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(InsectsCatalogContribution::toSearchableGenus);
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
+                .map(InsectsCatalogContribution::toSearchableGenus);
     }
 
     private static SearchableEntity toSearchableSpecies(InsectSpecies entity) {

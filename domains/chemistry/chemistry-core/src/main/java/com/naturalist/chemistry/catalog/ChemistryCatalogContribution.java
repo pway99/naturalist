@@ -5,15 +5,13 @@ import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.chemistry.ChemistryDomain;
 import com.naturalist.chemistry.compound.Compound;
-import com.naturalist.chemistry.compound.CompoundEntityCollections.CompoundCollection;
 import com.naturalist.chemistry.compound.CompoundQuery;
 import com.naturalist.chemistry.product.Product;
-import com.naturalist.chemistry.product.ProductCollection;
 import com.naturalist.chemistry.product.ProductQuery;
+import com.naturalist.data.Pages;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -42,6 +40,11 @@ public class ChemistryCatalogContribution implements CatalogContribution {
 
     private static final DomainId DOMAIN = new ChemistryDomain();
 
+    /**
+     * Page size for catalog assembly — bulk read, no horizon needed.
+     */
+    private static final int ASSEMBLY_PAGE_SIZE = 1000;
+
     private final CompoundQuery.CompoundEntityQuery compounds;
     private final ProductQuery products;
 
@@ -66,21 +69,13 @@ public class ChemistryCatalogContribution implements CatalogContribution {
     }
 
     private Stream<SearchableEntity> compoundEntities() {
-        var names = compounds.allCompoundNames();
-        if (names.isEmpty()) {
-            return Stream.empty();
-        }
-        CompoundCollection collection = compounds.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(ChemistryCatalogContribution::toSearchableCompound);
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, compounds::findPage)
+                .map(ChemistryCatalogContribution::toSearchableCompound);
     }
 
     private Stream<SearchableEntity> productEntities() {
-        var names = products.allProductNames();
-        if (names.isEmpty()) {
-            return Stream.empty();
-        }
-        ProductCollection collection = products.findByNameSet(names.stream().collect(Collectors.toSet()));
-        return collection.stream().map(ChemistryCatalogContribution::toSearchableProduct);
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, products::findPage)
+                .map(ChemistryCatalogContribution::toSearchableProduct);
     }
 
     private static SearchableEntity toSearchableCompound(Compound compound) {
