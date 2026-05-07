@@ -1,6 +1,8 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantName;
@@ -24,9 +26,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Comparator;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/plants")
@@ -53,12 +55,9 @@ public class PlantsController {
     // ── Plant catalog ────────────────────────────────────────────────────
 
     @GetMapping
-    String list(Model model) {
-        var nameSet = plantQuery.plants().allPlantNames().stream().collect(Collectors.toSet());
-        var plants = plantQuery.plants().findByNameSet(nameSet).stream()
-                .sorted(Comparator.comparing((Plant p) -> p.name().value()))
-                .toList();
-        model.addAttribute("plants", plants);
+    String list(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<Plant> plantsPage = plantQuery.plants().findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("plantsPage", plantsPage);
         return "plants/list";
     }
 
@@ -136,13 +135,10 @@ public class PlantsController {
     // ── Phytochemistry ───────────────────────────────────────────────────
 
     @GetMapping("/phytochemistry")
-    String phytochemistryList(Model model) {
-        var nameSet = phytochemicalConstituentQuery.constituents()
-                .allPhytochemicalConstituentNames().stream().collect(Collectors.toSet());
-        var constituents = phytochemicalConstituentQuery.constituents().findByNameSet(nameSet).stream()
-                .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
-                .toList();
-        model.addAttribute("constituents", constituents);
+    String phytochemistryList(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<PhytochemicalConstituent> constituentsPage = phytochemicalConstituentQuery.constituents()
+                .findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("constituentsPage", constituentsPage);
         return "plants/phytochemistry/list";
     }
 

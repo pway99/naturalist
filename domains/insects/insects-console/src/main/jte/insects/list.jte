@@ -1,15 +1,15 @@
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.FunctionalGuild
-@import java.util.List
+@import com.naturalist.data.Page
 
-@param List<InsectSpecies> species
+@param Page<InsectSpecies> speciesPage
 
 @template.layout.page(title = "Insect Catalog", content = @`
     <h1>Insect Catalog</h1>
-    <p>${species.size()} species documented at Oak Vista.</p>
+    <p>Insect species documented at Oak Vista.</p>
 
     <div class="entity-grid">
-        @for(var s : species)
+        @for(var s : speciesPage.content())
             <article>
                 <header>
                     <a href="/insects/${s.name().value()}">
@@ -40,4 +40,6 @@
             </article>
         @endfor
     </div>
+
+    @template.components.pager(page = speciesPage, baseUrl = "/insects")
 `)

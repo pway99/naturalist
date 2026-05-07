@@ -1,17 +1,17 @@
 @import com.naturalist.plants.phytochemistry.PhytochemicalConstituent
-@import java.util.List
+@import com.naturalist.data.Page
 
-@param List<PhytochemicalConstituent> constituents
+@param Page<PhytochemicalConstituent> constituentsPage
 
 @template.layout.page(title = "Phytochemistry Catalog", content = @`
     <a href="/plants" class="naturalist-backlink">&larr; Back to plants</a>
 
     <h1>Phytochemistry Catalog</h1>
-    <p>${constituents.size()} plant-compound links documented. Each entry records
-        one compound in one plant and the role(s) it plays there.</p>
+    <p>Plant-compound links documented. Each entry records one compound in one plant
+        and the role(s) it plays there.</p>
 
     <div class="entity-grid">
-        @for(var c : constituents)
+        @for(var c : constituentsPage.content())
             <article>
                 <header>
                     <a href="/plants/phytochemistry/${c.name().value()}">
@@ -53,4 +53,6 @@
             </article>
         @endfor
     </div>
+
+    @template.components.pager(page = constituentsPage, baseUrl = "/plants/phytochemistry")
 `)

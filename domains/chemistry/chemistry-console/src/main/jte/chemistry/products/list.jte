@@ -1,16 +1,16 @@
 @import com.naturalist.chemistry.product.Product
-@import java.util.List
+@import com.naturalist.data.Page
 
-@param List<Product> products
+@param Page<Product> productsPage
 
 @template.layout.page(title = "Products Catalog", content = @`
     <a href="/chemistry" class="naturalist-backlink">&larr; Back to compounds</a>
 
     <h1>Products Catalog</h1>
-    <p>${products.size()} products catalogued.</p>
+    <p>Products catalogued.</p>
 
     <div class="entity-grid">
-        @for(var p : products)
+        @for(var p : productsPage.content())
             <article>
                 <header>
                     <a href="/chemistry/products/${p.name().value()}">
@@ -37,4 +37,6 @@
             </article>
         @endfor
     </div>
+
+    @template.components.pager(page = productsPage, baseUrl = "/chemistry/products")
 `)

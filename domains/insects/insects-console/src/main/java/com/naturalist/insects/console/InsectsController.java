@@ -1,7 +1,8 @@
 package com.naturalist.insects.console;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.ddd.EntityName;
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.insects.*;
 import com.naturalist.insects.console.render.InsectsParagraphCues;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,14 +49,9 @@ public class InsectsController {
     }
 
     @GetMapping
-    String list(Model model) {
-        var species = insectQuery.species().allSpeciesNames().stream()
-                .sorted(Comparator.comparing(EntityName::value))
-                .map(name -> insectQuery.species()
-                        .getByName(name)
-                        .get())
-                .toList();
-        model.addAttribute("species", species);
+    String list(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("speciesPage", speciesPage);
         return "insects/list";
     }
 

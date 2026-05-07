@@ -3,11 +3,11 @@ package com.naturalist.chemistry.console;
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundTestEntitySource;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,12 +21,14 @@ class ChemistryListTemplateTest {
 
     @Test
     void list_rendersWithoutError() {
-        List<Compound> compounds = new CompoundTestEntitySource(NaturalistDatabase.create()).entityStream()
-                .sorted(Comparator.comparing((Compound c) -> c.name().value()))
-                .toList();
+        Page<Compound> compoundsPage = new CompoundTestEntitySource(NaturalistDatabase.create())
+                .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("chemistry/list.jte", Map.of("compounds", compounds), output);
+        TestTemplateEngine.create().render(
+                "chemistry/list.jte",
+                Map.of("compoundsPage", compoundsPage),
+                output);
 
         assertThat(output.toString()).isNotBlank();
     }

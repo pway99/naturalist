@@ -12,6 +12,8 @@ import com.naturalist.chemistry.product.Product;
 import com.naturalist.chemistry.product.ProductName;
 import com.naturalist.chemistry.product.ProductQuery;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -44,15 +47,13 @@ public class ChemistryController {
     }
 
     @GetMapping
-    String list(Model model) {
-        var nameSet = compoundQuery.compounds().allCompoundNames().stream().collect(Collectors.toSet());
-        var compounds = compoundQuery.compounds().findByNameSet(nameSet).stream()
-                .sorted(Comparator.comparing((Compound c) -> c.name().value()))
-                .toList();
+    String list(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<Compound> compoundsPage = compoundQuery.compounds()
+                .findPage(PageRequest.console(Math.max(0, page)));
         var depictableSlugs = compoundQuery.depictions().allDepictedCompounds().stream()
                 .map(CompoundName::value)
                 .collect(Collectors.toSet());
-        model.addAttribute("compounds", compounds);
+        model.addAttribute("compoundsPage", compoundsPage);
         model.addAttribute("depictableSlugs", depictableSlugs);
         return "chemistry/list";
     }
@@ -84,12 +85,9 @@ public class ChemistryController {
     }
 
     @GetMapping("/products")
-    String productList(Model model) {
-        var nameSet = productQuery.allProductNames().stream().collect(Collectors.toSet());
-        var products = productQuery.findByNameSet(nameSet).stream()
-                .sorted(Comparator.comparing((Product p) -> p.name().value()))
-                .toList();
-        model.addAttribute("products", products);
+    String productList(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<Product> productsPage = productQuery.findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("productsPage", productsPage);
         return "chemistry/products/list";
     }
 

@@ -1,13 +1,13 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,12 +21,14 @@ class PlantsListTemplateTest {
 
     @Test
     void list_rendersWithoutError() {
-        List<Plant> plants = new PlantTestEntitySource(NaturalistDatabase.create()).entityStream()
-                .sorted(Comparator.comparing((Plant p) -> p.name().value()))
-                .toList();
+        Page<Plant> plantsPage = new PlantTestEntitySource(NaturalistDatabase.create())
+                .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("plants/list.jte", Map.of("plants", plants), output);
+        TestTemplateEngine.create().render(
+                "plants/list.jte",
+                Map.of("plantsPage", plantsPage),
+                output);
 
         assertThat(output.toString()).isNotBlank();
     }

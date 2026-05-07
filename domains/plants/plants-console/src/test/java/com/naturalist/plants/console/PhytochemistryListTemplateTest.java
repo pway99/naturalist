@@ -1,13 +1,13 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,13 +21,12 @@ class PhytochemistryListTemplateTest {
 
     @Test
     void phytochemistryList_rendersWithoutError() {
-        List<PhytochemicalConstituent> constituents = new PhytochemicalConstituentTestEntitySource(NaturalistDatabase.create()).entityStream()
-                .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
-                .toList();
+        Page<PhytochemicalConstituent> constituentsPage = new PhytochemicalConstituentTestEntitySource(
+                NaturalistDatabase.create()).pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render("plants/phytochemistry/list.jte",
-                Map.of("constituents", constituents), output);
+                Map.of("constituentsPage", constituentsPage), output);
 
         assertThat(output.toString()).isNotBlank();
     }

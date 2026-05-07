@@ -1,16 +1,16 @@
 @import com.naturalist.chemistry.compound.Compound
-@import java.util.List
+@import com.naturalist.data.Page
 @import java.util.Set
 
-@param List<Compound> compounds
+@param Page<Compound> compoundsPage
 @param Set<String> depictableSlugs = java.util.Set.of()
 
 @template.layout.page(title = "Chemistry Catalog", content = @`
     <h1>Chemistry Catalog</h1>
-    <p>${compounds.size()} compounds catalogued. <a href="/chemistry/products">View products &rarr;</a></p>
+    <p>Compounds catalogued. <a href="/chemistry/products">View products &rarr;</a></p>
 
     <div class="entity-grid">
-        @for(var c : compounds)
+        @for(var c : compoundsPage.content())
             <article>
                 <header>
                     <a href="/chemistry/${c.name().value()}">
@@ -49,4 +49,6 @@
             </article>
         @endfor
     </div>
+
+    @template.components.pager(page = compoundsPage, baseUrl = "/chemistry")
 `)

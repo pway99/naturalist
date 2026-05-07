@@ -1,15 +1,14 @@
 @import com.naturalist.plants.Plant
-@import java.util.List
+@import com.naturalist.data.Page
 
-@param List<Plant> plants
+@param Page<Plant> plantsPage
 
 @template.layout.page(title = "Plant Catalog", content = @`
     <h1>Plant Catalog</h1>
-    <p>${plants.size()} plants documented at Oak Vista. <a href="/plants/phytochemistry">View phytochemistry &rarr;</a>
-    </p>
+    <p>Plants documented at Oak Vista. <a href="/plants/phytochemistry">View phytochemistry &rarr;</a></p>
 
     <div class="entity-grid">
-        @for(var p : plants)
+        @for(var p : plantsPage.content())
             <article>
                 <header>
                     <a href="/plants/${p.name().value()}">
@@ -50,4 +49,6 @@
             </article>
         @endfor
     </div>
+
+    @template.components.pager(page = plantsPage, baseUrl = "/plants")
 `)
