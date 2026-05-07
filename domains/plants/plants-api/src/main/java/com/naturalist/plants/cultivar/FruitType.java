@@ -7,6 +7,14 @@ package com.naturalist.plants.cultivar;
  * content and thick flesh for sauce production; cherry types are fresh-eating
  * varieties with high sugar concentration; slicers and beefsteaks are large
  * fresh-eating varieties for sandwiches and salads.
+ * <p>
+ * <strong>Naming caveat:</strong> the constants enumerated here describe
+ * <em>tomato</em> fruit morphology only, despite the type's generic name.
+ * Non-tomato cultivars (basil, parsley, eggplant, etc.) currently carry
+ * {@code null} on {@link Cultivar#fruitType()}. A future refactor should
+ * either rename to {@code TomatoFruitType} (matched by a sibling
+ * classifier for other crop families) or broaden the enum to cover
+ * non-tomato fruit and edible-part categories.
  */
 public enum FruitType {
 

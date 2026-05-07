@@ -19,7 +19,12 @@ import java.util.function.Consumer;
  * references in planting events and harvest records.
  * <p>
  * {@link VarietyType} determines genetic behaviour under seed saving.
- * {@link FruitType} determines culinary processing suitability.
+ * {@link FruitType} determines culinary processing suitability for fruiting
+ * cultivars and is nullable — non-fruiting cultivars (leaf herbs such as
+ * basil and parsley) carry {@code null}. The enum itself is currently
+ * tomato-specific (PASTE, CHERRY, SLICER, BEEFSTEAK) despite its generic
+ * name; non-tomato fruit-bearing cultivars added to the catalog should
+ * also use {@code null} until the enum is broadened.
  * {@link SeedSavingPolicy} encodes the management decision derived from
  * variety type and heritage significance.
  * <p>
@@ -47,7 +52,7 @@ public record Cultivar(
         String commonName,
         Description description,
         VarietyType varietyType,
-        FruitType fruitType,
+        @Nullable FruitType fruitType,
         SeedSavingPolicy seedSavingPolicy,
         @Nullable String seedSource,
         @Nullable String gardenNotes
@@ -85,7 +90,6 @@ public record Cultivar(
                 .notBlank(commonName, "commonName")
                 .valueObject(description, "description")
                 .notNull(this, Cultivar::varietyType, "varietyType")
-                .notNull(this, Cultivar::fruitType, "fruitType")
                 .notNull(this, Cultivar::seedSavingPolicy, "seedSavingPolicy");
     }
 }

@@ -80,7 +80,9 @@
                         <a href="/plants/cultivars/${c.name().value()}"><strong>${c.commonName()}</strong></a>
                         &middot; <code>${c.name().value()}</code>
                         &middot; ${c.varietyType().name()}
-                        &middot; ${c.fruitType().name()}
+                        @if(c.fruitType() != null)
+                            &middot; ${c.fruitType().name()}
+                        @endif
                         &middot; ${c.seedSavingPolicy().name()}
                     </li>
                 @endfor

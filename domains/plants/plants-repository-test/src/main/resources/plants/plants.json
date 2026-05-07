@@ -467,5 +467,70 @@
     "lifeForm": "ANNUAL",
     "nativeBioregions": [],
     "commonNames": []
+  },
+  {
+    "name": "ocimum-basilicum",
+    "taxonomy": {
+      "order": "Lamiales",
+      "family": "Lamiaceae",
+      "genus": "Ocimum",
+      "species": "basilicum"
+    },
+    "description": {
+      "preschool": "Basil is a fragrant green herb that smells wonderful when you brush against it. We grow basil in the kitchen garden so we can pick the leaves to put on top of pizzas and fresh tomato salads. Bees love basil flowers — they buzz around the tall purple flower spikes all summer long.",
+      "elementary": "Basil (Ocimum basilicum) is an annual culinary herb in the mint family, originally from tropical Africa and Asia. At Oak Vista we grow several different varieties — Genovese for Italian cooking and pesto, and Thai basil with its anise flavour for Southeast Asian dishes. Basil thrives in Chico's hot summers but bolts (rushes to flower and set seed) when temperatures stay above 95°F for too many days. Selecting plants that hold off bolting longest is the key to a productive basil season in the Sacramento Valley.",
+      "secondary": "Ocimum basilicum (Lamiaceae) is an aromatic annual cultivated as a culinary herb, with a tropical Old World origin (likely Indo-African). At Oak Vista, basil serves as a kitchen-garden staple supporting the heritage tomato sauce program and as nectar habitat for the broader pollinator community — its tall thyrsoid inflorescences are heavily visited by carpenter bees (Xylocopa varipuncta) and honeybees. Bolting under sustained heat is the primary management challenge; selection programs at Oak Vista target Sacramento Valley heat tolerance and chemotype stability across multiple cultivars (Genovese-type linalool chemotype, Thai-type estragole chemotype). The species is predominantly self-pollinating with 5–15% outcrossing rates mediated by hymenopteran visitors.",
+      "university": "Ocimum basilicum L. — Lamiales: Lamiaceae: Nepetoideae. Tetraploid (2n = 4x = 48), with extensive intraspecific morphological and chemotypic variation that has historically supported recognition of multiple varieties (var. basilicum sweet basil, var. thyrsiflora Thai basil, var. minimum bush basil). Floral architecture: zygomorphic two-lipped corolla characteristic of Lamiaceae, with thyrsoid inflorescence typically 8–20 cm; cleistogamous self-pollination predominates with secondary chasmogamous outcrossing (5–15%) mediated by Apidae and small Halictidae. Essential oil composition is under simple genetic control via the eugenol O-methyltransferase pathway, giving rise to the major chemotypes — linalool-dominant (Genovese, Italian sweet basil), methylchavicol/estragole-dominant (Thai basil, Egyptian basil), and methyl eugenol-dominant (East Indian basil). The bolting transition is photoperiod-and-temperature sensitive: ethylene-mediated floral induction occurs above approximately 38°C sustained, making heat-tolerant chemotype-stable selections a priority for Sacramento Valley adaptation."
+    },
+    "roles": [
+      "FOOD_CROP",
+      "POLLINATOR_SUPPORT"
+    ],
+    "lifeForm": "ANNUAL",
+    "nativeBioregions": [],
+    "commonNames": []
+  },
+  {
+    "name": "petroselinum-crispum",
+    "taxonomy": {
+      "order": "Apiales",
+      "family": "Apiaceae",
+      "genus": "Petroselinum",
+      "species": "crispum"
+    },
+    "description": {
+      "preschool": "Parsley is a green leafy herb we grow for cooking. The first year, parsley makes lots of flat, tasty leaves that we add to soups and salads. The second year, it grows tall flower stalks covered in tiny white flowers that beneficial wasps and flies love.",
+      "elementary": "Parsley (Petroselinum crispum) is a biennial herb in the carrot family. The first year of its life it makes a leafy rosette we harvest for cooking — flat-leaf Italian parsley has the strongest flavour and is preferred over the curly-leaf form. In the second year it bolts, producing umbels of tiny white flowers that attract beneficial insects like parasitoid wasps and hoverflies. We let some plants bolt every other year to support the beneficial insect community and to harvest seeds for the next planting.",
+      "secondary": "Petroselinum crispum (Apiaceae) is a biennial culinary herb of Mediterranean origin, grown both for its aromatic foliage (used fresh in Mediterranean and Middle Eastern cuisines) and for its umbel inflorescence's value as beneficial-insect habitat. The Apiaceae compound umbel structure presents shallow nectar accessible to short-tongued Hymenoptera and Diptera, making parsley one of the more functionally important plants for biocontrol-relevant insect support — Tachinidae, Braconidae (Aphidiinae), and Syrphidae all use Apiaceae nectar resources during adult stages. At Oak Vista, the variety neapolitanum (Italian flat-leaf) is favoured for both culinary quality and the petroselinic acid profile; Chico's mild winters provide adequate vernalisation (~800 chill hours, USDA Zone 9b) for second-year bolting and seed production.",
+      "university": "Petroselinum crispum (Mill.) Fuss — Apiales: Apiaceae: Apioideae. Diploid biennial (2n = 22), of probable Mediterranean origin. Vernalisation requirement: 6–8 weeks below 10°C, quantitative response — adequately met across most California climate zones including Chico. Floral biology: protandrous compound umbels enforce obligate outcrossing despite hermaphroditic flower structure, with pollination mediated by short-tongued Hymenoptera (Sphecidae, Crabronidae, small Vespidae) and Syrphidae attracted by exposed nectar at the schizocarp's stylopodium. Essential oil chemistry is dominated by myristicin and apiol in seed (apiol historically extracted as an emmenagogue, with attendant toxicity concerns), with petroselinic acid as the characteristic vegetative-tissue fatty acid distinguishing Apiaceae herbs from broader Umbelliferae lipid profiles. Significant cultivar groups: var. crispum (curled-leaf), var. neapolitanum (flat-leaf, generally preferred for flavour), var. tuberosum (Hamburg parsley, root-edible). The obligate outcrossing requirement places minimum effective seed-saving population sizes at 10+ plants and demands isolation distances on the order of 400 m between varietal selections to preserve genetic identity."
+    },
+    "roles": [
+      "FOOD_CROP",
+      "BENEFICIAL_INSECT_HABITAT"
+    ],
+    "lifeForm": "PERENNIAL",
+    "nativeBioregions": [],
+    "commonNames": []
+  },
+  {
+    "name": "solanum-melongena",
+    "taxonomy": {
+      "order": "Solanales",
+      "family": "Solanaceae",
+      "genus": "Solanum",
+      "species": "melongena"
+    },
+    "description": {
+      "preschool": "Eggplants are big shiny purple fruits that grow on bushy plants in the hottest part of the garden. They love the very hot Chico summers — the hotter it gets, the better the eggplants grow. We slice and grill them or bake them into eggplant parmesan.",
+      "elementary": "Eggplant (Solanum melongena) is a tropical relative of tomatoes and potatoes that thrives in extreme heat. Unlike tomatoes, which drop their flowers when temperatures stay above 95°F, eggplants set more fruit as the weather gets hotter — making them one of the best crops for Sacramento Valley summers. The plants produce purple star-shaped flowers that bumblebees and carpenter bees buzz-pollinate, the same way they do with tomato flowers. The main pest at Oak Vista is the eggplant flea beetle, which chews tiny pinhole-shaped holes in young leaves.",
+      "secondary": "Solanum melongena (Solanaceae) is a heat-loving Solanaceous fruit crop of South Asian origin, distinct among the family in actually preferring high-temperature conditions where its relatives (Solanum lycopersicum, Capsicum spp.) drop pollen. Floral biology: hermaphroditic flowers with large purple corollas and a poricidal anther cone requiring sonication for efficient pollen release — at Oak Vista, Bombus and Xylocopa varipuncta are the primary effective pollinators. The principal pest pressures at Oak Vista are Epitrix hirtipennis (eggplant flea beetle, characteristic shothole damage on young leaves) and Verticillium dahliae (race 1 predominates in Sacramento Valley soils). Heirloom open-pollinated cultivars such as Black Beauty (introduced 1902) are preferred for traceability and seed-saving suitability.",
+      "university": "Solanum melongena L. — Solanales: Solanaceae: Solanoideae. Cultivated diploid (2n = 24), domesticated from the S. insanum / S. incanum complex in South and Southeast Asia. Floral architecture: poricidal anthers concentric to a stout style, requiring buzz pollination at frequencies analogous to Solanum lycopersicum (~400 Hz); eggplant exhibits notably higher outcrossing rates (5–20% versus tomato's 2–5%) due to larger floral display and longer style exsertion at anthesis, mediated primarily by Bombus and Xylocopa visitation. Photosynthetic optimum is approximately 28–32°C with sustained productivity through 38–43°C peaks — in marked contrast to S. lycopersicum, where pollen viability collapses above ~32°C. Anthocyanin chemistry of the typical purple exocarp is dominated by nasunin (delphinidin-3-(p-coumaroylrutinoside)-5-glucoside), under relatively simple genetic control and stable across selection cycles. Pest and pathogen profile in Sacramento Valley production: Epitrix hirtipennis (Chrysomelidae) feeding damage manageable through trichome-density selection and row-cover deployment during early establishment; Verticillium dahliae race 1 the predominant soilborne pathogen, with quantitative tolerance available in Black Beauty and other long-cultivated heirloom backgrounds."
+    },
+    "roles": [
+      "FOOD_CROP"
+    ],
+    "lifeForm": "ANNUAL",
+    "nativeBioregions": [],
+    "commonNames": []
   }
 ]

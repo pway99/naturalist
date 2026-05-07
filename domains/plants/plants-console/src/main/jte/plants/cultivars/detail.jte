@@ -18,7 +18,9 @@
         <h2>Identity</h2>
         <ul>
             <li><strong>Variety type:</strong> ${cultivar.varietyType().name()}</li>
-            <li><strong>Fruit type:</strong> ${cultivar.fruitType().name()}</li>
+            @if(cultivar.fruitType() != null)
+                <li><strong>Fruit type:</strong> ${cultivar.fruitType().name()}</li>
+            @endif
             <li><strong>Seed saving:</strong> ${cultivar.seedSavingPolicy().name()}</li>
             @if(cultivar.seedSource() != null)
                 <li><strong>Seed source:</strong> ${cultivar.seedSource()}</li>
