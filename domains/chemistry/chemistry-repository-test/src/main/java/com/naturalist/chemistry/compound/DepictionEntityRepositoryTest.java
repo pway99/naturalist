@@ -44,15 +44,20 @@ interface DepictionEntityRepositoryTest
 
     @Override
     default CompoundDepiction newEntity() {
+        // urea is the one catalog compound without an existing depiction —
+        // satisfies both the FK constraint (urea exists in compounds-base.json)
+        // and the unique-on-compoundName constraint (no depiction yet references it).
         return new CompoundDepiction(
                 DepictionId.create(),
-                CompoundName.of(RandomValue.string()),
+                CompoundName.of("urea"),
                 RandomValue.string(),
                 RandomValue.string());
     }
 
     @Override
     default CompoundDepiction ghostEntity() {
+        // FK check is skipped on the update-not-found path because
+        // EntityNotFoundException fires before preSaveChecks.
         return new CompoundDepiction(
                 DepictionId.create(),
                 CompoundName.of(RandomValue.string()),

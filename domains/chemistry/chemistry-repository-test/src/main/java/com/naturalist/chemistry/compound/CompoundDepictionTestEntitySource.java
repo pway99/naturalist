@@ -1,5 +1,6 @@
 package com.naturalist.chemistry.compound;
 
+import com.naturalist.data.ForeignKeyConstraint;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
@@ -29,5 +30,13 @@ public class CompoundDepictionTestEntitySource extends TestEntitySource<Depictio
                     }
                 }
         );
+    }
+
+    @Override
+    protected List<ForeignKeyConstraint<CompoundDepiction, ?>> foreignKeyConstraints() {
+        return List.of(ForeignKeyConstraint.of(
+                "compoundName",
+                CompoundDepiction::compoundName,
+                CompoundTestEntitySource.class));
     }
 }

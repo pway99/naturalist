@@ -630,5 +630,48 @@
     },
     "omriListed": true,
     "properties": {}
+  },
+  {
+    "name": "urea",
+    "commonName": "Urea",
+    "compoundInfo": {
+      "formula": "CH4N2O",
+      "molecularWeight": 60.06,
+      "phCharacter": "NEUTRAL",
+      "chemicalNature": "ORGANIC",
+      "physicalForm": "COMPLEX",
+      "structuralType": {
+        "kind": "OTHER_ORGANIC"
+      },
+      "functionalRoles": [
+        {
+          "kind": "FERTILIZER"
+        }
+      ],
+      "constituentElements": [
+        "C",
+        "H",
+        "N",
+        "O"
+      ]
+    },
+    "solubility": {
+      "gramsPerLiterAt20C": 1080.0,
+      "category": "HIGHLY_SOLUBLE",
+      "ecContributionFactor": 0.0,
+      "notes": "Very high water solubility. Non-ionic in solution — does not contribute to electrical conductivity. Hydrolyzes to ammonia and CO2 via soil urease activity within hours of soil contact."
+    },
+    "bioavailability": {
+      "primaryPathway": "ROOT_MASS_FLOW",
+      "relativeAbsorptionRate": 0.7,
+      "cuticular": true,
+      "stomatal": true,
+      "isChelateEnhanced": false,
+      "mechanism": "Taken up directly by roots and rapidly converted to ammonium by soil urease enzymes. Foliar absorption viable through both stomatal and cuticular pathways — small uncharged molecule penetrates the waxy cuticle readily."
+    },
+    "volatilization": null,
+    "safety": null,
+    "omriListed": false,
+    "properties": {}
   }
 ]
