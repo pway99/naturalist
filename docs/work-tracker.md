@@ -21,6 +21,7 @@ Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surfa
 | 6   | Pressure test — *Battus philenor*                | Pressure test | Phase 1b active              | [`pressure-test/battus-philenor/01-findings.md`](pressure-test/battus-philenor/01-findings.md) | Node-by-node evaluation continues. A1-F1 CONTINGENT on FU-1. Next node: `Compound` or `PhytochemicalConstituent`. |
 | 7   | Backlog — Soil/Sensor services                   | Notes         | unprioritized backlog        | [`notes/pending-implementation.md`](notes/pending-implementation.md)                  | Stale in spots (BehavioralCollection now exists). Triage pass needed before picking from this list. |
 | 8   | Open design questions                            | Notes         | Q0–Q7 in flight              | [`notes/open-questions.md`](notes/open-questions.md)                                  | Several deferred-but-not-resolved. Q0 (Aggregate × Entity ADR) is the only one with structural impact. |
+| 9   | Vision-assisted identification                   | Plan (sketch) | **deferred** — long horizon  | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md)  | Claude Vision–driven console identification + draft-review-confirm workflow. Revisit after #1–#3 land and ≥4 weeks of manual entry surface real friction. |
 
 ---
 
@@ -108,6 +109,20 @@ The list is partly stale: item 1 (`BehavioralCollection`) is shipped (ADR-011 + 
 
 Of the seven, only **Q0** (Aggregate × CatalogEntity × Entity composition ADR) has potential structural impact and may want resolving before more aggregate-shaped work lands. Q1–Q7 are infrastructure concerns deferred behind the in-memory adapter.
 
+### 9. Vision-assisted identification (deferred)
+
+**Source:** [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md). Sketch only.
+
+Console- and web-driven workflow that posts an image to Claude Vision, returns a typed `IdentificationDraft<T>` per domain, lets Pat review and edit, and confirms via `EntityCommand.insert`. Architectural shape sketched (kernel facade `kernels/vision/` + `adapters/anthropic-vision/` + per-domain `<domain>-vision/` + console routes); not promoted to numbered milestones.
+
+**Why deferred:**
+- Pressure-test framing doesn't justify it (the test stresses cross-domain shape, not data volume).
+- Manual console entry through #1–#3 hasn't been tried; vision UX should be designed against the friction manual entry surfaces, not speculatively.
+- Prompt + tool-schema design wants iteration; locking now risks the wrong shape.
+- Multi-PR architectural shell is non-trivial and competes with five queued near-term efforts.
+
+**Revisit when:** Console-driven manual entry has been Pat's daily workflow for ≥4 weeks AND he can name the specific bottleneck.
+
 ---
 
 ## Recently completed
@@ -144,6 +159,8 @@ admin-console view 4              (gated on scheduled-task runner; not actionabl
 pressure-test Phase 1b node walks (independent; surfaces new FUs as it proceeds)
 
 FU-2 / FU-3 (pressure-test follow-ups; independent kernels, not yet planned)
+
+vision-assisted-identification          (deferred — long horizon; revisit after manual entry has been daily workflow for weeks)
 ```
 
 ---
@@ -173,6 +190,7 @@ losing data.
 - **Catalog kernel M9b–M12 is interleavable** — pick up between bigger efforts. M10's observation pipeline is its only sequencing constraint (M9b first).
 - **Pressure-test Phase 1b is interruptible.** Produces findings, not code. Slot in when the engineering queue is light.
 - **Backlog triage** ([`notes/pending-implementation.md`](notes/pending-implementation.md)) and **Q0 ADR** ([`notes/open-questions.md`](notes/open-questions.md)) are not on the path. Worth a 30-minute independent pass to retire stale items or schedule the live ones.
+- **Vision-assisted identification** ([`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md)) is deliberately **off the near-term path**. The sketch is captured so the design space is organized when Pat does decide to pick it up; until then it does not compete for attention.
 
 ---
 
