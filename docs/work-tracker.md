@@ -5,7 +5,7 @@ This file does not own scope — every row links to its source-of-truth doc.
 Update a row when its status changes; promote completed rows to the
 "recently completed" section so the active table stays focused.
 
-Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surface (command framework) before the heavy editorial slice (FU-1 PR-2f). Runtime data persistence sketch added as a follow-up to the command-framework pilot, ahead of any console write route.
+Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surface (command framework) before the heavy editorial slice (FU-1 PR-2f). Runtime data persistence sketch added as a follow-up to the command-framework pilot, ahead of any console write route. Command framework pilot landed 2026-05-09 (commit `482b48d`); runtime data persistence is now unblocked.
 
 ---
 
@@ -13,33 +13,23 @@ Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surfa
 
 | #   | Effort                                           | Type          | Status                       | Source                                                                                | Notes                                                                                              |
 |-----|--------------------------------------------------|---------------|------------------------------|---------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| 1   | Command framework                                | Plan          | **next** — pilot pending     | [`plans/command-framework.md`](plans/command-framework.md)                            | Kernel + insects pilot; no controller wiring, no persistence change. Selected as the next effort.  |
-| 2   | Runtime data persistence                         | Plan (sketch) | gated on #1                  | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)              | Optional `JsonRuntimeStore` write-back hook on `TestEntitySource` so console-driven writes survive restart. Defers RDBMS. |
-| 3   | FU-1 — Family/Genus catalog tiers                | Plan (notes)  | active — PR-2f after #1, #2  | [`notes/fu-1-plan.md`](notes/fu-1-plan.md)                                            | Unblocked 2026-05-09 by paged-queries. PR-2f, PR-2g, PR-3 remain. Closes pressure-test A1-F1.      |
+| 1   | Runtime data persistence                         | Plan (sketch) | **next** — unblocked         | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)              | Optional `JsonRuntimeStore` write-back hook on `TestEntitySource` so console-driven writes survive restart. Defers RDBMS. Unblocked 2026-05-09 by command-framework pilot landing. |
+| 2   | Command framework — follow-ups                   | Plan          | active — pilot landed; FUs   | [`plans/command-framework.md`](plans/command-framework.md)                            | Pilot shipped 2026-05-09 (commit `482b48d`). Remaining: console controller wiring (after #1), second-domain rollout (chemistry), aggregate-level commands (when forced by a use case). |
+| 3   | FU-1 — Family/Genus catalog tiers                | Plan (notes)  | active — PR-2f after #1      | [`notes/fu-1-plan.md`](notes/fu-1-plan.md)                                            | Unblocked 2026-05-09 by paged-queries. PR-2f, PR-2g, PR-3 remain. Closes pressure-test A1-F1.      |
 | 4   | Catalog kernel — finish line                     | Plan          | active — M9b/M10/M11/M12     | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                                  | Typed observation types + coverage assertion + ArchUnit guard + ADR. Independent of FU-1.          |
 | 5   | Admin console                                    | Plan          | active — view 4 (future)     | [`plans/admin-console.md`](plans/admin-console.md)                                    | Views 1–3 shipped. View 4 (`/admin/schedules`) is gated on the future scheduled-task runner.       |
 | 6   | Pressure test — *Battus philenor*                | Pressure test | Phase 1b active              | [`pressure-test/battus-philenor/01-findings.md`](pressure-test/battus-philenor/01-findings.md) | Node-by-node evaluation continues. A1-F1 CONTINGENT on FU-1. Next node: `Compound` or `PhytochemicalConstituent`. |
 | 7   | Backlog — Soil/Sensor services                   | Notes         | unprioritized backlog        | [`notes/pending-implementation.md`](notes/pending-implementation.md)                  | Stale in spots (BehavioralCollection now exists). Triage pass needed before picking from this list. |
 | 8   | Open design questions                            | Notes         | Q0–Q7 in flight              | [`notes/open-questions.md`](notes/open-questions.md)                                  | Several deferred-but-not-resolved. Q0 (Aggregate × Entity ADR) is the only one with structural impact. |
-| 9   | Vision-assisted identification                   | Plan (sketch) | **deferred** — long horizon  | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md)  | Claude Vision–driven console identification + draft-review-confirm workflow. Revisit after #1–#3 land and ≥4 weeks of manual entry surface real friction. |
+| 9   | Vision-assisted identification                   | Plan (sketch) | **deferred** — long horizon  | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md)  | Claude Vision–driven console identification + draft-review-confirm workflow. Revisit after #1, FU-1 land and ≥4 weeks of manual entry surface real friction. |
 
 ---
 
 ## Active efforts — what's left
 
-### 1. Command framework pilot — **next**
+### 1. Runtime data persistence — **next**
 
-**Source:** [`plans/command-framework.md`](plans/command-framework.md). Single PR; insects only; no controller wiring; no persistence change.
-
-- New: `EntityCommand`, `AbstractEntityCommand` in `kernels/framework`.
-- New: `EntityCommandContractTest` in `kernels/framework-test`.
-- New: public `InsectCommand` namespace + `*CommandImpl` adapters in insects-api / insects-core.
-- Test context gains an `insectCommand()` accessor.
-- **Out of scope of the pilot:** controller wiring, second-domain rollout, aggregate-level commands, durable persistence (covered separately by #2).
-
-### 2. Runtime data persistence
-
-**Source:** [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md). Sketch only — promote to numbered milestones in the implementing PR. **Gated on #1.**
+**Source:** [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md). Sketch only — promote to numbered milestones in the implementing PR. **Unblocked** 2026-05-09 by the command-framework pilot landing.
 
 The minimum-complexity stop-gap that lets console-driven inserts/updates survive restart without standing up MyBatis. Optional `JsonRuntimeStore` collaborator on `TestEntitySource`; null in tests (in-memory only), wired in the management-console composition root with a configured runtime directory outside the classpath.
 
@@ -48,9 +38,18 @@ The minimum-complexity stop-gap that lets console-driven inserts/updates survive
 - Composition root binds `naturalist.data.dir` and supplies stores to subclasses that opt in.
 - **Out of scope:** RDBMS adapter, multi-process coordination, console write routes (separate follow-up under `command-framework.md`), catalog index re-assembly trigger (own follow-up under `catalog-kernel.md`).
 
+### 2. Command framework — follow-ups
+
+**Source:** [`plans/command-framework.md`](plans/command-framework.md). Pilot shipped 2026-05-09 (commit `482b48d`):
+`EntityCommand` + `AbstractEntityCommand` in the kernel, `EntityCommandContractTest` in framework-test, public `InsectCommand` namespace with entity-level `SpeciesCommand` / `ImageCommand`, `*CommandImpl` adapters in insects-core, contract tests, and `insectCommand()` accessor on `InsectsTestContext`. Three follow-ups remain in the plan:
+
+- **First console write route.** A `@PostMapping` route in `insects-console` calling `insectCommand.species().insert(...)`. CSRF / form rendering / route-test review live here. Sequenced after #1 so inserted entities persist.
+- **Second-domain rollout.** Replicate the namespace + adapters to chemistry (N=3 — Compound, Element, Product). Proves the abstraction at higher cardinality.
+- **Aggregate-level commands.** Defer until a controller route genuinely needs to coordinate multi-entity writes; a real shape will be obvious then.
+
 ### 3. FU-1 — Family/Genus catalog tiers
 
-**Source:** [`notes/fu-1-plan.md`](notes/fu-1-plan.md). **Unblocked** 2026-05-09 by paged-queries landing. Sequenced after #1 and #2 so the species-narrowing editorial cycle can optionally use the console for data entry.
+**Source:** [`notes/fu-1-plan.md`](notes/fu-1-plan.md). **Unblocked** 2026-05-09 by paged-queries landing. Sequenced after #1 so the species-narrowing editorial cycle can optionally use the console for data entry once write routes land.
 
 | Slice  | Status     | Description                                                                                                                                                                                                                               |
 |--------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -127,28 +126,33 @@ Console- and web-driven workflow that posts an image to Claude Vision, returns a
 
 ## Recently completed
 
-| Effort                    | Completed  | Source                                                    | Final commit                                                   |
-|---------------------------|------------|-----------------------------------------------------------|----------------------------------------------------------------|
-| Paged queries (steps 1–7) | 2026-05-09 | [`plans/paged-queries-plan.md`](plans/paged-queries-plan.md) | `3789319` (delete unbounded) → `3a5ea41` (mark plan implemented) |
+| Effort                            | Completed  | Source                                                       | Final commit                                                     |
+|-----------------------------------|------------|--------------------------------------------------------------|------------------------------------------------------------------|
+| Command framework pilot           | 2026-05-09 | [`plans/command-framework.md`](plans/command-framework.md)   | `482b48d` (kernel + insects pilot; follow-ups deferred)          |
+| Paged queries (steps 1–7)         | 2026-05-09 | [`plans/paged-queries-plan.md`](plans/paged-queries-plan.md) | `3789319` (delete unbounded) → `3a5ea41` (mark plan implemented) |
 
 ---
 
 ## Dependency graph
 
 ```
-paged-queries  ✅ done
+paged-queries           ✅ done
+command-framework pilot ✅ done
       │
       ▼
-command-framework pilot ──► runtime-data-persistence ──► (first console write route, follow-up)
-                                                            │
-                                                            └─► search-index re-assembly trigger
-                                                                (new milestone in catalog-kernel.md)
+runtime-data-persistence ──► (first console write route, follow-up under command-framework.md)
+                                  │
+                                  └─► search-index re-assembly trigger
+                                      (new milestone in catalog-kernel.md)
 
-(parallel — interleavable with the above once command-framework lands)
+(parallel — interleavable)
 
 fu-1 PR-2f ─► fu-1 PR-2g ─► pressure-test A1-F1 closes
                   │
                   └─► fu-1 PR-3 (console)
+
+command-framework second-domain rollout (chemistry) — independent of #1
+command-framework aggregate commands     — deferred until forced by a use case
 
 catalog-kernel M9b ─► M10
                   │
@@ -168,25 +172,24 @@ vision-assisted-identification          (deferred — long horizon; revisit afte
 ## Decided ordering (Option B)
 
 **Rationale.** The read side shipped end-to-end through paged-queries; the
-write side is still internal-only. Open the symmetric write port (#1)
-before the heavy editorial slice (FU-1 PR-2f). Add durable persistence
-(#2) right after so any console write route entered during PR-2f's
-editorial cycle survives restart. Defers the RDBMS adapter without
+write side is now opened by the command-framework pilot (landed 2026-05-09).
+Add durable persistence next so any console write route entered during
+PR-2f's editorial cycle survives restart. Defers the RDBMS adapter without
 losing data.
 
-1. **Command framework pilot** — `EntityCommand` + insects-only adapters. Small, focused, no persistence change. ([source](plans/command-framework.md))
-2. **Runtime data persistence** — `JsonRuntimeStore` write-back hook on `TestEntitySource`. Console-driven inserts/updates persist to a configured runtime directory; canonical JSON stays read-only. ([source](plans/runtime-data-persistence.md))
-3. **First console write route** *(follow-up under `command-framework.md`)* — exercises #1 + #2 end-to-end with one concrete `@PostMapping`. CSRF / form rendering / route-test review live here.
-4. **FU-1 PR-2f** — Species narrowing (heaviest editorial slice). PR-2f's family/genus prose can optionally be entered through the new console write route rather than hand-edited JSON.
-5. **FU-1 PR-2g** — A1-F1 closure. Pressure-test finding moves CONTINGENT → CLOSED.
-6. **FU-1 PR-3** — Console for family/genus tiers.
-7. **Catalog kernel M9b → M10 → M11 → M12** — finish-line work; small per-milestone. Can interleave at any point after #1.
-8. **Pressure-test Phase 1b — next node** (`Compound` or `PhytochemicalConstituent`). Interruptible; slot in between coding sessions.
+0. ✅ **Command framework pilot** — landed `482b48d`. ([source](plans/command-framework.md))
+1. **Runtime data persistence** — `JsonRuntimeStore` write-back hook on `TestEntitySource`. Console-driven inserts/updates persist to a configured runtime directory; canonical JSON stays read-only. ([source](plans/runtime-data-persistence.md))
+2. **First console write route** *(follow-up under `command-framework.md`)* — exercises pilot + #1 end-to-end with one concrete `@PostMapping`. CSRF / form rendering / route-test review live here.
+3. **FU-1 PR-2f** — Species narrowing (heaviest editorial slice). PR-2f's family/genus prose can optionally be entered through the new console write route rather than hand-edited JSON.
+4. **FU-1 PR-2g** — A1-F1 closure. Pressure-test finding moves CONTINGENT → CLOSED.
+5. **FU-1 PR-3** — Console for family/genus tiers.
+6. **Catalog kernel M9b → M10 → M11 → M12** — finish-line work; small per-milestone. Can interleave at any point.
+7. **Pressure-test Phase 1b — next node** (`Compound` or `PhytochemicalConstituent`). Interruptible; slot in between coding sessions.
 
 ### Notes on the ordering
 
 - **Editorial cost remains concentrated in FU-1 PR-2f** (~29 new descriptions × 4 Durrell levels). Largest single effort remaining; schedule around availability for prose work.
-- **#1 → #2 → #3 are all small.** None is a "heavy" PR; they're three focused changes that compound into "console can persist data."
+- **#1 → #2 are both small.** Two focused changes that compound into "console can persist data."
 - **Catalog kernel M9b–M12 is interleavable** — pick up between bigger efforts. M10's observation pipeline is its only sequencing constraint (M9b first).
 - **Pressure-test Phase 1b is interruptible.** Produces findings, not code. Slot in when the engineering queue is light.
 - **Backlog triage** ([`notes/pending-implementation.md`](notes/pending-implementation.md)) and **Q0 ADR** ([`notes/open-questions.md`](notes/open-questions.md)) are not on the path. Worth a 30-minute independent pass to retire stale items or schedule the live ones.
