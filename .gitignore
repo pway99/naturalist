@@ -4,7 +4,8 @@ target/
 .class
 
 ### IntelliJ IDEA ###
-.idea/
+.idea/*
+!.idea/codeStyles/
 *.iws
 *.iml
 *.ipr
