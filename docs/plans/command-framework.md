@@ -251,13 +251,18 @@ status is tracked).
 
 ## Follow-ups (not in this PR)
 
-1. **Console controller wiring.** A separate PR adds the first `@PostMapping`
+1. **Runtime data persistence.** [`runtime-data-persistence.md`](runtime-data-persistence.md)
+   — small `JsonRuntimeStore` write-back hook on `TestEntitySource` so
+   console-driven inserts / updates survive restart without an RDBMS adapter.
+   The natural next PR after the command framework pilot lands; gates the first
+   console controller route below so writes don't evaporate on restart.
+2. **Console controller wiring.** A separate PR adds the first `@PostMapping`
    route in `insects-console` calling `insectCommand.species().insert(...)`.
    That PR pulls in CSRF/security review and JTE form rendering — kept out of
-   the framework PR per ADR-019.
-2. **Second-domain rollout.** Replicate to chemistry once the framework PR
+   the framework PR per ADR-019. Lands after #1 so the inserted entity persists.
+3. **Second-domain rollout.** Replicate to chemistry once the framework PR
    merges. Chemistry is N=3 (Compound, Element, Product), proves the
    abstraction at higher cardinality.
-3. **Aggregate-level commands.** Revisit when a controller route genuinely
+4. **Aggregate-level commands.** Revisit when a controller route genuinely
    needs to coordinate multi-entity writes. A real shape will be obvious then;
    guessing now would prejudge the orchestration site.
