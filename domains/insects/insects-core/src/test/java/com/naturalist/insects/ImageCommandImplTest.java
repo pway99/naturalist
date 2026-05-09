@@ -1,0 +1,78 @@
+package com.naturalist.insects;
+
+import com.naturalist.data.EntityCommand;
+import com.naturalist.data.EntityCommandContractTest;
+import com.naturalist.data.EntityQuery;
+import com.naturalist.data.FileName;
+import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.TestEntitySource;
+import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.time.Instant;
+import java.util.List;
+
+class ImageCommandImplTest
+        implements EntityCommandContractTest<InsectImageId, InsectImage, ImageCollection> {
+
+    @RegisterExtension
+    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+
+    InsectImageRepositoryMock repository = new InsectImageRepositoryMock(db);
+    InsectCommand.ImageCommand command = new ImageCommandImpl(repository);
+    InsectQuery.ImageQuery query = new ImageQueryImpl(repository);
+
+    @Override
+    public EntityCommand<InsectImageId, InsectImage> command() {
+        return command;
+    }
+
+    @Override
+    public EntityQuery<InsectImageId, InsectImage, ImageCollection> query() {
+        return query;
+    }
+
+    @Override
+    public TestEntitySource<InsectImageId, InsectImage> source() {
+        return db.getNamed(InsectImageTestEntitySource.class);
+    }
+
+    @Override
+    public InsectImageId notFoundName() {
+        return TestInsectsIdentifiers.InsectSpecies.NotFound.imageName;
+    }
+
+    @Override
+    public List<InsectImageId> knownEntityNames() {
+        return List.of(
+                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,
+                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9048.name);
+    }
+
+    @Override
+    public InsectImage newEntity() {
+        return new InsectImage(
+                InsectImageId.create(),
+                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name,
+                Instant.parse("2026-04-20T12:00:00Z"),
+                FileName.of("IMG_TEST_NEW.HEIC"));
+    }
+
+    @Override
+    public InsectImage ghostEntity() {
+        return new InsectImage(
+                InsectImageId.create(),
+                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name,
+                Instant.parse("2026-04-21T12:00:00Z"),
+                FileName.of("IMG_TEST_GHOST.HEIC"));
+    }
+
+    @Override
+    public InsectImage modifiedEntity(InsectImage original) {
+        return new InsectImage(
+                original.name(),
+                TestInsectsIdentifiers.InsectSpecies.TachinidFly.name,
+                Instant.parse("2026-05-01T08:30:00Z"),
+                FileName.of("IMG_TEST_MODIFIED.HEIC"));
+    }
+}
