@@ -7,6 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ConsoleApplication {
 
     static void main(String[] args) {
+        // Set BEFORE SpringApplication.run so TestEntitySource captures the value
+        // when its class loads. See docs/plans/runtime-data-persistence.md for the
+        // structural invariant: console writes flush to source-tree JSON; tests
+        // never set this property and so see false for the test JVM's lifetime.
+        System.setProperty("naturalist.persistence.enabled", "true");
         SpringApplication.run(ConsoleApplication.class, args);
     }
 }

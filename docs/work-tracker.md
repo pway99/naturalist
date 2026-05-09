@@ -5,7 +5,7 @@ This file does not own scope — every row links to its source-of-truth doc.
 Update a row when its status changes; promote completed rows to the
 "recently completed" section so the active table stays focused.
 
-Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surface (command framework) before the heavy editorial slice (FU-1 PR-2f). Runtime data persistence sketch added as a follow-up to the command-framework pilot, ahead of any console write route. Command framework pilot landed 2026-05-09 (commit `482b48d`); runtime data persistence is now unblocked.
+Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surface (command framework) before the heavy editorial slice (FU-1 PR-2f). Command framework pilot landed 2026-05-09 (commit `482b48d`); runtime data persistence implemented same day (origin-tracked source-tree write-back, manual console smoke verifies). First console write route is now unblocked.
 
 ---
 
@@ -13,7 +13,7 @@ Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surfa
 
 | #   | Effort                                           | Type          | Status                       | Source                                                                                | Notes                                                                                              |
 |-----|--------------------------------------------------|---------------|------------------------------|---------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| 1   | Runtime data persistence                         | Plan (sketch) | **next** — unblocked         | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)              | Optional `JsonRuntimeStore` write-back hook on `TestEntitySource` so console-driven writes survive restart. Defers RDBMS. Unblocked 2026-05-09 by command-framework pilot landing. |
+| 1   | Runtime data persistence                         | Plan          | **landed** 2026-05-09        | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)              | Origin-tracked write-back on `TestEntitySource`: console edits flush to canonical source-tree JSON via `target/classes` → `src/main/resources` heuristic; `static final` flag keeps tests no-op. Defers RDBMS. First console write route unblocked. |
 | 2   | Command framework — follow-ups                   | Plan          | active — pilot landed; FUs   | [`plans/command-framework.md`](plans/command-framework.md)                            | Pilot shipped 2026-05-09 (commit `482b48d`). Remaining: console controller wiring (after #1), second-domain rollout (chemistry), aggregate-level commands (when forced by a use case). |
 | 3   | FU-1 — Family/Genus catalog tiers                | Plan (notes)  | active — PR-2f after #1      | [`notes/fu-1-plan.md`](notes/fu-1-plan.md)                                            | Unblocked 2026-05-09 by paged-queries. PR-2f, PR-2g, PR-3 remain. Closes pressure-test A1-F1.      |
 | 4   | Catalog kernel — finish line                     | Plan          | active — M9b/M10/M11/M12     | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                                  | Typed observation types + coverage assertion + ArchUnit guard + ADR. Independent of FU-1.          |
@@ -27,16 +27,15 @@ Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surfa
 
 ## Active efforts — what's left
 
-### 1. Runtime data persistence — **next**
+### 1. Runtime data persistence — **landed 2026-05-09**
 
-**Source:** [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md). Sketch only — promote to numbered milestones in the implementing PR. **Unblocked** 2026-05-09 by the command-framework pilot landing.
+**Source:** [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md). Implemented same day as command-framework pilot.
 
-The minimum-complexity stop-gap that lets console-driven inserts/updates survive restart without standing up MyBatis. Optional `JsonRuntimeStore` collaborator on `TestEntitySource`; null in tests (in-memory only), wired in the management-console composition root with a configured runtime directory outside the classpath.
+Origin-tracked write-back on `TestEntitySource`. Console edits flush to canonical source-tree JSON; the classpath heuristic (`target/classes` → `src/main/resources`) locates the write target with zero per-source configuration. A `static final boolean PERSISTENCE_ENABLED = Boolean.getBoolean("naturalist.persistence.enabled")` is captured at class load — tests can never enable it (the only setters run before `SpringApplication.run`). Verification is manual via the console; no unit tests for kernel test infrastructure.
 
-- New: `JsonRuntimeStore<ENTITY>` interface + `FilesystemJsonRuntimeStore` in `kernels/framework-test`.
-- `TestEntitySource` gains an opt-in two-arg constructor and a `flushRuntime()` hook on insert/update.
-- Composition root binds `naturalist.data.dir` and supplies stores to subclasses that opt in.
-- **Out of scope:** RDBMS adapter, multi-process coordination, console write routes (separate follow-up under `command-framework.md`), catalog index re-assembly trigger (own follow-up under `catalog-kernel.md`).
+- `TestEntitySource` gains `originFile` map (per-entity source file) and `defaultInsertFile` (first suffix from `loadFiles`); `insert`/`update` flush; flush groups by origin, writes per-file atomically.
+- `ConsoleApplication.main` sets `naturalist.persistence.enabled=true` before `SpringApplication.run`.
+- **Out of scope:** RDBMS adapter, multi-process coordination, console write routes (own follow-up under `command-framework.md`), catalog index re-assembly trigger (own follow-up under `catalog-kernel.md`).
 
 ### 2. Command framework — follow-ups
 
@@ -126,24 +125,26 @@ Console- and web-driven workflow that posts an image to Claude Vision, returns a
 
 ## Recently completed
 
-| Effort                            | Completed  | Source                                                       | Final commit                                                     |
-|-----------------------------------|------------|--------------------------------------------------------------|------------------------------------------------------------------|
-| Command framework pilot           | 2026-05-09 | [`plans/command-framework.md`](plans/command-framework.md)   | `482b48d` (kernel + insects pilot; follow-ups deferred)          |
-| Paged queries (steps 1–7)         | 2026-05-09 | [`plans/paged-queries-plan.md`](plans/paged-queries-plan.md) | `3789319` (delete unbounded) → `3a5ea41` (mark plan implemented) |
+| Effort                            | Completed  | Source                                                                       | Final commit                                                     |
+|-----------------------------------|------------|------------------------------------------------------------------------------|------------------------------------------------------------------|
+| Runtime data persistence          | 2026-05-09 | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)     | (pending)                                                        |
+| Command framework pilot           | 2026-05-09 | [`plans/command-framework.md`](plans/command-framework.md)                   | `482b48d` (kernel + insects pilot; follow-ups deferred)          |
+| Paged queries (steps 1–7)         | 2026-05-09 | [`plans/paged-queries-plan.md`](plans/paged-queries-plan.md)                 | `3789319` (delete unbounded) → `3a5ea41` (mark plan implemented) |
 
 ---
 
 ## Dependency graph
 
 ```
-paged-queries           ✅ done
-command-framework pilot ✅ done
+paged-queries            ✅ done
+command-framework pilot  ✅ done
+runtime-data-persistence ✅ done
       │
       ▼
-runtime-data-persistence ──► (first console write route, follow-up under command-framework.md)
-                                  │
-                                  └─► search-index re-assembly trigger
-                                      (new milestone in catalog-kernel.md)
+(first console write route, follow-up under command-framework.md)
+      │
+      └─► search-index re-assembly trigger
+          (new milestone in catalog-kernel.md)
 
 (parallel — interleavable)
 
@@ -178,7 +179,7 @@ PR-2f's editorial cycle survives restart. Defers the RDBMS adapter without
 losing data.
 
 0. ✅ **Command framework pilot** — landed `482b48d`. ([source](plans/command-framework.md))
-1. **Runtime data persistence** — `JsonRuntimeStore` write-back hook on `TestEntitySource`. Console-driven inserts/updates persist to a configured runtime directory; canonical JSON stays read-only. ([source](plans/runtime-data-persistence.md))
+1. ✅ **Runtime data persistence** — origin-tracked source-tree write-back on `TestEntitySource`; classpath heuristic locates the target; static-final flag keeps tests no-op. Console writes update canonical JSON in place. ([source](plans/runtime-data-persistence.md))
 2. **First console write route** *(follow-up under `command-framework.md`)* — exercises pilot + #1 end-to-end with one concrete `@PostMapping`. CSRF / form rendering / route-test review live here.
 3. **FU-1 PR-2f** — Species narrowing (heaviest editorial slice). PR-2f's family/genus prose can optionally be entered through the new console write route rather than hand-edited JSON.
 4. **FU-1 PR-2g** — A1-F1 closure. Pressure-test finding moves CONTINGENT → CLOSED.

@@ -7,9 +7,19 @@ import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.exception.UniqueConstraintException;
 import com.naturalist.observability.Observer;
 import org.apache.commons.collections4.MapUtils;
+import org.jspecify.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.ParameterizedType;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -33,8 +43,23 @@ import java.util.stream.Stream;
  */
 public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
+    /**
+     * Whether {@code insert}/{@code update} flush state back to the source-tree
+     * JSON file the entity came from. Read once at class load. Tests do not
+     * set the system property → field is {@code false} for the test JVM's
+     * lifetime, no {@code @BeforeEach} or runtime {@code System.setProperty}
+     * can flip it. Production startup ({@code ConsoleApplication.main}) sets
+     * the property before {@code SpringApplication.run}, so this field is
+     * already {@code true} when the first {@code TestEntitySource} subclass
+     * loads.
+     */
+    private static final boolean PERSISTENCE_ENABLED =
+            Boolean.getBoolean("naturalist.persistence.enabled");
+
     private static final Observer observer = Observer.forClass(TestEntitySource.class);
     private final Map<NAME, ENTITY> entityMap = new HashMap<>();
+    private final Map<NAME, String> originFile = new HashMap<>();
+    private @Nullable String defaultInsertFile;
     protected final NaturalistDatabase database;
 
     protected TestEntitySource(NaturalistDatabase database) {
@@ -136,6 +161,15 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     }
 
     public void insert(ENTITY entity) {
+        insertCommon(entity);
+        NAME name = entity.name();
+        if (!originFile.containsKey(name)) {
+            originFile.put(name, defaultInsertFile);
+        }
+        flushIfWritable();
+    }
+
+    private void insertCommon(ENTITY entity) {
         final ENTITY argument = entity;
         observer.arguments("insert", i -> i.namedEntity(argument, "entity")).throwWhenInvalid();
         NAME name = entity.name();
@@ -154,6 +188,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         }
         preSaveChecks(entity, name);
         entityMap.replace(name, entity);
+        flushIfWritable();
     }
 
     boolean isEmpty() {
@@ -161,6 +196,9 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     }
 
     public void loadFiles(String pathFormat, String... replacements) {
+        if (replacements.length > 0 && defaultInsertFile == null) {
+            defaultInsertFile = pathFormat.formatted(replacements[0]);
+        }
         Stream.of(replacements)
                 .map(pathFormat::formatted)
                 .forEach(this::loadFile);
@@ -170,7 +208,53 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         String json = TestDataHelper.readFileToString(relativePath);
         List<ENTITY> entities = TestDataHelper.readObjectsFromString(() -> json, entityClass());
         for (ENTITY entity : entities) {
-            insert(entity);
+            insertCommon(entity);
+            originFile.put(entity.name(), relativePath);
+        }
+    }
+
+    /**
+     * Group entities by the file they came from and rewrite each file in place. Only
+     * fires when persistence is enabled (production composition root). Per-flush:
+     * entries with no resolvable source-tree path (e.g. running outside a Maven
+     * layout) are skipped silently — the heuristic matches the project's dev-tool
+     * framing rather than failing.
+     */
+    private void flushIfWritable() {
+        if (!PERSISTENCE_ENABLED) return;
+        Map<String, List<ENTITY>> byFile = entityMap.values().stream()
+                .filter(e -> originFile.get(e.name()) != null)
+                .collect(Collectors.groupingBy(e -> originFile.get(e.name())));
+        for (Map.Entry<String, List<ENTITY>> entry : byFile.entrySet()) {
+            Path target = resolveSourcePath(entry.getKey());
+            if (target == null) continue;
+            writeJsonAtomic(target, entry.getValue());
+        }
+    }
+
+    private @Nullable Path resolveSourcePath(String relativePath) {
+        URL classpathUrl = getClass().getResource("/" + relativePath);
+        if (classpathUrl == null) return null;
+        try {
+            String filePath = Paths.get(classpathUrl.toURI()).toString();
+            if (!filePath.contains("/target/classes/")) return null;
+            return Paths.get(filePath.replace("/target/classes/", "/src/main/resources/"));
+        } catch (URISyntaxException e) {
+            return null;
+        }
+    }
+
+    private void writeJsonAtomic(Path target, List<ENTITY> entities) {
+        try {
+            byte[] bytes = TestDataHelper.mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsBytes(entities);
+            Path tmp = target.resolveSibling(target.getFileName() + ".tmp");
+            Files.write(tmp, bytes);
+            Files.move(tmp, target,
+                    StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
