@@ -1,6 +1,7 @@
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectImage
 @import java.util.List
+@import org.springframework.security.web.csrf.CsrfToken
 
 @param InsectSpecies species
 @param List<InsectImage> images
@@ -8,6 +9,7 @@
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
+@param CsrfToken _csrf = null
 
 @template.layout.page(title = species.name().value(), content = @`
     <a href="/insects">&larr; Back to catalog</a>
@@ -59,6 +61,24 @@
             </div>
         </section>
     @endif
+
+    <section class="add-image">
+        <h2>Add Photo</h2>
+        <p>
+            Drop the image file into
+            <code>insects-repository-test/src/main/resources/insects/images/</code>
+            first, then register its filename here.
+        </p>
+        <form method="post" action="/insects/${species.name().value()}/images">
+            @if(_csrf != null)
+                <input type="hidden" name="${_csrf.getParameterName()}" value="${_csrf.getToken()}">
+            @endif
+            <label for="resourceName">Filename</label>
+            <input type="text" id="resourceName" name="resourceName"
+                   placeholder="IMG_9047.HEIC" required>
+            <button type="submit">Register photo</button>
+        </form>
+    </section>
 
     @if(species.identificationFeatures() != null)
         <section>

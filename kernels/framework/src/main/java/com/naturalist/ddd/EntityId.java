@@ -1,5 +1,6 @@
 package com.naturalist.ddd;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.github.f4b6a3.uuid.UuidCreator;
 import org.jspecify.annotations.Nullable;
 
@@ -28,6 +29,7 @@ public abstract class EntityId {
         this.value = value;
     }
 
+    @JsonValue
     public UUID value() {
         return value;
     }

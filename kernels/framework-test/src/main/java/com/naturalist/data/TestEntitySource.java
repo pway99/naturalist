@@ -196,15 +196,15 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     }
 
     public void loadFiles(String pathFormat, String... replacements) {
-        if (replacements.length > 0 && defaultInsertFile == null) {
-            defaultInsertFile = pathFormat.formatted(replacements[0]);
-        }
         Stream.of(replacements)
                 .map(pathFormat::formatted)
                 .forEach(this::loadFile);
     }
 
     public void loadFile(String relativePath) {
+        if (defaultInsertFile == null) {
+            defaultInsertFile = relativePath;
+        }
         String json = TestDataHelper.readFileToString(relativePath);
         List<ENTITY> entities = TestDataHelper.readObjectsFromString(() -> json, entityClass());
         for (ENTITY entity : entities) {
@@ -222,8 +222,12 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
      */
     private void flushIfWritable() {
         if (!PERSISTENCE_ENABLED) return;
+        // Sort by name().toString() to match pageOf's read-side ordering. The entity
+        // map is a HashMap, so iteration order is unstable; without a sort, every flush
+        // reshuffles file contents and produces noisy diffs.
         Map<String, List<ENTITY>> byFile = entityMap.values().stream()
                 .filter(e -> originFile.get(e.name()) != null)
+                .sorted(Comparator.comparing(e -> e.name().toString()))
                 .collect(Collectors.groupingBy(e -> originFile.get(e.name())));
         for (Map.Entry<String, List<ENTITY>> entry : byFile.entrySet()) {
             Path target = resolveSourcePath(entry.getKey());

@@ -1,5 +1,6 @@
 package com.naturalist.ddd;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
@@ -24,6 +25,7 @@ public abstract class EntityName {
 
     protected abstract int maxLength();
 
+    @JsonValue
     public String value() {
         return value;
     }

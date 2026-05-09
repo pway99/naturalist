@@ -1,5 +1,6 @@
 package com.naturalist.insects.console;
 
+import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
@@ -9,6 +10,7 @@ import com.naturalist.insects.console.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -17,12 +19,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +37,10 @@ import java.util.concurrent.TimeUnit;
 public class InsectsController {
     private static final String IMAGE_CONVERSION = "image.conversion";
 
+    private static final String CSRF_REQUEST_ATTRIBUTE = "org.springframework.security.web.csrf.CsrfToken";
+
     private final InsectQuery insectQuery;
+    private final InsectCommand insectCommand;
     private final InsectLifeStageQuery insectLifeStageQuery;
     private final Resilience resilience;
     private final DescriptionRenderer descriptionRenderer;
@@ -43,6 +50,7 @@ public class InsectsController {
         //TODO:: This will eventually be a spring managed bean
         InsectsTestContext context = InsectsTestContext.create(NaturalistDatabase.create());
         this.insectQuery = context.insectQuery();
+        this.insectCommand = context.insectCommand();
         this.insectLifeStageQuery = context.insectLifeStageQuery();
         this.resilience = resilience;
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
@@ -73,7 +81,7 @@ public class InsectsController {
     }
 
     @GetMapping("/{name}")
-    String detail(@PathVariable String name, Model model) {
+    String detail(@PathVariable String name, HttpServletRequest request, Model model) {
         var speciesName = InsectSpeciesName.of(name);
         var species = insectQuery.species().getByName(speciesName);
         if (species.isEmpty()) {
@@ -87,7 +95,23 @@ public class InsectsController {
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
+        Object csrf = request.getAttribute(CSRF_REQUEST_ATTRIBUTE);
+        if (csrf != null) {
+            model.addAttribute("_csrf", csrf);
+        }
         return "insects/detail";
+    }
+
+    @PostMapping("/{name}/images")
+    String addImage(@PathVariable String name, @RequestParam("resourceName") String resourceName) {
+        var speciesName = InsectSpeciesName.of(name);
+        var image = new InsectImage(
+                InsectImageId.create(),
+                speciesName,
+                Instant.now(),
+                FileName.of(resourceName));
+        insectCommand.images().insert(image);
+        return "redirect:/insects/" + name;
     }
 
     @GetMapping("/{name}/life-stages")
