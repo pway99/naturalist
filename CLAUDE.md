@@ -11,6 +11,14 @@ Area-specific conventions (load when working in that area):
 - [`domains/<domain>/CLAUDE.md`](domains/) — per-domain vocabulary and invariants
 - [`docs/measurement-standards.md`](docs/measurement-standards.md) — units
 
+Cross-effort status (load when the user asks "where are we", "what's next",
+or starts work that touches multiple plans):
+
+- [`docs/work-tracker.md`](docs/work-tracker.md) — single index of every active
+  and recently-completed effort, with status, source-doc links, dependency graph,
+  and the decided ordering. Each row points to its source-of-truth plan; the
+  tracker itself owns no scope.
+
 ## Identity
 
 Every domain class implements exactly one of `NamedEntity`, `Entity`, `Aggregate`,
