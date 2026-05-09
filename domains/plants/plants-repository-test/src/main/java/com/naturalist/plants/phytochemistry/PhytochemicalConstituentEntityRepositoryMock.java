@@ -18,13 +18,6 @@ public class PhytochemicalConstituentEntityRepositoryMock
     }
 
     @Override
-    public List<PhytochemicalConstituentName> getAllPhytochemicalConstituentNames() {
-        return testEntitySource().entityStream()
-                .map(PhytochemicalConstituent::name)
-                .toList();
-    }
-
-    @Override
     public List<PhytochemicalConstituent> getByPlantName(PlantName plantName) {
         return testEntitySource().entityStream()
                 .filter(c -> c.plantName().equals(plantName))

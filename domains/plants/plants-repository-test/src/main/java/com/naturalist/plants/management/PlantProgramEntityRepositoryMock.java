@@ -17,13 +17,6 @@ public class PlantProgramEntityRepositoryMock
     }
 
     @Override
-    public List<PlantProgramName> getAllPlantProgramNames() {
-        return testEntitySource().entityStream()
-                .map(PlantProgram::name)
-                .toList();
-    }
-
-    @Override
     public List<PlantProgram> getByPlantName(PlantName plantName) {
         return testEntitySource().entityStream()
                 .filter(p -> p.plantName().equals(plantName))

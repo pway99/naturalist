@@ -1,7 +1,6 @@
 package com.naturalist.plants.management;
 
 import com.naturalist.data.EntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.management.PlantProgramEntityCollections.PlantProgramCollection;
 
@@ -14,8 +13,6 @@ public interface PlantProgramQuery {
     PlantProgramEntityQuery programs();
 
     interface PlantProgramEntityQuery extends EntityQuery<PlantProgramName, PlantProgram, PlantProgramCollection> {
-
-        EntityNameSet<PlantProgramName> allPlantProgramNames();
 
         /**
          * All programs recorded for a given plant — the natural plant → programs rollup.

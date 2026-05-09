@@ -45,7 +45,6 @@ class CompoundRepository {
 
     protected interface CompoundEntityRepository
             extends EntityRepository<CompoundName, Compound> {
-        List<CompoundName> getAllCompoundNames();
     }
 
     protected interface DepictionRepository

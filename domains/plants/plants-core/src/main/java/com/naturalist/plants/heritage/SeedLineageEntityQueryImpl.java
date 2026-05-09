@@ -1,7 +1,6 @@
 package com.naturalist.plants.heritage;
 
 import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.heritage.SeedLineageEntityCollections.SeedLineageCollection;
@@ -23,11 +22,6 @@ class SeedLineageEntityQueryImpl
                         .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return SeedLineageCollection.of(repository().getByEntityNameSet(names));
-    }
-
-    @Override
-    public EntityNameSet<SeedLineageName> allSeedLineageNames() {
-        return EntityNameSet.of(repository().getAllSeedLineageNames());
     }
 
     @Override

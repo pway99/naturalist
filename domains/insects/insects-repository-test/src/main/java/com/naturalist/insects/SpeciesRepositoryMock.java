@@ -16,13 +16,6 @@ class SpeciesRepositoryMock
     }
 
     @Override
-    public List<InsectSpeciesName> getAllSpeciesNames() {
-        return testEntitySource().entityStream()
-                .map(InsectSpecies::name)
-                .toList();
-    }
-
-    @Override
     public List<InsectSpecies> getByFunctionalGuild(FunctionalGuild functionalGuild) {
         observer().arguments("getByFunctionalGuild", i -> i
                         .notNull(functionalGuild, "functionalGuild"))

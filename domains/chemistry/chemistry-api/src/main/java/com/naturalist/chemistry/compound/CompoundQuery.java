@@ -30,8 +30,6 @@ public interface CompoundQuery {
     DepictionQuery depictions();
 
     interface CompoundEntityQuery extends EntityQuery<CompoundName, Compound, CompoundCollection> {
-
-        EntityNameSet<CompoundName> allCompoundNames();
     }
 
     interface DepictionQuery extends EntityQuery<DepictionId, CompoundDepiction, DepictionCollection> {

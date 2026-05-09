@@ -2,7 +2,6 @@ package com.naturalist.chemistry.product;
 
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.Set;
@@ -32,10 +31,5 @@ class ProductQueryImpl
                 .throwWhenInvalid();
 
         return new ProductCollection(repository().getByCompoundName(compoundName));
-    }
-
-    @Override
-    public EntityNameSet<ProductName> allProductNames() {
-        return EntityNameSet.of(repository().getAllProductNames());
     }
 }

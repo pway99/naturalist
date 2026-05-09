@@ -2,7 +2,6 @@ package com.naturalist.chemistry.compound;
 
 import com.naturalist.chemistry.compound.CompoundEntityCollections.CompoundCollection;
 import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.Set;
@@ -23,10 +22,5 @@ class CompoundEntityQueryImpl
                 .throwWhenInvalid();
 
         return CompoundCollection.of(repository().getByEntityNameSet(names));
-    }
-
-    @Override
-    public EntityNameSet<CompoundName> allCompoundNames() {
-        return EntityNameSet.of(repository().getAllCompoundNames());
     }
 }

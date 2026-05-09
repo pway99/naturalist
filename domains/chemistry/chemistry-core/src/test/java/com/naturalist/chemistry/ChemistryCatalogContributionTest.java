@@ -10,6 +10,7 @@ import com.naturalist.chemistry.compound.CompoundQueryTestSupport;
 import com.naturalist.chemistry.product.ProductQuery;
 import com.naturalist.chemistry.product.ProductQueryTestSupport;
 import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.Pages;
 import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -57,8 +58,8 @@ class ChemistryCatalogContributionTest {
 
     @Test
     void contributionEmitsOneSearchableEntityPerCompoundAndProduct() {
-        long compoundCount = compounds.allCompoundNames().size();
-        long productCount = products.allProductNames().size();
+        long compoundCount = Pages.stream(1000, compounds::findPage).count();
+        long productCount = Pages.stream(1000, products::findPage).count();
         assertThat(contribution.searchableEntities().count())
                 .isEqualTo(compoundCount + productCount);
     }

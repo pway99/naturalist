@@ -17,13 +17,6 @@ public class SeedLineageEntityRepositoryMock
     }
 
     @Override
-    public List<SeedLineageName> getAllSeedLineageNames() {
-        return testEntitySource().entityStream()
-                .map(SeedLineage::name)
-                .toList();
-    }
-
-    @Override
     public List<SeedLineage> getByCultivarName(CultivarName cultivarName) {
         return testEntitySource().entityStream()
                 .filter(s -> s.cultivarName().equals(cultivarName))

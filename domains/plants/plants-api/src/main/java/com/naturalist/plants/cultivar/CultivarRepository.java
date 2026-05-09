@@ -9,8 +9,6 @@ class CultivarRepository {
     protected interface CultivarEntityRepository
             extends EntityRepository<CultivarName, Cultivar> {
 
-        List<CultivarName> getAllCultivarNames();
-
         List<Cultivar> getByPlantName(PlantName plantName);
     }
 }

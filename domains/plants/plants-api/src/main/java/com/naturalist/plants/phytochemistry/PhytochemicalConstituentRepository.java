@@ -10,8 +10,6 @@ class PhytochemicalConstituentRepository {
     protected interface PhytochemicalConstituentEntityRepository
             extends EntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent> {
 
-        List<PhytochemicalConstituentName> getAllPhytochemicalConstituentNames();
-
         /**
          * All constituents recorded for a given plant.
          */

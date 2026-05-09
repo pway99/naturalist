@@ -11,13 +11,11 @@ import java.util.stream.Stream;
 
 /**
  * Immutable set of {@link EntityName}s — the names-only analogue of
- * {@link BehavioralCollection}. Used on both sides of a port:
- * <ul>
- *   <li>as a return type for "give me the names" reads
- *       (e.g. {@code speciesQuery.allSpeciesNames()}), and</li>
- *   <li>as an argument type wherever a set of names enters the domain
- *       (e.g. a future {@code findByNameSet(EntityNameSet<...>)}).</li>
- * </ul>
+ * {@link BehavioralCollection}. Used as an argument type wherever a set of
+ * names enters the domain (e.g. a future
+ * {@code findByNameSet(EntityNameSet<...>)}). The unbounded "all-names"
+ * read shape is gone: bulk reads paginate via the kernel's
+ * {@code findPage(PageRequest)} contract.
  *
  * <p><b>Why concrete, not abstract.</b> Unlike {@link BehavioralCollection}, which
  * anchors domain-specific filtering vocabulary per entity type, a name set carries no

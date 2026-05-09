@@ -4,6 +4,7 @@ import com.naturalist.catalog.*;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.Pages;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.catalog.InsectsCatalogContribution;
 import org.junit.jupiter.api.Test;
@@ -62,9 +63,9 @@ class InsectsCatalogContributionTest {
 
     @Test
     void contributionEmitsOneSearchableEntityPerCatalogEntry() {
-        long speciesCount = speciesQuery.allSpeciesNames().size();
-        long familyCount = familyQuery.allFamilyNames().size();
-        long genusCount = genusQuery.allGenusNames().size();
+        long speciesCount = Pages.stream(1000, speciesQuery::findPage).count();
+        long familyCount = Pages.stream(1000, familyQuery::findPage).count();
+        long genusCount = Pages.stream(1000, genusQuery::findPage).count();
         long entityCount = contribution.searchableEntities().count();
 
         assertThat(entityCount).isEqualTo(speciesCount + familyCount + genusCount);

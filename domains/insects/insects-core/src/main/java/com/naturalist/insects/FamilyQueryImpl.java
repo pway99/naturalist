@@ -1,7 +1,6 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectEntityCollections.FamilyCollection;
 
@@ -25,10 +24,5 @@ class FamilyQueryImpl
         observer().arguments("findByNameSet", i -> i.entityNameCollection(names, "names"))
                 .throwWhenInvalid();
         return FamilyCollection.of(repository().getByEntityNameSet(names));
-    }
-
-    @Override
-    public EntityNameSet<InsectFamilyName> allFamilyNames() {
-        return EntityNameSet.of(repository().getAllFamilyNames());
     }
 }

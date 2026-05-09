@@ -9,8 +9,6 @@ class SeedLineageRepository {
     protected interface SeedLineageEntityRepository
             extends EntityRepository<SeedLineageName, SeedLineage> {
 
-        List<SeedLineageName> getAllSeedLineageNames();
-
         List<SeedLineage> getByCultivarName(CultivarName cultivarName);
     }
 }

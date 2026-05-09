@@ -2,7 +2,6 @@ package com.naturalist.plants.phytochemistry;
 
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollections.PhytochemicalConstituentCollection;
@@ -24,11 +23,6 @@ class PhytochemicalConstituentEntityQueryImpl
                         .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return PhytochemicalConstituentCollection.of(repository().getByEntityNameSet(names));
-    }
-
-    @Override
-    public EntityNameSet<PhytochemicalConstituentName> allPhytochemicalConstituentNames() {
-        return EntityNameSet.of(repository().getAllPhytochemicalConstituentNames());
     }
 
     @Override

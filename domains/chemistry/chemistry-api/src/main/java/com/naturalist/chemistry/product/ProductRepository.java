@@ -8,6 +8,4 @@ import java.util.List;
 interface ProductRepository extends EntityRepository<ProductName, Product> {
 
     List<Product> getByCompoundName(CompoundName compoundName);
-
-    List<ProductName> getAllProductNames();
 }

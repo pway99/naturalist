@@ -25,11 +25,4 @@ class ProductEntityRepositoryMock
                 .filter(product -> product.compounds().contains(compoundName))
                 .toList();
     }
-
-    @Override
-    public List<ProductName> getAllProductNames() {
-        return testEntitySource().entityStream()
-                .map(Product::name)
-                .toList();
-    }
 }

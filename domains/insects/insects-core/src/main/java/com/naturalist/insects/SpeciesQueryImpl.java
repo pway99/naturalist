@@ -1,7 +1,6 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.Set;
@@ -24,11 +23,6 @@ class SpeciesQueryImpl
         observer().arguments("findByNameSet", i -> i.entityNameCollection(names, "names"))
                 .throwWhenInvalid();
         return InsectEntityCollections.SpeciesCollection.of(repository().getByEntityNameSet(names));
-    }
-
-    @Override
-    public EntityNameSet<InsectSpeciesName> allSpeciesNames() {
-        return EntityNameSet.of(repository().getAllSpeciesNames());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.EntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.plants.PlantEntityCollections.PlantCollection;
 import com.naturalist.plants.PlantEntityCollections.PlantFamilyCollection;
 import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
@@ -20,7 +19,7 @@ import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
  * <p><b>Usage:</b>
  * <pre>{@code
  * plantQuery.plants().getByName(plantName);
- * plantQuery.plants().allPlantNames();
+ * plantQuery.plants().findPage(PageRequest.console(0));
  * plantQuery.families().getByName(familyName);
  * plantQuery.genera().getByName(genusName);
  * }</pre>
@@ -34,19 +33,13 @@ public interface PlantQuery {
     PlantGenusEntityQuery genera();
 
     interface PlantEntityQuery extends EntityQuery<PlantName, Plant, PlantCollection> {
-
-        EntityNameSet<PlantName> allPlantNames();
     }
 
     interface PlantFamilyEntityQuery
             extends EntityQuery<PlantFamilyName, PlantFamily, PlantFamilyCollection> {
-
-        EntityNameSet<PlantFamilyName> allFamilyNames();
     }
 
     interface PlantGenusEntityQuery
             extends EntityQuery<PlantGenusName, PlantGenus, PlantGenusCollection> {
-
-        EntityNameSet<PlantGenusName> allGenusNames();
     }
 }

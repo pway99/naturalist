@@ -4,6 +4,7 @@ import com.naturalist.catalog.*;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.Pages;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
 import com.naturalist.plants.catalog.PlantCatalogContribution;
@@ -142,9 +143,9 @@ class PlantCatalogContributionTest {
 
     @Test
     void contributionEmitsOneSearchableEntityPerCatalogEntry() {
-        long plantCount = entityQuery.allPlantNames().size();
-        long familyCount = familyQuery.allFamilyNames().size();
-        long genusCount = genusQuery.allGenusNames().size();
+        long plantCount = Pages.stream(1000, entityQuery::findPage).count();
+        long familyCount = Pages.stream(1000, familyQuery::findPage).count();
+        long genusCount = Pages.stream(1000, genusQuery::findPage).count();
         long entityCount = contribution.searchableEntities().count();
 
         assertThat(entityCount).isEqualTo(plantCount + familyCount + genusCount);

@@ -1,7 +1,6 @@
 package com.naturalist.plants.cultivar;
 
 import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.cultivar.CultivarEntityCollections.CultivarCollection;
@@ -23,11 +22,6 @@ class CultivarEntityQueryImpl
                         .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return CultivarCollection.of(repository().getByEntityNameSet(names));
-    }
-
-    @Override
-    public EntityNameSet<CultivarName> allCultivarNames() {
-        return EntityNameSet.of(repository().getAllCultivarNames());
     }
 
     @Override

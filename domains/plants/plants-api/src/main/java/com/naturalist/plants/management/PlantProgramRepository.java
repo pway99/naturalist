@@ -9,8 +9,6 @@ class PlantProgramRepository {
     protected interface PlantProgramEntityRepository
             extends EntityRepository<PlantProgramName, PlantProgram> {
 
-        List<PlantProgramName> getAllPlantProgramNames();
-
         List<PlantProgram> getByPlantName(PlantName plantName);
     }
 }

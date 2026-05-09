@@ -17,13 +17,6 @@ public class CultivarEntityRepositoryMock
     }
 
     @Override
-    public List<CultivarName> getAllCultivarNames() {
-        return testEntitySource().entityStream()
-                .map(Cultivar::name)
-                .toList();
-    }
-
-    @Override
     public List<Cultivar> getByPlantName(PlantName plantName) {
         return testEntitySource().entityStream()
                 .filter(c -> c.plantName().equals(plantName))

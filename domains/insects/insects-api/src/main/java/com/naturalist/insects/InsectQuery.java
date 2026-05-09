@@ -1,7 +1,6 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.EntityQuery;
-import com.naturalist.ddd.EntityNameSet;
 import com.naturalist.insects.InsectEntityCollections.FamilyCollection;
 import com.naturalist.insects.InsectEntityCollections.GenusCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
@@ -49,7 +48,6 @@ public interface InsectQuery {
     }
 
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
-        EntityNameSet<InsectSpeciesName> allSpeciesNames();
 
         SpeciesCollection getByFunctionalGuild(FunctionalGuild functionalGuild);
     }
@@ -61,10 +59,8 @@ public interface InsectQuery {
     }
 
     interface FamilyQuery extends EntityQuery<InsectFamilyName, InsectFamily, FamilyCollection> {
-        EntityNameSet<InsectFamilyName> allFamilyNames();
     }
 
     interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenus, GenusCollection> {
-        EntityNameSet<InsectGenusName> allGenusNames();
     }
 }
