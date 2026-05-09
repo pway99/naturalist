@@ -1,12 +1,23 @@
 # Paged Queries — Plan
 
-**Status.** Accepted, 2026-05-07. Folds in MyBatis ORM decision, opt-in
-lookahead probe in place of COUNT, default page size 25 (1000 for
-Solr-style bulk export), configurable contract-test page size. Pat
-flagged the unbounded-query hazard at the end of PR-2e; before PR-2f or
-PR-3 grows the read surface further, the kernel lands the paged-result
-contract and the existing query/repository ports migrate. Implementation
-begins from step 1 of Section 3.
+**Status.** Implemented, 2026-05-09. All seven steps of Section 3 landed
+across commits `8a3519b` (plan), `45c37f7` + `fda192e` (kernel ports +
+value objects + in-memory adapter), `d90c77e` (catalog contributions),
+`972377b` (console list views), and `3789319` (delete unbounded
+`all*Names`). The PR-2f / PR-3 gate is resolved.
+
+Original framing — Folds in MyBatis ORM decision, opt-in lookahead probe
+in place of COUNT, default page size 25 (1000 for Solr-style bulk
+export), configurable contract-test page size. Pat flagged the
+unbounded-query hazard at the end of PR-2e; before PR-2f or PR-3 grew
+the read surface further, the kernel landed the paged-result contract
+and the existing query/repository ports migrated.
+
+**Carve-out kept:** chemistry's `DepictionQuery.allDepictedCompounds` /
+`DepictionRepository.getAllDepictedCompoundNames` — a derived projection
+(compound names that have a depiction) used by the compound list to
+render the "depictable" badge. Different shape from the all-entities
+read; revisit if depictions become a heavy collection.
 
 **Why it matters.** Several query methods today return whole-catalog lists
 (`getAllSpeciesNames`, `getAllPlantNames`, `getAllFamilyNames`,
