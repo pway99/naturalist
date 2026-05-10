@@ -5,7 +5,7 @@ This file does not own scope — every row links to its source-of-truth doc.
 Update a row when its status changes; promote completed rows to the
 "recently completed" section so the active table stays focused.
 
-Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surface (command framework) before the heavy editorial slice (FU-1 PR-2f). Command framework pilot landed 2026-05-09 (commit `482b48d`); runtime data persistence implemented same day (origin-tracked source-tree write-back, manual console smoke verifies). First console write route is now unblocked.
+Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surface (command framework) before the heavy editorial slice (FU-1 PR-2f). Command framework pilot landed 2026-05-09 (commit `482b48d`); runtime data persistence implemented same day; first console write route — `POST /insects/{name}/images` — landed 2026-05-09 (commit `b6c4957`), surfacing and fixing two latent persistence bugs (`@JsonValue` missing on `EntityId`/`EntityName`; `defaultInsertFile` only set by `loadFiles` plural). Manual QA verified end-to-end. **FU-1 PR-2f is now next.**
 
 ---
 
@@ -13,9 +13,9 @@ Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surfa
 
 | #   | Effort                                           | Type          | Status                       | Source                                                                                | Notes                                                                                              |
 |-----|--------------------------------------------------|---------------|------------------------------|---------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| 1   | Runtime data persistence                         | Plan          | **landed** 2026-05-09        | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)              | Origin-tracked write-back on `TestEntitySource`: console edits flush to canonical source-tree JSON via `target/classes` → `src/main/resources` heuristic; `static final` flag keeps tests no-op. Defers RDBMS. First console write route unblocked. |
-| 2   | Command framework — follow-ups                   | Plan          | active — pilot landed; FUs   | [`plans/command-framework.md`](plans/command-framework.md)                            | Pilot shipped 2026-05-09 (commit `482b48d`). Remaining: console controller wiring (after #1), second-domain rollout (chemistry), aggregate-level commands (when forced by a use case). |
-| 3   | FU-1 — Family/Genus catalog tiers                | Plan (notes)  | active — PR-2f after #1      | [`notes/fu-1-plan.md`](notes/fu-1-plan.md)                                            | Unblocked 2026-05-09 by paged-queries. PR-2f, PR-2g, PR-3 remain. Closes pressure-test A1-F1.      |
+| 1   | Runtime data persistence                         | Plan          | **landed** 2026-05-09        | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)              | Origin-tracked write-back on `TestEntitySource`: console edits flush to canonical source-tree JSON via `target/classes` → `src/main/resources` heuristic; `static final` flag keeps tests no-op. Two latent bugs fixed when first write route exercised it (commit `b6c4957`): `@JsonValue` on `EntityId`/`EntityName.value()` and `defaultInsertFile` set in `loadFile` singular. Defers RDBMS. |
+| 2   | Command framework — follow-ups                   | Plan          | active — 1 of 3 FUs landed   | [`plans/command-framework.md`](plans/command-framework.md)                            | Pilot shipped 2026-05-09 (commit `482b48d`); first console write route landed 2026-05-09 (commit `b6c4957` — `POST /insects/{name}/images`). Remaining: second-domain rollout (chemistry), aggregate-level commands (when forced by a use case). |
+| 3   | FU-1 — Family/Genus catalog tiers                | Plan (notes)  | **active — PR-2f next**      | [`notes/fu-1-plan.md`](notes/fu-1-plan.md)                                            | Unblocked 2026-05-09 by paged-queries; first console write route landed, persistence verified. PR-2f, PR-2g, PR-3 remain. Closes pressure-test A1-F1. |
 | 4   | Catalog kernel — finish line                     | Plan          | active — M9b/M10/M11/M12     | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                                  | Typed observation types + coverage assertion + ArchUnit guard + ADR. Independent of FU-1.          |
 | 5   | Admin console                                    | Plan          | active — view 4 (future)     | [`plans/admin-console.md`](plans/admin-console.md)                                    | Views 1–3 shipped. View 4 (`/admin/schedules`) is gated on the future scheduled-task runner.       |
 | 6   | Pressure test — *Battus philenor*                | Pressure test | Phase 1b active              | [`pressure-test/battus-philenor/01-findings.md`](pressure-test/battus-philenor/01-findings.md) | Node-by-node evaluation continues. A1-F1 CONTINGENT on FU-1. Next node: `Compound` or `PhytochemicalConstituent`. |
@@ -33,16 +33,19 @@ Last updated: 2026-05-09. Ordering: **Option B** chosen — open the write surfa
 
 Origin-tracked write-back on `TestEntitySource`. Console edits flush to canonical source-tree JSON; the classpath heuristic (`target/classes` → `src/main/resources`) locates the write target with zero per-source configuration. A `static final boolean PERSISTENCE_ENABLED = Boolean.getBoolean("naturalist.persistence.enabled")` is captured at class load — tests can never enable it (the only setters run before `SpringApplication.run`). Verification is manual via the console; no unit tests for kernel test infrastructure.
 
-- `TestEntitySource` gains `originFile` map (per-entity source file) and `defaultInsertFile` (first suffix from `loadFiles`); `insert`/`update` flush; flush groups by origin, writes per-file atomically.
+- `TestEntitySource` gains `originFile` map (per-entity source file) and `defaultInsertFile` (first file passed to `loadFile` or `loadFiles`); `insert`/`update` flush; flush groups by origin, sorts by `name().toString()` for stable diffs, writes per-file atomically.
 - `ConsoleApplication.main` sets `naturalist.persistence.enabled=true` before `SpringApplication.run`.
-- **Out of scope:** RDBMS adapter, multi-process coordination, console write routes (own follow-up under `command-framework.md`), catalog index re-assembly trigger (own follow-up under `catalog-kernel.md`).
+- **Two follow-up fixes** landed alongside the first console write route (commit `b6c4957`) when manual QA exercised the flush end-to-end:
+    - `@JsonValue` on `EntityId.value()` and `EntityName.value()` — without it, Jackson serialised the abstract wrappers via JavaBean discovery and emitted `{"valid":..,"notValid":..}` envelopes instead of the wrapped UUID/slug. Reads worked via `@JsonCreator`; only writes were broken.
+    - `loadFile` (singular) now sets `defaultInsertFile`. Previously only `loadFiles` (plural) did, so every existing source — all use the singular form — left the default null, new inserts got null origin, and the flush filter dropped them silently.
+- **Out of scope:** RDBMS adapter, multi-process coordination, catalog index re-assembly trigger (own follow-up under `catalog-kernel.md`).
 
 ### 2. Command framework — follow-ups
 
 **Source:** [`plans/command-framework.md`](plans/command-framework.md). Pilot shipped 2026-05-09 (commit `482b48d`):
-`EntityCommand` + `AbstractEntityCommand` in the kernel, `EntityCommandContractTest` in framework-test, public `InsectCommand` namespace with entity-level `SpeciesCommand` / `ImageCommand`, `*CommandImpl` adapters in insects-core, contract tests, and `insectCommand()` accessor on `InsectsTestContext`. Three follow-ups remain in the plan:
+`EntityCommand` + `AbstractEntityCommand` in the kernel, `EntityCommandContractTest` in framework-test, public `InsectCommand` namespace with entity-level `SpeciesCommand` / `ImageCommand`, `*CommandImpl` adapters in insects-core, contract tests, and `insectCommand()` accessor on `InsectsTestContext`.
 
-- **First console write route.** A `@PostMapping` route in `insects-console` calling `insectCommand.species().insert(...)`. CSRF / form rendering / route-test review live here. Sequenced after #1 so inserted entities persist.
+- ✅ **First console write route** — landed 2026-05-09 (commit `b6c4957`). `POST /insects/{name}/images` in `insects-console` calling `insectCommand.images().insert(...)`. CSRF protection via Spring Security default; form on the species detail page; web-mvc tests cover authenticated POST, anonymous POST, and missing-CSRF rejection. Manual QA verified pipevine-swallow-tail entries flush to source-tree JSON. Surfaced and resolved the two persistence bugs noted under #1.
 - **Second-domain rollout.** Replicate the namespace + adapters to chemistry (N=3 — Compound, Element, Product). Proves the abstraction at higher cardinality.
 - **Aggregate-level commands.** Defer until a controller route genuinely needs to coordinate multi-entity writes; a real shape will be obvious then.
 
@@ -127,7 +130,8 @@ Console- and web-driven workflow that posts an image to Claude Vision, returns a
 
 | Effort                            | Completed  | Source                                                                       | Final commit                                                     |
 |-----------------------------------|------------|------------------------------------------------------------------------------|------------------------------------------------------------------|
-| Runtime data persistence          | 2026-05-09 | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)     | (pending)                                                        |
+| First console write route         | 2026-05-09 | [`plans/command-framework.md`](plans/command-framework.md)                   | `b6c4957` (POST /insects/{name}/images + 2 persistence bug fixes)|
+| Runtime data persistence          | 2026-05-09 | [`plans/runtime-data-persistence.md`](plans/runtime-data-persistence.md)     | `2a4dea4` (initial); `b6c4957` (`@JsonValue` + `loadFile` default)|
 | Command framework pilot           | 2026-05-09 | [`plans/command-framework.md`](plans/command-framework.md)                   | `482b48d` (kernel + insects pilot; follow-ups deferred)          |
 | Paged queries (steps 1–7)         | 2026-05-09 | [`plans/paged-queries-plan.md`](plans/paged-queries-plan.md)                 | `3789319` (delete unbounded) → `3a5ea41` (mark plan implemented) |
 
@@ -139,9 +143,10 @@ Console- and web-driven workflow that posts an image to Claude Vision, returns a
 paged-queries            ✅ done
 command-framework pilot  ✅ done
 runtime-data-persistence ✅ done
+first console write route ✅ done (POST /insects/{name}/images)
       │
       ▼
-(first console write route, follow-up under command-framework.md)
+fu-1 PR-2f  ←  next on the path
       │
       └─► search-index re-assembly trigger
           (new milestone in catalog-kernel.md)
@@ -152,7 +157,7 @@ fu-1 PR-2f ─► fu-1 PR-2g ─► pressure-test A1-F1 closes
                   │
                   └─► fu-1 PR-3 (console)
 
-command-framework second-domain rollout (chemistry) — independent of #1
+command-framework second-domain rollout (chemistry) — independent
 command-framework aggregate commands     — deferred until forced by a use case
 
 catalog-kernel M9b ─► M10
@@ -179,9 +184,9 @@ PR-2f's editorial cycle survives restart. Defers the RDBMS adapter without
 losing data.
 
 0. ✅ **Command framework pilot** — landed `482b48d`. ([source](plans/command-framework.md))
-1. ✅ **Runtime data persistence** — origin-tracked source-tree write-back on `TestEntitySource`; classpath heuristic locates the target; static-final flag keeps tests no-op. Console writes update canonical JSON in place. ([source](plans/runtime-data-persistence.md))
-2. **First console write route** *(follow-up under `command-framework.md`)* — exercises pilot + #1 end-to-end with one concrete `@PostMapping`. CSRF / form rendering / route-test review live here.
-3. **FU-1 PR-2f** — Species narrowing (heaviest editorial slice). PR-2f's family/genus prose can optionally be entered through the new console write route rather than hand-edited JSON.
+1. ✅ **Runtime data persistence** — origin-tracked source-tree write-back on `TestEntitySource`; classpath heuristic locates the target; static-final flag keeps tests no-op. Console writes update canonical JSON in place. Initial commit `2a4dea4`; `@JsonValue` + `defaultInsertFile` follow-ups in `b6c4957`. ([source](plans/runtime-data-persistence.md))
+2. ✅ **First console write route** — landed `b6c4957`. `POST /insects/{name}/images` exercises the command port + persistence end-to-end. Surfaced the two persistence bugs noted in #1. CSRF / form rendering / web-mvc tests covered.
+3. **FU-1 PR-2f** ← **next.** Species narrowing (heaviest editorial slice). PR-2f's family/genus prose can optionally be entered through the new console write route rather than hand-edited JSON.
 4. **FU-1 PR-2g** — A1-F1 closure. Pressure-test finding moves CONTINGENT → CLOSED.
 5. **FU-1 PR-3** — Console for family/genus tiers.
 6. **Catalog kernel M9b → M10 → M11 → M12** — finish-line work; small per-milestone. Can interleave at any point.
@@ -190,7 +195,7 @@ losing data.
 ### Notes on the ordering
 
 - **Editorial cost remains concentrated in FU-1 PR-2f** (~29 new descriptions × 4 Durrell levels). Largest single effort remaining; schedule around availability for prose work.
-- **#1 → #2 are both small.** Two focused changes that compound into "console can persist data."
+- **#1 → #2 both shipped 2026-05-09.** Two focused changes that compound into "console can persist data," verified end-to-end via manual QA on insect images.
 - **Catalog kernel M9b–M12 is interleavable** — pick up between bigger efforts. M10's observation pipeline is its only sequencing constraint (M9b first).
 - **Pressure-test Phase 1b is interruptible.** Produces findings, not code. Slot in when the engineering queue is light.
 - **Backlog triage** ([`notes/pending-implementation.md`](notes/pending-implementation.md)) and **Q0 ADR** ([`notes/open-questions.md`](notes/open-questions.md)) are not on the path. Worth a 30-minute independent pass to retire stale items or schedule the live ones.
