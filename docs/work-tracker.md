@@ -131,7 +131,7 @@ Console- and web-driven workflow that posts an image to Claude Vision, returns a
 
 **Source:** [`plans/identification.md`](plans/identification.md). Sketch, 2026-05-10.
 
-Multi-week, multi-phase roadmap for the per-domain identification workflow, starting in `insects`. Captures the design intent from a separately-contributed entomology design document and re-derives the shape against current naturalist conventions (`NamedEntity` / `Entity` / `Aggregate` / `ValueObject`; cross-domain by `EntityName`; UUIDv7; no Spring in api modules). Per the FU-3 stance, kernel extraction (`kernels/identification`) is deferred until a second domain proves the same shape.
+Multi-week, multi-phase roadmap for the per-domain identification workflow, starting in `insects`. Naturalist conventions throughout (`NamedEntity` / `Entity` / `Aggregate` / `ValueObject`; cross-domain by `EntityName`; UUIDv7; no Spring in api modules). Per the FU-3 stance, kernel extraction (`kernels/identification`) is deferred until a second domain proves the same shape.
 
 | Phase | Name                                          | Status   | Gates on                                  |
 |-------|-----------------------------------------------|----------|-------------------------------------------|

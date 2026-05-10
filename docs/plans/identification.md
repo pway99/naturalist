@@ -3,10 +3,7 @@
 A multi-phase roadmap for building the per-domain identification
 workflow, starting in `insects` and folding in the resolution paths
 for FU-1 (under-identified organisms), FU-2 (bibliography), and FU-3
-(identification as first-class). Source design contributed via a
-separate brainstorming session that did not have access to the
-current state of the codebase; the design *spirit* is preserved here,
-the *shape* has been re-derived against naturalist conventions.
+(identification as first-class).
 
 This is a **sketch**, not a binding plan. Each phase is promoted to
 its own implementation plan when its predecessor lands.
@@ -21,7 +18,7 @@ at a taxon conclusion. The app scaffolds the reasoning; the
 naturalist does the thinking. Each concluded identification promotes
 into a permanent collection entry in the naturalist's own words.
 
-**Design principles** (lifted from the source document):
+**Design principles:**
 
 1. The domain never knows how data is fetched or stored.
 2. The naturalist's own language is preserved alongside curated
@@ -71,10 +68,9 @@ existing seed; the workflow evolves it rather than competing with
 it. A second domain — likely `plants` — follows later, on its own
 gating, and only then does kernel extraction become a real question.
 
-The source PDF proposed `com.naturalist.entomology` as a parallel
-module to insects. **This roadmap rejects that proposal** — it
-contradicts the FU-3 stance, duplicates `InsectSpecies` and
-`InsectImage`, and ignores the pressure test's explicit "resolve
+A parallel `com.naturalist.entomology` module is **not** introduced
+— it would duplicate `InsectSpecies` and `InsectImage`, contradict
+the FU-3 stance, and ignore the pressure test's explicit "resolve
 FU-1 and FU-3 together" guidance.
 
 ---
@@ -243,13 +239,12 @@ FU-3 stance.
   Append-only step list; state machine
   (IN_PROGRESS / CONCLUDED / ABANDONED); promotion to a durable
   observation record on conclusion.
-- Couplet / choice / step / scope value objects — re-derived
-  against naturalist conventions (`NamedEntity` /
-  `Entity` / `Aggregate` / `ValueObject` from
-  `kernels/framework`; cross-domain by `EntityName`; UUIDv7 for
-  surrogate ids). Unlike the source PDF, **no Spring annotations
-  in api modules** — apis depend only on `framework`,
-  `identifiers`, `field-notes`, `taxonomy`.
+- Couplet / choice / step / scope value objects — naturalist
+  conventions throughout (`NamedEntity` / `Entity` /
+  `Aggregate` / `ValueObject` from `kernels/framework`;
+  cross-domain by `EntityName`; UUIDv7 for surrogate ids).
+  **No Spring annotations in api modules** — apis depend only
+  on `framework`, `identifiers`, `field-notes`, `taxonomy`.
 - JSON-fed local key adapter (`*-repository-test` pattern;
   `JsonFileKeyNavigationAdapter`-equivalent reshaped as a
   `*RepositoryMock` per existing repository conventions, *not*
@@ -436,12 +431,14 @@ FU-1 PR-3 line on the FU-1 row updates to point at Phase 0.
   visitor).
 - **Phase 2** — Couplet ordering / discrimination strategy: is
   there a single "next couplet" or a partial order with multiple
-  candidate discriminators? PDF assumes single-next; real keys are
-  often partial-order. Plan decides on first-pass simplicity.
+  candidate discriminators? Real dichotomous keys are often
+  partial-order; first-pass simplicity may favour single-next.
+  Plan decides.
 - **Phase 2** — Naturalist note carry-forward shape: are
   step-level notes denormalised into the durable observation, or
-  is the session itself preserved alongside the observation? PDF
-  proposes the former; the latter is simpler.
+  is the session itself preserved alongside the observation? The
+  latter is simpler structurally; the former preserves the
+  reasoning chain inline. Plan decides.
 - **Phase 3** — Which of the three FU-1 paths. Decided after Phase 2.
 - **Phase 4** — Catalog re-assembly trigger when EOL adds a
   characteristic to a previously-unfetched node. Coordinate with
