@@ -542,7 +542,7 @@ main > section:not(.life-stages) code,
     border-top: 1px solid var(--sepia-rule);
     border-radius: 0 0 0.25rem 0.25rem;
     padding: 0.6rem 1rem !important;
-    margin: 0.75rem 0 0 0 !important;
+    margin: auto 0 0 0 !important;
     color: var(--sepia-ink) !important;
 }
 
@@ -569,6 +569,31 @@ main > section .taxonomy,
 .life-stages .plate-subtitle.taxonomy {
     color: var(--sepia-ink-soft) !important;
     text-shadow: none !important;
+}
+
+dl.taxonomy {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 0.4rem;
+    row-gap: 0;
+    margin: 0 0 0.5rem 0;
+    padding: 0;
+    font-style: normal;
+}
+
+dl.taxonomy dt {
+    grid-column: 1;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: normal;
+}
+
+dl.taxonomy dd {
+    grid-column: 2;
+    margin: 0;
+    padding: 0;
 }
 
 /* Nested <details> tree inside a section plate — used for collapsible sub-trees. */
@@ -1081,6 +1106,45 @@ figure.compound-depiction img {
     border: 1px solid var(--sepia-rule);
     border-radius: 0.25rem;
     padding: 0.5rem;
+}
+
+/* Card image — single fixed-size photo plate on entity-grid cards.
+   Multi-image cards mark the figure with `data-rotate`; a small script
+   cross-fades through the stacked images on a timed interval. */
+.entity-grid .card-image-link {
+    display: block;
+    margin: 0 0 0.75rem 0;
+}
+
+.entity-grid .card-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    margin: 0;
+    background: #ffffff;
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+    overflow: hidden;
+}
+
+.entity-grid .card-image img {
+    position: absolute;
+    inset: 0.25rem;
+    width: calc(100% - 0.5rem);
+    height: calc(100% - 0.5rem);
+    object-fit: cover;
+    border-radius: 0.15rem;
+    opacity: 1;
+    transition: opacity 0.6s ease-in-out;
+}
+
+.entity-grid .card-image[data-rotate] img {
+    opacity: 0;
+}
+
+.entity-grid .card-image[data-rotate] img.card-image-active {
+    opacity: 1;
 }
 
 /* Admin pages — diagnostic surfaces under /admin/**. Inner groups sit

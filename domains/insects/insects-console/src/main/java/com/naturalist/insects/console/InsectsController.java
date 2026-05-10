@@ -28,6 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +61,14 @@ public class InsectsController {
     @GetMapping
     String list(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
+        Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = new LinkedHashMap<>();
+        for (var species : speciesPage.content()) {
+            imagesBySpecies.put(
+                    species.name(),
+                    insectQuery.images().forSpeciesName(species.name()).stream().toList());
+        }
         model.addAttribute("speciesPage", speciesPage);
+        model.addAttribute("imagesBySpecies", imagesBySpecies);
         return "insects/list";
     }
 

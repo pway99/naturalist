@@ -3,12 +3,17 @@ package com.naturalist.insects.console;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
+import com.naturalist.insects.InsectImage;
+import com.naturalist.insects.InsectImageTestEntitySource;
 import com.naturalist.insects.InsectSpecies;
+import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.InsectSpeciesTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,13 +27,19 @@ class InsectsListTemplateTest {
 
     @Test
     void list_rendersWithoutError() {
-        Page<InsectSpecies> speciesPage = new InsectSpeciesTestEntitySource(NaturalistDatabase.create())
+        NaturalistDatabase database = NaturalistDatabase.create();
+        Page<InsectSpecies> speciesPage = new InsectSpeciesTestEntitySource(database)
                 .pageOf(PageRequest.console(0));
+        Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies =
+                new InsectImageTestEntitySource(database).entityStream()
+                        .collect(Collectors.groupingBy(InsectImage::insectSpeciesName));
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render(
                 "insects/list.jte",
-                Map.of("speciesPage", speciesPage),
+                Map.of(
+                        "speciesPage", speciesPage,
+                        "imagesBySpecies", imagesBySpecies),
                 output);
 
         assertThat(output.toString()).isNotBlank();
