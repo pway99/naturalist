@@ -30,7 +30,13 @@ raised, when, why it was deferred, and what would resolve it.
 ## FU-1 — Under-identified organisms in `LinnaeanSpecies` contract
 
 **Source.** Structural commitment §5; Phase 1a review of identity model.
-**Status.** OPEN.
+**Status.** OPEN — resolution path settled.
+**Resolution path.** Catalog side closes via FU-1 PR-2f / PR-2g (see
+[`docs/notes/fu-1-plan.md`](../../notes/fu-1-plan.md)). Identification side —
+the pending-organism mechanism — closes in **identification roadmap
+Phase 3** (see [`docs/plans/identification.md`](../../plans/identification.md)).
+The decision among the three resolution paths below is deferred to that
+phase, which lands after Phase 2 has surfaced the right answer.
 **Severity if surfaced as finding.** Likely STRAIN — workflow concern,
 not a swallowtail-blocking issue.
 
@@ -68,6 +74,13 @@ as a first-class concern) — they share design surface.
 
 **Source.** Identity discussion during Phase 1a review; Pat raised the
 need for naturalist citations of published authority.
+**Resolution path.** `kernels/bibliography` (`LiteratureReference` value
+object) lands as part of **identification roadmap Phase 4**
+([`docs/plans/identification.md`](../../plans/identification.md)) — every
+curated `TaxonCharacteristic` fetched from EOL carries a
+`LiteratureReference`, which closes ADR-009's authority loop for the
+entomology slice. Concrete shape (DOI / ISBN / URL / author / year /
+title / journal) is decided in the Phase 4 plan.
 **Status.** OPEN, structural commitment named but not resolved.
 **Severity if surfaced as finding.** NOTE — cross-cutting feature, not a
 swallowtail-blocking concern.
@@ -110,7 +123,15 @@ size: small kernel addition plus VO field on a handful of aggregates.
 ## FU-3 — Identification as a per-domain first-class concern
 
 **Source.** Identity discussion during Phase 1a review.
-**Status.** OPEN, structural commitment named but not resolved.
+**Status.** OPEN — resolution path settled.
+**Resolution path.** Per-domain start in `insects` ships in
+**identification roadmap Phase 2**
+([`docs/plans/identification.md`](../../plans/identification.md)) as the
+`InsectIdentification` aggregate — couplet/choice/step records, JSON-fed
+local key adapter, deep-link surfacing when local key exhausts. Kernel
+extraction (`kernels/identification`) stays deferred until a second
+domain (likely `plants`) demands the same shape, per the original
+followup's `@Incubating` discipline.
 **Severity if surfaced as finding.** STRAIN — workflow capability that
 is currently under-modeled.
 
