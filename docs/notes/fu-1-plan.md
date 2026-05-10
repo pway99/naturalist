@@ -247,12 +247,31 @@ catalog, and A1-F1 closes.
 
 ---
 
-## PR-3 — Console
+## PR-3 — Console — *rolled into identification roadmap Phase 0 (2026-05-10)*
 
-**Ships.** Naturalist-facing UI for the family and genus catalog tiers, with the
-species pages updated to link up the chain.
+**Status.** No longer a standalone slice of FU-1. The console family + genus
+views land as part of **identification roadmap Phase 0** —
+[`docs/plans/identification.md`](../plans/identification.md) — with an
+identification-readiness lens layered on top of the original PR-3 scope.
 
-**Console.**
+**Why rolled.** The identification module needs to *render* every taxonomic
+level (couplet results, session scope, pending-organism display). Building the
+catalog console pages without that lens, then retrofitting them in Phase 2 of
+the roadmap, would invent the same primitive twice. Phase 0 absorbs PR-3's
+scope unchanged and adds:
+
+- An audit of `InsectQuery` (and `PlantQuery` for symmetry) against the lineal
+  taxonomy kernel — surfaces api gaps before identification depends on them.
+- A reusable **taxonomic-scope rendering primitive** —
+  breadcrumb-style ("Animalia › Arthropoda › Insecta › Coleoptera ›
+  **Carabidae** › *Carabus nemoralis*"), with order-and-above as
+  non-clickable labels and family-and-below as links. Phase 2 of the
+  roadmap reuses this for session-scope and pending-organism display.
+- Verification that the scope value object can express
+  `InsectsDomain` (a `DomainId`) as the broadest starting scope, without
+  requiring a Family or Genus.
+
+**Original PR-3 scope** — preserved for traceability, lands in Phase 0:
 
 - New view: family catalog list + detail per organism domain. Detail page shows
   description, common names, child genera (with links), child species count.
@@ -264,10 +283,14 @@ species pages updated to link up the chain.
   without a structural rewrite — leave room for characteristic blocks even if
   empty in PR-3.
 
-**Out of PR-3.**
+**Out of Phase 0.**
 
-- Identification-key data (FU-3) — not in this plan.
-- Any further entity changes — PR-3 is read-only against the model from PR-2.
+- Identification-key data — lands in roadmap Phase 2 (`InsectIdentification`).
+- Any further entity changes — Phase 0 is read-only against the model from PR-2.
+
+**Promote** [`docs/plans/identification.md`](../plans/identification.md) Phase 0
+to its own implementation plan when FU-1 PR-2f / PR-2g have landed and the
+audit subject is stable.
 
 ---
 
@@ -281,10 +304,12 @@ species pages updated to link up the chain.
 - PR-2 is the heavy PR. It depends on PR-1's interfaces and introduces the four
   new identifier types. Editorial fill-in of family/genus descriptions is the
   pre-flight gate — descriptions written before merge, not as follow-up commits.
-- PR-3 depends on PR-2's repositories and queries. Console-only; no further entity
-  changes.
+- The console slice that was originally PR-3 now lands as part of
+  identification roadmap Phase 0 ([`docs/plans/identification.md`](../plans/identification.md)).
+  It still depends on PR-2's repositories and queries; the dependency graph is
+  unchanged.
 - Each PR keeps the build and bundle green. The swallowtail bundle re-emits in
-  PR-2 (entity-side closure); PR-3 renders it.
+  PR-2 (entity-side closure); the roadmap Phase 0 console pages render it.
 
 ## Memory notes for next-chat handoff
 
@@ -297,5 +322,5 @@ species pages updated to link up the chain.
 1. This plan (`docs/notes/fu-1-plan.md`).
 2. `docs/pressure-test/battus-philenor/structural-commitments.md` §6 (the resolution
    path is no longer "TBD" — it is the accretion model).
-3. `docs/pressure-test/battus-philenor/01-findings.md` §A1-F1 (closes in PR-3).
+3. `docs/pressure-test/battus-philenor/01-findings.md` §A1-F1 (closes in PR-2g).
 4. `kernels/CLAUDE.md`, `domains/CLAUDE.md`, target domain's `CLAUDE.md`.
