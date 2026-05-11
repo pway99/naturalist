@@ -206,7 +206,12 @@ shape.
 }
 ```
 
-**Closure status.** CONTINGENT (depends on FU-1 — pending-organism mechanism).
+**Closure status.** CONTINGENT — closes when *Battus philenor*
+completes the identification workflow with an EOL-grounded citation
+(identification roadmap Phase 4). Re-anchored 2026-05-10: the closure
+is no longer "PR-2g re-emits the bundle under fully-binomial catalog,"
+it is "the swallowtail's records become fully binomial and fully cited
+as a side-effect of the identification capability landing."
 
 Closure work delivered in this session:
 
@@ -229,14 +234,18 @@ What did **not** ship in this session, and why:
   `InsectSpecies`** is deferred. Ten insect species and five plants in
   the catalog carry partial taxonomy (genus-only, family-only, or fully
   unresolved) — `green-lacewing`, `tachinid-fly`, `creeping-thyme`, and
-  the others identified during the Phase 1b sweep. Per Pat's session
-  decision (under-identified organisms become "pending organisms"),
-  these records continue to load with their original vernacular slugs
-  and partial taxonomy. Tightening the contract here would orphan them
-  before the pending-organism mechanism (`FU-1`) lands. Closure of
-  `A1-F1` therefore waits on `FU-1` — at which point the invariant
-  tightens and either (a) pending records migrate to a separate
-  aggregate or (b) `LinnaeanSpecies` accepts a provisional epithet form.
+  the others identified during the Phase 1b sweep. Per Pat's 2026-05-10
+  reframing, these records are the *use case* the application exists
+  to support, not waste to clear. Identification roadmap Phase 0 will
+  move them out of the species-rank JSONs into their actual rank
+  (genus or family). The non-null invariant tightens in Phase 3 once
+  every species-rank record satisfies it. FU-1 closes via **path 1**
+  (organisms live at their actual rank; promote on identification) —
+  paths 2 (separate aggregate) and 3 (provisional epithets) rejected.
+  A1-F1's closure is the natural by-product: when *Battus philenor*
+  walks through the identification workflow with EOL citation, its
+  records are binomial-slugged and cited, and the finding moves to
+  CLOSED.
 - **Slug↔name consistency invariant** (`name.value().equals(binomialSlug())`)
   is not enforced at the record level. The fluent `Constraints` builder
   has no boolean-expression form (per `kernels/framework/docs/constraints-ubl.md`),
@@ -312,10 +321,14 @@ entry.
   ergonomics start mattering at consumer sites, a one-commit refactor
   to `LinnaeanSpecies<NAME extends EntityName> extends Named<NAME>`
   remains available.
-- **In flight.** `A1-F1` is now CONTINGENT on `FU-1`. The
-  pending-organism mechanism is the closure dependency — once it lands,
-  the genus/species non-null invariant tightens and `A1-F1` can move to
-  CLOSED.
+- **In flight.** `A1-F1` is now CONTINGENT on the identification roadmap.
+  Closure path re-anchored 2026-05-10: A1-F1 closes when *Battus philenor*
+  completes the identification workflow (roadmap Phase 2) with an
+  EOL-grounded citation (Phase 4), at which point the swallowtail's
+  records are fully binomial and fully cited as a side-effect.
+  FU-1 closes via path 1 (organisms at their actual rank; promote on
+  identification) — Phase 0 reorganizes the data, Phase 2 builds the
+  promotion mechanism, Phase 3 confirms the path formally.
 - **Java changes.**
   - `kernels/taxonomy` — added `LinnaeanSpecies`, `LinnaeanSubspecies`,
     `TaxonomicSubspecies`, package-private `TaxonomicSlugs`, with unit

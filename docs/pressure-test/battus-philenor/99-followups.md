@@ -30,43 +30,58 @@ raised, when, why it was deferred, and what would resolve it.
 ## FU-1 — Under-identified organisms in `LinnaeanSpecies` contract
 
 **Source.** Structural commitment §5; Phase 1a review of identity model.
-**Status.** OPEN — resolution path settled.
-**Resolution path.** Catalog side closes via FU-1 PR-2f / PR-2g (see
-[`docs/notes/fu-1-plan.md`](../../notes/fu-1-plan.md)). Identification side —
-the pending-organism mechanism — closes in **identification roadmap
-Phase 3** (see [`docs/plans/identification.md`](../../plans/identification.md)).
-The decision among the three resolution paths below is deferred to that
-phase, which lands after Phase 2 has surfaced the right answer.
-**Severity if surfaced as finding.** Likely STRAIN — workflow concern,
-not a swallowtail-blocking issue.
+**Status.** OPEN — resolution path is **path 1** (organisms live at their
+actual rank; promote on identification). Formal confirmation pending in
+identification roadmap Phase 3.
+**Resolution path.** Three steps:
+1. **Catalog data side** — identification roadmap **Phase 0** moves the
+   10 under-identified `InsectSpecies` records and 5 under-identified
+   `Plant` records to their actual rank in the existing genus/family
+   JSONs and re-anchors life-stage observations
+   ([`docs/plans/identification.md`](../../plans/identification.md)
+   Phase 0 data side).
+2. **Promotion mechanism** — identification roadmap **Phase 2** builds
+   the application service that, on session conclusion, creates a
+   species record from a parent genus-rank entry and re-anchors
+   observations.
+3. **Formal confirmation** — identification roadmap **Phase 3**
+   documents the path-1 choice in this file and in
+   [`structural-commitments.md`](structural-commitments.md) §5;
+   tightens the non-null `genusName` invariant on
+   `InsectSpecies` / `Plant`.
+
+**Why path 1** (reframed 2026-05-10). Pat's principle: the application
+exists to support a naturalist's journey of discovery. An organism
+identified to genus level is *the use case*, not waste to be cleared.
+The catalog already has genus and family aggregates (PR-2a–e) that can
+host these records; the data simply needs to live at the rank it actually
+represents. Paths 2 and 3 are rejected:
+
+- Path 2 (separate `UnidentifiedSpecimen` aggregate) duplicates surface
+  that `InsectGenus` and `InsectFamily` already provide. Promotion would
+  require schema migration rather than a new record at the next rank.
+- Path 3 (provisional epithets like `aristolochia-sp`) puts non-Linnaean
+  slugs in `LinnaeanSpecies`, violating Commitment 4 (slug derived from
+  taxonomic components). The slug-derivation rule is load-bearing for
+  cross-domain reference resolution.
+
+**Severity if surfaced as finding.** STRAIN — workflow concern, not a
+swallowtail-blocking issue.
 
 **Summary.** The slug-derivation rule (Commitment 4) requires non-null
 genus and species on any entity implementing `LinnaeanSpecies`. A
 naturalist engaged in field identification commonly has organisms with
 genus-level or family-level confidence but no species identification yet.
-Such organisms cannot enter the `Plant` or `InsectSpecies` catalog under
-the current commitment.
+Such organisms now live as `InsectGenus` / `InsectFamily` / `PlantGenus` /
+`PlantFamily` records, not as `LinnaeanSpecies` records. When a
+naturalist's identification firms to species, a new `LinnaeanSpecies`
+record is created with the typed `genusName` reference pointing at the
+existing genus record.
 
-**Three resolution paths considered:**
-
-1. **Defer entry until species-level identification is achieved.**
-   Cleanest model; awkward for active field workflow.
-2. **Separate aggregate for unidentified specimens** (`UnidentifiedSpecimen`
-   or similar), promoted to `Plant` / `InsectSpecies` when identification
-   firms.
-3. **Accommodate provisional epithets** (`Aristolochia sp.`,
-   `Lepidoptera sp.`) in `LinnaeanSpecies`, with derived slug like
-   `aristolochia-sp` or `aristolochia-unknown-1`.
-
-**Why deferred.** The swallowtail story does not exercise this — *Battus
-philenor* identification is firm, and every catalogued organism in the
-current JSON files has species-level taxonomy. Resolving this question
-properly requires understanding how the application's identification
-workflow is intended to work, which is broader than the audit's scope.
-
-**What would resolve it.** A future modeling session focused on the
-field-identification workflow. Possibly tied to `FU-3` (identification
-as a first-class concern) — they share design surface.
+**Why not resolved sooner.** The pressure test surfaced this in Phase 1a
+review and the original FU-1 plan deferred resolution to "after the
+identification workflow exists." That was the right shape; the
+identification roadmap (2026-05-10) is that workflow.
 
 ---
 
@@ -75,12 +90,14 @@ as a first-class concern) — they share design surface.
 **Source.** Identity discussion during Phase 1a review; Pat raised the
 need for naturalist citations of published authority.
 **Resolution path.** `kernels/bibliography` (`LiteratureReference` value
-object) lands as part of **identification roadmap Phase 4**
-([`docs/plans/identification.md`](../../plans/identification.md)) — every
-curated `TaxonCharacteristic` fetched from EOL carries a
-`LiteratureReference`, which closes ADR-009's authority loop for the
-entomology slice. Concrete shape (DOI / ISBN / URL / author / year /
-title / journal) is decided in the Phase 4 plan.
+object) lands as part of **identification roadmap Phase 2**
+([`docs/plans/identification.md`](../../plans/identification.md))
+— moved earlier than the original Phase 4 placement on 2026-05-10. ADR-009
+requires every curated `TaxonCharacteristic` to carry a
+`LiteratureReference`, and Phase 2 is where curated characteristics start
+being written. The EOL adapter in Phase 4 populates these citations from
+a real source; the kernel itself is older. Concrete shape (DOI / ISBN /
+URL / author / year / title / journal) is decided in the Phase 2 plan.
 **Status.** OPEN, structural commitment named but not resolved.
 **Severity if surfaced as finding.** NOTE — cross-cutting feature, not a
 swallowtail-blocking concern.

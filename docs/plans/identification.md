@@ -8,6 +8,17 @@ for FU-1 (under-identified organisms), FU-2 (bibliography), and FU-3
 This is a **sketch**, not a binding plan. Each phase is promoted to
 its own implementation plan when its predecessor lands.
 
+**Rebalanced 2026-05-10** per Pat's reframing — pressure tests guide
+development; they are not deadlines. The original PR-2f mass migration
+would have deleted 10 of 16 `InsectSpecies` records and 5 of 22 `Plant`
+records to satisfy a clean invariant. Instead, this roadmap is now the
+primary trajectory: Phase 0 reorganizes under-identified records to
+their actual rank, Phase 2 lands `kernels/bibliography` alongside the
+identification workflow (ADR-009 requires citations from day one),
+Phase 4 wires the real EOL adapter and populates citations as the
+naturalist reaches each node. A1-F1 closes as a side-effect of
+*Battus philenor* completing that workflow.
+
 ---
 
 ## Why this exists
@@ -133,32 +144,62 @@ the substrate here so Phase 2 doesn't re-derive it.
 
 ## Phase summary
 
-| Phase | Name                                          | Status   | Gates on                                  |
-| ----- | --------------------------------------------- | -------- | ----------------------------------------- |
-| 0     | Taxonomic navigation — api/console review     | next     | FU-1 PR-2f / PR-2g (in flight)            |
-| 1     | External-source seam in console               | sketched | independent of Phase 0; can parallelize   |
-| 2     | `InsectIdentification` workflow (FU-3)        | sketched | Phases 0 + 1                              |
-| 3     | FU-1 closure — under-identified organisms     | sketched | Phase 2; FU-1 PR-2g                       |
-| 4     | EOL trait fetch — closes ADR-009 loop         | sketched | Phase 2 (Phase 3 helpful, not strict)     |
+| Phase | Name                                                          | Status   | Gates on                                                              |
+| ----- | ------------------------------------------------------------- | -------- | --------------------------------------------------------------------- |
+| 0     | Taxonomic reorganization + navigation console                 | **next** | Nothing — fully unblocked                                             |
+| 1     | External-source seam (mock first)                             | sketched | Independent of Phase 0; can parallelize                               |
+| 2     | `InsectIdentification` workflow (FU-3) + `kernels/bibliography` (FU-2) | sketched | Phases 0 + 1 (mock seam)                                              |
+| 3     | FU-1 path-1 confirmation                                      | sketched | Phase 0's reorganization surfaces the actual shape                    |
+| 4     | Real EOL REST adapter + citation population                   | sketched | Phase 2 (kernel + workflow); EOL API key obtained                     |
 
 ---
 
-## Phase 0 — Taxonomic navigation review
+## Phase 0 — Taxonomic reorganization + navigation console
 
-**Why first.** The taxonomy kernel has grown to a thorough lineal
-model (Order through Subspecies). The `insects-api` reflects this
-— `InsectFamily`, `InsectGenus`, `InsectSpecies` aggregates exist;
-`InsectQuery` already namespaces `families()` / `genera()` /
-`species()`. The console lags: `/insects` lists species directly;
-there are no family or genus pages. This is also the existing FU-1
-PR-3 ("Console — family + genus list/detail views"), pending.
+**Why first.** Two halves. **Data side** — 10 of 16 records in
+`insect-species.json` and 5 of 22 records in `plants.json` carry
+partial taxonomy (genus-only, family-only, or fully unresolved) yet
+sit in the species-rank file. They are catalogued at a rank above
+their file's rank. Before the console renders the family/genus
+catalog and before Phase 2 walks identification through them, those
+records need to move to their actual rank — `insect-genera.json` /
+`insect-families.json` for the under-identified insects, and
+`plant-genera.json` / `plant-families.json` for the under-identified
+plants. Life-stage observations re-anchor to the new home record.
+
+**UI side** — the taxonomy kernel has grown to a thorough lineal
+model (Order through Subspecies). `InsectFamily`, `InsectGenus`,
+`InsectSpecies` aggregates exist; `InsectQuery` already namespaces
+`families()` / `genera()` / `species()`. The console lags: `/insects`
+lists species directly; there are no family or genus pages. This is
+also the existing FU-1 PR-3 scope ("Console — family + genus
+list/detail views").
 
 The identification module needs to *render* every taxonomic level
 to display couplet results, scope, and pending-organism records
 ("at family level, no further yet"). Without this, Phase 2 invents
 its own family/genus presentation under time pressure.
 
-**Delivers.**
+**Delivers — data side.**
+
+- **Reorganization migration.** For each under-identified insect record
+  in `insect-species.json` (`green-lacewing`, `tachinid-fly`,
+  `braconid-wasp`, `hoverfly`, `ground-beetle`, `crane-fly`,
+  `skipper-butterfly`, `native-sweat-bee`, `grey-mining-bee`,
+  `potato-leafhopper`): create or update the corresponding entry in
+  `insect-genera.json` (when genus is known) or `insect-families.json`
+  (when only family is known); migrate the species record's
+  description, common names, and any other relevant fields up; remove
+  the species-rank record; re-anchor its life-stage observations to
+  the new home.
+- Same for the five under-identified plants in `plants.json`
+  (`creeping-thyme`, `ornamental-passiflora`, `dianthus`, `sage`,
+  `citrus`) — promote into `plant-genera.json` or `plant-families.json`.
+- The migration is **review-as-you-go**, not algorithmic — each move
+  is a small naturalist judgment call about where the existing
+  description and observations rightfully live.
+
+**Delivers — UI side.**
 
 - An audit pass of `InsectQuery` (and `PlantQuery` for symmetry)
   against the lineal kernel: are family / genus / species
@@ -178,37 +219,40 @@ its own family/genus presentation under time pressure.
   "`InsectsDomain` as starting scope" cleanly without requiring a
   Family or Genus.
 
-**Subsumes** FU-1 PR-3. The FU-1 work-tracker pointer redirects to
-"see roadmap Phase 0" once this lands.
+**Subsumes** FU-1 PR-3 and absorbs the data-migration piece that the
+original PR-2f attempted to do (correctly: at the *correct rank*, not
+by deletion).
 
 **Touches plants lightly.** The audit looks at `PlantQuery` for
 symmetry only; actual plant family/genus console views land when
 plant identification (a future, post-roadmap effort) demands them.
+The plant data reorganization still happens in this phase because
+the under-identified plant records are the same kind of catalog
+shape problem the insect records are.
 
 ---
 
-## Phase 1 — External-source seam in console
+## Phase 1 — External-source seam (mock first)
 
-**Why.** "Console-ready for EOL" — the gating state Pat named for
-the identification work. Establishes the seam now so the EOL real-
-call work in Phase 4 doesn't reshape the console.
+**Why.** Stand up the kernel facade so Phase 2's workflow can
+exercise the seam without an API key. The real EOL REST adapter
+wires in Phase 4 once Phase 2 has proven the integration shape.
 
 **Delivers.**
 
 - `kernels/external-source` (or similar; naming is a Phase 1
   decision) — a vendor-neutral facade. `Resilience`-wrapped per
   ADR-026; bulkheaded, timed-out, retried per the kernel's
-  facade. `NoOp` default for tests and unwired apps. Mirrors the
-  shape `kernels/vision/` was sketched as in
+  facade. Mirrors the shape `kernels/vision/` was sketched as in
   [`vision-assisted-identification.md`](vision-assisted-identification.md).
-- API-key management — env-var read at adapter construction;
-  refuse to start if absent and the feature is wired. No
-  defaults, no fallback. (`ANTHROPIC_API_KEY`,
-  `EOL_API_TOKEN`, etc.)
-- First wired adapter: **GBIF name validation**. No auth
-  required — the easiest real outbound call. Proves the
-  resilience / caching / error-handling shape against a real
-  upstream before the auth-required EOL work in Phase 4.
+- **Mock adapter** as the default in this phase — returns fixture
+  data scoped to a single demo species (likely *Battus philenor*
+  so Phase 2 can walk through the swallowtail). The mock is a
+  real `*Mock` per repository conventions, not a Spring
+  `@Profile("dev")` adapter.
+- API-key management *skeleton* — env-var read at adapter
+  construction; documented but not enforced at this stage (no
+  real adapter requires a key yet).
 - Console: entity detail pages render external authority links
   on `InsectSpecies`. Forms accept EOL page IDs, BugGuide node
   IDs, iNat taxon IDs, GBIF usage keys as identifier-shaped
@@ -226,14 +270,24 @@ both want the same plumbing. Reuse the runtime data directory
 from [`runtime-data-persistence.md`](runtime-data-persistence.md)
 unless the Phase 1 plan finds a reason not to.
 
+**GBIF as first real adapter — deferred to Phase 4 prerequisite.**
+The original sketch placed a GBIF name-validation adapter here as
+"easy unauthenticated outbound." Moved to Phase 4 prerequisite work
+so Phase 1 stays mock-only and the real-call shape is proven
+end-to-end against EOL itself, not a sidecar.
+
 ---
 
-## Phase 2 — `InsectIdentification` workflow (FU-3)
+## Phase 2 — `InsectIdentification` workflow (FU-3) + `kernels/bibliography` (FU-2)
 
 **Why.** The actual identification module. Per-domain, per the
-FU-3 stance.
+FU-3 stance. **And** the bibliography kernel — ADR-009 requires
+every curated `TaxonCharacteristic` to carry a `LiteratureReference`,
+and Phase 2 is where curated characteristics start being written.
+The kernel lands at the start of the workflow that produces those
+statements, not at the end of the roadmap.
 
-**Delivers.**
+**Delivers — workflow side.**
 
 - `InsectIdentification` aggregate — the running session.
   Append-only step list; state machine
@@ -254,10 +308,25 @@ FU-3 stance.
 - Deep-link surfacing: when the local key returns no further
   couplets, the application service surfaces stored authority
   URLs from Phase 1's link plumbing — the naturalist continues
-  outside the app. **No EOL API call in this phase.**
+  outside the app. **No real EOL API call in this phase** (mock
+  adapter from Phase 1 stands in).
 - A new durable observation entity — provisional name
   `InsectObservation`, decided here. Naturalist's own language
   preserved per principle 2.
+
+**Delivers — bibliography kernel.**
+
+- `kernels/bibliography` — a new shared kernel.
+- `LiteratureReference` value object carrying citation metadata
+  (DOI, ISBN, URL, author, year, title, journal). VO-form
+  initially; promote to `NamedEntity` only if duplication becomes
+  a real maintenance burden.
+- Carried as `Set<LiteratureReference>` on entities that need
+  citation support — initially `TaxonCharacteristic` (or whatever
+  the curated-statement shape is called), `InsectIdentification`
+  step entries, and any other Phase 2 surface that makes
+  scientific claims.
+- Closes **FU-2** ([`99-followups.md`](../pressure-test/battus-philenor/99-followups.md)).
 
 **Identification scope shape.** Closed value type, two members:
 `DomainId` (whole-domain scope) or a typed rank
@@ -266,70 +335,104 @@ Substrate decision per the `DomainId` section above; concrete
 encoding (sealed interface vs. record vs. visitor) is the Phase 2
 plan's call.
 
-**Out of scope for this phase.** EOL fetch (Phase 4),
-under-identified pending records (Phase 3), vision draft input
+**Promotion mechanism — preview.** When a naturalist's session
+narrows an organism from genus-rank to species-rank (e.g.,
+`Chrysoperla` → `Chrysoperla rufilabris`), Phase 2's application
+service creates the species record, attaches the citation, and
+re-anchors observations from the genus record as appropriate.
+The genus record stays — other naturalist may have organisms at
+that rank. The formal design of this promotion ceremony is
+Phase 3's job; Phase 2 builds the supporting machinery.
+
+**Out of scope for this phase.** Real EOL REST call (Phase 4),
+formal FU-1 path-1 documentation (Phase 3), vision draft input
 (separate plan).
 
 ---
 
-## Phase 3 — FU-1 closure — under-identified organisms
+## Phase 3 — FU-1 path-1 confirmation
 
-**Why.** [FU-1 in the pressure test
-followups](../pressure-test/battus-philenor/99-followups.md): a
-naturalist with genus-level or family-level confidence has nowhere
-to put the observation under the current `InsectSpecies` slug
-contract. FU-1 names three resolution paths and explicitly says
-"resolving requires understanding the identification workflow."
-Phase 2 is that understanding.
-
-**Delivers.** A decision among the three FU-1 paths:
-
-1. Defer entry until species-level — cleanest model, awkward for
-   active field workflow.
-2. Separate aggregate (`PendingInsectObservation` or similar) at
-   family/genus scope, promoted to `InsectSpecies` when
-   identification firms.
-3. Provisional epithets (`Aristolochia sp.`, `Lepidoptera sp.`)
-   with derived slug like `aristolochia-sp` — `InsectSpecies`
-   admits genus-level entries.
-
-The decision is informed by what Phase 2 actually built: how
-sessions terminate, what the durable observation shape looks like,
-how scope-at-family or scope-at-genus renders. **Don't pre-commit
-the path** — Phase 2 surfaces the right answer.
-
-**Closes** FU-1 (the family/genus catalog tier work in
-[`fu-1-plan.md`](../notes/fu-1-plan.md) closes the *catalog* side;
-this phase closes the *identification* side, which FU-1 explicitly
-flags as missing).
-
----
-
-## Phase 4 — EOL trait fetch — closes the ADR-009 loop
-
-**Why.** Structural completion of ADR-009 for the entomology
-slice. Without this, identification is an AI-or-author oracle.
-With this, every curated claim is traceable.
+**Why.** Phase 0's data reorganization is the operational expression
+of FU-1 **path 1** — organisms live at their actual identification
+rank in the catalog (genus or family), with a species record created
+only when species-level identification is firm. Phase 3 makes that
+choice explicit in the design record and formalises the promotion
+ceremony that Phase 2 began to build.
 
 **Delivers.**
 
-- `kernels/bibliography` — `LiteratureReference` value object
-  (DOI, ISBN, URL, author, year, title, journal). Carried as
-  `Set<LiteratureReference>` on entities that need citation
-  support. **Closes FU-2.**
-- An EOL trait API adapter implementing a
-  `CharacteristicLookupPort`-equivalent — populates the curated
-  knowledge layer (`TaxonCharacteristic`-equivalent — likely an
-  evolution of `IdentificationFeatures`) on demand. Each
-  `CharacteristicStatement` carries a `LiteratureReference`.
-  Per principle 4: catalog grows one node at a time as
-  naturalists reach those nodes.
-- EOL trait API access registration (account, token) is a
-  prerequisite milestone, not work this phase plans.
+- Formal confirmation of FU-1 path 1 in
+  [`99-followups.md`](../pressure-test/battus-philenor/99-followups.md)
+  and [`structural-commitments.md`](../pressure-test/battus-philenor/structural-commitments.md)
+  §5. Paths 2 (separate `UnidentifiedSpecimen` aggregate) and 3
+  (provisional epithets like `aristolochia-sp`) are explicitly
+  considered and rejected here, with reasoning preserved.
+- Design documentation for the **promotion ceremony**: when a
+  naturalist's identification narrows from genus to species, the
+  species record is created with `genusName` pointing at the
+  existing genus record; the genus record stays (other naturalists
+  may still observe at that rank); observations re-anchor as
+  appropriate. The mechanics ship in Phase 2; Phase 3 documents
+  the contract.
+- Tightening review of the non-null `genusName` invariant on
+  `InsectSpecies` / `Plant` — invariant activates only after every
+  species-rank record satisfies it. Phase 0 removed records that
+  couldn't satisfy it (they moved to genus/family). Phase 2's
+  workflow only ever creates species records that do. So by
+  Phase 3 the invariant is safe to enable.
+
+**Why not earlier in the roadmap.** Phase 0's reorganization is
+informed by what's in the data, not by an upfront design choice.
+Phase 2's workflow surfaces what the promotion experience actually
+looks like. By Phase 3, both the data and the workflow exist to
+inform the formal documentation.
+
+**Why not later.** The non-null invariant tightening — small but
+load-bearing — should land before Phase 4 wires the real EOL
+adapter, so citation-attaching code can assume the invariant
+holds.
+
+**Closes** FU-1 fully — both the catalog-side (kernel work shipped
+in PR-1 / PR-2a–e, data reorganization shipped in Phase 0) and the
+workflow-side (Phase 2's promotion mechanism + Phase 3's formal
+confirmation).
+
+---
+
+## Phase 4 — Real EOL REST adapter + citation population
+
+**Why.** Structural completion of ADR-009 for the entomology
+slice. Without this, identification is an AI-or-author oracle.
+With this, every curated claim is traceable. `kernels/bibliography`
+already exists from Phase 2; Phase 4 wires the data source.
+
+**Prerequisite — not work this phase plans.**
+
+- EOL trait API access registration (account, token).
+- API key obtained and stored per the env-var convention from
+  Phase 1's seam.
+
+**Delivers.**
+
+- **Real EOL REST adapter** implementing the
+  `CharacteristicLookupPort`-equivalent from Phase 2 — replaces
+  the mock from Phase 1 for production use. The mock stays
+  available for tests and offline development.
+- **Citation population walk** — per organism, as the naturalist
+  reaches a node in the identification workflow, the EOL adapter
+  fetches curated trait data and populates `TaxonCharacteristic`
+  statements with `LiteratureReference` citations. Per principle 4:
+  catalog grows one node at a time, not as a bulk import.
+- **A1-F1 closure** happens here. When *Battus philenor*'s walk
+  through the identification workflow produces citations from
+  EOL, the swallowtail bundle is fully binomial, fully cited, and
+  A1-F1 moves CONTINGENT → CLOSED in
+  [`01-findings.md`](../pressure-test/battus-philenor/01-findings.md).
 - Resilience-wrapped per Phase 1's seam.
 
-**Folds in** FU-2 entirely. The standalone FU-2 followup
-redirects to "see roadmap Phase 4" once this lands.
+**Closes the ADR-009 loop** for the entomology slice — Claude
+explains, EOL authorises, the naturalist evaluates the synthesis
+against the cited material.
 
 ---
 
@@ -360,11 +463,11 @@ already-shipped facade.
 
 ## Resolution mapping for the existing followups
 
-| Followup                                    | Status before  | Resolution path                                                                    |
-| ------------------------------------------- | -------------- | ---------------------------------------------------------------------------------- |
-| FU-1 — under-identified organisms           | OPEN, STRAIN   | Catalog side closes via FU-1 PR-2f / PR-2g; identification side closes in **Phase 3** |
-| FU-2 — bibliography / provenance kernel     | OPEN, NOTE     | **Phase 4** lands `kernels/bibliography`                                           |
-| FU-3 — identification as first-class        | OPEN, STRAIN   | **Phase 2** ships `InsectIdentification`; kernel extraction stays deferred         |
+| Followup                                    | Status before  | Resolution path                                                                                                       |
+| ------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------- |
+| FU-1 — under-identified organisms           | OPEN, STRAIN   | Catalog data side closes in **Phase 0** (reorganization); promotion mechanism ships in **Phase 2**; formal path-1 confirmation in **Phase 3** |
+| FU-2 — bibliography / provenance kernel     | OPEN, NOTE     | **Phase 2** lands `kernels/bibliography` (moved earlier than the original sketch; ADR-009 needs citations from day one) |
+| FU-3 — identification as first-class        | OPEN, STRAIN   | **Phase 2** ships `InsectIdentification`; kernel extraction stays deferred                                            |
 
 The followup entries get a "→ rolled into roadmap" pointer once
 the roadmap row is live in the work-tracker; they no longer track
@@ -374,20 +477,20 @@ separately.
 
 ## Slot in the work-tracker
 
-One new row in `docs/work-tracker.md`:
+Row #10 in [`docs/work-tracker.md`](../work-tracker.md):
 
 > **Identification roadmap** — Plan (sketch) — *active — Phase 0
 > next* — [`plans/identification.md`](plans/identification.md) —
-> *Multi-week. Per-domain start in `insects`. Phase 0 audits api
-> + lands family/genus console views (subsumes FU-1 PR-3); Phase 1
-> establishes the external-source kernel seam; Phase 2 ships the
-> identification workflow (FU-3); Phase 3 closes FU-1's
-> identification-side; Phase 4 lands the EOL adapter and
-> `kernels/bibliography` (FU-2), closing ADR-009's authority loop.*
+> *Multi-week. Per-domain start in `insects`. Phase 0 reorganizes
+> under-identified records to their actual rank AND ships family/genus
+> console views; Phase 1 establishes the external-source kernel seam
+> as a mock; Phase 2 ships the identification workflow (FU-3) and
+> `kernels/bibliography` (FU-2); Phase 3 confirms FU-1 path-1; Phase 4
+> wires the real EOL REST adapter and populates citations, closing
+> ADR-009's authority loop.*
 
 As each phase is promoted to its own implementation plan, that
-plan gets its own row; the roadmap row remains as the index. The
-FU-1 PR-3 line on the FU-1 row updates to point at Phase 0.
+plan gets its own row; the roadmap row remains as the index.
 
 ---
 
@@ -450,19 +553,25 @@ FU-1 PR-3 line on the FU-1 row updates to point at Phase 0.
 
 ## How this slots into the work order
 
-The current near-term queue (per
-[`docs/work-tracker.md`](../work-tracker.md)) is:
+**Reframed 2026-05-10.** This roadmap is now the primary near-term
+trajectory; PR-2f / PR-2g / PR-3 fold into it:
 
-> command-framework follow-ups → FU-1 PR-2f / 2g / 3 →
-> catalog-kernel M9b–M12
+- **Phase 0** absorbs PR-3 (console views) *and* the data
+  reorganization the original PR-2f tried to do via deletion.
+- **Phase 2** carries the per-organism species narrowing that
+  the original PR-2f tried to do via mass migration. As each
+  identification firms, a species record is created (or the
+  existing one gains `genusName`).
+- **Phase 4** carries the A1-F1 closure the original PR-2g
+  tried to do via bundle re-emit. *Battus philenor*'s walk
+  through the workflow with EOL citation is what closes it.
 
-This roadmap sits **after FU-1 PR-2f / PR-2g**, with **Phase 0
-absorbing PR-3**. Phase 1 can interleave with catalog-kernel work
-since they touch different surfaces. Phase 2 onwards is the
-multi-week stretch this roadmap exists to make legible in advance.
+Phase 1 can interleave with catalog-kernel work since they touch
+different surfaces. Phase 2 onwards is the multi-week stretch
+this roadmap exists to make legible in advance.
 
 If friction appears earlier or differently than expected (Phase 0's
-audit reveals deeper api work, Phase 1's GBIF call surfaces a
+audit reveals deeper api work, Phase 1's mock seam surfaces a
 resilience gap, Phase 2 finds the dichotomous-key abstraction
 doesn't fit), this sketch adjusts; the phase structure is the
 design space, not a commitment.

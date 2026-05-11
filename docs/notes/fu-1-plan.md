@@ -11,6 +11,35 @@ sitting; main stays buildable at every PR boundary.
 
 ---
 
+## Reframed 2026-05-10 — remaining slices fold into identification roadmap
+
+The kernel + aggregate work (PR-1 / PR-2a–e) is complete and remains the foundation. The
+remaining slices have been reshaped per Pat's 2026-05-10 reframing — pressure tests guide
+development; build the capability A1-F1 surfaced rather than shorten the path to closure:
+
+- **PR-2f** (species narrowing) is **no longer a mass migration**. Under the original
+  plan, the non-null `genusName` invariant on `InsectSpecies` / `Plant` would have
+  orphaned 10 of 16 insect species and 5 of 22 plants that carry partial taxonomy.
+  Deleting those records (or downgrading them to placeholder slugs) destroys domain
+  content the app exists to support. Species narrowing now happens **opportunistically
+  per organism** through identification roadmap Phase 2's workflow — as a naturalist
+  firms an identification, the genus-rank record becomes (or spawns) a species-rank
+  record. The invariant tightens only after every record satisfies it.
+- **PR-2g** (A1-F1 closure) is no longer a single bundle re-emit. The closure happens
+  when *Battus philenor* completes the identification workflow with an EOL-grounded
+  citation in roadmap Phase 4.
+- **PR-3** (console family/genus views) is subsumed by roadmap Phase 0, which adds a
+  prerequisite step: **data reorganization** — move the under-identified records to
+  their actual rank in the existing family/genus JSONs and re-anchor life-stage
+  observations. The console then renders the reorganized data.
+
+The original PR-2f / PR-2g / PR-3 specifications below remain as reference for the kernel
+shape and JSON migration semantics, but their execution shape is now per-organism inside
+the identification roadmap. See [`docs/plans/identification.md`](../plans/identification.md)
+and [`docs/work-tracker.md`](../work-tracker.md) for the current trajectory.
+
+---
+
 ## RESUME HERE — current state (snapshot for next-chat handoff, 2026-05-06)
 
 **Landed / pushed (`git log --oneline -10`):**
@@ -155,20 +184,18 @@ aggregates exist.
   (`InsectFamilyQuery`, `PlantFamilyQuery`, `InsectGenusQuery`, `PlantGenusQuery`)
   + their adapters in `*-core`. Cross-rank validation activates at catalog
     assembly.
-- **PR-2f** — Species narrowing: `Plant` and `InsectSpecies` gain typed
-  `genusName` reference and re-implement `LinnaeanSpecies<*GenusName>`. JSON
-  migration adds `genusName` to every species record. Backfill the 6 species-
-  derived insect genera (Battus, Blattella, Colias, Hippodamia, Vanessa,
-  Xylocopa) and their parent families (Papilionidae, Ectobiidae, Pieridae,
-  Coccinellidae, Nymphalidae, Apidae). Backfill species-derived plant genera
-  (~17 distinct genera across `plants.json`). The 15 currently-pending records
-  removed from species JSONs since they're now in family/genus JSONs.
-  **Editorial heaviest slice** — ~6 new insect families + ~6 new insect genera
-  + ~17 plant genera × 4 description levels.
-- **PR-2g** — A1-F1 closure: bundle JSON re-emit under fully-binomial catalog,
-  `TestInsectsIdentifiers` / `TestPlantsIdentifiers` cleanups,
-  `99-followups.md` FU-1 retirement, `01-findings.md` A1-F1 CONTINGENT →
-  CLOSED.
+- **PR-2f** — ↪ **reshaped 2026-05-10**. Original spec retained below for kernel-shape
+  reference. Execution now happens per-organism through identification roadmap Phase 2:
+  as a naturalist firms an identification, the affected record narrows from
+  genus-rank (or family-rank) to species-rank and gains the typed `genusName`. No mass
+  migration; no up-front editorial backfill. The non-null `genusName` invariant
+  tightens only after every record satisfies it. Roadmap Phase 0's data reorganization
+  step is the prerequisite — it moves the 10 under-identified insect species and 5
+  under-identified plants *out* of their species JSONs and into the existing
+  genus/family JSONs.
+- **PR-2g** — ↪ **reshaped 2026-05-10**. A1-F1 closes when *Battus philenor* completes
+  the identification workflow with an EOL-grounded citation (roadmap Phase 4). Bundle
+  re-emit happens organically at that point; not a discrete PR.
 
 The original "PR-2 — Refactor the entities" specification below remains the
 reference for what eventually lands across the slices.
@@ -289,27 +316,23 @@ scope unchanged and adds:
 - Any further entity changes — Phase 0 is read-only against the model from PR-2.
 
 **Promote** [`docs/plans/identification.md`](../plans/identification.md) Phase 0
-to its own implementation plan when FU-1 PR-2f / PR-2g have landed and the
-audit subject is stable.
+to its own implementation plan next — Phase 0 is now fully unblocked (PR-2f /
+PR-2g were reshaped 2026-05-10 and no longer ship as discrete slices).
 
 ---
 
 ## Sequencing notes
 
-- PR-1 lands kernel-only with the hard narrow in place. The kernel module compiles
-  and tests pass via test-doubles, but `domains/plants` and `domains/insects` will
-  not compile against the new `LinnaeanSpecies` until PR-2 supplies the typed
-  `genusName` reference. Land PR-2 tightly behind PR-1 to keep main's intermediate
-  state short.
-- PR-2 is the heavy PR. It depends on PR-1's interfaces and introduces the four
-  new identifier types. Editorial fill-in of family/genus descriptions is the
-  pre-flight gate — descriptions written before merge, not as follow-up commits.
-- The console slice that was originally PR-3 now lands as part of
-  identification roadmap Phase 0 ([`docs/plans/identification.md`](../plans/identification.md)).
-  It still depends on PR-2's repositories and queries; the dependency graph is
-  unchanged.
-- Each PR keeps the build and bundle green. The swallowtail bundle re-emits in
-  PR-2 (entity-side closure); the roadmap Phase 0 console pages render it.
+- PR-1 / PR-2a–e all landed; the kernel and the four new aggregates exist and the
+  catalog wires them.
+- PR-2f / PR-2g were reshaped 2026-05-10 — they no longer ship as discrete slices.
+  Species narrowing happens opportunistically per organism through identification
+  roadmap Phase 2; A1-F1 closes when *Battus philenor* completes that workflow
+  with EOL citation in Phase 4.
+- The console slice that was originally PR-3 now lands as part of identification
+  roadmap Phase 0 ([`docs/plans/identification.md`](../plans/identification.md)),
+  paired with the Phase 0 **data reorganization** that moves under-identified
+  records to their actual rank before the console renders them.
 
 ## Memory notes for next-chat handoff
 
