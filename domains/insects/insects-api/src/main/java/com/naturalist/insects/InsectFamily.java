@@ -3,10 +3,15 @@ package com.naturalist.insects;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.insects.lifestage.AdultStage;
+import com.naturalist.insects.lifestage.EggStage;
+import com.naturalist.insects.lifestage.LarvaStage;
+import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.LinnaeanFamily;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicOrder;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -33,16 +38,45 @@ public record InsectFamily(
         TaxonomicOrder order,
         TaxonomicFamily family,
         Description description,
-        Set<CommonName> commonNames
+        Set<CommonName> commonNames,
+        @Nullable EggStage egg,
+        @Nullable LarvaStage larva,
+        @Nullable PupaStage pupa,
+        @Nullable AdultStage adult
 ) implements NamedEntity<InsectFamilyName>, LinnaeanFamily {
+
+    public InsectFamily withEgg(@Nullable EggStage value) {
+        return new InsectFamily(name, order, family, description, commonNames,
+                value, larva, pupa, adult);
+    }
+
+    public InsectFamily withLarva(@Nullable LarvaStage value) {
+        return new InsectFamily(name, order, family, description, commonNames,
+                egg, value, pupa, adult);
+    }
+
+    public InsectFamily withPupa(@Nullable PupaStage value) {
+        return new InsectFamily(name, order, family, description, commonNames,
+                egg, larva, value, adult);
+    }
+
+    public InsectFamily withAdult(@Nullable AdultStage value) {
+        return new InsectFamily(name, order, family, description, commonNames,
+                egg, larva, pupa, value);
+    }
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> i
-                .entityName(name, "name")
-                .namedValue(order, "order")
-                .namedValue(family, "family")
-                .valueObject(description, "description")
-                .notNull(commonNames, "commonNames");
+        return i -> {
+            i.entityName(name, "name")
+                    .namedValue(order, "order")
+                    .namedValue(family, "family")
+                    .valueObject(description, "description")
+                    .notNull(commonNames, "commonNames");
+            if (egg != null) i.namedEntity(this, InsectFamily::egg, "egg");
+            if (larva != null) i.namedEntity(this, InsectFamily::larva, "larva");
+            if (pupa != null) i.namedEntity(this, InsectFamily::pupa, "pupa");
+            if (adult != null) i.namedEntity(this, InsectFamily::adult, "adult");
+        };
     }
 }

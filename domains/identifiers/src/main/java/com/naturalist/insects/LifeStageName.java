@@ -24,6 +24,18 @@ public final class LifeStageName extends EntityName {
         return new LifeStageName(species.value() + "-" + kind.slug());
     }
 
+    public static LifeStageName of(InsectGenusName genus, LifeStageKind kind) {
+        Objects.requireNonNull(genus, "genus");
+        Objects.requireNonNull(kind, "kind");
+        return new LifeStageName(genus.value() + "-" + kind.slug());
+    }
+
+    public static LifeStageName of(InsectFamilyName family, LifeStageKind kind) {
+        Objects.requireNonNull(family, "family");
+        Objects.requireNonNull(kind, "kind");
+        return new LifeStageName(family.value() + "-" + kind.slug());
+    }
+
     @JsonCreator
     public static LifeStageName of(String value) {
         return new LifeStageName(value);

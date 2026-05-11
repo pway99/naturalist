@@ -47,7 +47,11 @@ interface FamilyRepositoryTest
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 description(),
-                Set.of());
+                Set.of(),
+                null,
+                null,
+                null,
+                null);
     }
 
     @Override
@@ -57,7 +61,11 @@ interface FamilyRepositoryTest
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 description(),
-                Set.of());
+                Set.of(),
+                null,
+                null,
+                null,
+                null);
     }
 
     @Override
@@ -67,7 +75,11 @@ interface FamilyRepositoryTest
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 description(),
-                Set.of(CommonName.of("alt-" + RandomValue.string())));
+                Set.of(CommonName.of("alt-" + RandomValue.string())),
+                null,
+                null,
+                null,
+                null);
     }
 
     private static Description description() {

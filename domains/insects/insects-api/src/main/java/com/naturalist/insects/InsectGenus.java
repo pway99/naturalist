@@ -3,11 +3,16 @@ package com.naturalist.insects;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.insects.lifestage.AdultStage;
+import com.naturalist.insects.lifestage.EggStage;
+import com.naturalist.insects.lifestage.LarvaStage;
+import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.LinnaeanGenus;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -37,18 +42,47 @@ public record InsectGenus(
         TaxonomicFamily family,
         TaxonomicGenus genus,
         Description description,
-        Set<CommonName> commonNames
+        Set<CommonName> commonNames,
+        @Nullable EggStage egg,
+        @Nullable LarvaStage larva,
+        @Nullable PupaStage pupa,
+        @Nullable AdultStage adult
 ) implements NamedEntity<InsectGenusName>, LinnaeanGenus<InsectFamilyName> {
+
+    public InsectGenus withEgg(@Nullable EggStage value) {
+        return new InsectGenus(name, familyName, order, family, genus,
+                description, commonNames, value, larva, pupa, adult);
+    }
+
+    public InsectGenus withLarva(@Nullable LarvaStage value) {
+        return new InsectGenus(name, familyName, order, family, genus,
+                description, commonNames, egg, value, pupa, adult);
+    }
+
+    public InsectGenus withPupa(@Nullable PupaStage value) {
+        return new InsectGenus(name, familyName, order, family, genus,
+                description, commonNames, egg, larva, value, adult);
+    }
+
+    public InsectGenus withAdult(@Nullable AdultStage value) {
+        return new InsectGenus(name, familyName, order, family, genus,
+                description, commonNames, egg, larva, pupa, value);
+    }
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> i
-                .entityName(name, "name")
-                .entityName(familyName, "familyName")
-                .namedValue(order, "order")
-                .namedValue(family, "family")
-                .namedValue(genus, "genus")
-                .valueObject(description, "description")
-                .notNull(commonNames, "commonNames");
+        return i -> {
+            i.entityName(name, "name")
+                    .entityName(familyName, "familyName")
+                    .namedValue(order, "order")
+                    .namedValue(family, "family")
+                    .namedValue(genus, "genus")
+                    .valueObject(description, "description")
+                    .notNull(commonNames, "commonNames");
+            if (egg != null) i.namedEntity(this, InsectGenus::egg, "egg");
+            if (larva != null) i.namedEntity(this, InsectGenus::larva, "larva");
+            if (pupa != null) i.namedEntity(this, InsectGenus::pupa, "pupa");
+            if (adult != null) i.namedEntity(this, InsectGenus::adult, "adult");
+        };
     }
 }
