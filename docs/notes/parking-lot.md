@@ -12,7 +12,7 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 **Where:** Discovered while applying the green-lacewing → chrysoperla data move; slice 1 had just spread the inline-life-stage pattern from `InsectSpecies` to `InsectGenus` and `InsectFamily`.
 **The smell:** `LifeStage` is a `NamedEntity` with its own repository and standalone `life-stages.json`, but is *also* held by value as a component on `InsectSpecies` (annotated `@AggregateRoot`) and now on `InsectGenus` / `InsectFamily` (plain `NamedEntity`, not aggregates per the framework rules). Two homes for the same data; framework rule violation (NamedEntity owning NamedEntity by value).
 **Blocking:** YES — for slice 2 onwards. Doing the per-organism data moves in the current inline-copy shape compounds the duplication across 10 organisms. Per Pat's call: park slice 2; resolve the modeling first.
-**Resolution path:** Add `Clade` and `Rank` to `kernels/taxonomy`. Model `LifeStage` as referenced-by-name from parent records (Clade + Rank + stage-kind composes the identity). Slice 2 then becomes "replace inline duplicates with references," far smaller per-organism work.
+**Resolution path:** Promoted as a slice plan on 2026-05-12 — see [`plans/clades-kernel.md`](../plans/clades-kernel.md). Introduces a Clade DAG alongside the existing Rank DAG; `Metaboly` declares stage sequences as a clade trait; per-organism `LifeStage` records remain but key off the clade-resolved stage-kind rather than free-form enumeration. Slice 2 (PL-2) resumes once Phase 5 of that plan lands.
 
 ---
 
@@ -21,7 +21,7 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 **Raised:** 2026-05-11 (this session).
 **Where:** Per-organism data reorganization for Phase 0 of the identification roadmap.
 **Status:** Plan doc committed at `16e4910` (`docs/plans/green-lacewing-rank-correction.md`); the data-move JSON edits were reverted and never committed.
-**Blocking:** Pat's reframing on PL-1 makes the inline-copy shape wrong. Resume after PL-1 lands.
+**Blocking:** Pat's reframing on PL-1 makes the inline-copy shape wrong. Resume after [`plans/clades-kernel.md`](../plans/clades-kernel.md) Phase 5 lands.
 **Expected resume shape:** "Remove green-lacewing species record + add `chrysoperla` references to existing clade life-stages." Editorial mass drops significantly because there's no description-merge work — the clade life-stage records exist independently of the inline copies that would have been promoted.
 
 ---
