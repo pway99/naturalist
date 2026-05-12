@@ -35,7 +35,7 @@ in [`../`](..):
 
 - [`../notes/pending-implementation.md`](../notes/pending-implementation.md) — prioritized backlog of work not yet
   planned.
-- [`../notes/open-questions.md`](../notes/open-questions.md) — design decisions in flight.
+- [`../notes/parking-lot.md`](../notes/parking-lot.md) — forks and design decisions in flight (the single landing site when a discovery diverts current work).
 - [`../briefings/`](../briefings/) — chat-prompt context documents (not plans).
 - [`../adr/`](../adr/) — Architecture Decision Records.
 
