@@ -71,9 +71,9 @@ The evolutionary tree of life as a curated, controlled vocabulary. `Clade` is a
 **sealed interface** with one stateless `record` permit per recognised clade
 (`Eukaryota`, `Animalia`, `Arthropoda`, `Insecta`, `Holometabola`, `Lepidoptera`,
 `Papilionidae`, expanding as needed). Each permit carries its slug, display name,
-four-level Durrell `Description`, and a reference to its `parent()` clade (or
-`null` at Eukaryota). The shape mirrors `biogeography.Bioregion` — adding a clade
-is a deliberate kernel PR, not free-text data entry.
+four-level Durrell `Description`, and an `Optional<Clade>` parent reference
+(`Optional.empty()` at Eukaryota). The shape mirrors `biogeography.Bioregion`
+— adding a clade is a deliberate kernel PR, not free-text data entry.
 
 ```java
 import com.naturalist.clades.Clade;

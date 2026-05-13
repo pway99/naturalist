@@ -6,7 +6,9 @@ package com.naturalist.insects;
 public enum LifeStageKind {
     EGG("egg"),
     LARVA("larva"),
+    NYMPH("nymph"),
     PUPA("pupa"),
+    JUVENILE("juvenile"),
     ADULT("adult");
 
     private final String slug;
