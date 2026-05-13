@@ -56,8 +56,8 @@ public record MulchLayer(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, MulchLayer::mulchType, "mulchType")
+                .notNull(mulchType, "mulchType")
                 .namedValue(depthInches, "depthInches")
-                .notNull(this, MulchLayer::appliedDate, "appliedDate");
+                .notNull(appliedDate, "appliedDate");
     }
 }

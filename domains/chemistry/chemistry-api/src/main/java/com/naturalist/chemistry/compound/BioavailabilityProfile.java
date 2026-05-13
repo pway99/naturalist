@@ -29,9 +29,9 @@ public record BioavailabilityProfile(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, BioavailabilityProfile::primaryPathway, "primaryPathway")
-                .notNull(this, BioavailabilityProfile::relativeAbsorptionRate, "relativeAbsorptionRate")
-                .notNull(this, BioavailabilityProfile::mechanism, "mechanism");
+                .notNull(primaryPathway, "primaryPathway")
+                .notNull(relativeAbsorptionRate, "relativeAbsorptionRate")
+                .notNull(mechanism, "mechanism");
     }
 
     public enum AbsorptionPathway {

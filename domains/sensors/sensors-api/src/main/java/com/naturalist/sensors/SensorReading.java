@@ -153,7 +153,7 @@ public record SensorReading(
                 .entityName(sensorName, "sensorName")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
-                .notNull(this, SensorReading::recordedAt, "recordedAt")
+                .notNull(recordedAt, "recordedAt")
                 .namedValue(moisturePercent, "moisturePercent");
     }
 }

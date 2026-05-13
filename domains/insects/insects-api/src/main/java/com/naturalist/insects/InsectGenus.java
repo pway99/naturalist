@@ -71,18 +71,17 @@ public record InsectGenus(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> {
-            i.entityName(name, "name")
-                    .entityName(familyName, "familyName")
-                    .namedValue(order, "order")
-                    .namedValue(family, "family")
-                    .namedValue(genus, "genus")
-                    .valueObject(description, "description")
-                    .notNull(commonNames, "commonNames");
-            if (egg != null) i.namedEntity(this, InsectGenus::egg, "egg");
-            if (larva != null) i.namedEntity(this, InsectGenus::larva, "larva");
-            if (pupa != null) i.namedEntity(this, InsectGenus::pupa, "pupa");
-            if (adult != null) i.namedEntity(this, InsectGenus::adult, "adult");
-        };
+        return i -> i
+                .entityName(name, "name")
+                .entityName(familyName, "familyName")
+                .namedValue(order, "order")
+                .namedValue(family, "family")
+                .namedValue(genus, "genus")
+                .valueObject(description, "description")
+                .notNull(commonNames, "commonNames")
+                .namedEntityOrNull(egg, "egg")
+                .namedEntityOrNull(larva, "larva")
+                .namedEntityOrNull(pupa, "pupa")
+                .namedEntityOrNull(adult, "adult");
     }
 }

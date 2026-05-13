@@ -40,9 +40,9 @@ public record PupaStage(
                 .entityName(name, "name")
                 .valueObject(phenology, "phenology")
                 .valueObject(habitat, "habitat")
-                .valueObjectOrNull(this, PupaStage::chemistryRole, "chemistryRole")
+                .valueObjectOrNull(chemistryRole, "chemistryRole")
                 .valueObject(description, "description")
-                .valueObjectOrNull(this, PupaStage::diapauseRegulation, "diapauseRegulation");
+                .valueObjectOrNull(diapauseRegulation, "diapauseRegulation");
     }
 
     /**

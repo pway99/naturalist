@@ -91,6 +91,6 @@ public record HabitatProfile(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, HabitatProfile::zones, "zones");
+                .notNull(zones, "zones");
     }
 }

@@ -216,11 +216,11 @@ public record Compound(
         return i -> i
                 .entityName(name, "name")
                 .notBlank(commonName, "commonName")
-                .valueObject(this, Compound::compoundInfo, "compoundInfo")
-                .valueObject(this, Compound::solubility, "solubility")
-                .valueObject(this, Compound::bioavailability, "bioavailability")
-                .valueObjectOrNull(this, Compound::volatilization, "volatilization")
-                .valueObjectOrNull(this, Compound::safety, "safety")
-                .notNull(this, Compound::properties, "properties");
+                .valueObject(compoundInfo, "compoundInfo")
+                .valueObject(solubility, "solubility")
+                .valueObject(bioavailability, "bioavailability")
+                .valueObjectOrNull(volatilization, "volatilization")
+                .valueObjectOrNull(safety, "safety")
+                .notNull(properties, "properties");
     }
 }

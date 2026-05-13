@@ -225,12 +225,12 @@ public record SoilProfile(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .namedEntity(this, SoilProfile::soilProfileInfo, "soilProfileInfo")
-                .valueObjectOrNull(this, SoilProfile::currentMulchLayer, "currentMulchLayer")
-                .notNull(this, SoilProfile::labAnalyses, "labAnalyses")
-                .notNull(this, SoilProfile::amendmentEvents, "amendmentEvents")
-                .notNull(this, SoilProfile::irrigationEvents, "irrigationEvents")
-                .notNull(this, SoilProfile::tillageEvents, "tillageEvents")
-                .notNull(this, SoilProfile::precipitationEvents, "precipitationEvents");
+                .namedEntity(soilProfileInfo, "soilProfileInfo")
+                .valueObjectOrNull(currentMulchLayer, "currentMulchLayer")
+                .notNull(labAnalyses, "labAnalyses")
+                .notNull(amendmentEvents, "amendmentEvents")
+                .notNull(irrigationEvents, "irrigationEvents")
+                .notNull(tillageEvents, "tillageEvents")
+                .notNull(precipitationEvents, "precipitationEvents");
     }
 }

@@ -15,8 +15,8 @@ public record SubstrateCharacteristics(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, SubstrateCharacteristics::category, "category")
-                .notNull(this, SubstrateCharacteristics::drainageCharacteristic, "drainageCharacteristic")
+                .notNull(category, "category")
+                .notNull(drainageCharacteristic, "drainageCharacteristic")
                 .namedValue(biologicalAmplificationFactor, "biologicalAmplificationFactor");
     }
 }

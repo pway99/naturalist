@@ -82,9 +82,9 @@ public record LabAnalysis(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityId(name, "name")
-                .notNull(this, LabAnalysis::sampleDate, "sampleDate")
-                .notNull(this, LabAnalysis::labId, "labId")
-                .notNull(this, LabAnalysis::labSampleId, "labSampleId")
+                .notNull(sampleDate, "sampleDate")
+                .notNull(labId, "labId")
+                .notNull(labSampleId, "labSampleId")
                 .valueObject(nutrients, "nutrients");
     }
 }

@@ -46,9 +46,9 @@ public record Description(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, Description::preschool, "preschool")
-                .notNull(this, Description::elementary, "elementary")
-                .notNull(this, Description::secondary, "secondary")
-                .notNull(this, Description::university, "university");
+                .notNull(preschool, "preschool")
+                .notNull(elementary, "elementary")
+                .notNull(secondary, "secondary")
+                .notNull(university, "university");
     }
 }

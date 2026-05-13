@@ -38,7 +38,7 @@ public record InsectAggregate(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .namedEntity(this, InsectAggregate::species, "species")
-                .observable(this, InsectAggregate::images, "images");
+                .namedEntity(species, "species")
+                .observable(images, "images");
     }
 }

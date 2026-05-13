@@ -21,7 +21,7 @@ public record StagePhenology(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .valueObjectCollection(this, StagePhenology::windows, "windows")
-                .notEmpty(this, StagePhenology::windows, "windows");
+                .notEmpty(windows, "windows");
     }
 
     /**
@@ -39,8 +39,8 @@ public record StagePhenology(
         @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i
-                    .notNull(this, ActivityWindow::onset, "onset")
-                    .notNull(this, ActivityWindow::tail, "tail");
+                    .notNull(onset, "onset")
+                    .notNull(tail, "tail");
         }
     }
 }

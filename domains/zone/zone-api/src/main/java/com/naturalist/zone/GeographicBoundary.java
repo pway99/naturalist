@@ -15,6 +15,6 @@ public record GeographicBoundary(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .namedValue(areaSqft, "areaSqft")
-                .notNull(this, GeographicBoundary::shape, "shape");
+                .notNull(shape, "shape");
     }
 }

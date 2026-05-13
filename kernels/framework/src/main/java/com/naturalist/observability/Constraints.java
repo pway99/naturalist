@@ -43,6 +43,10 @@ public class Constraints {
         return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
+    public <V extends ValueObject> Constraints valueObjectOrNull(V valueObject, String name) {
+        return valueObjectOrNull(valueObject, Function.identity(), name);
+    }
+
     public <O, V extends ValueObject> Constraints valueObjectOrNull(O o, Function<O, V> valueFunction, String name) {
         return add(new ValueObjectOrNullConstraint<>(o, valueFunction, name));
     }
@@ -63,6 +67,10 @@ public class Constraints {
      * most commonly a {@link com.naturalist.ddd.BehavioralCollection} held by an
      * {@link com.naturalist.ddd.Aggregate}.
      */
+    public <V extends Observable> Constraints observable(V observable, String name) {
+        return observable(observable, Function.identity(), name);
+    }
+
     public <O, V extends Observable> Constraints observable(O o, Function<O, V> valueFunction, String name) {
         return add(new ObservableConstraint<>(o, valueFunction, name));
     }
@@ -165,6 +173,10 @@ public class Constraints {
      * a descent constraint (e.g. {@link #valueObjectCollection}) to assert both
      * "has elements" and "each element is valid".
      */
+    public <R> Constraints notEmpty(R value, String name) {
+        return notEmpty(value, Function.identity(), name);
+    }
+
     public <T, R> Constraints notEmpty(T t, Function<T, R> valueFunction, String name) {
         return add(new NotEmptyConstraint<>(t, valueFunction, name));
     }

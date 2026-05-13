@@ -22,7 +22,7 @@ public record Aspect(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, Aspect::primaryDirection, "primaryDirection")
+                .notNull(primaryDirection, "primaryDirection")
                 .namedValue(slopeDegrees, "slopeDegrees");
     }
 }

@@ -39,9 +39,9 @@ public record PestPressureRecord(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, PestPressureRecord::pathogen, "pathogen")
-                .notNull(this, PestPressureRecord::severity, "severity")
-                .notNull(this, PestPressureRecord::detectedDate, "detectedDate");
+                .notNull(pathogen, "pathogen")
+                .notNull(severity, "severity")
+                .notNull(detectedDate, "detectedDate");
     }
 
     // ─────────────────────────────────────────────────────────────────────────

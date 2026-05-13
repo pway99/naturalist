@@ -122,8 +122,8 @@ public record SubZone(
                 .entityName(name, "name")
                 .entityName(parentZoneName, "parentZoneName")
                 .entityNameOrNull(soilProfileName, "soilProfileName")
-                .notNull(this, SubZone::position, "position")
+                .notNull(position, "position")
                 .namedValue(areaSqft, "areaSqft")
-                .notNull(this, SubZone::surfaceHabitatRisk, "surfaceHabitatRisk");
+                .notNull(surfaceHabitatRisk, "surfaceHabitatRisk");
     }
 }

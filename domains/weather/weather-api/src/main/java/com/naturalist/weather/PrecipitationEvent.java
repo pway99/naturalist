@@ -118,10 +118,10 @@ public record PrecipitationEvent(
                 .entityId(name, "name")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
-                .notNull(this, PrecipitationEvent::startDate, "startDate")
-                .notNull(this, PrecipitationEvent::endDate, "endDate")
+                .notNull(startDate, "startDate")
+                .notNull(endDate, "endDate")
                 .namedValue(totalInches, "totalInches")
-                .notNull(this, PrecipitationEvent::totalDuration, "totalDuration")
-                .notNull(this, PrecipitationEvent::peakIntensityInchesPerHour, "peakIntensityInchesPerHour");
+                .notNull(totalDuration, "totalDuration")
+                .notNull(peakIntensityInchesPerHour, "peakIntensityInchesPerHour");
     }
 }

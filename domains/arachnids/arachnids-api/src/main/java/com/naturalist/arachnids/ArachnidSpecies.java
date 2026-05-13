@@ -54,6 +54,6 @@ public record ArachnidSpecies(
                 .entityName(name, "name")
                 .valueObject(taxonomy, "taxonomy")
                 .valueObject(description, "description")
-                .notNull(this, ArachnidSpecies::huntingStrategy, "huntingStrategy");
+                .notNull(huntingStrategy, "huntingStrategy");
     }
 }

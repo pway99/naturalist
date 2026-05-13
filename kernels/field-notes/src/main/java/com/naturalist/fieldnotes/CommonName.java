@@ -47,7 +47,7 @@ public record CommonName(String label, Locale locale) implements ValueObject {
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notBlank(this, CommonName::label, "label")
-                .notNull(this, CommonName::locale, "locale");
+                .notBlank(label, "label")
+                .notNull(locale, "locale");
     }
 }

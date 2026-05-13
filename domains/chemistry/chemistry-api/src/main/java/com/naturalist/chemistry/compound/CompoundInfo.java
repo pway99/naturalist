@@ -52,13 +52,13 @@ public record CompoundInfo(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, CompoundInfo::formula, "formula")
-                .notNull(this, CompoundInfo::phCharacter, "phCharacter")
-                .notNull(this, CompoundInfo::chemicalNature, "chemicalNature")
-                .notNull(this, CompoundInfo::physicalForm, "physicalForm")
-                .valueObject(this, CompoundInfo::structuralType, "structuralType")
-                .notEmpty(this, CompoundInfo::functionalRoles, "functionalRoles")
+                .notNull(formula, "formula")
+                .notNull(phCharacter, "phCharacter")
+                .notNull(chemicalNature, "chemicalNature")
+                .notNull(physicalForm, "physicalForm")
+                .valueObject(structuralType, "structuralType")
+                .notEmpty(functionalRoles, "functionalRoles")
                 .valueObjectCollection(this, CompoundInfo::functionalRoles, "functionalRoles")
-                .notEmpty(this, CompoundInfo::constituentElements, "constituentElements");
+                .notEmpty(constituentElements, "constituentElements");
     }
 }

@@ -106,11 +106,11 @@ public record Sensor(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, Sensor::model, "model")
+                .notNull(model, "model")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .namedValue(depthInches, "depthInches")
-                .notNull(this, Sensor::installedDate, "installedDate");
+                .notNull(installedDate, "installedDate");
     }
 
     // ── Hardware model enum ────────────────────────────────────────────────────

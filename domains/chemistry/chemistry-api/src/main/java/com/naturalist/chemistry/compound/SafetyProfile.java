@@ -39,9 +39,9 @@ public record SafetyProfile(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, SafetyProfile::hazardLevel, "hazardLevel")
-                .notNull(this, SafetyProfile::maxSafeConcentrationPpm, "maxSafeConcentrationPpm")
-                .notNull(this, SafetyProfile::applicationConstraints, "applicationConstraints");
+                .notNull(hazardLevel, "hazardLevel")
+                .notNull(maxSafeConcentrationPpm, "maxSafeConcentrationPpm")
+                .notNull(applicationConstraints, "applicationConstraints");
     }
 
     public enum HazardLevel {

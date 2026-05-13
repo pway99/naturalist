@@ -33,7 +33,7 @@ public record EggStage(
                 .entityName(name, "name")
                 .valueObject(phenology, "phenology")
                 .valueObject(habitat, "habitat")
-                .valueObjectOrNull(this, EggStage::chemistryRole, "chemistryRole")
+                .valueObjectOrNull(chemistryRole, "chemistryRole")
                 .valueObject(description, "description");
     }
 }

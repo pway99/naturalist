@@ -28,9 +28,9 @@ public record SolubilityProfile(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .namedValue(gramsPerLiterAt20C, "gramsPerLiterAt20C")
-                .notNull(this, SolubilityProfile::category, "category")
-                .notNull(this, SolubilityProfile::ecContributionFactor, "ecContributionFactor")
-                .notNull(this, SolubilityProfile::notes, "notes");
+                .notNull(category, "category")
+                .notNull(ecContributionFactor, "ecContributionFactor")
+                .notNull(notes, "notes");
     }
 
     public enum SolubilityCategory {

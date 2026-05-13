@@ -62,7 +62,7 @@ public record AmendmentEvent(
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .entityName(compoundName, "compoundName")
                 .namedValue(amount, "amount")
-                .notNull(this, AmendmentEvent::unit, "unit")
-                .notNull(this, AmendmentEvent::appliedDate, "appliedDate");
+                .notNull(unit, "unit")
+                .notNull(appliedDate, "appliedDate");
     }
 }

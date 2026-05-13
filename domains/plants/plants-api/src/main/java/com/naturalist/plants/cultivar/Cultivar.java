@@ -89,7 +89,7 @@ public record Cultivar(
                 .entityName(plantName, "plantName")
                 .notBlank(commonName, "commonName")
                 .valueObject(description, "description")
-                .notNull(this, Cultivar::varietyType, "varietyType")
-                .notNull(this, Cultivar::seedSavingPolicy, "seedSavingPolicy");
+                .notNull(varietyType, "varietyType")
+                .notNull(seedSavingPolicy, "seedSavingPolicy");
     }
 }

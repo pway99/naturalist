@@ -221,7 +221,7 @@ public record Zone(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .namedEntity(this, Zone::zoneInfo, "zoneInfo")
+                .namedEntity(zoneInfo, "zoneInfo")
                 .valueObject(sunExposure, "sunExposure")
                 .valueObject(aspect, "aspect")
                 .valueObject(boundary, "boundary")

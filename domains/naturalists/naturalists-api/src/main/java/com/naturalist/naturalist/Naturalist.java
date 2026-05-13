@@ -71,8 +71,8 @@ public record Naturalist(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notNull(this, Naturalist::givenName, "givenName")
-                .notNull(this, Naturalist::role, "role")
-                .notNull(this, Naturalist::stage, "stage");
+                .notNull(givenName, "givenName")
+                .notNull(role, "role")
+                .notNull(stage, "stage");
     }
 }

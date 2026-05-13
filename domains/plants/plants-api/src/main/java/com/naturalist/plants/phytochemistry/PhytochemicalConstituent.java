@@ -201,11 +201,11 @@ public record PhytochemicalConstituent(
                 .entityName(name, "name")
                 .entityName(plantName, "plantName")
                 .entityName(compoundName, "compoundName")
-                .valueObject(this, PhytochemicalConstituent::description, "description")
-                .notNull(this, PhytochemicalConstituent::category, "category")
-                .notEmpty(this, PhytochemicalConstituent::roles, "roles")
+                .valueObject(description, "description")
+                .notNull(category, "category")
+                .notEmpty(roles, "roles")
                 .valueObjectCollection(this, PhytochemicalConstituent::roles, "roles")
-                .notEmpty(this, PhytochemicalConstituent::tissues, "tissues")
-                .notNull(this, PhytochemicalConstituent::induction, "induction");
+                .notEmpty(tissues, "tissues")
+                .notNull(induction, "induction");
     }
 }

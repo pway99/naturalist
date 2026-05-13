@@ -40,7 +40,7 @@ public record CationExchangeProfile(
         return i -> i
                 .entityName(displacingCation, "displacingCation")
                 .entityName(displacedCation, "displacedCation")
-                .notNull(this, CationExchangeProfile::selectivityCoefficient, "selectivityCoefficient")
-                .notNull(this, CationExchangeProfile::exchangeCapacityCmolKg, "exchangeCapacityCmolKg");
+                .notNull(selectivityCoefficient, "selectivityCoefficient")
+                .notNull(exchangeCapacityCmolKg, "exchangeCapacityCmolKg");
     }
 }

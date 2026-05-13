@@ -79,9 +79,9 @@ public record InsectFamily(
                 .namedValue(family, "family")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames")
-                .namedEntityOrNull(this, InsectFamily::egg, "egg")
-                .namedEntityOrNull(this, InsectFamily::larva, "larva")
-                .namedEntityOrNull(this, InsectFamily::pupa, "pupa")
-                .namedEntityOrNull(this, InsectFamily::adult, "adult");
+                .namedEntityOrNull(egg, "egg")
+                .namedEntityOrNull(larva, "larva")
+                .namedEntityOrNull(pupa, "pupa")
+                .namedEntityOrNull(adult, "adult");
     }
 }

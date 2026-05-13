@@ -50,9 +50,9 @@ public record VolatilizationProfile(
                 .namedValue(minEffectiveTempF, "minEffectiveTempF")
                 .namedValue(maxSafeTempF, "maxSafeTempF")
                 .namedValue(optimalTempF, "optimalTempF")
-                .notNull(this, VolatilizationProfile::vaporPressureAt20C, "vaporPressureAt20C")
-                .notNull(this, VolatilizationProfile::efficacyNotes, "efficacyNotes")
-                .notNull(this, VolatilizationProfile::safetyNotes, "safetyNotes");
+                .notNull(vaporPressureAt20C, "vaporPressureAt20C")
+                .notNull(efficacyNotes, "efficacyNotes")
+                .notNull(safetyNotes, "safetyNotes");
     }
 
     public enum TemperatureAssessment {

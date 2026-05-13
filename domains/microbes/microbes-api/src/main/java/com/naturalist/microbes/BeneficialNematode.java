@@ -65,7 +65,7 @@ public record BeneficialNematode(
                 .entityName(name, "name")
                 .valueObject(taxonomy, "taxonomy")
                 .valueObject(description, "description")
-                .notNull(this, BeneficialNematode::primaryTargetPest, "primaryTargetPest")
-                .notNull(this, BeneficialNematode::foragingStrategy, "foragingStrategy");
+                .notNull(primaryTargetPest, "primaryTargetPest")
+                .notNull(foragingStrategy, "foragingStrategy");
     }
 }

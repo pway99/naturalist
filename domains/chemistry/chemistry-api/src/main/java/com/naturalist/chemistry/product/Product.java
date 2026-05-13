@@ -38,7 +38,7 @@ public record Product(
         return i -> i
                 .entityName(name, "name")
                 .notBlank(displayName, "displayName")
-                .notEmpty(this, Product::compounds, "compounds")
-                .notNull(this, Product::properties, "properties");
+                .notEmpty(compounds, "compounds")
+                .notNull(properties, "properties");
     }
 }

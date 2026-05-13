@@ -18,7 +18,7 @@ public record StageChemistryRole(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> i.notNull(this, StageChemistryRole::role, "role");
+        return i -> i.notNull(role, "role");
     }
 
     public enum Role {

@@ -45,9 +45,9 @@ public record AdultStage(
                 .entityName(name, "name")
                 .valueObject(phenology, "phenology")
                 .valueObject(habitat, "habitat")
-                .valueObjectOrNull(this, AdultStage::chemistryRole, "chemistryRole")
+                .valueObjectOrNull(chemistryRole, "chemistryRole")
                 .valueObject(description, "description")
-                .notNull(this, AdultStage::nectarSources, "nectarSources");
+                .notNull(nectarSources, "nectarSources");
     }
 
     /**

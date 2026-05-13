@@ -167,29 +167,24 @@ public record InsectSpecies(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        // Stage children are NamedEntity subtypes; Constraints has no nullable
-        // descent helper for them, so each non-null stage is descended conditionally.
-        // Nullable value-object children continue to use valueObjectOrNull.
-        Consumer<Constraints> body = i -> {
-            i.entityName(name, "name")
-                    .valueObject(taxonomy, "taxonomy")
-                    .valueObject(description, "description")
-                    .notNull(commonNames, "commonNames")
-                    .notNull(this, InsectSpecies::guilds, "guilds")
-                    .valueObjectOrNull(this, InsectSpecies::identificationFeatures, "identificationFeatures")
-                    .valueObjectOrNull(this, InsectSpecies::chemicalDefense, "chemicalDefense")
-                    .valueObjectOrNull(this, InsectSpecies::voltinism, "voltinism")
-                    .valueObjectOrNull(this, InsectSpecies::habitatProfile, "habitatProfile")
-                    .valueObjectOrNull(this, InsectSpecies::habitatRequirements, "habitatRequirements")
-                    .valueObjectOrNull(this, InsectSpecies::gardenConnections, "gardenConnections")
-                    .valueObjectOrNull(this, InsectSpecies::beneficialProfile, "beneficialProfile")
-                    .valueObjectOrNull(this, InsectSpecies::ecologicalSignificance, "ecologicalSignificance");
-            if (egg != null) i.namedEntity(this, InsectSpecies::egg, "egg");
-            if (larva != null) i.namedEntity(this, InsectSpecies::larva, "larva");
-            if (pupa != null) i.namedEntity(this, InsectSpecies::pupa, "pupa");
-            if (adult != null) i.namedEntity(this, InsectSpecies::adult, "adult");
-        };
-        return body;
+        return i -> i
+                .entityName(name, "name")
+                .valueObject(taxonomy, "taxonomy")
+                .valueObject(description, "description")
+                .notNull(commonNames, "commonNames")
+                .notNull(guilds, "guilds")
+                .valueObjectOrNull(identificationFeatures, "identificationFeatures")
+                .valueObjectOrNull(chemicalDefense, "chemicalDefense")
+                .valueObjectOrNull(voltinism, "voltinism")
+                .valueObjectOrNull(habitatProfile, "habitatProfile")
+                .valueObjectOrNull(habitatRequirements, "habitatRequirements")
+                .valueObjectOrNull(gardenConnections, "gardenConnections")
+                .valueObjectOrNull(beneficialProfile, "beneficialProfile")
+                .valueObjectOrNull(ecologicalSignificance, "ecologicalSignificance")
+                .namedEntityOrNull(egg, "egg")
+                .namedEntityOrNull(larva, "larva")
+                .namedEntityOrNull(pupa, "pupa")
+                .namedEntityOrNull(adult, "adult");
     }
 
     /**
@@ -209,7 +204,7 @@ public record InsectSpecies(
 
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> i.notNull(this, IdentificationFeatures::features, "features");
+            return i -> i.notNull(features, "features");
         }
     }
 
@@ -258,7 +253,7 @@ public record InsectSpecies(
         public Consumer<? extends Constraints> invariants() {
             return i -> i
                     .notBlank(mechanism, "mechanism")
-                    .notNull(this, ChemicalDefense::protectedStages, "protectedStages");
+                    .notNull(protectedStages, "protectedStages");
         }
     }
 
@@ -285,7 +280,7 @@ public record InsectSpecies(
 
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> i.notNull(this, Voltinism::pattern, "pattern");
+            return i -> i.notNull(pattern, "pattern");
         }
 
         /**
@@ -391,7 +386,7 @@ public record InsectSpecies(
 
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> i.notNull(this, GardenConnections::supportingPlants, "supportingPlants");
+            return i -> i.notNull(supportingPlants, "supportingPlants");
         }
     }
 
@@ -425,7 +420,7 @@ public record InsectSpecies(
 
         @Override
         public Consumer<? extends Constraints> invariants() {
-            return i -> i.notNull(this, BeneficialProfile::significance, "significance");
+            return i -> i.notNull(significance, "significance");
         }
     }
 

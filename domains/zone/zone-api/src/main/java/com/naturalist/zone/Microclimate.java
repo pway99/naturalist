@@ -28,6 +28,6 @@ public record Microclimate(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> i.notNull(this, Microclimate::summerThermalRisk, "summerThermalRisk");
+        return i -> i.notNull(summerThermalRisk, "summerThermalRisk");
     }
 }

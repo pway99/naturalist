@@ -31,7 +31,7 @@ public record NutrientReading(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(this, NutrientReading::value, "value")
-                .notNull(this, NutrientReading::status, "status");
+                .notNull(value, "value")
+                .notNull(status, "status");
     }
 }

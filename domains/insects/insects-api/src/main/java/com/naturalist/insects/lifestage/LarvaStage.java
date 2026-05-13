@@ -49,10 +49,10 @@ public record LarvaStage(
                 .entityName(name, "name")
                 .valueObject(phenology, "phenology")
                 .valueObject(habitat, "habitat")
-                .valueObjectOrNull(this, LarvaStage::chemistryRole, "chemistryRole")
+                .valueObjectOrNull(chemistryRole, "chemistryRole")
                 .valueObject(description, "description")
-                .notNull(this, LarvaStage::hostPlants, "hostPlants")
-                .notNull(this, LarvaStage::parasitoidHosts, "parasitoidHosts");
+                .notNull(hostPlants, "hostPlants")
+                .notNull(parasitoidHosts, "parasitoidHosts");
     }
 
     /**

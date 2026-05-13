@@ -45,7 +45,7 @@ public record IrrigationEvent(
                 .entityId(name, "name")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
-                .notNull(this, IrrigationEvent::volumeGallons, "volumeGallons")
-                .notNull(this, IrrigationEvent::appliedDate, "appliedDate");
+                .notNull(volumeGallons, "volumeGallons")
+                .notNull(appliedDate, "appliedDate");
     }
 }
