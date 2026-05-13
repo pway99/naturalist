@@ -19,6 +19,22 @@ public class Constraints {
         return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
+    /**
+     * Null-tolerant variant of {@link #namedEntity}. A null reference passes
+     * (the field's {@code @Nullable} declaration is respected); a non-null
+     * reference is descended into and its own {@code invariants()} are walked
+     * by the graph walker. Use for {@code @Nullable NamedEntity} record
+     * components — most commonly nullable child entities on an aggregate
+     * (e.g. {@code @Nullable EggStage egg} on {@code InsectFamily}).
+     */
+    public <E extends Named<?>> Constraints namedEntityOrNull(E entity, String name) {
+        return namedEntityOrNull(entity, Function.identity(), name);
+    }
+
+    public <O, E extends Named<?>> Constraints namedEntityOrNull(O o, Function<O, E> valueFunction, String name) {
+        return add(new NamedEntityOrNullConstraint<>(o, valueFunction, name));
+    }
+
     public <V extends ValueObject> Constraints valueObject(V valueObject, String name) {
         return valueObject(valueObject, Function.identity(), name);
     }

@@ -8,6 +8,7 @@ import com.naturalist.insects.lifestage.EggStage;
 import com.naturalist.insects.lifestage.LarvaStage;
 import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinnaeanFamily;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicOrder;
@@ -45,7 +46,12 @@ public record InsectFamily(
         @Nullable AdultStage adult
 ) implements NamedEntity<InsectFamilyName>, LinnaeanFamily {
 
+    private static final Observer observer = Observer.forClass(InsectFamily.class);
+
     public InsectFamily withEgg(@Nullable EggStage value) {
+        observer.arguments("withEgg", i -> i
+            .namedEntityOrNull(value, "value"))
+            .throwWhenInvalid();
         return new InsectFamily(name, order, family, description, commonNames,
                 value, larva, pupa, adult);
     }
@@ -67,16 +73,15 @@ public record InsectFamily(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> {
-            i.entityName(name, "name")
-                    .namedValue(order, "order")
-                    .namedValue(family, "family")
-                    .valueObject(description, "description")
-                    .notNull(commonNames, "commonNames");
-            if (egg != null) i.namedEntity(this, InsectFamily::egg, "egg");
-            if (larva != null) i.namedEntity(this, InsectFamily::larva, "larva");
-            if (pupa != null) i.namedEntity(this, InsectFamily::pupa, "pupa");
-            if (adult != null) i.namedEntity(this, InsectFamily::adult, "adult");
-        };
+        return i -> i
+                .entityName(name, "name")
+                .namedValue(order, "order")
+                .namedValue(family, "family")
+                .valueObject(description, "description")
+                .notNull(commonNames, "commonNames")
+                .namedEntityOrNull(this, InsectFamily::egg, "egg")
+                .namedEntityOrNull(this, InsectFamily::larva, "larva")
+                .namedEntityOrNull(this, InsectFamily::pupa, "pupa")
+                .namedEntityOrNull(this, InsectFamily::adult, "adult");
     }
 }
