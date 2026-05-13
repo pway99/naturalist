@@ -50,6 +50,7 @@ kernels/
   framework-test/     — NamedTestEntitySource, NamedTestEntitySourceTest, TestDataHelper
   field-notes/        — Description (four-level Durrell description)
   taxonomy/           — TaxonomicClassification (organism domains only)
+  clades/             — Clade sealed type (evolutionary tree of life, trait-bearing nodes)
   catalog/            — cross-domain reference resolution (DomainId, Catalog)
   catalog-inmem/      — in-memory reference adapter for catalog
 domains/
@@ -74,6 +75,7 @@ bootstrap                   →  application
 identifiers                 →  framework
 field-notes                 →  framework
 taxonomy                    →  framework
+clades                      →  framework, field-notes
 framework                   →  Jackson, Commons, Micrometer, JSpecify only
 framework-test              →  framework
 ```

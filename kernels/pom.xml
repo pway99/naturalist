@@ -28,6 +28,7 @@
         <module>framework-test</module>
         <module>catalog</module>
         <module>catalog-inmem</module>
+        <module>clades</module>
         <module>biogeography</module>
         <module>field-notes</module>
         <module>taxonomy</module>

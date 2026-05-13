@@ -65,6 +65,59 @@ plants. Chemistry, climate, soil, zone, and sensors have no use for Linnaean tax
 import com.naturalist.taxonomy.TaxonomicClassification;
 ```
 
+### clades  (`com.naturalist.clades`)
+
+The evolutionary tree of life as a curated, controlled vocabulary. `Clade` is a
+**sealed interface** with one stateless `record` permit per recognised clade
+(`Eukaryota`, `Animalia`, `Arthropoda`, `Insecta`, `Holometabola`, `Lepidoptera`,
+`Papilionidae`, expanding as needed). Each permit carries its slug, display name,
+four-level Durrell `Description`, and a reference to its `parent()` clade (or
+`null` at Eukaryota). The shape mirrors `biogeography.Bioregion` — adding a clade
+is a deliberate kernel PR, not free-text data entry.
+
+```java
+import com.naturalist.clades.Clade;
+import com.naturalist.clades.Holometabola;
+import com.naturalist.clades.CladeTraversal;
+```
+
+**Why sealed types, not entities.** The clade catalog is small (low hundreds at
+the project's upper bound) and curated. It needs single-tree identity —
+**value-equal references to the same logical node** across every domain, via
+record `equals`/`hashCode`, not actual singleton instances — so trait
+inheritance via traversal works. But it does not need entity machinery
+(repository, write paths, JSON seed). Sealed records give us all of that with
+compile-time discoverability: open `Holometabola.java` to see what Holometabola
+*is*. Importing a taxonomic backbone (Catalogue of Life, ChecklistBank) is
+explicitly out of scope and would be revisited separately if ever activated.
+
+**Traits are domain-owned.** The kernel holds no trait declarations. `Trait` is a
+marker interface; `CladeTraversal#findTrait` takes a
+`Function<Clade, Set<Trait>>` supplied by the consumer. The recommended shape
+for that function is a pattern-matching `switch` over the sealed permits the
+domain cares about, with `default -> Set.of()` for the rest — pure, stateless,
+and reviewable. No registry, no startup wiring:
+
+```java
+public static Set<Trait> insectTraits(Clade c) {
+    return switch (c) {
+        case Holometabola _ -> Set.of(new MetabolyTrait(HOLOMETABOLOUS));
+        default             -> Set.of();
+    };
+}
+```
+
+A domain that wants a compile-error nudge when new permits are added enumerates
+every permit instead of using `default`. Either is fine; the rule is "pure
+function in the consuming domain," not "exhaustive everywhere."
+
+Plants, when activated, declares its own trait function over its own clade
+nodes. The two domains coexist because the *clade values themselves* are
+value-equal across both — no shared registry needed.
+
+See [`docs/plans/clades-kernel.md`](../docs/plans/clades-kernel.md) for the
+multi-phase plan.
+
 ### catalog  (`com.naturalist.catalog`)
 
 Cross-domain reference resolution. `Catalog`, `CatalogContribution`,
@@ -94,6 +147,7 @@ that domain's slice of the response (ADR-026).
 ```
 field-notes  →  framework
 taxonomy     →  framework
+clades       →  framework, field-notes
 
 <any>-api         →  framework, identifiers, field-notes
 <organism>-api    →  framework, identifiers, field-notes, taxonomy
@@ -109,8 +163,10 @@ taxonomy     →  framework
   (ADR-022, superseding ADR-021).
 - Do not call `UUID.randomUUID()` from domain or kernel code. The kernel's UUIDv7
   generator is the only source of `EntityId` values.
-- `field-notes` and `taxonomy` contain shared value objects only.
-  No entity definitions. No domain-specific logic.
+- `field-notes`, `taxonomy`, and `clades` contain shared value objects and
+  controlled vocabularies only — no entity definitions, no per-domain logic.
+  `clades` is the first kernel to use a `sealed interface + record permits`
+  shape for a vocabulary; the older value-object kernels remain plain.
 - Do not add a new class to any kernel without considering whether it is truly
   cross-cutting. Kingdom-specific concerns belong in the domain module, not here.
 
