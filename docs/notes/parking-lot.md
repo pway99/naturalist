@@ -89,6 +89,37 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 
 ---
 
+## PL-10 — `with*` mutator observability pattern
+
+**Raised:** 2026-05-12.
+**Where:** Surfaced while threading `namedEntityOrNull` through `InsectFamily`. Piloted on `InsectFamily.withEgg` in commit `150009d`:
+
+```java
+public InsectFamily withEgg(@Nullable EggStage value) {
+    observer.arguments("withEgg", i -> i.namedEntityOrNull(value, "value"))
+            .throwWhenInvalid();
+    return new InsectFamily(name, …, value, …);
+}
+```
+
+**The smell.** Today's `with*` mutators are plain constructors — they accept whatever the caller passes and return a new record. An invalid child entity (e.g. a `PupaStage` with a stale enum string from a downstream deserialiser) flows through `family.withPupa(stage).withEgg(…)` and only surfaces at the next insertion site, or worse, never. The InsectFamily pilot validates input at the mutation boundary instead, throwing `InvariantViolationException` immediately and surfacing the failure on the observer-framework dashboard.
+
+**Blocking:** No. Phase 3 lands cleanly without it.
+
+**Why it may earn its keep, despite the cost:**
+
+- Each `with*` adds ~3 lines of Observer.arguments boilerplate.
+- Each pattern adoption requires at least one new test confirming invalid input throws (and that valid input — including `null` for nullable fields — passes through).
+- BUT — adoption gives **per-mutation control and awareness**: you know exactly when and where an object got into a bad shape, which is a real diagnostic win. The pattern's analogue in Pat's day-job framework caught a production bug (DB returned a String with extra whitespace that failed to deserialise to an enum); the dashboard metric pinpointed it in minutes where boundary-only validation would have surfaced it as a downstream EntityNotFoundException with no breadcrumb.
+
+**Resolution path (when revisited):**
+
+1. Decide scope: just the holometabolous-stage `with*` family across InsectFamily / InsectGenus / InsectSpecies, or every `with*` on every record project-wide?
+2. Settle the Observer-source question. Today each pilot adds `private static final Observer observer = Observer.forClass(X.class);`. Acceptable; or possibly a thread-local / injected observer if dashboard metrics need consumer routing.
+3. Write a "withFoo preserves Bar" round-trip test per mutator at the same time (catches the *other* silent failure — a `with*` method that drops an unrelated field, which the Lombok-`@With` discussion identified as an ongoing tax of the no-Lombok rule).
+
+---
+
 ## Resolved (kept for grep)
 
 - **Q4 — Insects vs Apiary** (resolved pre-PL rename). Apiary is its own domain module (Colony aggregate root). Insects module covers Insecta (six legs). SHB control: H. indica only (not S. feltiae).
