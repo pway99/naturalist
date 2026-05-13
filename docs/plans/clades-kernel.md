@@ -183,8 +183,8 @@ and a few related Papilionidae. The clade DAG only contributes the stage
 
 | Phase | Name                                                | Status     | Gates on                                                                |
 | ----- | --------------------------------------------------- | ---------- | ----------------------------------------------------------------------- |
-| 1     | Build the `clades` kernel standalone                | **next**   | Nothing — fully unblocked                                               |
-| 2     | Define `Metaboly` and attach to Holometabola        | sketched   | Phase 1                                                                 |
+| 1     | Build the `clades` kernel standalone                | ✅ done `b8f0025` (slice plan: [`clades-kernel-phase-1.md`](clades-kernel-phase-1.md)) | —          |
+| 2     | Define `Metaboly` and attach to Holometabola        | **next**   | Phase 1                                                                 |
 | 3     | Add `placedIn: Clade` to taxon entities             | sketched   | Phase 1 (Phase 2 not strictly required)                                 |
 | 4     | Place insects into the clade DAG                    | sketched   | Phases 2 + 3                                                            |
 | 5     | Route life-stage queries through the clade resolver | sketched   | Phase 4; closes PL-1                                                    |
