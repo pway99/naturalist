@@ -237,3 +237,39 @@ owning `<domain>-api`. Constructor is package-private;
 paths. `List.copyOf` defensive copy is inherited from the base class constructor.
 Domain-specific filtering methods return new instances via the package-private constructor.
 See ADR-011 and ADR-012. Reference implementation: `CompoundCollection` in `chemistry-api`.
+
+## Kernel Testing Convention
+
+**Kernel code is tested through its first consumer**, not via dedicated unit tests in
+`kernels/<kernel>/src/test/`. Most kernel primitives (`NamedEntity`, `Constraints`,
+`Observer`, `ObservableConstraint`, etc.) are exercised transitively by every domain
+test — a subtle bug in the framework turns half the suite red on the next
+`mvn verify`. Direct kernel tests would duplicate that coverage.
+
+**Default: no direct kernel test.** The first consumer's existing tests prove the
+primitive works in the shape that actually matters.
+
+**Write a direct kernel test when one of these holds:**
+
+- **No immediate consumer.** A new primitive lands ahead of the consumer it's
+  designed for. Write a small placeholder test that documents the semantics; fold
+  into the consumer's tests once a real consumer arrives.
+- **Subtle non-orthogonal semantics.** The primitive has edges the first consumer
+  doesn't exercise — e.g. a constraint that behaves differently when both parent
+  and value are null, but no consumer constructs that shape. Test the uncombined
+  edge directly.
+- **Stateful or lifecycle behaviour.** Registries, thread-locals, clock-bound
+  helpers. Direct tests pin lifecycle cleanly in a way consumer tests don't.
+
+**Recent example.** `NamedEntityOrNullConstraint` shipped without a kernel test
+(commit `150009d`); `InsectFamily.invariants()` and `InsectFamily.withEgg` are the
+first consumers, and their tests cover both null and non-null paths through the
+constraint. Adding a kernel-level test would re-verify edges that
+`InsectFamilyTest` already covers.
+
+**Scope of this convention.** Applies to all kernels: `framework`, `framework-test`,
+`field-notes`, `taxonomy`, `clades`, `biogeography`, `catalog`, `catalog-inmem`,
+`habitat`, `measurements`. The `framework-test` kernel additionally carries the
+"no test infra for test infra" rule — don't add unit tests for code that exists
+only to support other tests; rely on manual smoke + the consuming `*-repository-test`
+modules.
