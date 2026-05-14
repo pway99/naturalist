@@ -82,6 +82,24 @@ class CladePlacementResolutionTest {
     }
 
     @Test
+    void halictusGenusStagesResolveToHolometabolousSequenceViaResolver() {
+        InsectGenusTestEntitySource genera =
+                db.getNamed(InsectGenusTestEntitySource.class);
+
+        InsectGenus halictus = genera
+                .getByName(TestInsectsIdentifiers.InsectGenus.Halictus.name)
+                .orElseThrow();
+
+        assertThat(halictus.placedIn()).isEqualTo(new Holometabola());
+        assertThat(InsectLifeStages.stagesOf(halictus))
+                .containsExactly(
+                        LifeStageKind.EGG,
+                        LifeStageKind.LARVA,
+                        LifeStageKind.PUPA,
+                        LifeStageKind.ADULT);
+    }
+
+    @Test
     void chrysoperlaGenusStagesResolveToHolometabolousSequenceViaResolver() {
         InsectGenusTestEntitySource genera =
                 db.getNamed(InsectGenusTestEntitySource.class);

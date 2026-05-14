@@ -1152,7 +1152,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "native-sweat-bee-egg",
+    "name": "halictus-egg",
     "phenology": {
       "windows": [
         {
@@ -1194,7 +1194,7 @@
     "kind": "EGG"
   },
   {
-    "name": "native-sweat-bee-larva",
+    "name": "halictus-larva",
     "phenology": {
       "windows": [
         {
@@ -1238,7 +1238,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "native-sweat-bee-pupa",
+    "name": "halictus-pupa",
     "phenology": {
       "windows": [
         {
@@ -1280,7 +1280,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "native-sweat-bee-adult",
+    "name": "halictus-adult",
     "phenology": {
       "windows": [
         {
