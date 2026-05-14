@@ -15,7 +15,6 @@ import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicOrder;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -50,10 +49,6 @@ public record InsectFamily(
 ) implements NamedEntity<InsectFamilyName>, LinnaeanFamily {
 
     private static final Observer observer = Observer.forClass(InsectFamily.class);
-
-    public Optional<Clade> placedInOptional() {
-        return Optional.ofNullable(placedIn);
-    }
 
     public InsectFamily withPlacedIn(@Nullable Clade value) {
         return new InsectFamily(name, order, family, description, commonNames,

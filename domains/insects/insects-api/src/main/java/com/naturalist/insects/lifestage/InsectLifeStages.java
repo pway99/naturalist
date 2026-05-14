@@ -7,9 +7,9 @@ import com.naturalist.insects.InsectFamily;
 import com.naturalist.insects.InsectGenus;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.LifeStageKind;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Resolver answering "which life-stage kinds does this organism have?" by
@@ -46,21 +46,22 @@ public final class InsectLifeStages {
     }
 
     public static List<LifeStageKind> stagesOf(InsectSpecies species) {
-        return resolve(species.placedInOptional());
+        return resolve(species.placedIn());
     }
 
     public static List<LifeStageKind> stagesOf(InsectGenus genus) {
-        return resolve(genus.placedInOptional());
+        return resolve(genus.placedIn());
     }
 
     public static List<LifeStageKind> stagesOf(InsectFamily family) {
-        return resolve(family.placedInOptional());
+        return resolve(family.placedIn());
     }
 
-    private static List<LifeStageKind> resolve(Optional<Clade> placedIn) {
-        return placedIn
-                .flatMap(clade -> CladeTraversal.findTrait(
-                        clade, MetabolyTrait.class, InsectClades::traitsFor))
+    private static List<LifeStageKind> resolve(@Nullable Clade placedIn) {
+        if (placedIn == null) {
+            return List.of();
+        }
+        return CladeTraversal.findTrait(placedIn, MetabolyTrait.class, InsectClades::traitsFor)
                 .map(trait -> trait.metaboly().stages())
                 .orElse(List.of());
     }

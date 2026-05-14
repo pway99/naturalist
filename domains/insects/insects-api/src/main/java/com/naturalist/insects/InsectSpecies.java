@@ -18,7 +18,6 @@ import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -123,10 +122,6 @@ public record InsectSpecies(
         @Nullable BeneficialProfile beneficialProfile,
         @Nullable EcologicalSignificance ecologicalSignificance
 ) implements NamedEntity<InsectSpeciesName> {
-
-    public Optional<Clade> placedInOptional() {
-        return Optional.ofNullable(placedIn);
-    }
 
     public InsectSpecies withPlacedIn(@Nullable Clade value) {
         return new InsectSpecies(

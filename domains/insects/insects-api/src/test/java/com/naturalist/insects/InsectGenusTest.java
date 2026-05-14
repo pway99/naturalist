@@ -102,22 +102,6 @@ class InsectGenusTest {
     }
 
     @Test
-    void placedInOptionalReturnsEmptyWhenAbsent() {
-        InsectGenus genus = genusWithPlacedIn(null);
-
-        assertThat(genus.placedInOptional()).isEmpty();
-        assertThat(genus.placedIn()).isNull();
-    }
-
-    @Test
-    void placedInOptionalReturnsPresentWhenSet() {
-        InsectGenus genus = genusWithPlacedIn(new Papilionidae());
-
-        assertThat(genus.placedInOptional()).contains(new Papilionidae());
-        assertThat(genus.placedIn()).isEqualTo(new Papilionidae());
-    }
-
-    @Test
     void withPlacedInReturnsNewInstanceWithUpdatedClade() {
         InsectGenus genus = genusWithPlacedIn(null);
 

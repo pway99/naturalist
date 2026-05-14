@@ -40,7 +40,7 @@ class CladePlacementResolutionTest {
         assertThat(battusPhilenor.placedIn()).isEqualTo(new Papilionidae());
 
         Optional<MetabolyTrait> resolved = CladeTraversal.findTrait(
-                battusPhilenor.placedInOptional().orElseThrow(),
+                battusPhilenor.placedIn(),
                 MetabolyTrait.class,
                 InsectClades::traitsFor);
 
@@ -145,6 +145,5 @@ class CladePlacementResolutionTest {
                 .orElseThrow();
 
         assertThat(papilionidae.placedIn()).isEqualTo(new Papilionidae());
-        assertThat(papilionidae.placedInOptional()).contains(new Papilionidae());
     }
 }

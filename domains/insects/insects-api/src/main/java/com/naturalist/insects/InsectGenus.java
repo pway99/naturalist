@@ -15,7 +15,6 @@ import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -51,10 +50,6 @@ public record InsectGenus(
         @Nullable PupaStage pupa,
         @Nullable AdultStage adult
 ) implements NamedEntity<InsectGenusName>, LinnaeanGenus<InsectFamilyName> {
-
-    public Optional<Clade> placedInOptional() {
-        return Optional.ofNullable(placedIn);
-    }
 
     public InsectGenus withPlacedIn(@Nullable Clade value) {
         return new InsectGenus(name, familyName, order, family, genus,

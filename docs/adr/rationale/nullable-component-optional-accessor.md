@@ -1,10 +1,19 @@
 # Nullable Component + Optional Accessor — Tradeoff Analysis
 
 > Context for ADR amendment. Captures the design tension between Java
-> records' auto-generated accessors and the project's preference for
-> `Optional`-shaped return types, and the alternatives considered before
-> settling on the established `@Nullable` component + freestanding
-> `xOptional()` accessor pattern.
+> records' auto-generated accessors and the project's instinct toward
+> `Optional`-shaped return types, and explains why the project does
+> **not** ship a paired `xOptional()` accessor alongside an `@Nullable`
+> record component.
+>
+> **Revised 2026-05-14.** An earlier draft of this doc advocated for the
+> paired-accessor pattern (Option A below). After living with the
+> pattern for a few days under the clades-kernel work, the awkwardness
+> showed up most loudly in `InsectLifeStages#resolve(Optional<Clade>)`
+> — an Optional parameter, which is an Effective Java Item 55
+> anti-pattern that no private-method wrapping can fully disguise. The
+> alternatives analysis below is preserved; the decision is now
+> Option B.
 
 ## The tension
 
@@ -15,12 +24,10 @@ in the records JEP — records are transparent carriers of their components,
 and the auto-generated accessor *is* the component.
 
 The project's conventions point in a different direction for nullable
-fields. Across the codebase, the established pattern (chemistry domain's
-"Optional Profile Methods") is:
+fields. Across the codebase, the chemistry domain ships a "Optional
+Profile Methods" pattern:
 
-- Storage uses `@Nullable T t` — JSpecify annotation, plain reference,
-  consistent with the four `@Nullable` life-stage components already on
-  `InsectFamily` (`egg`, `larva`, `pupa`, `adult`).
+- Storage uses `@Nullable T t` — JSpecify annotation, plain reference.
 - External access goes through `Optional<T> tOptional()` — freestanding
   method, returns `Optional.ofNullable(t)`.
 
@@ -47,10 +54,9 @@ of type `T` and have it expose externally as `Optional<T>` without either:
   anti-pattern — see Effective Java Item 55, "It is almost always wrong
   to declare a field of type Optional").
 
-So the two-accessor pattern isn't a flaw in the project's design — it's
-the *least bad* response to a constraint that Java records impose on any
-domain that wants both compact nullable storage and ergonomic Optional
-access. Acknowledging this explicitly is the point of this document.
+So both directions are constrained. The project's choice is which trade
+to accept: paired accessors on every nullable component, or Optional
+wrapping at each consumer site.
 
 ## Why `Optional<T>` as a record component is rejected
 
@@ -83,39 +89,54 @@ literal `null` Optional components) and decisions about wire format
 
 ## Alternatives considered
 
-Each alternative trades the two-accessor friction for a different,
-typically larger, cost.
-
-### A — Keep the pattern (current proposal)
+### A — Paired accessors (`@Nullable` storage + freestanding `Optional` accessor)
 
 `@Nullable T t` component, freestanding `Optional<T> tOptional()` method.
 
-**Cost.** Two accessors on the same field. Small ongoing readability tax.
+**Cost.** Two accessors on the same field. Small ongoing readability tax
+that compounds:
+- Every nullable component gains an `xOptional()` sibling. The api
+  surface grows uniformly for an ergonomic gain that the caller could
+  also get with a one-line wrap.
+- Internal helpers that *take* an `Optional<T>` (e.g.
+  `InsectLifeStages#resolve(Optional<Clade>)`) inherit the
+  Optional-as-parameter anti-pattern. Private-method scoping reduces
+  the harm but doesn't eliminate the smell — the shape still reads
+  wrong because the caller is "pre-wrapping" a value the helper
+  immediately unwraps.
+- Consumers must choose between two equivalent accessors at every
+  call site. The two-accessor design promised choice; in practice
+  the codebase picks one consistently and the other becomes dead
+  ergonomics.
 
-**Benefit.** Aligned with existing chemistry-domain idiom. Consistent
-with the other `@Nullable` components on the same record. JSON wire
-format stays clean (`"t": null` or omitted). Jackson handles it
-natively. Equals and hashCode behave correctly.
+**Benefit.** Saves one `Optional.ofNullable(...)` wrap at consumer
+sites that want fluent chaining. The wrap is one method call.
 
-### B — Drop the Optional accessor entirely
+### B — Nullable accessor only; consumer wraps for Optional ergonomics (current decision)
 
-Just `@Nullable T t`. Consumers wrap with `Optional.ofNullable(...)` at
-call sites when they want Optional ergonomics.
+Storage and external API are both `@Nullable T t`. The auto-generated
+accessor is the only public surface. Consumers that want fluent
+Optional chaining wrap themselves: `Optional.ofNullable(record.t()).map(...)`.
 
-**Cost.** Every consumer doing more than a null check writes
-`Optional.ofNullable(family.placedIn()).map(...)`. Across the codebase
-this is consistent noise. The Optional accessor exists because Optional's
-API surface (`map`, `filter`, `orElse`, `ifPresent`) is genuinely useful;
-forcing every caller to construct the Optional themselves loses that
-ergonomic win.
+**Cost.** Each call site that wants the Optional API surface writes
+`Optional.ofNullable(...)` once. Across the small set of consumers
+that actually want Optional chaining, this is a few extra characters
+per site.
 
-**Verdict.** Cleaner inside the record, worse at every call site.
+**Benefit.**
+- One accessor per field. No "which one do I call" choice.
+- Internal helpers take `@Nullable T`, never `Optional<T>` — no
+  parameter-of-Optional anti-pattern.
+- The api surface stays uniform with every other `@Nullable`
+  component in the codebase (life-stage fields, voltinism,
+  identificationFeatures, etc., all of which use plain `@Nullable`
+  without sibling Optional accessors).
+- Consumer ergonomics are still available — they're just opt-in at
+  the call site rather than baked into the type.
 
-### C — Drop the nullable accessor (use only Optional)
+### C — Rename the component to free the canonical name for an Optional-returning method
 
-Rename the component to free the canonical name for an Optional-returning
-method: `@Nullable Clade placedInClade` component (auto-accessor
-`placedInClade() : @Nullable Clade`), plus public
+Component `@Nullable Clade placedInClade`, public
 `Optional<Clade> placedIn() { return Optional.ofNullable(placedInClade); }`.
 
 **Cost.** Component name drives the Jackson field name, so the JSON
@@ -160,12 +181,6 @@ on the same type.
 Don't store `Clade` on `InsectFamily` at all. A domain-level function
 maps `InsectFamily → Optional<Clade>` via a separate lookup table.
 
-```java
-public final class InsectClades {
-    public static Optional<Clade> placementOf(InsectFamily family) { … }
-}
-```
-
 **Cost.** Breaks the project's identity-on-the-entity pattern. Every
 other classification fact about an insect family — order, family,
 common names, life stages — lives on the record. Pulling `placedIn`
@@ -179,14 +194,17 @@ wrong way for this codebase.
 
 ## Decision
 
-**Adopt Option A** — `@Nullable T t` component plus freestanding
-`Optional<T> tOptional()` accessor. Continue the existing
-chemistry-domain idiom for all nullable fields on records.
+**Adopt Option B** — `@Nullable T t` component, no paired
+`tOptional()` accessor. Consumers that want Optional ergonomics call
+`Optional.ofNullable(record.t())` at the call site.
 
-The two-accessor surface is the smallest available cost. Every
-alternative trades it for a larger one — anti-patterns, wire-format
-pollution, inconsistency with sibling `@Nullable` components on the
-same record, or breaking the project's identity-on-the-entity pattern.
+The two-accessor pattern (Option A) was the project's earlier choice
+on the theory that "every consumer doing more than a null check"
+would benefit from the pre-wrapped Optional. In practice the consumer
+set is small, the wrap is one line, and the alternative cost — paired
+api surface that grows linearly with the number of nullable
+components, plus internal helpers that take `Optional<T>` and trigger
+the parameter anti-pattern — is the larger tax.
 
 ## ADR amendment text (suggested)
 
@@ -205,43 +223,39 @@ mechanism to alter the accessor's return type, name, or nullability
 shape from the component declaration alone.
 
 This creates a tension whenever a domain field is conceptually nullable
-*and* the project's preferred external-access shape is `Optional<T>`.
-The available options reduce to:
+*and* a consumer would benefit from `Optional<T>` chaining. The
+available options reduce to:
 
 1. Declare the component as `Optional<T>` — rejected as an anti-pattern
    (Effective Java Item 55), produces three-state field semantics
    (`null`, `Optional.empty()`, `Optional.of(value)`), causes Jackson
    serialization friction, and makes `equals`/`hashCode` behave
    surprisingly across "absent" representations.
-2. Declare the component as `@Nullable T` and expose only the
-   auto-generated accessor — forces every consumer to write
-   `Optional.ofNullable(...)` at the call site, losing the ergonomic
-   point of Optional.
-3. Declare the component as `@Nullable T` and add a freestanding
+2. Declare the component as `@Nullable T` and add a freestanding
    `Optional<T> tOptional()` method — produces two accessors on the
-   same field but keeps each in its idiomatic role: `@Nullable` for
-   storage, `Optional` for ergonomic access.
+   same field, grows the api surface uniformly with the number of
+   nullable components, and pulls the Optional-as-parameter
+   anti-pattern into internal helpers that consume the wrapper form.
+3. Declare the component as `@Nullable T` and expose only the
+   auto-generated accessor — consumers wrap with
+   `Optional.ofNullable(record.t())` at call sites where Optional
+   ergonomics are wanted. One accessor per field. No
+   parameter-of-Optional anti-pattern.
 
-The project chooses option 3. The cost is a small readability tax
-(two accessors visible to consumers); the benefit is correctness and
-consistency with every other nullable component on records across the
-codebase. This is not a flaw in the project's conventions — it is the
+The project chooses option 3. The cost is one `Optional.ofNullable(...)`
+wrap per consumer site that wants Optional chaining; the benefit is a
+uniform api surface and internal helpers that operate on `@Nullable T`
+directly. This is not a flaw in the project's conventions — it is the
 least bad response to a constraint that Java records impose by design.
-
-Consumers may use either accessor. The auto-generated `t() : @Nullable T`
-is appropriate for null-check sites and Jackson serialization. The
-freestanding `tOptional() : Optional<T>` is appropriate for fluent
-chains (`map`, `filter`, `orElse`). Both are public; neither is
-preferred over the other.
 
 JSON wire format is driven by the component name. Components are named
 for the domain concept (`placedIn`, `egg`, `larva`), never for the
 accessor shape — `placedInOptional` is never a component name.
 
-Reference implementations: `domains/chemistry/...` ("Optional Profile
-Methods" section in chemistry's CLAUDE.md), and as of Phase 3 of the
-clades kernel integration, the `placedIn` component on `InsectFamily`,
-`InsectGenus`, and `InsectSpecies`.
+Reference implementations: every `@Nullable` component on
+`InsectFamily`, `InsectGenus`, and `InsectSpecies` (life-stage fields,
+`placedIn`, voltinism, etc.) follows this shape — auto-generated
+nullable accessor, no paired `xOptional()`.
 
 ---
 

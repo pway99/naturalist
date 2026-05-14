@@ -2,7 +2,6 @@ package com.naturalist.insects;
 
 import com.naturalist.RandomValue;
 import com.naturalist.clades.Clade;
-import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.habitat.HabitatProfile;
@@ -10,8 +9,6 @@ import com.naturalist.habitat.HabitatZone;
 import com.naturalist.habitat.LightRegime;
 import com.naturalist.habitat.MoistureRegime;
 import com.naturalist.insects.lifestage.AdultStage;
-import com.naturalist.insects.lifestage.Holometabolous;
-import com.naturalist.insects.lifestage.MetabolyTrait;
 import com.naturalist.insects.lifestage.StageHabitat;
 import com.naturalist.insects.lifestage.StagePhenology;
 import com.naturalist.observability.InvariantObservation;
@@ -22,7 +19,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.MonthDay;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,22 +94,6 @@ class InsectFamilyTest {
     }
 
     @Test
-    void placedInOptionalReturnsEmptyWhenAbsent() {
-        InsectFamily family = familyWithPlacedIn(null);
-
-        assertThat(family.placedInOptional()).isEmpty();
-        assertThat(family.placedIn()).isNull();
-    }
-
-    @Test
-    void placedInOptionalReturnsPresentWhenSet() {
-        InsectFamily family = familyWithPlacedIn(new Papilionidae());
-
-        assertThat(family.placedInOptional()).contains(new Papilionidae());
-        assertThat(family.placedIn()).isEqualTo(new Papilionidae());
-    }
-
-    @Test
     void withPlacedInReturnsNewInstanceWithUpdatedClade() {
         InsectFamily family = familyWithPlacedIn(null);
 
@@ -130,19 +110,6 @@ class InsectFamilyTest {
         InsectFamily updated = family.withEgg(null);
 
         assertThat(updated.placedIn()).isEqualTo(new Papilionidae());
-    }
-
-    @Test
-    void papilionidaeFamilyResolvesItsCladePlacement() {
-        InsectFamily family = familyWithPlacedIn(new Papilionidae());
-
-        Optional<MetabolyTrait> resolved = CladeTraversal.findTrait(
-                family.placedInOptional().orElseThrow(),
-                MetabolyTrait.class,
-                InsectClades::traitsFor);
-
-        assertThat(resolved).isPresent();
-        assertThat(resolved.get()).isEqualTo(new MetabolyTrait(new Holometabolous()));
     }
 
     private static InsectFamily familyWithPlacedIn(Clade placedIn) {

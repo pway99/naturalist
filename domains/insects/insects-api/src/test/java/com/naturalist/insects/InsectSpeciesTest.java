@@ -18,22 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectSpeciesTest {
 
     @Test
-    void placedInOptionalReturnsEmptyWhenAbsent() {
-        InsectSpecies species = speciesWithPlacedIn(null);
-
-        assertThat(species.placedInOptional()).isEmpty();
-        assertThat(species.placedIn()).isNull();
-    }
-
-    @Test
-    void placedInOptionalReturnsPresentWhenSet() {
-        InsectSpecies species = speciesWithPlacedIn(new Papilionidae());
-
-        assertThat(species.placedInOptional()).contains(new Papilionidae());
-        assertThat(species.placedIn()).isEqualTo(new Papilionidae());
-    }
-
-    @Test
     void withPlacedInReturnsNewInstanceWithUpdatedClade() {
         InsectSpecies species = speciesWithPlacedIn(null);
 
