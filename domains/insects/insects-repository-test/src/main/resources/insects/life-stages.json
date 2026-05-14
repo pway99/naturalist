@@ -2061,7 +2061,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "green-lacewing-egg",
+    "name": "chrysoperla-egg",
     "phenology": {
       "windows": [
         {
@@ -2104,7 +2104,7 @@
     "kind": "EGG"
   },
   {
-    "name": "green-lacewing-larva",
+    "name": "chrysoperla-larva",
     "phenology": {
       "windows": [
         {
@@ -2149,7 +2149,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "green-lacewing-pupa",
+    "name": "chrysoperla-pupa",
     "phenology": {
       "windows": [
         {
@@ -2193,7 +2193,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "green-lacewing-adult",
+    "name": "chrysoperla-adult",
     "phenology": {
       "windows": [
         {

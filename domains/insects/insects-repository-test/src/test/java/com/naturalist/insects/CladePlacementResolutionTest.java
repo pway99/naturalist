@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.clades.CladeTraversal;
+import com.naturalist.clades.Holometabola;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.insects.lifestage.Holometabolous;
@@ -73,6 +74,24 @@ class CladePlacementResolutionTest {
                 .orElseThrow();
 
         assertThat(InsectLifeStages.stagesOf(papilionidae))
+                .containsExactly(
+                        LifeStageKind.EGG,
+                        LifeStageKind.LARVA,
+                        LifeStageKind.PUPA,
+                        LifeStageKind.ADULT);
+    }
+
+    @Test
+    void chrysoperlaGenusStagesResolveToHolometabolousSequenceViaResolver() {
+        InsectGenusTestEntitySource genera =
+                db.getNamed(InsectGenusTestEntitySource.class);
+
+        InsectGenus chrysoperla = genera
+                .getByName(TestInsectsIdentifiers.InsectGenus.Chrysoperla.name)
+                .orElseThrow();
+
+        assertThat(chrysoperla.placedIn()).isEqualTo(new Holometabola());
+        assertThat(InsectLifeStages.stagesOf(chrysoperla))
                 .containsExactly(
                         LifeStageKind.EGG,
                         LifeStageKind.LARVA,

@@ -15,12 +15,23 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 
 ---
 
-## PL-2 — Slice 2 (green-lacewing rank correction) — unblocked 2026-05-13
+## PL-2 — Per-organism rank corrections (green-lacewing pilot landed 2026-05-13)
 
-**Raised:** 2026-05-11 (this session).
+**Raised:** 2026-05-11.
 **Where:** Per-organism data reorganization for Phase 0 of the identification roadmap.
-**Status:** Plan doc committed at `16e4910` (`docs/plans/green-lacewing-rank-correction.md`); the data-move JSON edits were reverted and never committed. **Unblocked** as of clades-kernel Phase 5 — the resolver replaces the dual-home shape that made the original slice-2 approach wrong.
-**Resume shape:** Per-organism removal of inline `egg`/`larva`/`pupa`/`adult` fields on `InsectSpecies`/`InsectGenus`/`InsectFamily`, replaced with reliance on `InsectLifeStages.stagesOf(...)` + per-organism `LifeStage` records keyed by `(organismName, stageKind)`. Green-lacewing is the pilot; the same recipe applies across the catalog. Editorial mass dropped significantly versus the original slice-2 shape because the description-merge work doesn't exist — the clade life-stage records already exist independently.
+**Pilot status:** Green-lacewing landed 2026-05-13. The `green-lacewing` `InsectSpecies` record was deleted; the four `green-lacewing-*` standalone `LifeStage` records were renamed to `chrysoperla-*`; the `chrysoperla` `InsectGenus` record gained `"placedIn": "holometabola"` so `InsectLifeStages.stagesOf(...)` resolves its stage list via the clade traversal. No inline life-stage fields were added to the genus record — Phase 5 made that workaround obsolete.
+**Remaining work (each a separate per-organism slice):**
+- native-sweat-bee → halictus (genus)
+- grey-mining-bee → andrena (genus)
+- potato-leafhopper → empoasca (genus)
+- tachinid-fly → tachinidae (family)
+- braconid-wasp → braconidae (family)
+- hoverfly → syrphidae (family)
+- ground-beetle → carabidae (family)
+- crane-fly → tipulidae (family)
+- skipper-butterfly → hesperiidae (family)
+
+Recipe per organism: delete the under-identified `InsectSpecies` record, rename its four standalone `LifeStage` records to the parent-rank composite slug, add `"placedIn": "..."` to the destination genus/family record so the resolver works. Each move is a focused JSON-only commit; the original plan at `docs/plans/green-lacewing-rank-correction.md` predates Phase 5 and overstates the work — there is no inline-life-stage merge step. New clade permits may be needed for some destinations (e.g., a `Hymenoptera` permit for sweat bees) — each slice decides whether to add the permit or place at the nearest existing ancestor.
 
 ---
 
