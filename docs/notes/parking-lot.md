@@ -6,23 +6,21 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 
 ---
 
-## PL-1 — LifeStage modeling: dual-home problem
+## PL-1 — LifeStage modeling: dual-home problem (RESOLVED 2026-05-13)
 
 **Raised:** 2026-05-10 (mid-slice-2 execution); reinforced 2026-05-11 after Pat's overnight research.
 **Where:** Discovered while applying the green-lacewing → chrysoperla data move; slice 1 had just spread the inline-life-stage pattern from `InsectSpecies` to `InsectGenus` and `InsectFamily`.
 **The smell:** `LifeStage` is a `NamedEntity` with its own repository and standalone `life-stages.json`, but is *also* held by value as a component on `InsectSpecies` (annotated `@AggregateRoot`) and now on `InsectGenus` / `InsectFamily` (plain `NamedEntity`, not aggregates per the framework rules). Two homes for the same data; framework rule violation (NamedEntity owning NamedEntity by value).
-**Blocking:** YES — for slice 2 onwards. Doing the per-organism data moves in the current inline-copy shape compounds the duplication across 10 organisms. Per Pat's call: park slice 2; resolve the modeling first.
-**Resolution path:** Promoted as a slice plan on 2026-05-12 — see [`plans/clades-kernel.md`](../plans/clades-kernel.md). Introduces a Clade DAG alongside the existing Rank DAG; `Metaboly` declares stage sequences as a clade trait; per-organism `LifeStage` records remain but key off the clade-resolved stage-kind rather than free-form enumeration. Slice 2 (PL-2) resumes once Phase 5 of that plan lands.
+**Resolution:** Closed by Phase 5 of [`plans/clades-kernel.md`](../plans/clades-kernel.md) (slice plan: [`plans/clades-kernel-phase-5.md`](../plans/clades-kernel-phase-5.md)). `InsectLifeStages.stagesOf(species|genus|family)` is now the canonical answer to "which stages exist" — it walks `placedIn` → `CladeTraversal.findTrait` → `MetabolyTrait` → `Metaboly.stages()`. The inline `egg`/`larva`/`pupa`/`adult` fields are still present on the records (Phase 5 was deliberately additive) and will be removed per-organism via PL-2.
 
 ---
 
-## PL-2 — Slice 2 (green-lacewing rank correction) paused
+## PL-2 — Slice 2 (green-lacewing rank correction) — unblocked 2026-05-13
 
 **Raised:** 2026-05-11 (this session).
 **Where:** Per-organism data reorganization for Phase 0 of the identification roadmap.
-**Status:** Plan doc committed at `16e4910` (`docs/plans/green-lacewing-rank-correction.md`); the data-move JSON edits were reverted and never committed.
-**Blocking:** Pat's reframing on PL-1 makes the inline-copy shape wrong. Resume after [`plans/clades-kernel.md`](../plans/clades-kernel.md) Phase 5 lands.
-**Expected resume shape:** "Remove green-lacewing species record + add `chrysoperla` references to existing clade life-stages." Editorial mass drops significantly because there's no description-merge work — the clade life-stage records exist independently of the inline copies that would have been promoted.
+**Status:** Plan doc committed at `16e4910` (`docs/plans/green-lacewing-rank-correction.md`); the data-move JSON edits were reverted and never committed. **Unblocked** as of clades-kernel Phase 5 — the resolver replaces the dual-home shape that made the original slice-2 approach wrong.
+**Resume shape:** Per-organism removal of inline `egg`/`larva`/`pupa`/`adult` fields on `InsectSpecies`/`InsectGenus`/`InsectFamily`, replaced with reliance on `InsectLifeStages.stagesOf(...)` + per-organism `LifeStage` records keyed by `(organismName, stageKind)`. Green-lacewing is the pilot; the same recipe applies across the catalog. Editorial mass dropped significantly versus the original slice-2 shape because the description-merge work doesn't exist — the clade life-stage records already exist independently.
 
 ---
 

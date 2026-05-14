@@ -2,7 +2,7 @@
 
 Dashboard for what's currently in flight. Strategy lives in [`plans/identification.md`](plans/identification.md); forks and open questions live in [`notes/parking-lot.md`](notes/parking-lot.md) (the parking lot). This file does NOT synthesize either — it is just the current view.
 
-Last updated: 2026-05-13 (Phase 4 of clades-kernel landed; Phase 5 next).
+Last updated: 2026-05-13 (Phase 5 of clades-kernel landed; PL-2 unblocked).
 
 ---
 
@@ -12,7 +12,7 @@ Last updated: 2026-05-13 (Phase 4 of clades-kernel landed; Phase 5 next).
 
 ## Current slice
 
-**Clades kernel + life-stage refactor — Phase 5 next** ([`plans/clades-kernel.md`](plans/clades-kernel.md)). Phases 1–4 landed; Phase 4 landed the first real catalog placements (`"placedIn": "papilionidae"` on both the new Papilionidae InsectFamily entry and the existing *Battus philenor* InsectSpecies entry) and an end-to-end test that walks species → clade → trait through the real JSON load path. Phase 5 routes life-stage queries through the clade resolver, closes PL-1, and unblocks PL-2 (green-lacewing rank correction).
+**Clades kernel + life-stage refactor — Phase 6 deferred; PL-2 unblocked** ([`plans/clades-kernel.md`](plans/clades-kernel.md)). Phases 1–5 landed; Phase 5 added `InsectLifeStages.stagesOf(species|genus|family)` — the consumer-facing resolver that walks `placedIn` → `CladeTraversal` → `MetabolyTrait` → stage list. PL-1 closes here (resolver is the dual-home replacement); PL-2 (green-lacewing rank correction) unblocks and can resume as the per-organism removal of inline `egg`/`larva`/`pupa`/`adult` duplicates. Phase 6 (extend to plants) stays deferred until plant identification demands it.
 
 **Resumes when complete:** PL-2 (green-lacewing rank correction) unblocks once Phase 5 lands. The resume shape becomes "replace inline life-stage duplicates with clade references" — much smaller per-organism work.
 
@@ -24,7 +24,8 @@ Last updated: 2026-05-13 (Phase 4 of clades-kernel landed; Phase 5 next).
 
 | Effort                                         | Completed  | Source                                                                       | Final commit                                                     |
 |------------------------------------------------|------------|------------------------------------------------------------------------------|------------------------------------------------------------------|
-| Clades kernel — Phase 4 (first catalog placements) | 2026-05-13 | [`plans/clades-kernel-phase-4.md`](plans/clades-kernel-phase-4.md)       | (this commit)                                                    |
+| Clades kernel — Phase 5 (InsectLifeStages resolver)  | 2026-05-13 | [`plans/clades-kernel-phase-5.md`](plans/clades-kernel-phase-5.md)     | (this commit)                                                    |
+| Clades kernel — Phase 4 (first catalog placements) | 2026-05-13 | [`plans/clades-kernel-phase-4.md`](plans/clades-kernel-phase-4.md)       | `1cfd9ba`                                                        |
 | Clades kernel — Phase 3 (placedIn on insect records) | 2026-05-13 | [`plans/clades-kernel-phase-3.md`](plans/clades-kernel-phase-3.md)     | `5e67c1b`                                                        |
 | Clades kernel — Phase 2 (Metaboly + InsectClades) | 2026-05-12 | [`plans/clades-kernel-phase-2.md`](plans/clades-kernel-phase-2.md)        | `348fd0b`                                                        |
 | Clades kernel — Phase 1 (sealed vocabulary)    | 2026-05-12 | [`plans/clades-kernel-phase-1.md`](plans/clades-kernel-phase-1.md)           | `b8f0025`                                                        |
@@ -39,7 +40,7 @@ Last updated: 2026-05-13 (Phase 4 of clades-kernel landed; Phase 5 next).
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
 | 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md)                              |
-| 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — current slice; Phase 1 ✅ `b8f0025`, Phase 2 ✅ `348fd0b`, Phase 3 ✅ `5e67c1b`, Phase 4 ✅ (this commit), Phase 5 next; resolves PL-1, unblocks PL-2 when Phase 5 lands |
+| 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phase 1 ✅ `b8f0025`, Phase 2 ✅ `348fd0b`, Phase 3 ✅ `5e67c1b`, Phase 4 ✅ `1cfd9ba`, Phase 5 ✅ (this commit); PL-1 resolved, PL-2 unblocked; Phase 6 (plants) deferred |
 | 3  | FU-1 — Family/Genus catalog tiers     | Plan (notes)   | [`notes/fu-1-plan.md`](notes/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 4  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |
 | 5  | Command framework — follow-ups        | Plan           | [`plans/command-framework.md`](plans/command-framework.md)                        |

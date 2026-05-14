@@ -4,6 +4,7 @@ import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.insects.lifestage.Holometabolous;
+import com.naturalist.insects.lifestage.InsectLifeStages;
 import com.naturalist.insects.lifestage.MetabolyTrait;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -14,11 +15,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * End-to-end resolution from loaded JSON catalog through {@code placedIn}
- * and {@link CladeTraversal} to a {@link MetabolyTrait}. This is the
- * Phase 4 validation: the Phase 1 sealed-clade vocabulary, the Phase 2
- * trait declarations on {@code Holometabola}, and the Phase 3
- * {@code placedIn} field on insect records all line up against real
- * catalog data rather than synthetic fixtures.
+ * and {@link CladeTraversal} to a {@link MetabolyTrait}, and through the
+ * Phase 5 {@link InsectLifeStages} resolver to the stage-kind list. The
+ * Phase 1 sealed-clade vocabulary, the Phase 2 trait declarations on
+ * {@code Holometabola}, the Phase 3 {@code placedIn} field on insect
+ * records, and the Phase 5 organism-level resolver all line up against
+ * real catalog data rather than synthetic fixtures.
  */
 class CladePlacementResolutionTest {
 
@@ -42,6 +44,40 @@ class CladePlacementResolutionTest {
                 InsectClades::traitsFor);
 
         assertThat(resolved).contains(new MetabolyTrait(new Holometabolous()));
+    }
+
+    @Test
+    void battusPhilenorStagesResolveToHolometabolousSequenceViaResolver() {
+        InsectSpeciesTestEntitySource species =
+                db.getNamed(InsectSpeciesTestEntitySource.class);
+
+        InsectSpecies battusPhilenor = species
+                .getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name)
+                .orElseThrow();
+
+        assertThat(InsectLifeStages.stagesOf(battusPhilenor))
+                .containsExactly(
+                        LifeStageKind.EGG,
+                        LifeStageKind.LARVA,
+                        LifeStageKind.PUPA,
+                        LifeStageKind.ADULT);
+    }
+
+    @Test
+    void papilionidaeFamilyStagesResolveToHolometabolousSequenceViaResolver() {
+        InsectFamilyTestEntitySource families =
+                db.getNamed(InsectFamilyTestEntitySource.class);
+
+        InsectFamily papilionidae = families
+                .getByName(TestInsectsIdentifiers.InsectFamily.Papilionidae.name)
+                .orElseThrow();
+
+        assertThat(InsectLifeStages.stagesOf(papilionidae))
+                .containsExactly(
+                        LifeStageKind.EGG,
+                        LifeStageKind.LARVA,
+                        LifeStageKind.PUPA,
+                        LifeStageKind.ADULT);
     }
 
     @Test
