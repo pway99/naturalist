@@ -1,5 +1,7 @@
 package com.naturalist.ddd;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * A typed, non-identifying, single-value wrapper whose type carries its own domain meaning.
  * <p>
@@ -59,6 +61,7 @@ package com.naturalist.ddd;
  * @see ValueObject
  */
 public interface NamedValue<T> {
+    @JsonValue
     T value();
 
     boolean isValid();

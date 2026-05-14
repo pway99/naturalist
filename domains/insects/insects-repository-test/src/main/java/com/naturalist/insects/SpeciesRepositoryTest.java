@@ -48,6 +48,7 @@ interface SpeciesRepositoryTest
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
                 null, null,
+                null,
                 null, null, null, null,
                 null, null, null, null, null, null, null);
     }
@@ -62,6 +63,7 @@ interface SpeciesRepositoryTest
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
                 null, null,
+                null,
                 null, null, null, null,
                 null, null, null, null, null, null, null);
     }
@@ -77,6 +79,7 @@ interface SpeciesRepositoryTest
                 true,
                 RandomValue.string(),
                 new InsectSpecies.IdentificationFeatures(List.of(RandomValue.string())),
+                null,
                 null, null, null, null,
                 null,
                 new InsectSpecies.Voltinism(

@@ -1,6 +1,8 @@
 package com.naturalist.insects;
 
 import com.naturalist.RandomValue;
+import com.naturalist.clades.Clade;
+import com.naturalist.clades.Papilionidae;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.habitat.HabitatProfile;
@@ -51,6 +53,7 @@ class InsectGenusTest {
                 description(),
                 Set.of(),
                 null,
+                null,
                 larva,
                 null,
                 null);
@@ -78,6 +81,7 @@ class InsectGenusTest {
                 null,
                 null,
                 null,
+                null,
                 null);
         LarvaStage larva = new LarvaStage(
                 LifeStageName.of(name, LifeStageKind.LARVA),
@@ -95,6 +99,57 @@ class InsectGenusTest {
 
         assertThat(updated.larva()).isEqualTo(larva);
         assertThat(genus.larva()).isNull();
+    }
+
+    @Test
+    void placedInOptionalReturnsEmptyWhenAbsent() {
+        InsectGenus genus = genusWithPlacedIn(null);
+
+        assertThat(genus.placedInOptional()).isEmpty();
+        assertThat(genus.placedIn()).isNull();
+    }
+
+    @Test
+    void placedInOptionalReturnsPresentWhenSet() {
+        InsectGenus genus = genusWithPlacedIn(new Papilionidae());
+
+        assertThat(genus.placedInOptional()).contains(new Papilionidae());
+        assertThat(genus.placedIn()).isEqualTo(new Papilionidae());
+    }
+
+    @Test
+    void withPlacedInReturnsNewInstanceWithUpdatedClade() {
+        InsectGenus genus = genusWithPlacedIn(null);
+
+        InsectGenus updated = genus.withPlacedIn(new Papilionidae());
+
+        assertThat(updated.placedIn()).isEqualTo(new Papilionidae());
+        assertThat(genus.placedIn()).isNull();
+    }
+
+    @Test
+    void withLarvaPreservesPlacedIn() {
+        InsectGenus genus = genusWithPlacedIn(new Papilionidae());
+
+        InsectGenus updated = genus.withLarva(null);
+
+        assertThat(updated.placedIn()).isEqualTo(new Papilionidae());
+    }
+
+    private static InsectGenus genusWithPlacedIn(Clade placedIn) {
+        return new InsectGenus(
+                InsectGenusName.of("battus"),
+                InsectFamilyName.of("papilionidae"),
+                TaxonomicOrder.of("Lepidoptera"),
+                TaxonomicFamily.of("Papilionidae"),
+                TaxonomicGenus.of("Battus"),
+                description(),
+                Set.of(),
+                placedIn,
+                null,
+                null,
+                null,
+                null);
     }
 
     private static StagePhenology phenology() {

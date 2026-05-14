@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.clades.Clade;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
@@ -14,6 +15,7 @@ import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicOrder;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -40,6 +42,7 @@ public record InsectFamily(
         TaxonomicFamily family,
         Description description,
         Set<CommonName> commonNames,
+        @Nullable Clade placedIn,
         @Nullable EggStage egg,
         @Nullable LarvaStage larva,
         @Nullable PupaStage pupa,
@@ -48,27 +51,36 @@ public record InsectFamily(
 
     private static final Observer observer = Observer.forClass(InsectFamily.class);
 
+    public Optional<Clade> placedInOptional() {
+        return Optional.ofNullable(placedIn);
+    }
+
+    public InsectFamily withPlacedIn(@Nullable Clade value) {
+        return new InsectFamily(name, order, family, description, commonNames,
+                value, egg, larva, pupa, adult);
+    }
+
     public InsectFamily withEgg(@Nullable EggStage value) {
         observer.arguments("withEgg", i -> i
             .namedEntityOrNull(value, "value"))
             .throwWhenInvalid();
         return new InsectFamily(name, order, family, description, commonNames,
-                value, larva, pupa, adult);
+                placedIn, value, larva, pupa, adult);
     }
 
     public InsectFamily withLarva(@Nullable LarvaStage value) {
         return new InsectFamily(name, order, family, description, commonNames,
-                egg, value, pupa, adult);
+                placedIn, egg, value, pupa, adult);
     }
 
     public InsectFamily withPupa(@Nullable PupaStage value) {
         return new InsectFamily(name, order, family, description, commonNames,
-                egg, larva, value, adult);
+                placedIn, egg, larva, value, adult);
     }
 
     public InsectFamily withAdult(@Nullable AdultStage value) {
         return new InsectFamily(name, order, family, description, commonNames,
-                egg, larva, pupa, value);
+                placedIn, egg, larva, pupa, value);
     }
 
     @Override

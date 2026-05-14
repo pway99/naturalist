@@ -65,6 +65,7 @@ class SpeciesCommandImplTest
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
                 null, null,
+                null,
                 null, null, null, null,
                 null, null, null, null, null, null, null);
     }
@@ -79,6 +80,7 @@ class SpeciesCommandImplTest
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
                 null, null,
+                null,
                 null, null, null, null,
                 null, null, null, null, null, null, null);
     }
@@ -94,6 +96,7 @@ class SpeciesCommandImplTest
                 true,
                 RandomValue.string(),
                 new InsectSpecies.IdentificationFeatures(List.of(RandomValue.string())),
+                null,
                 null, null, null, null,
                 null,
                 new InsectSpecies.Voltinism(

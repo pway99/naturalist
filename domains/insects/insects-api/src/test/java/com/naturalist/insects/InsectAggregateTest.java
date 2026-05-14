@@ -52,6 +52,7 @@ class InsectAggregateTest {
                 Set.of(FunctionalGuild.PREDATOR),
                 true,
                 null, null,
+                null,
                 null, null, null, null,
                 null, null, null, null, null, null, null
         );

@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.clades.Clade;
 import com.naturalist.ddd.AggregateRoot;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.ddd.ValueObject;
@@ -17,6 +18,7 @@ import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -108,6 +110,7 @@ public record InsectSpecies(
         boolean beneficial,
         @Nullable String sightingNotes,
         @Nullable IdentificationFeatures identificationFeatures,
+        @Nullable Clade placedIn,
         @Nullable EggStage egg,
         @Nullable LarvaStage larva,
         @Nullable PupaStage pupa,
@@ -120,6 +123,20 @@ public record InsectSpecies(
         @Nullable BeneficialProfile beneficialProfile,
         @Nullable EcologicalSignificance ecologicalSignificance
 ) implements NamedEntity<InsectSpeciesName> {
+
+    public Optional<Clade> placedInOptional() {
+        return Optional.ofNullable(placedIn);
+    }
+
+    public InsectSpecies withPlacedIn(@Nullable Clade value) {
+        return new InsectSpecies(
+                name, taxonomy, description, commonNames, guilds, beneficial,
+                sightingNotes, identificationFeatures,
+                value,
+                egg, larva, pupa, adult,
+                chemicalDefense, voltinism, habitatProfile, habitatRequirements,
+                gardenConnections, beneficialProfile, ecologicalSignificance);
+    }
 
     /**
      * Convenience accessor for the genus epithet from {@link #taxonomy()}. Will
