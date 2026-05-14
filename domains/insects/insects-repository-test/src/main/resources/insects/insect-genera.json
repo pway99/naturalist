@@ -44,7 +44,8 @@
         "label": "Grey Mining Bee",
         "locale": "en"
       }
-    ]
+    ],
+    "placedIn": "holometabola"
   },
   {
     "name": "chrysoperla",

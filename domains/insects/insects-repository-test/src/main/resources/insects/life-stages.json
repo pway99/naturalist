@@ -1331,7 +1331,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "grey-mining-bee-egg",
+    "name": "andrena-egg",
     "phenology": {
       "windows": [
         {
@@ -1373,7 +1373,7 @@
     "kind": "EGG"
   },
   {
-    "name": "grey-mining-bee-larva",
+    "name": "andrena-larva",
     "phenology": {
       "windows": [
         {
@@ -1417,7 +1417,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "grey-mining-bee-pupa",
+    "name": "andrena-pupa",
     "phenology": {
       "windows": [
         {
@@ -1459,7 +1459,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "grey-mining-bee-adult",
+    "name": "andrena-adult",
     "phenology": {
       "windows": [
         {

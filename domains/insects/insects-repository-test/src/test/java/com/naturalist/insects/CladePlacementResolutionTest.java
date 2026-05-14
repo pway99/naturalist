@@ -82,6 +82,24 @@ class CladePlacementResolutionTest {
     }
 
     @Test
+    void andrenaGenusStagesResolveToHolometabolousSequenceViaResolver() {
+        InsectGenusTestEntitySource genera =
+                db.getNamed(InsectGenusTestEntitySource.class);
+
+        InsectGenus andrena = genera
+                .getByName(TestInsectsIdentifiers.InsectGenus.Andrena.name)
+                .orElseThrow();
+
+        assertThat(andrena.placedIn()).isEqualTo(new Holometabola());
+        assertThat(InsectLifeStages.stagesOf(andrena))
+                .containsExactly(
+                        LifeStageKind.EGG,
+                        LifeStageKind.LARVA,
+                        LifeStageKind.PUPA,
+                        LifeStageKind.ADULT);
+    }
+
+    @Test
     void halictusGenusStagesResolveToHolometabolousSequenceViaResolver() {
         InsectGenusTestEntitySource genera =
                 db.getNamed(InsectGenusTestEntitySource.class);

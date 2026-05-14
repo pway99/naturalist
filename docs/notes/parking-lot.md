@@ -22,7 +22,7 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 **Pilot status:** Green-lacewing landed 2026-05-13. The `green-lacewing` `InsectSpecies` record was deleted; the four `green-lacewing-*` standalone `LifeStage` records were renamed to `chrysoperla-*`; the `chrysoperla` `InsectGenus` record gained `"placedIn": "holometabola"` so `InsectLifeStages.stagesOf(...)` resolves its stage list via the clade traversal. No inline life-stage fields were added to the genus record — Phase 5 made that workaround obsolete.
 **Remaining work (each a separate per-organism slice):**
 - ~~native-sweat-bee → halictus (genus)~~ landed 2026-05-13
-- grey-mining-bee → andrena (genus)
+- ~~grey-mining-bee → andrena (genus)~~ landed 2026-05-13
 - potato-leafhopper → empoasca (genus)
 - tachinid-fly → tachinidae (family)
 - braconid-wasp → braconidae (family)
