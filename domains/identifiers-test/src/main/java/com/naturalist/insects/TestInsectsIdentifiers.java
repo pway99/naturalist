@@ -72,6 +72,10 @@ public class TestInsectsIdentifiers {
         public static class Cicadellidae {
             public static final InsectFamilyName name = InsectFamilyName.of("cicadellidae");
         }
+
+        public static class Papilionidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("papilionidae");
+        }
     }
 
     public static class InsectGenus {
@@ -142,6 +146,20 @@ public class TestInsectsIdentifiers {
             // pending (family-level, no genus/species). Migrates to binomial
             // when FU-1 ships the pending-organism mechanism.
             public static final InsectSpeciesName name = InsectSpeciesName.of("braconid-wasp");
+
+            public static class LifeStages {
+                private LifeStages() {
+                }
+
+                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
+                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
+                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
+                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
+            }
+        }
+
+        public static class BattusPhilenor {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("battus-philenor");
 
             public static class LifeStages {
                 private LifeStages() {

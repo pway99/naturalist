@@ -168,5 +168,23 @@
         "locale": "en"
       }
     ]
+  },
+  {
+    "name": "papilionidae",
+    "order": "Lepidoptera",
+    "family": "Papilionidae",
+    "description": {
+      "preschool": "Swallowtails are big colourful butterflies with little tails on their back wings, like a swallow bird. Many of them are yellow and black, and some are dark with shining blue. You can see them in the garden visiting flowers in the summer.",
+      "elementary": "Papilionidae is the family of butterflies called swallowtails. They are usually large, brightly coloured, and most species have a thin tail-like extension on each hind wing. Pipevine Swallowtail, Western Tiger Swallowtail, and Anise Swallowtail are all members of this family. Swallowtail caterpillars have a strange defence: they can pop out a forked orange organ called an osmeterium that gives off a smelly chemical to scare off ants and birds. The Pipevine Swallowtail caterpillar takes this further — it eats only one kind of plant (Pipevine) and stores its poison so birds learn to leave it alone.",
+      "secondary": "Family Papilionidae (Papilionoidea) — approximately 570 species worldwide, including the swallowtails, apollos, and birdwings. Adults are typically large butterflies; many have tailed hindwings, hence the common name. Caterpillars possess an eversible osmeterium — a Y-shaped gland behind the head that emits volatile terpenoids when disturbed — and several lineages sequester or synthesise host-plant chemical defences for use in all life stages. Larval host plants are taxonomically narrow within tribes: Troidini specialise on Aristolochiaceae, Papilionini on Rutaceae and Apiaceae, Parnassiini on Crassulaceae and Papaveraceae. At Oak Vista, the family is represented by Battus philenor (Pipevine Swallowtail) — a Troidini species whose breeding presence is gated entirely on Aristolochia californica availability.",
+      "university": "Family Papilionidae — sister to Hedylidae within Papilionoidea; fossil record from the Eocene (~50 Ma). Subfamily structure: Baroniinae (monotypic, Mexican relict), Parnassiinae (apollos and festoons, Holarctic), and Papilioninae (true swallowtails and birdwings, cosmopolitan). The tribe Troidini contains the Battus philenor validation case for the clades kernel — its larval host-plant specialisation on Aristolochia (Aristolochiaceae) underlies its aristolochic-acid-based chemical defence and the Müllerian/Batesian mimicry rings that surround it (Spicebush Swallowtail, dark-morph female Tiger Swallowtail, Red-spotted Purple). The chemical defence is not a clade-level trait — it is restricted to a subset of Troidini and a few related Papilionidae — and is therefore declared on the species-level record rather than on the family clade. The family-level clade carries only what is true of every Papilionidae member: Holometabola-inherited complete metamorphosis with the egg → larva → pupa → adult stage set."
+    },
+    "commonNames": [
+      {
+        "label": "Swallowtail Family",
+        "locale": "en"
+      }
+    ],
+    "placedIn": "papilionidae"
   }
 ]
