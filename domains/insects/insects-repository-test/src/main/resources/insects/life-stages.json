@@ -357,7 +357,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "hoverfly-egg",
+    "name": "syrphidae-egg",
     "phenology": {
       "windows": [
         {
@@ -399,7 +399,7 @@
     "kind": "EGG"
   },
   {
-    "name": "hoverfly-larva",
+    "name": "syrphidae-larva",
     "phenology": {
       "windows": [
         {
@@ -443,7 +443,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "hoverfly-pupa",
+    "name": "syrphidae-pupa",
     "phenology": {
       "windows": [
         {
@@ -486,7 +486,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "hoverfly-adult",
+    "name": "syrphidae-adult",
     "phenology": {
       "windows": [
         {
@@ -712,7 +712,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "ground-beetle-egg",
+    "name": "carabidae-egg",
     "phenology": {
       "windows": [
         {
@@ -755,7 +755,7 @@
     "kind": "EGG"
   },
   {
-    "name": "ground-beetle-larva",
+    "name": "carabidae-larva",
     "phenology": {
       "windows": [
         {
@@ -800,7 +800,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "ground-beetle-pupa",
+    "name": "carabidae-pupa",
     "phenology": {
       "windows": [
         {
@@ -842,7 +842,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "ground-beetle-adult",
+    "name": "carabidae-adult",
     "phenology": {
       "windows": [
         {
@@ -886,7 +886,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "crane-fly-egg",
+    "name": "tipulidae-egg",
     "phenology": {
       "windows": [
         {
@@ -930,7 +930,7 @@
     "kind": "EGG"
   },
   {
-    "name": "crane-fly-larva",
+    "name": "tipulidae-larva",
     "phenology": {
       "windows": [
         {
@@ -976,7 +976,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "crane-fly-pupa",
+    "name": "tipulidae-pupa",
     "phenology": {
       "windows": [
         {
@@ -1019,7 +1019,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "crane-fly-adult",
+    "name": "tipulidae-adult",
     "phenology": {
       "windows": [
         {
@@ -1692,7 +1692,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "skipper-butterfly-egg",
+    "name": "hesperiidae-egg",
     "phenology": {
       "windows": [
         {
@@ -1734,7 +1734,7 @@
     "kind": "EGG"
   },
   {
-    "name": "skipper-butterfly-larva",
+    "name": "hesperiidae-larva",
     "phenology": {
       "windows": [
         {
@@ -1778,7 +1778,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "skipper-butterfly-pupa",
+    "name": "hesperiidae-pupa",
     "phenology": {
       "windows": [
         {
@@ -1821,7 +1821,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "skipper-butterfly-adult",
+    "name": "hesperiidae-adult",
     "phenology": {
       "windows": [
         {

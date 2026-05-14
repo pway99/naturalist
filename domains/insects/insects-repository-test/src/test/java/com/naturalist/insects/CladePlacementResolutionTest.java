@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Holometabola;
+import com.naturalist.clades.Lepidoptera;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.insects.lifestage.Holometabolous;
@@ -128,6 +129,50 @@ class CladePlacementResolutionTest {
 
         assertThat(chrysoperla.placedIn()).isEqualTo(new Holometabola());
         assertThat(InsectLifeStages.stagesOf(chrysoperla))
+                .containsExactly(
+                        LifeStageKind.EGG,
+                        LifeStageKind.LARVA,
+                        LifeStageKind.PUPA,
+                        LifeStageKind.ADULT);
+    }
+
+    @Test
+    void syrphidaeFamilyStagesResolveToHolometabolousSequenceViaResolver() {
+        assertFamilyResolvesToHolometabolousStages(
+                TestInsectsIdentifiers.InsectFamily.Syrphidae.name,
+                new Holometabola());
+    }
+
+    @Test
+    void carabidaeFamilyStagesResolveToHolometabolousSequenceViaResolver() {
+        assertFamilyResolvesToHolometabolousStages(
+                TestInsectsIdentifiers.InsectFamily.Carabidae.name,
+                new Holometabola());
+    }
+
+    @Test
+    void tipulidaeFamilyStagesResolveToHolometabolousSequenceViaResolver() {
+        assertFamilyResolvesToHolometabolousStages(
+                TestInsectsIdentifiers.InsectFamily.Tipulidae.name,
+                new Holometabola());
+    }
+
+    @Test
+    void hesperiidaeFamilyStagesResolveToHolometabolousSequenceViaResolver() {
+        assertFamilyResolvesToHolometabolousStages(
+                TestInsectsIdentifiers.InsectFamily.Hesperiidae.name,
+                new Lepidoptera());
+    }
+
+    private void assertFamilyResolvesToHolometabolousStages(
+            InsectFamilyName name, com.naturalist.clades.Clade expectedPlacement) {
+        InsectFamilyTestEntitySource families =
+                db.getNamed(InsectFamilyTestEntitySource.class);
+
+        InsectFamily family = families.getByName(name).orElseThrow();
+
+        assertThat(family.placedIn()).isEqualTo(expectedPlacement);
+        assertThat(InsectLifeStages.stagesOf(family))
                 .containsExactly(
                         LifeStageKind.EGG,
                         LifeStageKind.LARVA,

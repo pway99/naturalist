@@ -23,15 +23,15 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 **Remaining work (each a separate per-organism slice):**
 - ~~native-sweat-bee → halictus (genus)~~ landed 2026-05-13
 - ~~grey-mining-bee → andrena (genus)~~ landed 2026-05-13
-- potato-leafhopper → empoasca (genus)
-- tachinid-fly → tachinidae (family)
-- braconid-wasp → braconidae (family)
-- hoverfly → syrphidae (family)
-- ground-beetle → carabidae (family)
-- crane-fly → tipulidae (family)
-- skipper-butterfly → hesperiidae (family)
+- ~~hoverfly → syrphidae (family)~~ landed 2026-05-14
+- ~~ground-beetle → carabidae (family)~~ landed 2026-05-14
+- ~~crane-fly → tipulidae (family)~~ landed 2026-05-14
+- ~~skipper-butterfly → hesperiidae (family)~~ landed 2026-05-14 (placed at `lepidoptera`, more specific than the others)
+- **potato-leafhopper → empoasca (genus)** — *not bundled.* Two blockers: (1) Cicadellidae is Hemiptera/Hemimetabolous, no kernel permit declares that trait, so any `placedIn` choice would either resolve to wrong stages (`holometabola`) or empty (`insecta`). (2) `PotatoLeafhopper` is a test fixture in TestInsectsIdentifiers carrying `Images.Img9047`/`Img9048` constants tied to records in `insect-images.json`, used across image command/query tests. Resolution requires either adding a `Hemimetabolous` trait permit (kernel work) or accepting empty stage resolution; image records and their consumers need repointing or deletion.
+- **tachinid-fly → tachinidae (family)** — *not bundled.* `TachinidFly` is the canonical species fixture in `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, and `InMemoryCatalogTest` (`knownEntityNames()`, life-stage lookup assertions, cross-domain catalog ref). Migrating means picking replacement fixtures (likely battus-philenor) across all those test classes — a separate refactor with explicit scope, not a 5-line JSON edit.
+- **braconid-wasp → braconidae (family)** — *not bundled.* Same fixture-migration shape as tachinid-fly: appears alongside it in the `knownEntityNames()` lists across multiple test classes.
 
-Recipe per organism: delete the under-identified `InsectSpecies` record, rename its four standalone `LifeStage` records to the parent-rank composite slug, add `"placedIn": "..."` to the destination genus/family record so the resolver works. Each move is a focused JSON-only commit; the original plan at `docs/plans/green-lacewing-rank-correction.md` predates Phase 5 and overstates the work — there is no inline-life-stage merge step. New clade permits may be needed for some destinations (e.g., a `Hymenoptera` permit for sweat bees) — each slice decides whether to add the permit or place at the nearest existing ancestor.
+Clean recipe (applies to the 6 landed organisms): delete the under-identified `InsectSpecies` record, rename its four standalone `LifeStage` records to the parent-rank composite slug, add `"placedIn": "..."` to the destination genus/family record so the resolver works. Each clean move is a focused JSON edit + one resolver test. The original plan at `docs/plans/green-lacewing-rank-correction.md` predates Phase 5 and overstates the work — there is no inline-life-stage merge step.
 
 ---
 
