@@ -1,3 +1,4 @@
+@import com.naturalist.insects.InsectFunctionalRole
 @import com.naturalist.insects.InsectImage
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectSpeciesName
@@ -5,9 +6,11 @@
 @import com.naturalist.data.Page
 @import java.util.List
 @import java.util.Map
+@import java.util.Set
 
 @param Page<InsectSpecies> speciesPage
 @param Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = Map.of()
+@param Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = Map.of()
 
 @template.layout.page(title = "Insect Catalog", content = @`
     <h1>Insect Catalog</h1>
@@ -16,13 +19,16 @@
     <div class="entity-grid">
         @for(var s : speciesPage.content())
             !{var images = imagesBySpecies.getOrDefault(s.name(), List.of());}
+            !{var role = rolesBySpecies.get(s.name());}
+            !{var guilds = role == null ? Set.<FunctionalGuild>of() : role.guilds();}
+            !{var beneficial = role != null && role.beneficial();}
             !{var commonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
             <article>
                 <header>
                     <a href="/insects/${s.name().value()}">
                         <strong>${commonName}</strong>
                     </a>
-                    @if(s.beneficial())
+                    @if(beneficial)
                         <span class="badge beneficial">beneficial</span>
                     @endif
                 </header>
@@ -51,7 +57,7 @@
                     </a>
                 @endif
                 <div class="guilds">
-                    @for(var guild : s.guilds())
+                    @for(var guild : guilds)
                         <a href="/insects/guild/${guild.name()}"
                            class="badge guild-${guild.name().toLowerCase()}">${guild.name()}</a>
                     @endfor

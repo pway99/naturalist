@@ -1,3 +1,4 @@
+@import com.naturalist.insects.InsectFunctionalRole
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectImage
 @import java.util.List
@@ -5,6 +6,7 @@
 
 @param InsectSpecies species
 @param List<InsectImage> images
+@param InsectFunctionalRole role = null
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -24,15 +26,17 @@
 
     @template.components.taxonomy(taxonomy = species.taxonomy())
 
-    <div class="guilds">
-        @for(var guild : species.guilds())
-            <a href="/insects/guild/${guild.name()}"
-               class="badge guild-${guild.name().toLowerCase()}">${guild.name()}</a>
-        @endfor
-        @if(species.beneficial())
-            <span class="badge beneficial">beneficial</span>
-        @endif
-    </div>
+    @if(role != null)
+        <div class="guilds">
+            @for(var guild : role.guilds())
+                <a href="/insects/guild/${guild.name()}"
+                   class="badge guild-${guild.name().toLowerCase()}">${guild.name()}</a>
+            @endfor
+            @if(role.beneficial())
+                <span class="badge beneficial">beneficial</span>
+            @endif
+        </div>
+    @endif
 
     @template.components.description(
     preschool = descriptionPreschool,

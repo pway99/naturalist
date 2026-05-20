@@ -5,6 +5,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
+import java.util.Optional;
 
 @DomainService
 class InsectFunctionalRoleRepositoryMock
@@ -20,5 +21,12 @@ class InsectFunctionalRoleRepositoryMock
         return testEntitySource().entityStream()
                 .filter(role -> role.guilds().contains(guild))
                 .toList();
+    }
+
+    @Override
+    public Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName) {
+        return testEntitySource().entityStream()
+                .filter(role -> role.parentName().equals(parentName))
+                .findFirst();
     }
 }

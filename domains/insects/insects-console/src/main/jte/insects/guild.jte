@@ -1,10 +1,10 @@
-@import com.naturalist.insects.InsectSpecies
+@import com.naturalist.insects.InsectFunctionalRole
 @import com.naturalist.insects.FunctionalGuild
 @import java.util.List
 
 @param FunctionalGuild selectedGuild
 @param FunctionalGuild[] guilds
-@param List<InsectSpecies> species
+@param List<InsectFunctionalRole> roles
 
 @template.layout.page(title = "Guild: " + selectedGuild.name(), content = @`
     <a href="/insects">&larr; Back to catalog</a>
@@ -25,37 +25,26 @@
         </select>
     </form>
 
-    <p>${species.size()} species in this guild.</p>
+    <p>${roles.size()} catalog records in this guild, across family, genus, and species ranks.</p>
 
     <div class="entity-grid">
-        @for(var s : species)
+        @for(var r : roles)
+            !{var parent = r.parentName();}
+            !{var rankLabel = parent.getClass().getSimpleName().replace("Insect", "").replace("Name", "");}
             <article>
                 <header>
-                    <a href="/insects/${s.name().value()}">
-                        <strong>${s.name().value()}</strong>
-                    </a>
-                    @if(s.beneficial())
+                    <strong>${parent.value()}</strong>
+                    <span class="badge rank">${rankLabel}</span>
+                    @if(r.beneficial())
                         <span class="badge beneficial">beneficial</span>
                     @endif
                 </header>
-                <p class="taxonomy">
-                    ${s.taxonomy().order().value()} &middot; ${s.taxonomy().family().value()}
-                    @if(s.taxonomy().genus() != null)
-                        &middot; <em>${s.taxonomy().genus().value()}</em>
-                    @endif
-                </p>
                 <div class="guilds">
-                    @for(var guild : s.guilds())
+                    @for(var guild : r.guilds())
                         <a href="/insects/guild/${guild.name()}"
                            class="badge guild-${guild.name().toLowerCase()}">${guild.name()}</a>
                     @endfor
                 </div>
-                <p class="description-preview">${s.description().preschool()}</p>
-                <footer>
-                    <a href="/insects/${s.name().value()}/life-stages" class="secondary">
-                        Life Stages &rarr;
-                    </a>
-                </footer>
             </article>
         @endfor
     </div>

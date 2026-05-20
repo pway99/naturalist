@@ -28,17 +28,12 @@ import java.util.function.Consumer;
  * a four-level {@link Description} embodying Durrell's principle — the same ecological
  * truth rendered at preschool, elementary, secondary, and university resolution.
  * <p>
- * The {@code guilds} set captures all functional ecological roles the species fills
- * at Oak Vista. A hoverfly, for example, holds both {@link FunctionalGuild#PREDATOR}
- * (larva) and {@link FunctionalGuild#POLLINATOR} (adult). Guild assignment governs
- * which application modules incorporate this species in their analyses
- * (ForagingCalendar, PestManagement).
- * <p>
- * {@code beneficial} is a pragmatic garden-management flag — true for species whose
- * net effect on tomato yield and ecosystem health is positive. All parasitoids,
- * predators, pollinators, and decomposers in the Oak Vista catalog are beneficial.
- * The field is retained for completeness: future catalog entries may include pest
- * species for educational or monitoring purposes.
+ * Functional ecology — which {@link FunctionalGuild} roles the species fills and
+ * whether it is a beneficial in the garden-management sense — is held in
+ * {@link InsectFunctionalRole}, not on this record. The role record attaches to the
+ * species (or genus / family for under-identified organisms) via a separate cross-rank
+ * entity, queried by {@code insectQuery.functionalRoles().getByParentName(species.name())}.
+ * See PL-11 for the migration rationale.
  * <p>
  * {@code sightingNotes} captures field observations specific to Oak Vista —
  * dates of first observation, confirmed breeding, microhabitat, or management
@@ -81,7 +76,8 @@ import java.util.function.Consumer;
  * {@link #gardenConnections}, {@link #beneficialProfile}, and
  * {@link #ecologicalSignificance} — are populated incrementally as the catalog
  * matures. {@code beneficialProfile} is additionally constrained by intent: it should
- * only be populated when {@code beneficial} is {@code true}. {@code chemicalDefense} is
+ * only be populated when the species's {@link InsectFunctionalRole#beneficial()} flag
+ * is {@code true}. {@code chemicalDefense} is
  * populated only for species that sequester, synthesise, or otherwise deploy defensive
  * chemistry — <i>Battus philenor</i> (aristolochic acids from <i>Aristolochia
  * californica</i>), monarchs, pierids, and other aposematic taxa. Non-defended species
@@ -105,8 +101,6 @@ public record InsectSpecies(
         TaxonomicClassification taxonomy,
         Description description,
         Set<CommonName> commonNames,
-        Set<FunctionalGuild> guilds,
-        boolean beneficial,
         @Nullable String sightingNotes,
         @Nullable IdentificationFeatures identificationFeatures,
         @Nullable Clade placedIn,
@@ -125,7 +119,7 @@ public record InsectSpecies(
 
     public InsectSpecies withPlacedIn(@Nullable Clade value) {
         return new InsectSpecies(
-                name, taxonomy, description, commonNames, guilds, beneficial,
+                name, taxonomy, description, commonNames,
                 sightingNotes, identificationFeatures,
                 value,
                 egg, larva, pupa, adult,
@@ -151,32 +145,6 @@ public record InsectSpecies(
         return taxonomy.species();
     }
 
-    /**
-     * Whether this species performs pollination services at Oak Vista.
-     * Convenience query over {@code guilds.contains(FunctionalGuild.POLLINATOR)}.
-     */
-    public boolean isPollinator() {
-        return guilds.contains(FunctionalGuild.POLLINATOR);
-    }
-
-    /**
-     * Whether this species is a keystone species at Oak Vista.
-     * Keystone species require heightened management caution — never apply
-     * pesticides to host plants of keystone species.
-     */
-    public boolean isKeystone() {
-        return guilds.contains(FunctionalGuild.KEYSTONE);
-    }
-
-    /**
-     * Whether this species provides direct pest suppression via predation or parasitism.
-     */
-    public boolean isBiocontrolAgent() {
-        return guilds.contains(FunctionalGuild.PARASITOID)
-                || guilds.contains(FunctionalGuild.PREDATOR)
-                || guilds.contains(FunctionalGuild.APEX_PREDATOR);
-    }
-
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
@@ -184,7 +152,6 @@ public record InsectSpecies(
                 .valueObject(taxonomy, "taxonomy")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames")
-                .notNull(guilds, "guilds")
                 .valueObjectOrNull(identificationFeatures, "identificationFeatures")
                 .valueObjectOrNull(chemicalDefense, "chemicalDefense")
                 .valueObjectOrNull(voltinism, "voltinism")
@@ -404,7 +371,8 @@ public record InsectSpecies(
 
     /**
      * Structured pest-management and ecological significance data for species whose
-     * {@link InsectSpecies#beneficial()} flag is {@code true}.
+     * {@link InsectFunctionalRole#beneficial()} flag is {@code true} (per PL-11,
+     * functional ecology lives on the cross-rank role record, not on the species record).
      * <p>
      * This is a nullable field on {@link InsectSpecies} — it is only populated for
      * documented beneficial species. Future catalog entries for pest species or

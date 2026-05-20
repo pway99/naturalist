@@ -10,7 +10,6 @@ import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.Test;
-
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,8 +36,6 @@ class InsectSpeciesTest {
                         TaxonomicSpecies.of("philenor")),
                 description(),
                 Set.of(),
-                Set.of(FunctionalGuild.POLLINATOR),
-                true,
                 null, null,
                 placedIn,
                 null, null, null, null,

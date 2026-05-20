@@ -2,8 +2,8 @@ package com.naturalist.insects.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.insects.FunctionalGuild;
-import com.naturalist.insects.InsectSpecies;
-import com.naturalist.insects.InsectSpeciesTestEntitySource;
+import com.naturalist.insects.InsectFunctionalRole;
+import com.naturalist.insects.InsectFunctionalRoleTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
@@ -23,9 +23,10 @@ class InsectsGuildTemplateTest {
     @Test
     void guild_rendersWithoutError() {
         FunctionalGuild selected = FunctionalGuild.POLLINATOR;
-        List<InsectSpecies> species = new InsectSpeciesTestEntitySource(NaturalistDatabase.create()).entityStream()
-                .filter(s -> s.guilds().contains(selected))
-                .toList();
+        List<InsectFunctionalRole> roles =
+                new InsectFunctionalRoleTestEntitySource(NaturalistDatabase.create()).entityStream()
+                        .filter(r -> r.guilds().contains(selected))
+                        .toList();
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render(
@@ -33,7 +34,7 @@ class InsectsGuildTemplateTest {
                 Map.of(
                         "selectedGuild", selected,
                         "guilds", FunctionalGuild.values(),
-                        "species", species),
+                        "roles", roles),
                 output);
 
         assertThat(output.toString()).isNotBlank();

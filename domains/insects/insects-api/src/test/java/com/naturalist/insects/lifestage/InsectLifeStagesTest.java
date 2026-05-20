@@ -4,7 +4,6 @@ import com.naturalist.RandomValue;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.insects.FunctionalGuild;
 import com.naturalist.insects.InsectFamily;
 import com.naturalist.insects.InsectFamilyName;
 import com.naturalist.insects.InsectGenus;
@@ -111,8 +110,6 @@ class InsectLifeStagesTest {
                         TaxonomicSpecies.of("philenor")),
                 description(),
                 Set.of(),
-                Set.of(FunctionalGuild.POLLINATOR),
-                true,
                 null, null,
                 placedIn,
                 null, null, null, null,

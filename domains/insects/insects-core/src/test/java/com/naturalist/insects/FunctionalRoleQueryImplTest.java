@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,35 @@ class FunctionalRoleQueryImplTest
                 .allMatch(role -> role.guilds().contains(FunctionalGuild.FOOD_WEB));
         assertThat(collection.stream().map(InsectFunctionalRole::parentName))
                 .contains(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
+    }
+
+    @Test
+    void getByParentName_rejectsNull() {
+        assertThatThrownBy(() -> query.getByParentName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("parentName");
+    }
+
+    @Test
+    void getByParentName_unknownParent_returnsEmpty() {
+        Optional<InsectFunctionalRole> result =
+                query.getByParentName(TestInsectsIdentifiers.InsectFamily.NotFound.name);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getByParentName_knownGenusParent_returnsThatRole() {
+        // empoasca is the canonical PL-11 cross-rank case — a genus carrying
+        // FOOD_WEB. getByParentName at genus rank returns the same record that
+        // getByGuild(FOOD_WEB) would.
+        Optional<InsectFunctionalRole> result =
+                query.getByParentName(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().guilds()).contains(FunctionalGuild.FOOD_WEB);
+        assertThat(result.get().parentName())
+                .isEqualTo(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
     }
 
     @Test

@@ -62,13 +62,17 @@ public class InsectsController {
     String list(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
         Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = new LinkedHashMap<>();
+        Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = new LinkedHashMap<>();
         for (var species : speciesPage.content()) {
             imagesBySpecies.put(
                     species.name(),
                     insectQuery.images().forParentName(species.name()).stream().toList());
+            insectQuery.functionalRoles().getByParentName(species.name())
+                    .ifPresent(role -> rolesBySpecies.put(species.name(), role));
         }
         model.addAttribute("speciesPage", speciesPage);
         model.addAttribute("imagesBySpecies", imagesBySpecies);
+        model.addAttribute("rolesBySpecies", rolesBySpecies);
         return "insects/list";
     }
 
@@ -80,12 +84,12 @@ public class InsectsController {
         } catch (IllegalArgumentException e) {
             return "redirect:/insects";
         }
-        var species = insectQuery.species().getByFunctionalGuild(selected).stream()
-                .sorted(Comparator.comparing(s -> s.name().value()))
+        var roles = insectQuery.functionalRoles().getByGuild(selected).stream()
+                .sorted(Comparator.comparing(r -> r.parentName().value()))
                 .toList();
         model.addAttribute("selectedGuild", selected);
         model.addAttribute("guilds", FunctionalGuild.values());
-        model.addAttribute("species", species);
+        model.addAttribute("roles", roles);
         return "insects/guild";
     }
 
@@ -100,6 +104,8 @@ public class InsectsController {
         var description = species.get().description();
         model.addAttribute("species", species.get());
         model.addAttribute("images", images.stream().toList());
+        model.addAttribute("role",
+                insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));

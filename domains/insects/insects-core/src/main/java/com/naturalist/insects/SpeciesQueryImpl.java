@@ -24,12 +24,4 @@ class SpeciesQueryImpl
                 .throwWhenInvalid();
         return InsectEntityCollections.SpeciesCollection.of(repository().getByEntityNameSet(names));
     }
-
-    @Override
-    public InsectEntityCollections.SpeciesCollection getByFunctionalGuild(FunctionalGuild functionalGuild) {
-        observer().arguments("getByFunctionalGuild", i -> i
-                        .notNull(functionalGuild, "functionalGuild"))
-                .throwWhenInvalid();
-        return InsectEntityCollections.SpeciesCollection.of(repository().getByFunctionalGuild(functionalGuild));
-    }
 }

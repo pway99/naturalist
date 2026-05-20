@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.insects.InsectEntityCollections.FunctionalRoleCollection;
 
+import java.util.Optional;
 import java.util.Set;
 
 class FunctionalRoleQueryImpl
@@ -30,5 +31,12 @@ class FunctionalRoleQueryImpl
         observer().arguments("getByGuild", i -> i.notNull(guild, "guild"))
                 .throwWhenInvalid();
         return FunctionalRoleCollection.of(repository().getByGuild(guild));
+    }
+
+    @Override
+    public Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName) {
+        observer().arguments("getByParentName", i -> i.identifier(parentName, "parentName"))
+                .throwWhenInvalid();
+        return repository().getByParentName(parentName);
     }
 }

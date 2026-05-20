@@ -49,8 +49,6 @@ class InsectAggregateTest {
                         RandomValue.string(),
                         RandomValue.string()),
                 Set.of(),
-                Set.of(FunctionalGuild.PREDATOR),
-                true,
                 null, null,
                 null,
                 null, null, null, null,

@@ -55,8 +55,6 @@ public interface InsectQuery {
     }
 
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
-
-        SpeciesCollection getByFunctionalGuild(FunctionalGuild functionalGuild);
     }
 
     interface ImageQuery
@@ -75,5 +73,7 @@ public interface InsectQuery {
             extends EntityQuery<InsectFunctionalRoleId, InsectFunctionalRole, FunctionalRoleCollection> {
 
         FunctionalRoleCollection getByGuild(FunctionalGuild guild);
+
+        Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName);
     }
 }

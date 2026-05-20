@@ -60,4 +60,13 @@ package com.naturalist.insects;
  */
 public sealed interface InsectRankName
         permits InsectFamilyName, InsectGenusName, InsectSpeciesName, InsectSubspeciesName {
+
+    /**
+     * The slug string carried by this rank name. Exposed on the sealed
+     * interface so polymorphic consumers (e.g. the {@code /insects/guild/{guild}}
+     * console page sorting by {@code parentName.value()}) can read the slug
+     * without down-casting to a specific permit. Every permit inherits the
+     * concrete implementation from {@link com.naturalist.ddd.EntityName}.
+     */
+    String value();
 }

@@ -76,8 +76,6 @@ class InsectRepository {
 
     protected interface SpeciesRepository
             extends EntityRepository<InsectSpeciesName, InsectSpecies> {
-
-        List<InsectSpecies> getByFunctionalGuild(FunctionalGuild functionalGuild);
     }
 
     protected interface ImageRepository
@@ -98,5 +96,7 @@ class InsectRepository {
             extends EntityRepository<InsectFunctionalRoleId, InsectFunctionalRole> {
 
         List<InsectFunctionalRole> getByGuild(FunctionalGuild guild);
+
+        java.util.Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName);
     }
 }
