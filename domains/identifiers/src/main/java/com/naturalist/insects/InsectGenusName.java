@@ -12,7 +12,7 @@ import com.naturalist.ddd.EntityName;
  * {@code InsectGenusName} rather than importing {@code insects-api},
  * preserving DAG integrity.
  */
-public final class InsectGenusName extends EntityName {
+public final class InsectGenusName extends EntityName implements InsectRankName {
 
     private InsectGenusName(String value) {
         super(value);
