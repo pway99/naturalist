@@ -49,8 +49,8 @@ package com.naturalist.insects;
  *
  * <pre>{@code
  * {
- *   "parentRank": "SPECIES",
- *   "parentName": "potato-leafhopper"
+ *   "parentRank": "GENUS",
+ *   "parentName": "empoasca"
  * }
  * }</pre>
  *

@@ -26,22 +26,20 @@ class InsectAggregateFactoryTest {
     @Test
     void buildByName_speciesWithImages_attachesAllImagesAndPreservesReferentialIntegrity() {
         Optional<InsectAggregate> aggregate =
-                factory.buildByName(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
+                factory.buildByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
         assertThat(aggregate).isPresent();
         InsectAggregate value = aggregate.get();
 
         assertThat(value.species().name())
-                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
+                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
-        assertThat(value.images().size()).isGreaterThanOrEqualTo(2);
+        assertThat(value.images().size()).isGreaterThanOrEqualTo(1);
         assertThat(value.images().stream())
                 .as("every image carries the root species name (factory-owned referential integrity)")
                 .allMatch(image -> image.parentName().equals(value.species().name()));
         assertThat(value.images().stream().map(InsectImage::name))
-                .contains(
-                        TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,
-                        TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9048.name);
+                .contains(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.Images.PipevineSwallowtail.name);
 
         assertThat(observer.observable(value, "insectAggregate").violations()).isEmpty();
     }

@@ -1,10 +1,12 @@
 package com.naturalist.insects;
 
 import com.naturalist.clades.CladeTraversal;
+import com.naturalist.clades.Hemiptera;
 import com.naturalist.clades.Holometabola;
 import com.naturalist.clades.Lepidoptera;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.insects.lifestage.Hemimetabolous;
 import com.naturalist.insects.lifestage.Holometabolous;
 import com.naturalist.insects.lifestage.InsectLifeStages;
 import com.naturalist.insects.lifestage.MetabolyTrait;
@@ -115,6 +117,41 @@ class CladePlacementResolutionTest {
                         LifeStageKind.EGG,
                         LifeStageKind.LARVA,
                         LifeStageKind.PUPA,
+                        LifeStageKind.ADULT);
+    }
+
+    @Test
+    void empoascaGenusPlacementResolvesToHemimetabolousTraitViaHemiptera() {
+        InsectGenusTestEntitySource genera =
+                db.getNamed(InsectGenusTestEntitySource.class);
+
+        InsectGenus empoasca = genera
+                .getByName(TestInsectsIdentifiers.InsectGenus.Empoasca.name)
+                .orElseThrow();
+
+        assertThat(empoasca.placedIn()).isEqualTo(new Hemiptera());
+
+        Optional<MetabolyTrait> resolved = CladeTraversal.findTrait(
+                empoasca.placedIn(),
+                MetabolyTrait.class,
+                InsectClades::traitsFor);
+
+        assertThat(resolved).contains(new MetabolyTrait(new Hemimetabolous()));
+    }
+
+    @Test
+    void empoascaGenusStagesResolveToHemimetabolousSequenceViaResolver() {
+        InsectGenusTestEntitySource genera =
+                db.getNamed(InsectGenusTestEntitySource.class);
+
+        InsectGenus empoasca = genera
+                .getByName(TestInsectsIdentifiers.InsectGenus.Empoasca.name)
+                .orElseThrow();
+
+        assertThat(InsectLifeStages.stagesOf(empoasca))
+                .containsExactly(
+                        LifeStageKind.EGG,
+                        LifeStageKind.NYMPH,
                         LifeStageKind.ADULT);
     }
 

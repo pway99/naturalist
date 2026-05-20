@@ -45,15 +45,15 @@ class ImageCommandImplTest
     @Override
     public List<InsectImageId> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,
-                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9048.name);
+                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.name,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.name);
     }
 
     @Override
     public InsectImage newEntity() {
         return new InsectImage(
                 InsectImageId.create(),
-                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-04-20T12:00:00Z"),
                 FileName.of("IMG_TEST_NEW.HEIC"));
     }
@@ -62,7 +62,7 @@ class ImageCommandImplTest
     public InsectImage ghostEntity() {
         return new InsectImage(
                 InsectImageId.create(),
-                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-04-21T12:00:00Z"),
                 FileName.of("IMG_TEST_GHOST.HEIC"));
     }

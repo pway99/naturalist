@@ -30,7 +30,7 @@ class SpeciesQueryImplTest
     @Override
     public List<InsectSpeciesName> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name,
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 TestInsectsIdentifiers.InsectSpecies.TachinidFly.name,
                 TestInsectsIdentifiers.InsectSpecies.BraconidWasp.name);
     }

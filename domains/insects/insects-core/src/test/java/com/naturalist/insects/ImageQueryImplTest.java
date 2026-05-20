@@ -35,23 +35,23 @@ class ImageQueryImplTest
     @Override
     public List<InsectImageId> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,
-                TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9048.name);
+                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.name,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.name);
     }
 
     @Test
-    void forParentName_returnsAllImagesForThatSpecies() {
+    void forParentName_returnsAllImagesForThatGenus() {
         ImageCollection collection =
-                query.forParentName(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
+                query.forParentName(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
 
         assertThat(collection.size()).isGreaterThanOrEqualTo(2);
         assertThat(collection.stream())
                 .allMatch(image -> image.parentName()
-                        .equals(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name));
+                        .equals(TestInsectsIdentifiers.InsectGenus.Empoasca.name));
         assertThat(collection.stream().map(InsectImage::name))
                 .contains(
-                        TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,
-                        TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9048.name);
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.name,
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.name);
     }
 
     @Test
@@ -79,12 +79,14 @@ class ImageQueryImplTest
     }
 
     @Test
-    void forParentName_acceptsGenusName() {
+    void forParentName_acceptsSpeciesName() {
         ImageCollection collection =
-                query.forParentName(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
+                query.forParentName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
-        assertThat(collection).isNotNull();
-        assertThat(collection.isEmpty()).isTrue();
+        assertThat(collection.size()).isGreaterThanOrEqualTo(1);
+        assertThat(collection.stream())
+                .allMatch(image -> image.parentName()
+                        .equals(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name));
     }
 
     @Test

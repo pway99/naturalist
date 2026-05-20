@@ -27,12 +27,12 @@ class InsectAggregateQueryImplTest {
     @Test
     void getByName_known_returnsStructurallyValidAggregate() {
         Optional<InsectAggregate> aggregate =
-                aggregateQuery.getByName(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
+                aggregateQuery.getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
         assertThat(aggregate).isPresent();
         assertThat(observer.observable(aggregate.get(), "insectAggregate").violations()).isEmpty();
         assertThat(aggregate.get().species().name())
-                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
+                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
     }
 
     @Test

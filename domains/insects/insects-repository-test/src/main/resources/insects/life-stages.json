@@ -2451,7 +2451,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "potato-leafhopper-egg",
+    "name": "empoasca-egg",
     "phenology": {
       "windows": [
         {
@@ -2492,7 +2492,7 @@
     "kind": "EGG"
   },
   {
-    "name": "potato-leafhopper-adult",
+    "name": "empoasca-adult",
     "phenology": {
       "windows": [
         {

@@ -105,6 +105,22 @@ public class TestInsectsIdentifiers {
 
         public static class Empoasca {
             public static final InsectGenusName name = InsectGenusName.of("empoasca");
+
+            public static class Images {
+
+                private Images() {
+                }
+
+                public static class Img9047 {
+                    public static final InsectImageId name = InsectImageId.of(
+                            UUID.fromString("0066fe0f-a3e0-70d8-b557-c42f13e67067"));
+                }
+
+                public static class Img9048 {
+                    public static final InsectImageId name = InsectImageId.of(
+                            UUID.fromString("6091691e-7900-7ed3-a35b-88c46e47b866"));
+                }
+            }
         }
     }
 
@@ -170,27 +186,15 @@ public class TestInsectsIdentifiers {
                 public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
                 public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
             }
-        }
-
-        public static class PotatoLeafhopper {
-            // potato-leafhopper remains on its vernacular slug — catalog record
-            // is pending (genus-level, no species). Migrates to binomial when
-            // FU-1 ships the pending-organism mechanism.
-            public static final InsectSpeciesName name = InsectSpeciesName.of("potato-leafhopper");
 
             public static class Images {
 
                 private Images() {
                 }
 
-                public static class Img9047 {
+                public static class PipevineSwallowtail {
                     public static final InsectImageId name = InsectImageId.of(
-                            UUID.fromString("0066fe0f-a3e0-70d8-b557-c42f13e67067"));
-                }
-
-                public static class Img9048 {
-                    public static final InsectImageId name = InsectImageId.of(
-                            UUID.fromString("6091691e-7900-7ed3-a35b-88c46e47b866"));
+                            UUID.fromString("019e0f1b-71d0-7cdb-9d07-d8214037a4cb"));
                 }
             }
         }

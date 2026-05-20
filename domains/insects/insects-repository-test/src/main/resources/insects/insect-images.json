@@ -1,7 +1,7 @@
 [ {
   "name" : "0066fe0f-a3e0-70d8-b557-c42f13e67067",
-  "parentRank" : "SPECIES",
-  "parentName" : "potato-leafhopper",
+  "parentRank" : "GENUS",
+  "parentName" : "empoasca",
   "dateAdded" : "2026-04-16T00:00:00Z",
   "resourceName" : "IMG_9047.HEIC"
 }, {
@@ -30,8 +30,8 @@
   "resourceName" : "IMG_9061.HEIC"
 }, {
   "name" : "6091691e-7900-7ed3-a35b-88c46e47b866",
-  "parentRank" : "SPECIES",
-  "parentName" : "potato-leafhopper",
+  "parentRank" : "GENUS",
+  "parentName" : "empoasca",
   "dateAdded" : "2026-04-16T00:00:00Z",
   "resourceName" : "IMG_9048.HEIC"
 }, {
@@ -42,8 +42,8 @@
   "resourceName" : "IMG_9057.HEIC"
 }, {
   "name" : "8c14f59c-bba0-7a75-8f80-62e454ea3f8e",
-  "parentRank" : "SPECIES",
-  "parentName" : "potato-leafhopper",
+  "parentRank" : "GENUS",
+  "parentName" : "empoasca",
   "dateAdded" : "2026-04-16T00:00:00Z",
   "resourceName" : "IMG_9049.HEIC"
 }, {
@@ -54,8 +54,8 @@
   "resourceName" : "IMG_9062.HEIC"
 }, {
   "name" : "f859f5cf-f2fe-7947-833d-7713051f9575",
-  "parentRank" : "SPECIES",
-  "parentName" : "potato-leafhopper",
+  "parentRank" : "GENUS",
+  "parentName" : "empoasca",
   "dateAdded" : "2026-04-16T00:00:00Z",
   "resourceName" : "IMG_9050.HEIC"
 }, {
