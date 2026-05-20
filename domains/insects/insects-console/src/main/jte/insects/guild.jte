@@ -30,7 +30,7 @@
     <div class="entity-grid">
         @for(var r : roles)
             !{var parent = r.parentName();}
-            !{var rankLabel = parent.getClass().getSimpleName().replace("Insect", "").replace("Name", "");}
+            !{var rankLabel = parent.rank().name();}
             <article>
                 <header>
                     <strong>${parent.value()}</strong>

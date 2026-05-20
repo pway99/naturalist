@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.taxonomy.LinealRank;
 
 /**
  * Strongly typed natural key for {@code InsectFamily} entities.
@@ -26,5 +27,10 @@ public final class InsectFamilyName extends EntityName implements InsectRankName
     @Override
     protected int maxLength() {
         return 64;
+    }
+
+    @Override
+    public LinealRank rank() {
+        return LinealRank.FAMILY;
     }
 }

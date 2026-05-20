@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.taxonomy.LinealRank;
 
 /**
  * Strongly typed natural key for an insect subspecies-rank catalog entry.
@@ -32,5 +33,10 @@ public final class InsectSubspeciesName extends EntityName implements InsectRank
     @Override
     protected int maxLength() {
         return 96;
+    }
+
+    @Override
+    public LinealRank rank() {
+        return LinealRank.SUBSPECIES;
     }
 }

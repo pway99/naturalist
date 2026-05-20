@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.taxonomy.LinealRank;
 
 public final class InsectSpeciesName extends EntityName implements InsectRankName {
     private InsectSpeciesName(String value) {
@@ -16,5 +17,10 @@ public final class InsectSpeciesName extends EntityName implements InsectRankNam
     @Override
     protected int maxLength() {
         return 64;
+    }
+
+    @Override
+    public LinealRank rank() {
+        return LinealRank.SPECIES;
     }
 }

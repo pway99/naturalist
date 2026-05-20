@@ -17,6 +17,10 @@
             <groupId>com.naturalist</groupId>
             <artifactId>framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>taxonomy</artifactId>
+        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency>

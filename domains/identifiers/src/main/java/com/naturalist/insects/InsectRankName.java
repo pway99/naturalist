@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.taxonomy.LinealRank;
+
 /**
  * Sealed marker type for the four insect-side Linnaean rank names —
  * {@link InsectFamilyName}, {@link InsectGenusName}, {@link InsectSpeciesName},
@@ -69,4 +71,12 @@ public sealed interface InsectRankName
      * concrete implementation from {@link com.naturalist.ddd.EntityName}.
      */
     String value();
+
+    /**
+     * The {@link LinealRank} position this permit occupies on the Linnaean ladder.
+     * Lets polymorphic consumers read the rank directly without {@code instanceof}
+     * switching or reflective class-name inspection — the {@code guild.jte} rank
+     * badge being the canonical case.
+     */
+    LinealRank rank();
 }
