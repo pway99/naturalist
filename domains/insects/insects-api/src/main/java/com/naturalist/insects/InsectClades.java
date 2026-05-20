@@ -1,8 +1,10 @@
 package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
+import com.naturalist.clades.Hemiptera;
 import com.naturalist.clades.Holometabola;
 import com.naturalist.clades.Trait;
+import com.naturalist.insects.lifestage.Hemimetabolous;
 import com.naturalist.insects.lifestage.Holometabolous;
 import com.naturalist.insects.lifestage.MetabolyTrait;
 
@@ -31,9 +33,9 @@ public final class InsectClades {
     public static Set<Trait> traitsFor(Clade clade) {
         return switch (clade) {
             case Holometabola _ -> Set.of(new MetabolyTrait(new Holometabolous()));
+            case Hemiptera _ -> Set.of(new MetabolyTrait(new Hemimetabolous()));
             // Future declarations land here as the kernel adds the
             // corresponding clade permits — e.g.:
-            //   case Hemiptera _  -> Set.of(new MetabolyTrait(new Hemimetabolous()));
             //   case Odonata _    -> Set.of(new MetabolyTrait(new Hemimetabolous()));
             //   case Zygentoma _  -> Set.of(new MetabolyTrait(new Ametabolous()));
             default -> Set.of();

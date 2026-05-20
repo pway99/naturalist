@@ -2,10 +2,12 @@ package com.naturalist.insects;
 
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Eukaryota;
+import com.naturalist.clades.Hemiptera;
 import com.naturalist.clades.Holometabola;
 import com.naturalist.clades.Insecta;
 import com.naturalist.clades.Lepidoptera;
 import com.naturalist.clades.Papilionidae;
+import com.naturalist.insects.lifestage.Hemimetabolous;
 import com.naturalist.insects.lifestage.Holometabolous;
 import com.naturalist.insects.lifestage.MetabolyTrait;
 import org.junit.jupiter.api.Test;
@@ -69,5 +71,16 @@ class InsectCladesTest {
                 InsectClades::traitsFor);
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void metabolyResolvesAtHemipteraToHemimetabolous() {
+        Optional<MetabolyTrait> result = CladeTraversal.findTrait(
+                new Hemiptera(),
+                MetabolyTrait.class,
+                InsectClades::traitsFor);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().metaboly()).isEqualTo(new Hemimetabolous());
     }
 }

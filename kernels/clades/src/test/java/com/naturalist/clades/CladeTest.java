@@ -17,6 +17,7 @@ class CladeTest {
             new Animalia(),
             new Arthropoda(),
             new Insecta(),
+            new Hemiptera(),
             new Holometabola(),
             new Lepidoptera(),
             new Papilionidae());
@@ -55,7 +56,7 @@ class CladeTest {
     void onlyEukaryotaHasEmptyParent() {
         assertThat(new Eukaryota().parent()).isEmpty();
         Stream.of(new Animalia(), new Arthropoda(), new Insecta(),
-                  new Holometabola(), new Lepidoptera(), new Papilionidae())
+                  new Hemiptera(), new Holometabola(), new Lepidoptera(), new Papilionidae())
                 .forEach(c -> assertThat(c.parent()).as(c.slug() + ".parent").isPresent());
     }
 
@@ -68,6 +69,14 @@ class CladeTest {
         assertThat(new Arthropoda().parent()).contains(new Animalia());
         assertThat(new Animalia().parent()).contains(new Eukaryota());
         assertThat(new Eukaryota().parent()).isEmpty();
+    }
+
+    @Test
+    void hemipteraSitsAsADirectChildOfInsecta() {
+        // Hemiptera (true bugs) is a hemimetabolous order — a sibling of
+        // Holometabola under Insecta, not a descendant of it. Skips
+        // intermediate Paraneoptera node since no consumer needs it yet.
+        assertThat(new Hemiptera().parent()).contains(new Insecta());
     }
 
     @Test

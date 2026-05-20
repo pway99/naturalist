@@ -39,6 +39,7 @@ public sealed interface Clade
         Animalia,
         Arthropoda,
         Insecta,
+        Hemiptera,
         Holometabola,
         Lepidoptera,
         Papilionidae {
@@ -67,6 +68,7 @@ public sealed interface Clade
             case "animalia" -> new Animalia();
             case "arthropoda" -> new Arthropoda();
             case "insecta" -> new Insecta();
+            case "hemiptera" -> new Hemiptera();
             case "holometabola" -> new Holometabola();
             case "lepidoptera" -> new Lepidoptera();
             case "papilionidae" -> new Papilionidae();
