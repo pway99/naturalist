@@ -27,7 +27,7 @@ Last updated: 2026-05-20 (LifeStage rank-polymorphism widening landed — `forPa
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
-| LifeStage query rank-polymorphism — `forParentName(InsectRankName)`                     | 2026-05-20 | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md) (mirror) | _commit_     |
+| LifeStage query rank-polymorphism — `forParentName(InsectRankName)`                     | 2026-05-20 | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md) (mirror) | `f5878d7`    |
 | PL-11 Phase 4 — strip species fields; console fanout                                    | 2026-05-19 | [`plans/insect-functional-role.md`](plans/insect-functional-role.md)         | `327c5db`    |
 | PL-11 Phase 3 — cross-rank `getByGuild` query stack                                     | 2026-05-19 | [`plans/insect-functional-role.md`](plans/insect-functional-role.md)         | `2b0c38a`    |
 | PL-11 Phase 2 — seed 16 records + smoke + contract tests                                | 2026-05-19 | [`plans/insect-functional-role.md`](plans/insect-functional-role.md)         | `bcce0e0`    |
