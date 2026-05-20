@@ -124,6 +124,25 @@ public class TestInsectsIdentifiers {
         }
     }
 
+    public static class InsectFunctionalRole {
+
+        private InsectFunctionalRole() {
+        }
+
+        /**
+         * Fictitious identifier for the cross-rank
+         * {@link com.naturalist.insects.InsectFunctionalRole} scope —
+         * guaranteed absent from any catalog. The scope sits at the top
+         * level rather than nested inside a rank because functional-role
+         * records attach to records at any rank via {@code InsectRankName},
+         * so there is no single parent rank to nest under.
+         */
+        public static class NotFound {
+            public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                    UUID.fromString("019dbdb8-aaaa-7eee-aaaa-aaaaaaaaaaaa"));
+        }
+    }
+
     public static class InsectSpecies {
 
         private InsectSpecies() {

@@ -164,9 +164,11 @@ that loads cleanly. No data, no consumers wired.
   `guilds : Set<FunctionalGuild>`, `beneficial : boolean`. Field-level
   `@JsonTypeInfo` / `@JsonSubTypes` on `parentName` mirroring
   `InsectImage` exactly. Invariants: `entityId(name, …)`,
-  `identifier(parentName, …)`, `notNull(guilds, …)` (empty set is
-  valid — an organism can have *no* recorded guild yet),
-  `notNull(beneficial, …)` is automatic via primitive boolean.
+  `identifier(parentName, …)`, `notEmpty(guilds, …)` — at least one
+  guild is required, since a role record with no guild assignment has
+  no purpose; "not yet documented" is expressed by the absence of a
+  role record. `beneficial` is a primitive boolean; no constraint
+  declaration needed.
 - [ ] `InsectFunctionalRoleTest` — record invariants test in
   `insects-api` test sources. Standard valid-case + invalid-case shape.
 - [ ] `InsectRepository.FunctionalRoleRepository` —
@@ -186,23 +188,18 @@ that loads cleanly. No data, no consumers wired.
   `loadFile("insects/insect-functional-roles.json")` — file exists but
   empty: `[]`.
 - [ ] `insect-functional-roles.json` — empty array `[]` to start.
-- [ ] `InsectFunctionalRoleTestEntitySourceTest` extends
-  `TestEntitySourceTest<...>` — the framework smoke test.
-- [ ] `InsectFunctionalRoleRepositoryMockTest` —
-  `NamedEntityRepositoryContractTest`-style hooks (but
-  `EntityCommandContractTest`/`EntityQueryContractTest` for the
-  surrogate-id branch). Identifier hooks point to two seeded records;
-  this phase will need a couple of seed records (or defer the contract
-  test to Phase 2 when records exist).
-- [ ] `TestInsectsIdentifiers` — add `InsectFunctionalRole` scope with
-  `NotFound.name` and (after Phase 2 seeds data) at least two known
-  identifiers.
+- [ ] `TestInsectsIdentifiers` — add `InsectFunctionalRole.NotFound.name`
+  (cross-rank scope, sibling to `InsectFamily` / `InsectGenus` /
+  `InsectSpecies`). Known identifiers under per-rank parent scopes land
+  in Phase 2 once records are seeded.
 - [ ] User runs `mvn verify`. Commit.
 
-**Defer to Phase 2 if contract tests need data:** the
-`InsectFunctionalRoleRepositoryMockTest` may need at least two seed
-records to satisfy `knownEntityNames()`. If so, defer that test class to
-Phase 2.
+**Smoke + contract tests deferred to Phase 2.** The framework's
+`TestEntitySourceTest` requires at least four entities to pass
+(`hasAtLeastFourEntities` + `dataLoads`), so the per-entity smoke test
+class can't exist until the catalog has data. Same for
+`InsectFunctionalRoleRepositoryMockTest` — its `knownEntityNames()`
+hook needs ≥2 seeded records. Both classes are created in Phase 2.
 
 ### Phase 2 — Seed 16 records (8 species + 8 PL-2 ranks)
 

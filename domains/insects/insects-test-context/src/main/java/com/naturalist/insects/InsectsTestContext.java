@@ -38,7 +38,8 @@ public class InsectsTestContext {
                 new SpeciesRepositoryMock(db),
                 new InsectImageRepositoryMock(db),
                 new FamilyRepositoryMock(db),
-                new GenusRepositoryMock(db));
+                new GenusRepositoryMock(db),
+                new InsectFunctionalRoleRepositoryMock(db));
         InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository.speciesRepository);
         InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(repository.imageRepository);
         InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(repository.familyRepository);

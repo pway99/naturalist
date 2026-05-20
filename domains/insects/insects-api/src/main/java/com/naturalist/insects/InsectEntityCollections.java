@@ -14,6 +14,8 @@ import java.util.List;
  *   <li>{@link ImageCollection} — multi-result return type for {@link InsectImage}.</li>
  *   <li>{@link FamilyCollection} — multi-result return type for {@link InsectFamily}.</li>
  *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenus}.</li>
+ *   <li>{@link FunctionalRoleCollection} — multi-result return type for
+ *       {@link InsectFunctionalRole}.</li>
  * </ul>
  *
  * <p>{@code InsectEntityCollections} is a pure container — it holds no behavior of its own,
@@ -79,6 +81,21 @@ public interface InsectEntityCollections {
 
         public static GenusCollection empty() {
             return new GenusCollection(List.of());
+        }
+    }
+
+    final class FunctionalRoleCollection extends BehavioralCollection<InsectFunctionalRole> {
+
+        FunctionalRoleCollection(Collection<InsectFunctionalRole> roles) {
+            super(roles);
+        }
+
+        public static FunctionalRoleCollection of(Collection<InsectFunctionalRole> roles) {
+            return new FunctionalRoleCollection(roles);
+        }
+
+        public static FunctionalRoleCollection empty() {
+            return new FunctionalRoleCollection(List.of());
         }
     }
 }
