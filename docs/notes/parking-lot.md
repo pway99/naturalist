@@ -132,7 +132,7 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 ## PL-11 — Cross-rank functional ecology (`InsectFunctionalRole`)
 
 **Raised:** 2026-05-19 (during Path A step 3 — potato-leafhopper → empoasca migration).
-**Where:** Surfaced when the empoasca migration deleted the `potato-leafhopper` species record. The species record carried `guilds: Set<FunctionalGuild>` and `beneficial: boolean` — structured, enum-typed ecology, queryable through `species().getByFunctionalGuild(...)`. `InsectGenus` and `InsectFamily` have no equivalent fields, so deleting the species record silently drops the structured assignment. The narrative survives (`empoasca-adult.ecologicalRole` text; genus description tiers), but the enum-tagged query path no longer reaches the organism. The same loss occurred silently for the six previously-migrated PL-2 organisms (chrysoperla, halictus, andrena, syrphidae, carabidae, tipulidae, hesperiidae) — Pat overlooked it at the time.
+**Where:** Surfaced when the empoasca migration deleted the `potato-leafhopper` species record. The species record carried `guilds: Set<FunctionalGuild>` and `beneficial: boolean` — structured, enum-typed ecology, queryable through `species().getByFunctionalGuild(...)`. `InsectGenus` and `InsectFamily` have no equivalent fields, so deleting the species record silently drops the structured assignment. The narrative survives (`empoasca-adult.ecologicalRole` text; genus description tiers), but the enum-tagged query path no longer reaches the organism. The same loss occurred silently for the seven previously-migrated PL-2 organisms (chrysoperla, halictus, andrena, syrphidae, carabidae, tipulidae, hesperiidae) — Pat overlooked it at the time.
 
 **Blocking:** No. Current slice (potato-leafhopper migration) ships without it; the follow-up reattaches structured ecology cross-rank.
 
@@ -148,14 +148,14 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 - Repository + query + mock + behavioral contract test (use `/entity-repository` + `/entity-query` skills).
 - Rank-aware FK constraint (3 constraints — family / genus / species) in `InsectFunctionalRoleTestEntitySource`, mirroring `InsectImageTestEntitySource`.
 - `parentName` is `@EntityIdentifier` (one role record per organism record).
-- Initial JSON catalog: 15 records — 8 species (back-filled from current `insect-species.json`), 7 PL-2-migrated genus/family records (rehydrated from git history of commits `e5e3c8d`, `be0bbce`, `d12c3b2`, `c3a3f8d`, `4c7449d`).
+- Initial JSON catalog: 16 records — 8 species (back-filled from current `insect-species.json`), 8 PL-2-migrated genus/family records (rehydrated from git history of commits `e5e3c8d`, `be0bbce`, `d12c3b2`, `c3a3f8d`, `05d430f`).
 - Remove `guilds` and `beneficial` fields from `InsectSpecies` record; update `SpeciesRepository.getByFunctionalGuild(...)` and `SpeciesQuery.getByFunctionalGuild(...)` to delegate to the new entity (or remove and replace with the cross-rank query).
 - Update the `/insects/guild/{guild}` console page to fan results across ranks.
 
 **Out of scope for the follow-up slice:**
 - `sightingNotes` rehoming — that's observation-event content, belongs to the eventual sightings entity in the identification roadmap, not to functional-role. The two `sightingNotes` lines unique to the deleted potato-leafhopper record (the dated crimson-clover observation; the "first pest documented" sequencing fact) are noted here for the sightings-entity slice when it lands.
 
-**Resolution path:** Lands in `domains/insects/insects-api/InsectFunctionalRole` + its repository / query stack. Remove this entry when the new entity is wired and the 15 records are seeded.
+**Resolution path:** Lands in `domains/insects/insects-api/InsectFunctionalRole` + its repository / query stack per [`plans/insect-functional-role.md`](../plans/insect-functional-role.md). Remove this entry when that slice closes (all 16 records seeded; `guilds` / `beneficial` removed from `InsectSpecies`).
 
 ---
 
