@@ -73,7 +73,7 @@ class InsectRepository {
     protected interface ImageRepository
             extends EntityRepository<InsectImageId, InsectImage> {
 
-        List<InsectImage> getBySpeciesName(InsectSpeciesName speciesName);
+        List<InsectImage> getByParentName(InsectRankName parentName);
     }
 
     protected interface FamilyRepository

@@ -32,7 +32,8 @@ class InsectsListTemplateTest {
                 .pageOf(PageRequest.console(0));
         Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies =
                 new InsectImageTestEntitySource(database).entityStream()
-                        .collect(Collectors.groupingBy(InsectImage::insectSpeciesName));
+                        .filter(image -> image.parentName() instanceof InsectSpeciesName)
+                        .collect(Collectors.groupingBy(image -> (InsectSpeciesName) image.parentName()));
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render(

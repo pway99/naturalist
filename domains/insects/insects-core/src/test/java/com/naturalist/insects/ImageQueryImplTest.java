@@ -40,13 +40,13 @@ class ImageQueryImplTest
     }
 
     @Test
-    void forSpeciesName_returnsAllImagesForThatSpecies() {
+    void forParentName_returnsAllImagesForThatSpecies() {
         ImageCollection collection =
-                query.forSpeciesName(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
+                query.forParentName(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name);
 
         assertThat(collection.size()).isGreaterThanOrEqualTo(2);
         assertThat(collection.stream())
-                .allMatch(image -> image.insectSpeciesName()
+                .allMatch(image -> image.parentName()
                         .equals(TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.name));
         assertThat(collection.stream().map(InsectImage::name))
                 .contains(
@@ -55,26 +55,44 @@ class ImageQueryImplTest
     }
 
     @Test
-    void forSpeciesName_speciesWithNoImages_returnsEmpty() {
+    void forParentName_speciesWithNoImages_returnsEmpty() {
         ImageCollection collection =
-                query.forSpeciesName(TestInsectsIdentifiers.InsectSpecies.TachinidFly.name);
+                query.forParentName(TestInsectsIdentifiers.InsectSpecies.TachinidFly.name);
 
         assertThat(collection).isNotNull();
         assertThat(collection.isEmpty()).isTrue();
     }
 
     @Test
-    void forSpeciesName_unknownSpecies_returnsEmpty() {
+    void forParentName_unknownSpecies_returnsEmpty() {
         ImageCollection collection =
-                query.forSpeciesName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
+                query.forParentName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
 
         assertThat(collection.isEmpty()).isTrue();
     }
 
     @Test
-    void forSpeciesName_rejectsNull() {
-        assertThatThrownBy(() -> query.forSpeciesName(null))
+    void forParentName_rejectsNull() {
+        assertThatThrownBy(() -> query.forParentName(null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("speciesName");
+                .hasMessageContainingAll("parentName");
+    }
+
+    @Test
+    void forParentName_acceptsGenusName() {
+        ImageCollection collection =
+                query.forParentName(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
+
+        assertThat(collection).isNotNull();
+        assertThat(collection.isEmpty()).isTrue();
+    }
+
+    @Test
+    void forParentName_acceptsFamilyName() {
+        ImageCollection collection =
+                query.forParentName(TestInsectsIdentifiers.InsectFamily.Cicadellidae.name);
+
+        assertThat(collection).isNotNull();
+        assertThat(collection.isEmpty()).isTrue();
     }
 }

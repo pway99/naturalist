@@ -37,7 +37,7 @@ class InsectAggregateFactoryTest {
         assertThat(value.images().size()).isGreaterThanOrEqualTo(2);
         assertThat(value.images().stream())
                 .as("every image carries the root species name (factory-owned referential integrity)")
-                .allMatch(image -> image.insectSpeciesName().equals(value.species().name()));
+                .allMatch(image -> image.parentName().equals(value.species().name()));
         assertThat(value.images().stream().map(InsectImage::name))
                 .contains(
                         TestInsectsIdentifiers.InsectSpecies.PotatoLeafhopper.Images.Img9047.name,

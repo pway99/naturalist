@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * <p>{@link ImageCollection} is non-null but may be empty — a species can be
  * catalogued without photographs. The aggregate enforces structural invariants on its
  * children (presence and validity); referential integrity between
- * {@link InsectImage#insectSpeciesName()} and {@link InsectSpecies#name()} is the
+ * {@link InsectImage#parentName()} and {@link InsectSpecies#name()} is the
  * assembly factory's responsibility, since the factory queries images by species name
  * and the match is tautological at construction time.
  */

@@ -55,7 +55,7 @@ public interface InsectQuery {
     interface ImageQuery
             extends EntityQuery<InsectImageId, InsectImage, ImageCollection> {
 
-        ImageCollection forSpeciesName(InsectSpeciesName speciesName);
+        ImageCollection forParentName(InsectRankName parentName);
     }
 
     interface FamilyQuery extends EntityQuery<InsectFamilyName, InsectFamily, FamilyCollection> {

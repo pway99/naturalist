@@ -36,7 +36,7 @@ class InsectAggregateFactory {
         observer.arguments("buildByName", i -> i.entityName(name, "name")).throwWhenInvalid();
         return speciesQuery.getByName(name)
                 .map(species -> {
-                    ImageCollection images = imageQuery.forSpeciesName(species.name());
+                    ImageCollection images = imageQuery.forParentName(species.name());
                     InsectAggregate aggregate = InsectAggregate.of(species, images);
                     observer.observable(aggregate, "insectAggregate").observe(Level.WARN);
                     return aggregate;

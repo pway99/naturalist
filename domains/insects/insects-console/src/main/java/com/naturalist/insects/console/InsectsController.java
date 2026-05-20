@@ -65,7 +65,7 @@ public class InsectsController {
         for (var species : speciesPage.content()) {
             imagesBySpecies.put(
                     species.name(),
-                    insectQuery.images().forSpeciesName(species.name()).stream().toList());
+                    insectQuery.images().forParentName(species.name()).stream().toList());
         }
         model.addAttribute("speciesPage", speciesPage);
         model.addAttribute("imagesBySpecies", imagesBySpecies);
@@ -96,7 +96,7 @@ public class InsectsController {
         if (species.isEmpty()) {
             return "redirect:/insects";
         }
-        InsectEntityCollections.ImageCollection images = insectQuery.images().forSpeciesName(speciesName);
+        InsectEntityCollections.ImageCollection images = insectQuery.images().forParentName(speciesName);
         var description = species.get().description();
         model.addAttribute("species", species.get());
         model.addAttribute("images", images.stream().toList());

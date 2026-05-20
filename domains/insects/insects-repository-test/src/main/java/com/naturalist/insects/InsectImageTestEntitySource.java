@@ -15,9 +15,18 @@ public class InsectImageTestEntitySource extends TestEntitySource<InsectImageId,
 
     @Override
     protected List<ForeignKeyConstraint<InsectImage, ?>> foreignKeyConstraints() {
-        return List.of(ForeignKeyConstraint.of(
-                "insectSpeciesName",
-                InsectImage::insectSpeciesName,
-                InsectSpeciesTestEntitySource.class));
+        return List.of(
+                ForeignKeyConstraint.of(
+                        "parentName (family)",
+                        image -> image.parentName() instanceof InsectFamilyName f ? f : null,
+                        InsectFamilyTestEntitySource.class),
+                ForeignKeyConstraint.of(
+                        "parentName (genus)",
+                        image -> image.parentName() instanceof InsectGenusName g ? g : null,
+                        InsectGenusTestEntitySource.class),
+                ForeignKeyConstraint.of(
+                        "parentName (species)",
+                        image -> image.parentName() instanceof InsectSpeciesName s ? s : null,
+                        InsectSpeciesTestEntitySource.class));
     }
 }

@@ -16,9 +16,9 @@ class InsectImageRepositoryMock
     }
 
     @Override
-    public List<InsectImage> getBySpeciesName(InsectSpeciesName speciesName) {
+    public List<InsectImage> getByParentName(InsectRankName parentName) {
         return testEntitySource().entityStream()
-                .filter(image -> image.insectSpeciesName().equals(speciesName))
+                .filter(image -> image.parentName().equals(parentName))
                 .toList();
     }
 }

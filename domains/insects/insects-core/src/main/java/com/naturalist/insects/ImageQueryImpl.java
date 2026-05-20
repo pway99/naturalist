@@ -26,9 +26,9 @@ class ImageQueryImpl
     }
 
     @Override
-    public ImageCollection forSpeciesName(InsectSpeciesName speciesName) {
-        observer().arguments("forSpeciesName", i -> i.entityName(speciesName, "speciesName"))
+    public ImageCollection forParentName(InsectRankName parentName) {
+        observer().arguments("forParentName", i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        return ImageCollection.of(repository().getBySpeciesName(speciesName));
+        return ImageCollection.of(repository().getByParentName(parentName));
     }
 }
