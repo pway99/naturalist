@@ -39,9 +39,10 @@ This is not encoded in any ADR today. If the pattern recurs (e.g. `com.naturalis
 
 ## 3. Identity: `LifeStageName`
 
-Per ADR-022, the identity question is: *does this thing have a natural key?* For a life stage, yes:
-`(InsectSpeciesName, LifeStageKind)`. The identity is biologically determined, stable before persistence, and survives
-across deployments.
+Per ADR-022, the identity question is: *does this thing have a natural key?* For a life stage, yes: a
+`(parentRankName, LifeStageKind)` pair, where `parentRankName` is whichever insect-rank name — family, genus,
+species, or subspecies — the field naturalist's confidence allowed. The identity is biologically determined, stable
+before persistence, and survives across deployments.
 
 Therefore `LifeStage` is a `NamedEntity<LifeStageName>`.
 
@@ -61,9 +62,17 @@ Structure is recovered through accessors:
 ```java
 LifeStageName name = LifeStageName.of(InsectSpeciesName.of("battus-philenor"), LifeStageKind.LARVA);
 name.value();          // "battus-philenor-larva"
-name.speciesName();    // InsectSpeciesName
+name.parentSlug();     // "battus-philenor" — the rank-prefix slug; rank itself is consumer-known
 name.stageKind();      // LifeStageKind.LARVA
 ```
+
+Rank-flexible parent: `LifeStageName.of(...)` is overloaded over `InsectSpeciesName`,
+`InsectGenusName`, and `InsectFamilyName`, so a stage may be keyed under any rank
+(`battus-philenor-larva` at species rank, `chrysoperla-larva` at genus rank,
+`syrphidae-larva` at family rank). `parentSlug()` returns the raw prefix; it carries
+no rank discriminator because the slug itself doesn't. The query surface accepts the
+sealed `InsectRankName` marker — `insectLifeStageQuery.lifeStages().forParentName(name)`
+— and matches by slug.
 
 Parsing splits on the **last** hyphen. This works because `LifeStageKind` slugs are always single tokens without
 internal hyphens.

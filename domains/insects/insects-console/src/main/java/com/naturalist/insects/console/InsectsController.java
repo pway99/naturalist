@@ -136,7 +136,7 @@ public class InsectsController {
         if (species.isEmpty()) {
             return "redirect:/insects";
         }
-        var stages = insectLifeStageQuery.lifeStages().forSpeciesName(speciesName).stream()
+        var stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
                 .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
                 .toList();
         model.addAttribute("species", species.get());

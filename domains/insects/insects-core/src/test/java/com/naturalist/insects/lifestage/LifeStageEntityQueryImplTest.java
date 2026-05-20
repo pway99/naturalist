@@ -43,13 +43,13 @@ class LifeStageEntityQueryImplTest
     }
 
     @Test
-    void forSpeciesName_returnsAllLifeStagesForThatSpecies() {
+    void forParentName_returnsAllLifeStagesForThatSpecies() {
         InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.TachinidFly.name;
 
-        LifeStageCollection collection = query.forSpeciesName(species);
+        LifeStageCollection collection = query.forParentName(species);
 
         assertThat(collection.stream())
-                .allMatch(stage -> stage.name().speciesName().equals(species));
+                .allMatch(stage -> stage.name().parentSlug().equals(species.value()));
         assertThat(collection.stream().map(LifeStage::name))
                 .contains(
                         TestInsectsIdentifiers.InsectSpecies.TachinidFly.LifeStages.Egg,
@@ -59,17 +59,39 @@ class LifeStageEntityQueryImplTest
     }
 
     @Test
-    void forSpeciesName_unknownSpecies_returnsEmpty() {
+    void forParentName_acceptsGenusName() {
+        var genus = TestInsectsIdentifiers.InsectGenus.Chrysoperla.name;
+
+        LifeStageCollection collection = query.forParentName(genus);
+
+        assertThat(collection.size()).isGreaterThanOrEqualTo(4);
+        assertThat(collection.stream())
+                .allMatch(stage -> stage.name().parentSlug().equals(genus.value()));
+    }
+
+    @Test
+    void forParentName_acceptsFamilyName() {
+        var family = TestInsectsIdentifiers.InsectFamily.Syrphidae.name;
+
+        LifeStageCollection collection = query.forParentName(family);
+
+        assertThat(collection.size()).isGreaterThanOrEqualTo(4);
+        assertThat(collection.stream())
+                .allMatch(stage -> stage.name().parentSlug().equals(family.value()));
+    }
+
+    @Test
+    void forParentName_unknownSpecies_returnsEmpty() {
         LifeStageCollection collection =
-                query.forSpeciesName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
+                query.forParentName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
 
         assertThat(collection.isEmpty()).isTrue();
     }
 
     @Test
-    void forSpeciesName_rejectsNull() {
-        assertThatThrownBy(() -> query.forSpeciesName(null))
+    void forParentName_rejectsNull() {
+        assertThatThrownBy(() -> query.forParentName(null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("speciesName");
+                .hasMessageContainingAll("parentName");
     }
 }

@@ -2,7 +2,7 @@ package com.naturalist.insects.lifestage;
 
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.insects.InsectSpeciesName;
+import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery.LifeStageEntityQuery;
@@ -30,9 +30,9 @@ class LifeStageEntityQueryImpl
     }
 
     @Override
-    public LifeStageCollection forSpeciesName(InsectSpeciesName speciesName) {
-        observer().arguments("forSpeciesName", i -> i.entityName(speciesName, "speciesName"))
+    public LifeStageCollection forParentName(InsectRankName parentName) {
+        observer().arguments("forParentName", i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        return LifeStageCollection.of(repository().getBySpeciesName(speciesName));
+        return LifeStageCollection.of(repository().getByParentName(parentName));
     }
 }

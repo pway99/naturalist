@@ -41,8 +41,17 @@ public final class LifeStageName extends EntityName {
         return new LifeStageName(value);
     }
 
-    public InsectSpeciesName speciesName() {
-        return InsectSpeciesName.of(value().substring(0, lastHyphenIndex()));
+    /**
+     * The parent-rank slug component of this composite name — everything
+     * before the trailing {@code -{stageKind}} segment. The slug carries no
+     * intrinsic rank discrimination; the rank is known by the consumer
+     * that constructed this name (via the rank-typed {@code of(...)}
+     * overloads) or by joining to the parent rank's catalog. For
+     * {@code chrysoperla-larva} this returns {@code "chrysoperla"}; for
+     * {@code battus-philenor-egg} it returns {@code "battus-philenor"}.
+     */
+    public String parentSlug() {
+        return value().substring(0, lastHyphenIndex());
     }
 
     public LifeStageKind stageKind() {

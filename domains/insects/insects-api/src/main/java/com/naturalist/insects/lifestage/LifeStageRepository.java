@@ -2,7 +2,7 @@ package com.naturalist.insects.lifestage;
 
 import com.naturalist.Incubating;
 import com.naturalist.data.EntityRepository;
-import com.naturalist.insects.InsectSpeciesName;
+import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.LifeStageName;
 
 import java.util.List;
@@ -11,6 +11,6 @@ import java.util.List;
 interface LifeStageRepository {
     interface LifeStageEntityRepository extends EntityRepository<LifeStageName, LifeStage> {
 
-        List<LifeStage> getBySpeciesName(InsectSpeciesName speciesName);
+        List<LifeStage> getByParentName(InsectRankName parentName);
     }
 }

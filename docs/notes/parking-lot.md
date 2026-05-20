@@ -129,6 +129,29 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
+## PL-12 — Promote `parentName` to a typed component on `LifeStage`
+
+**Raised:** 2026-05-20.
+**Where:** Surfaced while landing the LifeStage rank-polymorphism widening (mirror of the image-parent-rank slice). The query API now accepts `InsectRankName`, but `LifeStage` itself carries no typed parent — the parent rank is encoded only in the `LifeStageName` slug prefix, and `LifeStageName.parentSlug()` returns `String` because the slug carries no rank discriminator. `InsectImage` does it cleanly (typed `parentName: InsectRankName` component, polymorphic JSON via `@JsonTypeInfo`) because it is `Entity<InsectImageId>` (surrogate identity) where parent reference is a separate field. `LifeStage` is `NamedEntity<LifeStageName>` (natural-key identity), so the parent is double-encoded if promoted: once in the slug, once typed.
+
+**Blocking:** No. The query-widening slice landed on the slug-string path and is sufficient for current consumers.
+
+**Why it may earn its keep:**
+- Honest type-recovery — `lifeStage.parentName(): InsectRankName` instead of consumer-known-only rank.
+- Symmetry with `InsectImage` (same parent-rank shape across image and life-stage records).
+- Catches the "rank changed without slug update" class of bug at the boundary (e.g., a record migrated from genus to species rank where only one of the two encodings was updated).
+
+**Cost:**
+- Schema change across four sealed subtypes (`EggStage` / `LarvaStage` / `PupaStage` / `AdultStage`).
+- JSON migration on ~70 records: add `"parentName": "<slug>"` + polymorphic envelope `"parentRank": "GENUS"|"FAMILY"|"SPECIES"|"SUBSPECIES"`.
+- New invariant pinning `name.parentSlug().equals(parentName.value())` — the two encodings must stay consistent.
+
+**Coupled question (deferred to inform):** A parallel session is working on a `LinneanRank` abstraction. If that lands a typed rank discriminator at the framework/identifiers level, the polymorphic JSON envelope and the `name`↔`parentName` consistency invariant may have a cleaner shape than the per-record `@JsonTypeInfo` repetition. Hold PL-12 until that direction is known.
+
+**Resolution path (when revisited):** Decide after `LinneanRank` lands. Then either (a) mirror the `InsectImage` pattern verbatim with `@JsonTypeInfo` per consumer field, or (b) use whatever the LinneanRank abstraction yields. Either way: schema + JSON migration + invariant.
+
+---
+
 ## Resolved (kept for grep)
 
 - **PL-11 — Cross-rank functional ecology** (resolved 2026-05-19). Landed as `InsectFunctionalRole` (Entity, cross-rank by `InsectRankName`) per [`plans/insect-functional-role.md`](../plans/insect-functional-role.md). Commits `8f6072a` (entity stack), `bcce0e0` (16 seed records + smoke/contract tests), `2b0c38a` (cross-rank `getByGuild`), `327c5db` (strip `guilds`/`beneficial` from `InsectSpecies`, console fanout). `sightingNotes` rehoming explicitly deferred to the future sightings entity — two facts unique to the deleted potato-leafhopper record (dated crimson-clover observation, "first pest documented" sequencing) noted for that slice.

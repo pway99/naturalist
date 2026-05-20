@@ -2,7 +2,7 @@
 
 Dashboard for what's currently in flight. Strategy lives in [`plans/identification.md`](plans/identification.md); forks and open questions live in [`notes/parking-lot.md`](notes/parking-lot.md) (the parking lot). This file does NOT synthesize either — it is just the current view.
 
-Last updated: 2026-05-19 (PL-11 slice — `InsectFunctionalRole` cross-rank entity — closed; all five phases landed).
+Last updated: 2026-05-20 (LifeStage rank-polymorphism widening landed — `forParentName(InsectRankName)` mirror of the image-parent-rank slice. PL-12 raised: promote `LifeStage.parentName` to a typed component, parked pending LinneanRank).
 
 ---
 
@@ -12,22 +12,22 @@ Last updated: 2026-05-19 (PL-11 slice — `InsectFunctionalRole` cross-rank enti
 
 ## Current slice
 
-**No active slice — PL-11 just closed.** The `InsectFunctionalRole` cross-rank entity is the sole source of `guilds` / `beneficial` data; the species record no longer carries them; the `/insects/guild/{guild}` console page fans across all four ranks.
+**No active slice — LifeStage rank-polymorphism widening just landed.** `InsectLifeStageQuery.forParentName(InsectRankName)` now accepts any of the four insect-rank names; the species-only `forSpeciesName` is gone. Mirror of the image-parent-rank slice; no JSON migration (the LifeStageName slug was already rank-flexible post-PL-2). Typed `LifeStage.parentName` component promotion deferred as PL-12, pending the parallel LinneanRank session.
 
 **Candidate next slices** (pick when ready):
 
 - **PL-2 — tachinid-fly + braconid-wasp rank corrections.** Same recipe as the eight landed PL-2 organisms, but blocked on fixture-migration scope across `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, `InMemoryCatalogTest`. Needs a deliberate fixture-replacement sub-slice (likely repoint to `battus-philenor`).
-- **LifeStage parallel rank-polymorphism slice.** `LifeStageRepository.getBySpeciesName` + `InsectLifeStageQuery.forSpeciesName` still only accept `InsectSpeciesName`, even though life-stage records keyed under genus / family composite slugs (`chrysoperla-egg`, `halictus-larva`, `empoasca-adult`, …) already exist in the catalog. Same recipe as the image-parent-rank slice. Noted in `insect-image-parent-rank.md` as out-of-scope.
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 
 ## Parking lot
 
-[`notes/parking-lot.md`](notes/parking-lot.md) — currently 9 entries (PL-11 moved to the Resolved section today). PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
+[`notes/parking-lot.md`](notes/parking-lot.md) — currently 10 entries. PL-12 raised today: promote `LifeStage.parentName` to a typed component (parked pending LinneanRank). PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
 
 ## Recently completed
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| LifeStage query rank-polymorphism — `forParentName(InsectRankName)`                     | 2026-05-20 | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md) (mirror) | _commit_     |
 | PL-11 Phase 4 — strip species fields; console fanout                                    | 2026-05-19 | [`plans/insect-functional-role.md`](plans/insect-functional-role.md)         | `327c5db`    |
 | PL-11 Phase 3 — cross-rank `getByGuild` query stack                                     | 2026-05-19 | [`plans/insect-functional-role.md`](plans/insect-functional-role.md)         | `2b0c38a`    |
 | PL-11 Phase 2 — seed 16 records + smoke + contract tests                                | 2026-05-19 | [`plans/insect-functional-role.md`](plans/insect-functional-role.md)         | `bcce0e0`    |

@@ -1,7 +1,7 @@
 package com.naturalist.insects.lifestage;
 
 import com.naturalist.data.EntityQuery;
-import com.naturalist.insects.InsectSpeciesName;
+import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 
@@ -15,7 +15,9 @@ import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeSta
  * <p><b>Usage:</b>
  * <pre>{@code
  * insectLifeStageQuery.lifeStages().getByName(lifeStageName);
- * insectLifeStageQuery.lifeStages().forSpeciesName(speciesName);
+ * insectLifeStageQuery.lifeStages().forParentName(speciesName);
+ * insectLifeStageQuery.lifeStages().forParentName(genusName);
+ * insectLifeStageQuery.lifeStages().forParentName(familyName);
  * }</pre>
  */
 public interface InsectLifeStageQuery {
@@ -25,6 +27,6 @@ public interface InsectLifeStageQuery {
     interface LifeStageEntityQuery
             extends EntityQuery<LifeStageName, LifeStage, LifeStageCollection> {
 
-        LifeStageCollection forSpeciesName(InsectSpeciesName speciesName);
+        LifeStageCollection forParentName(InsectRankName parentName);
     }
 }

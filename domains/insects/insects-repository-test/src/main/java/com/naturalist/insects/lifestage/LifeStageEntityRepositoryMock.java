@@ -3,7 +3,7 @@ package com.naturalist.insects.lifestage;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.insects.InsectSpeciesName;
+import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.LifeStageName;
 
 import java.util.List;
@@ -18,9 +18,9 @@ public class LifeStageEntityRepositoryMock
     }
 
     @Override
-    public List<LifeStage> getBySpeciesName(InsectSpeciesName speciesName) {
+    public List<LifeStage> getByParentName(InsectRankName parentName) {
         return testEntitySource().entityStream()
-                .filter(stage -> stage.name().speciesName().equals(speciesName))
+                .filter(stage -> stage.name().parentSlug().equals(parentName.value()))
                 .toList();
     }
 }
