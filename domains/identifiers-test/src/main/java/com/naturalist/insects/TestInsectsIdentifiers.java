@@ -43,6 +43,11 @@ public class TestInsectsIdentifiers {
 
         public static class Syrphidae {
             public static final InsectFamilyName name = InsectFamilyName.of("syrphidae");
+
+            public static class FunctionalRole {
+                public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                        UUID.fromString("019e5221-b000-70ab-8000-ee00cafef00d"));
+            }
         }
 
         public static class Carabidae {
@@ -105,6 +110,11 @@ public class TestInsectsIdentifiers {
 
         public static class Empoasca {
             public static final InsectGenusName name = InsectGenusName.of("empoasca");
+
+            public static class FunctionalRole {
+                public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                        UUID.fromString("019e5221-b007-77ab-8700-ee00cafef00d"));
+            }
 
             public static class Images {
 
@@ -195,6 +205,11 @@ public class TestInsectsIdentifiers {
 
         public static class BattusPhilenor {
             public static final InsectSpeciesName name = InsectSpeciesName.of("battus-philenor");
+
+            public static class FunctionalRole {
+                public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                        UUID.fromString("019e5221-b00e-7eab-8e00-ee00cafef00d"));
+            }
 
             public static class LifeStages {
                 private LifeStages() {
