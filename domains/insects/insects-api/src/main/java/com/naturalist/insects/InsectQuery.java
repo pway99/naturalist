@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.insects.InsectEntityCollections.FamilyCollection;
+import com.naturalist.insects.InsectEntityCollections.FunctionalRoleCollection;
 import com.naturalist.insects.InsectEntityCollections.GenusCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
@@ -18,8 +19,11 @@ import java.util.Optional;
  *       (species + images), rooted at {@link InsectSpecies}.</li>
  *   <li>{@link SpeciesQuery} — {@link InsectSpecies} entities in isolation.</li>
  *   <li>{@link ImageQuery} — {@link InsectImage} entities in isolation.</li>
+
  *   <li>{@link FamilyQuery} — {@link InsectFamily} entities in isolation.</li>
  *   <li>{@link GenusQuery} — {@link InsectGenus} entities in isolation.</li>
+ *   <li>{@link FunctionalRoleQuery} — {@link InsectFunctionalRole} entities,
+ *       carrying the cross-rank {@code (guilds, beneficial)} assignment.</li>
  * </ul>
  *
  * <p><b>Usage:</b>
@@ -29,6 +33,7 @@ import java.util.Optional;
  * insectQuery.insect().getByName(speciesName);    // InsectAggregate rooted at speciesName
  * insectQuery.families().getByName(familyName);   // InsectFamily
  * insectQuery.genera().getByName(genusName);      // InsectGenus
+ * insectQuery.functionalRoles().getByGuild(guild);// InsectFunctionalRoleCollection
  * }</pre>
  */
 public interface InsectQuery {
@@ -42,6 +47,8 @@ public interface InsectQuery {
     FamilyQuery families();
 
     GenusQuery genera();
+
+    FunctionalRoleQuery functionalRoles();
 
     interface InsectAggregateQuery {
         Optional<InsectAggregate> getByName(InsectSpeciesName name);
@@ -62,5 +69,11 @@ public interface InsectQuery {
     }
 
     interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenus, GenusCollection> {
+    }
+
+    interface FunctionalRoleQuery
+            extends EntityQuery<InsectFunctionalRoleId, InsectFunctionalRole, FunctionalRoleCollection> {
+
+        FunctionalRoleCollection getByGuild(FunctionalGuild guild);
     }
 }

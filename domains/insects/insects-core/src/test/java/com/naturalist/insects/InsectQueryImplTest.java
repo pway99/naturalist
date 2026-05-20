@@ -19,11 +19,14 @@ class InsectQueryImplTest {
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
     FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
     GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
+    InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(db);
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
     InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository);
-    InsectQuery insectQuery = new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery);
+    InsectQuery.FunctionalRoleQuery functionalRoleQuery = new FunctionalRoleQueryImpl(functionalRoleRepository);
+    InsectQuery insectQuery = new InsectQueryImpl(
+            speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery);
 
     @Test
     void getByFunctionalGuild_validaton() {
@@ -53,6 +56,7 @@ class InsectQueryImplTest {
         assertThat(insectQuery.images()).isSameAs(imageQuery);
         assertThat(insectQuery.families()).isSameAs(familyQuery);
         assertThat(insectQuery.genera()).isSameAs(genusQuery);
+        assertThat(insectQuery.functionalRoles()).isSameAs(functionalRoleQuery);
         assertThat(insectQuery.insect()).isNotNull();
     }
 
@@ -62,41 +66,49 @@ class InsectQueryImplTest {
         assertThat(insectQuery.images()).isSameAs(insectQuery.images());
         assertThat(insectQuery.families()).isSameAs(insectQuery.families());
         assertThat(insectQuery.genera()).isSameAs(insectQuery.genera());
+        assertThat(insectQuery.functionalRoles()).isSameAs(insectQuery.functionalRoles());
         assertThat(insectQuery.insect()).isSameAs(insectQuery.insect());
     }
 
     @Test
     void constructor_rejectsNullSpeciesQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery, familyQuery, genusQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery, familyQuery, genusQuery, functionalRoleQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery");
     }
 
     @Test
     void constructor_rejectsNullImageQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null, familyQuery, genusQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null, familyQuery, genusQuery, functionalRoleQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("imageQuery");
     }
 
     @Test
     void constructor_rejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, null, genusQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, null, genusQuery, functionalRoleQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("familyQuery");
     }
 
     @Test
     void constructor_rejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, null))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, null, functionalRoleQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("genusQuery");
     }
 
     @Test
-    void constructor_collectsAllViolationsInSinglePass() {
-        assertThatThrownBy(() -> new InsectQueryImpl(null, null, null, null))
+    void constructor_rejectsNullFunctionalRoleQuery() {
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("speciesQuery", "imageQuery", "familyQuery", "genusQuery");
+                .hasMessageContainingAll("functionalRoleQuery");
+    }
+
+    @Test
+    void constructor_collectsAllViolationsInSinglePass() {
+        assertThatThrownBy(() -> new InsectQueryImpl(null, null, null, null, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("speciesQuery", "imageQuery", "familyQuery", "genusQuery", "functionalRoleQuery");
     }
 }

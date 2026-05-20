@@ -44,7 +44,10 @@ public class InsectsTestContext {
         InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(repository.imageRepository);
         InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(repository.familyRepository);
         InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(repository.genusRepository);
-        this.insectQuery = new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery);
+        InsectQuery.FunctionalRoleQuery functionalRoleQuery =
+                new FunctionalRoleQueryImpl(repository.functionalRoleRepository);
+        this.insectQuery = new InsectQueryImpl(
+                speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery);
         InsectCommand.SpeciesCommand speciesCommand = new SpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new ImageCommandImpl(repository.imageRepository);
         this.insectCommand = new InsectCommandImpl(speciesCommand, imageCommand);

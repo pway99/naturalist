@@ -96,5 +96,7 @@ class InsectRepository {
 
     protected interface FunctionalRoleRepository
             extends EntityRepository<InsectFunctionalRoleId, InsectFunctionalRole> {
+
+        List<InsectFunctionalRole> getByGuild(FunctionalGuild guild);
     }
 }
