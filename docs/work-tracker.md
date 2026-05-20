@@ -2,7 +2,7 @@
 
 Dashboard for what's currently in flight. Strategy lives in [`plans/identification.md`](plans/identification.md); forks and open questions live in [`notes/parking-lot.md`](notes/parking-lot.md) (the parking lot). This file does NOT synthesize either — it is just the current view.
 
-Last updated: 2026-05-19 (Insect-image parent-rank slice Steps 0–8 landed; Path A step 1 of 3 complete).
+Last updated: 2026-05-19 (Path A complete — three-step sequence landed; PL-11 raised for the structural functional-ecology follow-up).
 
 ---
 
@@ -12,37 +12,44 @@ Last updated: 2026-05-19 (Insect-image parent-rank slice Steps 0–8 landed; Pat
 
 ## Current slice
 
-**Insect-image parent-rank extension — Path A step 1 of 3 complete** ([`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md)). Step 0 (`InsectRankName` sealed marker + Jackson polymorphism verification) and Steps 1–8 (retype `InsectImage.parentName : InsectRankName`, collapse `forSpeciesName`/`getBySpeciesName` to rank-polymorphic `forParentName`/`getByParentName`, migrate the 11 image records to flat `EXTERNAL_PROPERTY` JSON shape, ripple through ~10 consumer files) landed in `600bc1d` + `4c7449d`. The image model now accepts any of the four insect-side rank permits at compile time, with field-level `@JsonTypeInfo` dispatch keeping leaf-class direct serializations as plain strings.
+**No active slice — Path A just closed.** The three-step Path A sequence is fully landed:
 
-**Next on the path:**
-- **Path A step 2** — add a `Hemimetabolous` trait permit to `kernels/clades/` + `InsectClades.traitsFor` so Hemiptera resolves to the right stage list (currently no kernel permit declares the trait).
-- **Path A step 3** — reclassify potato-leafhopper → empoasca genus (the last PL-2 organism whose blocker was "images and Hemiptera trait"). This will produce the first organic genus-attached image records and let `ImageQueryImplTest.forParentName_acceptsGenusName` upgrade from "returns empty" to a real positive assertion.
+- **Step 1** — Insect-image parent-rank extension (`600bc1d` + `4c7449d`). `InsectImage.parentName : InsectRankName`; rank-polymorphic query (`forParentName`); flat `EXTERNAL_PROPERTY` JSON shape; rank-aware FK constraints.
+- **Step 2** — Hemiptera Clade permit + Hemimetabolous trait declaration (`2e469f0`). New kernel permit `kernels/clades/Hemiptera.java` (parent = Insecta); `InsectClades.traitsFor` declares Hemiptera → MetabolyTrait(Hemimetabolous).
+- **Step 3** — potato-leafhopper → empoasca genus reclassification (`05d430f`). Species record deleted; standalone life-stage records renamed to `empoasca-egg`/`empoasca-adult`; empoasca genus placed in Hemiptera; four leafhopper image records repointed from species to genus rank; test consumers swapped off `PotatoLeafhopper` to `BattusPhilenor` + `Empoasca`.
+
+**Side-effect from step 3** — PL-11 raised. Deleting the potato-leafhopper species record exposed that `guilds: Set<FunctionalGuild>` and `beneficial: boolean` had no home at genus/family rank — the same loss had hit the six previously-migrated PL-2 organisms silently. Decision (confirmed in conversation): Option B — introduce a cross-rank `InsectFunctionalRole` entity keyed by `InsectRankName`, mirroring the `InsectImage` cross-rank pattern. 15 records to migrate (8 species + 7 PL-2 ranks), all recoverable from git history.
+
+**Candidate next slices** (pick when ready):
+- **PL-11 — `InsectFunctionalRole` cross-rank entity.** Scaffold the entity + repository + query + mock + contract test; back-fill 15 records; remove `guilds` / `beneficial` from `InsectSpecies`; update `/insects/guild/{guild}` console to fan across ranks. Scope sketched in PL-11.
+- **PL-2 — tachinid-fly + braconid-wasp rank corrections.** Same recipe as the 7 landed PL-2 organisms, but blocked on fixture-migration scope across `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, `InMemoryCatalogTest`. Needs a deliberate fixture-replacement sub-slice (likely repoint to battus-philenor).
+- **LifeStage parallel rank-polymorphism slice.** `LifeStageRepository.getBySpeciesName` + `InsectLifeStageQuery.forSpeciesName` still only accept `InsectSpeciesName`, even though life-stage records keyed under genus / family composite slugs (`chrysoperla-egg`, `halictus-larva`, `empoasca-adult`, …) already exist in the catalog. Same recipe as the image-parent-rank slice. Noted in `insect-image-parent-rank.md` as out-of-scope.
 
 ## Parking lot
 
-[`notes/parking-lot.md`](notes/parking-lot.md) — currently 9 entries, none blocking the current path. PL-2 has 3 remaining organisms (potato-leafhopper on Path A; tachinid-fly + braconid-wasp blocked by fixture-migration scope across 6+ test classes, separate slice).
+[`notes/parking-lot.md`](notes/parking-lot.md) — currently 10 entries (PL-11 raised today). PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope. PL-11 is the structural-ecology follow-up triggered by Path A step 3.
 
 ## Recently completed
 
-| Effort                                                              | Completed  | Source                                                                       | Final commit                       |
-|---------------------------------------------------------------------|------------|------------------------------------------------------------------------------|------------------------------------|
-| Insect-image parent-rank — Steps 1–8 (retype to InsectRankName)     | 2026-05-19 | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md)     | `4c7449d`                          |
-| Insect-image parent-rank — Step 0 (sealed marker + Jackson verify)  | 2026-05-19 | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md)     | `600bc1d`                          |
-| PL-2 — four family-rank corrections (hoverfly, ground-beetle, crane-fly, skipper-butterfly) | 2026-05-14 | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-2) | `c3a3f8d`                          |
-| Drop `placedInOptional()` — consumers wrap at the call site         | 2026-05-14 | inline cleanup                                                               | `b2f415a`                          |
-| PL-2 — grey-mining-bee → andrena                                    | 2026-05-13 | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-2)                        | `d12c3b2`                          |
-| PL-2 — native-sweat-bee → halictus                                  | 2026-05-13 | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-2)                        | `be0bbce`                          |
-| PL-2 — green-lacewing → chrysoperla (pilot)                         | 2026-05-13 | [`plans/green-lacewing-rank-correction.md`](plans/green-lacewing-rank-correction.md) | `e5e3c8d`                  |
-| Clades kernel — Phase 5 (InsectLifeStages resolver)                 | 2026-05-13 | [`plans/clades-kernel-phase-5.md`](plans/clades-kernel-phase-5.md)           | `ad7d7c7`                          |
-| Clades kernel — Phase 4 (first catalog placements)                  | 2026-05-13 | [`plans/clades-kernel-phase-4.md`](plans/clades-kernel-phase-4.md)           | `1cfd9ba`                          |
-| Clades kernel — Phase 3 (placedIn on insect records)                | 2026-05-13 | [`plans/clades-kernel-phase-3.md`](plans/clades-kernel-phase-3.md)           | `5e67c1b`                          |
+| Effort                                                                                  | Completed  | Source                                                                       | Final commit |
+|-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Path A step 3 — potato-leafhopper → empoasca + PL-11 raised                             | 2026-05-19 | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md)     | `05d430f`    |
+| Path A step 2 — Hemiptera Clade permit + Hemimetabolous trait declaration               | 2026-05-19 | conversation; [`kernels/clades/`](../kernels/clades/)                        | `2e469f0`    |
+| Path A step 1 — Insect-image parent-rank Steps 1–8 (retype to InsectRankName)           | 2026-05-19 | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md)     | `4c7449d`    |
+| Insect-image parent-rank — Step 0 (sealed marker + Jackson verify)                      | 2026-05-19 | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md)     | `600bc1d`    |
+| PL-2 — four family-rank corrections (hoverfly, ground-beetle, crane-fly, skipper-butterfly) | 2026-05-14 | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-2)                    | `c3a3f8d`    |
+| Drop `placedInOptional()` — consumers wrap at the call site                             | 2026-05-14 | inline cleanup                                                               | `b2f415a`    |
+| PL-2 — grey-mining-bee → andrena                                                        | 2026-05-13 | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-2)                        | `d12c3b2`    |
+| PL-2 — native-sweat-bee → halictus                                                      | 2026-05-13 | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-2)                        | `be0bbce`    |
+| PL-2 — green-lacewing → chrysoperla (pilot)                                             | 2026-05-13 | [`plans/green-lacewing-rank-correction.md`](plans/green-lacewing-rank-correction.md) | `e5e3c8d` |
+| Clades kernel — Phase 5 (InsectLifeStages resolver)                                     | 2026-05-13 | [`plans/clades-kernel-phase-5.md`](plans/clades-kernel-phase-5.md)           | `ad7d7c7`    |
 
 ## Active efforts (read the source doc for status; this is just the index)
 
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
 | 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md)                              |
-| 2  | Insect-image parent-rank (Path A)     | Plan           | [`plans/insect-image-parent-rank.md`](plans/insect-image-parent-rank.md) — Step 0 ✅ `600bc1d`, Steps 1–8 ✅ `4c7449d`; Path A step 2 (Hemimetabolous trait) + step 3 (potato-leafhopper → empoasca) next |
+| 2  | PL-11 — cross-rank functional ecology | Parking lot    | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-11) — Option B decided; 15 records to migrate; sized but not yet slice-planned |
 | 3  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 6 (plants) deferred |
 | 4  | FU-1 — Family/Genus catalog tiers     | Plan (notes)   | [`notes/fu-1-plan.md`](notes/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 5  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |
