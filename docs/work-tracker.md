@@ -2,7 +2,7 @@
 
 Dashboard for what's currently in flight. Strategy lives in [`plans/identification.md`](plans/identification.md); forks and open questions live in [`notes/parking-lot.md`](notes/parking-lot.md) (the parking lot). This file does NOT synthesize either — it is just the current view.
 
-Last updated: 2026-05-20 (LifeStage rank-polymorphism widening landed — `forParentName(InsectRankName)` mirror of the image-parent-rank slice. PL-12 raised: promote `LifeStage.parentName` to a typed component, parked pending LinneanRank).
+Last updated: 2026-05-22 (Phase 0 UI side promoted to a slice plan — [`plans/insects-family-genus-console.md`](plans/insects-family-genus-console.md). Adds `/insects/families` + `/insects/genera` list/detail pages; fills `GenusQuery.forFamilyName` api gap with typed FK; species-under-genus uses text stopgap pending PL-13 typed-FK retypeover. Audit pass also raises PL-14: rank-polymorphic `InsectAggregate` for Phase 2 to decide.).
 
 ---
 
@@ -12,16 +12,19 @@ Last updated: 2026-05-20 (LifeStage rank-polymorphism widening landed — `forPa
 
 ## Current slice
 
-**No active slice — LifeStage rank-polymorphism widening just landed.** `InsectLifeStageQuery.forParentName(InsectRankName)` now accepts any of the four insect-rank names; the species-only `forSpeciesName` is gone. Mirror of the image-parent-rank slice; no JSON migration (the LifeStageName slug was already rank-flexible post-PL-2). Typed `LifeStage.parentName` component promotion deferred as PL-12, pending the parallel LinneanRank session.
+**Insects console — family + genus list/detail pages** ([`plans/insects-family-genus-console.md`](plans/insects-family-genus-console.md)). Phase 0 UI side of the identification roadmap, absorbing the old FU-1 PR-3 scope. Adds 4 console routes (`/insects/families`, `/insects/families/{name}`, `/insects/genera`, `/insects/genera/{name}`), 4 JTE templates, and 2 api gap fillers — `GenusQuery.forFamilyName(InsectFamilyName)` (typed FK, real fix) and `SpeciesQuery.forGenusEpithet(TaxonomicGenus)` (text stopgap). Also updates `InsectsLinker` so existing family/genus search hits resolve to URLs. PL-13 raised in Task 1 captures the typed `genusName`/`familyName` FK on `InsectSpecies` for a separate slice.
 
 **Candidate next slices** (pick when ready):
 
+- **PL-13 — typed `InsectGenusName`/`InsectFamilyName` FK on `InsectSpecies`.** Removes the text stopgap this slice introduces. JSON migration on 38 species records plus query-impl retypeover. Raised by the audit in the current slice.
+- **PL-14 — rank-polymorphic `InsectAggregate`.** Aggregate currently rooted at `InsectSpecies` only; `InsectImage.parentName()` is already `InsectRankName` so the data side is ready. Three shape options (sealed permits / parallel records / generic root) — Phase 2's session-scope value object will inform the choice. Raised by the audit in the current slice.
 - **PL-2 — tachinid-fly + braconid-wasp rank corrections.** Same recipe as the eight landed PL-2 organisms, but blocked on fixture-migration scope across `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, `InMemoryCatalogTest`. Needs a deliberate fixture-replacement sub-slice (likely repoint to `battus-philenor`).
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
+- **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
 
 ## Parking lot
 
-[`notes/parking-lot.md`](notes/parking-lot.md) — currently 10 entries. PL-12 raised today: promote `LifeStage.parentName` to a typed component (parked pending LinneanRank). PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
+[`notes/parking-lot.md`](notes/parking-lot.md) — 10 entries today; PL-13 (typed FK on `InsectSpecies`) and PL-14 (rank-polymorphic `InsectAggregate`) both land as part of the current slice's Task 1 audit. PL-12 (typed `LifeStage.parentName`) parked pending LinneanRank. PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
 
 ## Recently completed
 
