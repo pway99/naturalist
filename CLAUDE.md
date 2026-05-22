@@ -19,6 +19,21 @@ or starts work that touches multiple plans):
   and the decided ordering. Each row points to its source-of-truth plan; the
   tracker itself owns no scope.
 
+Cold storage — **do not load, search, or grep by default.** Read only when
+explicitly investigating historical context (a resolved fork, a completed
+slice's mechanics, an ADR's deep argument). Surfacing these in routine
+work pollutes context with content that no longer drives decisions:
+
+- `docs/plans/archive/` — completed and superseded plans.
+- `docs/notes/parking-lot-resolved.md` — resolved forks. Live forks are in
+  the sibling `parking-lot.md`.
+- `docs/adr/rationale/` — deep-argument companions to the canonical ADRs.
+  Prefer `docs/adr/ADR-N-*.md` (short form) first; consult the rationale
+  file only when the short form does not carry enough context.
+
+When excluding directories from a broad search, pass these paths to
+`grep --exclude-dir` / `find -prune` explicitly.
+
 ## Identity
 
 Every domain class implements exactly one of `NamedEntity`, `Entity`, `Aggregate`,
