@@ -183,11 +183,11 @@ and a few related Papilionidae. The clade DAG only contributes the stage
 
 | Phase | Name                                                | Status     | Gates on                                                                |
 | ----- | --------------------------------------------------- | ---------- | ----------------------------------------------------------------------- |
-| 1     | Build the `clades` kernel standalone                | ✅ done `b8f0025` (slice plan: [`clades-kernel-phase-1.md`](clades-kernel-phase-1.md)) | —          |
-| 2     | Define `Metaboly` and attach to Holometabola        | ✅ done `348fd0b` (slice plan: [`clades-kernel-phase-2.md`](clades-kernel-phase-2.md)) | —          |
-| 3     | Add `placedIn: Clade` to taxon entities             | **next**   | Phase 1 (Phase 2 not strictly required)                                 |
-| 4     | Place insects into the clade DAG                    | sketched   | Phases 2 + 3                                                            |
-| 5     | Route life-stage queries through the clade resolver | sketched   | Phase 4; closes PL-1                                                    |
+| 1     | Build the `clades` kernel standalone                | ✅ done `b8f0025` (slice plan: [`phase-1.md`](archive/clades-kernel/phase-1.md)) | —          |
+| 2     | Define `Metaboly` and attach to Holometabola        | ✅ done `348fd0b` (slice plan: [`phase-2.md`](archive/clades-kernel/phase-2.md)) | —          |
+| 3     | Add `placedIn: Clade` to taxon entities             | ✅ done `5e67c1b` (slice plan: [`phase-3.md`](archive/clades-kernel/phase-3.md)) | —          |
+| 4     | Place insects into the clade DAG                    | ✅ done `1cfd9ba` (slice plan: [`phase-4.md`](archive/clades-kernel/phase-4.md)) | —          |
+| 5     | Route life-stage queries through the clade resolver | ✅ done `ad7d7c7` (slice plan: [`phase-5.md`](archive/clades-kernel/phase-5.md)); closes PL-1 | —          |
 | 6     | Extend to plants when needed                        | deferred   | Plant identification work demanding it                                  |
 
 ---

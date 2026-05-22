@@ -35,8 +35,8 @@ development; build the capability A1-F1 surfaced rather than shorten the path to
 
 The original PR-2f / PR-2g / PR-3 specifications below remain as reference for the kernel
 shape and JSON migration semantics, but their execution shape is now per-organism inside
-the identification roadmap. See [`docs/plans/identification.md`](../plans/identification.md)
-and [`docs/work-tracker.md`](../work-tracker.md) for the current trajectory.
+the identification roadmap. See [`docs/plans/identification.md`](../identification.md)
+and [`docs/work-tracker.md`](../../work-tracker.md) for the current trajectory.
 
 ---
 
@@ -74,14 +74,14 @@ unbounded queries (`getAllSpeciesNames`, `getAllFamilyNames`, `entityStream`,
 `forSpeciesName`, etc.) are a production-availability hazard. Before PR-2f or
 PR-3 grows the read surface further, the kernel needs a `Page<T>` /
 cursor-based contract and the existing query/repository ports need to migrate.
-See `docs/notes/paged-queries-plan.md` for the design sketch and rollout
+See `docs/plans/archive/paged-queries-plan.md` for the design sketch and rollout
 strategy.
 
 After paged-queries lands, the FU-1 series resumes at PR-2f (Species
 narrowing). PR-2f is unchanged in shape but will use the paged read surface
 for any bulk migration helpers it needs.
 
-**Suggested resume command:** open `docs/notes/paged-queries-plan.md`, agree on
+**Suggested resume command:** open `docs/plans/archive/paged-queries-plan.md`, agree on
 the kernel `Page<T>` shape and port migration order, then start with the kernel
 contract change.
 
@@ -278,7 +278,7 @@ catalog, and A1-F1 closes.
 
 **Status.** No longer a standalone slice of FU-1. The console family + genus
 views land as part of **identification roadmap Phase 0** —
-[`docs/plans/identification.md`](../plans/identification.md) — with an
+[`docs/plans/identification.md`](../identification.md) — with an
 identification-readiness lens layered on top of the original PR-3 scope.
 
 **Why rolled.** The identification module needs to *render* every taxonomic
@@ -315,7 +315,7 @@ scope unchanged and adds:
 - Identification-key data — lands in roadmap Phase 2 (`InsectIdentification`).
 - Any further entity changes — Phase 0 is read-only against the model from PR-2.
 
-**Promote** [`docs/plans/identification.md`](../plans/identification.md) Phase 0
+**Promote** [`docs/plans/identification.md`](../identification.md) Phase 0
 to its own implementation plan next — Phase 0 is now fully unblocked (PR-2f /
 PR-2g were reshaped 2026-05-10 and no longer ship as discrete slices).
 
@@ -330,7 +330,7 @@ PR-2g were reshaped 2026-05-10 and no longer ship as discrete slices).
   roadmap Phase 2; A1-F1 closes when *Battus philenor* completes that workflow
   with EOL citation in Phase 4.
 - The console slice that was originally PR-3 now lands as part of identification
-  roadmap Phase 0 ([`docs/plans/identification.md`](../plans/identification.md)),
+  roadmap Phase 0 ([`docs/plans/identification.md`](../identification.md)),
   paired with the Phase 0 **data reorganization** that moves under-identified
   records to their actual rank before the console renders them.
 
@@ -342,7 +342,7 @@ PR-2g were reshaped 2026-05-10 and no longer ship as discrete slices).
 
 ## Documents to read at start of each PR
 
-1. This plan (`docs/notes/fu-1-plan.md`).
+1. This plan (`docs/plans/archive/fu-1-plan.md`).
 2. `docs/pressure-test/battus-philenor/structural-commitments.md` §6 (the resolution
    path is no longer "TBD" — it is the accretion model).
 3. `docs/pressure-test/battus-philenor/01-findings.md` §A1-F1 (closes in PR-2g).

@@ -1,6 +1,6 @@
 ok # Clades Kernel — Phase 1 Slice Plan
 
-> Promoted from [`clades-kernel.md`](clades-kernel.md) Phase 1 on 2026-05-12.
+> Promoted from [`clades-kernel.md`](../../clades-kernel.md) Phase 1 on 2026-05-12.
 > Revised the same day after design review converged on a sealed-type
 > vocabulary kernel rather than entity-with-repository scaffolding.
 

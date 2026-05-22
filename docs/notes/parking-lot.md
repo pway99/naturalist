@@ -1,17 +1,8 @@
 # Parking Lot
 
-Short entries (~5 lines each) for forks discovered mid-work and decisions in flight. Not loaded into conversation context — reference explicitly when working the relevant question. Entries are removed when resolved (the answer lands in code or strategy doc, not here).
+Short entries (~5 lines each) for forks discovered mid-work and decisions in flight. Not loaded into conversation context — reference explicitly when working the relevant question. Entries move to [`parking-lot-resolved.md`](parking-lot-resolved.md) when the answer lands in code or a strategy doc.
 
 **Shape per entry:** *what surfaced* / *when raised* / *where in the work it came up* / *blocking the current slice yes/no* / *resolution path if known*.
-
----
-
-## PL-1 — LifeStage modeling: dual-home problem (RESOLVED 2026-05-13)
-
-**Raised:** 2026-05-10 (mid-slice-2 execution); reinforced 2026-05-11 after Pat's overnight research.
-**Where:** Discovered while applying the green-lacewing → chrysoperla data move; slice 1 had just spread the inline-life-stage pattern from `InsectSpecies` to `InsectGenus` and `InsectFamily`.
-**The smell:** `LifeStage` is a `NamedEntity` with its own repository and standalone `life-stages.json`, but is *also* held by value as a component on `InsectSpecies` (annotated `@AggregateRoot`) and now on `InsectGenus` / `InsectFamily` (plain `NamedEntity`, not aggregates per the framework rules). Two homes for the same data; framework rule violation (NamedEntity owning NamedEntity by value).
-**Resolution:** Closed by Phase 5 of [`plans/clades-kernel.md`](../plans/clades-kernel.md) (slice plan: [`plans/clades-kernel-phase-5.md`](../plans/clades-kernel-phase-5.md)). `InsectLifeStages.stagesOf(species|genus|family)` is now the canonical answer to "which stages exist" — it walks `placedIn` → `CladeTraversal.findTrait` → `MetabolyTrait` → `Metaboly.stages()`. The inline `egg`/`larva`/`pupa`/`adult` fields are still present on the records (Phase 5 was deliberately additive) and will be removed per-organism via PL-2.
 
 ---
 
@@ -31,7 +22,7 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 - **tachinid-fly → tachinidae (family)** — *not bundled.* `TachinidFly` is the canonical species fixture in `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, and `InMemoryCatalogTest` (`knownEntityNames()`, life-stage lookup assertions, cross-domain catalog ref). Migrating means picking replacement fixtures (likely battus-philenor) across all those test classes — a separate refactor with explicit scope, not a 5-line JSON edit.
 - **braconid-wasp → braconidae (family)** — *not bundled.* Same fixture-migration shape as tachinid-fly: appears alongside it in the `knownEntityNames()` lists across multiple test classes.
 
-Clean recipe (applies to the 6 landed organisms): delete the under-identified `InsectSpecies` record, rename its four standalone `LifeStage` records to the parent-rank composite slug, add `"placedIn": "..."` to the destination genus/family record so the resolver works. Each clean move is a focused JSON edit + one resolver test. The original plan at `docs/plans/green-lacewing-rank-correction.md` predates Phase 5 and overstates the work — there is no inline-life-stage merge step.
+Clean recipe (applies to the 6 landed organisms): delete the under-identified `InsectSpecies` record, rename its four standalone `LifeStage` records to the parent-rank composite slug, add `"placedIn": "..."` to the destination genus/family record so the resolver works. Each clean move is a focused JSON edit + one resolver test. The original plan at `docs/plans/archive/green-lacewing-rank-correction.md` predates Phase 5 and overstates the work — there is no inline-life-stage merge step.
 
 ---
 
@@ -152,16 +143,8 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
-## Resolved (kept for grep)
-
-- **PL-11 — Cross-rank functional ecology** (resolved 2026-05-19). Landed as `InsectFunctionalRole` (Entity, cross-rank by `InsectRankName`) per [`plans/insect-functional-role.md`](../plans/insect-functional-role.md). Commits `8f6072a` (entity stack), `bcce0e0` (16 seed records + smoke/contract tests), `2b0c38a` (cross-rank `getByGuild`), `327c5db` (strip `guilds`/`beneficial` from `InsectSpecies`, console fanout). `sightingNotes` rehoming explicitly deferred to the future sightings entity — two facts unique to the deleted potato-leafhopper record (dated crimson-clover observation, "first pest documented" sequencing) noted for that slice.
-
-- **Q4 — Insects vs Apiary** (resolved pre-PL rename). Apiary is its own domain module (Colony aggregate root). Insects module covers Insecta (six legs). SHB control: H. indica only (not S. feltiae).
-
----
-
 ## Conventions
 
 - New entries get the next `PL-N` ID; numbers are never reused.
-- Resolving an entry means the answer landed in code or in a strategy doc (identification.md, structural-commitments.md, an ADR). Remove the entry; the resolution lives at the answer's home.
+- Resolving an entry means the answer landed in code or in a strategy doc (identification.md, structural-commitments.md, an ADR). Move the entry to [`parking-lot-resolved.md`](parking-lot-resolved.md) with a `**Resolved:**` line; the live file stays scannable, grep still finds the history.
 - Don't ripple to other docs when raising an entry. The parking lot is the one place a fork lands. Strategy docs only update when the question is *resolved*.

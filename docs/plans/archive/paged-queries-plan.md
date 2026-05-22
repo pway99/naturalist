@@ -336,6 +336,6 @@ Each step is a separate PR. Step 1 + 2 together is the kernel landing; step
 A fresh chat picking this up needs:
 
 1. This document.
-2. `docs/notes/fu-1-plan.md` to confirm FU-1 work is paused at PR-2f.
+2. `docs/plans/archive/fu-1-plan.md` to confirm FU-1 work is paused at PR-2f.
 3. The `git log --oneline -10` snapshot — paged-queries lands on top of
    `9f6aed6` (PR-2e).

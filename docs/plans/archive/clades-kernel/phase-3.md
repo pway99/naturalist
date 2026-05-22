@@ -1,6 +1,6 @@
 # Clades Kernel — Phase 3 Slice Plan
 
-> Promoted from [`clades-kernel.md`](clades-kernel.md) Phase 3 on 2026-05-12.
+> Promoted from [`clades-kernel.md`](../../clades-kernel.md) Phase 3 on 2026-05-12.
 > Revised 2026-05-13 to drop the kernel-level coupling between `kernels/taxonomy/`
 > and `kernels/clades/`.
 

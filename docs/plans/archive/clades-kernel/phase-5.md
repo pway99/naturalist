@@ -1,6 +1,6 @@
 # Clades Kernel — Phase 5 Slice Plan
 
-> Promoted from [`clades-kernel.md`](clades-kernel.md) Phase 5 on 2026-05-13.
+> Promoted from [`clades-kernel.md`](../../clades-kernel.md) Phase 5 on 2026-05-13.
 
 **Goal.** Provide the resolver that answers *"which life-stage kinds
 does this organism have?"* by walking `placedIn` → `CladeTraversal`
@@ -9,7 +9,7 @@ surface the inline `egg`/`larva`/`pupa`/`adult` fields on
 `InsectSpecies` / `InsectGenus` / `InsectFamily` were a workaround
 for.
 
-After this phase lands, [PL-2](../notes/parking-lot.md) (the
+After this phase lands, [PL-2](../../../notes/parking-lot.md) (the
 green-lacewing rank correction) can resume — its work becomes
 *"replace inline duplicates with clade references"* rather than
 *"move duplicates around between ranks"*.
@@ -206,7 +206,7 @@ than calling `CladeTraversal.findTrait` directly.
 - [ ] Commit.
 - [ ] Roll work-tracker forward — Phase 5 ✅, Phase 6 deferred,
   PL-2 unblocked.
-- [ ] Update [`notes/parking-lot.md`](../notes/parking-lot.md) PL-2
+- [ ] Update [`notes/parking-lot.md`](../../../notes/parking-lot.md) PL-2
   to "unblocked — resume when ready" status.
 
 ---

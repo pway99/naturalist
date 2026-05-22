@@ -1,6 +1,6 @@
 # Clades Kernel — Phase 2 Slice Plan
 
-> Promoted from [`clades-kernel.md`](clades-kernel.md) Phase 2 on 2026-05-12.
+> Promoted from [`clades-kernel.md`](../../clades-kernel.md) Phase 2 on 2026-05-12.
 
 **Goal.** Define `Metaboly` (the three developmental patterns insects can
 follow), wrap it in a `MetabolyTrait` implementing the kernel's `Trait`

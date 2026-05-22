@@ -1,6 +1,6 @@
 # Clades Kernel — Phase 4 Slice Plan
 
-> Promoted from [`clades-kernel.md`](clades-kernel.md) Phase 4 on 2026-05-13.
+> Promoted from [`clades-kernel.md`](../../clades-kernel.md) Phase 4 on 2026-05-13.
 
 **Goal.** Land the first real clade placement on a catalogued insect,
 so the end-to-end resolution path (species → `placedIn` → traversal →
