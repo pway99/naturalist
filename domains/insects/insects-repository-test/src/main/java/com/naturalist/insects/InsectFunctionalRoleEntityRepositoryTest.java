@@ -2,9 +2,14 @@ package com.naturalist.insects;
 
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link InsectRepository.FunctionalRoleRepository}.
@@ -73,5 +78,19 @@ interface InsectFunctionalRoleEntityRepositoryTest
                 TestInsectsIdentifiers.InsectFamily.Chrysopidae.name,
                 Set.of(FunctionalGuild.PREDATOR),
                 false);
+    }
+
+    @Test
+    default void getByGuild_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByGuild(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("guild");
+    }
+
+    @Test
+    default void getByParentName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByParentName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("parentName");
     }
 }

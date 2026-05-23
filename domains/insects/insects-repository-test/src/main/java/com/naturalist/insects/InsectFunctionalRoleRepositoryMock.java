@@ -18,6 +18,9 @@ class InsectFunctionalRoleRepositoryMock
 
     @Override
     public List<InsectFunctionalRole> getByGuild(FunctionalGuild guild) {
+        observer().arguments("getByGuild",
+                        i -> i.notNull(guild, "guild"))
+                .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(role -> role.guilds().contains(guild))
                 .toList();
@@ -25,6 +28,9 @@ class InsectFunctionalRoleRepositoryMock
 
     @Override
     public Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName) {
+        observer().arguments("getByParentName",
+                        i -> i.identifier(parentName, "parentName"))
+                .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(role -> role.parentName().equals(parentName))
                 .findFirst();
