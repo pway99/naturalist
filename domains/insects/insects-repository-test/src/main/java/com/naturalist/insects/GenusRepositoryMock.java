@@ -4,6 +4,8 @@ import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
 
+import java.util.List;
+
 @DomainService
 class GenusRepositoryMock
         extends AbstractTestEntityRepository<InsectGenusName, InsectGenus, InsectGenusTestEntitySource>
@@ -11,5 +13,12 @@ class GenusRepositoryMock
 
     GenusRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
+    }
+
+    @Override
+    public List<InsectGenus> getByFamilyName(InsectFamilyName familyName) {
+        return testEntitySource().entityStream()
+                .filter(g -> familyName.equals(g.familyName()))
+                .toList();
     }
 }

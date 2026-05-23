@@ -33,6 +33,7 @@ import java.util.Optional;
  * insectQuery.insect().getByName(speciesName);    // InsectAggregate rooted at speciesName
  * insectQuery.families().getByName(familyName);   // InsectFamily
  * insectQuery.genera().getByName(genusName);      // InsectGenus
+ * insectQuery.genera().forFamilyName(familyName);  // genera under a family
  * insectQuery.functionalRoles().getByGuild(guild);// InsectFunctionalRoleCollection
  * }</pre>
  */
@@ -67,6 +68,8 @@ public interface InsectQuery {
     }
 
     interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenus, GenusCollection> {
+
+        GenusCollection forFamilyName(InsectFamilyName familyName);
     }
 
     interface FunctionalRoleQuery

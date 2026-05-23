@@ -9,8 +9,12 @@ import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Behavioral contract for {@link InsectRepository.GenusRepository}.
@@ -98,5 +102,26 @@ interface GenusRepositoryTest
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    default void getByFamilyName_returnsGeneraWithMatchingFamilyName() {
+        InsectFamilyName halictidae = InsectFamilyName.of("halictidae");
+
+        var results = repository().getByFamilyName(halictidae);
+
+        assertThat(results)
+                .extracting(InsectGenus::name)
+                .extracting(InsectGenusName::value)
+                .contains("halictus");
+    }
+
+    @Test
+    default void getByFamilyName_returnsEmptyForUnknownFamily() {
+        InsectFamilyName unknown = InsectFamilyName.of("unobtainium-idae");
+
+        var results = repository().getByFamilyName(unknown);
+
+        assertThat(results).isEmpty();
     }
 }

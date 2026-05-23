@@ -90,6 +90,8 @@ class InsectRepository {
 
     protected interface GenusRepository
             extends EntityRepository<InsectGenusName, InsectGenus> {
+
+        List<InsectGenus> getByFamilyName(InsectFamilyName familyName);
     }
 
     protected interface FunctionalRoleRepository
