@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicFamily;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link InsectRepository.GenusRepository}.
@@ -102,6 +104,13 @@ interface GenusRepositoryTest
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    default void getByFamilyName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByFamilyName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("familyName");
     }
 
     @Test

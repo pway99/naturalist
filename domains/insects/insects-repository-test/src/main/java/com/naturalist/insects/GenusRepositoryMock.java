@@ -17,6 +17,9 @@ class GenusRepositoryMock
 
     @Override
     public List<InsectGenus> getByFamilyName(InsectFamilyName familyName) {
+        observer().arguments("getByFamilyName",
+                        i -> i.entityName(familyName, "familyName"))
+                .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(g -> familyName.equals(g.familyName()))
                 .toList();
