@@ -76,6 +76,14 @@ public class InsectsController {
         return "insects/list";
     }
 
+    @GetMapping("/families")
+    String families(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<InsectFamily> familyPage = insectQuery.families()
+                .findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("familyPage", familyPage);
+        return "insects/families";
+    }
+
     @GetMapping("/guild/{guild}")
     String guild(@PathVariable String guild, Model model) {
         FunctionalGuild selected;
