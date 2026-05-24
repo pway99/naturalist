@@ -51,7 +51,7 @@ class InsectsControllerWebMvcTest {
         mockMvc.perform(get("/insects").with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("text/html"))
-                .andExpect(content().string(containsString("Insect Catalog")))
+                .andExpect(content().string(containsString("Insect Species")))
                 .andExpect(content().string(containsString("species documented at Oak Vista")));
     }
 
