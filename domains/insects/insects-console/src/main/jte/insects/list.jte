@@ -17,9 +17,21 @@
 @param Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = Map.of()
 @param Map<InsectFamilyName, InsectFamily> familyByName = Map.of()
 @param Map<InsectGenusName, InsectGenus> genusByName = Map.of()
+@param String cladePreschool = ""
+@param String cladeElementary = ""
+@param String cladeSecondary = ""
+@param String cladeUniversity = ""
 
 @template.layout.page(title = "Insect Species", content = @`
     @template.insects.nav(active = "species")
+    <section class="clade-introduction">
+        <h2>Class Insecta</h2>
+        @template.components.description(
+            preschool = cladePreschool,
+            elementary = cladeElementary,
+            secondary = cladeSecondary,
+            university = cladeUniversity)
+    </section>
     <h1>Insect Species</h1>
     <p>Insect species documented at Oak Vista.</p>
 

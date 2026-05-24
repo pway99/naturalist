@@ -1,8 +1,10 @@
+@import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectGenus
 @import com.naturalist.insects.InsectSpecies
 @import java.util.List
 
 @param InsectGenus genus
+@param InsectFamily family
 @param List<InsectSpecies> species
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
@@ -13,8 +15,8 @@
     @template.insects.nav(active = "genus")
     <h1><em>${genus.genus().value()}</em></h1>
     <p class="taxonomy">
-        ${genus.order().value()} &middot;
-        <a href="/insects/families/${genus.familyName().value()}">${genus.family().value()}</a>
+        ${family.order().value()} &middot;
+        <a href="/insects/families/${genus.familyName().value()}">${family.family().value()}</a>
     </p>
 
     @template.components.description(
