@@ -104,6 +104,36 @@ public class InsectsController {
         return "insects/family";
     }
 
+    @GetMapping("/genera")
+    String genera(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<InsectGenus> genusPage = insectQuery.genera()
+                .findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("genusPage", genusPage);
+        return "insects/genera";
+    }
+
+    @GetMapping("/genera/{name}")
+    String genusDetail(@PathVariable String name, Model model) {
+        var genusName = InsectGenusName.of(name);
+        var genus = insectQuery.genera().getByName(genusName);
+        if (genus.isEmpty()) {
+            return "redirect:/insects/genera";
+        }
+        var description = genus.get().description();
+        var members = insectQuery.species()
+                .forGenusEpithet(genus.get().genus())
+                .stream()
+                .sorted(Comparator.comparing(s -> s.name().value()))
+                .toList();
+        model.addAttribute("genus", genus.get());
+        model.addAttribute("species", members);
+        model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
+        model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
+        model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
+        model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
+        return "insects/genus";
+    }
+
     @GetMapping("/guild/{guild}")
     String guild(@PathVariable String guild, Model model) {
         FunctionalGuild selected;
