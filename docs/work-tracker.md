@@ -32,7 +32,7 @@ Last updated: 2026-05-24 (Catalogue-completeness slice 2 landed — `InsectSpeci
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
-| Catalogue-completeness slice 2 — `InsectSpecies` drops `TaxonomicClassification`; honest non-null invariants | 2026-05-24 | conversation; closes the simplification arc opened by slice 1               | _pending_    |
+| Catalogue-completeness slice 2 — `InsectSpecies` drops `TaxonomicClassification`; honest non-null invariants | 2026-05-24 | conversation; closes the simplification arc opened by slice 1               | `db9623b`    |
 | PL-2 closeout — tachinid-fly + braconid-wasp → family rank; fixtures repointed          | 2026-05-24 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-2)      | `16ff792`    |
 | Catalogue-completeness slice 1 — 5 families + 6 genera + species FK wiring              | 2026-05-23 | conversation; prerequisite for stripping `TaxonomicClassification` from `InsectSpecies` | `412912f`    |
 | Family-page species enrichment — under-identified species on `/insects/families/{name}` | 2026-05-23 | conversation; uses `SpeciesQuery.forFamilyName` from PL-13 (reverted in PL-2 closeout) | `a81cccd`    |
