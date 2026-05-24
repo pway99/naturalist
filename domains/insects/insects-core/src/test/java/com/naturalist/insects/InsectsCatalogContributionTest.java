@@ -1,7 +1,6 @@
 package com.naturalist.insects;
 
 import com.naturalist.catalog.*;
-import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.data.Pages;
@@ -149,23 +148,6 @@ class InsectsCatalogContributionTest {
     void unknownTokenReturnsEmptyResults() {
         Catalog catalog = CatalogAssembly.from(contribution);
         assertThat(catalog.search("zzzzzzz").isEmpty()).isTrue();
-    }
-
-    @Test
-    void speciesWithoutGenusContributesSlugAndCommonNamesButNoBinomial() {
-        // tachinid-fly is catalogued at family level (Tachinidae) — both
-        // genus and species are null, so no "Genus species" or "G. species"
-        // token is emitted. The slug and every common-name label still
-        // appear. tachinid-fly remains on its vernacular slug pending the
-        // FU-1 pending-organism mechanism; the auto-seeded common name
-        // ("Tachinid Fly") preserves vernacular search until then.
-        SearchableEntity tachinidFly = contribution.searchableEntities()
-                .filter(e -> e.target().name().equals(InsectSpeciesName.of("tachinid-fly")))
-                .findFirst()
-                .orElseThrow();
-        List<String> tokens = tachinidFly.tokens().toList();
-
-        assertThat(tokens).containsExactly("tachinid-fly", "Tachinid Fly");
     }
 
     private static List<EntityRef> targetsOf(SearchResults results) {

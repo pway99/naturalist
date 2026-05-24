@@ -40,8 +40,8 @@ interface SpeciesRepositoryTest
     @Override
     default List<InsectSpeciesName> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectSpecies.TachinidFly.name,
-                TestInsectsIdentifiers.InsectSpecies.BraconidWasp.name);
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
+                TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
     }
 
     @Override
@@ -163,14 +163,14 @@ interface SpeciesRepositoryTest
 
     @Test
     default void getByFamilyName_returnsSpeciesWithMatchingFamilyName() {
-        InsectFamilyName tachinidae = TestInsectsIdentifiers.InsectFamily.Tachinidae.name;
+        InsectFamilyName papilionidae = TestInsectsIdentifiers.InsectFamily.Papilionidae.name;
 
-        var results = repository().getByFamilyName(tachinidae);
+        var results = repository().getByFamilyName(papilionidae);
 
         assertThat(results)
                 .extracting(InsectSpecies::name)
                 .extracting(InsectSpeciesName::value)
-                .contains("tachinid-fly");
+                .contains("battus-philenor");
     }
 
     @Test

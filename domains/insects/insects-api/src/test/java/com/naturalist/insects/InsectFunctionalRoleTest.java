@@ -67,7 +67,7 @@ class InsectFunctionalRoleTest {
         MethodObserver mo = observer.forMethod("emptyGuildsIsInvalid");
         InsectFunctionalRole role = new InsectFunctionalRole(
                 InsectFunctionalRoleId.create(),
-                InsectSpeciesName.of("tachinid-fly"),
+                InsectSpeciesName.of("battus-philenor"),
                 Set.of(),
                 false);
 

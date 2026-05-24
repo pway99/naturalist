@@ -51,8 +51,8 @@ class SpeciesCommandImplTest
     @Override
     public List<InsectSpeciesName> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectSpecies.TachinidFly.name,
-                TestInsectsIdentifiers.InsectSpecies.BraconidWasp.name);
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
+                TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
     }
 
     @Override

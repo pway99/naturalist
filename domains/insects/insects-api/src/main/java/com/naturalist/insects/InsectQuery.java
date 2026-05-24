@@ -79,10 +79,9 @@ public interface InsectQuery {
 
         /**
          * Members of a family, joined on the species's typed {@link InsectSpecies#familyName()}
-         * upward FK. Covers the under-identified-species case where genus is unknown but
-         * family is catalogued (e.g. {@code tachinid-fly} → {@code tachinidae}). Species
-         * without a catalogued parent family carry a {@code null} {@code familyName} and
-         * are absent from the result.
+         * upward FK (e.g. {@code battus-philenor} → {@code papilionidae}). Species without
+         * a catalogued parent family carry a {@code null} {@code familyName} and are absent
+         * from the result.
          */
         SpeciesCollection forFamilyName(InsectFamilyName familyName);
     }

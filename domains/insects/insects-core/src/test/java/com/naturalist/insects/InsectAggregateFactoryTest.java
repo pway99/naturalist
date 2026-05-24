@@ -57,13 +57,13 @@ class InsectAggregateFactoryTest {
     @Test
     void buildByName_speciesWithoutImages_returnsAggregateWithEmptyImageCollection() {
         Optional<InsectAggregate> aggregate =
-                factory.buildByName(TestInsectsIdentifiers.InsectSpecies.TachinidFly.name);
+                factory.buildByName(TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
 
         assertThat(aggregate).isPresent();
         assertThat(aggregate.get()).isInstanceOf(InsectSpeciesAggregate.class);
         InsectSpeciesAggregate value = (InsectSpeciesAggregate) aggregate.get();
         assertThat(value.species().name())
-                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.TachinidFly.name);
+                .isEqualTo(TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
         assertThat(value.images().isEmpty()).isTrue();
         assertThat(observer.observable(value, "insectAggregate").violations()).isEmpty();
     }

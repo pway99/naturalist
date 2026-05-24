@@ -65,7 +65,7 @@ class InsectsControllerWebMvcTest {
 
     @Test
     void detail_authenticated_rendersAddPhotoForm() throws Exception {
-        mockMvc.perform(get("/insects/tachinid-fly").with(user("naturalist").roles("ADMIN")))
+        mockMvc.perform(get("/insects/battus-philenor").with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Add Photo")))
                 .andExpect(content().string(containsString("name=\"resourceName\"")))
@@ -74,17 +74,17 @@ class InsectsControllerWebMvcTest {
 
     @Test
     void addImage_authenticatedWithCsrf_redirectsToDetail() throws Exception {
-        mockMvc.perform(post("/insects/tachinid-fly/images")
+        mockMvc.perform(post("/insects/battus-philenor/images")
                         .with(user("naturalist").roles("ADMIN"))
                         .with(csrf())
                         .param("resourceName", "IMG_TEST_NEW.HEIC"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/insects/tachinid-fly"));
+                .andExpect(redirectedUrl("/insects/battus-philenor"));
     }
 
     @Test
     void addImage_anonymous_redirectsToLogin() throws Exception {
-        mockMvc.perform(post("/insects/tachinid-fly/images")
+        mockMvc.perform(post("/insects/battus-philenor/images")
                         .with(csrf())
                         .param("resourceName", "IMG_ANON.HEIC"))
                 .andExpect(status().is3xxRedirection())
@@ -94,7 +94,7 @@ class InsectsControllerWebMvcTest {
 
     @Test
     void addImage_missingCsrf_isForbidden() throws Exception {
-        mockMvc.perform(post("/insects/tachinid-fly/images")
+        mockMvc.perform(post("/insects/battus-philenor/images")
                         .with(user("naturalist").roles("ADMIN"))
                         .param("resourceName", "IMG_NO_CSRF.HEIC"))
                 .andExpect(status().isForbidden());

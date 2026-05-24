@@ -42,8 +42,8 @@ interface LifeStageEntityRepositoryTest
     @Override
     default List<LifeStageName> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectSpecies.TachinidFly.LifeStages.Egg,
-                TestInsectsIdentifiers.InsectSpecies.BraconidWasp.LifeStages.Larva);
+                TestInsectsIdentifiers.InsectFamily.Tachinidae.LifeStages.Egg,
+                TestInsectsIdentifiers.InsectFamily.Braconidae.LifeStages.Larva);
     }
 
     @Override

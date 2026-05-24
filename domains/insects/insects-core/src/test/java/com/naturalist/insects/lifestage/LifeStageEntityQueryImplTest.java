@@ -38,13 +38,13 @@ class LifeStageEntityQueryImplTest
     @Override
     public List<LifeStageName> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectSpecies.TachinidFly.LifeStages.Egg,
-                TestInsectsIdentifiers.InsectSpecies.BraconidWasp.LifeStages.Larva);
+                TestInsectsIdentifiers.InsectFamily.Tachinidae.LifeStages.Egg,
+                TestInsectsIdentifiers.InsectFamily.Braconidae.LifeStages.Larva);
     }
 
     @Test
     void forParentName_returnsAllLifeStagesForThatSpecies() {
-        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.TachinidFly.name;
+        InsectSpeciesName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
 
         LifeStageCollection collection = query.forParentName(species);
 
@@ -52,10 +52,10 @@ class LifeStageEntityQueryImplTest
                 .allMatch(stage -> stage.name().parentSlug().equals(species.value()));
         assertThat(collection.stream().map(LifeStage::name))
                 .contains(
-                        TestInsectsIdentifiers.InsectSpecies.TachinidFly.LifeStages.Egg,
-                        TestInsectsIdentifiers.InsectSpecies.TachinidFly.LifeStages.Larva,
-                        TestInsectsIdentifiers.InsectSpecies.TachinidFly.LifeStages.Pupa,
-                        TestInsectsIdentifiers.InsectSpecies.TachinidFly.LifeStages.Adult);
+                        TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.LifeStages.Egg,
+                        TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.LifeStages.Larva,
+                        TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.LifeStages.Pupa,
+                        TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.LifeStages.Adult);
     }
 
     @Test

@@ -1,6 +1,6 @@
 [
   {
-    "name": "tachinid-fly-egg",
+    "name": "tachinidae-egg",
     "phenology": {
       "windows": [
         {
@@ -43,7 +43,7 @@
     "kind": "EGG"
   },
   {
-    "name": "tachinid-fly-larva",
+    "name": "tachinidae-larva",
     "phenology": {
       "windows": [
         {
@@ -87,7 +87,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "tachinid-fly-pupa",
+    "name": "tachinidae-pupa",
     "phenology": {
       "windows": [
         {
@@ -130,7 +130,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "tachinid-fly-adult",
+    "name": "tachinidae-adult",
     "phenology": {
       "windows": [
         {
@@ -180,7 +180,7 @@
     "kind": "ADULT"
   },
   {
-    "name": "braconid-wasp-egg",
+    "name": "braconidae-egg",
     "phenology": {
       "windows": [
         {
@@ -222,7 +222,7 @@
     "kind": "EGG"
   },
   {
-    "name": "braconid-wasp-larva",
+    "name": "braconidae-larva",
     "phenology": {
       "windows": [
         {
@@ -266,7 +266,7 @@
     "kind": "LARVA"
   },
   {
-    "name": "braconid-wasp-pupa",
+    "name": "braconidae-pupa",
     "phenology": {
       "windows": [
         {
@@ -308,7 +308,7 @@
     "kind": "PUPA"
   },
   {
-    "name": "braconid-wasp-adult",
+    "name": "braconidae-adult",
     "phenology": {
       "windows": [
         {

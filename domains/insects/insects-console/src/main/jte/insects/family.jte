@@ -1,11 +1,9 @@
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectGenus
-@import com.naturalist.insects.InsectSpecies
 @import java.util.List
 
 @param InsectFamily family
 @param List<InsectGenus> genera
-@param List<InsectSpecies> species
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -45,29 +43,4 @@
             </div>
         @endif
     </section>
-
-    @if(!species.isEmpty())
-        <section>
-            <h2>Species attached at family rank</h2>
-            <p><em>Identified to family — no catalogued genus yet.</em></p>
-            <div class="entity-grid">
-                @for(var s : species)
-                    !{var commonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
-                    <article>
-                        <header>
-                            <a href="/insects/${s.name().value()}">
-                                <strong>${commonName}</strong>
-                            </a>
-                        </header>
-                        <dl class="taxonomy">
-                            @if(s.taxonomy().species() != null)
-                                <dt>species</dt>
-                                <dd><em>${s.taxonomy().species().value()}</em></dd>
-                            @endif
-                        </dl>
-                    </article>
-                @endfor
-            </div>
-        </section>
-    @endif
 `)

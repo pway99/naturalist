@@ -26,6 +26,21 @@ and keep its original `PL-N` ID. IDs never reuse.
 
 ---
 
+## PL-2 — Per-organism rank corrections (closed out 2026-05-24)
+
+**Raised:** 2026-05-11. Pilot (green-lacewing) landed 2026-05-13.
+**Resolved:** 2026-05-24 with the migration of the final two organisms (tachinid-fly + braconid-wasp).
+**Resolution timeline:**
+- Green-lacewing pilot — 2026-05-13.
+- native-sweat-bee → halictus, grey-mining-bee → andrena — 2026-05-13.
+- hoverfly → syrphidae, ground-beetle → carabidae, crane-fly → tipulidae, skipper-butterfly → hesperiidae — 2026-05-14.
+- potato-leafhopper → empoasca — 2026-05-19 (Path A step 3, commit `05d430f`).
+- tachinid-fly → tachinidae, braconid-wasp → braconidae — 2026-05-24. The fixture-migration blocker resolved by repointing `TachinidFly` / `BraconidWasp` references across `SpeciesRepositoryTest`, `SpeciesQueryImplTest`, `SpeciesCommandImplTest`, `ImageQueryImplTest`, `ImageCommandImplTest`, `InsectAggregateFactoryTest`, `LifeStageEntityRepositoryTest`, `LifeStageEntityQueryImplTest`, `InMemoryCatalogTest`, `InsectFunctionalRoleTest`, and `InsectsControllerWebMvcTest` to `BattusPhilenor` / `ColiasEurytheme` / `HippodamiaConvergens` (added the latter two as `TestInsectsIdentifiers` constants). `InsectsCatalogContributionTest.speciesWithoutGenus…` deleted — the under-identified-species code path is no longer reachable. Family-page species enrichment (commit `a81cccd`) reverted as vestigial — no under-identified species exist in the catalog any more.
+
+**Outcome.** Every species record in the catalog is a real species — fully identified to genus + species + epithet, with typed `genusName` + `familyName` FKs to catalogued parents. Sets up the follow-up slice (Slice 2) to strip the redundant `TaxonomicClassification` from `InsectSpecies` and tighten the invariants to non-nullable.
+
+---
+
 ## PL-14 — Rank-polymorphic `InsectAggregate`
 
 **Raised:** 2026-05-22 (Phase 0 console-pages slice; user noted `InsectAggregate` only referenced `InsectSpecies`).

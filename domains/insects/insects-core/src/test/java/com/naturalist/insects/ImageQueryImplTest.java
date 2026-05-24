@@ -57,7 +57,7 @@ class ImageQueryImplTest
     @Test
     void forParentName_speciesWithNoImages_returnsEmpty() {
         ImageCollection collection =
-                query.forParentName(TestInsectsIdentifiers.InsectSpecies.TachinidFly.name);
+                query.forParentName(TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
 
         assertThat(collection).isNotNull();
         assertThat(collection.isEmpty()).isTrue();

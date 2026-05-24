@@ -1,97 +1,150 @@
-[ {
-  "name" : "019e5221-b000-70ab-8000-ee00cafef00d",
-  "parentRank" : "FAMILY",
-  "parentName" : "syrphidae",
-  "guilds" : [ "PREDATOR", "POLLINATOR" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b001-71ab-8100-ee00cafef00d",
-  "parentRank" : "FAMILY",
-  "parentName" : "carabidae",
-  "guilds" : [ "APEX_PREDATOR" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b002-72ab-8200-ee00cafef00d",
-  "parentRank" : "FAMILY",
-  "parentName" : "tipulidae",
-  "guilds" : [ "DECOMPOSER" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b003-73ab-8300-ee00cafef00d",
-  "parentRank" : "FAMILY",
-  "parentName" : "hesperiidae",
-  "guilds" : [ "POLLINATOR" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b004-74ab-8400-ee00cafef00d",
-  "parentRank" : "GENUS",
-  "parentName" : "chrysoperla",
-  "guilds" : [ "PREDATOR", "POLLINATOR" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b005-75ab-8500-ee00cafef00d",
-  "parentRank" : "GENUS",
-  "parentName" : "halictus",
-  "guilds" : [ "POLLINATOR" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b006-76ab-8600-ee00cafef00d",
-  "parentRank" : "GENUS",
-  "parentName" : "andrena",
-  "guilds" : [ "POLLINATOR" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b007-77ab-8700-ee00cafef00d",
-  "parentRank" : "GENUS",
-  "parentName" : "empoasca",
-  "guilds" : [ "FOOD_WEB" ],
-  "beneficial" : false
-}, {
-  "name" : "019e5221-b008-78ab-8800-ee00cafef00d",
-  "parentRank" : "SPECIES",
-  "parentName" : "tachinid-fly",
-  "guilds" : [ "PARASITOID" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b009-79ab-8900-ee00cafef00d",
-  "parentRank" : "SPECIES",
-  "parentName" : "braconid-wasp",
-  "guilds" : [ "PARASITOID" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b00a-7aab-8a00-ee00cafef00d",
-  "parentRank" : "SPECIES",
-  "parentName" : "hippodamia-convergens",
-  "guilds" : [ "PREDATOR" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b00b-7bab-8b00-ee00cafef00d",
-  "parentRank" : "SPECIES",
-  "parentName" : "blattella-vaga",
-  "guilds" : [ "DECOMPOSER", "FOOD_WEB" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b00c-7cab-8c00-ee00cafef00d",
-  "parentRank" : "SPECIES",
-  "parentName" : "xylocopa-varipuncta",
-  "guilds" : [ "POLLINATOR" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b00d-7dab-8d00-ee00cafef00d",
-  "parentRank" : "SPECIES",
-  "parentName" : "vanessa-cardui",
-  "guilds" : [ "POLLINATOR", "MIGRATORY" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b00e-7eab-8e00-ee00cafef00d",
-  "parentRank" : "SPECIES",
-  "parentName" : "battus-philenor",
-  "guilds" : [ "KEYSTONE" ],
-  "beneficial" : true
-}, {
-  "name" : "019e5221-b00f-7fab-8f00-ee00cafef00d",
-  "parentRank" : "SPECIES",
-  "parentName" : "colias-eurytheme",
-  "guilds" : [ "POLLINATOR" ],
-  "beneficial" : true
-} ]
+[
+  {
+    "name": "019e5221-b000-70ab-8000-ee00cafef00d",
+    "parentRank": "FAMILY",
+    "parentName": "syrphidae",
+    "guilds": [
+      "PREDATOR",
+      "POLLINATOR"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b001-71ab-8100-ee00cafef00d",
+    "parentRank": "FAMILY",
+    "parentName": "carabidae",
+    "guilds": [
+      "APEX_PREDATOR"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b002-72ab-8200-ee00cafef00d",
+    "parentRank": "FAMILY",
+    "parentName": "tipulidae",
+    "guilds": [
+      "DECOMPOSER"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b003-73ab-8300-ee00cafef00d",
+    "parentRank": "FAMILY",
+    "parentName": "hesperiidae",
+    "guilds": [
+      "POLLINATOR"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b004-74ab-8400-ee00cafef00d",
+    "parentRank": "GENUS",
+    "parentName": "chrysoperla",
+    "guilds": [
+      "PREDATOR",
+      "POLLINATOR"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b005-75ab-8500-ee00cafef00d",
+    "parentRank": "GENUS",
+    "parentName": "halictus",
+    "guilds": [
+      "POLLINATOR"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b006-76ab-8600-ee00cafef00d",
+    "parentRank": "GENUS",
+    "parentName": "andrena",
+    "guilds": [
+      "POLLINATOR"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b007-77ab-8700-ee00cafef00d",
+    "parentRank": "GENUS",
+    "parentName": "empoasca",
+    "guilds": [
+      "FOOD_WEB"
+    ],
+    "beneficial": false
+  },
+  {
+    "name": "019e5221-b008-78ab-8800-ee00cafef00d",
+    "parentRank": "FAMILY",
+    "parentName": "tachinidae",
+    "guilds": [
+      "PARASITOID"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b009-79ab-8900-ee00cafef00d",
+    "parentRank": "FAMILY",
+    "parentName": "braconidae",
+    "guilds": [
+      "PARASITOID"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b00a-7aab-8a00-ee00cafef00d",
+    "parentRank": "SPECIES",
+    "parentName": "hippodamia-convergens",
+    "guilds": [
+      "PREDATOR"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b00b-7bab-8b00-ee00cafef00d",
+    "parentRank": "SPECIES",
+    "parentName": "blattella-vaga",
+    "guilds": [
+      "DECOMPOSER",
+      "FOOD_WEB"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b00c-7cab-8c00-ee00cafef00d",
+    "parentRank": "SPECIES",
+    "parentName": "xylocopa-varipuncta",
+    "guilds": [
+      "POLLINATOR"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b00d-7dab-8d00-ee00cafef00d",
+    "parentRank": "SPECIES",
+    "parentName": "vanessa-cardui",
+    "guilds": [
+      "POLLINATOR",
+      "MIGRATORY"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b00e-7eab-8e00-ee00cafef00d",
+    "parentRank": "SPECIES",
+    "parentName": "battus-philenor",
+    "guilds": [
+      "KEYSTONE"
+    ],
+    "beneficial": true
+  },
+  {
+    "name": "019e5221-b00f-7fab-8f00-ee00cafef00d",
+    "parentRank": "SPECIES",
+    "parentName": "colias-eurytheme",
+    "guilds": [
+      "POLLINATOR"
+    ],
+    "beneficial": true
+  }
+]

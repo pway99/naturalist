@@ -95,12 +95,8 @@ public class InsectsController {
         var genera = insectQuery.genera().forFamilyName(familyName).stream()
                 .sorted(Comparator.comparing(g -> g.name().value()))
                 .toList();
-        var species = insectQuery.species().forFamilyName(familyName).stream()
-                .sorted(Comparator.comparing(s -> s.name().value()))
-                .toList();
         model.addAttribute("family", family.get());
         model.addAttribute("genera", genera);
-        model.addAttribute("species", species);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));

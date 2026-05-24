@@ -11,7 +11,7 @@ import java.util.UUID;
  * <p>
  * Usage in contract tests:
  * <pre>
- *     repository().getByName(TestInsectsIdentifiers.InsectSpecies.TachinidFly.name)
+ *     repository().getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name)
  *     repository().getByName(TestInsectsIdentifiers.InsectSpecies.NotFound.name)
  * </pre>
  */
@@ -35,10 +35,30 @@ public class TestInsectsIdentifiers {
 
         public static class Tachinidae {
             public static final InsectFamilyName name = InsectFamilyName.of("tachinidae");
+
+            public static class LifeStages {
+                private LifeStages() {
+                }
+
+                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
+                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
+                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
+                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
+            }
         }
 
         public static class Braconidae {
             public static final InsectFamilyName name = InsectFamilyName.of("braconidae");
+
+            public static class LifeStages {
+                private LifeStages() {
+                }
+
+                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
+                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
+                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
+                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
+            }
         }
 
         public static class Syrphidae {
@@ -213,40 +233,6 @@ public class TestInsectsIdentifiers {
                     LifeStageName.of(name, LifeStageKind.EGG);
         }
 
-        public static class TachinidFly {
-            // tachinid-fly remains on its vernacular slug — catalog record is
-            // pending (family-level, no genus/species). Migrates to binomial
-            // when FU-1 ships the pending-organism mechanism.
-            public static final InsectSpeciesName name = InsectSpeciesName.of("tachinid-fly");
-
-            public static class LifeStages {
-                private LifeStages() {
-                }
-
-                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
-                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
-                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
-                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
-            }
-        }
-
-        public static class BraconidWasp {
-            // braconid-wasp remains on its vernacular slug — catalog record is
-            // pending (family-level, no genus/species). Migrates to binomial
-            // when FU-1 ships the pending-organism mechanism.
-            public static final InsectSpeciesName name = InsectSpeciesName.of("braconid-wasp");
-
-            public static class LifeStages {
-                private LifeStages() {
-                }
-
-                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
-                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
-                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
-                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
-            }
-        }
-
         public static class BattusPhilenor {
             public static final InsectSpeciesName name = InsectSpeciesName.of("battus-philenor");
 
@@ -274,6 +260,34 @@ public class TestInsectsIdentifiers {
                     public static final InsectImageId name = InsectImageId.of(
                             UUID.fromString("019e0f1b-71d0-7cdb-9d07-d8214037a4cb"));
                 }
+            }
+        }
+
+        public static class ColiasEurytheme {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("colias-eurytheme");
+
+            public static class LifeStages {
+                private LifeStages() {
+                }
+
+                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
+                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
+                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
+                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
+            }
+        }
+
+        public static class HippodamiaConvergens {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("hippodamia-convergens");
+
+            public static class LifeStages {
+                private LifeStages() {
+                }
+
+                public static final LifeStageName Egg = LifeStageName.of(name, LifeStageKind.EGG);
+                public static final LifeStageName Larva = LifeStageName.of(name, LifeStageKind.LARVA);
+                public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
+                public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
             }
         }
     }

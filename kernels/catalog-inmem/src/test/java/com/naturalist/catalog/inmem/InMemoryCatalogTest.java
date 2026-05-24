@@ -58,8 +58,8 @@ class InMemoryCatalogTest {
             new Plants(), PlantName.of("white-clover"));
     private static final EntityRef THYMOL = new EntityRef(
             new Chemistry(), Compounds.Thymol.name);
-    private static final EntityRef TACHINID_FLY = new EntityRef(
-            new Insects(), InsectSpecies.TachinidFly.name);
+    private static final EntityRef BATTUS_PHILENOR = new EntityRef(
+            new Insects(), InsectSpecies.BattusPhilenor.name);
 
     private static final CompoundName THYMOL_NAME = Compounds.Thymol.name;
     private static final CompoundName UNKNOWN_COMPOUND = Compounds.NotFound.name;
@@ -396,14 +396,14 @@ class InMemoryCatalogTest {
                 Map.of(THYMOL_NAME, List.of(CALIFORNIA_PIPEVINE)));
         EntityReferences<CompoundName> insectsRefs = provider(new Insects(),
                 CompoundName.class,
-                Map.of(THYMOL_NAME, List.of(TACHINID_FLY)));
+                Map.of(THYMOL_NAME, List.of(BATTUS_PHILENOR)));
         Catalog catalog = CatalogAssembly.from(List.of(), List.of(plantsRefs, insectsRefs));
 
         Map<DomainId, List<EntityRef>> result = catalog.findReferencesTo(THYMOL_NAME);
 
         assertThat(result).containsOnlyKeys(new Plants(), new Insects());
         assertThat(result.get(new Plants())).containsExactly(CALIFORNIA_PIPEVINE);
-        assertThat(result.get(new Insects())).containsExactly(TACHINID_FLY);
+        assertThat(result.get(new Insects())).containsExactly(BATTUS_PHILENOR);
     }
 
     @Test
@@ -431,13 +431,13 @@ class InMemoryCatalogTest {
                 new Plants(), CompoundName.class);
         EntityReferences<CompoundName> insectsRefs = provider(new Insects(),
                 CompoundName.class,
-                Map.of(THYMOL_NAME, List.of(TACHINID_FLY)));
+                Map.of(THYMOL_NAME, List.of(BATTUS_PHILENOR)));
         Catalog catalog = CatalogAssembly.from(List.of(), List.of(plantsRefs, insectsRefs));
 
         Map<DomainId, List<EntityRef>> result = catalog.findReferencesTo(THYMOL_NAME);
 
         assertThat(result).containsOnlyKeys(new Insects());
-        assertThat(result.get(new Insects())).containsExactly(TACHINID_FLY);
+        assertThat(result.get(new Insects())).containsExactly(BATTUS_PHILENOR);
     }
 
     @Test

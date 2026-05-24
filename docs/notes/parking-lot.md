@@ -6,26 +6,6 @@ Short entries (~5 lines each) for forks discovered mid-work and decisions in fli
 
 ---
 
-## PL-2 — Per-organism rank corrections (green-lacewing pilot landed 2026-05-13)
-
-**Raised:** 2026-05-11.
-**Where:** Per-organism data reorganization for Phase 0 of the identification roadmap.
-**Pilot status:** Green-lacewing landed 2026-05-13. The `green-lacewing` `InsectSpecies` record was deleted; the four `green-lacewing-*` standalone `LifeStage` records were renamed to `chrysoperla-*`; the `chrysoperla` `InsectGenus` record gained `"placedIn": "holometabola"` so `InsectLifeStages.stagesOf(...)` resolves its stage list via the clade traversal. No inline life-stage fields were added to the genus record — Phase 5 made that workaround obsolete.
-**Remaining work (each a separate per-organism slice):**
-- ~~native-sweat-bee → halictus (genus)~~ landed 2026-05-13
-- ~~grey-mining-bee → andrena (genus)~~ landed 2026-05-13
-- ~~hoverfly → syrphidae (family)~~ landed 2026-05-14
-- ~~ground-beetle → carabidae (family)~~ landed 2026-05-14
-- ~~crane-fly → tipulidae (family)~~ landed 2026-05-14
-- ~~skipper-butterfly → hesperiidae (family)~~ landed 2026-05-14 (placed at `lepidoptera`, more specific than the others)
-- **potato-leafhopper → empoasca (genus)** — *not bundled.* Two blockers: (1) Cicadellidae is Hemiptera/Hemimetabolous, no kernel permit declares that trait, so any `placedIn` choice would either resolve to wrong stages (`holometabola`) or empty (`insecta`). (2) `PotatoLeafhopper` is a test fixture in TestInsectsIdentifiers carrying `Images.Img9047`/`Img9048` constants tied to records in `insect-images.json`, used across image command/query tests. Resolution requires either adding a `Hemimetabolous` trait permit (kernel work) or accepting empty stage resolution; image records and their consumers need repointing or deletion.
-- **tachinid-fly → tachinidae (family)** — *not bundled.* `TachinidFly` is the canonical species fixture in `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, and `InMemoryCatalogTest` (`knownEntityNames()`, life-stage lookup assertions, cross-domain catalog ref). Migrating means picking replacement fixtures (likely battus-philenor) across all those test classes — a separate refactor with explicit scope, not a 5-line JSON edit.
-- **braconid-wasp → braconidae (family)** — *not bundled.* Same fixture-migration shape as tachinid-fly: appears alongside it in the `knownEntityNames()` lists across multiple test classes.
-
-Clean recipe (applies to the 6 landed organisms): delete the under-identified `InsectSpecies` record, rename its four standalone `LifeStage` records to the parent-rank composite slug, add `"placedIn": "..."` to the destination genus/family record so the resolver works. Each clean move is a focused JSON edit + one resolver test. The original plan at `docs/plans/archive/green-lacewing-rank-correction.md` predates Phase 5 and overstates the work — there is no inline-life-stage merge step.
-
----
-
 ## PL-3 — Aggregate × CatalogEntity / Entity composition ADR
 
 **Raised:** Pre-Phase-1b (rolled forward from old `Q0`).

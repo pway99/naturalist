@@ -36,8 +36,8 @@ class SpeciesQueryImplTest
     public List<InsectSpeciesName> knownEntityNames() {
         return List.of(
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
-                TestInsectsIdentifiers.InsectSpecies.TachinidFly.name,
-                TestInsectsIdentifiers.InsectSpecies.BraconidWasp.name);
+                TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name,
+                TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
     }
 
     @Test
@@ -57,10 +57,10 @@ class SpeciesQueryImplTest
     @Test
     void forFamilyName_returnsSpeciesWithMatchingFamilyName() {
         SpeciesCollection collection =
-                query.forFamilyName(TestInsectsIdentifiers.InsectFamily.Tachinidae.name);
+                query.forFamilyName(TestInsectsIdentifiers.InsectFamily.Papilionidae.name);
 
         assertThat(collection.stream())
                 .extracting(s -> s.name().value())
-                .contains("tachinid-fly");
+                .contains("battus-philenor");
     }
 }

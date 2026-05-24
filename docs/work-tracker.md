@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-23 (Catalogue-completeness slice 1 landed — every species record now has a catalogued parent genus + family. Added 5 new family records (`coccinellidae`, `ectobiidae`, `apidae`, `nymphalidae`, `pieridae`) and 6 new genus records (`hippodamia`, `blattella`, `xylocopa`, `vanessa`, `battus`, `colias`); wired typed `genusName` + `familyName` FKs on the 6 fully-identified species. `tachinid-fly` and `braconid-wasp` stay genus-less by design. Sets up the follow-up slice that strips redundant `TaxonomicClassification` fields from `InsectSpecies`.).
+Last updated: 2026-05-24 (PL-2 closed out — tachinid-fly + braconid-wasp species records deleted; their standalone `LifeStage` records renamed to family-rank slugs (`tachinidae-*`, `braconidae-*`); functional-role parents rewired to family rank; `tachinidae` + `braconidae` gained `placedIn: "holometabola"`. Test fixtures repointed to `BattusPhilenor`/`ColiasEurytheme`/`HippodamiaConvergens` across ~10 test classes. Family-page species enrichment reverted as vestigial. Every species record in the catalog is now a fully-identified species. Unblocks Slice 2 to strip `TaxonomicClassification` from `InsectSpecies`.).
 
 ---
 
@@ -17,25 +17,25 @@ Last updated: 2026-05-23 (Catalogue-completeness slice 1 landed — every specie
 
 ## Current slice
 
-**No active slice** — catalogue-completeness slice 1 just landed.
+**No active slice** — PL-2 closed out.
 
 **Candidate next slices** (pick when ready):
 
-- **Catalogue-completeness slice 2 — strip redundant `TaxonomicClassification` fields from `InsectSpecies`.** With every species now having a catalogued parent genus + family, `taxonomy.order/family/genus` on `InsectSpecies` is derivable from the parent records and can be dropped. Species keeps only `TaxonomicSpecies` (the epithet). Touches every consumer of `species.taxonomy().family()` / `.genus()` / `.order()` plus the JTE templates.
-- **PL-2 — tachinid-fly + braconid-wasp rank corrections.** Same recipe as the eight landed PL-2 organisms, but blocked on fixture-migration scope across `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, `InMemoryCatalogTest`. Needs a deliberate fixture-replacement sub-slice (likely repoint to `battus-philenor`).
+- **Catalogue-completeness slice 2 — strip redundant `TaxonomicClassification` fields from `InsectSpecies`.** With every species now having a catalogued parent genus + family AND no more under-identified species records, `taxonomy.order/family/genus` on `InsectSpecies` is derivable from the parent records and can be dropped. Species keeps only `TaxonomicSpecies` (the epithet). All three of `genusName`, `familyName`, `epithet` become non-nullable. Touches every consumer of `species.taxonomy().family()` / `.genus()` / `.order()` plus the JTE templates and `InsectsCatalogContribution.tokensFor(InsectSpecies)`.
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 - **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
 
 ## Parking lot
 
-[`notes/parking-lot.md`](notes/parking-lot.md) — 10 entries today (PL-13 and PL-14 both resolved 2026-05-23, moved to `parking-lot-resolved.md`). PL-12 (typed `LifeStage.parentName`) parked pending LinneanRank. PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
+[`notes/parking-lot.md`](notes/parking-lot.md) — 9 entries today (PL-2 closed out 2026-05-24, moved to `parking-lot-resolved.md`). PL-12 (typed `LifeStage.parentName`) parked pending LinneanRank.
 
 ## Recently completed
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| PL-2 closeout — tachinid-fly + braconid-wasp → family rank; fixtures repointed          | 2026-05-24 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-2)      | _pending_    |
 | Catalogue-completeness slice 1 — 5 families + 6 genera + species FK wiring              | 2026-05-23 | conversation; prerequisite for stripping `TaxonomicClassification` from `InsectSpecies` | `412912f`    |
-| Family-page species enrichment — under-identified species on `/insects/families/{name}` | 2026-05-23 | conversation; uses `SpeciesQuery.forFamilyName` from PL-13                   | `a81cccd`    |
+| Family-page species enrichment — under-identified species on `/insects/families/{name}` | 2026-05-23 | conversation; uses `SpeciesQuery.forFamilyName` from PL-13 (reverted in PL-2 closeout) | `a81cccd`    |
 | PL-14 — rank-polymorphic `InsectAggregate` (sealed interface + 3 record permits)        | 2026-05-23 | [`plans/archive/pl-14-rank-polymorphic-insect-aggregate.md`](plans/archive/pl-14-rank-polymorphic-insect-aggregate.md) | `d698ac5`    |
 | PL-13 — typed `InsectGenusName` / `InsectFamilyName` FK on `InsectSpecies`              | 2026-05-23 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-13)     | `c91efc0`    |
 | Insects console — family + genus list/detail pages                                      | 2026-05-23 | [`plans/archive/insects-family-genus-console.md`](plans/archive/insects-family-genus-console.md) | `b1216de`    |

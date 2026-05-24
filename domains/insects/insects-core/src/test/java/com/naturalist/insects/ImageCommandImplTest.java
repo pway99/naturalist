@@ -71,7 +71,7 @@ class ImageCommandImplTest
     public InsectImage modifiedEntity(InsectImage original) {
         return new InsectImage(
                 original.name(),
-                TestInsectsIdentifiers.InsectSpecies.TachinidFly.name,
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-05-01T08:30:00Z"),
                 FileName.of("IMG_TEST_MODIFIED.HEIC"));
     }

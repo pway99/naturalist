@@ -14,7 +14,8 @@
         "label": "tachinid fly",
         "locale": "en"
       }
-    ]
+    ],
+    "placedIn": "holometabola"
   },
   {
     "name": "braconidae",
@@ -31,7 +32,8 @@
         "label": "braconid wasp",
         "locale": "en"
       }
-    ]
+    ],
+    "placedIn": "holometabola"
   },
   {
     "name": "syrphidae",
