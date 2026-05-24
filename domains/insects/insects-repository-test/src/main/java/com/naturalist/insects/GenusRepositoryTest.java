@@ -6,9 +6,7 @@ import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,8 +50,6 @@ interface GenusRepositoryTest
         return new InsectGenus(
                 InsectGenusName.of("test-genus-xx"),
                 InsectFamilyName.of("tachinidae"),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
-                TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(),
@@ -71,8 +67,6 @@ interface GenusRepositoryTest
         return new InsectGenus(
                 InsectGenusName.of("test-ghost-xx"),
                 InsectFamilyName.of("test-ghost-family-xx"),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
-                TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(),
@@ -88,8 +82,6 @@ interface GenusRepositoryTest
         return new InsectGenus(
                 original.name(),
                 InsectFamilyName.of("braconidae"),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
-                TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(CommonName.of("alt-" + RandomValue.string())),

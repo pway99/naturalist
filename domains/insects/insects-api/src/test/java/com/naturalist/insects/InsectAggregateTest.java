@@ -4,7 +4,10 @@ import com.naturalist.RandomValue;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
-import com.naturalist.taxonomy.*;
+import com.naturalist.taxonomy.TaxonomicFamily;
+import com.naturalist.taxonomy.TaxonomicGenus;
+import com.naturalist.taxonomy.TaxonomicOrder;
+import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -99,8 +102,6 @@ class InsectAggregateTest {
         return new InsectGenus(
                 InsectGenusName.of(RandomValue.string()),
                 InsectFamilyName.of("papilionidae"),
-                TaxonomicOrder.of("Lepidoptera"),
-                TaxonomicFamily.of("Papilionidae"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),

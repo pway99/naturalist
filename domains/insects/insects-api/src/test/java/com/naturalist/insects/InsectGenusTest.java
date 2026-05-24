@@ -14,9 +14,7 @@ import com.naturalist.insects.lifestage.StageHabitat;
 import com.naturalist.insects.lifestage.StagePhenology;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
-import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 import org.junit.jupiter.api.Test;
 
 import java.time.MonthDay;
@@ -47,8 +45,6 @@ class InsectGenusTest {
         InsectGenus genus = new InsectGenus(
                 name,
                 InsectFamilyName.of("chrysopidae"),
-                TaxonomicOrder.of("Neuroptera"),
-                TaxonomicFamily.of("Chrysopidae"),
                 TaxonomicGenus.of("Chrysoperla"),
                 description(),
                 Set.of(),
@@ -73,8 +69,6 @@ class InsectGenusTest {
         InsectGenus genus = new InsectGenus(
                 name,
                 InsectFamilyName.of("chrysopidae"),
-                TaxonomicOrder.of("Neuroptera"),
-                TaxonomicFamily.of("Chrysopidae"),
                 TaxonomicGenus.of("Chrysoperla"),
                 description(),
                 Set.of(),
@@ -124,8 +118,6 @@ class InsectGenusTest {
         return new InsectGenus(
                 InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
-                TaxonomicOrder.of("Lepidoptera"),
-                TaxonomicFamily.of("Papilionidae"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),

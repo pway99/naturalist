@@ -90,8 +90,6 @@ class InsectLifeStagesTest {
         return new InsectGenus(
                 InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
-                TaxonomicOrder.of("Lepidoptera"),
-                TaxonomicFamily.of("Papilionidae"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),
