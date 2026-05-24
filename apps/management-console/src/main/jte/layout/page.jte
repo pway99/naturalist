@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=7">
+    <link rel="stylesheet" href="/css/naturalist.css?v=8">
     <script src="/js/htmx.min.js" defer></script>
 </head>
 <body>

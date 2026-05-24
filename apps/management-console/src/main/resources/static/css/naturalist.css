@@ -1223,6 +1223,13 @@ figure.compound-depiction img {
     margin-top: 1.25rem;
 }
 
+.clade-lineage {
+    font-size: 0.85rem;
+    color: var(--pico-muted-color);
+    margin: 0 0 0.25rem;
+    text-shadow: var(--text-shadow-subtle);
+}
+
 /* Insects sub-navigation: left-aligned tab strip rendered under page H1s
    inside the insects context. The strip sits on a warm-tan panel
    darker than the page's cream `--pico-background-color`, which lets
