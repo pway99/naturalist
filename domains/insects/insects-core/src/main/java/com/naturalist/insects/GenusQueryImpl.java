@@ -25,4 +25,12 @@ class GenusQueryImpl
                 .throwWhenInvalid();
         return GenusCollection.of(repository().getByEntityNameSet(names));
     }
+
+    @Override
+    public GenusCollection forFamilyName(InsectFamilyName familyName) {
+        observer().arguments("forFamilyName",
+                        i -> i.entityName(familyName, "familyName"))
+                .throwWhenInvalid();
+        return GenusCollection.of(repository().getByFamilyName(familyName));
+    }
 }
