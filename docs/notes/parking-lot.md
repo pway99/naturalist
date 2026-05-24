@@ -143,22 +143,6 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
-## PL-13 — typed `InsectGenusName` / `InsectFamilyName` FK on `InsectSpecies`
-
-**Raised:** 2026-05-22 (during Phase 0 console-pages slice api audit).
-
-**Where:** `domains/insects/insects-api/src/main/java/com/naturalist/insects/InsectSpecies.java` — `taxonomy` (TaxonomicClassification) carries `family()` and `genus()` as text `TaxonomicFamily` / `TaxonomicGenus` values, but no typed `InsectFamilyName` / `InsectGenusName` upward FK.
-
-**The smell.** `GenusQuery.forFamilyName(InsectFamilyName)` is typed (uses `genus.familyName()`). The matching species lookups — "members of this genus", "members of this family" — fall back to text-equality on `taxonomy().genus().value()` / `taxonomy().family().value()`. This works today (one slug per taxonomic name in the current data) but quietly couples the species record's display string to the genus record's slug. A rename of either drops the link silently.
-
-**Why deferred.** Promoting `genusName` / `familyName` to typed components on `InsectSpecies` requires (a) the record retype, (b) JSON migration on 38 species records, (c) repository unique-constraint review, (d) updates to `SpeciesRepositoryTest` / `SpeciesCommandImplTest` / `SpeciesQueryImplTest`. That is its own slice. Doing it together with the console pages over-scopes this PR.
-
-**Resolution path.** Add `InsectGenusName genusName` (and `InsectFamilyName familyName` — for under-identified-species cases where genus is unknown but family is) as nullable components on `InsectSpecies`. Promote the existing text accessors to convenience methods. Migrate JSON. Retype `SpeciesQuery.forGenusEpithet(TaxonomicGenus)` introduced in this slice to `forGenusName(InsectGenusName)` and remove the text stopgap. Same for any species-by-family follow-up.
-
-**Blocking:** Not currently — text-based join works on the present dataset.
-
----
-
 ## PL-14 — Rank-polymorphic `InsectAggregate`
 
 **Raised:** 2026-05-22 (during Phase 0 console-pages slice; user noted `InsectAggregate` only references `InsectSpecies`).

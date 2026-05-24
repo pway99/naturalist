@@ -121,7 +121,7 @@ public class InsectsController {
         }
         var description = genus.get().description();
         var members = insectQuery.species()
-                .forGenusEpithet(genus.get().genus())
+                .forGenusName(genusName)
                 .stream()
                 .sorted(Comparator.comparing(s -> s.name().value()))
                 .toList();

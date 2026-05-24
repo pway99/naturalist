@@ -108,6 +108,8 @@ class InsectLifeStagesTest {
                         TaxonomicFamily.of("Papilionidae"),
                         TaxonomicGenus.of("Battus"),
                         TaxonomicSpecies.of("philenor")),
+                null,
+                InsectFamilyName.of("papilionidae"),
                 description(),
                 Set.of(),
                 null, null,

@@ -3,7 +3,6 @@ package com.naturalist.insects;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.taxonomy.TaxonomicGenus;
 
 import java.util.List;
 
@@ -17,12 +16,22 @@ class SpeciesRepositoryMock
     }
 
     @Override
-    public List<InsectSpecies> getByGenusEpithet(TaxonomicGenus genusEpithet) {
-        observer().arguments("getByGenusEpithet",
-                        i -> i.namedValue(genusEpithet, "genusEpithet"))
+    public List<InsectSpecies> getByGenusName(InsectGenusName genusName) {
+        observer().arguments("getByGenusName",
+                        i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
-                .filter(s -> s.belongsToGenus(genusEpithet))
+                .filter(s -> genusName.equals(s.genusName()))
+                .toList();
+    }
+
+    @Override
+    public List<InsectSpecies> getByFamilyName(InsectFamilyName familyName) {
+        observer().arguments("getByFamilyName",
+                        i -> i.entityName(familyName, "familyName"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(s -> familyName.equals(s.familyName()))
                 .toList();
     }
 }

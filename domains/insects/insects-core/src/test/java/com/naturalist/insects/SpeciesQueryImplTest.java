@@ -5,7 +5,6 @@ import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
-import com.naturalist.taxonomy.TaxonomicGenus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -42,19 +41,26 @@ class SpeciesQueryImplTest
     }
 
     @Test
-    void forGenusEpithet_rejectsNull() {
-        assertThatThrownBy(() -> query.forGenusEpithet(null))
+    void forGenusName_rejectsNull() {
+        assertThatThrownBy(() -> query.forGenusName(null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("genusEpithet");
+                .hasMessageContainingAll("genusName");
     }
 
     @Test
-    void forGenusEpithet_returnsSpeciesWithMatchingTaxonomyGenus() {
+    void forFamilyName_rejectsNull() {
+        assertThatThrownBy(() -> query.forFamilyName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("familyName");
+    }
+
+    @Test
+    void forFamilyName_returnsSpeciesWithMatchingFamilyName() {
         SpeciesCollection collection =
-                query.forGenusEpithet(TaxonomicGenus.of("Battus"));
+                query.forFamilyName(TestInsectsIdentifiers.InsectFamily.Tachinidae.name);
 
         assertThat(collection.stream())
                 .extracting(s -> s.name().value())
-                .contains("battus-philenor");
+                .contains("tachinid-fly");
     }
 }

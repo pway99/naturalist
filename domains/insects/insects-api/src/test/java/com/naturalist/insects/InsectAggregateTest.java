@@ -43,6 +43,7 @@ class InsectAggregateTest {
                         TaxonomicFamily.of("Coccinellidae"),
                         TaxonomicGenus.of("Hippodamia"),
                         TaxonomicSpecies.of("convergens")),
+                null, null,
                 new Description(
                         RandomValue.string(),
                         RandomValue.string(),

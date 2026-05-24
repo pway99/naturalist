@@ -1,7 +1,6 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.EntityRepository;
-import com.naturalist.taxonomy.TaxonomicGenus;
 
 import java.util.List;
 
@@ -78,7 +77,9 @@ class InsectRepository {
     protected interface SpeciesRepository
             extends EntityRepository<InsectSpeciesName, InsectSpecies> {
 
-        List<InsectSpecies> getByGenusEpithet(TaxonomicGenus genusEpithet);
+        List<InsectSpecies> getByGenusName(InsectGenusName genusName);
+
+        List<InsectSpecies> getByFamilyName(InsectFamilyName familyName);
     }
 
     protected interface ImageRepository

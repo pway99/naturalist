@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-23 (Phase 0 console pages slice closed — [`plans/archive/insects-family-genus-console.md`](plans/archive/insects-family-genus-console.md) shipped `/insects/families` + `/insects/genera` list/detail pages, the `GenusQuery.forFamilyName` typed-FK api gap, and the `SpeciesQuery.forGenusEpithet` text stopgap. Audit pass raised PL-13 (typed `InsectSpecies` FK) and PL-14 (rank-polymorphic `InsectAggregate`). `mvn verify` green; no active slice.).
+Last updated: 2026-05-23 (PL-13 landed — `InsectSpecies` now carries typed `@Nullable InsectGenusName` / `@Nullable InsectFamilyName` upward FKs; `SpeciesQuery.forGenusName` and `forFamilyName` replace the `forGenusEpithet(TaxonomicGenus)` text stopgap; console genus detail routes through the typed FK; 8 species JSON records migrated. `mvn verify` green; no active slice.).
 
 ---
 
@@ -17,24 +17,25 @@ Last updated: 2026-05-23 (Phase 0 console pages slice closed — [`plans/archive
 
 ## Current slice
 
-**No active slice** — Phase 0 console pages just landed (final commit `b1216de`).
+**No active slice** — PL-13 just landed.
 
 **Candidate next slices** (pick when ready):
 
-- **PL-13 — typed `InsectGenusName`/`InsectFamilyName` FK on `InsectSpecies`.** Removes the text stopgap (`SpeciesQuery.forGenusEpithet`) the family/genus pages slice introduced. JSON migration on 38 species records plus query-impl retypeover.
 - **PL-14 — rank-polymorphic `InsectAggregate`.** Aggregate currently rooted at `InsectSpecies` only; `InsectImage.parentName()` is already `InsectRankName` so the data side is ready. Three shape options (sealed permits / parallel records / generic root) — Phase 2's session-scope value object will inform the choice.
+- **Family-page species enrichment.** Now that `SpeciesQuery.forFamilyName` exists, the `/insects/families/{name}` page could list under-identified species (e.g. `tachinid-fly`) alongside the genera under that family. Two-line controller change + template tweak.
 - **PL-2 — tachinid-fly + braconid-wasp rank corrections.** Same recipe as the eight landed PL-2 organisms, but blocked on fixture-migration scope across `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, `InMemoryCatalogTest`. Needs a deliberate fixture-replacement sub-slice (likely repoint to `battus-philenor`).
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 - **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
 
 ## Parking lot
 
-[`notes/parking-lot.md`](notes/parking-lot.md) — 12 entries today; PL-13 (typed FK on `InsectSpecies`) and PL-14 (rank-polymorphic `InsectAggregate`) landed in `d1cf631` from the Phase 0 console-pages audit. PL-12 (typed `LifeStage.parentName`) parked pending LinneanRank. PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
+[`notes/parking-lot.md`](notes/parking-lot.md) — 11 entries today (PL-13 resolved 2026-05-23, moved to `parking-lot-resolved.md`). PL-14 (rank-polymorphic `InsectAggregate`) remains parked pending Phase 2's session-scope value object. PL-12 (typed `LifeStage.parentName`) parked pending LinneanRank. PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
 
 ## Recently completed
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| PL-13 — typed `InsectGenusName` / `InsectFamilyName` FK on `InsectSpecies`              | 2026-05-23 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-13)     | _pending_    |
 | Insects console — family + genus list/detail pages                                      | 2026-05-23 | [`plans/archive/insects-family-genus-console.md`](plans/archive/insects-family-genus-console.md) | `b1216de`    |
 | LifeStage query rank-polymorphism — `forParentName(InsectRankName)`                     | 2026-05-20 | [`plans/archive/insect-image-parent-rank.md`](plans/archive/insect-image-parent-rank.md) (mirror) | `f5878d7`    |
 | PL-11 Phase 4 — strip species fields; console fanout                                    | 2026-05-19 | [`plans/archive/insect-functional-role.md`](plans/archive/insect-functional-role.md)         | `327c5db`    |

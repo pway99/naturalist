@@ -7,6 +7,8 @@
       "genus": null,
       "species": null
     },
+    "genusName": null,
+    "familyName": "tachinidae",
     "description": {
       "preschool": "This fuzzy fly is a garden helper. It looks like a housefly with extra bristles, and it lays its tiny eggs on caterpillars and other insects that eat our plants. Once the eggs hatch, they protect the garden from the inside.",
       "elementary": "Tachinid flies are parasites of caterpillars, beetles, and bugs that damage vegetable plants. The mother fly glues her eggs onto a pest insect or hides them on leaves where the pest will eat them. The fly larva hatches inside the pest and slowly eats it, which kills the pest before it can do much more damage.",
@@ -209,6 +211,8 @@
       "genus": null,
       "species": null
     },
+    "genusName": null,
+    "familyName": "braconidae",
     "description": {
       "preschool": "This tiny wasp is smaller than your fingernail and it is one of the garden's best protectors. It finds caterpillars and aphids and lays eggs inside them or on them. The babies that hatch eat the pest and protect our tomatoes.",
       "elementary": "Braconid wasps are tiny insects that lay their eggs inside or on pest insects like aphids and caterpillars. When the eggs hatch, the wasp larvae eat the pest from the inside out, eventually killing it. You can sometimes find caterpillars covered with little white cocoons — those are the braconid pupae, and the caterpillar is already dying. Braconid wasps help protect our tomato plants without any sprays.",
@@ -402,6 +406,8 @@
   },
   {
     "name": "hippodamia-convergens",
+    "genusName": null,
+    "familyName": null,
     "taxonomy": {
       "order": "Coleoptera",
       "family": "Coccinellidae",
@@ -598,6 +604,8 @@
   },
   {
     "name": "blattella-vaga",
+    "genusName": null,
+    "familyName": null,
     "taxonomy": {
       "order": "Blattodea",
       "family": "Ectobiidae",
@@ -709,6 +717,8 @@
   },
   {
     "name": "xylocopa-varipuncta",
+    "genusName": null,
+    "familyName": null,
     "taxonomy": {
       "order": "Hymenoptera",
       "family": "Apidae",
@@ -914,6 +924,8 @@
   },
   {
     "name": "vanessa-cardui",
+    "genusName": null,
+    "familyName": null,
     "taxonomy": {
       "order": "Lepidoptera",
       "family": "Nymphalidae",
@@ -1126,6 +1138,8 @@
   },
   {
     "name": "battus-philenor",
+    "genusName": null,
+    "familyName": "papilionidae",
     "taxonomy": {
       "order": "Lepidoptera",
       "family": "Papilionidae",
@@ -1413,6 +1427,8 @@
   },
   {
     "name": "colias-eurytheme",
+    "genusName": null,
+    "familyName": null,
     "taxonomy": {
       "order": "Lepidoptera",
       "family": "Pieridae",

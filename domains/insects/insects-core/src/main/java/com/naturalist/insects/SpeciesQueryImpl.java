@@ -2,7 +2,6 @@ package com.naturalist.insects;
 
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.taxonomy.TaxonomicGenus;
 
 import java.util.Set;
 
@@ -27,11 +26,20 @@ class SpeciesQueryImpl
     }
 
     @Override
-    public InsectEntityCollections.SpeciesCollection forGenusEpithet(TaxonomicGenus genusEpithet) {
-        observer().arguments("forGenusEpithet",
-                        i -> i.namedValue(genusEpithet, "genusEpithet"))
+    public InsectEntityCollections.SpeciesCollection forGenusName(InsectGenusName genusName) {
+        observer().arguments("forGenusName",
+                        i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
         return InsectEntityCollections.SpeciesCollection.of(
-                repository().getByGenusEpithet(genusEpithet));
+                repository().getByGenusName(genusName));
+    }
+
+    @Override
+    public InsectEntityCollections.SpeciesCollection forFamilyName(InsectFamilyName familyName) {
+        observer().arguments("forFamilyName",
+                        i -> i.entityName(familyName, "familyName"))
+                .throwWhenInvalid();
+        return InsectEntityCollections.SpeciesCollection.of(
+                repository().getByFamilyName(familyName));
     }
 }

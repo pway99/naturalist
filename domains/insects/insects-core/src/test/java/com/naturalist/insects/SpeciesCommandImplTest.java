@@ -60,6 +60,7 @@ class SpeciesCommandImplTest
         return new InsectSpecies(
                 InsectSpeciesName.of("test-command-species-xx"),
                 taxonomy(),
+                null, null,
                 description(),
                 Set.of(),
                 null, null,
@@ -73,6 +74,7 @@ class SpeciesCommandImplTest
         return new InsectSpecies(
                 InsectSpeciesName.of("test-command-ghost-xx"),
                 taxonomy(),
+                null, null,
                 description(),
                 Set.of(),
                 null, null,
@@ -86,6 +88,7 @@ class SpeciesCommandImplTest
         return new InsectSpecies(
                 original.name(),
                 taxonomy(),
+                null, null,
                 description(),
                 Set.of(),
                 RandomValue.string(),

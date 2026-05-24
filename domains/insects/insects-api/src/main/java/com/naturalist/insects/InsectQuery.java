@@ -6,7 +6,6 @@ import com.naturalist.insects.InsectEntityCollections.FunctionalRoleCollection;
 import com.naturalist.insects.InsectEntityCollections.GenusCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
-import com.naturalist.taxonomy.TaxonomicGenus;
 
 import java.util.Optional;
 
@@ -35,7 +34,8 @@ import java.util.Optional;
  * insectQuery.families().getByName(familyName);   // InsectFamily
  * insectQuery.genera().getByName(genusName);      // InsectGenus
  * insectQuery.genera().forFamilyName(familyName);  // genera under a family
- * insectQuery.species().forGenusEpithet(TaxonomicGenus.of("Halictus"));
+ * insectQuery.species().forGenusName(genusName);   // species under a genus
+ * insectQuery.species().forFamilyName(familyName); // species under a family (typed FK)
  * insectQuery.functionalRoles().getByGuild(guild);// InsectFunctionalRoleCollection
  * }</pre>
  */
@@ -60,11 +60,20 @@ public interface InsectQuery {
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
 
         /**
-         * Members of a genus, joined by the text {@link TaxonomicGenus} epithet on the
-         * species's {@link TaxonomicClassification}. Stopgap until {@code InsectSpecies}
-         * carries a typed {@code InsectGenusName} upward reference (see PL-13).
+         * Members of a genus, joined on the species's typed {@link InsectSpecies#genusName()}
+         * upward FK. Species without a catalogued parent genus carry a {@code null}
+         * {@code genusName} and are absent from the result.
          */
-        SpeciesCollection forGenusEpithet(TaxonomicGenus genusEpithet);
+        SpeciesCollection forGenusName(InsectGenusName genusName);
+
+        /**
+         * Members of a family, joined on the species's typed {@link InsectSpecies#familyName()}
+         * upward FK. Covers the under-identified-species case where genus is unknown but
+         * family is catalogued (e.g. {@code tachinid-fly} → {@code tachinidae}). Species
+         * without a catalogued parent family carry a {@code null} {@code familyName} and
+         * are absent from the result.
+         */
+        SpeciesCollection forFamilyName(InsectFamilyName familyName);
     }
 
     interface ImageQuery

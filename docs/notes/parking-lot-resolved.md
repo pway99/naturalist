@@ -26,6 +26,14 @@ and keep its original `PL-N` ID. IDs never reuse.
 
 ---
 
+## PL-13 — Typed `InsectGenusName` / `InsectFamilyName` FK on `InsectSpecies`
+
+**Raised:** 2026-05-22 (Phase 0 console-pages slice api audit).
+**Resolved:** 2026-05-23.
+**Resolution:** `InsectSpecies` gained `@Nullable InsectGenusName genusName` and `@Nullable InsectFamilyName familyName` components, validated via `entityNameOrNull` invariants. `SpeciesRepository` exposes typed `getByGenusName` / `getByFamilyName` (replacing the `getByGenusEpithet(TaxonomicGenus)` text stopgap); `SpeciesQuery` exposes `forGenusName` / `forFamilyName`. The console genus detail page now routes through the typed FK. JSON migration updated the 8 species records: `tachinid-fly` → `familyName: "tachinidae"`, `braconid-wasp` → `"braconidae"`, `battus-philenor` → `"papilionidae"`; the remaining 5 carry null on both fields because their parent genera/families are not yet catalogued. `InsectSpecies.belongsToGenus(TaxonomicGenus)` was removed (text-equality predicate retired alongside the stopgap; `TaxonomicClassification.belongsToGenus` remains for any future cross-rank caller). `SpeciesRepositoryTest` rewrote its contract cases to cover null-rejection, matching, and unknown-parent paths for both new methods.
+
+---
+
 ## Q4 — Insects vs Apiary
 
 **Resolved:** Pre-PL rename.

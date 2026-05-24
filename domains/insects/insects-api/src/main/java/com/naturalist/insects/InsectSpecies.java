@@ -17,6 +17,7 @@ import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.jspecify.annotations.Nullable;
 
+
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -99,6 +100,8 @@ import java.util.function.Consumer;
 public record InsectSpecies(
         InsectSpeciesName name,
         TaxonomicClassification taxonomy,
+        @Nullable InsectGenusName genusName,
+        @Nullable InsectFamilyName familyName,
         Description description,
         Set<CommonName> commonNames,
         @Nullable String sightingNotes,
@@ -119,7 +122,7 @@ public record InsectSpecies(
 
     public InsectSpecies withPlacedIn(@Nullable Clade value) {
         return new InsectSpecies(
-                name, taxonomy, description, commonNames,
+                name, taxonomy, genusName, familyName, description, commonNames,
                 sightingNotes, identificationFeatures,
                 value,
                 egg, larva, pupa, adult,
@@ -128,38 +131,27 @@ public record InsectSpecies(
     }
 
     /**
-     * Convenience accessor for the genus epithet from {@link #taxonomy()}. Will
-     * be re-anchored to {@code LinnaeanSpecies} once the typed {@code InsectGenusName}
-     * upward reference and per-record migration land in PR-2f of FU-1.
+     * Convenience accessor for the genus epithet from {@link #taxonomy()}.
+     * Distinct from {@link #genusName()}, which carries the typed upward FK to the
+     * {@code InsectGenus} catalog entry when one exists.
      */
     public TaxonomicGenus genus() {
         return taxonomy.genus();
     }
 
     /**
-     * Convenience accessor for the species epithet from {@link #taxonomy()}. Will
-     * be re-anchored to {@code LinnaeanSpecies} once the typed {@code InsectGenusName}
-     * upward reference and per-record migration land in PR-2f of FU-1.
+     * Convenience accessor for the species epithet from {@link #taxonomy()}.
      */
     public TaxonomicSpecies species() {
         return taxonomy.species();
-    }
-
-    /**
-     * Whether this species's {@link #taxonomy()} carries the given genus epithet.
-     * Delegates to {@link TaxonomicClassification#belongsToGenus}, so a species
-     * identified only to family rank returns {@code false} rather than throwing.
-     * Will be re-anchored against the typed {@code InsectGenusName} upward
-     * reference once PL-13 lands.
-     */
-    public boolean belongsToGenus(TaxonomicGenus other) {
-        return taxonomy.belongsToGenus(other);
     }
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
+                .entityNameOrNull(genusName, "genusName")
+                .entityNameOrNull(familyName, "familyName")
                 .valueObject(taxonomy, "taxonomy")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames")

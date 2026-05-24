@@ -49,6 +49,7 @@ interface SpeciesRepositoryTest
         return new InsectSpecies(
                 InsectSpeciesName.of("test-species-xx"),
                 taxonomy(),
+                null, null,
                 description(),
                 Set.of(),
                 null, null,
@@ -62,6 +63,7 @@ interface SpeciesRepositoryTest
         return new InsectSpecies(
                 InsectSpeciesName.of("test-ghost-xx"),
                 taxonomy(),
+                null, null,
                 description(),
                 Set.of(),
                 null, null,
@@ -75,6 +77,7 @@ interface SpeciesRepositoryTest
         return new InsectSpecies(
                 original.name(),
                 taxonomy(),
+                null, null,
                 description(),
                 Set.of(),
                 RandomValue.string(),
@@ -113,29 +116,68 @@ interface SpeciesRepositoryTest
     }
 
     @Test
-    default void getByGenusEpithet_rejectsNull() {
-        assertThatThrownBy(() -> repository().getByGenusEpithet(null))
+    default void getByGenusName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByGenusName(null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContaining("genusEpithet");
+                .hasMessageContaining("genusName");
     }
 
     @Test
-    default void getByGenusEpithet_returnsSpeciesWithMatchingGenus() {
-        TaxonomicGenus battus = TaxonomicGenus.of("Battus");
+    default void getByGenusName_returnsSpeciesWithMatchingGenusName() {
+        InsectGenusName halictus = TestInsectsIdentifiers.InsectGenus.Halictus.name;
+        InsectSpecies seeded = newEntity();
+        InsectSpecies underHalictus = new InsectSpecies(
+                seeded.name(),
+                seeded.taxonomy(),
+                halictus, null,
+                seeded.description(),
+                seeded.commonNames(),
+                null, null, null,
+                null, null, null, null,
+                null, null, null, null, null, null, null);
+        repository().insert(underHalictus);
 
-        var results = repository().getByGenusEpithet(battus);
+        var results = repository().getByGenusName(halictus);
 
         assertThat(results)
                 .extracting(InsectSpecies::name)
                 .extracting(InsectSpeciesName::value)
-                .contains("battus-philenor");
+                .contains(seeded.name().value());
     }
 
     @Test
-    default void getByGenusEpithet_returnsEmptyForUnknownGenus() {
-        TaxonomicGenus unknown = TaxonomicGenus.of("Unobtainium");
+    default void getByGenusName_returnsEmptyForUnknownGenus() {
+        InsectGenusName unknown = TestInsectsIdentifiers.InsectGenus.NotFound.name;
 
-        var results = repository().getByGenusEpithet(unknown);
+        var results = repository().getByGenusName(unknown);
+
+        assertThat(results).isEmpty();
+    }
+
+    @Test
+    default void getByFamilyName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByFamilyName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("familyName");
+    }
+
+    @Test
+    default void getByFamilyName_returnsSpeciesWithMatchingFamilyName() {
+        InsectFamilyName tachinidae = TestInsectsIdentifiers.InsectFamily.Tachinidae.name;
+
+        var results = repository().getByFamilyName(tachinidae);
+
+        assertThat(results)
+                .extracting(InsectSpecies::name)
+                .extracting(InsectSpeciesName::value)
+                .contains("tachinid-fly");
+    }
+
+    @Test
+    default void getByFamilyName_returnsEmptyForUnknownFamily() {
+        InsectFamilyName unknown = TestInsectsIdentifiers.InsectFamily.NotFound.name;
+
+        var results = repository().getByFamilyName(unknown);
 
         assertThat(results).isEmpty();
     }

@@ -11,6 +11,8 @@
     "genus": "<Genus — capitalised, or null>",
     "species": "<species epithet — lowercase, or null>"
   },
+  "genusName": "<kebab-case InsectGenus slug if the parent genus is catalogued, else null>",
+  "familyName": "<kebab-case InsectFamily slug if the parent family is catalogued, else null>",
   "description": {
     "preschool": "...",
     "elementary": "...",
