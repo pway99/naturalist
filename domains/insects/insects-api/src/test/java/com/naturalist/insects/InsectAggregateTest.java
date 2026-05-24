@@ -15,24 +15,69 @@ class InsectAggregateTest {
     private static final Observer observer = Observer.forClass(InsectAggregateTest.class);
 
     @Test
-    void aggregateIsValid() {
-        var mo = observer.forMethod("aggregateIsValid");
-        InsectAggregate agg = InsectAggregate.of(validSpecies());
+    void speciesAggregateIsValid() {
+        var mo = observer.forMethod("speciesAggregateIsValid");
+        InsectSpeciesAggregate agg = InsectSpeciesAggregate.of(validSpecies());
 
         InvariantObservation result = mo.observable(agg, "agg");
 
         assertThat(result.violations()).isEmpty();
+        assertThat(agg.name()).isEqualTo(agg.species().name());
     }
 
     @Test
-    void aggregateIsNotValid() {
-        var mo = observer.forMethod("aggregateIsNotValid");
-        InsectAggregate agg = new InsectAggregate(null, null);
+    void speciesAggregateIsNotValid() {
+        var mo = observer.forMethod("speciesAggregateIsNotValid");
+        InsectSpeciesAggregate agg = new InsectSpeciesAggregate(null, null);
 
         InvariantObservation result = mo.observable(agg, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(".agg.species", ".agg.images");
+    }
+
+    @Test
+    void genusAggregateIsValid() {
+        var mo = observer.forMethod("genusAggregateIsValid");
+        InsectGenusAggregate agg = InsectGenusAggregate.of(validGenus());
+
+        InvariantObservation result = mo.observable(agg, "agg");
+
+        assertThat(result.violations()).isEmpty();
+        assertThat(agg.name()).isEqualTo(agg.genus().name());
+    }
+
+    @Test
+    void genusAggregateIsNotValid() {
+        var mo = observer.forMethod("genusAggregateIsNotValid");
+        InsectGenusAggregate agg = new InsectGenusAggregate(null, null);
+
+        InvariantObservation result = mo.observable(agg, "agg");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactlyInAnyOrder(".agg.genus", ".agg.images");
+    }
+
+    @Test
+    void familyAggregateIsValid() {
+        var mo = observer.forMethod("familyAggregateIsValid");
+        InsectFamilyAggregate agg = InsectFamilyAggregate.of(validFamily());
+
+        InvariantObservation result = mo.observable(agg, "agg");
+
+        assertThat(result.violations()).isEmpty();
+        assertThat(agg.name()).isEqualTo(agg.family().name());
+    }
+
+    @Test
+    void familyAggregateIsNotValid() {
+        var mo = observer.forMethod("familyAggregateIsNotValid");
+        InsectFamilyAggregate agg = new InsectFamilyAggregate(null, null);
+
+        InvariantObservation result = mo.observable(agg, "agg");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactlyInAnyOrder(".agg.family", ".agg.images");
     }
 
     private static InsectSpecies validSpecies() {
@@ -44,16 +89,44 @@ class InsectAggregateTest {
                         TaxonomicGenus.of("Hippodamia"),
                         TaxonomicSpecies.of("convergens")),
                 null, null,
-                new Description(
-                        RandomValue.string(),
-                        RandomValue.string(),
-                        RandomValue.string(),
-                        RandomValue.string()),
+                description(),
                 Set.of(),
                 null, null,
                 null,
                 null, null, null, null,
                 null, null, null, null, null, null, null
         );
+    }
+
+    private static InsectGenus validGenus() {
+        return new InsectGenus(
+                InsectGenusName.of(RandomValue.string()),
+                InsectFamilyName.of("papilionidae"),
+                TaxonomicOrder.of("Lepidoptera"),
+                TaxonomicFamily.of("Papilionidae"),
+                TaxonomicGenus.of("Battus"),
+                description(),
+                Set.of(),
+                null,
+                null, null, null, null);
+    }
+
+    private static InsectFamily validFamily() {
+        return new InsectFamily(
+                InsectFamilyName.of(RandomValue.string()),
+                TaxonomicOrder.of("Diptera"),
+                TaxonomicFamily.of("Syrphidae"),
+                description(),
+                Set.of(),
+                null,
+                null, null, null, null);
+    }
+
+    private static Description description() {
+        return new Description(
+                RandomValue.string(),
+                RandomValue.string(),
+                RandomValue.string(),
+                RandomValue.string());
     }
 }

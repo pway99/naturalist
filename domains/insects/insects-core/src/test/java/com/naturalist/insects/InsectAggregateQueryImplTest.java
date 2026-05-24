@@ -19,26 +19,66 @@ class InsectAggregateQueryImplTest {
 
     SpeciesRepositoryMock speciesRepository = new SpeciesRepositoryMock(db);
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
+    GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
+    FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
+
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
+    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository);
+    InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
+
     InsectQuery.InsectAggregateQuery aggregateQuery =
-            new InsectAggregateQueryImpl(new InsectAggregateFactory(speciesQuery, imageQuery));
+            new InsectAggregateQueryImpl(new InsectAggregateFactory(
+                    speciesQuery, imageQuery, genusQuery, familyQuery));
 
     @Test
-    void getByName_known_returnsStructurallyValidAggregate() {
+    void getByName_knownSpecies_returnsSpeciesAggregate() {
         Optional<InsectAggregate> aggregate =
                 aggregateQuery.getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
         assertThat(aggregate).isPresent();
+        assertThat(aggregate.get()).isInstanceOf(InsectSpeciesAggregate.class);
         assertThat(observer.observable(aggregate.get(), "insectAggregate").violations()).isEmpty();
-        assertThat(aggregate.get().species().name())
+        assertThat(aggregate.get().name())
                 .isEqualTo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
     }
 
     @Test
-    void getByName_notFound_returnsEmptyOptional() {
+    void getByName_knownGenus_returnsGenusAggregate() {
+        Optional<InsectAggregate> aggregate =
+                aggregateQuery.getByName(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
+
+        assertThat(aggregate).isPresent();
+        assertThat(aggregate.get()).isInstanceOf(InsectGenusAggregate.class);
+        assertThat(observer.observable(aggregate.get(), "insectAggregate").violations()).isEmpty();
+        assertThat(aggregate.get().name())
+                .isEqualTo(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
+    }
+
+    @Test
+    void getByName_knownFamily_returnsFamilyAggregate() {
+        Optional<InsectAggregate> aggregate =
+                aggregateQuery.getByName(TestInsectsIdentifiers.InsectFamily.Tachinidae.name);
+
+        assertThat(aggregate).isPresent();
+        assertThat(aggregate.get()).isInstanceOf(InsectFamilyAggregate.class);
+        assertThat(observer.observable(aggregate.get(), "insectAggregate").violations()).isEmpty();
+        assertThat(aggregate.get().name())
+                .isEqualTo(TestInsectsIdentifiers.InsectFamily.Tachinidae.name);
+    }
+
+    @Test
+    void getByName_unknownSpecies_returnsEmptyOptional() {
         Optional<InsectAggregate> aggregate =
                 aggregateQuery.getByName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
+
+        assertThat(aggregate).isEmpty();
+    }
+
+    @Test
+    void getByName_subspecies_returnsEmptyOptional() {
+        Optional<InsectAggregate> aggregate =
+                aggregateQuery.getByName(InsectSubspeciesName.of("battus-philenor-hirsuta"));
 
         assertThat(aggregate).isEmpty();
     }

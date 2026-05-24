@@ -143,26 +143,6 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
-## PL-14 — Rank-polymorphic `InsectAggregate`
-
-**Raised:** 2026-05-22 (during Phase 0 console-pages slice; user noted `InsectAggregate` only references `InsectSpecies`).
-
-**Where:** `domains/insects/insects-api/src/main/java/com/naturalist/insects/InsectAggregate.java` — record carries `(InsectSpecies species, ImageCollection images)`; rooted at `InsectSpeciesName`. `InsectAggregateFactory` assembles species + images by name.
-
-**The smell.** `InsectImage.parentName()` is already `InsectRankName` (Path A landed — images can attach to family, genus, or species). But the aggregate that exists to present "an insect at Oak Vista" hardcodes species rank. Family- and genus-rank under-identified organisms have no aggregate representation; the catalog-view machinery (`insectQuery.insect().getByName(...)`) silently doesn't apply to them. The console papers over this by composing its own view models from entity queries — fine for now, but Phase 2's identification workflow expects an aggregate at the session's current rank.
-
-**Shape options.**
-
-1. Sealed `InsectAggregate` with permits `InsectFamilyAggregate`, `InsectGenusAggregate`, `InsectSpeciesAggregate` — pattern-match at consumers. Discoverable; clean visitor semantics.
-2. Three parallel records, no shared supertype — simpler today, more duplication. Mirror of the entity records themselves.
-3. Generic `InsectAggregate<ROOT extends InsectRankName, ENTITY>` — most compact but loses the per-rank semantic distinctions Phase 2 likely wants on its scope value object.
-
-**Resolution path.** Decide between (1) and (2) when Phase 2 starts (the workflow's session-scope value object will inform which shape is ergonomic). Until then the console composes from entity queries; this is fine.
-
-**Blocking:** Not currently — entity queries cover the console; Phase 1's mock seam doesn't need a polymorphic aggregate either.
-
----
-
 ## Conventions
 
 - New entries get the next `PL-N` ID; numbers are never reused.

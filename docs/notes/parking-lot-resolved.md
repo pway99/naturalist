@@ -26,6 +26,14 @@ and keep its original `PL-N` ID. IDs never reuse.
 
 ---
 
+## PL-14 — Rank-polymorphic `InsectAggregate`
+
+**Raised:** 2026-05-22 (Phase 0 console-pages slice; user noted `InsectAggregate` only referenced `InsectSpecies`).
+**Resolved:** 2026-05-23.
+**Resolution:** `InsectAggregate` is now a sealed interface permitting `InsectFamilyAggregate`, `InsectGenusAggregate`, and `InsectSpeciesAggregate` — each a record composing its rank entity with the `ImageCollection`. The aggregate's identity is the root rank's typed slug, returned polymorphically via `InsectRankName name()`. `InsectAggregateQuery.getByName` widened to accept `InsectRankName`; `InsectAggregateFactory` switches on the rank-name permit and dispatches to the matching rank query (`SpeciesQuery` / `GenusQuery` / `FamilyQuery`). `InsectSubspeciesName` returns `Optional.empty()` — no subspecies entity exists yet, so the factory degrades gracefully until the entity lands. The console was unaffected — it composes its own view models from entity queries (the parking-lot note had flagged this). Followed plan [`plans/archive/pl-14-rank-polymorphic-insect-aggregate.md`](../plans/archive/pl-14-rank-polymorphic-insect-aggregate.md).
+
+---
+
 ## PL-13 — Typed `InsectGenusName` / `InsectFamilyName` FK on `InsectSpecies`
 
 **Raised:** 2026-05-22 (Phase 0 console-pages slice api audit).

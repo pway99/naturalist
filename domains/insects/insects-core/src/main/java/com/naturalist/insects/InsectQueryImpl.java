@@ -28,7 +28,8 @@ class InsectQueryImpl implements InsectQuery {
         this.familyQuery = familyQuery;
         this.genusQuery = genusQuery;
         this.functionalRoleQuery = functionalRoleQuery;
-        InsectAggregateFactory factory = new InsectAggregateFactory(speciesQuery, imageQuery);
+        InsectAggregateFactory factory =
+                new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery);
         this.insectAggregateQuery = new InsectAggregateQueryImpl(factory);
     }
 

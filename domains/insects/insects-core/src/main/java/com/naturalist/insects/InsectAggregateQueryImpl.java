@@ -14,8 +14,8 @@ class InsectAggregateQueryImpl implements InsectQuery.InsectAggregateQuery {
     }
 
     @Override
-    public Optional<InsectAggregate> getByName(InsectSpeciesName name) {
-        observer.arguments("getByName", i -> i.entityName(name, "name")).throwWhenInvalid();
+    public Optional<InsectAggregate> getByName(InsectRankName name) {
+        observer.arguments("getByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return factory.buildByName(name);
     }
 }

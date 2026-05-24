@@ -13,5 +13,11 @@ layer; the RDBMS adapter carries a numeric primary key privately.
 Carries `InsectSpeciesName` (slug) as its parent reference — no `insectSpeciesId`, no
 `withId`, no nullable id-shaped FK column.
 
-**InsectAggregate** — Aggregate rooted at `InsectSpecies`, composing the species with
-its `InsectImageCollection`. Assembled by name through `InsectAggregateFactory`.
+**InsectAggregate** — Sealed `Aggregate` over the three Linnaean ranks that carry
+catalog entities: `InsectSpeciesAggregate`, `InsectGenusAggregate`,
+`InsectFamilyAggregate`. Each permit composes its rank entity with the
+`ImageCollection` of photographs attached at that rank. Identity is the root's
+typed `InsectRankName`, returned polymorphically by `name()`. Assembled by name
+through `InsectAggregateFactory`, which dispatches on the rank-name permit;
+`InsectSubspeciesName` is permitted on `InsectRankName` but yields
+`Optional.empty()` (no subspecies entity exists yet).

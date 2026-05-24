@@ -16,7 +16,8 @@ import java.util.Optional;
  * <p>Nested queries scope to a single consistency concern each:
  * <ul>
  *   <li>{@link InsectAggregateQuery} — the catalog-view {@link InsectAggregate}
- *       (species + images), rooted at {@link InsectSpecies}.</li>
+ *       (rank entity + images), rooted at whichever Linnaean rank the parent name
+ *       identifies (family, genus, or species).</li>
  *   <li>{@link SpeciesQuery} — {@link InsectSpecies} entities in isolation.</li>
  *   <li>{@link ImageQuery} — {@link InsectImage} entities in isolation.</li>
 
@@ -30,7 +31,9 @@ import java.util.Optional;
  * <pre>{@code
  * insectQuery.species().getByName(speciesName);   // InsectSpecies
  * insectQuery.images().getByName(imageName);      // InsectImage
- * insectQuery.insect().getByName(speciesName);    // InsectAggregate rooted at speciesName
+ * insectQuery.insect().getByName(speciesName);    // InsectSpeciesAggregate
+ * insectQuery.insect().getByName(genusName);      // InsectGenusAggregate
+ * insectQuery.insect().getByName(familyName);     // InsectFamilyAggregate
  * insectQuery.families().getByName(familyName);   // InsectFamily
  * insectQuery.genera().getByName(genusName);      // InsectGenus
  * insectQuery.genera().forFamilyName(familyName);  // genera under a family
@@ -54,7 +57,15 @@ public interface InsectQuery {
     FunctionalRoleQuery functionalRoles();
 
     interface InsectAggregateQuery {
-        Optional<InsectAggregate> getByName(InsectSpeciesName name);
+
+        /**
+         * Resolve the {@link InsectAggregate} rooted at the given rank name. The
+         * concrete permit returned matches the {@link InsectRankName} permit passed in
+         * (species → {@link InsectSpeciesAggregate}, genus → {@link InsectGenusAggregate},
+         * family → {@link InsectFamilyAggregate}). Subspecies-rank names always return
+         * {@link Optional#empty()} — no subspecies entity exists in the catalog yet.
+         */
+        Optional<InsectAggregate> getByName(InsectRankName name);
     }
 
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
