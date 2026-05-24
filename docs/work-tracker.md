@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-22 (Phase 0 UI side promoted to a slice plan — [`plans/insects-family-genus-console.md`](plans/insects-family-genus-console.md). Adds `/insects/families` + `/insects/genera` list/detail pages; fills `GenusQuery.forFamilyName` api gap with typed FK; species-under-genus uses text stopgap pending PL-13 typed-FK retypeover. Audit pass also raises PL-14: rank-polymorphic `InsectAggregate` for Phase 2 to decide.).
+Last updated: 2026-05-23 (Phase 0 console pages slice closed — [`plans/archive/insects-family-genus-console.md`](plans/archive/insects-family-genus-console.md) shipped `/insects/families` + `/insects/genera` list/detail pages, the `GenusQuery.forFamilyName` typed-FK api gap, and the `SpeciesQuery.forGenusEpithet` text stopgap. Audit pass raised PL-13 (typed `InsectSpecies` FK) and PL-14 (rank-polymorphic `InsectAggregate`). `mvn verify` green; no active slice.).
 
 ---
 
@@ -17,24 +17,25 @@ Last updated: 2026-05-22 (Phase 0 UI side promoted to a slice plan — [`plans/i
 
 ## Current slice
 
-**Insects console — family + genus list/detail pages** ([`plans/insects-family-genus-console.md`](plans/insects-family-genus-console.md)). Phase 0 UI side of the identification roadmap, absorbing the old FU-1 PR-3 scope. Adds 4 console routes (`/insects/families`, `/insects/families/{name}`, `/insects/genera`, `/insects/genera/{name}`), 4 JTE templates, and 2 api gap fillers — `GenusQuery.forFamilyName(InsectFamilyName)` (typed FK, real fix) and `SpeciesQuery.forGenusEpithet(TaxonomicGenus)` (text stopgap). Also updates `InsectsLinker` so existing family/genus search hits resolve to URLs. PL-13 raised in Task 1 captures the typed `genusName`/`familyName` FK on `InsectSpecies` for a separate slice.
+**No active slice** — Phase 0 console pages just landed (final commit `b1216de`).
 
 **Candidate next slices** (pick when ready):
 
-- **PL-13 — typed `InsectGenusName`/`InsectFamilyName` FK on `InsectSpecies`.** Removes the text stopgap this slice introduces. JSON migration on 38 species records plus query-impl retypeover. Raised by the audit in the current slice.
-- **PL-14 — rank-polymorphic `InsectAggregate`.** Aggregate currently rooted at `InsectSpecies` only; `InsectImage.parentName()` is already `InsectRankName` so the data side is ready. Three shape options (sealed permits / parallel records / generic root) — Phase 2's session-scope value object will inform the choice. Raised by the audit in the current slice.
+- **PL-13 — typed `InsectGenusName`/`InsectFamilyName` FK on `InsectSpecies`.** Removes the text stopgap (`SpeciesQuery.forGenusEpithet`) the family/genus pages slice introduced. JSON migration on 38 species records plus query-impl retypeover.
+- **PL-14 — rank-polymorphic `InsectAggregate`.** Aggregate currently rooted at `InsectSpecies` only; `InsectImage.parentName()` is already `InsectRankName` so the data side is ready. Three shape options (sealed permits / parallel records / generic root) — Phase 2's session-scope value object will inform the choice.
 - **PL-2 — tachinid-fly + braconid-wasp rank corrections.** Same recipe as the eight landed PL-2 organisms, but blocked on fixture-migration scope across `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, `InMemoryCatalogTest`. Needs a deliberate fixture-replacement sub-slice (likely repoint to `battus-philenor`).
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 - **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
 
 ## Parking lot
 
-[`notes/parking-lot.md`](notes/parking-lot.md) — 10 entries today; PL-13 (typed FK on `InsectSpecies`) and PL-14 (rank-polymorphic `InsectAggregate`) both land as part of the current slice's Task 1 audit. PL-12 (typed `LifeStage.parentName`) parked pending LinneanRank. PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
+[`notes/parking-lot.md`](notes/parking-lot.md) — 12 entries today; PL-13 (typed FK on `InsectSpecies`) and PL-14 (rank-polymorphic `InsectAggregate`) landed in `d1cf631` from the Phase 0 console-pages audit. PL-12 (typed `LifeStage.parentName`) parked pending LinneanRank. PL-2 has 2 remaining organisms (tachinid-fly, braconid-wasp) blocked by fixture-migration scope.
 
 ## Recently completed
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Insects console — family + genus list/detail pages                                      | 2026-05-23 | [`plans/archive/insects-family-genus-console.md`](plans/archive/insects-family-genus-console.md) | `b1216de`    |
 | LifeStage query rank-polymorphism — `forParentName(InsectRankName)`                     | 2026-05-20 | [`plans/archive/insect-image-parent-rank.md`](plans/archive/insect-image-parent-rank.md) (mirror) | `f5878d7`    |
 | PL-11 Phase 4 — strip species fields; console fanout                                    | 2026-05-19 | [`plans/archive/insect-functional-role.md`](plans/archive/insect-functional-role.md)         | `327c5db`    |
 | PL-11 Phase 3 — cross-rank `getByGuild` query stack                                     | 2026-05-19 | [`plans/archive/insect-functional-role.md`](plans/archive/insect-functional-role.md)         | `2b0c38a`    |
