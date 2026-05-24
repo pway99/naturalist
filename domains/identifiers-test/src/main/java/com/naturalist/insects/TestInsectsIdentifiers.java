@@ -81,6 +81,26 @@ public class TestInsectsIdentifiers {
         public static class Papilionidae {
             public static final InsectFamilyName name = InsectFamilyName.of("papilionidae");
         }
+
+        public static class Coccinellidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("coccinellidae");
+        }
+
+        public static class Ectobiidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("ectobiidae");
+        }
+
+        public static class Apidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("apidae");
+        }
+
+        public static class Nymphalidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("nymphalidae");
+        }
+
+        public static class Pieridae {
+            public static final InsectFamilyName name = InsectFamilyName.of("pieridae");
+        }
     }
 
     public static class InsectGenus {
@@ -131,6 +151,30 @@ public class TestInsectsIdentifiers {
                             UUID.fromString("6091691e-7900-7ed3-a35b-88c46e47b866"));
                 }
             }
+        }
+
+        public static class Hippodamia {
+            public static final InsectGenusName name = InsectGenusName.of("hippodamia");
+        }
+
+        public static class Blattella {
+            public static final InsectGenusName name = InsectGenusName.of("blattella");
+        }
+
+        public static class Xylocopa {
+            public static final InsectGenusName name = InsectGenusName.of("xylocopa");
+        }
+
+        public static class Vanessa {
+            public static final InsectGenusName name = InsectGenusName.of("vanessa");
+        }
+
+        public static class Battus {
+            public static final InsectGenusName name = InsectGenusName.of("battus");
+        }
+
+        public static class Colias {
+            public static final InsectGenusName name = InsectGenusName.of("colias");
         }
     }
 

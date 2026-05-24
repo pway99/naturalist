@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-23 (Family-page species enrichment landed — `/insects/families/{name}` now lists species attached at family rank via the typed `SpeciesQuery.forFamilyName` FK (e.g. `tachinid-fly` under `tachinidae`). Controller adds a sorted species list; template gains a "Species attached at family rank" section that renders only when non-empty. JTE template test exercises the populated path with Tachinidae + tachinid-fly fixtures.).
+Last updated: 2026-05-23 (Catalogue-completeness slice 1 landed — every species record now has a catalogued parent genus + family. Added 5 new family records (`coccinellidae`, `ectobiidae`, `apidae`, `nymphalidae`, `pieridae`) and 6 new genus records (`hippodamia`, `blattella`, `xylocopa`, `vanessa`, `battus`, `colias`); wired typed `genusName` + `familyName` FKs on the 6 fully-identified species. `tachinid-fly` and `braconid-wasp` stay genus-less by design. Sets up the follow-up slice that strips redundant `TaxonomicClassification` fields from `InsectSpecies`.).
 
 ---
 
@@ -17,10 +17,11 @@ Last updated: 2026-05-23 (Family-page species enrichment landed — `/insects/fa
 
 ## Current slice
 
-**No active slice** — family-page species enrichment just landed.
+**No active slice** — catalogue-completeness slice 1 just landed.
 
 **Candidate next slices** (pick when ready):
 
+- **Catalogue-completeness slice 2 — strip redundant `TaxonomicClassification` fields from `InsectSpecies`.** With every species now having a catalogued parent genus + family, `taxonomy.order/family/genus` on `InsectSpecies` is derivable from the parent records and can be dropped. Species keeps only `TaxonomicSpecies` (the epithet). Touches every consumer of `species.taxonomy().family()` / `.genus()` / `.order()` plus the JTE templates.
 - **PL-2 — tachinid-fly + braconid-wasp rank corrections.** Same recipe as the eight landed PL-2 organisms, but blocked on fixture-migration scope across `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, `InMemoryCatalogTest`. Needs a deliberate fixture-replacement sub-slice (likely repoint to `battus-philenor`).
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 - **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
@@ -33,6 +34,7 @@ Last updated: 2026-05-23 (Family-page species enrichment landed — `/insects/fa
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Catalogue-completeness slice 1 — 5 families + 6 genera + species FK wiring              | 2026-05-23 | conversation; prerequisite for stripping `TaxonomicClassification` from `InsectSpecies` | _pending_    |
 | Family-page species enrichment — under-identified species on `/insects/families/{name}` | 2026-05-23 | conversation; uses `SpeciesQuery.forFamilyName` from PL-13                   | `a81cccd`    |
 | PL-14 — rank-polymorphic `InsectAggregate` (sealed interface + 3 record permits)        | 2026-05-23 | [`plans/archive/pl-14-rank-polymorphic-insect-aggregate.md`](plans/archive/pl-14-rank-polymorphic-insect-aggregate.md) | `d698ac5`    |
 | PL-13 — typed `InsectGenusName` / `InsectFamilyName` FK on `InsectSpecies`              | 2026-05-23 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-13)     | `c91efc0`    |

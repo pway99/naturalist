@@ -406,8 +406,8 @@
   },
   {
     "name": "hippodamia-convergens",
-    "genusName": null,
-    "familyName": null,
+    "genusName": "hippodamia",
+    "familyName": "coccinellidae",
     "taxonomy": {
       "order": "Coleoptera",
       "family": "Coccinellidae",
@@ -604,8 +604,8 @@
   },
   {
     "name": "blattella-vaga",
-    "genusName": null,
-    "familyName": null,
+    "genusName": "blattella",
+    "familyName": "ectobiidae",
     "taxonomy": {
       "order": "Blattodea",
       "family": "Ectobiidae",
@@ -717,8 +717,8 @@
   },
   {
     "name": "xylocopa-varipuncta",
-    "genusName": null,
-    "familyName": null,
+    "genusName": "xylocopa",
+    "familyName": "apidae",
     "taxonomy": {
       "order": "Hymenoptera",
       "family": "Apidae",
@@ -924,8 +924,8 @@
   },
   {
     "name": "vanessa-cardui",
-    "genusName": null,
-    "familyName": null,
+    "genusName": "vanessa",
+    "familyName": "nymphalidae",
     "taxonomy": {
       "order": "Lepidoptera",
       "family": "Nymphalidae",
@@ -1138,7 +1138,7 @@
   },
   {
     "name": "battus-philenor",
-    "genusName": null,
+    "genusName": "battus",
     "familyName": "papilionidae",
     "taxonomy": {
       "order": "Lepidoptera",
@@ -1427,8 +1427,8 @@
   },
   {
     "name": "colias-eurytheme",
-    "genusName": null,
-    "familyName": null,
+    "genusName": "colias",
+    "familyName": "pieridae",
     "taxonomy": {
       "order": "Lepidoptera",
       "family": "Pieridae",
