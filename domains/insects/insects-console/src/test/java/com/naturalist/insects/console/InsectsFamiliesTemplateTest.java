@@ -8,6 +8,7 @@ import com.naturalist.insects.InsectFamilyTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +25,27 @@ class InsectsFamiliesTemplateTest {
         TestTemplateEngine.create().render(
                 "insects/families.jte",
                 Map.of("familyPage", familyPage),
+                output);
+
+        assertThat(output.toString()).isNotBlank();
+    }
+
+    @Test
+    void family_rendersWithoutError() {
+        NaturalistDatabase database = NaturalistDatabase.create();
+        InsectFamily anyFamily = new InsectFamilyTestEntitySource(database).entityStream()
+                .findFirst().orElseThrow();
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render(
+                "insects/family.jte",
+                Map.of(
+                        "family", anyFamily,
+                        "genera", List.of(),
+                        "descriptionPreschool", "p",
+                        "descriptionElementary", "e",
+                        "descriptionSecondary", "s",
+                        "descriptionUniversity", "u"),
                 output);
 
         assertThat(output.toString()).isNotBlank();

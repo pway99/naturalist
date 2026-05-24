@@ -84,6 +84,26 @@ public class InsectsController {
         return "insects/families";
     }
 
+    @GetMapping("/families/{name}")
+    String familyDetail(@PathVariable String name, Model model) {
+        var familyName = InsectFamilyName.of(name);
+        var family = insectQuery.families().getByName(familyName);
+        if (family.isEmpty()) {
+            return "redirect:/insects/families";
+        }
+        var description = family.get().description();
+        var genera = insectQuery.genera().forFamilyName(familyName).stream()
+                .sorted(Comparator.comparing(g -> g.name().value()))
+                .toList();
+        model.addAttribute("family", family.get());
+        model.addAttribute("genera", genera);
+        model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
+        model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
+        model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
+        model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
+        return "insects/family";
+    }
+
     @GetMapping("/guild/{guild}")
     String guild(@PathVariable String guild, Model model) {
         FunctionalGuild selected;
