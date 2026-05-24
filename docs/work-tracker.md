@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-23 (PL-14 landed — `InsectAggregate` is now a sealed interface with `InsectFamilyAggregate` / `InsectGenusAggregate` / `InsectSpeciesAggregate` permits; `InsectAggregateQuery.getByName` widened to `InsectRankName` and dispatches on the rank-name permit. Subspecies returns `Optional.empty()` until the entity lands. Console unaffected — it composes its own view models. No active slice.).
+Last updated: 2026-05-23 (Family-page species enrichment landed — `/insects/families/{name}` now lists species attached at family rank via the typed `SpeciesQuery.forFamilyName` FK (e.g. `tachinid-fly` under `tachinidae`). Controller adds a sorted species list; template gains a "Species attached at family rank" section that renders only when non-empty. JTE template test exercises the populated path with Tachinidae + tachinid-fly fixtures.).
 
 ---
 
@@ -17,11 +17,10 @@ Last updated: 2026-05-23 (PL-14 landed — `InsectAggregate` is now a sealed int
 
 ## Current slice
 
-**No active slice** — PL-14 just landed.
+**No active slice** — family-page species enrichment just landed.
 
 **Candidate next slices** (pick when ready):
 
-- **Family-page species enrichment.** Now that `SpeciesQuery.forFamilyName` exists, the `/insects/families/{name}` page could list under-identified species (e.g. `tachinid-fly`) alongside the genera under that family. Two-line controller change + template tweak.
 - **PL-2 — tachinid-fly + braconid-wasp rank corrections.** Same recipe as the eight landed PL-2 organisms, but blocked on fixture-migration scope across `SpeciesRepositoryTest`, `SpeciesCommandImplTest`, `SpeciesQueryImplTest`, `LifeStageEntityQueryImplTest`, `LifeStageEntityRepositoryTest`, `InMemoryCatalogTest`. Needs a deliberate fixture-replacement sub-slice (likely repoint to `battus-philenor`).
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 - **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
@@ -34,6 +33,7 @@ Last updated: 2026-05-23 (PL-14 landed — `InsectAggregate` is now a sealed int
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Family-page species enrichment — under-identified species on `/insects/families/{name}` | 2026-05-23 | conversation; uses `SpeciesQuery.forFamilyName` from PL-13                   | _pending_    |
 | PL-14 — rank-polymorphic `InsectAggregate` (sealed interface + 3 record permits)        | 2026-05-23 | [`plans/archive/pl-14-rank-polymorphic-insect-aggregate.md`](plans/archive/pl-14-rank-polymorphic-insect-aggregate.md) | `d698ac5`    |
 | PL-13 — typed `InsectGenusName` / `InsectFamilyName` FK on `InsectSpecies`              | 2026-05-23 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-13)     | `c91efc0`    |
 | Insects console — family + genus list/detail pages                                      | 2026-05-23 | [`plans/archive/insects-family-genus-console.md`](plans/archive/insects-family-genus-console.md) | `b1216de`    |
