@@ -49,6 +49,17 @@ public record TaxonomicClassification(
         return genus != null && species != null;
     }
 
+    /**
+     * Whether this classification's {@link #genus} is the given epithet.
+     * Returns {@code false} when this classification has no genus assigned
+     * (family-level identification) or when {@code other} is {@code null},
+     * so the predicate is safe to apply across a mixed-rank catalog without
+     * the caller carrying its own null guard.
+     */
+    public boolean belongsToGenus(TaxonomicGenus other) {
+        return genus != null && genus.equals(other);
+    }
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i

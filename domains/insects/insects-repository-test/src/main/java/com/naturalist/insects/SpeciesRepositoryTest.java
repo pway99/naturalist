@@ -3,11 +3,17 @@ package com.naturalist.insects;
 import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.*;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link InsectRepository.SpeciesRepository}.
@@ -104,5 +110,33 @@ interface SpeciesRepositoryTest
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    default void getByGenusEpithet_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByGenusEpithet(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("genusEpithet");
+    }
+
+    @Test
+    default void getByGenusEpithet_returnsSpeciesWithMatchingGenus() {
+        TaxonomicGenus battus = TaxonomicGenus.of("Battus");
+
+        var results = repository().getByGenusEpithet(battus);
+
+        assertThat(results)
+                .extracting(InsectSpecies::name)
+                .extracting(InsectSpeciesName::value)
+                .contains("battus-philenor");
+    }
+
+    @Test
+    default void getByGenusEpithet_returnsEmptyForUnknownGenus() {
+        TaxonomicGenus unknown = TaxonomicGenus.of("Unobtainium");
+
+        var results = repository().getByGenusEpithet(unknown);
+
+        assertThat(results).isEmpty();
     }
 }

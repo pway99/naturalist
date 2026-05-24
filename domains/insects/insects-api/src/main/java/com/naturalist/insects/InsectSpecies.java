@@ -145,6 +145,17 @@ public record InsectSpecies(
         return taxonomy.species();
     }
 
+    /**
+     * Whether this species's {@link #taxonomy()} carries the given genus epithet.
+     * Delegates to {@link TaxonomicClassification#belongsToGenus}, so a species
+     * identified only to family rank returns {@code false} rather than throwing.
+     * Will be re-anchored against the typed {@code InsectGenusName} upward
+     * reference once PL-13 lands.
+     */
+    public boolean belongsToGenus(TaxonomicGenus other) {
+        return taxonomy.belongsToGenus(other);
+    }
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i

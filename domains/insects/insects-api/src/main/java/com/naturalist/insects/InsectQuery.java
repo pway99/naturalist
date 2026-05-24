@@ -6,6 +6,7 @@ import com.naturalist.insects.InsectEntityCollections.FunctionalRoleCollection;
 import com.naturalist.insects.InsectEntityCollections.GenusCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
+import com.naturalist.taxonomy.TaxonomicGenus;
 
 import java.util.Optional;
 
@@ -34,6 +35,7 @@ import java.util.Optional;
  * insectQuery.families().getByName(familyName);   // InsectFamily
  * insectQuery.genera().getByName(genusName);      // InsectGenus
  * insectQuery.genera().forFamilyName(familyName);  // genera under a family
+ * insectQuery.species().forGenusEpithet(TaxonomicGenus.of("Halictus"));
  * insectQuery.functionalRoles().getByGuild(guild);// InsectFunctionalRoleCollection
  * }</pre>
  */
@@ -56,6 +58,13 @@ public interface InsectQuery {
     }
 
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
+
+        /**
+         * Members of a genus, joined by the text {@link TaxonomicGenus} epithet on the
+         * species's {@link TaxonomicClassification}. Stopgap until {@code InsectSpecies}
+         * carries a typed {@code InsectGenusName} upward reference (see PL-13).
+         */
+        SpeciesCollection forGenusEpithet(TaxonomicGenus genusEpithet);
     }
 
     interface ImageQuery
