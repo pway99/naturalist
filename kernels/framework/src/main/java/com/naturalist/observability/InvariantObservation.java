@@ -131,6 +131,7 @@ public class InvariantObservation {
                             .tag("constraint", c.getClass().getSimpleName())
                             .tag("class", c.source())
                             .tag("method", c.methodName())
+                        .tag("name", c.name())
                             .tag("valid", c.isValid())
                             .tag("level", perConstraint.tagValue())
                             .incrementCounter();
@@ -142,6 +143,7 @@ public class InvariantObservation {
                         .tag("constraint", c.getClass().getSimpleName())
                         .tag("class", c.source())
                         .tag("method", c.methodName())
+                    .tag("name", c.name())
                         .tag("level", violationLevel.tagValue())
                         .incrementCounter();
             }
