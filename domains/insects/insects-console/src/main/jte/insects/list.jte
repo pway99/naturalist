@@ -12,8 +12,9 @@
 @param Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = Map.of()
 @param Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = Map.of()
 
-@template.layout.page(title = "Insect Catalog", content = @`
-    <h1>Insect Catalog</h1>
+@template.layout.page(title = "Insect Species", content = @`
+    @template.insects.nav(active = "species")
+    <h1>Insect Species</h1>
     <p>Insect species documented at Oak Vista.</p>
 
     <div class="entity-grid">

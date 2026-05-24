@@ -4,10 +4,9 @@
 @param Page<InsectFamily> familyPage
 
 @template.layout.page(title = "Insect Families", content = @`
-    <a href="/insects">&larr; Back to species catalog</a>
+    @template.insects.nav(active = "family")
     <h1>Insect Families</h1>
-    <p>Family-rank records in the Oak Vista catalog.
-       <a href="/insects/genera">Browse genera &rarr;</a></p>
+    <p>Family-rank records in the Oak Vista catalog.</p>
 
     <div class="entity-grid">
         @for(var f : familyPage.content())

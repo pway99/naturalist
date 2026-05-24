@@ -1222,3 +1222,39 @@ figure.compound-depiction img {
 .search-empty-state {
     margin-top: 1.25rem;
 }
+
+/* Insects sub-navigation: left-aligned tab strip rendered under page H1s
+   inside the insects context. The strip sits on a warm-tan panel
+   darker than the page's cream `--pico-background-color`, which lets
+   both the inactive tab text (full `--pico-color` for readability) and
+   the "lifted" active tab (whose background matches the page below,
+   creating the open-folder-tab metaphor) stand out clearly. Overrides
+   pico's default `nav { justify-content: space-between }` so the
+   tabs left-align instead of stretching edge-to-edge. */
+.insects-subnav {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.25rem;
+    margin: 0 0 1.5rem;
+    padding: 0.25rem 0.25rem 0;
+    background: #D8CFBC;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.insects-subnav a {
+    padding: 0.5rem 1.25rem;
+    text-decoration: none;
+    color: var(--pico-color);
+    font-weight: 500;
+    border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.insects-subnav a:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.insects-subnav a[aria-current="page"] {
+    background: var(--pico-background-color);
+    color: var(--pico-secondary);
+    font-weight: 700;
+}
