@@ -11,7 +11,6 @@ import com.naturalist.insects.InsectGenusName;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageKind;
-import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
@@ -103,13 +102,9 @@ class InsectLifeStagesTest {
     private static InsectSpecies speciesWithPlacedIn(Clade placedIn) {
         return new InsectSpecies(
                 InsectSpeciesName.of("battus-philenor"),
-                new TaxonomicClassification(
-                        TaxonomicOrder.of("Lepidoptera"),
-                        TaxonomicFamily.of("Papilionidae"),
-                        TaxonomicGenus.of("Battus"),
-                        TaxonomicSpecies.of("philenor")),
-                null,
+                InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
+                TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),
                 null, null,

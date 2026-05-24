@@ -83,12 +83,9 @@ class InsectAggregateTest {
     private static InsectSpecies validSpecies() {
         return new InsectSpecies(
                 InsectSpeciesName.of(RandomValue.string()),
-                new TaxonomicClassification(
-                        TaxonomicOrder.of("Coleoptera"),
-                        TaxonomicFamily.of("Coccinellidae"),
-                        TaxonomicGenus.of("Hippodamia"),
-                        TaxonomicSpecies.of("convergens")),
-                null, null,
+                InsectGenusName.of("hippodamia"),
+                InsectFamilyName.of("coccinellidae"),
+                TaxonomicSpecies.of("convergens"),
                 description(),
                 Set.of(),
                 null, null,

@@ -8,10 +8,11 @@ import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.*;
 import com.naturalist.observability.Observer;
-import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicSpecies;
 
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -78,13 +79,20 @@ public class InsectsCatalogContribution implements CatalogContribution {
 
     @Override
     public Stream<SearchableEntity> searchableEntities() {
-        return Stream.of(speciesEntities(), familyEntities(), genusEntities())
-                .flatMap(s -> s);
+        // Build the genus lookup once per stream so species token assembly can resolve
+        // the parent genus's TaxonomicGenus epithet without re-querying per species.
+        Map<InsectGenusName, InsectGenus> genusByName = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
+                .collect(Collectors.toMap(InsectGenus::name, Function.identity()));
+        return Stream.of(
+                speciesEntities(genusByName),
+                familyEntities(),
+                genusEntities()
+        ).flatMap(s -> s);
     }
 
-    private Stream<SearchableEntity> speciesEntities() {
+    private Stream<SearchableEntity> speciesEntities(Map<InsectGenusName, InsectGenus> genusByName) {
         return Pages.stream(ASSEMBLY_PAGE_SIZE, species::findPage)
-                .map(InsectsCatalogContribution::toSearchableSpecies);
+                .map(s -> toSearchableSpecies(s, genusByName));
     }
 
     private Stream<SearchableEntity> familyEntities() {
@@ -97,9 +105,10 @@ public class InsectsCatalogContribution implements CatalogContribution {
                 .map(InsectsCatalogContribution::toSearchableGenus);
     }
 
-    private static SearchableEntity toSearchableSpecies(InsectSpecies entity) {
+    private static SearchableEntity toSearchableSpecies(InsectSpecies entity,
+                                                        Map<InsectGenusName, InsectGenus> genusByName) {
         EntityRef target = new EntityRef(DOMAIN, entity.name());
-        return new SearchableEntity(target, tokensFor(entity));
+        return new SearchableEntity(target, tokensFor(entity, genusByName));
     }
 
     private static SearchableEntity toSearchableFamily(InsectFamily entity) {
@@ -112,18 +121,20 @@ public class InsectsCatalogContribution implements CatalogContribution {
         return new SearchableEntity(target, tokensFor(entity));
     }
 
-    private static Stream<String> tokensFor(InsectSpecies entity) {
+    private static Stream<String> tokensFor(InsectSpecies entity,
+                                            Map<InsectGenusName, InsectGenus> genusByName) {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(entity.name().value());
-        TaxonomicClassification taxonomy = entity.taxonomy();
-        TaxonomicGenus genus = taxonomy.genus();
-        TaxonomicSpecies speciesEpithet = taxonomy.species();
-        if (genus != null) {
-            tokens.add(genus.value());
-            if (speciesEpithet != null) {
-                tokens.add(genus.value() + " " + speciesEpithet.value());
-                tokens.add(genus.value().charAt(0) + ". " + speciesEpithet.value());
-            }
+        // Every species has a non-null genusName + epithet after the TaxonomicClassification
+        // collapse — referential integrity to the parent genus record is enforced by the
+        // species's invariants. A missing parent here would be a catalog data error.
+        InsectGenus parentGenus = genusByName.get(entity.genusName());
+        if (parentGenus != null) {
+            TaxonomicGenus genusEpithet = parentGenus.genus();
+            String speciesEpithet = entity.epithet().value();
+            tokens.add(genusEpithet.value());
+            tokens.add(genusEpithet.value() + " " + speciesEpithet);
+            tokens.add(genusEpithet.value().charAt(0) + ". " + speciesEpithet);
         }
         entity.commonNames().forEach(commonName -> tokens.add(commonName.label()));
         return tokens.build();

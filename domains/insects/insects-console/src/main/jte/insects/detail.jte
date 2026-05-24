@@ -1,10 +1,14 @@
+@import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectFunctionalRole
+@import com.naturalist.insects.InsectGenus
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectImage
 @import java.util.List
 @import org.springframework.security.web.csrf.CsrfToken
 
 @param InsectSpecies species
+@param InsectGenus genus
+@param InsectFamily family
 @param List<InsectImage> images
 @param InsectFunctionalRole role = null
 @param String descriptionPreschool = ""
@@ -24,7 +28,10 @@
         </a>
     </p>
 
-    @template.components.taxonomy(taxonomy = species.taxonomy())
+    <p class="taxonomy">
+        ${family.order().value()} &middot; ${family.family().value()}
+        &middot; <em>${genus.genus().value()} ${species.epithet().value()}</em>
+    </p>
 
     @if(role != null)
         <div class="guilds">

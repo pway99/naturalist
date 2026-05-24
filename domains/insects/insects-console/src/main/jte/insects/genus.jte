@@ -38,10 +38,8 @@
                             </a>
                         </header>
                         <dl class="taxonomy">
-                            @if(s.taxonomy().species() != null)
-                                <dt>species</dt>
-                                <dd><em>${s.taxonomy().species().value()}</em></dd>
-                            @endif
+                            <dt>species</dt>
+                            <dd><em>${s.epithet().value()}</em></dd>
                         </dl>
                     </article>
                 @endfor

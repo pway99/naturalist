@@ -12,8 +12,6 @@ import com.naturalist.insects.lifestage.EggStage;
 import com.naturalist.insects.lifestage.LarvaStage;
 import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.jspecify.annotations.Nullable;
 
@@ -25,9 +23,13 @@ import java.util.function.Consumer;
 /**
  * A catalogued insect species (class Insecta) observed or documented at Oak Vista.
  * <p>
- * Each species carries a {@link TaxonomicClassification} from order to species and
- * a four-level {@link Description} embodying Durrell's principle — the same ecological
- * truth rendered at preschool, elementary, secondary, and university resolution.
+ * Each species carries typed upward FKs to its parent {@link InsectGenus} and
+ * {@link InsectFamily} (both required — every catalogued species is identified to genus),
+ * its own species epithet (e.g. {@code "philenor"}), and a four-level {@link Description}
+ * embodying Durrell's principle — the same ecological truth rendered at preschool,
+ * elementary, secondary, and university resolution. Order and family epithets are
+ * derivable from the parent family record; the genus epithet is on the parent genus
+ * record.
  * <p>
  * Functional ecology — which {@link FunctionalGuild} roles the species fills and
  * whether it is a beneficial in the garden-management sense — is held in
@@ -99,9 +101,9 @@ import java.util.function.Consumer;
 @AggregateRoot
 public record InsectSpecies(
         InsectSpeciesName name,
-        TaxonomicClassification taxonomy,
-        @Nullable InsectGenusName genusName,
-        @Nullable InsectFamilyName familyName,
+        InsectGenusName genusName,
+        InsectFamilyName familyName,
+        TaxonomicSpecies epithet,
         Description description,
         Set<CommonName> commonNames,
         @Nullable String sightingNotes,
@@ -122,7 +124,7 @@ public record InsectSpecies(
 
     public InsectSpecies withPlacedIn(@Nullable Clade value) {
         return new InsectSpecies(
-                name, taxonomy, genusName, familyName, description, commonNames,
+                name, genusName, familyName, epithet, description, commonNames,
                 sightingNotes, identificationFeatures,
                 value,
                 egg, larva, pupa, adult,
@@ -130,29 +132,13 @@ public record InsectSpecies(
                 gardenConnections, beneficialProfile, ecologicalSignificance);
     }
 
-    /**
-     * Convenience accessor for the genus epithet from {@link #taxonomy()}.
-     * Distinct from {@link #genusName()}, which carries the typed upward FK to the
-     * {@code InsectGenus} catalog entry when one exists.
-     */
-    public TaxonomicGenus genus() {
-        return taxonomy.genus();
-    }
-
-    /**
-     * Convenience accessor for the species epithet from {@link #taxonomy()}.
-     */
-    public TaxonomicSpecies species() {
-        return taxonomy.species();
-    }
-
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .entityNameOrNull(genusName, "genusName")
-                .entityNameOrNull(familyName, "familyName")
-                .valueObject(taxonomy, "taxonomy")
+                .entityName(genusName, "genusName")
+                .entityName(familyName, "familyName")
+                .namedValue(epithet, "epithet")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames")
                 .valueObjectOrNull(identificationFeatures, "identificationFeatures")

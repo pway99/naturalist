@@ -8,10 +8,6 @@ import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -59,8 +55,9 @@ class SpeciesCommandImplTest
     public InsectSpecies newEntity() {
         return new InsectSpecies(
                 InsectSpeciesName.of("test-command-species-xx"),
-                taxonomy(),
-                null, null,
+                InsectGenusName.of("carabus"),
+                InsectFamilyName.of("carabidae"),
+                TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
                 null, null,
@@ -73,8 +70,9 @@ class SpeciesCommandImplTest
     public InsectSpecies ghostEntity() {
         return new InsectSpecies(
                 InsectSpeciesName.of("test-command-ghost-xx"),
-                taxonomy(),
-                null, null,
+                InsectGenusName.of("carabus"),
+                InsectFamilyName.of("carabidae"),
+                TaxonomicSpecies.of("ghost"),
                 description(),
                 Set.of(),
                 null, null,
@@ -87,8 +85,9 @@ class SpeciesCommandImplTest
     public InsectSpecies modifiedEntity(InsectSpecies original) {
         return new InsectSpecies(
                 original.name(),
-                taxonomy(),
-                null, null,
+                InsectGenusName.of("carabus"),
+                InsectFamilyName.of("carabidae"),
+                TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
                 RandomValue.string(),
@@ -110,14 +109,6 @@ class SpeciesCommandImplTest
                         RandomValue.string(),
                         RandomValue.string()),
                 null);
-    }
-
-    private static TaxonomicClassification taxonomy() {
-        return new TaxonomicClassification(
-                TaxonomicOrder.of("Coleoptera"),
-                TaxonomicFamily.of("Carabidae"),
-                TaxonomicGenus.of("Carabus"),
-                TaxonomicSpecies.of("nemoralis"));
     }
 
     private static Description description() {

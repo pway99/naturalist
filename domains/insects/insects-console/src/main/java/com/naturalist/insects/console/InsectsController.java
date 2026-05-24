@@ -63,16 +63,24 @@ public class InsectsController {
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
         Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = new LinkedHashMap<>();
         Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = new LinkedHashMap<>();
+        Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
+        Map<InsectGenusName, InsectGenus> genusByName = new LinkedHashMap<>();
         for (var species : speciesPage.content()) {
             imagesBySpecies.put(
                     species.name(),
                     insectQuery.images().forParentName(species.name()).stream().toList());
             insectQuery.functionalRoles().getByParentName(species.name())
                     .ifPresent(role -> rolesBySpecies.put(species.name(), role));
+            familyByName.computeIfAbsent(species.familyName(),
+                    n -> insectQuery.families().getByName(n).orElseThrow());
+            genusByName.computeIfAbsent(species.genusName(),
+                    n -> insectQuery.genera().getByName(n).orElseThrow());
         }
         model.addAttribute("speciesPage", speciesPage);
         model.addAttribute("imagesBySpecies", imagesBySpecies);
         model.addAttribute("rolesBySpecies", rolesBySpecies);
+        model.addAttribute("familyByName", familyByName);
+        model.addAttribute("genusByName", genusByName);
         return "insects/list";
     }
 
@@ -158,9 +166,14 @@ public class InsectsController {
         if (species.isEmpty()) {
             return "redirect:/insects";
         }
+        InsectSpecies s = species.get();
+        InsectGenus genus = insectQuery.genera().getByName(s.genusName()).orElseThrow();
+        InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
         InsectEntityCollections.ImageCollection images = insectQuery.images().forParentName(speciesName);
-        var description = species.get().description();
-        model.addAttribute("species", species.get());
+        var description = s.description();
+        model.addAttribute("species", s);
+        model.addAttribute("genus", genus);
+        model.addAttribute("family", family);
         model.addAttribute("images", images.stream().toList());
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
@@ -194,10 +207,13 @@ public class InsectsController {
         if (species.isEmpty()) {
             return "redirect:/insects";
         }
+        InsectSpecies s = species.get();
+        InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
         var stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
                 .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
                 .toList();
-        model.addAttribute("species", species.get());
+        model.addAttribute("species", s);
+        model.addAttribute("family", family);
         model.addAttribute("stages", stages);
         return "insects/life-stages";
     }

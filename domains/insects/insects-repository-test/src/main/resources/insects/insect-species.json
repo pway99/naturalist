@@ -3,12 +3,7 @@
     "name": "hippodamia-convergens",
     "genusName": "hippodamia",
     "familyName": "coccinellidae",
-    "taxonomy": {
-      "order": "Coleoptera",
-      "family": "Coccinellidae",
-      "genus": "Hippodamia",
-      "species": "convergens"
-    },
+    "epithet": "convergens",
     "description": {
       "preschool": "The ladybug has a bright red shell with black spots. Both the ladybug and its funny-looking spiky black baby eat aphids — the tiny green bugs that hurt our tomato plants. If you see a ladybug in the garden, it is doing important work!",
       "elementary": "Ladybugs are beetles that eat aphids, which are small insects that suck the juice from tomato and other plants. A single ladybug can eat 50 to 100 aphids every day! The ladybug larva — which looks like a tiny orange and black alligator — is an even hungrier predator than the adult. If you see ladybug eggs (tiny yellow cylinders in clusters) or larvae in the garden, it means there are enough aphids to feed a whole ladybug family.",
@@ -201,12 +196,7 @@
     "name": "blattella-vaga",
     "genusName": "blattella",
     "familyName": "ectobiidae",
-    "taxonomy": {
-      "order": "Blattodea",
-      "family": "Ectobiidae",
-      "genus": "Blattella",
-      "species": "vaga"
-    },
+    "epithet": "vaga",
     "description": {
       "preschool": "This little brown roach lives outside in the garden — not inside the house. It hides under leaves and rocks and helps clean up dead plant pieces. It is also food for lizards, toads, and birds that visit the garden.",
       "elementary": "The field roach (Blattella vaga) is a small, light-coloured cockroach that lives outside in the garden, under rocks and leaf mulch. Unlike house cockroaches, it does not come indoors and is not a pest. It eats dead plant material, helping to recycle nutrients back into the soil. It is also an important food source for lizards, toads, and birds — if the garden has field roaches, it can support a richer wildlife community.",
@@ -314,12 +304,7 @@
     "name": "xylocopa-varipuncta",
     "genusName": "xylocopa",
     "familyName": "apidae",
-    "taxonomy": {
-      "order": "Hymenoptera",
-      "family": "Apidae",
-      "genus": "Xylocopa",
-      "species": "varipuncta"
-    },
+    "epithet": "varipuncta",
     "description": {
       "preschool": "The Valley Carpenter Bee is the biggest bee in California! The females are all black and shiny, and the males are golden and fuzzy. They drill holes in wood to make their nests. They are very loud but gentle — the boys cannot even sting.",
       "elementary": "The Valley Carpenter Bee is a large native bee found all over California's Central Valley. Females are shiny black and males are golden or tan. They drill perfectly round holes in dead wood or fence posts for nests, which is how they got their name. They are excellent pollinators for tomatoes, peppers, and other vegetables because they are strong enough to vibrate the flower and shake the pollen loose — a trick called buzz pollination. Male bees are territorial but harmless because they cannot sting.",
@@ -521,12 +506,7 @@
     "name": "vanessa-cardui",
     "genusName": "vanessa",
     "familyName": "nymphalidae",
-    "taxonomy": {
-      "order": "Lepidoptera",
-      "family": "Nymphalidae",
-      "genus": "Vanessa",
-      "species": "cardui"
-    },
+    "epithet": "cardui",
     "description": {
       "preschool": "The Painted Lady butterfly has orange, black, and white wings with beautiful patterns. Every year it travels a very long way — farther than any other butterfly in the world. When it visits our garden flowers, it helps pollinate them.",
       "elementary": "The Painted Lady is one of the most common butterflies in the world and it makes an amazing journey every year. In California, millions of them fly north in spring and south in autumn — a migration longer than the monarch butterfly's. Adults drink nectar from flowers and carry pollen. Their caterpillars eat thistle, mallow, and some other plants but do not harm tomatoes or vegetables. Seeing a Painted Lady means the garden is part of a much larger ecological story.",
@@ -735,12 +715,7 @@
     "name": "battus-philenor",
     "genusName": "battus",
     "familyName": "papilionidae",
-    "taxonomy": {
-      "order": "Lepidoptera",
-      "family": "Papilionidae",
-      "genus": "Battus",
-      "species": "philenor"
-    },
+    "epithet": "philenor",
     "description": {
       "preschool": "The Pipevine Swallowtail is a beautiful dark butterfly with blue and green shining wings. Its caterpillars only eat one special plant — the California Pipevine. We found their eggs on our Pipevine plant in April! We must never spray anything on the Pipevine because it would hurt these special butterflies.",
       "elementary": "The Pipevine Swallowtail is one of the most beautiful butterflies in California. It has dark wings that shine blue and green in the light. The caterpillars can only survive by eating California Pipevine leaves — no other plant will do. We found Pipevine Swallowtail eggs on our Pipevine plant in April 2026, which is very exciting! Because the caterpillars eat Pipevine, they store a poison that makes them and the adult butterflies taste terrible to birds, protecting them. We must never spray any pesticides on the Pipevine or nearby plants during butterfly season.",
@@ -1024,12 +999,7 @@
     "name": "colias-eurytheme",
     "genusName": "colias",
     "familyName": "pieridae",
-    "taxonomy": {
-      "order": "Lepidoptera",
-      "family": "Pieridae",
-      "genus": "Colias",
-      "species": "eurytheme"
-    },
+    "epithet": "eurytheme",
     "description": {
       "preschool": "This bright yellow butterfly has wings the colour of sunshine with a little dark edge, like someone drew a frame around them. It loves to visit flowers in the garden, sipping nectar and carrying pollen from one bloom to the next. It is one of the most common butterflies you will see flying over our garden.",
       "elementary": "The Orange Sulphur is one of the most common butterflies in North America. Its wings are yellow to orange with dark borders, and it has a small dark spot on each hindwing. Adults drink nectar from many kinds of flowers and help pollinate them. The caterpillars eat clover, alfalfa, and other legumes — plants in the pea family. You can see Orange Sulphurs flying low over fields and gardens from spring through autumn, and they are so common that watching their flight patterns is a good way to learn butterfly behaviour.",

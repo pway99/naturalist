@@ -4,10 +4,6 @@ import com.naturalist.RandomValue;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.Test;
 import java.util.Set;
@@ -29,13 +25,9 @@ class InsectSpeciesTest {
     private static InsectSpecies speciesWithPlacedIn(Clade placedIn) {
         return new InsectSpecies(
                 InsectSpeciesName.of("battus-philenor"),
-                new TaxonomicClassification(
-                        TaxonomicOrder.of("Lepidoptera"),
-                        TaxonomicFamily.of("Papilionidae"),
-                        TaxonomicGenus.of("Battus"),
-                        TaxonomicSpecies.of("philenor")),
-                null,
+                InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
+                TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),
                 null, null,

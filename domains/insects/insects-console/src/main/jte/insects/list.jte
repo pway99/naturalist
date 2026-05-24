@@ -1,4 +1,8 @@
+@import com.naturalist.insects.InsectFamily
+@import com.naturalist.insects.InsectFamilyName
 @import com.naturalist.insects.InsectFunctionalRole
+@import com.naturalist.insects.InsectGenus
+@import com.naturalist.insects.InsectGenusName
 @import com.naturalist.insects.InsectImage
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectSpeciesName
@@ -11,6 +15,8 @@
 @param Page<InsectSpecies> speciesPage
 @param Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = Map.of()
 @param Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = Map.of()
+@param Map<InsectFamilyName, InsectFamily> familyByName = Map.of()
+@param Map<InsectGenusName, InsectGenus> genusByName = Map.of()
 
 @template.layout.page(title = "Insect Species", content = @`
     @template.insects.nav(active = "species")
@@ -24,6 +30,8 @@
             !{var guilds = role == null ? Set.<FunctionalGuild>of() : role.guilds();}
             !{var beneficial = role != null && role.beneficial();}
             !{var commonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
+            !{var family = familyByName.get(s.familyName());}
+            !{var genus = genusByName.get(s.genusName());}
             <article>
                 <header>
                     <a href="/insects/${s.name().value()}">
@@ -35,15 +43,11 @@
                 </header>
                 <dl class="taxonomy">
                     <dt>fam.</dt>
-                    <dd>${s.taxonomy().family().value()}</dd>
-                    @if(s.taxonomy().genus() != null)
-                        <dt>gen.</dt>
-                        <dd><em>${s.taxonomy().genus().value()}</em></dd>
-                    @endif
-                    @if(s.taxonomy().species() != null)
-                        <dt>sp.</dt>
-                        <dd><em>${s.taxonomy().species().value()}</em></dd>
-                    @endif
+                    <dd>${family != null ? family.family().value() : s.familyName().value()}</dd>
+                    <dt>gen.</dt>
+                    <dd><em>${genus != null ? genus.genus().value() : s.genusName().value()}</em></dd>
+                    <dt>sp.</dt>
+                    <dd><em>${s.epithet().value()}</em></dd>
                 </dl>
                 @if(!images.isEmpty())
                     <a href="/insects/${s.name().value()}" class="card-image-link">

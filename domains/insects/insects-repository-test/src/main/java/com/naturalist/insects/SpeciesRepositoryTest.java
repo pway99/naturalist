@@ -48,8 +48,9 @@ interface SpeciesRepositoryTest
     default InsectSpecies newEntity() {
         return new InsectSpecies(
                 InsectSpeciesName.of("test-species-xx"),
-                taxonomy(),
-                null, null,
+                InsectGenusName.of("carabus"),
+                InsectFamilyName.of("carabidae"),
+                TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
                 null, null,
@@ -62,8 +63,9 @@ interface SpeciesRepositoryTest
     default InsectSpecies ghostEntity() {
         return new InsectSpecies(
                 InsectSpeciesName.of("test-ghost-xx"),
-                taxonomy(),
-                null, null,
+                InsectGenusName.of("carabus"),
+                InsectFamilyName.of("carabidae"),
+                TaxonomicSpecies.of("ghost"),
                 description(),
                 Set.of(),
                 null, null,
@@ -76,8 +78,9 @@ interface SpeciesRepositoryTest
     default InsectSpecies modifiedEntity(InsectSpecies original) {
         return new InsectSpecies(
                 original.name(),
-                taxonomy(),
-                null, null,
+                InsectGenusName.of("carabus"),
+                InsectFamilyName.of("carabidae"),
+                TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
                 RandomValue.string(),
@@ -101,14 +104,6 @@ interface SpeciesRepositoryTest
                 null);
     }
 
-    private static TaxonomicClassification taxonomy() {
-        return new TaxonomicClassification(
-                TaxonomicOrder.of("Coleoptera"),
-                TaxonomicFamily.of("Carabidae"),
-                TaxonomicGenus.of("Carabus"),
-                TaxonomicSpecies.of("nemoralis"));
-    }
-
     private static Description description() {
         return new Description(
                 RandomValue.string(), RandomValue.string(),
@@ -128,8 +123,9 @@ interface SpeciesRepositoryTest
         InsectSpecies seeded = newEntity();
         InsectSpecies underHalictus = new InsectSpecies(
                 seeded.name(),
-                seeded.taxonomy(),
-                halictus, null,
+                halictus,
+                TestInsectsIdentifiers.InsectFamily.Halictidae.name,
+                seeded.epithet(),
                 seeded.description(),
                 seeded.commonNames(),
                 null, null, null,
