@@ -33,7 +33,7 @@ Last updated: 2026-05-24 (PL-2 closed out — tachinid-fly + braconid-wasp speci
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
-| PL-2 closeout — tachinid-fly + braconid-wasp → family rank; fixtures repointed          | 2026-05-24 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-2)      | _pending_    |
+| PL-2 closeout — tachinid-fly + braconid-wasp → family rank; fixtures repointed          | 2026-05-24 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-2)      | `16ff792`    |
 | Catalogue-completeness slice 1 — 5 families + 6 genera + species FK wiring              | 2026-05-23 | conversation; prerequisite for stripping `TaxonomicClassification` from `InsectSpecies` | `412912f`    |
 | Family-page species enrichment — under-identified species on `/insects/families/{name}` | 2026-05-23 | conversation; uses `SpeciesQuery.forFamilyName` from PL-13 (reverted in PL-2 closeout) | `a81cccd`    |
 | PL-14 — rank-polymorphic `InsectAggregate` (sealed interface + 3 record permits)        | 2026-05-23 | [`plans/archive/pl-14-rank-polymorphic-insect-aggregate.md`](plans/archive/pl-14-rank-polymorphic-insect-aggregate.md) | `d698ac5`    |
