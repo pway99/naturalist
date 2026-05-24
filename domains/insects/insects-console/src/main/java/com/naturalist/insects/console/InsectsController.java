@@ -1,5 +1,6 @@
 package com.naturalist.insects.console;
 
+import com.naturalist.clades.Insecta;
 import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
@@ -81,6 +82,11 @@ public class InsectsController {
         model.addAttribute("rolesBySpecies", rolesBySpecies);
         model.addAttribute("familyByName", familyByName);
         model.addAttribute("genusByName", genusByName);
+        var cladeDescription = new Insecta().description();
+        model.addAttribute("cladePreschool", descriptionRenderer.render(cladeDescription.preschool()));
+        model.addAttribute("cladeElementary", descriptionRenderer.render(cladeDescription.elementary()));
+        model.addAttribute("cladeSecondary", descriptionRenderer.render(cladeDescription.secondary()));
+        model.addAttribute("cladeUniversity", descriptionRenderer.render(cladeDescription.university()));
         return "insects/list";
     }
 
