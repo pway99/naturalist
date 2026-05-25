@@ -21,15 +21,17 @@ class InsectAggregateQueryImplTest {
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
     GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
     FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
+    OrderRepositoryMock orderRepository = new OrderRepositoryMock(db);
 
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
     InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository);
     InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
+    InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
 
     InsectQuery.InsectAggregateQuery aggregateQuery =
             new InsectAggregateQueryImpl(new InsectAggregateFactory(
-                    speciesQuery, imageQuery, genusQuery, familyQuery));
+                    speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery));
 
     @Test
     void getByName_knownSpecies_returnsSpeciesAggregate() {

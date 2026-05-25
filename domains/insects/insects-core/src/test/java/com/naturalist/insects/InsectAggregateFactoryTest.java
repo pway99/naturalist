@@ -21,14 +21,16 @@ class InsectAggregateFactoryTest {
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
     GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
     FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
+    OrderRepositoryMock orderRepository = new OrderRepositoryMock(db);
 
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
     InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository);
     InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
+    InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
 
     InsectAggregateFactory factory =
-            new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery);
+            new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
 
     @Test
     void buildByName_speciesWithImages_returnsSpeciesAggregateWithImagesAndReferentialIntegrity() {
@@ -166,36 +168,43 @@ class InsectAggregateFactoryTest {
 
     @Test
     void constructor_rejectsNullSpeciesQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(null, imageQuery, genusQuery, familyQuery))
+        assertThatThrownBy(() -> new InsectAggregateFactory(null, imageQuery, genusQuery, familyQuery, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery");
     }
 
     @Test
     void constructor_rejectsNullImageQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, null, genusQuery, familyQuery))
+        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, null, genusQuery, familyQuery, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("imageQuery");
     }
 
     @Test
     void constructor_rejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, imageQuery, null, familyQuery))
+        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, imageQuery, null, familyQuery, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("genusQuery");
     }
 
     @Test
     void constructor_rejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, null))
+        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, null, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("familyQuery");
     }
 
     @Test
-    void constructor_collectsAllViolationsInSinglePass() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(null, null, null, null))
+    void constructor_rejectsNullOrderQuery() {
+        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery, null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("speciesQuery", "imageQuery", "genusQuery", "familyQuery");
+                .hasMessageContainingAll("orderQuery");
+    }
+
+    @Test
+    void constructor_collectsAllViolationsInSinglePass() {
+        assertThatThrownBy(() -> new InsectAggregateFactory(null, null, null, null, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("speciesQuery", "imageQuery", "genusQuery", "familyQuery", "orderQuery");
     }
 }

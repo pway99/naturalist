@@ -3,9 +3,9 @@ package com.naturalist.insects;
 import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.observability.InvariantViolationException;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import org.junit.jupiter.api.Test;
 

@@ -14,7 +14,6 @@ import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageKind;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.Test;
 
@@ -79,7 +78,7 @@ class InsectLifeStagesTest {
     private static InsectFamily familyWithPlacedIn(Clade placedIn) {
         return new InsectFamily(
                 InsectFamilyName.of("papilionidae"),
-                TaxonomicOrder.of("Lepidoptera"),
+                InsectOrderName.of("lepidoptera"),
                 TaxonomicFamily.of("Papilionidae"),
                 description(),
                 Set.of(),

@@ -4,7 +4,6 @@ import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
-import com.naturalist.taxonomy.LinnaeanFamily;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicOrder;
 
@@ -24,8 +23,8 @@ import java.util.function.Consumer;
  * <p>
  * Each family carries the four-level Durrell {@link Description}, locale-tagged
  * {@link CommonName}s for findability, and the family's place in the Linnaean
- * order/family hierarchy. The slug identity is derived from the family epithet
- * via {@link LinnaeanFamily#familySlug()}; vernacular names live in
+ * order/family hierarchy. The slug identity is derived from the family epithet;
+ * vernacular names live in
  * {@code commonNames} and are findable but not authoritative.
  */
 public record PlantFamily(
@@ -34,7 +33,7 @@ public record PlantFamily(
         TaxonomicFamily family,
         Description description,
         Set<CommonName> commonNames
-) implements NamedEntity<PlantFamilyName>, LinnaeanFamily {
+) implements NamedEntity<PlantFamilyName> {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
