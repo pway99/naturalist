@@ -1,9 +1,11 @@
 package com.naturalist.insects;
 
 import com.naturalist.ddd.BehavioralCollection;
+import com.naturalist.ddd.BehavioralMap;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Namespace for the insects bounded context's {@link BehavioralCollection} return types.
@@ -52,6 +54,46 @@ public interface InsectEntityCollections {
 
         public static ImageCollection empty() {
             return new ImageCollection(List.of());
+        }
+    }
+
+    final class ImageGallery extends BehavioralMap<InsectRankName, InsectImage> {
+
+        ImageGallery(Collection<InsectImage> images) {
+            super(images, InsectImage::parentName);
+        }
+
+        ImageGallery(Map<InsectRankName, ? extends Collection<InsectImage>> groups) {
+            super(groups);
+        }
+
+        /**
+         * Construct a gallery that auto-groups images by their {@link InsectImage#parentName()}.
+         * Use when the card entity matches the image parent rank (e.g. species cards).
+         */
+        public static ImageGallery of(Collection<InsectImage> images) {
+            return new ImageGallery(images);
+        }
+
+        /**
+         * Construct a gallery from a pre-computed grouping where the key is the card entity
+         * name. Use when the card entity is a higher rank than the image parent (e.g. order
+         * cards showing descendant species images).
+         */
+        public static ImageGallery grouped(Map<InsectRankName, ? extends Collection<InsectImage>> groups) {
+            return new ImageGallery(groups);
+        }
+
+        public static ImageGallery empty() {
+            return new ImageGallery(List.of());
+        }
+
+        /**
+         * Returns the images grouped under the given entity name, or an empty
+         * {@link ImageCollection} if no images exist for that entity.
+         */
+        public ImageCollection forEntity(InsectRankName name) {
+            return ImageCollection.of(elementsForKey(name));
         }
     }
 
