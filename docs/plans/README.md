@@ -47,6 +47,13 @@ not loaded by default.
 | [archive/insect-functional-role.md](archive/insect-functional-role.md)                            | 2026-05-19 | `InsectFunctionalRole` entity stack (cross-rank by `InsectRankName`); strip `guilds`/`beneficial` from `InsectSpecies`. Closes PL-11. |
 | [archive/insects-family-genus-console.md](archive/insects-family-genus-console.md)                | 2026-05-23 | Phase 0 UI: `/insects/families` + `/insects/genera` list/detail pages, `GenusQuery.forFamilyName` typed-FK gap, `SpeciesQuery.forGenusEpithet` text stopgap, `InsectsLinker` family/genus routing. Raised PL-13 + PL-14. |
 | [archive/genus-family-life-stages.md](archive/genus-family-life-stages.md)                        | 2026-05-13 | Slice 1 of identification roadmap Phase 0: extend `InsectGenus` / `InsectFamily` records with optional life-stage components. |
+| [archive/insect-order-design.md](archive/insect-order-design.md)                                  | 2026-05-25 | Design spec for `InsectOrder` entity: order-rank + genus/family refactoring to drop local epithet copies and use typed `InsectOrderName` FKs. |
+| [archive/insect-order-phase1-plan.md](archive/insect-order-phase1-plan.md)                        | 2026-05-25 | Phase 1: refactor `InsectGenus` — drop `TaxonomicOrder`/`TaxonomicFamily` local copies, update `LinnaeanGenus` kernel, console resolves parent families. |
+| [archive/insect-order-phase2-plan.md](archive/insect-order-phase2-plan.md)                        | 2026-05-25 | Phase 2: introduce `InsectOrder` entity, `InsectOrderName` identifier, `LinnaeanOrder` kernel, refactor `InsectFamily`/`InsectGenus` FKs, console order pages, catalog contribution. |
+| [archive/console-clade-context-design.md](archive/console-clade-context-design.md)                | 2026-05-25 | Design spec for clade lineage trail and Class Insecta landing description on insects console pages. |
+| [archive/console-clade-context-plan.md](archive/console-clade-context-plan.md)                    | 2026-05-25 | Clade context implementation: `.clade-lineage` CSS, `nav.jte` lineage trail (Animalia › Arthropoda › Insecta), Class Insecta description on landing page. |
+| [archive/2026-05-24-insect-page-images.md](archive/2026-05-24-insect-page-images.md)              | 2026-05-25 | Image carousels on all insect listing/detail pages: `BehavioralMap` kernel type, `ImageGallery`, `cardImages.jte` component, hierarchy image helpers. |
+| [archive/2026-05-24-insect-page-images-design.md](archive/2026-05-24-insect-page-images-design.md) | 2026-05-25 | Design spec for insect page images: `BehavioralMap` kernel, `ImageGallery`, carousel component, hierarchy-walking controller helpers. |
 
 ## Where else to look
 

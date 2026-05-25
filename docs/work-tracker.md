@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-24 (Catalogue-completeness slice 2 landed — `InsectSpecies` collapsed: dropped the `TaxonomicClassification taxonomy` component (order/family/genus epithets), added `TaxonomicSpecies epithet` (just the species name). `genusName`, `familyName`, `epithet` are all non-nullable required components — invariants are honest. JSON migrated for the 6 species records. `InsectsCatalogContribution` builds a `Map<InsectGenusName, InsectGenus>` once per stream to resolve genus epithets for binomial tokens. Console controllers fetch parent records and pass them to JTE templates; `components/taxonomy.jte` deleted (orphan after inlining in `insects/detail.jte`). Every Linnaean text artefact now reads from a single source of truth — the parent record.).
+Last updated: 2026-05-25 (Archiving three completed efforts: InsectOrder entity + FK refactoring, console clade context, insect page images. All plans moved to `docs/plans/archive/`.)
 
 ---
 
@@ -32,6 +32,10 @@ Last updated: 2026-05-24 (Catalogue-completeness slice 2 landed — `InsectSpeci
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Insect page images — `BehavioralMap` kernel, `ImageGallery`, carousels on all listing/detail pages | 2026-05-25 | [`plans/archive/2026-05-24-insect-page-images.md`](plans/archive/2026-05-24-insect-page-images.md) | `a8f56f5`    |
+| Console clade context — lineage trail (Animalia › Arthropoda › Insecta), Class Insecta description on landing page | 2026-05-25 | [`plans/archive/console-clade-context-plan.md`](plans/archive/console-clade-context-plan.md) | `a540825`    |
+| InsectOrder entity — order-rank entity, genus/family FK refactoring (Phase 1 + 2)       | 2026-05-25 | [`plans/archive/insect-order-phase2-plan.md`](plans/archive/insect-order-phase2-plan.md)   | `41562e1`    |
+| InsectGenus refactor — drop `TaxonomicOrder`/`TaxonomicFamily` local copies             | 2026-05-25 | [`plans/archive/insect-order-phase1-plan.md`](plans/archive/insect-order-phase1-plan.md)   | `11faa76`    |
 | Catalogue-completeness slice 2 — `InsectSpecies` drops `TaxonomicClassification`; honest non-null invariants | 2026-05-24 | conversation; closes the simplification arc opened by slice 1               | `db9623b`    |
 | PL-2 closeout — tachinid-fly + braconid-wasp → family rank; fixtures repointed          | 2026-05-24 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-2)      | `16ff792`    |
 | Catalogue-completeness slice 1 — 5 families + 6 genera + species FK wiring              | 2026-05-23 | conversation; prerequisite for stripping `TaxonomicClassification` from `InsectSpecies` | `412912f`    |
