@@ -26,9 +26,20 @@
 
 <script>
     function showTab(button, level) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-        document.getElementById('tab-' + level).classList.add('active');
+        var section = button.closest('.description-tabs');
+        section.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        section.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+        section.querySelector('#tab-' + level).classList.add('active');
         button.classList.add('active');
+        localStorage.setItem('description-tab', level);
     }
+    (function () {
+        var saved = localStorage.getItem('description-tab');
+        if (!saved) return;
+        document.querySelectorAll('.description-tabs').forEach(function (section) {
+            var btn = Array.from(section.querySelectorAll('.tab')).find(
+                function (b) { return b.textContent.trim().toLowerCase() === saved; });
+            if (btn) showTab(btn, saved);
+        });
+    }());
 </script>

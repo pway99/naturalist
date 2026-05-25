@@ -20,7 +20,8 @@
 @param CsrfToken _csrf = null
 
 @template.layout.page(title = species.name().value(), content = @`
-    <a href="/insects">&larr; Back to catalog</a>
+    @template.insects.nav(active = "species")
+    <a href="/insects/species">&larr; Back to catalog</a>
 
     <h1>${species.name().value()}</h1>
 

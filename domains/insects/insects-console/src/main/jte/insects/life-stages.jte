@@ -14,6 +14,7 @@
 @param List<LifeStage> stages
 
 @template.layout.page(title = species.name().value() + " — Life Stages", content = @`
+    @template.insects.nav(active = "species")
     <a href="/insects/${species.name().value()}" class="naturalist-backlink">&larr; Back
         to ${species.name().value()}</a>
 

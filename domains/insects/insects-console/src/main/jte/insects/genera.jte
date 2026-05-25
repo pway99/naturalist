@@ -6,9 +6,23 @@
 
 @param Page<InsectGenus> genusPage
 @param Map<InsectFamilyName, InsectFamily> familyByName
+@param String cladePreschool = ""
+@param String cladeElementary = ""
+@param String cladeSecondary = ""
+@param String cladeUniversity = ""
 
 @template.layout.page(title = "Insect Genera", content = @`
-    @template.insects.nav(active = "genus")
+    @template.insects.cladeIntro(
+        cladePreschool = cladePreschool,
+        cladeElementary = cladeElementary,
+        cladeSecondary = cladeSecondary,
+        cladeUniversity = cladeUniversity)
+    <nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
+        <a href="/insects/orders" aria-current="false">Order</a>
+        <a href="/insects/families" aria-current="false">Family</a>
+        <a href="/insects/genera" aria-current="page">Genus</a>
+        <a href="/insects/species" aria-current="false">Species</a>
+    </nav>
     <h1>Insect Genera</h1>
     <p>Genus-rank records in the Oak Vista catalog.</p>
 

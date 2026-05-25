@@ -23,29 +23,16 @@
 @param String cladeUniversity = ""
 
 @template.layout.page(title = "Insect Species", content = @`
-    !{var ancestry = com.naturalist.clades.CladeTraversal.ancestry(new com.naturalist.clades.Insecta()).reversed();}
-    !{var display = ancestry.stream().filter(c -> !(c instanceof com.naturalist.clades.Eukaryota)).toList();}
-    <div class="clade-lineage" aria-label="Taxonomic placement">
-        @for(int i = 0; i < display.size(); i++)
-            @if(i > 0)
-                <span aria-hidden="true"> › </span>
-            @endif
-            <span>${display.get(i).displayName()}</span>
-        @endfor
-    </div>
-    <details class="clade-introduction" open>
-        <summary><h2>Class Insecta</h2></summary>
-        @template.components.description(
-            preschool = cladePreschool,
-            elementary = cladeElementary,
-            secondary = cladeSecondary,
-            university = cladeUniversity)
-    </details>
+    @template.insects.cladeIntro(
+        cladePreschool = cladePreschool,
+        cladeElementary = cladeElementary,
+        cladeSecondary = cladeSecondary,
+        cladeUniversity = cladeUniversity)
     <nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
         <a href="/insects/orders" aria-current="false">Order</a>
         <a href="/insects/families" aria-current="false">Family</a>
         <a href="/insects/genera" aria-current="false">Genus</a>
-        <a href="/insects" aria-current="page">Species</a>
+        <a href="/insects/species" aria-current="page">Species</a>
     </nav>
     <h1>Insect Species</h1>
     <p>Insect species documented at Oak Vista.</p>
@@ -103,7 +90,7 @@
         @endfor
     </div>
 
-    @template.components.pager(page = speciesPage, baseUrl = "/insects")
+    @template.components.pager(page = speciesPage, baseUrl = "/insects/species")
 
     <script>
         (function () {

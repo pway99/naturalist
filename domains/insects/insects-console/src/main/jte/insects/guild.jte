@@ -7,7 +7,8 @@
 @param List<InsectFunctionalRole> roles
 
 @template.layout.page(title = "Guild: " + selectedGuild.name(), content = @`
-    <a href="/insects">&larr; Back to catalog</a>
+    @template.insects.nav(active = "species")
+    <a href="/insects/species">&larr; Back to catalog</a>
 
     <h1>Functional Guild: ${selectedGuild.name()}</h1>
 

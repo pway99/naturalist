@@ -59,7 +59,20 @@ public class InsectsController {
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
     }
 
+    private void addCladeDescription(Model model) {
+        var d = new Insecta().description();
+        model.addAttribute("cladePreschool", descriptionRenderer.render(d.preschool()));
+        model.addAttribute("cladeElementary", descriptionRenderer.render(d.elementary()));
+        model.addAttribute("cladeSecondary", descriptionRenderer.render(d.secondary()));
+        model.addAttribute("cladeUniversity", descriptionRenderer.render(d.university()));
+    }
+
     @GetMapping
+    String index() {
+        return "redirect:/insects/orders";
+    }
+
+    @GetMapping("/species")
     String list(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
         Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = new LinkedHashMap<>();
@@ -82,11 +95,7 @@ public class InsectsController {
         model.addAttribute("rolesBySpecies", rolesBySpecies);
         model.addAttribute("familyByName", familyByName);
         model.addAttribute("genusByName", genusByName);
-        var cladeDescription = new Insecta().description();
-        model.addAttribute("cladePreschool", descriptionRenderer.render(cladeDescription.preschool()));
-        model.addAttribute("cladeElementary", descriptionRenderer.render(cladeDescription.elementary()));
-        model.addAttribute("cladeSecondary", descriptionRenderer.render(cladeDescription.secondary()));
-        model.addAttribute("cladeUniversity", descriptionRenderer.render(cladeDescription.university()));
+        addCladeDescription(model);
         return "insects/list";
     }
 
@@ -101,6 +110,7 @@ public class InsectsController {
         }
         model.addAttribute("familyPage", familyPage);
         model.addAttribute("orderByName", orderByName);
+        addCladeDescription(model);
         return "insects/families";
     }
 
@@ -131,6 +141,7 @@ public class InsectsController {
         Page<InsectOrder> orderPage = insectQuery.orders()
                 .findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("orderPage", orderPage);
+        addCladeDescription(model);
         return "insects/orders";
     }
 
@@ -158,7 +169,14 @@ public class InsectsController {
     String genera(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectGenus> genusPage = insectQuery.genera()
                 .findPage(PageRequest.console(Math.max(0, page)));
+        Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
+        for (var genus : genusPage.content()) {
+            familyByName.computeIfAbsent(genus.familyName(),
+                    n -> insectQuery.families().getByName(n).orElseThrow());
+        }
         model.addAttribute("genusPage", genusPage);
+        model.addAttribute("familyByName", familyByName);
+        addCladeDescription(model);
         return "insects/genera";
     }
 

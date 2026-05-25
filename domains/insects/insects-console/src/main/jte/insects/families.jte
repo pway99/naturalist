@@ -6,9 +6,23 @@
 
 @param Page<InsectFamily> familyPage
 @param Map<InsectOrderName, InsectOrder> orderByName
+@param String cladePreschool = ""
+@param String cladeElementary = ""
+@param String cladeSecondary = ""
+@param String cladeUniversity = ""
 
 @template.layout.page(title = "Insect Families", content = @`
-    @template.insects.nav(active = "family")
+    @template.insects.cladeIntro(
+        cladePreschool = cladePreschool,
+        cladeElementary = cladeElementary,
+        cladeSecondary = cladeSecondary,
+        cladeUniversity = cladeUniversity)
+    <nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
+        <a href="/insects/orders" aria-current="false">Order</a>
+        <a href="/insects/families" aria-current="page">Family</a>
+        <a href="/insects/genera" aria-current="false">Genus</a>
+        <a href="/insects/species" aria-current="false">Species</a>
+    </nav>
     <h1>Insect Families</h1>
     <p>Family-rank records in the Oak Vista catalog.</p>
 
