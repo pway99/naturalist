@@ -30,6 +30,11 @@ final class TaxonomicSlugs {
         return kebab(genus.value());
     }
 
+    static String orderSlug(TaxonomicOrder order) {
+        Objects.requireNonNull(order, "order");
+        return kebab(order.value());
+    }
+
     static String binomial(TaxonomicGenus genus, TaxonomicSpecies species) {
         Objects.requireNonNull(genus, "genus");
         Objects.requireNonNull(species, "species");

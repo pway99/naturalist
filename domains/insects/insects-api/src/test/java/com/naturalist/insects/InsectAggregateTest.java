@@ -83,6 +83,27 @@ class InsectAggregateTest {
                 .containsExactlyInAnyOrder(".agg.family", ".agg.images");
     }
 
+    @Test
+    void orderAggregateIsValid() {
+        var mo = observer.forMethod("orderAggregateIsValid");
+        InsectOrderAggregate agg = InsectOrderAggregate.of(validOrder());
+
+        InvariantObservation result = mo.observable(agg, "agg");
+
+        assertThat(result.violations()).isEmpty();
+    }
+
+    @Test
+    void orderAggregateIsNotValid() {
+        var mo = observer.forMethod("orderAggregateIsNotValid");
+        InsectOrderAggregate agg = new InsectOrderAggregate(null, null);
+
+        InvariantObservation result = mo.observable(agg, "agg");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactlyInAnyOrder(".agg.order", ".agg.images");
+    }
+
     private static InsectSpecies validSpecies() {
         return new InsectSpecies(
                 InsectSpeciesName.of(RandomValue.string()),
@@ -102,6 +123,7 @@ class InsectAggregateTest {
         return new InsectGenus(
                 InsectGenusName.of(RandomValue.string()),
                 InsectFamilyName.of("papilionidae"),
+                InsectOrderName.of("lepidoptera"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),
@@ -112,8 +134,18 @@ class InsectAggregateTest {
     private static InsectFamily validFamily() {
         return new InsectFamily(
                 InsectFamilyName.of(RandomValue.string()),
-                TaxonomicOrder.of("Diptera"),
+                InsectOrderName.of("diptera"),
                 TaxonomicFamily.of("Syrphidae"),
+                description(),
+                Set.of(),
+                null,
+                null, null, null, null);
+    }
+
+    private static InsectOrder validOrder() {
+        return new InsectOrder(
+                InsectOrderName.of(RandomValue.string()),
+                TaxonomicOrder.of("Diptera"),
                 description(),
                 Set.of(),
                 null,

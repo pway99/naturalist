@@ -3,9 +3,9 @@ package com.naturalist.insects;
 import com.naturalist.taxonomy.LinealRank;
 
 /**
- * Sealed marker type for the four insect-side Linnaean rank names —
- * {@link InsectFamilyName}, {@link InsectGenusName}, {@link InsectSpeciesName},
- * {@link InsectSubspeciesName}.
+ * Sealed marker type for the five insect-side Linnaean rank names —
+ * {@link InsectOrderName}, {@link InsectFamilyName}, {@link InsectGenusName},
+ * {@link InsectSpeciesName}, {@link InsectSubspeciesName}.
  *
  * <p>Used as the parent reference type on records that may attach to any of
  * the four ranks. The canonical case is {@code InsectImage.parentName}:
@@ -61,7 +61,7 @@ import com.naturalist.taxonomy.LinealRank;
  * {@link com.naturalist.ddd.EntityName} {@code @JsonValue} on {@code value()}.
  */
 public sealed interface InsectRankName
-        permits InsectFamilyName, InsectGenusName, InsectSpeciesName, InsectSubspeciesName {
+        permits InsectOrderName, InsectFamilyName, InsectGenusName, InsectSpeciesName, InsectSubspeciesName {
 
     /**
      * The slug string carried by this rank name. Exposed on the sealed

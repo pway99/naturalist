@@ -16,6 +16,7 @@ import java.util.List;
  *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenus}.</li>
  *   <li>{@link FunctionalRoleCollection} — multi-result return type for
  *       {@link InsectFunctionalRole}.</li>
+ *   <li>{@link OrderCollection} — multi-result return type for {@link InsectOrder}.</li>
  * </ul>
  *
  * <p>{@code InsectEntityCollections} is a pure container — it holds no behavior of its own,
@@ -96,6 +97,21 @@ public interface InsectEntityCollections {
 
         public static FunctionalRoleCollection empty() {
             return new FunctionalRoleCollection(List.of());
+        }
+    }
+
+    final class OrderCollection extends BehavioralCollection<InsectOrder> {
+
+        OrderCollection(Collection<InsectOrder> orders) {
+            super(orders);
+        }
+
+        public static OrderCollection of(Collection<InsectOrder> orders) {
+            return new OrderCollection(orders);
+        }
+
+        public static OrderCollection empty() {
+            return new OrderCollection(List.of());
         }
     }
 }

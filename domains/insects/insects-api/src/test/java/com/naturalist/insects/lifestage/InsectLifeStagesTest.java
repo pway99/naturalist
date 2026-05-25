@@ -8,6 +8,7 @@ import com.naturalist.insects.InsectFamily;
 import com.naturalist.insects.InsectFamilyName;
 import com.naturalist.insects.InsectGenus;
 import com.naturalist.insects.InsectGenusName;
+import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageKind;
@@ -90,6 +91,7 @@ class InsectLifeStagesTest {
         return new InsectGenus(
                 InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
+                InsectOrderName.of("lepidoptera"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),

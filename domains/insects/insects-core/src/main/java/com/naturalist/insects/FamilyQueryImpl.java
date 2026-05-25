@@ -25,4 +25,12 @@ class FamilyQueryImpl
                 .throwWhenInvalid();
         return FamilyCollection.of(repository().getByEntityNameSet(names));
     }
+
+    @Override
+    public FamilyCollection forOrderName(InsectOrderName orderName) {
+        observer().arguments("forOrderName",
+                        i -> i.entityName(orderName, "orderName"))
+                .throwWhenInvalid();
+        return FamilyCollection.of(repository().getByOrderName(orderName));
+    }
 }

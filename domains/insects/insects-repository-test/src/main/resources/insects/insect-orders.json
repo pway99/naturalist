@@ -1,0 +1,99 @@
+[
+  {
+    "name": "diptera",
+    "order": "Diptera",
+    "description": {
+      "preschool": "Flies have only two wings — that is what makes them different from most other flying bugs. Many flies we see in the garden are helpers, either eating pests or helping to break down old plants into soil.",
+      "elementary": "Diptera is the order of true flies — houseflies, hoverflies, crane flies, and many others. They have only two working wings; their second pair has shrunk into small knobs that help them balance while flying. Some fly larvae eat aphids and other pests, some break down dead plant material in the soil, and some are parasites of pest caterpillars. Most adult flies drink nectar and help pollinate flowers.",
+      "secondary": "Diptera (true flies) are defined by the reduction of the hindwings to halteres — gyroscopic organs that provide flight stability feedback. With over 160,000 described species, the order occupies a remarkable range of ecological guilds: saprophagous decomposers (Tipulidae larvae), aphidophagous predators (Syrphidae larvae), koinobiont parasitoids (Tachinidae), pollinators (Syrphidae and Bombyliidae adults), and haematophagous vectors (Culicidae, Tabanidae). The order exhibits holometabolous development. Many families are important natural enemies of crop pests and key components of pollinator assemblages in managed landscapes.",
+      "university": "Order Diptera (two-winged flies) — second only to Coleoptera in described species richness; approximately 160,000 species in 150+ families. Defining synapomorphy: posterior pair of wings modified into halteres (gyroscopic stabilisers), a key innovation enabling the high-frequency wingbeat and aerial agility characteristic of the order. Complete metamorphosis (holometaboly): egg, larva (maggot), pupa (puparium in some lineages), adult. Larval feeding guilds span the trophic spectrum — saprophagy, phytophagy, predation, parasitoidism, haematophagy, and fungivory. At Oak Vista, primary dipteran guilds are: koinobiont parasitoidism (Tachinidae), aphidophagous predation (Syrphidae), and saprophagous decomposition (Tipulidae). Adult nutritional ecology is dominated by nectarivory and pollen-feeding, with the Syrphidae representing the most ecologically significant dipteran pollinators in temperate garden systems. Diptera collectively contribute substantially to pollination service, pest suppression, and nutrient cycling in the Oak Vista managed landscape."
+    },
+    "commonNames": [
+      { "label": "true flies", "locale": "en" }
+    ],
+    "placedIn": "holometabola"
+  },
+  {
+    "name": "hymenoptera",
+    "order": "Hymenoptera",
+    "description": {
+      "preschool": "Bees and wasps belong to this order, and so do ants. Many of them are pollinators that carry pollen from flower to flower, and some are tiny wasps that keep caterpillars and aphids from taking over the garden.",
+      "elementary": "Hymenoptera is the order of bees, wasps, and ants — over 150,000 species. Bees collect pollen and nectar to feed their young, making them powerful pollinators. Wasps are often predators or parasites of caterpillars, aphids, and other pests that damage crops. Many Hymenoptera are social, living in colonies with queens and workers, but many others live alone as solitary insects.",
+      "secondary": "Hymenoptera is the order containing bees, wasps, sawflies, and ants. Two pairs of membranous wings are coupled by hamuli (tiny hooks) for synchronised flight. The order contains the most ecologically impactful natural enemies of insect pests — parasitoid wasps — as well as the dominant pollinator guild: bees (Anthophila). Major parasitoid families at Oak Vista include Braconidae (aphid and caterpillar parasitoids) and Ichneumonidae. Pollinator families include Apidae, Halictidae, and Andrenidae. Social behaviour has evolved independently multiple times within Hymenoptera and is associated with the haplo-diploidy sex-determination system.",
+      "university": "Order Hymenoptera (bees, wasps, and ants) — approximately 150,000 described species; arguably the most ecologically consequential insect order in managed landscapes. Defining features: two pairs of membranous wings connected by row of hamuli, gastral constriction (petiolate abdomen in Apocrita), and ovipositor modified into a sting in aculeate lineages. Holometabolous development. Two major functional guilds dominate at Oak Vista: Anthophila (bees) providing pollination services — including obligate buzz-pollination for Solanaceae — and parasitoid wasps (Ichneumonoidea: Braconidae, Ichneumonidae; Chalcidoidea: Mymaridae, Encyrtidae) providing trophic regulation of pest populations. The haplo-diploidy sex-determination system is the phylogenetic substrate for eusocial evolution; relatedness asymmetries between workers and offspring favour cooperative brood care. Pesticide management is critically mediated through this order: broad-spectrum insecticides at bloom disproportionately suppress pollinator and parasitoid populations relative to pest populations, consistently degrading biocontrol efficacy and fruit set."
+    },
+    "commonNames": [
+      { "label": "ants, bees, and wasps", "locale": "en" }
+    ],
+    "placedIn": "holometabola"
+  },
+  {
+    "name": "coleoptera",
+    "order": "Coleoptera",
+    "description": {
+      "preschool": "Beetles are insects with a hard shell on their back that is really a pair of wings folded up to protect them. Ladybugs and ground beetles are beetles, and they help our garden by eating aphids and other pests.",
+      "elementary": "Coleoptera is the order of beetles — the largest order of insects in the world, with over 400,000 species. Beetles have hardened front wings called elytra that cover and protect their flying wings underneath. Some beetles are important garden predators: ladybugs eat aphids and ground beetles eat caterpillars, slugs, and weed seeds. A few beetles are plant pests, but the majority of species are either helpful or neutral in the garden.",
+      "secondary": "Coleoptera (beetles) is the most species-rich insect order — approximately 400,000 described species, constituting nearly a quarter of all known animal species. The diagnostic feature is the hardened first pair of wings (elytra) that meet in a straight mid-dorsal suture, protecting the membranous hind wings and abdomen. Ecological guilds span the complete trophic range: predation (Carabidae, Coccinellidae), saprophagy and wood decomposition (Cerambycidae larvae, Scolytidae), phytophagy (Chrysomelidae, Curculionidae), fungivory, and carrion processing (Silphidae). At Oak Vista, Carabidae and Coccinellidae represent the primary beneficial families — apex soil-surface predators and aphidophagous predators respectively.",
+      "university": "Order Coleoptera (beetles) — approximately 400,000 described species; the most species-rich order in the animal kingdom. Synapomorphy: protibia with distinct tibial spur and elytra (sclerotised fore wings that meet along the dorsal midline, the elytral suture) protecting the membranous hind wings folded beneath. Holometabolous development with highly variable larval morphology. The extraordinary diversity of Coleoptera is attributed to parallel radiations into phytophagous guilds tracking angiosperm diversification, as well as to the mechanical protection conferred by elytra facilitating exploitation of soil, wood, and bark microhabitats. At Oak Vista, the primary functional guilds are: cursorial predation (Carabidae — apex soil-surface invertebrate predators, aphidophagy and granivory documented), aphidophagous predation (Coccinellidae, both adult and larval stages), and wood decomposition (various wood-boring larvae in garden dead wood). Elytra hardening has facilitated soil penetration and burial behaviour, amplifying the order's role as ecosystem engineers at the soil–litter interface."
+    },
+    "commonNames": [
+      { "label": "beetles", "locale": "en" }
+    ],
+    "placedIn": "holometabola"
+  },
+  {
+    "name": "lepidoptera",
+    "order": "Lepidoptera",
+    "description": {
+      "preschool": "Butterflies and moths belong to this order. They have beautiful wings covered in tiny coloured scales, like dust you can see if you look closely. They drink nectar from flowers and help carry pollen, and their caterpillars eat plants.",
+      "elementary": "Lepidoptera is the order of butterflies and moths. Their wings are covered in thousands of tiny, overlapping scales that make their colours and patterns. Adult butterflies and moths drink nectar from flowers and are important pollinators. Their caterpillars (larvae) eat plant leaves — some eat garden plants and a few are serious pests, but many feed only on weeds or wild plants and help support the food web for birds and parasitoid wasps.",
+      "secondary": "Lepidoptera (butterflies and moths) are characterised by scale-covered wings (the order name means 'scale-winged') and a coiled proboscis for liquid feeding. With approximately 160,000 described species, it is the second-largest holometabolous order. Adults are predominantly nectarivores and contribute substantially to pollination of garden flowers. Caterpillars are phytophagous; larval host-plant specialisation is widespread, making host-plant availability the primary driver of Lepidoptera community composition in managed landscapes. The order supports a large guild of specialist parasitoids (Tachinidae, Braconidae Microgastrinae, Ichneumonidae) that depend on caterpillar densities for their own population persistence.",
+      "university": "Order Lepidoptera (butterflies and moths) — approximately 160,000 described species across 124 families. Synapomorphies include scales on wings (modified setae carrying pigment or structural colour), a coiled proboscis (haustellum) formed from fused galeae, and loss of functional mandibles in most adult lineages. Holometabolous: egg, larva (caterpillar), pupa (chrysalis or cocoon), adult. Larval feeding biology is predominantly phytophagous, with high host-plant specificity in many families. The host-plant specificity creates a cascade: Lepidoptera caterpillar biomass depends on host-plant availability, parasitoid abundance depends on caterpillar biomass, and insectivorous bird productivity depends on caterpillar protein during nestling-rearing season. At Oak Vista, the documented families — Papilionidae, Nymphalidae, Pieridae, Hesperiidae — represent the nectarivorous adult guild. The caterpillar–parasitoid interaction is the primary ecological bridge between plant diversity and biocontrol service delivery."
+    },
+    "commonNames": [
+      { "label": "butterflies and moths", "locale": "en" }
+    ],
+    "placedIn": "lepidoptera"
+  },
+  {
+    "name": "neuroptera",
+    "order": "Neuroptera",
+    "description": {
+      "preschool": "Lacewings have beautiful see-through wings with a lacy pattern of veins. Their babies — called Aphid Lions — are fierce hunters that eat aphids and other tiny pests that damage our plants.",
+      "elementary": "Neuroptera is the order of lacewings, antlions, and their relatives. They have two pairs of large net-veined wings and big golden or copper-coloured eyes. Green lacewings are the most common in gardens — the adults drink nectar from flowers, but their larvae are voracious predators called Aphid Lions that hunt and eat aphids, mites, thrips, and small caterpillars. A single larva can eat hundreds of pest insects before it becomes an adult.",
+      "secondary": "Neuroptera (net-winged insects) are defined by two pairs of large wings with an elaborate, highly branched venation and numerous crossveins forming a net-like pattern. The order is predominantly predaceous as larvae, while adults are nectarivores or pollinators. Family Chrysopidae (green lacewings) is the ecologically dominant family in garden systems: larvae are generalist predators of soft-bodied arthropods, consuming aphids, mites, thrips, and lepidopteran eggs at high rates. The order provides important biocontrol services in the absence of broad-spectrum pesticide use, and green lacewing natural colonisation is a reliable indicator of adequate floral resources for adult retention.",
+      "university": "Order Neuroptera (net-winged insects) — approximately 6,000 described species in 17 families. Synapomorphies: two pairs of large membranous wings with complex reticulate venation including a characteristic costal gradate vein series, pterostigma, and numerous free veinlets. Holometabolous development; larvae are entirely predaceous in most families, equipped with suctorial, interlocking mandibles and maxillae forming piercing-sucking mouthparts. The larval digestive mechanism involves extracorporeal digestion — proteolytic saliva injected into prey liquefies haemolymph and soft tissues, which are then ingested. At Oak Vista, Chrysopidae (Chrysoperla spp.) represent the order; their presence without commercial release indicates that adult Chrysopidae are finding adequate nectar and pollen resources at the garden. Chrysopidae larvae are commercially released as biocontrol agents in high-value crop systems, but natural colonisation — as documented at Oak Vista — is the more ecologically stable and cost-effective form of pest regulation."
+    },
+    "commonNames": [
+      { "label": "net-winged insects", "locale": "en" }
+    ],
+    "placedIn": "holometabola"
+  },
+  {
+    "name": "hemiptera",
+    "order": "Hemiptera",
+    "description": {
+      "preschool": "True bugs are insects that drink plant juice or insect juice through a beak like a straw. Some are garden pests, but others — like assassin bugs and predatory stink bugs — hunt and eat the pest insects for us.",
+      "elementary": "Hemiptera is the order of true bugs — leafhoppers, aphids, stink bugs, assassin bugs, and many more. They all share a piercing beak they use to suck up liquid food. Pest species drink plant sap and can weaken or kill plants. But predatory species like assassin bugs and big-eyed bugs hunt aphids, caterpillars, and other pests. A garden with both plant-feeders and predatory true bugs is part of a balanced ecosystem.",
+      "secondary": "Hemiptera (true bugs) are defined by the presence of a rostrum (piercing-sucking beak) arising from the front of the head. The order encompasses both phytophagous families (Aphididae, Cicadellidae, Miridae) and predaceous families (Reduviidae, Geocoridae, Pentatomidae subfamily Asopinae). Hemiptera exhibit hemimetabolous development — nymphs resemble miniature adults and there is no pupal stage. The order is split into Heteroptera (with a characteristic hemelytra: thickened base, membranous tip) and Auchenorrhyncha/Sternorrhyncha (leafhoppers, cicadas, aphids, whiteflies, scales). At Oak Vista, leafhoppers (Cicadellidae) and the field roach-associated food web represent the principal hemipteran interactions.",
+      "university": "Order Hemiptera (true bugs) — approximately 80,000 described species; defined by the rostrum (piercing-sucking beak) and hemimetabolous development (egg → nymph → adult, without a pupal stage). Major suborder divisions: Heteroptera (true bugs sensu stricto; includes assassin bugs, stink bugs, plant bugs, seed bugs) with hemelytra (partially sclerotised fore wings); Auchenorrhyncha (cicadas, leafhoppers, treehoppers, planthoppers) with fully membranous hind wings; Sternorrhyncha (aphids, whiteflies, scale insects, psyllids) — many with complex life cycles including parthenogenesis and host alternation. The Sternorrhyncha represent the dominant hemipteran pest guild in garden systems; aphid population dynamics are regulated by a suite of natural enemies (Aphidiinae, Syrphidae larvae, Coccinellidae). At Oak Vista, hemipteran interactions relevant to management include: Empoasca (leafhopper; pest), Cicadellidae egg parasitoids (Mymaridae), and the broader predatory Heteroptera guild providing generalist pest regulation in undisturbed garden habitats."
+    },
+    "commonNames": [
+      { "label": "true bugs", "locale": "en" }
+    ],
+    "placedIn": "hemiptera"
+  },
+  {
+    "name": "blattodea",
+    "order": "Blattodea",
+    "description": {
+      "preschool": "Most cockroaches in this order live outdoors under stones and leaves in the garden — not in our house. They help the garden by eating old, dead plant material and turning it into food for the soil.",
+      "elementary": "Blattodea is the order of cockroaches and termites. Most cockroaches are outdoor insects that live under bark, stones, and leaf litter where they break down dead plant material into nutrients for the soil. Only a few species invade buildings. Termites — which are also in this order — are master decomposers of wood and dead trees. Both groups are important parts of the soil food web and provide food for birds, lizards, and predatory insects.",
+      "secondary": "Blattodea is the order that includes cockroaches and, following molecular phylogenetic revision, termites (Isoptera) — termites are derived eusocial cockroaches that originated within the cockroach lineage. Cockroaches are primarily nocturnal omnivores occupying decomposer and scavenger niches in leaf litter, soil, and decaying organic matter. Most cockroach species are outdoor-adapted and ecologically beneficial as detritivores in garden soil food webs. Only a small minority — principally species in the genus Blattella and related genera — are synanthropic. At Oak Vista, the outdoor cockroach fauna (Ectobiidae) contributes to soil organic matter cycling and serves as prey base for ground beetles, lizards, and ground-foraging birds.",
+      "university": "Order Blattodea (cockroaches and termites) — approximately 7,000 described cockroach species plus approximately 3,000 termite species (Isoptera, embedded within Blattodea per molecular phylogeny; Inward et al. 2007). Cockroaches are among the oldest winged insect lineages, with the body plan appearing in the Carboniferous (~320 Ma) — the basal position in the neopteran radiation contributes to their ecological generalism. Hemimetabolous development. Cockroach feeding biology: omnivorous detritivores consuming fungal hyphae, dead plant tissue, decaying wood, and invertebrate carcasses; salivary amylases and gut-associated microbiome (Bacteroidetes, Firmicutes) enable cellulose and lignocellulose degradation. Termite differentiation within the cockroach clade represents the most extreme transition from solitary scavenging to obligate eusociality in the insect radiation, facilitated by the evolution of protozoan and bacterial gut symbionts enabling lignocellulose fermentation. At Oak Vista, cockroach field populations in the Ectobiidae (Blattella vaga) are ecological indicators of undisturbed soil-surface habitat and serve as a significant prey node transferring detrital carbon into the predator food web."
+    },
+    "commonNames": [
+      { "label": "cockroaches", "locale": "en" }
+    ]
+  }
+]

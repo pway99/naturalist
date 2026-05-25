@@ -57,19 +57,23 @@ public class InsectsCatalogContribution implements CatalogContribution {
     private final InsectQuery.SpeciesQuery species;
     private final InsectQuery.FamilyQuery families;
     private final InsectQuery.GenusQuery genera;
+    private final InsectQuery.OrderQuery orders;
 
     public InsectsCatalogContribution(InsectQuery.SpeciesQuery species,
                                       InsectQuery.FamilyQuery families,
-                                      InsectQuery.GenusQuery genera) {
+                                      InsectQuery.GenusQuery genera,
+                                      InsectQuery.OrderQuery orders) {
         Observer.forClass(InsectsCatalogContribution.class)
                 .arguments("constructor", i -> i
                         .notNull(species, "species")
                         .notNull(families, "families")
-                        .notNull(genera, "genera"))
+                        .notNull(genera, "genera")
+                        .notNull(orders, "orders"))
                 .throwWhenInvalid();
         this.species = species;
         this.families = families;
         this.genera = genera;
+        this.orders = orders;
     }
 
     @Override
@@ -86,7 +90,8 @@ public class InsectsCatalogContribution implements CatalogContribution {
         return Stream.of(
                 speciesEntities(genusByName),
                 familyEntities(),
-                genusEntities()
+                genusEntities(),
+                orderEntities()
         ).flatMap(s -> s);
     }
 
@@ -152,6 +157,24 @@ public class InsectsCatalogContribution implements CatalogContribution {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(entity.name().value());
         tokens.add(entity.genus().value());
+        entity.commonNames().forEach(commonName -> tokens.add(commonName.label()));
+        return tokens.build();
+    }
+
+    private Stream<SearchableEntity> orderEntities() {
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, orders::findPage)
+                .map(InsectsCatalogContribution::toSearchableOrder);
+    }
+
+    private static SearchableEntity toSearchableOrder(InsectOrder entity) {
+        EntityRef target = new EntityRef(DOMAIN, entity.name());
+        return new SearchableEntity(target, tokensFor(entity));
+    }
+
+    private static Stream<String> tokensFor(InsectOrder entity) {
+        Stream.Builder<String> tokens = Stream.builder();
+        tokens.add(entity.name().value());
+        tokens.add(entity.order().value());
         entity.commonNames().forEach(commonName -> tokens.add(commonName.label()));
         return tokens.build();
     }

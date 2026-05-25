@@ -1,7 +1,11 @@
 @import com.naturalist.insects.InsectFamily
+@import com.naturalist.insects.InsectOrder
+@import com.naturalist.insects.InsectOrderName
 @import com.naturalist.data.Page
+@import java.util.Map
 
 @param Page<InsectFamily> familyPage
+@param Map<InsectOrderName, InsectOrder> orderByName
 
 @template.layout.page(title = "Insect Families", content = @`
     @template.insects.nav(active = "family")
@@ -10,6 +14,7 @@
 
     <div class="entity-grid">
         @for(var f : familyPage.content())
+            !{var order = orderByName.get(f.orderName());}
             !{var commonName = f.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(f.name().value());}
             <article>
                 <header>
@@ -19,7 +24,7 @@
                 </header>
                 <dl class="taxonomy">
                     <dt>order</dt>
-                    <dd>${f.order().value()}</dd>
+                    <dd>${order.order().value()}</dd>
                     <dt>family</dt>
                     <dd><em>${f.family().value()}</em></dd>
                 </dl>

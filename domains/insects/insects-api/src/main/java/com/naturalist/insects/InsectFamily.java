@@ -12,14 +12,13 @@ import com.naturalist.observability.Constraints;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinnaeanFamily;
 import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicOrder;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * A catalogued insect family — the rank between {@code TaxonomicOrder} and
+ * A catalogued insect family — the rank between {@link InsectOrder} and
  * {@link com.naturalist.insects.InsectSpecies} in the Linnaean hierarchy.
  * <p>
  * Family-rank records are first-class catalog citizens, not placeholders for
@@ -37,7 +36,7 @@ import java.util.function.Consumer;
  */
 public record InsectFamily(
         InsectFamilyName name,
-        TaxonomicOrder order,
+        InsectOrderName orderName,
         TaxonomicFamily family,
         Description description,
         Set<CommonName> commonNames,
@@ -46,12 +45,12 @@ public record InsectFamily(
         @Nullable LarvaStage larva,
         @Nullable PupaStage pupa,
         @Nullable AdultStage adult
-) implements NamedEntity<InsectFamilyName>, LinnaeanFamily {
+) implements NamedEntity<InsectFamilyName>, LinnaeanFamily<InsectOrderName> {
 
     private static final Observer observer = Observer.forClass(InsectFamily.class);
 
     public InsectFamily withPlacedIn(@Nullable Clade value) {
-        return new InsectFamily(name, order, family, description, commonNames,
+        return new InsectFamily(name, orderName, family, description, commonNames,
                 value, egg, larva, pupa, adult);
     }
 
@@ -59,22 +58,22 @@ public record InsectFamily(
         observer.arguments("withEgg", i -> i
             .namedEntityOrNull(value, "value"))
             .throwWhenInvalid();
-        return new InsectFamily(name, order, family, description, commonNames,
+        return new InsectFamily(name, orderName, family, description, commonNames,
                 placedIn, value, larva, pupa, adult);
     }
 
     public InsectFamily withLarva(@Nullable LarvaStage value) {
-        return new InsectFamily(name, order, family, description, commonNames,
+        return new InsectFamily(name, orderName, family, description, commonNames,
                 placedIn, egg, value, pupa, adult);
     }
 
     public InsectFamily withPupa(@Nullable PupaStage value) {
-        return new InsectFamily(name, order, family, description, commonNames,
+        return new InsectFamily(name, orderName, family, description, commonNames,
                 placedIn, egg, larva, value, adult);
     }
 
     public InsectFamily withAdult(@Nullable AdultStage value) {
-        return new InsectFamily(name, order, family, description, commonNames,
+        return new InsectFamily(name, orderName, family, description, commonNames,
                 placedIn, egg, larva, pupa, value);
     }
 
@@ -82,7 +81,7 @@ public record InsectFamily(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .namedValue(order, "order")
+                .entityName(orderName, "orderName")
                 .namedValue(family, "family")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames")

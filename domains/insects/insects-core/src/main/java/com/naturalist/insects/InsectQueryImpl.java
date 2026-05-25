@@ -9,27 +9,31 @@ class InsectQueryImpl implements InsectQuery {
     private final FamilyQuery familyQuery;
     private final GenusQuery genusQuery;
     private final FunctionalRoleQuery functionalRoleQuery;
+    private final OrderQuery orderQuery;
     private final InsectAggregateQuery insectAggregateQuery;
 
     InsectQueryImpl(SpeciesQuery speciesQuery,
                     ImageQuery imageQuery,
                     FamilyQuery familyQuery,
                     GenusQuery genusQuery,
-                    FunctionalRoleQuery functionalRoleQuery) {
+                    FunctionalRoleQuery functionalRoleQuery,
+                    OrderQuery orderQuery) {
         Observer.forClass(InsectQueryImpl.class).arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
                         .notNull(familyQuery, "familyQuery")
                         .notNull(genusQuery, "genusQuery")
-                        .notNull(functionalRoleQuery, "functionalRoleQuery"))
+                        .notNull(functionalRoleQuery, "functionalRoleQuery")
+                        .notNull(orderQuery, "orderQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
         this.familyQuery = familyQuery;
         this.genusQuery = genusQuery;
         this.functionalRoleQuery = functionalRoleQuery;
+        this.orderQuery = orderQuery;
         InsectAggregateFactory factory =
-                new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery);
+                new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
         this.insectAggregateQuery = new InsectAggregateQueryImpl(factory);
     }
 
@@ -61,5 +65,10 @@ class InsectQueryImpl implements InsectQuery {
     @Override
     public FunctionalRoleQuery functionalRoles() {
         return functionalRoleQuery;
+    }
+
+    @Override
+    public OrderQuery orders() {
+        return orderQuery;
     }
 }

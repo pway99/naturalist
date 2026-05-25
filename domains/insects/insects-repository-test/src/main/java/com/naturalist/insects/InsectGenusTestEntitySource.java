@@ -15,9 +15,14 @@ public class InsectGenusTestEntitySource extends TestEntitySource<InsectGenusNam
 
     @Override
     protected List<ForeignKeyConstraint<InsectGenus, ?>> foreignKeyConstraints() {
-        return List.of(ForeignKeyConstraint.of(
-                "familyName",
-                InsectGenus::familyName,
-                InsectFamilyTestEntitySource.class));
+        return List.of(
+                ForeignKeyConstraint.of(
+                        "familyName",
+                        InsectGenus::familyName,
+                        InsectFamilyTestEntitySource.class),
+                ForeignKeyConstraint.of(
+                        "orderName",
+                        InsectGenus::orderName,
+                        InsectOrderTestEntitySource.class));
     }
 }

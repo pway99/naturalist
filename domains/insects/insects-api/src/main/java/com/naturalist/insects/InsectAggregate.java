@@ -8,13 +8,15 @@ import com.naturalist.insects.InsectEntityCollections.ImageCollection;
  * genus, or species, depending on identification confidence) and the photographic
  * field record assembled into a single consistency boundary.
  *
- * <p>Sealed across the three Linnaean ranks that currently carry catalog entities:
+ * <p>Sealed across the four Linnaean ranks that currently carry catalog entities:
  * <ul>
  *   <li>{@link InsectSpeciesAggregate} — species-rank root (e.g. <i>Battus philenor</i>).</li>
  *   <li>{@link InsectGenusAggregate}   — genus-rank root, used when identification
  *       firmed up to genus but not species (e.g. <i>Empoasca</i>).</li>
  *   <li>{@link InsectFamilyAggregate}  — family-rank root, used when only family
  *       is resolved (e.g. <i>Tachinidae</i>).</li>
+ *   <li>{@link InsectOrderAggregate}   — order-rank root, used when only order
+ *       is resolved (e.g. <i>Diptera</i> sp.).</li>
  * </ul>
  *
  * <p>The aggregate's identity is the root rank's typed slug, returned by {@link #name()}
@@ -26,6 +28,7 @@ import com.naturalist.insects.InsectEntityCollections.ImageCollection;
  *     case InsectSpeciesAggregate sa -> ...sa.species()...;
  *     case InsectGenusAggregate   ga -> ...ga.genus()...;
  *     case InsectFamilyAggregate  fa -> ...fa.family()...;
+ *     case InsectOrderAggregate   oa -> ...oa.order()...;
  * }
  * }</pre>
  *
@@ -42,7 +45,7 @@ import com.naturalist.insects.InsectEntityCollections.ImageCollection;
  * gains a {@code InsectSubspeciesAggregate} permit when the entity lands.
  */
 public sealed interface InsectAggregate extends Aggregate
-        permits InsectFamilyAggregate, InsectGenusAggregate, InsectSpeciesAggregate {
+        permits InsectOrderAggregate, InsectFamilyAggregate, InsectGenusAggregate, InsectSpeciesAggregate {
 
     /** The typed slug of the root rank record — polymorphic across the sealed permits. */
     InsectRankName name();

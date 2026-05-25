@@ -20,6 +20,28 @@ public class TestInsectsIdentifiers {
     private TestInsectsIdentifiers() {
     }
 
+    public static class InsectOrder {
+
+        private InsectOrder() {
+        }
+
+        /**
+         * Fictitious identifier for the {@link com.naturalist.insects.InsectOrder}
+         * scope — guaranteed absent from any catalog.
+         */
+        public static class NotFound {
+            public static final InsectOrderName name = InsectOrderName.of("zygentoma");
+        }
+
+        public static class Diptera {
+            public static final InsectOrderName name = InsectOrderName.of("diptera");
+        }
+
+        public static class Hymenoptera {
+            public static final InsectOrderName name = InsectOrderName.of("hymenoptera");
+        }
+    }
+
     public static class InsectFamily {
 
         private InsectFamily() {

@@ -45,6 +45,7 @@ class InsectGenusTest {
         InsectGenus genus = new InsectGenus(
                 name,
                 InsectFamilyName.of("chrysopidae"),
+                InsectOrderName.of("neuroptera"),
                 TaxonomicGenus.of("Chrysoperla"),
                 description(),
                 Set.of(),
@@ -69,6 +70,7 @@ class InsectGenusTest {
         InsectGenus genus = new InsectGenus(
                 name,
                 InsectFamilyName.of("chrysopidae"),
+                InsectOrderName.of("neuroptera"),
                 TaxonomicGenus.of("Chrysoperla"),
                 description(),
                 Set.of(),
@@ -118,6 +120,7 @@ class InsectGenusTest {
         return new InsectGenus(
                 InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
+                InsectOrderName.of("lepidoptera"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),

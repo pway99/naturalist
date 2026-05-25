@@ -14,7 +14,6 @@ import com.naturalist.insects.lifestage.StagePhenology;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicOrder;
 import org.junit.jupiter.api.Test;
 
 import java.time.MonthDay;
@@ -43,7 +42,7 @@ class InsectFamilyTest {
 
         InsectFamily family = new InsectFamily(
                 name,
-                TaxonomicOrder.of("Diptera"),
+                InsectOrderName.of("diptera"),
                 TaxonomicFamily.of("Syrphidae"),
                 description(),
                 Set.of(),
@@ -67,7 +66,7 @@ class InsectFamilyTest {
         InsectFamilyName name = InsectFamilyName.of("syrphidae");
         InsectFamily family = new InsectFamily(
                 name,
-                TaxonomicOrder.of("Diptera"),
+                InsectOrderName.of("diptera"),
                 TaxonomicFamily.of("Syrphidae"),
                 description(),
                 Set.of(),
@@ -115,7 +114,7 @@ class InsectFamilyTest {
     private static InsectFamily familyWithPlacedIn(Clade placedIn) {
         return new InsectFamily(
                 InsectFamilyName.of("papilionidae"),
-                TaxonomicOrder.of("Lepidoptera"),
+                InsectOrderName.of("lepidoptera"),
                 TaxonomicFamily.of("Papilionidae"),
                 description(),
                 Set.of(),

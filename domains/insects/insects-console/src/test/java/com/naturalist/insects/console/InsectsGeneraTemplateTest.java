@@ -40,10 +40,12 @@ class InsectsGeneraTemplateTest {
     @Test
     void genus_rendersWithoutError() {
         NaturalistDatabase database = NaturalistDatabase.create();
+        InsectOrderTestEntitySource orderSource = new InsectOrderTestEntitySource(database);
         InsectGenusTestEntitySource genusSource = new InsectGenusTestEntitySource(database);
         InsectGenus anyGenus = genusSource.entityStream().findFirst().orElseThrow();
         InsectFamily family = new InsectFamilyTestEntitySource(database)
                 .getByName(anyGenus.familyName()).orElseThrow();
+        InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render(
@@ -51,6 +53,7 @@ class InsectsGeneraTemplateTest {
                 Map.of(
                         "genus", anyGenus,
                         "family", family,
+                        "order", order,
                         "species", List.of(),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",

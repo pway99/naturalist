@@ -5,11 +5,15 @@ import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.observability.InvariantViolationException;
 import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicOrder;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link InsectRepository.FamilyRepository}.
@@ -44,7 +48,7 @@ interface FamilyRepositoryTest
     default InsectFamily newEntity() {
         return new InsectFamily(
                 InsectFamilyName.of("test-family-xx"),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
+                InsectOrderName.of("diptera"),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 description(),
                 Set.of(),
@@ -59,7 +63,7 @@ interface FamilyRepositoryTest
     default InsectFamily ghostEntity() {
         return new InsectFamily(
                 InsectFamilyName.of("test-ghost-xx"),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
+                InsectOrderName.of("test-ghost-order-xx"),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 description(),
                 Set.of(),
@@ -74,7 +78,7 @@ interface FamilyRepositoryTest
     default InsectFamily modifiedEntity(InsectFamily original) {
         return new InsectFamily(
                 original.name(),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
+                InsectOrderName.of("hymenoptera"),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 description(),
                 Set.of(CommonName.of("alt-" + RandomValue.string())),
@@ -83,6 +87,30 @@ interface FamilyRepositoryTest
                 null,
                 null,
                 null);
+    }
+
+    @Test
+    default void getByOrderName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByOrderName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("orderName");
+    }
+
+    @Test
+    default void getByOrderName_returnsFamiliesWithMatchingOrderName() {
+        InsectOrderName diptera = InsectOrderName.of("diptera");
+        var results = repository().getByOrderName(diptera);
+        assertThat(results)
+                .extracting(InsectFamily::name)
+                .extracting(InsectFamilyName::value)
+                .contains("tachinidae");
+    }
+
+    @Test
+    default void getByOrderName_returnsEmptyForUnknownOrder() {
+        InsectOrderName unknown = InsectOrderName.of("zygentoma");
+        var results = repository().getByOrderName(unknown);
+        assertThat(results).isEmpty();
     }
 
     private static Description description() {

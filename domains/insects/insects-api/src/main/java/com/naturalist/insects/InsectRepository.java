@@ -15,6 +15,7 @@ import java.util.List;
  *   <li>{@link FamilyRepository} — {@link InsectFamily} entities.</li>
  *   <li>{@link GenusRepository} — {@link InsectGenus} entities.</li>
  *   <li>{@link FunctionalRoleRepository} — {@link InsectFunctionalRole} entities.</li>
+ *   <li>{@link OrderRepository} — {@link InsectOrder} entities.</li>
  * </ul>
  *
  * <p>This is a {@code class}, not an {@code interface}, so the nested repository
@@ -30,18 +31,21 @@ class InsectRepository {
     final FamilyRepository familyRepository;
     final GenusRepository genusRepository;
     final FunctionalRoleRepository functionalRoleRepository;
+    final OrderRepository orderRepository;
 
     private InsectRepository(
             SpeciesRepository speciesRepository,
             ImageRepository imageRepository,
             FamilyRepository familyRepository,
             GenusRepository genusRepository,
-            FunctionalRoleRepository functionalRoleRepository) {
+            FunctionalRoleRepository functionalRoleRepository,
+            OrderRepository orderRepository) {
         this.speciesRepository = speciesRepository;
         this.imageRepository = imageRepository;
         this.familyRepository = familyRepository;
         this.genusRepository = genusRepository;
         this.functionalRoleRepository = functionalRoleRepository;
+        this.orderRepository = orderRepository;
     }
 
     static InsectRepository create(
@@ -49,9 +53,10 @@ class InsectRepository {
             ImageRepository imageRepository,
             FamilyRepository familyRepository,
             GenusRepository genusRepository,
-            FunctionalRoleRepository functionalRoleRepository) {
+            FunctionalRoleRepository functionalRoleRepository,
+            OrderRepository orderRepository) {
         return new InsectRepository(speciesRepository, imageRepository, familyRepository,
-                genusRepository, functionalRoleRepository);
+                genusRepository, functionalRoleRepository, orderRepository);
     }
 
     SpeciesRepository speciesRepository() {
@@ -74,6 +79,10 @@ class InsectRepository {
         return functionalRoleRepository;
     }
 
+    OrderRepository orderRepository() {
+        return orderRepository;
+    }
+
     protected interface SpeciesRepository
             extends EntityRepository<InsectSpeciesName, InsectSpecies> {
 
@@ -90,12 +99,16 @@ class InsectRepository {
 
     protected interface FamilyRepository
             extends EntityRepository<InsectFamilyName, InsectFamily> {
+
+        List<InsectFamily> getByOrderName(InsectOrderName orderName);
     }
 
     protected interface GenusRepository
             extends EntityRepository<InsectGenusName, InsectGenus> {
 
         List<InsectGenus> getByFamilyName(InsectFamilyName familyName);
+
+        List<InsectGenus> getByOrderName(InsectOrderName orderName);
     }
 
     protected interface FunctionalRoleRepository
@@ -104,5 +117,9 @@ class InsectRepository {
         List<InsectFunctionalRole> getByGuild(FunctionalGuild guild);
 
         java.util.Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName);
+    }
+
+    protected interface OrderRepository
+            extends EntityRepository<InsectOrderName, InsectOrder> {
     }
 }

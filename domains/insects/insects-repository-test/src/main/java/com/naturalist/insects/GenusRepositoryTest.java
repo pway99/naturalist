@@ -50,6 +50,7 @@ interface GenusRepositoryTest
         return new InsectGenus(
                 InsectGenusName.of("test-genus-xx"),
                 InsectFamilyName.of("tachinidae"),
+                InsectOrderName.of("diptera"),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(),
@@ -67,6 +68,7 @@ interface GenusRepositoryTest
         return new InsectGenus(
                 InsectGenusName.of("test-ghost-xx"),
                 InsectFamilyName.of("test-ghost-family-xx"),
+                InsectOrderName.of("test-ghost-order-xx"),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(),
@@ -82,6 +84,7 @@ interface GenusRepositoryTest
         return new InsectGenus(
                 original.name(),
                 InsectFamilyName.of("braconidae"),
+                InsectOrderName.of("hymenoptera"),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(CommonName.of("alt-" + RandomValue.string())),
@@ -123,6 +126,30 @@ interface GenusRepositoryTest
 
         var results = repository().getByFamilyName(unknown);
 
+        assertThat(results).isEmpty();
+    }
+
+    @Test
+    default void getByOrderName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByOrderName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("orderName");
+    }
+
+    @Test
+    default void getByOrderName_returnsGeneraWithMatchingOrderName() {
+        InsectOrderName hymenoptera = InsectOrderName.of("hymenoptera");
+        var results = repository().getByOrderName(hymenoptera);
+        assertThat(results)
+                .extracting(InsectGenus::name)
+                .extracting(InsectGenusName::value)
+                .contains("halictus");
+    }
+
+    @Test
+    default void getByOrderName_returnsEmptyForUnknownOrder() {
+        InsectOrderName unknown = InsectOrderName.of("zygentoma");
+        var results = repository().getByOrderName(unknown);
         assertThat(results).isEmpty();
     }
 }

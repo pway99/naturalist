@@ -31,8 +31,10 @@ class InsectsCatalogContributionTest {
             new FamilyQueryImpl(new FamilyRepositoryMock(db));
     private final InsectQuery.GenusQuery genusQuery =
             new GenusQueryImpl(new GenusRepositoryMock(db));
+    private final InsectQuery.OrderQuery orderQuery =
+            new OrderQueryImpl(new OrderRepositoryMock(db));
     private final InsectsCatalogContribution contribution =
-            new InsectsCatalogContribution(speciesQuery, familyQuery, genusQuery);
+            new InsectsCatalogContribution(speciesQuery, familyQuery, genusQuery, orderQuery);
 
     @Test
     void domainIsInsects() {
@@ -41,23 +43,30 @@ class InsectsCatalogContributionTest {
 
     @Test
     void constructorRejectsNullSpeciesQuery() {
-        assertThatThrownBy(() -> new InsectsCatalogContribution(null, familyQuery, genusQuery))
+        assertThatThrownBy(() -> new InsectsCatalogContribution(null, familyQuery, genusQuery, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("species");
     }
 
     @Test
     void constructorRejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new InsectsCatalogContribution(speciesQuery, null, genusQuery))
+        assertThatThrownBy(() -> new InsectsCatalogContribution(speciesQuery, null, genusQuery, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("families");
     }
 
     @Test
     void constructorRejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new InsectsCatalogContribution(speciesQuery, familyQuery, null))
+        assertThatThrownBy(() -> new InsectsCatalogContribution(speciesQuery, familyQuery, null, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("genera");
+    }
+
+    @Test
+    void constructorRejectsNullOrderQuery() {
+        assertThatThrownBy(() -> new InsectsCatalogContribution(speciesQuery, familyQuery, genusQuery, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("orders");
     }
 
     @Test
@@ -65,9 +74,10 @@ class InsectsCatalogContributionTest {
         long speciesCount = Pages.stream(1000, speciesQuery::findPage).count();
         long familyCount = Pages.stream(1000, familyQuery::findPage).count();
         long genusCount = Pages.stream(1000, genusQuery::findPage).count();
+        long orderCount = Pages.stream(1000, orderQuery::findPage).count();
         long entityCount = contribution.searchableEntities().count();
 
-        assertThat(entityCount).isEqualTo(speciesCount + familyCount + genusCount);
+        assertThat(entityCount).isEqualTo(speciesCount + familyCount + genusCount + orderCount);
     }
 
     @Test
@@ -148,6 +158,16 @@ class InsectsCatalogContributionTest {
     void unknownTokenReturnsEmptyResults() {
         Catalog catalog = CatalogAssembly.from(contribution);
         assertThat(catalog.search("zzzzzzz").isEmpty()).isTrue();
+    }
+
+    @Test
+    void ordersAreSearchableBySlugAndEpithet() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+        EntityRef expected = new EntityRef(new InsectsDomain(), InsectOrderName.of("diptera"));
+
+        assertThat(catalog.search("diptera").stream())
+                .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
+        assertThat(targetsOf(catalog.search("Diptera"))).contains(expected);
     }
 
     private static List<EntityRef> targetsOf(SearchResults results) {

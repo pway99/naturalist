@@ -88,7 +88,13 @@ public class InsectsController {
     String families(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectFamily> familyPage = insectQuery.families()
                 .findPage(PageRequest.console(Math.max(0, page)));
+        Map<InsectOrderName, InsectOrder> orderByName = new LinkedHashMap<>();
+        for (var family : familyPage.content()) {
+            orderByName.computeIfAbsent(family.orderName(),
+                    n -> insectQuery.orders().getByName(n).orElseThrow());
+        }
         model.addAttribute("familyPage", familyPage);
+        model.addAttribute("orderByName", orderByName);
         return "insects/families";
     }
 
@@ -99,17 +105,47 @@ public class InsectsController {
         if (family.isEmpty()) {
             return "redirect:/insects/families";
         }
+        InsectOrder order = insectQuery.orders().getByName(family.get().orderName()).orElseThrow();
         var description = family.get().description();
         var genera = insectQuery.genera().forFamilyName(familyName).stream()
                 .sorted(Comparator.comparing(g -> g.name().value()))
                 .toList();
         model.addAttribute("family", family.get());
+        model.addAttribute("order", order);
         model.addAttribute("genera", genera);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         return "insects/family";
+    }
+
+    @GetMapping("/orders")
+    String orders(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<InsectOrder> orderPage = insectQuery.orders()
+                .findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("orderPage", orderPage);
+        return "insects/orders";
+    }
+
+    @GetMapping("/orders/{name}")
+    String orderDetail(@PathVariable String name, Model model) {
+        var orderName = InsectOrderName.of(name);
+        var order = insectQuery.orders().getByName(orderName);
+        if (order.isEmpty()) {
+            return "redirect:/insects/orders";
+        }
+        var description = order.get().description();
+        var families = insectQuery.families().forOrderName(orderName).stream()
+                .sorted(Comparator.comparing(f -> f.name().value()))
+                .toList();
+        model.addAttribute("order", order.get());
+        model.addAttribute("families", families);
+        model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
+        model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
+        model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
+        model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
+        return "insects/order";
     }
 
     @GetMapping("/genera")
@@ -127,6 +163,8 @@ public class InsectsController {
         if (genus.isEmpty()) {
             return "redirect:/insects/genera";
         }
+        InsectFamily family = insectQuery.families().getByName(genus.get().familyName()).orElseThrow();
+        InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
         var description = genus.get().description();
         var members = insectQuery.species()
                 .forGenusName(genusName)
@@ -134,6 +172,8 @@ public class InsectsController {
                 .sorted(Comparator.comparing(s -> s.name().value()))
                 .toList();
         model.addAttribute("genus", genus.get());
+        model.addAttribute("family", family);
+        model.addAttribute("order", order);
         model.addAttribute("species", members);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -169,11 +209,13 @@ public class InsectsController {
         InsectSpecies s = species.get();
         InsectGenus genus = insectQuery.genera().getByName(s.genusName()).orElseThrow();
         InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
+        InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
         InsectEntityCollections.ImageCollection images = insectQuery.images().forParentName(speciesName);
         var description = s.description();
         model.addAttribute("species", s);
         model.addAttribute("genus", genus);
         model.addAttribute("family", family);
+        model.addAttribute("order", order);
         model.addAttribute("images", images.stream().toList());
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
@@ -209,11 +251,13 @@ public class InsectsController {
         }
         InsectSpecies s = species.get();
         InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
+        InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
         var stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
                 .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
                 .toList();
         model.addAttribute("species", s);
         model.addAttribute("family", family);
+        model.addAttribute("order", order);
         model.addAttribute("stages", stages);
         return "insects/life-stages";
     }

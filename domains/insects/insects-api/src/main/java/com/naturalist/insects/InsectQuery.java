@@ -5,6 +5,7 @@ import com.naturalist.insects.InsectEntityCollections.FamilyCollection;
 import com.naturalist.insects.InsectEntityCollections.FunctionalRoleCollection;
 import com.naturalist.insects.InsectEntityCollections.GenusCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import com.naturalist.insects.InsectEntityCollections.OrderCollection;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 
 import java.util.Optional;
@@ -56,6 +57,8 @@ public interface InsectQuery {
 
     FunctionalRoleQuery functionalRoles();
 
+    OrderQuery orders();
+
     interface InsectAggregateQuery {
 
         /**
@@ -93,11 +96,15 @@ public interface InsectQuery {
     }
 
     interface FamilyQuery extends EntityQuery<InsectFamilyName, InsectFamily, FamilyCollection> {
+
+        FamilyCollection forOrderName(InsectOrderName orderName);
     }
 
     interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenus, GenusCollection> {
 
         GenusCollection forFamilyName(InsectFamilyName familyName);
+
+        GenusCollection forOrderName(InsectOrderName orderName);
     }
 
     interface FunctionalRoleQuery
@@ -106,5 +113,8 @@ public interface InsectQuery {
         FunctionalRoleCollection getByGuild(FunctionalGuild guild);
 
         Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName);
+    }
+
+    interface OrderQuery extends EntityQuery<InsectOrderName, InsectOrder, OrderCollection> {
     }
 }

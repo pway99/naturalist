@@ -15,6 +15,7 @@ import java.util.Optional;
  *   <li>{@link InsectSpeciesName}  → {@link InsectSpeciesAggregate}</li>
  *   <li>{@link InsectGenusName}    → {@link InsectGenusAggregate}</li>
  *   <li>{@link InsectFamilyName}   → {@link InsectFamilyAggregate}</li>
+ *   <li>{@link InsectOrderName}      → {@link InsectOrderAggregate}</li>
  *   <li>{@link InsectSubspeciesName} → {@link Optional#empty()} (no entity exists yet)</li>
  * </ul>
  *
@@ -35,21 +36,25 @@ class InsectAggregateFactory {
     private final InsectQuery.ImageQuery imageQuery;
     private final InsectQuery.GenusQuery genusQuery;
     private final InsectQuery.FamilyQuery familyQuery;
+    private final InsectQuery.OrderQuery orderQuery;
 
     InsectAggregateFactory(InsectQuery.SpeciesQuery speciesQuery,
                            InsectQuery.ImageQuery imageQuery,
                            InsectQuery.GenusQuery genusQuery,
-                           InsectQuery.FamilyQuery familyQuery) {
+                           InsectQuery.FamilyQuery familyQuery,
+                           InsectQuery.OrderQuery orderQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
                         .notNull(genusQuery, "genusQuery")
-                        .notNull(familyQuery, "familyQuery"))
+                        .notNull(familyQuery, "familyQuery")
+                        .notNull(orderQuery, "orderQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
         this.genusQuery = genusQuery;
         this.familyQuery = familyQuery;
+        this.orderQuery = orderQuery;
     }
 
     Optional<InsectAggregate> buildByName(InsectRankName name) {
@@ -64,6 +69,9 @@ class InsectAggregateFactory {
             case InsectFamilyName familyName -> familyQuery.getByName(familyName)
                     .map(family -> observe(new InsectFamilyAggregate(
                             family, imageQuery.forParentName(family.name()))));
+            case InsectOrderName on -> orderQuery.getByName(on)
+                    .map(order -> observe(new InsectOrderAggregate(
+                            order, imageQuery.forParentName(order.name()))));
             case InsectSubspeciesName subspeciesName -> Optional.empty();
         };
     }

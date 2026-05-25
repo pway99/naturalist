@@ -24,4 +24,14 @@ class GenusRepositoryMock
                 .filter(g -> familyName.equals(g.familyName()))
                 .toList();
     }
+
+    @Override
+    public List<InsectGenus> getByOrderName(InsectOrderName orderName) {
+        observer().arguments("getByOrderName",
+                        i -> i.entityName(orderName, "orderName"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(g -> orderName.equals(g.orderName()))
+                .toList();
+    }
 }

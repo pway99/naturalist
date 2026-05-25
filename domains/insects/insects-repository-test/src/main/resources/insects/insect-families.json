@@ -1,7 +1,7 @@
 [
   {
     "name": "tachinidae",
-    "order": "Diptera",
+    "orderName": "diptera",
     "family": "Tachinidae",
     "description": {
       "preschool": "This fuzzy fly is a garden helper. It looks like a housefly with extra bristles, and it lays its tiny eggs on caterpillars and other insects that eat our plants. Once the eggs hatch, they protect the garden from the inside.",
@@ -19,7 +19,7 @@
   },
   {
     "name": "braconidae",
-    "order": "Hymenoptera",
+    "orderName": "hymenoptera",
     "family": "Braconidae",
     "description": {
       "preschool": "This tiny wasp is smaller than your fingernail and it is one of the garden's best protectors. It finds caterpillars and aphids and lays eggs inside them or on them. The babies that hatch eat the pest and protect our tomatoes.",
@@ -37,7 +37,7 @@
   },
   {
     "name": "syrphidae",
-    "order": "Diptera",
+    "orderName": "diptera",
     "family": "Syrphidae",
     "description": {
       "preschool": "Hoverflies look like tiny bees or wasps with yellow and black stripes, but they cannot sting. Watch them hover in one spot in the air — they can fly perfectly still! Their babies eat the aphids that hurt our tomatoes.",
@@ -55,7 +55,7 @@
   },
   {
     "name": "carabidae",
-    "order": "Coleoptera",
+    "orderName": "coleoptera",
     "family": "Carabidae",
     "description": {
       "preschool": "Ground beetles are shiny black beetles that live under rocks and in the soil. They run very fast at night hunting for insects, slugs, and other pests that eat our plants. They are nocturnal garden helpers — they work while we sleep.",
@@ -73,7 +73,7 @@
   },
   {
     "name": "tipulidae",
-    "order": "Diptera",
+    "orderName": "diptera",
     "family": "Tipulidae",
     "description": {
       "preschool": "A crane fly looks like a giant mosquito with very long legs, but it is harmless. It cannot bite you. Its babies live in the soil and help break down old leaves and roots into food for the plants.",
@@ -91,7 +91,7 @@
   },
   {
     "name": "hesperiidae",
-    "order": "Lepidoptera",
+    "orderName": "lepidoptera",
     "family": "Hesperiidae",
     "description": {
       "preschool": "Skippers are small butterflies that skip and dart through the air very fast instead of floating slowly like bigger butterflies. They have chunky fuzzy bodies and little hooked antennae. They drink nectar from flowers and help the garden while they eat.",
@@ -109,7 +109,7 @@
   },
   {
     "name": "halictidae",
-    "order": "Hymenoptera",
+    "orderName": "hymenoptera",
     "family": "Halictidae",
     "description": {
       "preschool": "Sweat bees are small bees in this family — sometimes shiny green, sometimes plain black. They live in tunnels in the ground and visit flowers for pollen. Most are very gentle and rarely sting, even though one or two species are attracted to the salt in human sweat.",
@@ -126,7 +126,7 @@
   },
   {
     "name": "andrenidae",
-    "order": "Hymenoptera",
+    "orderName": "hymenoptera",
     "family": "Andrenidae",
     "description": {
       "preschool": "Mining bees in this family dig little tunnels in the ground to make their nests. Their entrances look like tiny anthills with a hole in the middle. They are some of the very first bees to fly in springtime when the early flowers open.",
@@ -143,7 +143,7 @@
   },
   {
     "name": "chrysopidae",
-    "order": "Neuroptera",
+    "orderName": "neuroptera",
     "family": "Chrysopidae",
     "description": {
       "preschool": "Green lacewings are delicate insects with see-through wings shaped like lace. The grown-up lacewing eats nectar from flowers, but its babies — called Aphid Lions — eat hundreds of aphids and other tiny pests that hurt our plants.",
@@ -160,7 +160,7 @@
   },
   {
     "name": "cicadellidae",
-    "order": "Hemiptera",
+    "orderName": "hemiptera",
     "family": "Cicadellidae",
     "description": {
       "preschool": "Leafhoppers are tiny insects that jump away in a flash if you get too close. They drink sap from plant leaves like drinking through a straw. Some are bright green, some are striped, and a few are even patterned with bright colors.",
@@ -177,7 +177,7 @@
   },
   {
     "name": "papilionidae",
-    "order": "Lepidoptera",
+    "orderName": "lepidoptera",
     "family": "Papilionidae",
     "description": {
       "preschool": "Swallowtails are big colourful butterflies with little tails on their back wings, like a swallow bird. Many of them are yellow and black, and some are dark with shining blue. You can see them in the garden visiting flowers in the summer.",
@@ -195,7 +195,7 @@
   },
   {
     "name": "coccinellidae",
-    "order": "Coleoptera",
+    "orderName": "coleoptera",
     "family": "Coccinellidae",
     "description": {
       "preschool": "Ladybugs are small round beetles with red or orange backs and black spots. They walk and fly around the garden looking for tiny pests called aphids, and they eat lots and lots of them. A single ladybug can eat hundreds of aphids in its life — it is one of the garden's best helpers.",
@@ -217,7 +217,7 @@
   },
   {
     "name": "ectobiidae",
-    "order": "Blattodea",
+    "orderName": "blattodea",
     "family": "Ectobiidae",
     "description": {
       "preschool": "Field roaches are small outdoor cockroaches that live under stones and leaves in the garden. They do not come into the house. They help clean up the garden by eating old leaves and other bits of dead plant material — they are decomposers, just like worms.",
@@ -234,7 +234,7 @@
   },
   {
     "name": "apidae",
-    "order": "Hymenoptera",
+    "orderName": "hymenoptera",
     "family": "Apidae",
     "description": {
       "preschool": "Apidae is the family that includes bumble bees, carpenter bees, and honey bees. They are big strong bees that visit flowers all day long, collecting pollen and nectar to feed their babies. They are some of the best pollinators in the world — they help our tomatoes, squash, and fruit trees make food.",
@@ -255,7 +255,7 @@
   },
   {
     "name": "nymphalidae",
-    "order": "Lepidoptera",
+    "orderName": "lepidoptera",
     "family": "Nymphalidae",
     "description": {
       "preschool": "Brush-footed butterflies are colourful butterflies that look like they only have four legs. Their two front legs are tiny and brushy, hidden against their chests. The Painted Lady is one of them — it flies all the way from Mexico across California every year, stopping in our garden to drink nectar.",
@@ -273,7 +273,7 @@
   },
   {
     "name": "pieridae",
-    "order": "Lepidoptera",
+    "orderName": "lepidoptera",
     "family": "Pieridae",
     "description": {
       "preschool": "Pierid butterflies are usually white, yellow, or orange. The Orange Sulphur is one of them — a small bright yellow butterfly with dark edges on its wings. Their caterpillars eat plants in the pea family, like the crimson clover that grows under our trees as a cover crop.",

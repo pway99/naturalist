@@ -1,4 +1,5 @@
 @import com.naturalist.insects.InsectFamily
+@import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.lifestage.LifeStage
 @import com.naturalist.insects.lifestage.EggStage
@@ -9,6 +10,7 @@
 
 @param InsectSpecies species
 @param InsectFamily family
+@param InsectOrder order
 @param List<LifeStage> stages
 
 @template.layout.page(title = species.name().value() + " — Life Stages", content = @`
@@ -20,7 +22,7 @@
             <p class="plate-eyebrow">Plate &mdash; Life History</p>
             <h1>${species.name().value()}</h1>
             <p class="plate-subtitle">
-                ${family.order().value()} &middot; ${family.family().value()}
+                ${order.order().value()} &middot; ${family.family().value()}
             </p>
         </header>
 

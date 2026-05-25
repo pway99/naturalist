@@ -1,6 +1,7 @@
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectFunctionalRole
 @import com.naturalist.insects.InsectGenus
+@import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectImage
 @import java.util.List
@@ -9,6 +10,7 @@
 @param InsectSpecies species
 @param InsectGenus genus
 @param InsectFamily family
+@param InsectOrder order
 @param List<InsectImage> images
 @param InsectFunctionalRole role = null
 @param String descriptionPreschool = ""
@@ -29,7 +31,7 @@
     </p>
 
     <p class="taxonomy">
-        ${family.order().value()} &middot; ${family.family().value()}
+        ${order.order().value()} &middot; ${family.family().value()}
         &middot; <em>${genus.genus().value()} ${species.epithet().value()}</em>
     </p>
 

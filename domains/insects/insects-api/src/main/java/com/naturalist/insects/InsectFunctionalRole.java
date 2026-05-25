@@ -52,6 +52,7 @@ public record InsectFunctionalRole(
         InsectFunctionalRoleId name,
         @JsonTypeInfo(use = Id.NAME, property = "parentRank", include = As.EXTERNAL_PROPERTY)
         @JsonSubTypes({
+                @Type(value = InsectOrderName.class, name = "ORDER"),
                 @Type(value = InsectFamilyName.class, name = "FAMILY"),
                 @Type(value = InsectGenusName.class, name = "GENUS"),
                 @Type(value = InsectSpeciesName.class, name = "SPECIES"),
