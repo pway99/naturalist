@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -108,8 +109,14 @@ public class InsectsController {
             orderByName.computeIfAbsent(family.orderName(),
                     n -> insectQuery.orders().getByName(n).orElseThrow());
         }
+        Map<InsectRankName, Collection<InsectImage>> imagesByFamily = new LinkedHashMap<>();
+        for (var family : familyPage.content()) {
+            imagesByFamily.put(family.name(), imagesForFamily(family.name()));
+        }
+        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByFamily);
         model.addAttribute("familyPage", familyPage);
         model.addAttribute("orderByName", orderByName);
+        model.addAttribute("gallery", gallery);
         addCladeDescription(model);
         return "insects/families";
     }
@@ -126,9 +133,15 @@ public class InsectsController {
         var genera = insectQuery.genera().forFamilyName(familyName).stream()
                 .sorted(Comparator.comparing(g -> g.name().value()))
                 .toList();
+        Map<InsectRankName, Collection<InsectImage>> imagesByGenus = new LinkedHashMap<>();
+        for (var g : genera) {
+            imagesByGenus.put(g.name(), imagesForGenus(g.name()));
+        }
+        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByGenus);
         model.addAttribute("family", family.get());
         model.addAttribute("order", order);
         model.addAttribute("genera", genera);
+        model.addAttribute("gallery", gallery);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -140,7 +153,13 @@ public class InsectsController {
     String orders(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectOrder> orderPage = insectQuery.orders()
                 .findPage(PageRequest.console(Math.max(0, page)));
+        Map<InsectRankName, Collection<InsectImage>> imagesByOrder = new LinkedHashMap<>();
+        for (var order : orderPage.content()) {
+            imagesByOrder.put(order.name(), imagesForOrder(order.name()));
+        }
+        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByOrder);
         model.addAttribute("orderPage", orderPage);
+        model.addAttribute("gallery", gallery);
         addCladeDescription(model);
         return "insects/orders";
     }
@@ -156,8 +175,14 @@ public class InsectsController {
         var families = insectQuery.families().forOrderName(orderName).stream()
                 .sorted(Comparator.comparing(f -> f.name().value()))
                 .toList();
+        Map<InsectRankName, Collection<InsectImage>> imagesByFamily = new LinkedHashMap<>();
+        for (var f : families) {
+            imagesByFamily.put(f.name(), imagesForFamily(f.name()));
+        }
+        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByFamily);
         model.addAttribute("order", order.get());
         model.addAttribute("families", families);
+        model.addAttribute("gallery", gallery);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -174,8 +199,14 @@ public class InsectsController {
             familyByName.computeIfAbsent(genus.familyName(),
                     n -> insectQuery.families().getByName(n).orElseThrow());
         }
+        Map<InsectRankName, Collection<InsectImage>> imagesByGenus = new LinkedHashMap<>();
+        for (var genus : genusPage.content()) {
+            imagesByGenus.put(genus.name(), imagesForGenus(genus.name()));
+        }
+        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByGenus);
         model.addAttribute("genusPage", genusPage);
         model.addAttribute("familyByName", familyByName);
+        model.addAttribute("gallery", gallery);
         addCladeDescription(model);
         return "insects/genera";
     }
@@ -195,10 +226,17 @@ public class InsectsController {
                 .stream()
                 .sorted(Comparator.comparing(s -> s.name().value()))
                 .toList();
+        Map<InsectRankName, Collection<InsectImage>> imagesBySpecies = new LinkedHashMap<>();
+        for (var s : members) {
+            imagesBySpecies.put(s.name(),
+                    insectQuery.images().forParentName(s.name()).stream().toList());
+        }
+        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesBySpecies);
         model.addAttribute("genus", genus.get());
         model.addAttribute("family", family);
         model.addAttribute("order", order);
         model.addAttribute("species", members);
+        model.addAttribute("gallery", gallery);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));

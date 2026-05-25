@@ -1,9 +1,11 @@
+@import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectOrder
 @import java.util.List
 
 @param InsectOrder order
 @param List<InsectFamily> families
+@param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -37,9 +39,32 @@
                             <dt>family</dt>
                             <dd><em>${f.family().value()}</em></dd>
                         </dl>
+                        !{var images = gallery.forEntity(f.name()).stream().toList();}
+                        @if(!images.isEmpty())
+                            @template.insects.cardImages(images = images, linkUrl = "/insects/families/" + f.name().value(), alt = commonName)
+                        @endif
                     </article>
                 @endfor
             </div>
         @endif
     </section>
+
+    <script>
+        (function () {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+            var interval = 3500;
+            document.querySelectorAll('.card-image[data-rotate]').forEach(function (el) {
+                var imgs = el.querySelectorAll('img');
+                if (imgs.length < 2) return;
+                var i = 0;
+                setInterval(function () {
+                    imgs[i].classList.remove('card-image-active');
+                    i = (i + 1) % imgs.length;
+                    imgs[i].classList.add('card-image-active');
+                }, interval);
+            });
+        }());
+    </script>
 `)
