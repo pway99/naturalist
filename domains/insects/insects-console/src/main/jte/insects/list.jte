@@ -42,6 +42,7 @@
             university = cladeUniversity)
     </details>
     <nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
+        <a href="/insects/orders" aria-current="false">Order</a>
         <a href="/insects/families" aria-current="false">Family</a>
         <a href="/insects/genera" aria-current="false">Genus</a>
         <a href="/insects" aria-current="page">Species</a>
