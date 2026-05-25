@@ -17,46 +17,18 @@ Order, family, and genus listing/detail pages show no images.
 ### BehavioralMap (kernel)
 
 New abstract base in `kernels/framework` alongside `BehavioralCollection`. Extends
-`BehavioralCollection<V>` and adds a keyed index built from a grouping function.
+`BehavioralCollection<V>` and adds a keyed index. Two construction modes:
 
-```java
-public abstract class BehavioralMap<K, V extends Observable>
-        extends BehavioralCollection<V> {
-
-    private final Map<K, List<V>> index;
-    private final Observer observer;
-
-    protected BehavioralMap(Collection<V> elements, Function<V, K> keyExtractor) {
-        super(elements);
-        this.observer = Observer.forClass(getClass());
-        this.index = elements.stream()
-                .collect(Collectors.groupingBy(keyExtractor,
-                        Collectors.toUnmodifiableList()));
-    }
-
-    protected List<V> elementsForKey(K key) {
-        observer.arguments("elementsForKey", i -> i.notNull(key, "key"))
-                .observe();
-        if (key == null) {
-            return List.of();
-        }
-        return index.getOrDefault(key, List.of());
-    }
-
-    public boolean hasKey(K key) {
-        return index.containsKey(key);
-    }
-
-    public Set<K> keys() {
-        return Collections.unmodifiableSet(index.keySet());
-    }
-}
-```
+1. **Element-derived grouping** — a key extractor groups elements automatically. Use
+   when the grouping key is a field on the element itself.
+2. **Pre-computed grouping** — the caller supplies the mapping. Use when the grouping
+   key is derived externally (e.g. hierarchical ancestor lookup where card entities are
+   higher-rank than image parents).
 
 `elementsForKey` observes its argument and warns (via `.observe()`, not
 `.throwWhenInvalid()`) on null key, returning an empty list gracefully. Domain
 subclasses wrap it in their own typed collection. `BehavioralMap` inherits
-`stream()`, `isEmpty()`, `size()`, `invariants()` from `BehavioralCollection`.
+`stream()`, `isEmpty()`, `size()` from `BehavioralCollection`.
 
 ### ImageGallery (insects-api)
 
@@ -70,8 +42,17 @@ final class ImageGallery extends BehavioralMap<InsectRankName, InsectImage> {
         super(images, InsectImage::parentName);
     }
 
+    ImageGallery(Map<InsectRankName, ? extends Collection<InsectImage>> groups) {
+        super(groups);
+    }
+
     public static ImageGallery of(Collection<InsectImage> images) {
         return new ImageGallery(images);
+    }
+
+    public static ImageGallery grouped(
+            Map<InsectRankName, ? extends Collection<InsectImage>> groups) {
+        return new ImageGallery(groups);
     }
 
     public static ImageGallery empty() {
@@ -84,10 +65,14 @@ final class ImageGallery extends BehavioralMap<InsectRankName, InsectImage> {
 }
 ```
 
-Constructed from a flat list of images. The gallery groups by `parentName()` internally,
-so the caller (controller or query) just collects descendant images into a list — no
-map-building at the call site. Templates call `gallery.forEntity(entity.name())` to get
-the carousel images for each card.
+Two construction modes mirror `BehavioralMap`:
+- `of(flatList)` — auto-groups by `parentName()`. Use when card entities match image
+  parents (species cards).
+- `grouped(map)` — pre-computed grouping. Use when the controller has walked the
+  hierarchy and grouped descendant images under higher-rank card entity names.
+
+Templates call `gallery.forEntity(entity.name())` to get the carousel images for each
+card.
 
 ### JTE component: `insects/cardImages.jte`
 
