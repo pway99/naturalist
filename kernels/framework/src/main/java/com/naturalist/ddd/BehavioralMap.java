@@ -1,6 +1,7 @@
 package com.naturalist.ddd;
 
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observable;
 import com.naturalist.observability.Observer;
 
@@ -64,7 +65,7 @@ public abstract class BehavioralMap<K, V extends Observable> extends BehavioralC
      */
     protected List<V> elementsForKey(K key) {
         observer.arguments("elementsForKey", i -> i.notNull(key, "key"))
-                .observe();
+                .observe(Level.WARN);
         if (key == null) {
             return List.of();
         }
