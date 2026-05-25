@@ -1,19 +1,18 @@
+@import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectFamilyName
 @import com.naturalist.insects.InsectFunctionalRole
 @import com.naturalist.insects.InsectGenus
 @import com.naturalist.insects.InsectGenusName
-@import com.naturalist.insects.InsectImage
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectSpeciesName
 @import com.naturalist.insects.FunctionalGuild
 @import com.naturalist.data.Page
-@import java.util.List
 @import java.util.Map
 @import java.util.Set
 
 @param Page<InsectSpecies> speciesPage
-@param Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = Map.of()
+@param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = Map.of()
 @param Map<InsectFamilyName, InsectFamily> familyByName = Map.of()
 @param Map<InsectGenusName, InsectGenus> genusByName = Map.of()
@@ -39,7 +38,7 @@
 
     <div class="entity-grid">
         @for(var s : speciesPage.content())
-            !{var images = imagesBySpecies.getOrDefault(s.name(), List.of());}
+            !{var images = gallery.forEntity(s.name()).stream().toList();}
             !{var role = rolesBySpecies.get(s.name());}
             !{var guilds = role == null ? Set.<FunctionalGuild>of() : role.guilds();}
             !{var beneficial = role != null && role.beneficial();}
@@ -64,16 +63,7 @@
                     <dd><em>${s.epithet().value()}</em></dd>
                 </dl>
                 @if(!images.isEmpty())
-                    <a href="/insects/${s.name().value()}" class="card-image-link">
-                        <figure class="card-image" data-rotate="${images.size() > 1}">
-                            @for(int i = 0; i < images.size(); i++)
-                                <img src="/insects/images/${images.get(i).resourceName().value()}"
-                                     alt="${commonName}"
-                                     loading="lazy"
-                                     class="${i == 0 ? "card-image-active" : ""}">
-                            @endfor
-                        </figure>
-                    </a>
+                    @template.insects.cardImages(images = images, linkUrl = "/insects/" + s.name().value(), alt = commonName)
                 @endif
                 <div class="guilds">
                     @for(var guild : guilds)

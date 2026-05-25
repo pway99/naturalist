@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -75,14 +76,12 @@ public class InsectsController {
     @GetMapping("/species")
     String list(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
-        Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies = new LinkedHashMap<>();
+        List<InsectImage> allImages = new ArrayList<>();
         Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = new LinkedHashMap<>();
         Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
         Map<InsectGenusName, InsectGenus> genusByName = new LinkedHashMap<>();
         for (var species : speciesPage.content()) {
-            imagesBySpecies.put(
-                    species.name(),
-                    insectQuery.images().forParentName(species.name()).stream().toList());
+            allImages.addAll(insectQuery.images().forParentName(species.name()).stream().toList());
             insectQuery.functionalRoles().getByParentName(species.name())
                     .ifPresent(role -> rolesBySpecies.put(species.name(), role));
             familyByName.computeIfAbsent(species.familyName(),
@@ -90,8 +89,9 @@ public class InsectsController {
             genusByName.computeIfAbsent(species.genusName(),
                     n -> insectQuery.genera().getByName(n).orElseThrow());
         }
+        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.of(allImages);
         model.addAttribute("speciesPage", speciesPage);
-        model.addAttribute("imagesBySpecies", imagesBySpecies);
+        model.addAttribute("gallery", gallery);
         model.addAttribute("rolesBySpecies", rolesBySpecies);
         model.addAttribute("familyByName", familyByName);
         model.addAttribute("genusByName", genusByName);
@@ -341,5 +341,32 @@ public class InsectsController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS))
                 .body(jpeg);
+    }
+
+    private List<InsectImage> imagesForGenus(InsectGenusName genusName) {
+        List<InsectImage> images = new ArrayList<>(
+                insectQuery.images().forParentName(genusName).stream().toList());
+        for (var species : insectQuery.species().forGenusName(genusName).stream().toList()) {
+            images.addAll(insectQuery.images().forParentName(species.name()).stream().toList());
+        }
+        return images;
+    }
+
+    private List<InsectImage> imagesForFamily(InsectFamilyName familyName) {
+        List<InsectImage> images = new ArrayList<>(
+                insectQuery.images().forParentName(familyName).stream().toList());
+        for (var genus : insectQuery.genera().forFamilyName(familyName).stream().toList()) {
+            images.addAll(imagesForGenus(genus.name()));
+        }
+        return images;
+    }
+
+    private List<InsectImage> imagesForOrder(InsectOrderName orderName) {
+        List<InsectImage> images = new ArrayList<>(
+                insectQuery.images().forParentName(orderName).stream().toList());
+        for (var family : insectQuery.families().forOrderName(orderName).stream().toList()) {
+            images.addAll(imagesForFamily(family.name()));
+        }
+        return images;
     }
 }
