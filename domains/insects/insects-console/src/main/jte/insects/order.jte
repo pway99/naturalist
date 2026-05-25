@@ -1,6 +1,7 @@
 @import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectOrder
+@import com.naturalist.insects.console.BreadcrumbSegment
 @import java.util.List
 
 @param InsectOrder order
@@ -10,9 +11,10 @@
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
+@param List<BreadcrumbSegment> breadcrumb = List.of()
 
 @template.layout.page(title = order.order().value(), content = @`
-    @template.insects.nav(active = "order")
+    @template.insects.nav(active = "order", breadcrumb = breadcrumb)
     <h1>${order.order().value()}</h1>
 
     @template.components.description(

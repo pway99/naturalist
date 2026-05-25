@@ -1,9 +1,12 @@
 @import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectOrder
+@import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.data.Page
+@import java.util.List
 
 @param Page<InsectOrder> orderPage
 @param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
+@param List<BreadcrumbSegment> breadcrumb = List.of()
 @param String cladePreschool = ""
 @param String cladeElementary = ""
 @param String cladeSecondary = ""
@@ -11,6 +14,7 @@
 
 @template.layout.page(title = "Insect Orders", content = @`
     @template.insects.cladeIntro(
+        breadcrumb = breadcrumb,
         cladePreschool = cladePreschool,
         cladeElementary = cladeElementary,
         cladeSecondary = cladeSecondary,

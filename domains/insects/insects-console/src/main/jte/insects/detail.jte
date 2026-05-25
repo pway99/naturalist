@@ -4,6 +4,7 @@
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectImage
+@import com.naturalist.insects.console.BreadcrumbSegment
 @import java.util.List
 @import org.springframework.security.web.csrf.CsrfToken
 
@@ -18,9 +19,10 @@
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
 @param CsrfToken _csrf = null
+@param List<BreadcrumbSegment> breadcrumb = List.of()
 
 @template.layout.page(title = species.name().value(), content = @`
-    @template.insects.nav(active = "species")
+    @template.insects.nav(active = "species", breadcrumb = breadcrumb)
     <a href="/insects/species">&larr; Back to catalog</a>
 
     <h1>${species.name().value()}</h1>
@@ -29,11 +31,6 @@
         <a href="/insects/${species.name().value()}/life-stages" role="button" class="secondary">
             View Life Stages &rarr;
         </a>
-    </p>
-
-    <p class="taxonomy">
-        ${order.order().value()} &middot; ${family.family().value()}
-        &middot; <em>${genus.genus().value()} ${species.epithet().value()}</em>
     </p>
 
     @if(role != null)

@@ -7,7 +7,9 @@
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectSpeciesName
 @import com.naturalist.insects.FunctionalGuild
+@import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.data.Page
+@import java.util.List
 @import java.util.Map
 @import java.util.Set
 
@@ -16,6 +18,7 @@
 @param Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = Map.of()
 @param Map<InsectFamilyName, InsectFamily> familyByName = Map.of()
 @param Map<InsectGenusName, InsectGenus> genusByName = Map.of()
+@param List<BreadcrumbSegment> breadcrumb = List.of()
 @param String cladePreschool = ""
 @param String cladeElementary = ""
 @param String cladeSecondary = ""
@@ -23,6 +26,7 @@
 
 @template.layout.page(title = "Insect Species", content = @`
     @template.insects.cladeIntro(
+        breadcrumb = breadcrumb,
         cladePreschool = cladePreschool,
         cladeElementary = cladeElementary,
         cladeSecondary = cladeSecondary,

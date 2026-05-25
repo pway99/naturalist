@@ -1,25 +1,17 @@
-@import com.naturalist.clades.Clade
-@import com.naturalist.clades.CladeTraversal
-@import com.naturalist.clades.Eukaryota
-@import com.naturalist.clades.Insecta
+@import com.naturalist.insects.console.BreadcrumbSegment
 @import java.util.List
 
 @param String active = ""
+@param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 
-!{var ancestry = CladeTraversal.ancestry(new Insecta()).reversed();}
-!{var display = ancestry.stream().filter(c -> !(c instanceof Eukaryota)).toList();}
-
-<div class="clade-lineage" aria-label="Taxonomic placement">
-    @for(int i = 0; i < display.size(); i++)
-        @if(i > 0)
-            <span aria-hidden="true"> › </span>
-        @endif
-        <span>${display.get(i).displayName()}</span>
-    @endfor
+<div class="insects-context-bar">
+    <nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
+        <a href="/insects/orders" aria-current="${"order".equals(active) ? "page" : "false"}">Orders</a>
+        <a href="/insects/families" aria-current="${"family".equals(active) ? "page" : "false"}">Families</a>
+        <a href="/insects/genera" aria-current="${"genus".equals(active) ? "page" : "false"}">Genera</a>
+        <a href="/insects/species" aria-current="${"species".equals(active) ? "page" : "false"}">Species</a>
+    </nav>
+    @if(!breadcrumb.isEmpty())
+        @template.insects.breadcrumb(segments = breadcrumb)
+    @endif
 </div>
-<nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
-    <a href="/insects/orders" aria-current="${"order".equals(active) ? "page" : "false"}">Order</a>
-    <a href="/insects/families" aria-current="${"family".equals(active) ? "page" : "false"}">Family</a>
-    <a href="/insects/genera" aria-current="${"genus".equals(active) ? "page" : "false"}">Genus</a>
-    <a href="/insects/species" aria-current="${"species".equals(active) ? "page" : "false"}">Species</a>
-</nav>

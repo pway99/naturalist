@@ -2,6 +2,7 @@
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectGenus
 @import com.naturalist.insects.InsectOrder
+@import com.naturalist.insects.console.BreadcrumbSegment
 @import java.util.List
 
 @param InsectFamily family
@@ -12,11 +13,11 @@
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
+@param List<BreadcrumbSegment> breadcrumb = List.of()
 
 @template.layout.page(title = family.family().value(), content = @`
-    @template.insects.nav(active = "family")
+    @template.insects.nav(active = "family", breadcrumb = breadcrumb)
     <h1>${family.family().value()}</h1>
-    <p class="taxonomy"><a href="/insects/orders/${order.name().value()}">${order.order().value()}</a></p>
 
     @template.components.description(
         preschool = descriptionPreschool,

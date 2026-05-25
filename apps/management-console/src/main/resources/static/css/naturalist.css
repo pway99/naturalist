@@ -1223,11 +1223,78 @@ figure.compound-depiction img {
     margin-top: 1.25rem;
 }
 
-.clade-lineage {
-    font-size: 0.85rem;
-    color: var(--pico-muted-color);
-    margin: 0 0 0.25rem;
-    text-shadow: var(--text-shadow-subtle);
+/* The breadcrumb sits over the hero photo on detail pages, where any
+   text color will lose against some part of the image. Give it its
+   own translucent dark backing strip and rely on white text + an
+   underline affordance (not hue) for link distinction — that works
+   against any photo. The strip is inline-flex so it sizes to its
+   content (a pill, not a full-width banner). */
+.breadcrumb-trail {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-size: 1rem;
+    color: var(--text-light-color);
+    background: rgba(0, 0, 0, 0.55);
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.25rem;
+    margin: 0 0 0.5rem;
+    text-shadow: none;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.breadcrumb-trail a {
+    color: var(--text-light-color);
+    text-decoration: underline;
+    text-decoration-color: rgba(250, 248, 245, 0.55);
+    text-underline-offset: 0.2rem;
+}
+
+.breadcrumb-trail a:hover {
+    text-decoration-color: currentColor;
+}
+
+.breadcrumb-trail .breadcrumb-current strong {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* Dim the chevron separators so the segment words pop. */
+.breadcrumb-trail [aria-hidden="true"] {
+    color: rgba(250, 248, 245, 0.55);
+}
+
+/* When the breadcrumb sits inside the insects context bar (under the
+   rank tabs on the same tan panel), shed the standalone dark pill
+   styling. It becomes a transparent bottom row with sepia ink on the
+   tan, separated from the tabs above by a thin sepia rule. */
+.insects-context-bar .breadcrumb-trail {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 100%;
+    background: transparent;
+    color: var(--sepia-ink);
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid rgba(139, 107, 61, 0.35);
+    border-radius: 0;
+    margin: 0;
+    text-shadow: none;
+}
+
+.insects-context-bar .breadcrumb-trail a {
+    color: var(--sepia-ink);
+    text-decoration-color: rgba(58, 42, 24, 0.45);
+}
+
+.insects-context-bar .breadcrumb-trail .breadcrumb-current strong {
+    color: var(--sepia-ink);
+}
+
+.insects-context-bar .breadcrumb-trail [aria-hidden="true"] {
+    color: rgba(58, 42, 24, 0.45);
 }
 
 .clade-introduction {
@@ -1245,22 +1312,30 @@ figure.compound-depiction img {
     margin: 0;
 }
 
-/* Insects sub-navigation: left-aligned tab strip rendered under page H1s
-   inside the insects context. The strip sits on a warm-tan panel
-   darker than the page's cream `--pico-background-color`, which lets
-   both the inactive tab text (full `--pico-color` for readability) and
-   the "lifted" active tab (whose background matches the page below,
-   creating the open-folder-tab metaphor) stand out clearly. Overrides
-   pico's default `nav { justify-content: space-between }` so the
-   tabs left-align instead of stretching edge-to-edge. */
+/* Insects context bar: warm-tan unified panel that groups the rank tab
+   strip (Order/Family/Genus/Species) above the taxonomic breadcrumb.
+   The tabs sit on top, breadcrumb sits below them on the same panel
+   separated by a thin sepia rule. The breadcrumb row only renders when
+   segments are present — the `:has()` selector on the divider keeps
+   listing pages (no breadcrumb) from showing a stray bottom rule. */
+.insects-context-bar {
+    background: #D8CFBC;
+    border-radius: 0.5rem 0.5rem 0 0;
+    margin: 0 0 1.5rem;
+    padding: 0.25rem 0.25rem 0;
+}
+
+/* Insects sub-navigation: left-aligned tab strip inside the context
+   bar. The active tab keeps its cream background so it reads as the
+   selected one against the surrounding tan. Overrides pico's default
+   `nav { justify-content: space-between }` so the tabs left-align
+   instead of stretching edge-to-edge. */
 .insects-subnav {
     display: flex;
     justify-content: flex-start;
     gap: 0.25rem;
-    margin: 0 0 1.5rem;
-    padding: 0.25rem 0.25rem 0;
-    background: #D8CFBC;
-    border-radius: 0.5rem 0.5rem 0 0;
+    margin: 0;
+    padding: 0;
 }
 
 .insects-subnav a {
