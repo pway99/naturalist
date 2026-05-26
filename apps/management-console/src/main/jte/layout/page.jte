@@ -11,8 +11,11 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=8">
+    <link rel="stylesheet" href="/css/naturalist.css?v=14">
     <script src="/js/htmx.min.js" defer></script>
+    <%-- Rotates stacked images on .card-image[data-rotate] tiles across all
+         catalog cards. No-op on pages without rotating cards. --%>
+    <script src="/js/card-image-rotate.js" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -49,23 +52,5 @@
 <footer class="container">
     <small>Management Console</small>
 </footer>
-<div class="background-opacity-control" title="Image Opacity">
-    <input type="range" id="bg-opacity-slider" min="0" max="100" value="100" class="opacity-slider">
-    <div id="opacity-display">100%</div>
-</div>
-<script>
-    const slider = document.getElementById('bg-opacity-slider');
-    const display = document.getElementById('opacity-display');
-
-    function updateOpacity() {
-        const value = slider.value;
-        const imageOpacity = value / 100;
-        document.documentElement.style.setProperty('--image-opacity', imageOpacity);
-        display.textContent = value + '%';
-    }
-
-    slider.addEventListener('input', updateOpacity);
-    updateOpacity();
-</script>
 </body>
 </html>

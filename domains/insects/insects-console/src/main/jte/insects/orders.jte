@@ -1,5 +1,6 @@
 @import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectOrder
+@import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.data.Page
 @import java.util.List
@@ -7,24 +8,12 @@
 @param Page<InsectOrder> orderPage
 @param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param List<BreadcrumbSegment> breadcrumb = List.of()
-@param String cladePreschool = ""
-@param String cladeElementary = ""
-@param String cladeSecondary = ""
-@param String cladeUniversity = ""
+@param List<AncestorIntro> ancestorIntros = List.of()
 
 @template.layout.page(title = "Insect Orders", content = @`
-    @template.insects.cladeIntro(
-        breadcrumb = breadcrumb,
-        cladePreschool = cladePreschool,
-        cladeElementary = cladeElementary,
-        cladeSecondary = cladeSecondary,
-        cladeUniversity = cladeUniversity)
-    <nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
-        <a href="/insects/orders" aria-current="page">Order</a>
-        <a href="/insects/families" aria-current="false">Family</a>
-        <a href="/insects/genera" aria-current="false">Genus</a>
-        <a href="/insects/species" aria-current="false">Species</a>
-    </nav>
+    @template.insects.nav(active = "order", breadcrumb = breadcrumb)
+    @template.insects.ancestorIntros(intros = ancestorIntros)
+
     <h1>Insect Orders</h1>
     <p>Order-rank records in the Oak Vista catalog.</p>
 
@@ -39,7 +28,7 @@
                 </header>
                 <dl class="taxonomy">
                     <dt>order</dt>
-                    <dd><em>${o.order().value()}</em></dd>
+                    <dd>${o.order().value()}</dd>
                 </dl>
                 !{var images = gallery.forEntity(o.name()).stream().toList();}
                 @if(!images.isEmpty())
@@ -50,23 +39,4 @@
     </div>
 
     @template.components.pager(page = orderPage, baseUrl = "/insects/orders")
-
-    <script>
-        (function () {
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                return;
-            }
-            var interval = 3500;
-            document.querySelectorAll('.card-image[data-rotate]').forEach(function (el) {
-                var imgs = el.querySelectorAll('img');
-                if (imgs.length < 2) return;
-                var i = 0;
-                setInterval(function () {
-                    imgs[i].classList.remove('card-image-active');
-                    i = (i + 1) % imgs.length;
-                    imgs[i].classList.add('card-image-active');
-                }, interval);
-            });
-        }());
-    </script>
 `)

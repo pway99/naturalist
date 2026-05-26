@@ -1,6 +1,8 @@
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
+@import com.naturalist.insects.console.AncestorIntro
+@import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.insects.lifestage.LifeStage
 @import com.naturalist.insects.lifestage.EggStage
 @import com.naturalist.insects.lifestage.LarvaStage
@@ -12,16 +14,19 @@
 @param InsectFamily family
 @param InsectOrder order
 @param List<LifeStage> stages
+@param List<BreadcrumbSegment> breadcrumb = List.of()
+@param List<AncestorIntro> ancestorIntros = List.of()
 
-@template.layout.page(title = species.name().value() + " — Life Stages", content = @`
-    @template.insects.nav(active = "species")
-    <a href="/insects/${species.name().value()}" class="naturalist-backlink">&larr; Back
-        to ${species.name().value()}</a>
+!{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
+
+@template.layout.page(title = commonName + " — Life Stages", content = @`
+    @template.insects.nav(active = "species", breadcrumb = breadcrumb)
+    @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <section class="life-stages">
         <header class="plate-heading">
             <p class="plate-eyebrow">Plate &mdash; Life History</p>
-            <h1>${species.name().value()}</h1>
+            <h1>${commonName}</h1>
             <p class="plate-subtitle">
                 ${order.order().value()} &middot; ${family.family().value()}
             </p>

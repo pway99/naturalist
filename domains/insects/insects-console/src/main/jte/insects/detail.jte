@@ -20,20 +20,18 @@
 @param String descriptionUniversity = ""
 @param CsrfToken _csrf = null
 @param List<BreadcrumbSegment> breadcrumb = List.of()
+@param java.util.List<com.naturalist.insects.console.AncestorIntro> ancestorIntros = List.of()
 
-@template.layout.page(title = species.name().value(), content = @`
+!{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
+!{var binomial = genus.genus().value() + " " + species.epithet().value();}
+
+@template.layout.page(title = binomial, content = @`
     @template.insects.nav(active = "species", breadcrumb = breadcrumb)
-    <a href="/insects/species">&larr; Back to catalog</a>
+    @template.insects.ancestorIntros(intros = ancestorIntros)
 
-    <h1>${species.name().value()}</h1>
+    <h1>${commonName}</h1>
 
-    <p>
-        <a href="/insects/${species.name().value()}/life-stages" role="button" class="secondary">
-            View Life Stages &rarr;
-        </a>
-    </p>
-
-    @if(role != null)
+    @if(role != null && (!role.guilds().isEmpty() || role.beneficial()))
         <div class="guilds">
             @for(var guild : role.guilds())
                 <a href="/insects/guild/${guild.name()}"
@@ -45,11 +43,17 @@
         </div>
     @endif
 
+    <p class="page-actions">
+        <a href="/insects/${species.name().value()}/life-stages" role="button" class="secondary">
+            View Life Stages &rarr;
+        </a>
+    </p>
+
     @template.components.description(
-    preschool = descriptionPreschool,
-    elementary = descriptionElementary,
-    secondary = descriptionSecondary,
-    university = descriptionUniversity)
+        preschool = descriptionPreschool,
+        elementary = descriptionElementary,
+        secondary = descriptionSecondary,
+        university = descriptionUniversity)
 
     @if(species.sightingNotes() != null)
         <section>

@@ -2,6 +2,7 @@
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectOrderName
+@import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.data.Page
 @import java.util.List
@@ -11,24 +12,12 @@
 @param Map<InsectOrderName, InsectOrder> orderByName
 @param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param List<BreadcrumbSegment> breadcrumb = List.of()
-@param String cladePreschool = ""
-@param String cladeElementary = ""
-@param String cladeSecondary = ""
-@param String cladeUniversity = ""
+@param List<AncestorIntro> ancestorIntros = List.of()
 
 @template.layout.page(title = "Insect Families", content = @`
-    @template.insects.cladeIntro(
-        breadcrumb = breadcrumb,
-        cladePreschool = cladePreschool,
-        cladeElementary = cladeElementary,
-        cladeSecondary = cladeSecondary,
-        cladeUniversity = cladeUniversity)
-    <nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
-        <a href="/insects/orders" aria-current="false">Order</a>
-        <a href="/insects/families" aria-current="page">Family</a>
-        <a href="/insects/genera" aria-current="false">Genus</a>
-        <a href="/insects/species" aria-current="false">Species</a>
-    </nav>
+    @template.insects.nav(active = "family", breadcrumb = breadcrumb)
+    @template.insects.ancestorIntros(intros = ancestorIntros)
+
     <h1>Insect Families</h1>
     <p>Family-rank records in the Oak Vista catalog.</p>
 
@@ -46,7 +35,7 @@
                     <dt>order</dt>
                     <dd>${order.order().value()}</dd>
                     <dt>family</dt>
-                    <dd><em>${f.family().value()}</em></dd>
+                    <dd>${f.family().value()}</dd>
                 </dl>
                 !{var images = gallery.forEntity(f.name()).stream().toList();}
                 @if(!images.isEmpty())
@@ -57,23 +46,4 @@
     </div>
 
     @template.components.pager(page = familyPage, baseUrl = "/insects/families")
-
-    <script>
-        (function () {
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                return;
-            }
-            var interval = 3500;
-            document.querySelectorAll('.card-image[data-rotate]').forEach(function (el) {
-                var imgs = el.querySelectorAll('img');
-                if (imgs.length < 2) return;
-                var i = 0;
-                setInterval(function () {
-                    imgs[i].classList.remove('card-image-active');
-                    i = (i + 1) % imgs.length;
-                    imgs[i].classList.add('card-image-active');
-                }, interval);
-            });
-        }());
-    </script>
 `)

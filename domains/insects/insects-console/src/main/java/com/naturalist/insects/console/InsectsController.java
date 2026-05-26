@@ -63,33 +63,112 @@ public class InsectsController {
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
     }
 
-    private void addCladeDescription(Model model) {
-        var d = new Insecta().description();
-        model.addAttribute("cladePreschool", descriptionRenderer.render(d.preschool()));
-        model.addAttribute("cladeElementary", descriptionRenderer.render(d.elementary()));
-        model.addAttribute("cladeSecondary", descriptionRenderer.render(d.secondary()));
-        model.addAttribute("cladeUniversity", descriptionRenderer.render(d.university()));
-        model.addAttribute("breadcrumb", cladePrefix());
+    /**
+     * Builds an {@link AncestorIntro} from a rank label plus its
+     * {@link com.naturalist.fieldnotes.Description}. The {@code storageKey}
+     * is keyed by rank-type (not by specific entity name) so opening one
+     * Order panel keeps every Order panel open across pages — the user is
+     * signalling "I want rank-context", not "I want this specific order".
+     */
+    private AncestorIntro intro(String label, String storageKey,
+                                com.naturalist.fieldnotes.Description d) {
+        return new AncestorIntro(label, storageKey,
+                descriptionRenderer.render(d.preschool()),
+                descriptionRenderer.render(d.elementary()),
+                descriptionRenderer.render(d.secondary()),
+                descriptionRenderer.render(d.university()));
     }
+
+    private AncestorIntro classInsectaIntro() {
+        return intro("Class Insecta", "intro-class-open", new Insecta().description());
+    }
+
+    /**
+     * Class Insecta only — the baseline ancestor stack for listing pages
+     * and the order detail page (no Linnaean rank sits above Order).
+     */
+    private List<AncestorIntro> classOnlyIntros() {
+        return List.of(classInsectaIntro());
+    }
+
+    private List<AncestorIntro> introsForFamily(InsectOrder order) {
+        return List.of(
+                classInsectaIntro(),
+                intro("Order " + order.order().value(), "intro-order-open", order.description()));
+    }
+
+    private List<AncestorIntro> introsForGenus(InsectOrder order, InsectFamily family) {
+        return List.of(
+                classInsectaIntro(),
+                intro("Order " + order.order().value(), "intro-order-open", order.description()),
+                intro("Family " + family.family().value(), "intro-family-open", family.description()));
+    }
+
+    private List<AncestorIntro> introsForSpecies(InsectOrder order, InsectFamily family,
+                                                 InsectGenus genus) {
+        return List.of(
+                classInsectaIntro(),
+                intro("Order " + order.order().value(), "intro-order-open", order.description()),
+                intro("Family " + family.family().value(), "intro-family-open", family.description()),
+                intro("Genus " + genus.genus().value(), "intro-genus-open", genus.description()));
+    }
+
+    private List<AncestorIntro> introsForLifeStages(InsectOrder order, InsectFamily family,
+                                                    InsectGenus genus, InsectSpecies species) {
+        var binomial = genus.genus().value() + " " + species.epithet().value();
+        return List.of(
+                classInsectaIntro(),
+                intro("Order " + order.order().value(), "intro-order-open", order.description()),
+                intro("Family " + family.family().value(), "intro-family-open", family.description()),
+                intro("Genus " + genus.genus().value(), "intro-genus-open", genus.description()),
+                intro("Species " + binomial, "intro-species-open", species.description()));
+    }
+
+    /**
+     * Linnaean rank label for each Insecta-ancestry clade that has one.
+     * The kernel deliberately keeps clades and ranks as separate concepts
+     * (clades = evolutionary tree, ranks = Linnaean scheme); the controller
+     * supplies the rank label at the breadcrumb construction site for those
+     * clades that happen to coincide with a named rank.
+     */
+    private static final Map<String, String> CLADE_RANK_LABEL = Map.of(
+            "animalia", "Kingdom",
+            "arthropoda", "Phylum",
+            "insecta", "Class");
+
+    /**
+     * URL for clades that own a landing page in this console. Insecta points
+     * at the catalog root (the orders listing) so the breadcrumb's Insecta
+     * segment becomes a click-back-to-the-top affordance from anywhere in
+     * the insects domain. Clades without an entry render as plain text.
+     */
+    private static final Map<String, String> CLADE_URL = Map.of(
+            "insecta", "/insects/orders");
 
     private List<BreadcrumbSegment> cladePrefix() {
         return CladeTraversal.ancestry(new Insecta()).reversed().stream()
                 .filter(c -> !(c instanceof Eukaryota))
-                .map(c -> BreadcrumbSegment.text(c.displayName()))
+                .map(c -> {
+                    String rank = CLADE_RANK_LABEL.get(c.slug());
+                    String url = CLADE_URL.get(c.slug());
+                    return url != null
+                            ? BreadcrumbSegment.link(c.displayName(), url, rank)
+                            : BreadcrumbSegment.text(c.displayName(), rank);
+                })
                 .toList();
     }
 
     private List<BreadcrumbSegment> breadcrumbToOrder(InsectOrder order) {
         var segments = new ArrayList<>(cladePrefix());
-        segments.add(BreadcrumbSegment.current(order.order().value()));
+        segments.add(BreadcrumbSegment.current(order.order().value(), "Order"));
         return segments;
     }
 
     private List<BreadcrumbSegment> breadcrumbToFamily(InsectFamily family, InsectOrder order) {
         var segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
-                "/insects/orders/" + order.name().value()));
-        segments.add(BreadcrumbSegment.current(family.family().value()));
+                "/insects/orders/" + order.name().value(), "Order"));
+        segments.add(BreadcrumbSegment.current(family.family().value(), "Family"));
         return segments;
     }
 
@@ -98,10 +177,10 @@ public class InsectsController {
                                                       InsectOrder order) {
         var segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
-                "/insects/orders/" + order.name().value()));
+                "/insects/orders/" + order.name().value(), "Order"));
         segments.add(BreadcrumbSegment.link(family.family().value(),
-                "/insects/families/" + family.name().value()));
-        segments.add(BreadcrumbSegment.current(genus.genus().value()));
+                "/insects/families/" + family.name().value(), "Family"));
+        segments.add(BreadcrumbSegment.current(genus.genus().value(), "Genus"));
         return segments;
     }
 
@@ -111,13 +190,13 @@ public class InsectsController {
                                                         InsectOrder order) {
         var segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
-                "/insects/orders/" + order.name().value()));
+                "/insects/orders/" + order.name().value(), "Order"));
         segments.add(BreadcrumbSegment.link(family.family().value(),
-                "/insects/families/" + family.name().value()));
+                "/insects/families/" + family.name().value(), "Family"));
         segments.add(BreadcrumbSegment.link(genus.genus().value(),
-                "/insects/genera/" + genus.name().value()));
+                "/insects/genera/" + genus.name().value(), "Genus"));
         segments.add(BreadcrumbSegment.current(
-                genus.genus().value() + " " + species.epithet().value()));
+                genus.genus().value() + " " + species.epithet().value(), "Species"));
         return segments;
     }
 
@@ -148,7 +227,8 @@ public class InsectsController {
         model.addAttribute("rolesBySpecies", rolesBySpecies);
         model.addAttribute("familyByName", familyByName);
         model.addAttribute("genusByName", genusByName);
-        addCladeDescription(model);
+        model.addAttribute("ancestorIntros", classOnlyIntros());
+        model.addAttribute("breadcrumb", cladePrefix());
         return "insects/list";
     }
 
@@ -169,7 +249,8 @@ public class InsectsController {
         model.addAttribute("familyPage", familyPage);
         model.addAttribute("orderByName", orderByName);
         model.addAttribute("gallery", gallery);
-        addCladeDescription(model);
+        model.addAttribute("ancestorIntros", classOnlyIntros());
+        model.addAttribute("breadcrumb", cladePrefix());
         return "insects/families";
     }
 
@@ -199,6 +280,7 @@ public class InsectsController {
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         model.addAttribute("breadcrumb", breadcrumbToFamily(family.get(), order));
+        model.addAttribute("ancestorIntros", introsForFamily(order));
         return "insects/family";
     }
 
@@ -213,7 +295,8 @@ public class InsectsController {
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByOrder);
         model.addAttribute("orderPage", orderPage);
         model.addAttribute("gallery", gallery);
-        addCladeDescription(model);
+        model.addAttribute("ancestorIntros", classOnlyIntros());
+        model.addAttribute("breadcrumb", cladePrefix());
         return "insects/orders";
     }
 
@@ -241,6 +324,7 @@ public class InsectsController {
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         model.addAttribute("breadcrumb", breadcrumbToOrder(order.get()));
+        model.addAttribute("ancestorIntros", classOnlyIntros());
         return "insects/order";
     }
 
@@ -261,7 +345,8 @@ public class InsectsController {
         model.addAttribute("genusPage", genusPage);
         model.addAttribute("familyByName", familyByName);
         model.addAttribute("gallery", gallery);
-        addCladeDescription(model);
+        model.addAttribute("ancestorIntros", classOnlyIntros());
+        model.addAttribute("breadcrumb", cladePrefix());
         return "insects/genera";
     }
 
@@ -296,6 +381,7 @@ public class InsectsController {
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus.get(), family, order));
+        model.addAttribute("ancestorIntros", introsForGenus(order, family));
         return "insects/genus";
     }
 
@@ -313,6 +399,8 @@ public class InsectsController {
         model.addAttribute("selectedGuild", selected);
         model.addAttribute("guilds", FunctionalGuild.values());
         model.addAttribute("roles", roles);
+        model.addAttribute("ancestorIntros", classOnlyIntros());
+        model.addAttribute("breadcrumb", cladePrefix());
         return "insects/guild";
     }
 
@@ -341,6 +429,7 @@ public class InsectsController {
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         model.addAttribute("breadcrumb", breadcrumbToSpecies(s, genus, family, order));
+        model.addAttribute("ancestorIntros", introsForSpecies(order, family, genus));
         Object csrf = request.getAttribute(CSRF_REQUEST_ATTRIBUTE);
         if (csrf != null) {
             model.addAttribute("_csrf", csrf);
@@ -368,6 +457,7 @@ public class InsectsController {
             return "redirect:/insects";
         }
         InsectSpecies s = species.get();
+        InsectGenus genus = insectQuery.genera().getByName(s.genusName()).orElseThrow();
         InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
         InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
         var stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
@@ -377,6 +467,8 @@ public class InsectsController {
         model.addAttribute("family", family);
         model.addAttribute("order", order);
         model.addAttribute("stages", stages);
+        model.addAttribute("ancestorIntros", introsForLifeStages(order, family, genus, s));
+        model.addAttribute("breadcrumb", breadcrumbToSpecies(s, genus, family, order));
         return "insects/life-stages";
     }
 

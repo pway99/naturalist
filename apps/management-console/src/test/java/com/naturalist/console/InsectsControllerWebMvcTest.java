@@ -48,7 +48,7 @@ class InsectsControllerWebMvcTest {
 
     @Test
     void insectsListing_respondsOk_andRendersCatalogHeading() throws Exception {
-        mockMvc.perform(get("/insects").with(user("naturalist").roles("ADMIN")))
+        mockMvc.perform(get("/insects/species").with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("text/html"))
                 .andExpect(content().string(containsString("Insect Species")))

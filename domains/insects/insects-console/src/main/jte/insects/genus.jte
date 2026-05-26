@@ -3,6 +3,7 @@
 @import com.naturalist.insects.InsectGenus
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
+@import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import java.util.List
 
@@ -16,10 +17,15 @@
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
 @param List<BreadcrumbSegment> breadcrumb = List.of()
+@param List<AncestorIntro> ancestorIntros = List.of()
+
+!{var commonName = genus.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value());}
 
 @template.layout.page(title = genus.genus().value(), content = @`
     @template.insects.nav(active = "genus", breadcrumb = breadcrumb)
-    <h1><em>${genus.genus().value()}</em></h1>
+    @template.insects.ancestorIntros(intros = ancestorIntros)
+
+    <h1>${commonName}</h1>
 
     @template.components.description(
         preschool = descriptionPreschool,
@@ -34,11 +40,11 @@
         @else
             <div class="entity-grid">
                 @for(var s : species)
-                    !{var commonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
+                    !{var speciesCommonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
                     <article>
                         <header>
                             <a href="/insects/${s.name().value()}">
-                                <strong>${commonName}</strong>
+                                <strong>${speciesCommonName}</strong>
                             </a>
                         </header>
                         <dl class="taxonomy">
@@ -47,30 +53,11 @@
                         </dl>
                         !{var images = gallery.forEntity(s.name()).stream().toList();}
                         @if(!images.isEmpty())
-                            @template.insects.cardImages(images = images, linkUrl = "/insects/" + s.name().value(), alt = commonName)
+                            @template.insects.cardImages(images = images, linkUrl = "/insects/" + s.name().value(), alt = speciesCommonName)
                         @endif
                     </article>
                 @endfor
             </div>
         @endif
     </section>
-
-    <script>
-        (function () {
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                return;
-            }
-            var interval = 3500;
-            document.querySelectorAll('.card-image[data-rotate]').forEach(function (el) {
-                var imgs = el.querySelectorAll('img');
-                if (imgs.length < 2) return;
-                var i = 0;
-                setInterval(function () {
-                    imgs[i].classList.remove('card-image-active');
-                    i = (i + 1) % imgs.length;
-                    imgs[i].classList.add('card-image-active');
-                }, interval);
-            });
-        }());
-    </script>
 `)

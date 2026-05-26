@@ -6,15 +6,20 @@
 <nav class="breadcrumb-trail" aria-label="Taxonomic placement">
     @for(int i = 0; i < segments.size(); i++)
         @if(i > 0)
-            <span aria-hidden="true">›</span>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
         @endif
         !{var s = segments.get(i);}
-        @if(s.currentPage())
-            <span class="breadcrumb-current"><strong>${s.label()}</strong></span>
-        @elseif(s.url() != null)
-            <a href="${s.url()}">${s.label()}</a>
-        @else
-            <span>${s.label()}</span>
-        @endif
+        <span class="breadcrumb-segment">
+            @if(s.rank() != null)
+                <span class="breadcrumb-rank">${s.rank()}</span>
+            @endif
+            @if(s.currentPage())
+                <span class="breadcrumb-current"><strong>${s.label()}</strong></span>
+            @elseif(s.url() != null)
+                <a href="${s.url()}">${s.label()}</a>
+            @else
+                <span class="breadcrumb-name">${s.label()}</span>
+            @endif
+        </span>
     @endfor
 </nav>

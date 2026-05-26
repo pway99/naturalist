@@ -17,23 +17,17 @@
     --pico-form-element-focus-color: var(--pico-primary);
     --pico-secondary: #6B4423;
     --pico-secondary-hover: #5A3719;
-    --bg-opacity: 0.3;
 
-    /* Text styling for high contrast */
-    --text-light-color: #FAF8F5;
-    --text-shadow-strong: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 12px rgba(0, 0, 0, 0.3);
-    --text-shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --content-background: rgba(59, 50, 40, 0.6);
-    --image-opacity: 1;
-    --bg-overlay-opacity: 0.3;
-
-    /* Durrell "Amateur Naturalist" plate palette — shared across the console. */
+    /* Durrell "Amateur Naturalist" plate palette — shared across the console.
+       Three-step cream → parchment → deeper-parchment surface palette pairs
+       with the sepia ink palette below. */
+    --page-cream: #EDE8DF;
     --parchment: #F2E8D4;
     --parchment-deep: #E8DBBF;
     --sepia-ink: #3A2A18;
     --sepia-ink-soft: #5A4329;
     --sepia-rule: #8B6B3D;
-    --plate-shadow: 0 4px 10px rgba(58, 42, 24, 0.25);
+    --plate-shadow: 0 4px 10px rgba(58, 42, 24, 0.18);
 
     /* Legacy card vars — retained but repointed to the parchment palette so any
        lingering references match the rest of the app. */
@@ -44,53 +38,34 @@
 }
 
 body {
-    position: relative;
     font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
+    background: var(--page-cream);
+    color: var(--sepia-ink);
 }
 
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('/images/background.jpg');
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: center;
-    opacity: var(--image-opacity);
-    z-index: -2;
-    pointer-events: none;
-}
-
-body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(237, 232, 223, var(--bg-overlay-opacity));
-    z-index: -1;
-    pointer-events: none;
-}
-
+/* Headings and body text default to sepia ink. No shadows, no overlays —
+   the cream page surface is the canvas, plates carry their own slightly
+   warmer parchment so a card or section reads as a tactile insert. */
 h1, h2, h3 {
-    color: var(--text-light-color);
-    text-shadow: var(--text-shadow-strong);
+    color: var(--sepia-ink);
     font-weight: 700;
 }
 
-p, li, span:not(.badge), a {
-    color: var(--text-light-color);
-    text-shadow: var(--text-shadow-subtle);
+main > h1 {
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    margin: 1.25rem 0 0.25rem 0;
+}
+
+main > h1 + p {
+    margin: 0 0 1.5rem 0;
+    font-style: italic;
+    color: var(--sepia-ink-soft);
 }
 
 main {
-    background: var(--content-background);
-    border-radius: 0.5rem;
-    padding: 2rem !important;
+    padding: 1.5rem 0 !important;
 }
 
 /* ---------------------------------------------------------------------------
@@ -392,46 +367,6 @@ main {
         background: transparent;
         padding-left: 1rem;
     }
-}
-
-.background-opacity-control {
-    position: fixed;
-    bottom: 0.75rem;
-    right: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.5rem 0.4rem;
-    background: rgba(91, 117, 83, 0.85);
-    border-radius: 0.35rem;
-    z-index: 100;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    border: 1px solid #5B7553;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
-}
-
-.background-opacity-control:hover {
-    opacity: 1;
-}
-
-.opacity-slider {
-    -webkit-appearance: slider-vertical;
-    appearance: slider-vertical;
-    writing-mode: vertical-lr;
-    direction: rtl;
-    width: 6px;
-    height: 100px;
-    cursor: pointer;
-}
-
-#opacity-display {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #FAF8F5;
-    text-align: center;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 footer {
@@ -756,32 +691,37 @@ main > section:not(.life-stages) a:hover {
 
 .description-tabs nav {
     display: flex;
-    gap: 0;
+    gap: 0.15rem;
     border-bottom: 1px solid var(--sepia-rule);
     margin-bottom: 0;
 }
 
 .description-tabs .tab {
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: 3px solid transparent;
     margin-bottom: -1px;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.1rem;
     cursor: pointer;
     font-family: 'Georgia', 'Cambria', serif;
     font-style: italic;
     font-size: 0.95rem;
     color: var(--sepia-ink-soft) !important;
     text-shadow: none !important;
+    border-radius: 0.25rem 0.25rem 0 0;
+    transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
 
 .description-tabs .tab:hover {
     color: var(--sepia-ink) !important;
+    background: rgba(139, 107, 61, 0.08);
 }
 
 .description-tabs .tab.active {
     color: var(--sepia-ink) !important;
-    border-bottom-color: var(--sepia-rule);
+    background: var(--parchment-deep);
+    border-color: var(--sepia-rule);
+    border-bottom-color: var(--pico-primary);
     font-weight: 700;
 }
 
@@ -801,19 +741,42 @@ main > section:not(.life-stages) a:hover {
     text-shadow: none !important;
 }
 
+/* Inline links in description body — keep them readable without competing
+   with the prose. Dotted underline, sepia ink, primary colour on hover. */
 .tab-content a {
-    color: var(--pico-primary) !important;
-    font-weight: 600;
+    color: var(--sepia-ink) !important;
+    font-weight: inherit;
     text-shadow: none !important;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--sepia-rule);
 }
 
-/* Life stages — Durrell "Amateur Naturalist" plate aesthetic. Uses the shared
-   parchment/sepia palette declared at :root. */
-.life-stages .naturalist-backlink,
+.tab-content a:hover {
+    color: var(--pico-primary) !important;
+    border-bottom-color: var(--pico-primary);
+}
+
+/* Back-link affordance used on detail / guild / life-stages pages. Calm
+   sepia-on-cream, dotted underline so it reads as a navigational eyebrow
+   distinct from inline body links. */
 .naturalist-backlink {
-    color: var(--text-light-color);
-    text-shadow: var(--text-shadow-subtle);
+    display: inline-block;
+    color: var(--sepia-ink-soft);
     font-style: italic;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--sepia-rule);
+    margin: 0.5rem 0 1rem;
+}
+
+.naturalist-backlink:hover {
+    color: var(--pico-primary);
+    border-bottom-color: var(--pico-primary);
+}
+
+/* Page-level action button (e.g. "View Life Stages →" on species detail).
+   Sits on its own line as a clear secondary CTA. */
+.page-actions {
+    margin: 1rem 0 1.5rem;
 }
 
 .life-stages .plate-heading {
@@ -826,8 +789,7 @@ main > section:not(.life-stages) a:hover {
 }
 
 .life-stages .plate-heading h1 {
-    color: var(--text-light-color);
-    text-shadow: var(--text-shadow-strong);
+    color: var(--sepia-ink);
     font-family: 'Georgia', 'Cambria', serif;
     font-style: italic;
     font-weight: 700;
@@ -836,8 +798,7 @@ main > section:not(.life-stages) a:hover {
 }
 
 .life-stages .plate-eyebrow {
-    color: var(--text-light-color);
-    text-shadow: var(--text-shadow-subtle);
+    color: var(--sepia-ink-soft);
     text-transform: uppercase;
     letter-spacing: 0.25em;
     font-size: 0.75rem;
@@ -845,15 +806,13 @@ main > section:not(.life-stages) a:hover {
 }
 
 .life-stages .plate-subtitle {
-    color: var(--text-light-color);
-    text-shadow: var(--text-shadow-subtle);
+    color: var(--sepia-ink-soft);
     font-style: italic;
     margin: 0;
 }
 
 .life-stages .plate-note {
-    color: var(--text-light-color);
-    text-shadow: var(--text-shadow-subtle);
+    color: var(--sepia-ink-soft);
     text-align: center;
     padding: 2rem;
 }
@@ -1223,93 +1182,106 @@ figure.compound-depiction img {
     margin-top: 1.25rem;
 }
 
-/* The breadcrumb sits over the hero photo on detail pages, where any
-   text color will lose against some part of the image. Give it its
-   own translucent dark backing strip and rely on white text + an
-   underline affordance (not hue) for link distinction — that works
-   against any photo. The strip is inline-flex so it sizes to its
-   content (a pill, not a full-width banner). */
+/* Taxonomic breadcrumb — multi-line field-guide layout. Each segment
+   stacks a tiny uppercase Linnaean-rank eyebrow above the clickable name;
+   the chevron separators sit on the name baseline.
+
+   `align-items: flex-end` keeps the chevrons aligned with the bottoms of
+   the segment stacks (the name line), and `justify-content: flex-start`
+   overrides pico's default `nav { justify-content: space-between }` so
+   segments pack to the left rather than spreading across the row. */
 .breadcrumb-trail {
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.4rem;
-    font-size: 1rem;
-    color: var(--text-light-color);
-    background: rgba(0, 0, 0, 0.55);
-    padding: 0.5rem 0.9rem;
-    border-radius: 0.25rem;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 0.3rem 0.5rem;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--sepia-ink-soft);
+    padding: 0.4rem 0;
     margin: 0 0 0.5rem;
-    text-shadow: none;
-    width: fit-content;
-    max-width: 100%;
+    line-height: 1.2;
+}
+
+.breadcrumb-segment {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Tiny uppercase rank eyebrow — Kingdom / Phylum / Class / Order ... */
+.breadcrumb-rank {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: 600;
+    color: rgba(58, 42, 24, 0.55);
+    line-height: 1.1;
+    margin-bottom: 0.05rem;
 }
 
 .breadcrumb-trail a {
-    color: var(--text-light-color);
-    text-decoration: underline;
-    text-decoration-color: rgba(250, 248, 245, 0.55);
-    text-underline-offset: 0.2rem;
+    color: var(--sepia-ink-soft);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--sepia-rule);
 }
 
 .breadcrumb-trail a:hover {
-    text-decoration-color: currentColor;
+    color: var(--pico-primary);
+    border-bottom-color: var(--pico-primary);
 }
 
 .breadcrumb-trail .breadcrumb-current strong {
-    color: #ffffff;
+    color: var(--sepia-ink);
     font-weight: 700;
+    font-style: normal;
 }
 
-/* Dim the chevron separators so the segment words pop. */
-.breadcrumb-trail [aria-hidden="true"] {
-    color: rgba(250, 248, 245, 0.55);
+.breadcrumb-sep {
+    color: rgba(58, 42, 24, 0.35);
+    padding-bottom: 0.05rem;
 }
 
-/* When the breadcrumb sits inside the insects context bar (under the
-   rank tabs on the same tan panel), shed the standalone dark pill
-   styling. It becomes a transparent bottom row with sepia ink on the
-   tan, separated from the tabs above by a thin sepia rule. */
+/* Breadcrumb inside the insects context bar: same calm sepia-on-tan
+   styling as the standalone variant, but sits as the bottom row of the
+   bar (no own margin) and is separated from the rank tabs above by a
+   thin sepia rule. */
 .insects-context-bar .breadcrumb-trail {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    max-width: 100%;
-    background: transparent;
-    color: var(--sepia-ink);
-    padding: 0.5rem 0.75rem;
+    padding: 0.4rem 0.75rem;
     border-top: 1px solid rgba(139, 107, 61, 0.35);
-    border-radius: 0;
     margin: 0;
-    text-shadow: none;
 }
 
-.insects-context-bar .breadcrumb-trail a {
-    color: var(--sepia-ink);
-    text-decoration-color: rgba(58, 42, 24, 0.45);
-}
-
-.insects-context-bar .breadcrumb-trail .breadcrumb-current strong {
-    color: var(--sepia-ink);
-}
-
-.insects-context-bar .breadcrumb-trail [aria-hidden="true"] {
-    color: rgba(58, 42, 24, 0.45);
-}
-
-.clade-introduction {
+/* Ancestor intros — stack of collapsible Class / Order / Family / Genus /
+   Species descriptions above each detail page's primary content. Each
+   <details> stays one summary-line tall when closed (cheap to scroll past)
+   and persists open/closed state per rank-type via localStorage. */
+.ancestor-intros {
     margin: 0.75rem 0 1rem;
 }
 
-.clade-introduction summary {
-    cursor: pointer;
-    list-style: revert;
+.ancestor-intro {
+    margin: 0.25rem 0;
 }
 
-.clade-introduction summary h2 {
+.ancestor-intro summary {
+    cursor: pointer;
+    list-style: revert;
+    padding: 0.15rem 0;
+}
+
+.ancestor-intro summary h2 {
     display: inline;
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     margin: 0;
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+}
+
+.ancestor-intro[open] summary h2 {
+    font-weight: 700;
 }
 
 /* Insects context bar: warm-tan unified panel that groups the rank tab
@@ -1333,25 +1305,34 @@ figure.compound-depiction img {
 .insects-subnav {
     display: flex;
     justify-content: flex-start;
-    gap: 0.25rem;
+    gap: 0.15rem;
     margin: 0;
-    padding: 0;
+    padding: 0 0.25rem;
 }
 
+/* These are tabs, not body links. Override the global `a` text-shadow/colour. */
 .insects-subnav a {
     padding: 0.5rem 1.25rem;
     text-decoration: none;
-    color: var(--pico-color);
-    font-weight: 500;
+    color: var(--sepia-ink-soft) !important;
+    text-shadow: none !important;
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 600;
+    border: 1px solid transparent;
+    border-bottom: none;
     border-radius: 0.375rem 0.375rem 0 0;
+    transition: background-color 0.12s ease, color 0.12s ease;
 }
 
 .insects-subnav a:hover {
     background: rgba(255, 255, 255, 0.35);
+    color: var(--sepia-ink) !important;
 }
 
 .insects-subnav a[aria-current="page"] {
-    background: var(--pico-background-color);
-    color: var(--pico-secondary);
+    background: var(--page-cream);
+    border-color: var(--sepia-rule);
+    color: var(--sepia-ink) !important;
     font-weight: 700;
 }

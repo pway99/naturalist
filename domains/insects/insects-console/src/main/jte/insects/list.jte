@@ -7,6 +7,7 @@
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectSpeciesName
 @import com.naturalist.insects.FunctionalGuild
+@import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.data.Page
 @import java.util.List
@@ -19,24 +20,12 @@
 @param Map<InsectFamilyName, InsectFamily> familyByName = Map.of()
 @param Map<InsectGenusName, InsectGenus> genusByName = Map.of()
 @param List<BreadcrumbSegment> breadcrumb = List.of()
-@param String cladePreschool = ""
-@param String cladeElementary = ""
-@param String cladeSecondary = ""
-@param String cladeUniversity = ""
+@param List<AncestorIntro> ancestorIntros = List.of()
 
 @template.layout.page(title = "Insect Species", content = @`
-    @template.insects.cladeIntro(
-        breadcrumb = breadcrumb,
-        cladePreschool = cladePreschool,
-        cladeElementary = cladeElementary,
-        cladeSecondary = cladeSecondary,
-        cladeUniversity = cladeUniversity)
-    <nav class="insects-subnav" aria-label="Insects catalog sub-navigation">
-        <a href="/insects/orders" aria-current="false">Order</a>
-        <a href="/insects/families" aria-current="false">Family</a>
-        <a href="/insects/genera" aria-current="false">Genus</a>
-        <a href="/insects/species" aria-current="page">Species</a>
-    </nav>
+    @template.insects.nav(active = "species", breadcrumb = breadcrumb)
+    @template.insects.ancestorIntros(intros = ancestorIntros)
+
     <h1>Insect Species</h1>
     <p>Insect species documented at Oak Vista.</p>
 
@@ -85,23 +74,4 @@
     </div>
 
     @template.components.pager(page = speciesPage, baseUrl = "/insects/species")
-
-    <script>
-        (function () {
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                return;
-            }
-            var interval = 3500;
-            document.querySelectorAll('.card-image[data-rotate]').forEach(function (el) {
-                var imgs = el.querySelectorAll('img');
-                if (imgs.length < 2) return;
-                var i = 0;
-                setInterval(function () {
-                    imgs[i].classList.remove('card-image-active');
-                    i = (i + 1) % imgs.length;
-                    imgs[i].classList.add('card-image-active');
-                }, interval);
-            });
-        }());
-    </script>
 `)
