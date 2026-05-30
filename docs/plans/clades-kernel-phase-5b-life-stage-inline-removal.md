@@ -50,7 +50,7 @@ Three PRs, landed in order:
 | PR | Name                                                | Scope                                                            |
 | -- | --------------------------------------------------- | ---------------------------------------------------------------- |
 | 1  | Resolver walk-up                                    | Kernel-only. New `InsectLifeStages.stagesOf(species, genus, family, order)` overload that picks first non-null `placedIn` walking species → genus → family → order, then traverses the clade DAG from there. No consumer changes. |
-| 2  | Detail-page migration + inline drop                 | `detail.jte` rewritten with nested `<details class="ancestor-intro">` collapsibles matching the rank-context pattern. Controller loads the rank chain + `LifeStageQuery` results. Inline `EggStage / LarvaStage / PupaStage / AdultStage` fields removed from the three rank records. Inline JSON nodes removed from the three rank catalog files. |
+| 2  | Detail-page migration + inline drop                 | `detail.jte` rewritten with nested `<details class="ancestor-intro">` collapsibles matching the rank-context pattern. Controller adds a `stages` list to the model (rank chain already loaded). Inline `EggStage / LarvaStage / PupaStage / AdultStage` fields removed from **all four** rank records (`InsectSpecies`, `InsectGenus`, `InsectFamily`, `InsectOrder`). Inline JSON nodes removed from `insect-species.json` (the only catalog file that actually populated them — 6 species × 4 stages = 24 nodes). |
 | 3  | Write-time clade validation                         | `LifeStageEntityRepository` rejects inserts whose `kind()` is not in the organism's resolved `Metaboly.stages()`. Closes Phase 5's deferred open question. |
 
 ---
@@ -131,11 +131,19 @@ has, in the order the metaboly declares.
 </details>
 ```
 
-Per-stage rendering is **lifted from `life-stages.jte`** into a shared
-partial template (e.g. `_stageDetail.jte`) parameterised by
-`LifeStage stage`. Both `life-stages.jte` and `detail.jte` invoke it. The
-partial owns the `instanceof EggStage egg` pattern-matching and the
-`dt/dd` structure currently in `life-stages.jte:38–180`.
+The per-stage `<dl class="stage-facts">…</dl>` block (the
+phenology / habitat / chemistry-role / `instanceof EggStage egg`
+pattern-matching currently at `life-stages.jte:58–179`) is extracted
+into a shared partial template `stageFacts.jte`, parameterised by
+`LifeStage stage`. Both pages invoke it. Per-page **wrapper markup
+stays per page** — `life-stages.jte` keeps `<article
+class="stage-plate">` + `<header class="stage-header">` + lead
+description; `detail.jte` uses `<details class="ancestor-intro
+stage-detail">` + `<summary>` + lead description. Only the facts block
+is shared, because the wrapper concerns differ (plate view vs.
+inline-section view). JTE convention in this codebase is no-underscore
+filename — partials live as plain `*.jte` files alongside the pages
+that use them.
 
 The "View Life Stages →" link at `detail.jte:47–50` is removed; the
 standalone `/life-stages` route is kept (reframed as a print/plate view)
@@ -156,23 +164,29 @@ behaviour for empty stage lists.
 
 ### Controller change
 
-`InsectsController.detail(...)` loads the rank chain and the LifeStage
-list (the same lookups `/life-stages` already performs at lines 460–462):
+`InsectsController.detail(...)` already loads `species` plus the full
+rank chain (`genus / family / order` at lines 415–417) and exposes them
+to detail.jte. The only addition PR 2 needs is the LifeStage list — the
+same shape the `/life-stages` route already constructs at lines 463–465:
 
 ```java
-InsectGenus  genus  = insectQuery.genera().getByName(s.genusName()).orElseThrow();
-InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
-InsectOrder  order  = insectQuery.orders().getByName(family.orderName()).orElseThrow();
-List<LifeStage> stages = insectLifeStageQuery.lifeStages().forParentName(s.name()).stream()
+List<LifeStage> stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
         .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
         .toList();
 model.addAttribute("stages", stages);
 ```
 
+`insectLifeStageQuery` is already an injected field (constructor sets it
+at line 61). No new dependency wiring. The N+1 risk is bounded — every
+detail page already fetches the rank chain; this is one additional
+lookup per page (the LifeStage list).
+
 ### Inline-field removal
 
 The four `@Nullable EggStage egg / LarvaStage larva / PupaStage pupa /
-AdultStage adult` components are removed from three records:
+AdultStage adult` components are removed from **all four** rank records
+(PR 1's exploration found `InsectOrder` carries them too, not just the
+three originally named):
 
 - **`InsectSpecies`** — components at `:112–115`, `.namedEntityOrNull(...)`
   invariants at `:152–155`, imports at `:10–13`, javadoc passages at
@@ -181,26 +195,43 @@ AdultStage adult` components are removed from three records:
   / withPupa / withAdult` mutators at `:55–73` (deleted entirely),
   invariants at `:84–87`, imports at `:7–10`.
 - **`InsectFamily`** — same shape (`:44–47, :57–77, :88–91, :7–10`).
+- **`InsectOrder`** — components at `:39–42`, the four `with*` mutators
+  at `:50–68` (deleted entirely), invariants at `:77–80`, imports at
+  `:7–10`.
 
 ### JSON catalog cleanup
 
-Three JSON catalog files shrink: `insect-species.json`,
-`insect-genera.json`, `insect-families.json` lose every `"egg" / "larva" /
-"pupa" / "adult"` node. Estimated ~300 lines deleted across the three.
+**Only `insect-species.json` carries inline life-stage nodes** — the
+genera / families / orders JSON files use the inline fields as
+always-null (Jackson handles this by leaving them out, since records
+default missing components to null). Verified: 24 occurrences of
+`"egg" / "larva" / "pupa" / "adult"` keys across 6 species
+(`hippodamia-convergens`, `blattella-vaga`, `xylocopa-varipuncta`,
+`vanessa-cardui`, `battus-philenor`, `colias-eurytheme`). Removing
+these blocks shrinks the file by ~300 lines. The other three JSON
+files are already clean — no changes needed there.
 
-**Pre-deletion drift check.** Before deletion, run a one-shot test that
-walks every inline node and asserts a structurally-equal twin exists in
-`life-stages.json`. Test lives in `insects-repository-test`, captured in
-the PR description, deleted in the same PR after passing.
+**Pre-deletion drift check.** Before deletion, run a one-shot test
+script (or Java test) that, for each species entry in
+`insect-species.json` carrying inline `egg / larva / pupa / adult`
+nodes, asserts a same-name twin exists in `life-stages.json` with
+structurally-equal contents (description, phenology, habitat,
+kind-specific fields). Verified pre-implementation: all 6 species with
+inline nodes already have life-stages.json twins. The test is captured
+in the PR description and deleted in the same PR after passing.
 
 ### Test impact
 
-- `InsectSpeciesTest`, `InsectGenusTest`, `InsectFamilyTest` — remove
-  inline-stage assertions and constructor calls.
-- `SpeciesRepositoryTest`, `GenusRepositoryTest`, `FamilyRepositoryTest` —
-  `newEntity / modifiedEntity / ghostEntity` lose the four stage
-  arguments per ADR-002.
+- `InsectSpeciesTest`, `InsectGenusTest`, `InsectFamilyTest`,
+  `InsectOrderTest` — remove inline-stage assertions and constructor
+  calls.
+- `SpeciesRepositoryTest`, `GenusRepositoryTest`, `FamilyRepositoryTest`,
+  `OrderRepositoryTest` — `newEntity / modifiedEntity / ghostEntity`
+  lose the four stage arguments per ADR-002.
 - `SpeciesQueryImplTest` and similar — same constructor shape change.
+- `InsectLifeStagesTest` — its helpers (`speciesWithPlacedIn`,
+  `genusWithPlacedIn`, `familyWithPlacedIn`, `orderWithPlacedIn`) lose
+  the four trailing `null` arguments per constructor shrinkage.
 - `InsectsControllerWebMvcTest` — assertions for the new collapsible
   section and absence of the "View Life Stages →" button.
 - `InsectAggregateFactoryTest` — unchanged; aggregate does not reference
@@ -216,11 +247,17 @@ species and verify the open state persisted (matching how Order / Family
 / Genus persist today), confirm the standalone `/life-stages` route
 still renders.
 
-**LOC estimate.** Records / invariants: ~120 down. JSON: ~300 down.
-JTE: ~80 down on detail.jte + ~100 up for partial / detail rewrite.
-Tests: ~150 net down. Controller: ~10 up. Net diff: ~−640 LOC; meaningful
-review surface ~250 lines (detail.jte + controller + records). Inside the
-400-line target.
+**LOC estimate.** Records / invariants (four ranks): ~160 down. JSON
+(species file only): ~300 down. JTE: ~80 down on detail.jte +
+~120 down on life-stages.jte (replaced by partial call) + ~140 up for
+the new `stageFacts.jte` partial + the new detail.jte life-stages
+section. Tests (fixture compile-fixes across four ranks + their repo /
+query tests + InsectLifeStagesTest helpers): ~200 net down.
+Controller: ~5 up. Net diff: ~−800 LOC; meaningful review surface
+~300 lines (new partial + detail.jte rewrite + four record
+constructor shrinkages + controller addition). Borderline against the
+400-line target — most volume is mechanical compile-fix work that
+flows naturally from the record changes.
 
 ---
 
