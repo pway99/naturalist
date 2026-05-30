@@ -188,6 +188,7 @@ and a few related Papilionidae. The clade DAG only contributes the stage
 | 3     | Add `placedIn: Clade` to taxon entities             | ✅ done `5e67c1b` (slice plan: [`phase-3.md`](archive/clades-kernel/phase-3.md)) | —          |
 | 4     | Place insects into the clade DAG                    | ✅ done `1cfd9ba` (slice plan: [`phase-4.md`](archive/clades-kernel/phase-4.md)) | —          |
 | 5     | Route life-stage queries through the clade resolver | ✅ done `ad7d7c7` (slice plan: [`phase-5.md`](archive/clades-kernel/phase-5.md)); closes PL-1 | —          |
+| 5b    | Inline life-stage removal + resolver walk-up        | active — PR 1 next (slice plan: [`clades-kernel-phase-5b-life-stage-inline-removal.md`](clades-kernel-phase-5b-life-stage-inline-removal.md)) | Phase 5 ✅ |
 | 6     | Extend to plants when needed                        | deferred   | Plant identification work demanding it                                  |
 
 ---

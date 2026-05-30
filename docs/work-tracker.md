@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-25 (Archiving three completed efforts: InsectOrder entity + FK refactoring, console clade context, insect page images. All plans moved to `docs/plans/archive/`.)
+Last updated: 2026-05-30 (Promoting Clades kernel Phase 5b — life-stage inline removal + resolver walk-up — as the current slice. Slice plan at [`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md).)
 
 ---
 
@@ -17,9 +17,9 @@ Last updated: 2026-05-25 (Archiving three completed efforts: InsectOrder entity 
 
 ## Current slice
 
-**No active slice** — catalogue-completeness slice 2 just landed.
+**Clades kernel — Phase 5b (life-stage inline removal + resolver walk-up)** ([`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md)). Three PRs: (1) `InsectLifeStages.stagesOf(species, genus, family, order)` overload that walks the Linnaean parent chain; (2) detail-page migration + drop the inline `egg/larva/pupa/adult` fields from `InsectSpecies` / `InsectGenus` / `InsectFamily` + JSON catalog cleanup; (3) write-time clade validation on `LifeStage` insert. **PR 1 next.**
 
-**Candidate next slices** (pick when ready):
+**Candidate next slices** (pick when 5b lands):
 
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 - **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
@@ -60,7 +60,7 @@ Last updated: 2026-05-25 (Archiving three completed efforts: InsectOrder entity 
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
 | 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md)                              |
-| 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 6 (plants) deferred |
+| 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; **Phase 5b** (inline removal) active ([`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md)); Phase 6 (plants) deferred |
 | 3  | FU-1 — Family/Genus catalog tiers     | Plan (archived) | [`plans/archive/fu-1-plan.md`](plans/archive/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 4  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |
 | 5  | Command framework — follow-ups        | Plan           | [`plans/command-framework.md`](plans/command-framework.md)                        |
