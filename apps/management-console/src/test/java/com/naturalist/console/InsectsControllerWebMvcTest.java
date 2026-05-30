@@ -10,6 +10,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -70,6 +71,22 @@ class InsectsControllerWebMvcTest {
                 .andExpect(content().string(containsString("Add Photo")))
                 .andExpect(content().string(containsString("name=\"resourceName\"")))
                 .andExpect(content().string(containsString("name=\"_csrf\"")));
+    }
+
+    @Test
+    void detail_authenticated_rendersLifeStagesCollapsible() throws Exception {
+        mockMvc.perform(get("/insects/battus-philenor").with(user("naturalist").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("data-storage-key=\"life-stages\"")))
+                .andExpect(content().string(containsString("data-storage-key=\"life-stage-egg\"")))
+                .andExpect(content().string(containsString("<h2>Life Stages</h2>")));
+    }
+
+    @Test
+    void detail_authenticated_doesNotRenderStandalonePlateLink() throws Exception {
+        mockMvc.perform(get("/insects/battus-philenor").with(user("naturalist").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("View Life Stages"))));
     }
 
     @Test

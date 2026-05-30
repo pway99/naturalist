@@ -11,6 +11,7 @@ import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.insects.*;
 import com.naturalist.insects.console.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
+import com.naturalist.insects.lifestage.LifeStage;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
 import jakarta.servlet.http.HttpServletRequest;
@@ -416,11 +417,15 @@ public class InsectsController {
         InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
         InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
         InsectEntityCollections.ImageCollection images = insectQuery.images().forParentName(speciesName);
+        List<LifeStage> stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
+                .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
+                .toList();
         var description = s.description();
         model.addAttribute("species", s);
         model.addAttribute("genus", genus);
         model.addAttribute("family", family);
         model.addAttribute("order", order);
+        model.addAttribute("stages", stages);
         model.addAttribute("images", images.stream().toList());
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
