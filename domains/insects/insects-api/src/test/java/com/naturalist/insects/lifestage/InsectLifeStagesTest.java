@@ -2,6 +2,7 @@ package com.naturalist.insects.lifestage;
 
 import com.naturalist.RandomValue;
 import com.naturalist.clades.Clade;
+import com.naturalist.clades.Hemiptera;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.insects.InsectFamily;
@@ -81,6 +82,86 @@ class InsectLifeStagesTest {
         InsectFamily family = familyWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(family)).isEmpty();
+    }
+
+    @Test
+    void stagesOfWalkUpUsesSpeciesPlacementWhenSet() {
+        InsectSpecies species = speciesWithPlacedIn(new Papilionidae());
+
+        assertThat(InsectLifeStages.stagesOf(species, null, null, null))
+                .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
+    }
+
+    @Test
+    void stagesOfWalkUpPrefersCloserParentWhenSpeciesUnplaced() {
+        InsectSpecies species = speciesWithPlacedIn(null);
+        InsectGenus   genus   = genusWithPlacedIn(new Papilionidae());
+        InsectFamily  family  = familyWithPlacedIn(null);
+        InsectOrder   order   = orderWithPlacedIn(null);
+
+        assertThat(InsectLifeStages.stagesOf(species, genus, family, order))
+                .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
+    }
+
+    @Test
+    void stagesOfWalkUpUsesFamilyPlacementWhenSpeciesAndGenusUnplaced() {
+        InsectSpecies species = speciesWithPlacedIn(null);
+        InsectGenus   genus   = genusWithPlacedIn(null);
+        InsectFamily  family  = familyWithPlacedIn(new Papilionidae());
+        InsectOrder   order   = orderWithPlacedIn(null);
+
+        assertThat(InsectLifeStages.stagesOf(species, genus, family, order))
+                .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
+    }
+
+    @Test
+    void stagesOfWalkUpUsesOrderPlacementWhenSpeciesGenusFamilyUnplaced() {
+        InsectSpecies species = speciesWithPlacedIn(null);
+        InsectGenus   genus   = genusWithPlacedIn(null);
+        InsectFamily  family  = familyWithPlacedIn(null);
+        InsectOrder   order   = orderWithPlacedIn(new Papilionidae());
+
+        assertThat(InsectLifeStages.stagesOf(species, genus, family, order))
+                .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
+    }
+
+    @Test
+    void stagesOfWalkUpReturnsEmptyWhenNoRankIsPlaced() {
+        InsectSpecies species = speciesWithPlacedIn(null);
+        InsectGenus   genus   = genusWithPlacedIn(null);
+        InsectFamily  family  = familyWithPlacedIn(null);
+        InsectOrder   order   = orderWithPlacedIn(null);
+
+        assertThat(InsectLifeStages.stagesOf(species, genus, family, order)).isEmpty();
+    }
+
+    @Test
+    void stagesOfWalkUpResolvesHemimetabolousFromFamilyPlacement() {
+        InsectSpecies species = speciesWithPlacedIn(null);
+        InsectGenus   genus   = genusWithPlacedIn(null);
+        InsectFamily  family  = familyWithPlacedIn(new Hemiptera());
+        InsectOrder   order   = orderWithPlacedIn(null);
+
+        assertThat(InsectLifeStages.stagesOf(species, genus, family, order))
+                .containsExactlyElementsOf(HEMIMETABOLOUS_STAGES);
+    }
+
+    @Test
+    void stagesOfWalkUpAcceptsNullParentsWhenSpeciesPlacedIn() {
+        InsectSpecies species = speciesWithPlacedIn(new Papilionidae());
+
+        // Identical call shape to Task 2's pilot — kept as a separate test
+        // to document the nullable-parents contract independently from the
+        // precedence assertion the pilot is responsible for.
+        assertThat(InsectLifeStages.stagesOf(species, null, null, null))
+                .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
+    }
+
+    @Test
+    void stagesOfWalkUpReturnsEmptyWhenSpeciesUnplacedAndParentsNull() {
+        InsectSpecies species = speciesWithPlacedIn(null);
+
+        assertThat(InsectLifeStages.stagesOf(species, null, null, null)).isEmpty();
     }
 
     private static InsectOrder orderWithPlacedIn(@Nullable Clade placedIn) {

@@ -5,6 +5,7 @@ import com.naturalist.clades.CladeTraversal;
 import com.naturalist.insects.InsectClades;
 import com.naturalist.insects.InsectFamily;
 import com.naturalist.insects.InsectGenus;
+import com.naturalist.insects.InsectOrder;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.LifeStageKind;
 import org.jspecify.annotations.Nullable;
@@ -55,6 +56,48 @@ public final class InsectLifeStages {
 
     public static List<LifeStageKind> stagesOf(InsectFamily family) {
         return resolve(family.placedIn());
+    }
+
+    /**
+     * Resolves life-stage kinds for a species by inheriting {@code placedIn}
+     * up the Linnaean parent chain. Picks the first non-null placement
+     * walking species → genus → family → order, then runs the clade-DAG
+     * traversal from there.
+     *
+     * <p>The {@code species} parameter is non-null — it is the subject of the
+     * query. The three parent ranks are nullable to accommodate partial
+     * inputs (controller short-circuits, test fixtures where the chain is not
+     * fully assembled). When the entire chain has no placement, the resolver
+     * returns an empty list — the same "no exception path" contract the
+     * single-rank overloads honour.
+     *
+     * <p>Wired into {@code InsectsController.detail(...)} in PR 2 of the
+     * Phase 5b slice. Replaces silent empties on species-detail pages whose
+     * placement is declared at a higher rank than the species itself.
+     *
+     * @see #stagesOf(InsectSpecies) for the narrow "this entity's own placement" semantics
+     */
+    public static List<LifeStageKind> stagesOf(
+            InsectSpecies species,
+            @Nullable InsectGenus genus,
+            @Nullable InsectFamily family,
+            @Nullable InsectOrder order) {
+
+        Clade placement = firstNonNull(
+                species.placedIn(),
+                genus  != null ? genus.placedIn()  : null,
+                family != null ? family.placedIn() : null,
+                order  != null ? order.placedIn()  : null);
+        return resolve(placement);
+    }
+
+    private static @Nullable Clade firstNonNull(@Nullable Clade... candidates) {
+        for (Clade candidate : candidates) {
+            if (candidate != null) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     private static List<LifeStageKind> resolve(@Nullable Clade placedIn) {
