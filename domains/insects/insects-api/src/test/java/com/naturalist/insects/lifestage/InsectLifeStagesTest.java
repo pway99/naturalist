@@ -8,13 +8,16 @@ import com.naturalist.insects.InsectFamily;
 import com.naturalist.insects.InsectFamilyName;
 import com.naturalist.insects.InsectGenus;
 import com.naturalist.insects.InsectGenusName;
+import com.naturalist.insects.InsectOrder;
 import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageKind;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
+import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,6 +31,11 @@ class InsectLifeStagesTest {
             LifeStageKind.EGG,
             LifeStageKind.LARVA,
             LifeStageKind.PUPA,
+            LifeStageKind.ADULT);
+
+    private static final List<LifeStageKind> HEMIMETABOLOUS_STAGES = List.of(
+            LifeStageKind.EGG,
+            LifeStageKind.NYMPH,
             LifeStageKind.ADULT);
 
     @Test
@@ -75,7 +83,17 @@ class InsectLifeStagesTest {
         assertThat(InsectLifeStages.stagesOf(family)).isEmpty();
     }
 
-    private static InsectFamily familyWithPlacedIn(Clade placedIn) {
+    private static InsectOrder orderWithPlacedIn(@Nullable Clade placedIn) {
+        return new InsectOrder(
+                InsectOrderName.of("lepidoptera"),
+                TaxonomicOrder.of("Lepidoptera"),
+                description(),
+                Set.of(),
+                placedIn,
+                null, null, null, null);
+    }
+
+    private static InsectFamily familyWithPlacedIn(@Nullable Clade placedIn) {
         return new InsectFamily(
                 InsectFamilyName.of("papilionidae"),
                 InsectOrderName.of("lepidoptera"),
@@ -86,7 +104,7 @@ class InsectLifeStagesTest {
                 null, null, null, null);
     }
 
-    private static InsectGenus genusWithPlacedIn(Clade placedIn) {
+    private static InsectGenus genusWithPlacedIn(@Nullable Clade placedIn) {
         return new InsectGenus(
                 InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
@@ -98,7 +116,7 @@ class InsectLifeStagesTest {
                 null, null, null, null);
     }
 
-    private static InsectSpecies speciesWithPlacedIn(Clade placedIn) {
+    private static InsectSpecies speciesWithPlacedIn(@Nullable Clade placedIn) {
         return new InsectSpecies(
                 InsectSpeciesName.of("battus-philenor"),
                 InsectGenusName.of("battus"),
