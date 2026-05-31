@@ -51,7 +51,7 @@ Three PRs, landed in order:
 | -- | --------------------------------------------------- | ---------------------------------------------------------------- |
 | 1  | Resolver walk-up                                    | Kernel-only. New `InsectLifeStages.stagesOf(species, genus, family, order)` overload that picks first non-null `placedIn` walking species → genus → family → order, then traverses the clade DAG from there. No consumer changes. |
 | 2  | Detail-page migration + inline drop                 | `detail.jte` rewritten with nested `<details class="ancestor-intro">` collapsibles matching the rank-context pattern. Controller adds a `stages` list to the model (rank chain already loaded). Inline `EggStage / LarvaStage / PupaStage / AdultStage` fields removed from **all four** rank records (`InsectSpecies`, `InsectGenus`, `InsectFamily`, `InsectOrder`). Inline JSON nodes removed from `insect-species.json` (the only catalog file that actually populated them — 6 species × 4 stages = 24 nodes). |
-| 3  | Write-time clade validation                         | `LifeStageEntityRepository` rejects inserts whose `kind()` is not in the organism's resolved `Metaboly.stages()`. Closes Phase 5's deferred open question. |
+| 3  | ~~Write-time clade validation~~                     | **CANCELLED 2026-05-31.** Original plan was to add cross-record clade validation to `LifeStageEntityRepository.insert(...)` — wrong layer, violates `domains/CLAUDE.md`'s rule that *"a repository has exactly four responsibilities ... no logic."* The invariant moves to the new `Insect` aggregate's `invariants()`; see [`insect-aggregate.md`](insect-aggregate.md) Phase 3. Phase 5b's effective scope is now PRs 1 + 2 only. |
 
 ---
 
@@ -261,7 +261,29 @@ flows naturally from the record changes.
 
 ---
 
-## PR 3 — Write-time clade validation
+## PR 3 — ~~Write-time clade validation~~ (CANCELLED 2026-05-31)
+
+> **Status: cancelled.** The original design proposed putting cross-record
+> clade-conformance validation on `LifeStageEntityRepository.insert(...)`,
+> with the repository constructor taking four rank queries as
+> dependencies. That violates the project's repository contract from
+> `domains/CLAUDE.md`: *"A repository has exactly four responsibilities:
+> entity cache, referential integrity, unique constraints, transactional
+> consistency — no logic."* Cross-record domain logic belongs on an
+> aggregate, not a repository.
+>
+> The invariant ("every `LifeStage.kind()` ∈ resolved `Metaboly.stages()`
+> for the organism's clade chain") moves to the new `Insect` aggregate's
+> `invariants()` — see [`insect-aggregate.md`](insect-aggregate.md)
+> Phase 3. Phase 5b's effective scope is now PRs 1 + 2 only; PR 3 is
+> not executed.
+>
+> The original PR 3 design below is retained for reference but should not
+> be implemented.
+
+---
+
+### Original (cancelled) design
 
 Closes Phase 5's deferred open question.
 

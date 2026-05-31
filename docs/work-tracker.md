@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-30 (Promoting Clades kernel Phase 5b — life-stage inline removal + resolver walk-up — as the current slice. Slice plan at [`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md).)
+Last updated: 2026-05-31 (Clades kernel Phase 5b complete: PRs 1 + 2 landed, PR 3 cancelled — cross-record clade validation moves to the new Insect aggregate plan, [`plans/insect-aggregate.md`](plans/insect-aggregate.md).)
 
 ---
 
@@ -17,7 +17,7 @@ Last updated: 2026-05-30 (Promoting Clades kernel Phase 5b — life-stage inline
 
 ## Current slice
 
-**Clades kernel — Phase 5b (life-stage inline removal + resolver walk-up)** ([`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md)). Three PRs: (1) `InsectLifeStages.stagesOf(species, genus, family, order)` overload that walks the Linnaean parent chain; (2) detail-page migration + drop the inline `egg/larva/pupa/adult` fields from `InsectSpecies` / `InsectGenus` / `InsectFamily` + JSON catalog cleanup; (3) write-time clade validation on `LifeStage` insert. **PR 1 next.**
+*None active — Phase 5b just landed; next slice TBD.* Candidate: Insect aggregate Phase 1 ([`plans/insect-aggregate.md`](plans/insect-aggregate.md)) — record + structural invariants in isolation.
 
 **Candidate next slices** (pick when 5b lands):
 
@@ -32,6 +32,7 @@ Last updated: 2026-05-30 (Promoting Clades kernel Phase 5b — life-stage inline
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Clades kernel Phase 5b — life-stage inline removal + resolver walk-up (PRs 1 + 2; PR 3 cancelled — see [`plans/insect-aggregate.md`](plans/insect-aggregate.md)) | 2026-05-31 | [`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md) | `be4639a`    |
 | Insect page images — `BehavioralMap` kernel, `ImageGallery`, carousels on all listing/detail pages | 2026-05-25 | [`plans/archive/2026-05-24-insect-page-images.md`](plans/archive/2026-05-24-insect-page-images.md) | `a8f56f5`    |
 | Console clade context — lineage trail (Animalia › Arthropoda › Insecta), Class Insecta description on landing page | 2026-05-25 | [`plans/archive/console-clade-context-plan.md`](plans/archive/console-clade-context-plan.md) | `a540825`    |
 | InsectOrder entity — order-rank entity, genus/family FK refactoring (Phase 1 + 2)       | 2026-05-25 | [`plans/archive/insect-order-phase2-plan.md`](plans/archive/insect-order-phase2-plan.md)   | `41562e1`    |
@@ -60,7 +61,7 @@ Last updated: 2026-05-30 (Promoting Clades kernel Phase 5b — life-stage inline
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
 | 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md)                              |
-| 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; **Phase 5b** (inline removal) active ([`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md)); Phase 6 (plants) deferred |
+| 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 5b (inline removal + resolver walk-up) ✅ — PRs 1+2 landed, PR 3 cancelled (moved to [`plans/insect-aggregate.md`](plans/insect-aggregate.md)); Phase 6 (plants) deferred |
 | 3  | FU-1 — Family/Genus catalog tiers     | Plan (archived) | [`plans/archive/fu-1-plan.md`](plans/archive/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 4  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |
 | 5  | Command framework — follow-ups        | Plan           | [`plans/command-framework.md`](plans/command-framework.md)                        |
