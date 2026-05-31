@@ -63,7 +63,7 @@ class SpeciesCommandImplTest
                 null, null,
                 null,
                 null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null);
     }
 
     @Override
@@ -78,7 +78,7 @@ class SpeciesCommandImplTest
                 null, null,
                 null,
                 null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null);
     }
 
     @Override
@@ -93,7 +93,6 @@ class SpeciesCommandImplTest
                 RandomValue.string(),
                 new InsectSpecies.IdentificationFeatures(List.of(RandomValue.string())),
                 null,
-                null, null, null, null,
                 null,
                 new InsectSpecies.Voltinism(
                         InsectSpecies.Voltinism.VoltinismPattern.UNIVOLTINE,

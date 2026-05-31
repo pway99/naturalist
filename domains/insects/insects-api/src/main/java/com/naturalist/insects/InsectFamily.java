@@ -4,12 +4,7 @@ import com.naturalist.clades.Clade;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.insects.lifestage.AdultStage;
-import com.naturalist.insects.lifestage.EggStage;
-import com.naturalist.insects.lifestage.LarvaStage;
-import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
-import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinnaeanFamily;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import org.jspecify.annotations.Nullable;
@@ -33,6 +28,10 @@ import java.util.function.Consumer;
  * order/family hierarchy. The slug identity is derived from the family epithet
  * via {@link LinnaeanFamily#familySlug()}; vernacular names live in
  * {@code commonNames} and are findable but not authoritative.
+ * <p>
+ * Per-stage data lives on the {@link com.naturalist.insects.lifestage.LifeStage}
+ * records keyed by {@code (name, stageKind)}, queried via
+ * {@link com.naturalist.insects.lifestage.InsectLifeStageQuery}.
  */
 public record InsectFamily(
         InsectFamilyName name,
@@ -40,41 +39,12 @@ public record InsectFamily(
         TaxonomicFamily family,
         Description description,
         Set<CommonName> commonNames,
-        @Nullable Clade placedIn,
-        @Nullable EggStage egg,
-        @Nullable LarvaStage larva,
-        @Nullable PupaStage pupa,
-        @Nullable AdultStage adult
+        @Nullable Clade placedIn
 ) implements NamedEntity<InsectFamilyName>, LinnaeanFamily<InsectOrderName> {
-
-    private static final Observer observer = Observer.forClass(InsectFamily.class);
 
     public InsectFamily withPlacedIn(@Nullable Clade value) {
         return new InsectFamily(name, orderName, family, description, commonNames,
-                value, egg, larva, pupa, adult);
-    }
-
-    public InsectFamily withEgg(@Nullable EggStage value) {
-        observer.arguments("withEgg", i -> i
-            .namedEntityOrNull(value, "value"))
-            .throwWhenInvalid();
-        return new InsectFamily(name, orderName, family, description, commonNames,
-                placedIn, value, larva, pupa, adult);
-    }
-
-    public InsectFamily withLarva(@Nullable LarvaStage value) {
-        return new InsectFamily(name, orderName, family, description, commonNames,
-                placedIn, egg, value, pupa, adult);
-    }
-
-    public InsectFamily withPupa(@Nullable PupaStage value) {
-        return new InsectFamily(name, orderName, family, description, commonNames,
-                placedIn, egg, larva, value, adult);
-    }
-
-    public InsectFamily withAdult(@Nullable AdultStage value) {
-        return new InsectFamily(name, orderName, family, description, commonNames,
-                placedIn, egg, larva, pupa, value);
+                value);
     }
 
     @Override
@@ -84,10 +54,6 @@ public record InsectFamily(
                 .entityName(orderName, "orderName")
                 .namedValue(family, "family")
                 .valueObject(description, "description")
-                .notNull(commonNames, "commonNames")
-                .namedEntityOrNull(egg, "egg")
-                .namedEntityOrNull(larva, "larva")
-                .namedEntityOrNull(pupa, "pupa")
-                .namedEntityOrNull(adult, "adult");
+                .notNull(commonNames, "commonNames");
     }
 }

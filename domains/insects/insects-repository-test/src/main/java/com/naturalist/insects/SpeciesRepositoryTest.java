@@ -56,7 +56,7 @@ interface SpeciesRepositoryTest
                 null, null,
                 null,
                 null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null);
     }
 
     @Override
@@ -71,7 +71,7 @@ interface SpeciesRepositoryTest
                 null, null,
                 null,
                 null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null);
     }
 
     @Override
@@ -86,7 +86,6 @@ interface SpeciesRepositoryTest
                 RandomValue.string(),
                 new InsectSpecies.IdentificationFeatures(List.of(RandomValue.string())),
                 null,
-                null, null, null, null,
                 null,
                 new InsectSpecies.Voltinism(
                         InsectSpecies.Voltinism.VoltinismPattern.UNIVOLTINE,
@@ -129,7 +128,6 @@ interface SpeciesRepositoryTest
                 seeded.description(),
                 seeded.commonNames(),
                 null, null, null,
-                null, null, null, null,
                 null, null, null, null, null, null, null);
         repository().insert(underHalictus);
 

@@ -46,8 +46,7 @@ interface OrderRepositoryTest
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),
                 Set.of(),
-                null,
-                null, null, null, null);
+                null);
     }
 
     @Override
@@ -57,8 +56,7 @@ interface OrderRepositoryTest
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),
                 Set.of(),
-                null,
-                null, null, null, null);
+                null);
     }
 
     @Override
@@ -68,8 +66,7 @@ interface OrderRepositoryTest
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),
                 Set.of(CommonName.of("alt-" + RandomValue.string())),
-                null,
-                null, null, null, null);
+                null);
     }
 
     private static Description description() {

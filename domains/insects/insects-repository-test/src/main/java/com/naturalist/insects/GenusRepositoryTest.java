@@ -54,10 +54,6 @@ interface GenusRepositoryTest
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(),
-                null,
-                null,
-                null,
-                null,
                 null);
     }
 
@@ -72,10 +68,6 @@ interface GenusRepositoryTest
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(),
-                null,
-                null,
-                null,
-                null,
                 null);
     }
 
@@ -88,10 +80,6 @@ interface GenusRepositoryTest
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
                 Set.of(CommonName.of("alt-" + RandomValue.string())),
-                null,
-                null,
-                null,
-                null,
                 null);
     }
 

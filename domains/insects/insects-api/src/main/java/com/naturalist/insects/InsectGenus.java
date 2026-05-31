@@ -4,10 +4,6 @@ import com.naturalist.clades.Clade;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.insects.lifestage.AdultStage;
-import com.naturalist.insects.lifestage.EggStage;
-import com.naturalist.insects.lifestage.LarvaStage;
-import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.LinnaeanGenus;
 import com.naturalist.taxonomy.TaxonomicGenus;
@@ -32,6 +28,10 @@ import java.util.function.Consumer;
  * family epithet or order is needed for display, the consumer resolves the
  * parent entity — the genus does not carry local copies of ancestor epithets
  * beyond these direct FK references.
+ * <p>
+ * Per-stage data lives on the {@link com.naturalist.insects.lifestage.LifeStage}
+ * records keyed by {@code (name, stageKind)}, queried via
+ * {@link com.naturalist.insects.lifestage.InsectLifeStageQuery}.
  */
 public record InsectGenus(
         InsectGenusName name,
@@ -40,36 +40,12 @@ public record InsectGenus(
         TaxonomicGenus genus,
         Description description,
         Set<CommonName> commonNames,
-        @Nullable Clade placedIn,
-        @Nullable EggStage egg,
-        @Nullable LarvaStage larva,
-        @Nullable PupaStage pupa,
-        @Nullable AdultStage adult
+        @Nullable Clade placedIn
 ) implements NamedEntity<InsectGenusName>, LinnaeanGenus<InsectFamilyName> {
 
     public InsectGenus withPlacedIn(@Nullable Clade value) {
         return new InsectGenus(name, familyName, orderName, genus,
-                description, commonNames, value, egg, larva, pupa, adult);
-    }
-
-    public InsectGenus withEgg(@Nullable EggStage value) {
-        return new InsectGenus(name, familyName, orderName, genus,
-                description, commonNames, placedIn, value, larva, pupa, adult);
-    }
-
-    public InsectGenus withLarva(@Nullable LarvaStage value) {
-        return new InsectGenus(name, familyName, orderName, genus,
-                description, commonNames, placedIn, egg, value, pupa, adult);
-    }
-
-    public InsectGenus withPupa(@Nullable PupaStage value) {
-        return new InsectGenus(name, familyName, orderName, genus,
-                description, commonNames, placedIn, egg, larva, value, adult);
-    }
-
-    public InsectGenus withAdult(@Nullable AdultStage value) {
-        return new InsectGenus(name, familyName, orderName, genus,
-                description, commonNames, placedIn, egg, larva, pupa, value);
+                description, commonNames, value);
     }
 
     @Override
@@ -80,10 +56,6 @@ public record InsectGenus(
                 .entityName(orderName, "orderName")
                 .namedValue(genus, "genus")
                 .valueObject(description, "description")
-                .notNull(commonNames, "commonNames")
-                .namedEntityOrNull(egg, "egg")
-                .namedEntityOrNull(larva, "larva")
-                .namedEntityOrNull(pupa, "pupa")
-                .namedEntityOrNull(adult, "adult");
+                .notNull(commonNames, "commonNames");
     }
 }

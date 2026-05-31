@@ -114,7 +114,6 @@ class InsectAggregateTest {
                 Set.of(),
                 null, null,
                 null,
-                null, null, null, null,
                 null, null, null, null, null, null, null
         );
     }
@@ -127,8 +126,7 @@ class InsectAggregateTest {
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),
-                null,
-                null, null, null, null);
+                null);
     }
 
     private static InsectFamily validFamily() {
@@ -138,8 +136,7 @@ class InsectAggregateTest {
                 TaxonomicFamily.of("Syrphidae"),
                 description(),
                 Set.of(),
-                null,
-                null, null, null, null);
+                null);
     }
 
     private static InsectOrder validOrder() {
@@ -148,8 +145,7 @@ class InsectAggregateTest {
                 TaxonomicOrder.of("Diptera"),
                 description(),
                 Set.of(),
-                null,
-                null, null, null, null);
+                null);
     }
 
     private static Description description() {

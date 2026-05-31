@@ -170,8 +170,7 @@ class InsectLifeStagesTest {
                 TaxonomicOrder.of("Lepidoptera"),
                 description(),
                 Set.of(),
-                placedIn,
-                null, null, null, null);
+                placedIn);
     }
 
     private static InsectFamily familyWithPlacedIn(@Nullable Clade placedIn) {
@@ -181,8 +180,7 @@ class InsectLifeStagesTest {
                 TaxonomicFamily.of("Papilionidae"),
                 description(),
                 Set.of(),
-                placedIn,
-                null, null, null, null);
+                placedIn);
     }
 
     private static InsectGenus genusWithPlacedIn(@Nullable Clade placedIn) {
@@ -193,8 +191,7 @@ class InsectLifeStagesTest {
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),
-                placedIn,
-                null, null, null, null);
+                placedIn);
     }
 
     private static InsectSpecies speciesWithPlacedIn(@Nullable Clade placedIn) {
@@ -207,7 +204,6 @@ class InsectLifeStagesTest {
                 Set.of(),
                 null, null,
                 placedIn,
-                null, null, null, null,
                 null, null, null, null, null, null, null);
     }
 

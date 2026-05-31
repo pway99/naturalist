@@ -32,7 +32,6 @@ class InsectSpeciesTest {
                 Set.of(),
                 null, null,
                 placedIn,
-                null, null, null, null,
                 null, null, null, null, null, null, null);
     }
 

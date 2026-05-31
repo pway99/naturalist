@@ -7,10 +7,6 @@ import com.naturalist.ddd.ValueObject;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.habitat.HabitatProfile;
-import com.naturalist.insects.lifestage.AdultStage;
-import com.naturalist.insects.lifestage.EggStage;
-import com.naturalist.insects.lifestage.LarvaStage;
-import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.jspecify.annotations.Nullable;
@@ -50,31 +46,16 @@ import java.util.function.Consumer;
  * narrative: nectar sources, shelter substrate, prey density, and phototactic behaviour
  * expressed as ecological field notes rather than structured classification.
  * <p>
- * The four life-cycle stage fields — {@link #egg}, {@link #larva}, {@link #pupa},
- * and {@link #adult} — hold the species's stage entities from
- * {@link com.naturalist.insects.lifestage}. Each stage is a {@link NamedEntity} with
- * its own composite-slug identity ({@code {species-slug}-{stage-kind-slug}}); the
- * species composes them directly rather than referencing them by name because each
- * stage is biologically inseparable from its species.
+ * Per-stage data (egg, larva / nymph, pupa, adult) lives on the
+ * {@link com.naturalist.insects.lifestage.LifeStage} records keyed by
+ * {@code (name, stageKind)} and is queried via
+ * {@link com.naturalist.insects.lifestage.InsectLifeStageQuery}. Each stage carries its
+ * own composite-slug identity ({@code {species-slug}-{stage-kind-slug}}) and is
+ * catalogued incrementally per species. Cross-stage invariants (e.g. chemistry-story
+ * coherence across larva / pupa / adult) are enforced on the species aggregate rather
+ * than on any single stage.
  * <p>
- * All four stage fields are nullable for two distinct reasons, applied per stage:
- * <ul>
- *   <li>{@link #egg} — egg-stage data may simply not be documented for the species
- *       at catalog level, even if the species is holometabolous.</li>
- *   <li>{@link #larva} — hemimetabolous orders (Blattodea, Orthoptera, Hemiptera)
- *       produce nymphs rather than morphologically distinct larvae; their immature
- *       stages are not modelled here. A null {@code larva} on a holometabolous
- *       species means the larval stage has not yet been catalogued, not that it
- *       does not exist.</li>
- *   <li>{@link #pupa} — hemimetabolous orders do not pupate; on those species
- *       {@code pupa} is semantically absent. On holometabolous species a null
- *       {@code pupa} means the stage has not yet been catalogued.</li>
- *   <li>{@link #adult} — catalogued incrementally like the others. Cross-stage
- *       invariants (e.g. chemistry-story coherence across larva / pupa / adult)
- *       are enforced on this aggregate root rather than on any single stage.</li>
- * </ul>
- * <p>
- * All other nullable fields — {@link #identificationFeatures}, {@link #chemicalDefense},
+ * All nullable fields — {@link #identificationFeatures}, {@link #chemicalDefense},
  * {@link #voltinism}, {@link #habitatProfile}, {@link #habitatRequirements},
  * {@link #gardenConnections}, {@link #beneficialProfile}, and
  * {@link #ecologicalSignificance} — are populated incrementally as the catalog
@@ -94,7 +75,7 @@ import java.util.function.Consumer;
  * {@link GardenConnections}, {@link BeneficialProfile}, {@link EcologicalSignificance}
  * — is nested here. Each value object is exclusively owned by {@code InsectSpecies};
  * nesting expresses that ownership structurally and collapses the consumer's import
- * surface to this single type. {@link LifeStageKind} — now the shared vocabulary in
+ * surface to this single type. {@link LifeStageKind} — the shared vocabulary in
  * {@link com.naturalist.insects.lifestage} — is used by {@link ChemicalDefense} to
  * name one or more stages of the life cycle.
  */
@@ -109,10 +90,6 @@ public record InsectSpecies(
         @Nullable String sightingNotes,
         @Nullable IdentificationFeatures identificationFeatures,
         @Nullable Clade placedIn,
-        @Nullable EggStage egg,
-        @Nullable LarvaStage larva,
-        @Nullable PupaStage pupa,
-        @Nullable AdultStage adult,
         @Nullable ChemicalDefense chemicalDefense,
         @Nullable Voltinism voltinism,
         @Nullable HabitatProfile habitatProfile,
@@ -127,7 +104,6 @@ public record InsectSpecies(
                 name, genusName, familyName, epithet, description, commonNames,
                 sightingNotes, identificationFeatures,
                 value,
-                egg, larva, pupa, adult,
                 chemicalDefense, voltinism, habitatProfile, habitatRequirements,
                 gardenConnections, beneficialProfile, ecologicalSignificance);
     }
@@ -148,11 +124,7 @@ public record InsectSpecies(
                 .valueObjectOrNull(habitatRequirements, "habitatRequirements")
                 .valueObjectOrNull(gardenConnections, "gardenConnections")
                 .valueObjectOrNull(beneficialProfile, "beneficialProfile")
-                .valueObjectOrNull(ecologicalSignificance, "ecologicalSignificance")
-                .namedEntityOrNull(egg, "egg")
-                .namedEntityOrNull(larva, "larva")
-                .namedEntityOrNull(pupa, "pupa")
-                .namedEntityOrNull(adult, "adult");
+                .valueObjectOrNull(ecologicalSignificance, "ecologicalSignificance");
     }
 
     /**
@@ -163,8 +135,8 @@ public record InsectSpecies(
      * is a discrete, observable trait: colour, proportion, posture, structural feature.
      * <p>
      * These are morphological and postural facts, not behavioural ones. Behaviour belongs
-     * in the stage entities ({@link EggStage}, {@link LarvaStage}, {@link PupaStage},
-     * {@link AdultStage}) or {@link InsectSpecies#sightingNotes()}.
+     * in the stage entities under {@link com.naturalist.insects.lifestage} or
+     * {@link InsectSpecies#sightingNotes()}.
      */
     public record IdentificationFeatures(
             List<String> features

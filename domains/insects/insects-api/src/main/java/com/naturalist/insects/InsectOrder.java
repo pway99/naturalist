@@ -4,10 +4,6 @@ import com.naturalist.clades.Clade;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.insects.lifestage.AdultStage;
-import com.naturalist.insects.lifestage.EggStage;
-import com.naturalist.insects.lifestage.LarvaStage;
-import com.naturalist.insects.lifestage.PupaStage;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.LinnaeanOrder;
 import com.naturalist.taxonomy.TaxonomicOrder;
@@ -29,42 +25,22 @@ import java.util.function.Consumer;
  * no parent FK. {@link #order} is the proper-cased Linnaean epithet
  * (e.g., {@code "Diptera"}). The slug identity is derived mechanically
  * from the epithet via {@link LinnaeanOrder#orderSlug()}.
+ * <p>
+ * Per-stage data lives on the {@link com.naturalist.insects.lifestage.LifeStage}
+ * records keyed by {@code (name, stageKind)}, queried via
+ * {@link com.naturalist.insects.lifestage.InsectLifeStageQuery}.
  */
 public record InsectOrder(
         InsectOrderName name,
         TaxonomicOrder order,
         Description description,
         Set<CommonName> commonNames,
-        @Nullable Clade placedIn,
-        @Nullable EggStage egg,
-        @Nullable LarvaStage larva,
-        @Nullable PupaStage pupa,
-        @Nullable AdultStage adult
+        @Nullable Clade placedIn
 ) implements NamedEntity<InsectOrderName>, LinnaeanOrder {
 
     public InsectOrder withPlacedIn(@Nullable Clade value) {
         return new InsectOrder(name, order, description, commonNames,
-                value, egg, larva, pupa, adult);
-    }
-
-    public InsectOrder withEgg(@Nullable EggStage value) {
-        return new InsectOrder(name, order, description, commonNames,
-                placedIn, value, larva, pupa, adult);
-    }
-
-    public InsectOrder withLarva(@Nullable LarvaStage value) {
-        return new InsectOrder(name, order, description, commonNames,
-                placedIn, egg, value, pupa, adult);
-    }
-
-    public InsectOrder withPupa(@Nullable PupaStage value) {
-        return new InsectOrder(name, order, description, commonNames,
-                placedIn, egg, larva, value, adult);
-    }
-
-    public InsectOrder withAdult(@Nullable AdultStage value) {
-        return new InsectOrder(name, order, description, commonNames,
-                placedIn, egg, larva, pupa, value);
+                value);
     }
 
     @Override
@@ -73,10 +49,6 @@ public record InsectOrder(
                 .entityName(name, "name")
                 .namedValue(order, "order")
                 .valueObject(description, "description")
-                .notNull(commonNames, "commonNames")
-                .namedEntityOrNull(egg, "egg")
-                .namedEntityOrNull(larva, "larva")
-                .namedEntityOrNull(pupa, "pupa")
-                .namedEntityOrNull(adult, "adult");
+                .notNull(commonNames, "commonNames");
     }
 }

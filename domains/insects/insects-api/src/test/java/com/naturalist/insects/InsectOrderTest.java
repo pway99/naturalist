@@ -24,8 +24,7 @@ class InsectOrderTest {
                 TaxonomicOrder.of("Diptera"),
                 description(),
                 Set.of(),
-                null,
-                null, null, null, null);
+                null);
 
         InvariantObservation result = mo.namedEntity(order, "order");
 
@@ -36,8 +35,7 @@ class InsectOrderTest {
     void nullComponentsProduceExpectedInvariantViolations() {
         var mo = observer.forMethod("nullComponentsProduceExpectedInvariantViolations");
         InsectOrder order = new InsectOrder(
-                null, null, null, null, null,
-                null, null, null, null);
+                null, null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(order, "order");
 
@@ -59,23 +57,13 @@ class InsectOrderTest {
         assertThat(order.placedIn()).isNull();
     }
 
-    @Test
-    void withEggPreservesPlacedIn() {
-        InsectOrder order = orderWithPlacedIn(new Holometabola());
-
-        InsectOrder updated = order.withEgg(null);
-
-        assertThat(updated.placedIn()).isEqualTo(new Holometabola());
-    }
-
     private static InsectOrder orderWithPlacedIn(Clade placedIn) {
         return new InsectOrder(
                 InsectOrderName.of("diptera"),
                 TaxonomicOrder.of("Diptera"),
                 description(),
                 Set.of(),
-                placedIn,
-                null, null, null, null);
+                placedIn);
     }
 
     private static Description description() {
