@@ -33,6 +33,6 @@ public record InsectGenusAggregate(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .namedEntity(genus, "genus")
-                .observable(images, "images");
+                .behavioralCollection(images, "images");
     }
 }

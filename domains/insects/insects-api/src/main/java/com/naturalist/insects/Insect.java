@@ -131,19 +131,17 @@ public record Insect(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> {
-            // Required collections: null → violation; non-null → descend.
-            i.observable(observations, "observations");
-            i.observable(lifeStages, "lifeStages");
-            // Monotonic fill: each level conditional on the level below being present.
-            // Reports the immediate missing field; consumer infers the cross-rank semantic.
-            if (species != null) i.notNull(genus, "genus");
-            if (genus != null) i.notNull(family, "family");
-            if (family != null) i.notNull(order, "order");
+            i.behavioralCollection(observations, "observations");
+            i.behavioralCollection(lifeStages, "lifeStages");
+            // Monotonic fill: each rank requires the one above.
+            i.whenNotNull(species, c -> c.notNull(genus, "genus"));
+            i.whenNotNull(genus, c -> c.notNull(family, "family"));
+            i.whenNotNull(family, c -> c.notNull(order, "order"));
             // Descent into present rank aggregates.
-            if (order != null) i.observable(order, "order");
-            if (family != null) i.observable(family, "family");
-            if (genus != null) i.observable(genus, "genus");
-            if (species != null) i.observable(species, "species");
+            i.aggregateOrNull(order, "order");
+            i.aggregateOrNull(family, "family");
+            i.aggregateOrNull(genus, "genus");
+            i.aggregateOrNull(species, "species");
         };
     }
 }

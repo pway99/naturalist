@@ -3,7 +3,10 @@ package com.naturalist.observability;
 import com.naturalist.ddd.*;
 import com.naturalist.observability.constraints.*;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 
@@ -35,6 +38,35 @@ public class Constraints {
         return add(new NamedEntityOrNullConstraint<>(o, valueFunction, name));
     }
 
+    /**
+     * Validate a non-null {@link Aggregate} child and descend into its invariants.
+     * Type-specific counterpart to {@link #observable} for aggregate children.
+     */
+    public <A extends Aggregate> Constraints aggregate(A aggregate, String name) {
+        return aggregate(aggregate, Function.identity(), name);
+    }
+
+    public <O, A extends Aggregate> Constraints aggregate(O o, Function<O, A> valueFunction, String name) {
+        return add(new ObservableConstraint<>(o, valueFunction, name));
+    }
+
+    /**
+     * Null-tolerant variant of {@link #aggregate}. A null reference passes
+     * (the field's {@code @Nullable} declaration is respected); a non-null
+     * reference is descended into and its own {@code invariants()} are walked
+     * by the graph walker. Use for {@code @Nullable Aggregate} record
+     * components — most commonly nullable child aggregates on a parent
+     * aggregate (e.g. {@code @Nullable InsectSpeciesAggregate species} on
+     * {@code Insect}).
+     */
+    public <A extends Aggregate> Constraints aggregateOrNull(A aggregate, String name) {
+        return aggregateOrNull(aggregate, Function.identity(), name);
+    }
+
+    public <O, A extends Aggregate> Constraints aggregateOrNull(O o, Function<O, A> valueFunction, String name) {
+        return add(new AggregateOrNullConstraint<>(o, valueFunction, name));
+    }
+
     public <V extends ValueObject> Constraints valueObject(V valueObject, String name) {
         return valueObject(valueObject, Function.identity(), name);
     }
@@ -59,6 +91,20 @@ public class Constraints {
      */
     public <O, V extends ValueObject> Constraints valueObjectCollection(O o, Function<O, Collection<V>> valueFunction, String name) {
         return add(new ValueObjectCollectionConstraint<>(o, valueFunction, name));
+    }
+
+    /**
+     * Validate a non-null {@link BehavioralCollection} child and descend into its
+     * invariants. Type-specific counterpart to {@link #observable} for behavioral
+     * collection children — most commonly an {@code ImageCollection} or
+     * {@code LifeStageCollection} held by an aggregate.
+     */
+    public <B extends BehavioralCollection<?>> Constraints behavioralCollection(B collection, String name) {
+        return behavioralCollection(collection, Function.identity(), name);
+    }
+
+    public <O, B extends BehavioralCollection<?>> Constraints behavioralCollection(O o, Function<O, B> valueFunction, String name) {
+        return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
     /**
@@ -217,6 +263,23 @@ public class Constraints {
 
     public <T, V extends Comparable<V>> Constraints atMost(T t, Function<T, V> valueFunction, V max, String name) {
         return inRange(t, valueFunction, null, max, name);
+    }
+
+    /**
+     * Conditional constraint guard — runs the block only when {@code value} is
+     * non-null. Constraints added inside the block are appended to the same
+     * builder (flat, not nested). Use for invariants that are conditional on a
+     * nullable field's presence — most commonly monotonic-fill rules where one
+     * rank's presence implies another's.
+     *
+     * <p>Not a constraint type — no {@link Constraint} is created. This is pure
+     * control flow over the builder.
+     */
+    public Constraints whenNotNull(@Nullable Object value, Consumer<Constraints> block) {
+        if (value != null) {
+            block.accept(this);
+        }
+        return this;
     }
 
     public List<Constraint<?>> collected() {
