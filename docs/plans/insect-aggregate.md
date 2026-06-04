@@ -2,9 +2,9 @@
 
 A new top-level aggregate that composes everything known about an insect at
 Oak Vista — its photographic observation, its identified rank chain (Order
-through Species), and its life-stage catalog — into a single in-memory
-domain object whose `invariants()` becomes the legitimate home for
-cross-rank constraints.
+through Species), and its life stages — into a single in-memory domain
+object whose `invariants()` becomes the legitimate home for cross-rank
+constraints.
 
 This is a sketch in the style of [`clades-kernel.md`](clades-kernel.md) and
 [`identification.md`](identification.md) — direction and rationale,
@@ -81,9 +81,11 @@ render. The `Insect` aggregate's rank chain runs Order → Family → Genus
 **Relationship to two use cases.** The same `Insect` aggregate serves
 both. *Catalog read* (today's console): load an `Insect` from a rank
 name, full chain populated to that depth, returned for display. *Future
-identification workflow*: create an `Insect` from an `InsectImage` with
-no rank set, refine via `with*` mutators as the naturalist identifies
-the organism. Same record type; the loaded state differs.
+identification workflow*: create an `Insect` from an `ImageCollection`
+of observations with no rank set, refine via `with*` mutators as the
+naturalist identifies the organism (and extend the observation set via
+`withObservations(...)` as more photographs are taken). Same record
+type; the loaded state differs.
 
 **Cancels** Phase 5b PR 3 in
 [`clades-kernel-phase-5b-life-stage-inline-removal.md`](clades-kernel-phase-5b-life-stage-inline-removal.md).
@@ -103,35 +105,53 @@ in-memory composition that orchestrates invariants across them.
 ```java
 package com.naturalist.insects;
 
+import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
+
 public record Insect(
-        @Nullable InsectImage observation,
+        ImageCollection observations,
         @Nullable InsectOrderAggregate order,
         @Nullable InsectFamilyAggregate family,
         @Nullable InsectGenusAggregate genus,
         @Nullable InsectSpeciesAggregate species,
-        List<LifeStage> lifeStages
+        LifeStageCollection lifeStages
 ) implements Aggregate {
 
-    /** Most-specific identified rank, if any. Empty for image-only workflow start. */
+    /** Most-specific identified rank, if any. Empty for observations-only workflow start. */
     public Optional<InsectRankName> identifiedTo() { … }
 
     /** Workflow refinement — each returns a new Insect. */
-    public Insect withObservation(InsectImage image) { … }
+    public Insect withObservations(ImageCollection observations) { … }
     public Insect withOrder(InsectOrderAggregate order) { … }
     public Insect withFamily(InsectFamilyAggregate family) { … }
     public Insect withGenus(InsectGenusAggregate genus) { … }
     public Insect withSpecies(InsectSpeciesAggregate species) { … }
-    public Insect withLifeStages(List<LifeStage> stages) { … }
+    public Insect withLifeStages(LifeStageCollection lifeStages) { … }
 
     @Override
     public Consumer<? extends Constraints> invariants() { … }
 }
 ```
 
+`observations` is non-nullable — always an `ImageCollection`, may be empty
+(`ImageCollection.empty()`). Matches the existing rank-rooted aggregates'
+treatment of their `images` field. The collection is parent-agnostic by
+type; the consumer (factory or workflow) populates it with whatever images
+are relevant — a single rank's catalog images for the catalog-read use case,
+the naturalist's working set for the workflow use case (which may span
+ranks as identification refines).
+
+`lifeStages` follows the same pattern — non-nullable
+`LifeStageCollection`, may be empty (`LifeStageCollection.empty()`).
+Reuses the existing domain `BehavioralCollection<LifeStage>` already
+returned by `InsectLifeStageQuery.lifeStages().forParentName(...)`. Raw
+`List<LifeStage>` would violate the project's port-boundary rule from
+`domains/CLAUDE.md` and lose the domain type's discoverable name.
+
 **`identifiedTo()` semantics.** Returns the most-specific present rank's
 typed name. `species.name()` if species set, else `genus.name()`, else
 `family.name()`, else `order.name()`, else `Optional.empty()`
-(image-only workflow start).
+(observations-only workflow start, no rank identified yet).
 
 **`with*` semantics.** Each mutator returns a new `Insect` with the
 target field replaced. Invariants run on every construction (record
@@ -148,18 +168,28 @@ exception is correction: re-running identification produces a new
 1. **Monotonic fill** — if `species` is set, `genus` must be set; if
    `genus` is set, `family` must be set; if `family` is set, `order`
    must be set. Skipping ranks is invalid.
-2. **Image FK consistency** — if `observation` is set and the most-
-   specific identified rank is non-empty, `observation.parentName()`
-   must equal that rank's typed name. (An observation can sit on an
-   aggregate that has no rank yet — image-only start; once a rank is
-   identified, the observation must reference it.)
-3. **Permit-to-rank consistency** — `order` must be an
+2. **Permit-to-rank consistency** — `order` must be an
    `InsectOrderAggregate`, `family` an `InsectFamilyAggregate`, etc.
    The record's type signature enforces this at compile time; the
    invariant codifies the rule for runtime diagnostic clarity.
+3. **Constituent descent** — `invariants()` descends into the present
+   constituent observables (`observations`, the populated rank
+   aggregates, each `LifeStage`) so the Observer walks their own
+   invariants as part of validating the aggregate.
 
 ### Invariants — deferred to follow-up efforts
 
+- **Observation FK consistency** — each `InsectImage` in `observations`
+  carries a `parentName : InsectRankName` referencing the rank it was
+  filed under. With a multi-image observations set, that name may equal
+  any populated rank in the aggregate (an image filed at family is fine
+  on an aggregate identified to species). The deferred rule: every
+  observation's `parentName` must equal one of the populated ranks'
+  names, OR the aggregate must have no rank identified (the
+  workflow-pre-identification state is currently underspecified — every
+  `InsectImage` requires a parentName at creation, so the "no rank yet"
+  state has no clean shape until the identification module clarifies
+  it). Deferred until that workflow story is concrete.
 - **Placement chain monotonicity** — if multiple ranks set `placedIn`,
   the chain of clades must be consistent (child's placedIn must descend
   from parent's placedIn in the clade DAG).
@@ -177,8 +207,8 @@ first slice ships the aggregate's structure without them.
 
 ### What the aggregate does NOT include
 
-- **A factory.** Loading an `Insect` from a rank name (or from an
-  observation) is the next slice's concern. The first slice ships the
+- **A factory.** Loading an `Insect` from a rank name (or from a set of
+  observations) is the next slice's concern. The first slice ships the
   record in isolation — exercised by tests that construct it directly.
 - **A query namespace.** No `InsectQuery.insects()` entry until the
   factory exists.
@@ -215,7 +245,7 @@ pressure.
 
 - `Insect` record in `insects-api` with the six fields shown above.
 - `identifiedTo()` accessor.
-- Six `with*` mutators (observation, order, family, genus, species,
+- Six `with*` mutators (observations, order, family, genus, species,
   lifeStages).
 - `invariants()` enforcing monotonic-fill, image FK consistency, and
   permit-to-rank consistency.
@@ -288,16 +318,18 @@ into the workflow surface.
 
 **Delivers (sketched, decided when promoted).**
 
-- `InsectFactory.fromObservation(InsectImageId) : Optional<Insect>` —
-  starts an aggregate from just an observation, no rank identified.
+- `InsectFactory.fromObservations(ImageCollection) : Optional<Insect>` —
+  starts an aggregate from a set of observations, no rank identified.
+  Single-image entrypoints (`fromObservation(InsectImageId)`) may exist
+  as a convenience over this.
 - Whatever command surface the identification module needs to refine
   the aggregate (`identifyToOrder`, `identifyToFamily`, etc.) — these
   call the existing `with*` mutators after the rank entity is
   resolved.
 - Persistence story for an in-progress identification — the aggregate
-  itself is not persisted, but the constituent parts are (observation
-  exists in `InsectImage` repository; identified rank narrows the FK
-  on the observation). The exact mechanism is the identification
+  itself is not persisted, but the constituent parts are (observations
+  exist in `InsectImage` repository; identified rank narrows each
+  image's parent FK). The exact mechanism is the identification
   module's design.
 
 **Out of scope.** UI for identification (that's the identification
@@ -311,11 +343,11 @@ module's concern).
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | Single concrete record, not sealed permits              | The aggregate is always factory-loaded; sealed-permit compile-time exhaustiveness adds machinery without earning its keep when runtime construction already enforces the same guarantees. One type, simpler model. |
 | Composes existing rank-rooted `InsectAggregate` permits | The existing permits are the unit-of-load for "rank entity + its images." Keeping them as `Insect`'s composed parts preserves the existing structure as a load primitive. |
-| Sum-of-parts, not persisted                             | The aggregate's identity comes from its constituent parts — the observation's UUID, the species's slug, etc. — not from an aggregate-level identifier. Persisting it separately would duplicate state already managed by the constituent repositories. |
+| Sum-of-parts, not persisted                             | The aggregate's identity comes from its constituent parts — each observation's UUID, the species's slug, etc. — not from an aggregate-level identifier. Persisting it separately would duplicate state already managed by the constituent repositories. |
 | `identifiedTo()` returns Optional                        | An image-only aggregate (workflow start) has no identified rank. Forcing a default would lie about the state. |
 | Clade-conformance invariant deferred                     | The catalog is small and hand-curated; drift is not yet a felt pain. Hosting the invariant on `Insect.invariants()` is the right *home*; landing it on day one would block on data that doesn't exist yet. |
 | Phase 5b PR 3 cancelled, not deferred                    | The repository was the wrong host. Cancelling rather than deferring makes the architectural correction explicit. The Phase 5b slice plan is updated to flip PR 3's status. |
-| Single `lifeStages` list (not per-rank lists or map)    | Each `LifeStage` already carries its own `parentName`. A consumer that wants per-rank grouping can group locally. Premature structure otherwise. |
+| Single `lifeStages` collection (not per-rank collections or map) | Each `LifeStage` already carries its own `parentName`. A consumer that wants per-rank grouping can group locally. Premature structure otherwise. |
 
 ---
 
@@ -348,13 +380,14 @@ module's concern).
   consumers compose what they need at the application layer.
 
 - **Workflow entrypoints contradict catalog-read assumptions.** When
-  phase 4 adds `fromObservation`, the aggregate's invariants must
-  accommodate "image-only, no rank" states that the catalog-read use
-  case never produces. *Mitigation:* the structural invariants from
-  phase 1 are already image-only-tolerant (monotonic-fill allows the
-  observation-without-any-rank state; image FK consistency is
-  conditional on a rank existing). Future invariants follow the same
-  discipline: state validity is conditional on what's loaded.
+  phase 4 adds `fromObservations`, the aggregate's invariants must
+  accommodate "observations-only, no rank" states that the catalog-read
+  use case never produces. *Mitigation:* the structural invariants from
+  phase 1 are already observations-only-tolerant (monotonic-fill allows
+  the observations-without-any-rank state; the deferred observation FK
+  consistency rule is conditional on a rank existing). Future invariants
+  follow the same discipline: state validity is conditional on what's
+  loaded.
 
 - **Console refactor (Phase 2) may surface controller responsibilities
   that don't belong in the aggregate.** Breadcrumb construction,
@@ -380,7 +413,7 @@ Row to add to [`docs/work-tracker.md`](../work-tracker.md):
 
 > **Insect aggregate** — Plan (sketch) — *active — Phase 1 next* —
 > [`plans/insect-aggregate.md`](plans/insect-aggregate.md) — *New
-> top-level aggregate composing the rank chain + observation +
+> top-level aggregate composing the rank chain + observations +
 > life-stages; the legitimate home for cross-record clade invariants
 > Phase 5b PR 3 was trying to place on the wrong layer. Multi-phase:
 > Phase 1 ships the record + structural invariants in isolation;
