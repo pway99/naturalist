@@ -48,6 +48,16 @@ public record InsectGenus(
                 description, commonNames, value);
     }
 
+    /** True iff this genus's family FK equals the given family name. */
+    public boolean belongsToFamily(InsectFamilyName familyName) {
+        return this.familyName.equals(familyName);
+    }
+
+    /** True iff this genus's order FK equals the given order name. */
+    public boolean belongsToOrder(InsectOrderName orderName) {
+        return this.orderName.equals(orderName);
+    }
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i

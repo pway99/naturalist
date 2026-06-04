@@ -108,6 +108,16 @@ public record InsectSpecies(
                 gardenConnections, beneficialProfile, ecologicalSignificance);
     }
 
+    /** True iff this species's genus FK equals the given genus name. */
+    public boolean belongsToGenus(InsectGenusName genusName) {
+        return this.genusName.equals(genusName);
+    }
+
+    /** True iff this species's family FK equals the given family name. */
+    public boolean belongsToFamily(InsectFamilyName familyName) {
+        return this.familyName.equals(familyName);
+    }
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i

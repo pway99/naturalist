@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.observability.Constraints;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -24,8 +25,37 @@ public record InsectSpeciesAggregate(
     }
 
     @Override
-    public InsectRankName name() {
+    public InsectSpeciesName name() {
         return species.name();
+    }
+
+    /** The genus this species belongs to, exposed as a typed FK delegate. */
+    public InsectGenusName genusName() {
+        return species.genusName();
+    }
+
+    /** The family this species belongs to, exposed as a typed FK delegate. */
+    public InsectFamilyName familyName() {
+        return species.familyName();
+    }
+
+    /**
+     * True iff this species's genus FK equals the given genus's name, OR the
+     * given genus is null. Null tolerance lets a caller compose this check
+     * inside a {@code whenNotNull(species, ...)} block without firing a
+     * redundant {@code isTrue} violation when the genus is missing.
+     */
+    public boolean belongsToGenus(@Nullable InsectGenusAggregate genus) {
+        return genus == null || species.belongsToGenus(genus.name());
+    }
+
+    /**
+     * True iff this species's family FK equals the given family's name, OR
+     * the given family is null. Same null-tolerance rationale as
+     * {@link #belongsToGenus}.
+     */
+    public boolean belongsToFamily(@Nullable InsectFamilyAggregate family) {
+        return family == null || species.belongsToFamily(family.name());
     }
 
     @Override

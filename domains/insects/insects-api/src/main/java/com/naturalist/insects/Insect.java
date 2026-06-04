@@ -49,15 +49,25 @@ import java.util.function.Consumer;
  *       {@code lifeStages} must be non-null. Use
  *       {@link ImageCollection#empty()} /
  *       {@link LifeStageCollection#empty()} for the empty state.</li>
- *   <li><b>Monotonic fill</b> — if {@code species} is set, {@code genus} must
- *       be set; if {@code genus} is set, {@code family} must be set; if
- *       {@code family} is set, {@code order} must be set. Each rule reports
- *       its violation as the missing field's name (e.g. {@code .genus} when
- *       species is present but genus is null) — the consumer infers the
- *       cross-rank semantic from context.</li>
- *   <li><b>Constituent descent</b> — descends into each non-null constituent
- *       (observations, present rank aggregates, lifeStages) so the Observer
- *       walks their own invariants as part of validating the aggregate.</li>
+ *   <li><b>Per-rank descent</b> — each present rank is descended into once
+ *       via its own {@code whenNotNull(rank, r -> r.aggregate(rank, name))}
+ *       block. Closes the leaf-rank gap (the most-specific identified rank
+ *       still gets its own invariants walked).</li>
+ *   <li><b>Ancestor-presence</b> — when a child rank is set, each of its
+ *       ancestor slots must also be set. Reported as path-prefixed
+ *       {@code .child:ancestor} violations (e.g. {@code .species:genus},
+ *       {@code .genus:family}) so the diagnostic identifies which child's
+ *       expectation surfaced the missing ancestor.</li>
+ *   <li><b>Cross-rank FK consistency</b> — when both child and ancestor are
+ *       present, the child's typed ancestor-FK field must equal the
+ *       ancestor's name. One {@code isTrue} check per direct FK on each
+ *       rank entity: {@code .familyBelongsToOrder},
+ *       {@code .genusBelongsToFamily}, {@code .genusBelongsToOrder},
+ *       {@code .speciesBelongsToGenus}, {@code .speciesBelongsToFamily}.
+ *       Each denormalized FK gets its own check — a {@code species.familyName}
+ *       that drifts from the actual {@code family.name} is caught even when
+ *       {@code species.genusName} and {@code genus.familyName} both still
+ *       match.</li>
  * </ul>
  *
  * <p>Cross-rank clade invariants (placement-chain monotonicity, resolvable
@@ -104,6 +114,26 @@ public record Insect(
         return Optional.empty();
     }
 
+    /** The order's name, if the aggregate carries an order. */
+    public Optional<InsectOrderName> orderName() {
+        return order == null ? Optional.empty() : Optional.of(order.name());
+    }
+
+    /** The family's name, if the aggregate carries a family. */
+    public Optional<InsectFamilyName> familyName() {
+        return family == null ? Optional.empty() : Optional.of(family.name());
+    }
+
+    /** The genus's name, if the aggregate carries a genus. */
+    public Optional<InsectGenusName> genusName() {
+        return genus == null ? Optional.empty() : Optional.of(genus.name());
+    }
+
+    /** The species's name, if the aggregate carries a species. */
+    public Optional<InsectSpeciesName> speciesName() {
+        return species == null ? Optional.empty() : Optional.of(species.name());
+    }
+
     public Insect withObservations(ImageCollection observations) {
         return new Insect(observations, order, family, genus, species, lifeStages);
     }
@@ -130,18 +160,40 @@ public record Insect(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> {
-            i.behavioralCollection(observations, "observations");
-            i.behavioralCollection(lifeStages, "lifeStages");
-            // Monotonic fill: each rank requires the one above.
-            i.whenNotNull(species, c -> c.notNull(genus, "genus"));
-            i.whenNotNull(genus, c -> c.notNull(family, "family"));
-            i.whenNotNull(family, c -> c.notNull(order, "order"));
-            // Descent into present rank aggregates.
-            i.aggregateOrNull(order, "order");
-            i.aggregateOrNull(family, "family");
-            i.aggregateOrNull(genus, "genus");
-            i.aggregateOrNull(species, "species");
-        };
+        return i -> i
+            .behavioralCollection(observations, "observations")
+            .behavioralCollection(lifeStages, "lifeStages")
+            // One block per present rank. Each block uses aggregate(...) for
+            // every rank reference — it does both the presence check (null
+            // value fires a violation) and the descent into that rank's own
+            // invariants. Path-prefixed names (e.g. "species:genus") tag the
+            // descent with the child block that demanded it, so the same
+            // underlying rank issue surfaces under multiple paths when
+            // multiple descendants are present — useful diagnostic
+            // traceability per consumer perspective.
+            .whenNotNull(order, o -> o
+                .aggregate(order, "order")
+            )
+            .whenNotNull(family, f -> f
+                .aggregate(family, "family")
+                .aggregate(order, "family:order")
+                .isTrue(family.belongsToOrder(order), "familyBelongsToOrder")
+            )
+            .whenNotNull(genus, g -> g
+                .aggregate(genus, "genus")
+                .aggregate(family, "genus:family")
+                .aggregate(order, "genus:order")
+                .isTrue(genus.belongsToFamily(family), "genusBelongsToFamily")
+                .isTrue(genus.belongsToOrder(order), "genusBelongsToOrder")
+            )
+            .whenNotNull(species, s -> s
+                .aggregate(species, "species")
+                .aggregate(genus, "species:genus")
+                .aggregate(family, "species:family")
+                .aggregate(order, "species:order")
+                .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus")
+                .isTrue(species.belongsToFamily(family), "speciesBelongsToFamily")
+            )
+        ;
     }
 }

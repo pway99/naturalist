@@ -24,7 +24,7 @@ public record InsectOrderAggregate(
     }
 
     @Override
-    public InsectRankName name() {
+    public InsectOrderName name() {
         return order.name();
     }
 

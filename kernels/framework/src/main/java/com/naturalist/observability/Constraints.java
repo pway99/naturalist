@@ -266,6 +266,18 @@ public class Constraints {
     }
 
     /**
+     * Generic boolean predicate constraint — fires a violation under
+     * {@code name} when {@code value} is {@code false}. Use for invariants
+     * that don't fit any of the type-specific constraints (e.g. cross-field
+     * consistency rules expressed as a domain-specific predicate method on
+     * the owning record). Compose with {@link #whenNotNull} when the
+     * predicate depends on a nullable field's presence.
+     */
+    public Constraints isTrue(boolean value, String name) {
+        return add(new IsTrueConstraint(value, name));
+    }
+
+    /**
      * Conditional constraint guard — runs the block only when {@code value} is
      * non-null. Constraints added inside the block are appended to the same
      * builder (flat, not nested). Use for invariants that are conditional on a

@@ -47,6 +47,11 @@ public record InsectFamily(
                 value);
     }
 
+    /** True iff this family's order FK equals the given order name. */
+    public boolean belongsToOrder(InsectOrderName orderName) {
+        return this.orderName.equals(orderName);
+    }
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i

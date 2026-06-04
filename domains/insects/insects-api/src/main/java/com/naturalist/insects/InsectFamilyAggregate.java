@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.observability.Constraints;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -25,8 +26,25 @@ public record InsectFamilyAggregate(
     }
 
     @Override
-    public InsectRankName name() {
+    public InsectFamilyName name() {
         return family.name();
+    }
+
+    /** The order this family belongs to, exposed as a typed FK delegate. */
+    public InsectOrderName orderName() {
+        return family.orderName();
+    }
+
+    /**
+     * True iff this family's order FK equals the given order's name, OR the
+     * given order is null. Null tolerance lets a caller compose this check
+     * inside a {@code whenNotNull(family, ...)} block without firing a
+     * redundant {@code isTrue} violation when the order is missing —
+     * monotonic-fill already reports the missing-order case via its own
+     * violation.
+     */
+    public boolean belongsToOrder(@Nullable InsectOrderAggregate order) {
+        return order == null || family.belongsToOrder(order.name());
     }
 
     @Override
