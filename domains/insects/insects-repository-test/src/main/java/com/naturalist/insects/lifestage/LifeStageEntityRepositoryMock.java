@@ -19,8 +19,11 @@ public class LifeStageEntityRepositoryMock
 
     @Override
     public List<LifeStage> getByParentName(InsectRankName parentName) {
+        observer().arguments("getByParentName",
+                        i -> i.identifier(parentName, "parentName"))
+                .throwWhenInvalid();
         return testEntitySource().entityStream()
-                .filter(stage -> stage.name().parentSlug().equals(parentName.value()))
+                .filter(stage -> parentName.equals(stage.parentName()))
                 .toList();
     }
 }

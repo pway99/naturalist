@@ -14,7 +14,7 @@ import com.naturalist.observability.Constraint;
  * predicate depends on a nullable field's presence.
  */
 public record IsTrueConstraint(
-        boolean value,
+        Boolean value,
         String name
 ) implements Constraint<Boolean> {
 

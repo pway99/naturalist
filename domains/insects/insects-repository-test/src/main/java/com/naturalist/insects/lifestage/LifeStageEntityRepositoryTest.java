@@ -3,19 +3,25 @@ package com.naturalist.insects.lifestage;
 import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.habitat.HabitatProfile;
 import com.naturalist.habitat.HabitatZone;
 import com.naturalist.habitat.LightRegime;
 import com.naturalist.habitat.MoistureRegime;
+import com.naturalist.insects.InsectFamilyName;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageKind;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.insects.TestInsectsIdentifiers;
+import org.junit.jupiter.api.Test;
 
 import java.time.MonthDay;
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link LifeStageRepository.LifeStageEntityRepository}.
@@ -50,6 +56,7 @@ interface LifeStageEntityRepositoryTest
     default LifeStage newEntity() {
         return new EggStage(
                 LifeStageName.of(InsectSpeciesName.of("test-species-xx"), LifeStageKind.EGG),
+                InsectSpeciesName.of("test-species-xx"),
                 phenology(),
                 habitat(),
                 null,
@@ -61,6 +68,7 @@ interface LifeStageEntityRepositoryTest
     default LifeStage ghostEntity() {
         return new EggStage(
                 LifeStageName.of(InsectSpeciesName.of("test-ghost-xx"), LifeStageKind.EGG),
+                InsectSpeciesName.of("test-ghost-xx"),
                 phenology(),
                 habitat(),
                 null,
@@ -72,6 +80,7 @@ interface LifeStageEntityRepositoryTest
     default LifeStage modifiedEntity(LifeStage original) {
         return new EggStage(
                 original.name(),
+                original.parentName(),
                 phenology(),
                 habitat(),
                 new StageChemistryRole(StageChemistryRole.Role.ACQUISITION, RandomValue.string()),
@@ -79,6 +88,33 @@ interface LifeStageEntityRepositoryTest
                 RandomValue.string(),
                 RandomValue.string(),
                 RandomValue.string());
+    }
+
+    @Test
+    default void getByParentName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByParentName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("parentName");
+    }
+
+    @Test
+    default void getByParentName_returnsStagesForKnownParent() {
+        InsectFamilyName tachinidae = TestInsectsIdentifiers.InsectFamily.Tachinidae.name;
+
+        var results = repository().getByParentName(tachinidae);
+
+        assertThat(results)
+                .extracting(stage -> stage.name().value())
+                .contains("tachinidae-egg");
+    }
+
+    @Test
+    default void getByParentName_returnsEmptyForUnknownParent() {
+        InsectFamilyName unknown = TestInsectsIdentifiers.InsectFamily.NotFound.name;
+
+        var results = repository().getByParentName(unknown);
+
+        assertThat(results).isEmpty();
     }
 
     private static StagePhenology phenology() {
