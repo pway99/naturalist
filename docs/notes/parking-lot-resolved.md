@@ -61,3 +61,11 @@ and keep its original `PL-N` ID. IDs never reuse.
 
 **Resolved:** Pre-PL rename.
 **Resolution:** Apiary is its own domain module (Colony aggregate root). Insects module covers Insecta (six legs). SHB control: H. indica only (not S. feltiae).
+
+---
+
+## PL-12 — Promote `parentName` to a typed component on `LifeStage`
+
+**Raised:** 2026-05-20.
+**Resolved:** 2026-06-07 (R6 of the rank-FK normalization effort).
+**Resolution:** Implemented as option (a) — mirrored the `InsectImage.parentName` pattern verbatim, without waiting for the `LinneanRank` abstraction (the coupled question was not blocking). The `LifeStage` sealed interface and all four permits (`EggStage` / `LarvaStage` / `PupaStage` / `AdultStage`) gained a typed `InsectRankName parentName` as the second component, carrying the same `@JsonTypeInfo(property = "parentRank", include = As.EXTERNAL_PROPERTY)` + `@JsonSubTypes` dispatch `InsectImage` uses. The 60-record `life-stages.json` catalog migrated to carry `parentRank` + `parentName`; `LifeStageEntityRepositoryMock.getByParentName` now matches on class-qualified typed equality (rank-safe) instead of the slug substring, with argument validation and a full three-case contract test. The cross-encoding consistency invariant (`name.parentSlug().equals(parentName.value())`) was **not** added — only a null-check on `parentName`; pinning the two encodings together is folded into the still-deferred phase-3 conformance invariant. Landed in `730a218`; see [`plans/2026-06-07-insect-rank-fk-normalization-design.md`](../plans/2026-06-07-insect-rank-fk-normalization-design.md).

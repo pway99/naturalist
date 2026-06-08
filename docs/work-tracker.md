@@ -29,7 +29,7 @@ Last updated: 2026-06-07 (Insect rank-FK normalization + the ReadModel kernel ty
 
 ## Parking lot
 
-[`notes/parking-lot.md`](notes/parking-lot.md) — PL-2 closed out 2026-05-24 (moved to `parking-lot-resolved.md`). PL-12 (typed `LifeStage.parentName`) **resolved 2026-06-07** by R6 of the rank-FK effort (`InsectRankName parentName` on `LifeStage`) — its parking-lot entry still needs moving to `parking-lot-resolved.md`.
+[`notes/parking-lot.md`](notes/parking-lot.md) — PL-2 closed out 2026-05-24 (moved to `parking-lot-resolved.md`). PL-12 (typed `LifeStage.parentName`) **resolved 2026-06-07** by R6 of the rank-FK effort (`InsectRankName parentName` on `LifeStage`), moved to `parking-lot-resolved.md`.
 
 ## Recently completed
 
