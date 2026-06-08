@@ -25,12 +25,12 @@ class InsectsCatalogContributionTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    private final InsectQuery.SpeciesQuery speciesQuery =
-            new SpeciesQueryImpl(new SpeciesRepositoryMock(db));
     private final InsectQuery.FamilyQuery familyQuery =
             new FamilyQueryImpl(new FamilyRepositoryMock(db));
     private final InsectQuery.GenusQuery genusQuery =
-            new GenusQueryImpl(new GenusRepositoryMock(db));
+            new GenusQueryImpl(new GenusRepositoryMock(db), familyQuery);
+    private final InsectQuery.SpeciesQuery speciesQuery =
+            new SpeciesQueryImpl(new SpeciesRepositoryMock(db), genusQuery);
     private final InsectQuery.OrderQuery orderQuery =
             new OrderQueryImpl(new OrderRepositoryMock(db));
     private final InsectsCatalogContribution contribution =

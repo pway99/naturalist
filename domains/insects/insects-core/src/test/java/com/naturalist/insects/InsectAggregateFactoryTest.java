@@ -23,10 +23,10 @@ class InsectAggregateFactoryTest {
     FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
     OrderRepositoryMock orderRepository = new OrderRepositoryMock(db);
 
-    InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
-    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository);
     InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
+    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
+    InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
     InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
 
     InsectAggregateFactory factory =

@@ -19,10 +19,10 @@ class InsectQueryImplTest {
     GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
     InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(db);
     OrderRepositoryMock orderRepository = new OrderRepositoryMock(db);
-    InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository);
     InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
     InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository);
+    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
+    InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
     InsectQuery.FunctionalRoleQuery functionalRoleQuery = new FunctionalRoleQueryImpl(functionalRoleRepository);
     InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
     InsectQuery insectQuery = new InsectQueryImpl(

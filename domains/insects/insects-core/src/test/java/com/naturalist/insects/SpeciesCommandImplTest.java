@@ -22,7 +22,9 @@ class SpeciesCommandImplTest
 
     SpeciesRepositoryMock repository = new SpeciesRepositoryMock(db);
     InsectCommand.SpeciesCommand command = new SpeciesCommandImpl(repository);
-    InsectQuery.SpeciesQuery query = new SpeciesQueryImpl(repository);
+    InsectQuery.GenusQuery genusQuery =
+            new GenusQueryImpl(new GenusRepositoryMock(db), new FamilyQueryImpl(new FamilyRepositoryMock(db)));
+    InsectQuery.SpeciesQuery query = new SpeciesQueryImpl(repository, genusQuery);
 
     @Override
     public EntityCommand<InsectSpeciesName, InsectSpecies> command() {
