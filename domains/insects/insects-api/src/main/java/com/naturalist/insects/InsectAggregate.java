@@ -1,12 +1,12 @@
 package com.naturalist.insects;
 
-import com.naturalist.ddd.Aggregate;
+import com.naturalist.ddd.ReadModel;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
 /**
  * The catalog-view aggregate for an insect at Oak Vista — its rank record (family,
  * genus, or species, depending on identification confidence) and the photographic
- * field record assembled into a single consistency boundary.
+ * field record assembled into a single read-side view.
  *
  * <p>Sealed across the four Linnaean ranks that currently carry catalog entities:
  * <ul>
@@ -44,7 +44,7 @@ import com.naturalist.insects.InsectEntityCollections.ImageCollection;
  * returns {@code Optional.empty()} for subspecies-rank requests; this interface
  * gains a {@code InsectSubspeciesAggregate} permit when the entity lands.
  */
-public sealed interface InsectAggregate extends Aggregate
+public sealed interface InsectAggregate extends ReadModel
         permits InsectOrderAggregate, InsectFamilyAggregate, InsectGenusAggregate, InsectSpeciesAggregate {
 
     /** The typed slug of the root rank record — polymorphic across the sealed permits. */

@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.ddd.Aggregate;
+import com.naturalist.ddd.ReadModel;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.observability.Constraints;
@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * The Insect aggregate — sum-of-parts in-memory composition of everything known
+ * The Insect read model — sum-of-parts in-memory composition of everything known
  * about an insect at Oak Vista, at whatever identification depth has been
  * reached.
  *
@@ -29,10 +29,10 @@ import java.util.function.Consumer;
  *       {@code parentName}).</li>
  * </ul>
  *
- * <p>Not persisted — the aggregate's constituent parts live in their own
+ * <p>Not persisted — the read model's constituent parts live in their own
  * repositories. {@code Insect} is the in-memory composition that orchestrates
  * invariants across them. {@code identifiedTo()} exposes the most-specific
- * identified rank's name; the {@code with*} mutators refine the aggregate
+ * identified rank's name; the {@code with*} mutators refine the read model
  * (workflow case) or replace constituent parts.
  *
  * <p><b>Construction is always permissible.</b> The record's canonical
@@ -41,7 +41,7 @@ import java.util.function.Consumer;
  * a consumer asks the {@link com.naturalist.observability.Observer} to walk
  * them. This is the project's standard pattern (see {@code domains/CLAUDE.md}
  * and {@code InsectSpeciesAggregate} for reference). Consumers are responsible
- * for observing at boundaries before persisting / acting on an aggregate.
+ * for observing at boundaries before acting on a read model.
  *
  * <p>Structural invariants declared by {@link #invariants()}:
  * <ul>
@@ -50,7 +50,7 @@ import java.util.function.Consumer;
  *       {@link ImageCollection#empty()} /
  *       {@link LifeStageCollection#empty()} for the empty state.</li>
  *   <li><b>Per-rank descent</b> — each present rank is descended into once
- *       via its own {@code whenNotNull(rank, r -> r.aggregate(rank, name))}
+ *       via its own {@code whenNotNull(rank, r -> r.readModel(rank, name))}
  *       block. Closes the leaf-rank gap (the most-specific identified rank
  *       still gets its own invariants walked).</li>
  *   <li><b>Ancestor-presence</b> — when a child rank is set, each of its
@@ -84,10 +84,10 @@ public record Insect(
         @Nullable InsectGenusAggregate genus,
         @Nullable InsectSpeciesAggregate species,
         LifeStageCollection lifeStages
-) implements Aggregate {
+) implements ReadModel {
 
     /**
-     * Zero-state aggregate — empty observations, no rank identified, empty
+     * Zero-state read model — empty observations, no rank identified, empty
      * life stages. Useful as the starting point for progressive refinement
      * via the {@code with*} mutators.
      */
@@ -113,22 +113,22 @@ public record Insect(
         return Optional.empty();
     }
 
-    /** The order's name, if the aggregate carries an order. */
+    /** The order's name, if the read model carries an order. */
     public Optional<InsectOrderName> orderName() {
         return order == null ? Optional.empty() : Optional.of(order.name());
     }
 
-    /** The family's name, if the aggregate carries a family. */
+    /** The family's name, if the read model carries a family. */
     public Optional<InsectFamilyName> familyName() {
         return family == null ? Optional.empty() : Optional.of(family.name());
     }
 
-    /** The genus's name, if the aggregate carries a genus. */
+    /** The genus's name, if the read model carries a genus. */
     public Optional<InsectGenusName> genusName() {
         return genus == null ? Optional.empty() : Optional.of(genus.name());
     }
 
-    /** The species's name, if the aggregate carries a species. */
+    /** The species's name, if the read model carries a species. */
     public Optional<InsectSpeciesName> speciesName() {
         return species == null ? Optional.empty() : Optional.of(species.name());
     }
@@ -170,20 +170,20 @@ public record Insect(
             // the former skip-level checks (speciesBelongsToFamily,
             // genusBelongsToOrder) are structurally impossible and gone.
             .whenNotNull(order, o -> o
-                .aggregate(order, "order")
+                .readModel(order, "order")
             )
             .whenNotNull(family, f -> f
-                .aggregate(family, "family")
+                .readModel(family, "family")
                 .notNull(order, "family:order")
                 .isTrue(family.belongsToOrder(order), "familyBelongsToOrder")
             )
             .whenNotNull(genus, g -> g
-                .aggregate(genus, "genus")
+                .readModel(genus, "genus")
                 .notNull(family, "genus:family")
                 .isTrue(genus.belongsToFamily(family), "genusBelongsToFamily")
             )
             .whenNotNull(species, s -> s
-                .aggregate(species, "species")
+                .readModel(species, "species")
                 .notNull(genus, "species:genus")
                 .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus")
             )

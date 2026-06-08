@@ -67,6 +67,19 @@ public class Constraints {
         return add(new AggregateOrNullConstraint<>(o, valueFunction, name));
     }
 
+    /**
+     * Validate a non-null {@link ReadModel} child and descend into its invariants.
+     * Type-specific counterpart to {@link #observable} for read-model children —
+     * assembled projections such as {@code Insect} or the rank views.
+     */
+    public <R extends ReadModel> Constraints readModel(R readModel, String name) {
+        return readModel(readModel, Function.identity(), name);
+    }
+
+    public <O, R extends ReadModel> Constraints readModel(O o, Function<O, R> valueFunction, String name) {
+        return add(new ObservableConstraint<>(o, valueFunction, name));
+    }
+
     public <V extends ValueObject> Constraints valueObject(V valueObject, String name) {
         return valueObject(valueObject, Function.identity(), name);
     }
