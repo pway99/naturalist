@@ -26,7 +26,6 @@ class InsectSpeciesTest {
         return new InsectSpecies(
                 InsectSpeciesName.of("battus-philenor"),
                 InsectGenusName.of("battus"),
-                InsectFamilyName.of("papilionidae"),
                 TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),

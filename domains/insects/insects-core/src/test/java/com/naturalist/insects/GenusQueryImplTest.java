@@ -56,4 +56,20 @@ class GenusQueryImplTest
                 .extracting(g -> g.name().value())
                 .contains("halictus");
     }
+
+    @Test
+    void forOrderName_rejectsNull() {
+        assertThatThrownBy(() -> query.forOrderName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("orderName");
+    }
+
+    @Test
+    void forOrderName_returnsGeneraInThatOrderViaFanOut() {
+        GenusCollection collection = query.forOrderName(InsectOrderName.of("hymenoptera"));
+
+        assertThat(collection.stream())
+                .extracting(g -> g.name().value())
+                .contains("halictus");
+    }
 }

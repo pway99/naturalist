@@ -108,7 +108,6 @@ class InsectAggregateTest {
         return new InsectSpecies(
                 InsectSpeciesName.of(RandomValue.string()),
                 InsectGenusName.of("hippodamia"),
-                InsectFamilyName.of("coccinellidae"),
                 TaxonomicSpecies.of("convergens"),
                 description(),
                 Set.of(),
@@ -122,7 +121,6 @@ class InsectAggregateTest {
         return new InsectGenus(
                 InsectGenusName.of(RandomValue.string()),
                 InsectFamilyName.of("papilionidae"),
-                InsectOrderName.of("lepidoptera"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),

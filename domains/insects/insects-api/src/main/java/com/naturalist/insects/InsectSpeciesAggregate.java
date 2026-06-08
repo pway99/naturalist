@@ -34,11 +34,6 @@ public record InsectSpeciesAggregate(
         return species.genusName();
     }
 
-    /** The family this species belongs to, exposed as a typed FK delegate. */
-    public InsectFamilyName familyName() {
-        return species.familyName();
-    }
-
     /**
      * True iff this species's genus FK equals the given genus's name, OR the
      * given genus is null. Null tolerance lets a caller compose this check
@@ -47,15 +42,6 @@ public record InsectSpeciesAggregate(
      */
     public boolean belongsToGenus(@Nullable InsectGenusAggregate genus) {
         return genus == null || species.belongsToGenus(genus.name());
-    }
-
-    /**
-     * True iff this species's family FK equals the given family's name, OR
-     * the given family is null. Same null-tolerance rationale as
-     * {@link #belongsToGenus}.
-     */
-    public boolean belongsToFamily(@Nullable InsectFamilyAggregate family) {
-        return family == null || species.belongsToFamily(family.name());
     }
 
     @Override

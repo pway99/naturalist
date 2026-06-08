@@ -87,8 +87,6 @@ class InsectRepository {
             extends EntityRepository<InsectSpeciesName, InsectSpecies> {
 
         List<InsectSpecies> getByGenusName(InsectGenusName genusName);
-
-        List<InsectSpecies> getByFamilyName(InsectFamilyName familyName);
     }
 
     protected interface ImageRepository
@@ -107,8 +105,6 @@ class InsectRepository {
             extends EntityRepository<InsectGenusName, InsectGenus> {
 
         List<InsectGenus> getByFamilyName(InsectFamilyName familyName);
-
-        List<InsectGenus> getByOrderName(InsectOrderName orderName);
     }
 
     protected interface FunctionalRoleRepository

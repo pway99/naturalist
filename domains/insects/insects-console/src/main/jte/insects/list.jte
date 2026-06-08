@@ -36,8 +36,8 @@
             !{var guilds = role == null ? Set.<FunctionalGuild>of() : role.guilds();}
             !{var beneficial = role != null && role.beneficial();}
             !{var commonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
-            !{var family = familyByName.get(s.familyName());}
             !{var genus = genusByName.get(s.genusName());}
+            !{var family = genus != null ? familyByName.get(genus.familyName()) : null;}
             <article>
                 <header>
                     <a href="/insects/${s.name().value()}">
@@ -49,7 +49,7 @@
                 </header>
                 <dl class="taxonomy">
                     <dt>fam.</dt>
-                    <dd>${family != null ? family.family().value() : s.familyName().value()}</dd>
+                    <dd>${family != null ? family.family().value() : (genus != null ? genus.familyName().value() : "—")}</dd>
                     <dt>gen.</dt>
                     <dd><em>${genus != null ? genus.genus().value() : s.genusName().value()}</em></dd>
                     <dt>sp.</dt>

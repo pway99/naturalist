@@ -56,7 +56,6 @@ class SpeciesCommandImplTest
         return new InsectSpecies(
                 InsectSpeciesName.of("test-command-species-xx"),
                 InsectGenusName.of("carabus"),
-                InsectFamilyName.of("carabidae"),
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
@@ -71,7 +70,6 @@ class SpeciesCommandImplTest
         return new InsectSpecies(
                 InsectSpeciesName.of("test-command-ghost-xx"),
                 InsectGenusName.of("carabus"),
-                InsectFamilyName.of("carabidae"),
                 TaxonomicSpecies.of("ghost"),
                 description(),
                 Set.of(),
@@ -86,7 +84,6 @@ class SpeciesCommandImplTest
         return new InsectSpecies(
                 original.name(),
                 InsectGenusName.of("carabus"),
-                InsectFamilyName.of("carabidae"),
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),

@@ -2,7 +2,6 @@
   {
     "name": "hippodamia-convergens",
     "genusName": "hippodamia",
-    "familyName": "coccinellidae",
     "epithet": "convergens",
     "description": {
       "preschool": "The ladybug has a bright red shell with black spots. Both the ladybug and its funny-looking spiky black baby eat aphids — the tiny green bugs that hurt our tomato plants. If you see a ladybug in the garden, it is doing important work!",
@@ -21,7 +20,6 @@
   {
     "name": "blattella-vaga",
     "genusName": "blattella",
-    "familyName": "ectobiidae",
     "epithet": "vaga",
     "description": {
       "preschool": "This little brown roach lives outside in the garden — not inside the house. It hides under leaves and rocks and helps clean up dead plant pieces. It is also food for lizards, toads, and birds that visit the garden.",
@@ -40,7 +38,6 @@
   {
     "name": "xylocopa-varipuncta",
     "genusName": "xylocopa",
-    "familyName": "apidae",
     "epithet": "varipuncta",
     "description": {
       "preschool": "The Valley Carpenter Bee is the biggest bee in California! The females are all black and shiny, and the males are golden and fuzzy. They drill holes in wood to make their nests. They are very loud but gentle — the boys cannot even sting.",
@@ -59,7 +56,6 @@
   {
     "name": "vanessa-cardui",
     "genusName": "vanessa",
-    "familyName": "nymphalidae",
     "epithet": "cardui",
     "description": {
       "preschool": "The Painted Lady butterfly has orange, black, and white wings with beautiful patterns. Every year it travels a very long way — farther than any other butterfly in the world. When it visits our garden flowers, it helps pollinate them.",
@@ -78,7 +74,6 @@
   {
     "name": "battus-philenor",
     "genusName": "battus",
-    "familyName": "papilionidae",
     "epithet": "philenor",
     "description": {
       "preschool": "The Pipevine Swallowtail is a beautiful dark butterfly with blue and green shining wings. Its caterpillars only eat one special plant — the California Pipevine. We found their eggs on our Pipevine plant in April! We must never spray anything on the Pipevine because it would hurt these special butterflies.",
@@ -154,7 +149,6 @@
   {
     "name": "colias-eurytheme",
     "genusName": "colias",
-    "familyName": "pieridae",
     "epithet": "eurytheme",
     "description": {
       "preschool": "This bright yellow butterfly has wings the colour of sunshine with a little dark edge, like someone drew a frame around them. It loves to visit flowers in the garden, sipping nectar and carrying pollen from one bloom to the next. It is one of the most common butterflies you will see flying over our garden.",

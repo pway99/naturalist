@@ -217,10 +217,10 @@ public class InsectsController {
             allImages.addAll(insectQuery.images().forParentName(species.name()).stream().toList());
             insectQuery.functionalRoles().getByParentName(species.name())
                     .ifPresent(role -> rolesBySpecies.put(species.name(), role));
-            familyByName.computeIfAbsent(species.familyName(),
-                    n -> insectQuery.families().getByName(n).orElseThrow());
-            genusByName.computeIfAbsent(species.genusName(),
+            InsectGenus genus = genusByName.computeIfAbsent(species.genusName(),
                     n -> insectQuery.genera().getByName(n).orElseThrow());
+            familyByName.computeIfAbsent(genus.familyName(),
+                    n -> insectQuery.families().getByName(n).orElseThrow());
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.of(allImages);
         model.addAttribute("speciesPage", speciesPage);
@@ -414,7 +414,7 @@ public class InsectsController {
         }
         InsectSpecies s = species.get();
         InsectGenus genus = insectQuery.genera().getByName(s.genusName()).orElseThrow();
-        InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
+        InsectFamily family = insectQuery.families().getByName(genus.familyName()).orElseThrow();
         InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
         InsectEntityCollections.ImageCollection images = insectQuery.images().forParentName(speciesName);
         List<LifeStage> stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
@@ -463,7 +463,7 @@ public class InsectsController {
         }
         InsectSpecies s = species.get();
         InsectGenus genus = insectQuery.genera().getByName(s.genusName()).orElseThrow();
-        InsectFamily family = insectQuery.families().getByName(s.familyName()).orElseThrow();
+        InsectFamily family = insectQuery.families().getByName(genus.familyName()).orElseThrow();
         InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
         var stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
                 .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))

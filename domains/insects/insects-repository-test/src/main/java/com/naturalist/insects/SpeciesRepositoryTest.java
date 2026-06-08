@@ -49,7 +49,6 @@ interface SpeciesRepositoryTest
         return new InsectSpecies(
                 InsectSpeciesName.of("test-species-xx"),
                 InsectGenusName.of("carabus"),
-                InsectFamilyName.of("carabidae"),
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
@@ -64,7 +63,6 @@ interface SpeciesRepositoryTest
         return new InsectSpecies(
                 InsectSpeciesName.of("test-ghost-xx"),
                 InsectGenusName.of("carabus"),
-                InsectFamilyName.of("carabidae"),
                 TaxonomicSpecies.of("ghost"),
                 description(),
                 Set.of(),
@@ -79,7 +77,6 @@ interface SpeciesRepositoryTest
         return new InsectSpecies(
                 original.name(),
                 InsectGenusName.of("carabus"),
-                InsectFamilyName.of("carabidae"),
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
@@ -123,7 +120,6 @@ interface SpeciesRepositoryTest
         InsectSpecies underHalictus = new InsectSpecies(
                 seeded.name(),
                 halictus,
-                TestInsectsIdentifiers.InsectFamily.Halictidae.name,
                 seeded.epithet(),
                 seeded.description(),
                 seeded.commonNames(),
@@ -148,31 +144,4 @@ interface SpeciesRepositoryTest
         assertThat(results).isEmpty();
     }
 
-    @Test
-    default void getByFamilyName_rejectsNull() {
-        assertThatThrownBy(() -> repository().getByFamilyName(null))
-                .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContaining("familyName");
-    }
-
-    @Test
-    default void getByFamilyName_returnsSpeciesWithMatchingFamilyName() {
-        InsectFamilyName papilionidae = TestInsectsIdentifiers.InsectFamily.Papilionidae.name;
-
-        var results = repository().getByFamilyName(papilionidae);
-
-        assertThat(results)
-                .extracting(InsectSpecies::name)
-                .extracting(InsectSpeciesName::value)
-                .contains("battus-philenor");
-    }
-
-    @Test
-    default void getByFamilyName_returnsEmptyForUnknownFamily() {
-        InsectFamilyName unknown = TestInsectsIdentifiers.InsectFamily.NotFound.name;
-
-        var results = repository().getByFamilyName(unknown);
-
-        assertThat(results).isEmpty();
-    }
 }

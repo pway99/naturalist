@@ -23,11 +23,9 @@ import java.util.function.Consumer;
  * genus record is never replaced or migrated.
  * <p>
  * The {@link #familyName} component is the upward typed reference to the
- * parent {@link InsectFamily}. The {@link #orderName} component is the
- * grandparent typed reference to the parent {@link InsectOrder}. When the
- * family epithet or order is needed for display, the consumer resolves the
- * parent entity — the genus does not carry local copies of ancestor epithets
- * beyond these direct FK references.
+ * parent {@link InsectFamily}. When the order is needed for display, the
+ * consumer resolves the parent family entity — the genus carries only the
+ * direct family FK.
  * <p>
  * Per-stage data lives on the {@link com.naturalist.insects.lifestage.LifeStage}
  * records keyed by {@code (name, stageKind)}, queried via
@@ -36,7 +34,6 @@ import java.util.function.Consumer;
 public record InsectGenus(
         InsectGenusName name,
         InsectFamilyName familyName,
-        InsectOrderName orderName,
         TaxonomicGenus genus,
         Description description,
         Set<CommonName> commonNames,
@@ -44,8 +41,7 @@ public record InsectGenus(
 ) implements NamedEntity<InsectGenusName>, LinnaeanGenus<InsectFamilyName> {
 
     public InsectGenus withPlacedIn(@Nullable Clade value) {
-        return new InsectGenus(name, familyName, orderName, genus,
-                description, commonNames, value);
+        return new InsectGenus(name, familyName, genus, description, commonNames, value);
     }
 
     /** True iff this genus's family FK equals the given family name. */
@@ -53,17 +49,11 @@ public record InsectGenus(
         return this.familyName.equals(familyName);
     }
 
-    /** True iff this genus's order FK equals the given order name. */
-    public boolean belongsToOrder(InsectOrderName orderName) {
-        return this.orderName.equals(orderName);
-    }
-
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
                 .entityName(familyName, "familyName")
-                .entityName(orderName, "orderName")
                 .namedValue(genus, "genus")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames");

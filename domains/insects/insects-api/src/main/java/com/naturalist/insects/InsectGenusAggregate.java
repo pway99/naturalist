@@ -35,11 +35,6 @@ public record InsectGenusAggregate(
         return genus.familyName();
     }
 
-    /** The order this genus belongs to, exposed as a typed FK delegate. */
-    public InsectOrderName orderName() {
-        return genus.orderName();
-    }
-
     /**
      * True iff this genus's family FK equals the given family's name, OR the
      * given family is null. Null tolerance lets a caller compose this check
@@ -50,19 +45,6 @@ public record InsectGenusAggregate(
      */
     public boolean belongsToFamily(@Nullable InsectFamilyAggregate family) {
         return family == null || genus.belongsToFamily(family.name());
-    }
-
-    /**
-     * True iff this genus's order FK equals the given order's name, OR the
-     * given order is null. {@code InsectGenus} carries {@code orderName} as a
-     * denormalized direct FK (alongside {@code familyName}); this check
-     * catches drift between {@code genus.orderName} and the actual order
-     * the aggregate composes — a gap left if only the immediate-parent
-     * (family) FK were validated. Same null-tolerance rationale as
-     * {@link #belongsToFamily}.
-     */
-    public boolean belongsToOrder(@Nullable InsectOrderAggregate order) {
-        return order == null || genus.belongsToOrder(order.name());
     }
 
     @Override

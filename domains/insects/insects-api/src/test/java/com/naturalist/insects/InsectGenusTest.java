@@ -27,7 +27,6 @@ class InsectGenusTest {
         return new InsectGenus(
                 InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
-                InsectOrderName.of("lepidoptera"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),

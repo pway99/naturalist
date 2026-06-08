@@ -24,14 +24,4 @@ class SpeciesRepositoryMock
                 .filter(s -> genusName.equals(s.genusName()))
                 .toList();
     }
-
-    @Override
-    public List<InsectSpecies> getByFamilyName(InsectFamilyName familyName) {
-        observer().arguments("getByFamilyName",
-                        i -> i.entityName(familyName, "familyName"))
-                .throwWhenInvalid();
-        return testEntitySource().entityStream()
-                .filter(s -> familyName.equals(s.familyName()))
-                .toList();
-    }
 }

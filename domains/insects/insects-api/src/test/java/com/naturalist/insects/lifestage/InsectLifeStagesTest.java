@@ -187,7 +187,6 @@ class InsectLifeStagesTest {
         return new InsectGenus(
                 InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
-                InsectOrderName.of("lepidoptera"),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),
@@ -198,7 +197,6 @@ class InsectLifeStagesTest {
         return new InsectSpecies(
                 InsectSpeciesName.of("battus-philenor"),
                 InsectGenusName.of("battus"),
-                InsectFamilyName.of("papilionidae"),
                 TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),

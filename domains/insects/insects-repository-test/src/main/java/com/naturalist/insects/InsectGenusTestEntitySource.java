@@ -19,10 +19,6 @@ public class InsectGenusTestEntitySource extends TestEntitySource<InsectGenusNam
                 ForeignKeyConstraint.of(
                         "familyName",
                         InsectGenus::familyName,
-                        InsectFamilyTestEntitySource.class),
-                ForeignKeyConstraint.of(
-                        "orderName",
-                        InsectGenus::orderName,
-                        InsectOrderTestEntitySource.class));
+                        InsectFamilyTestEntitySource.class));
     }
 }

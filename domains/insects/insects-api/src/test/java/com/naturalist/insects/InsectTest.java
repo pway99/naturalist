@@ -288,7 +288,7 @@ class InsectTest {
 
         InvariantObservation result = mo.observable(attempted, "attempted");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .contains(".attempted.species:genus", ".attempted.species:family");
+                .contains(".attempted.species:genus");
     }
 
     // ----- invariants() cross-rank FK consistency -----
@@ -319,7 +319,6 @@ class InsectTest {
         InsectGenusAggregate mismatched = InsectGenusAggregate.of(new InsectGenus(
                 genusName(),
                 InsectFamilyName.of("syrphidae"),
-                orderName(),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),
@@ -336,59 +335,11 @@ class InsectTest {
     }
 
     @Test
-    void genusWithMismatchedOrderFkReportsGenusBelongsToOrderViolation() {
-        var mo = observer.forMethod("genusWithMismatchedOrderFkReportsGenusBelongsToOrderViolation");
-        InsectGenusAggregate mismatched = InsectGenusAggregate.of(new InsectGenus(
-                genusName(),
-                familyName(),
-                InsectOrderName.of("diptera"),
-                TaxonomicGenus.of("Battus"),
-                description(),
-                Set.of(),
-                null));
-        Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate())
-                .withGenus(mismatched);
-
-        InvariantObservation result = mo.observable(insect, "insect");
-
-        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .contains(".insect.genusBelongsToOrder");
-    }
-
-    @Test
-    void speciesWithMismatchedFamilyFkReportsSpeciesBelongsToFamilyViolation() {
-        var mo = observer.forMethod("speciesWithMismatchedFamilyFkReportsSpeciesBelongsToFamilyViolation");
-        InsectSpeciesAggregate mismatched = InsectSpeciesAggregate.of(new InsectSpecies(
-                speciesName(),
-                genusName(),
-                InsectFamilyName.of("cicadellidae"),
-                TaxonomicSpecies.of("philenor"),
-                description(),
-                Set.of(),
-                null, null,
-                null,
-                null, null, null, null, null, null, null));
-        Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate())
-                .withGenus(genusAggregate())
-                .withSpecies(mismatched);
-
-        InvariantObservation result = mo.observable(insect, "insect");
-
-        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .contains(".insect.speciesBelongsToFamily");
-    }
-
-    @Test
     void speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation() {
         var mo = observer.forMethod("speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation");
         InsectSpeciesAggregate mismatched = InsectSpeciesAggregate.of(new InsectSpecies(
                 speciesName(),
                 InsectGenusName.of("empoasca"),
-                familyName(),
                 TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),
@@ -448,7 +399,6 @@ class InsectTest {
         return InsectGenusAggregate.of(new InsectGenus(
                 genusName(),
                 familyName(),
-                orderName(),
                 TaxonomicGenus.of("Battus"),
                 description(),
                 Set.of(),
@@ -459,7 +409,6 @@ class InsectTest {
         return InsectSpeciesAggregate.of(new InsectSpecies(
                 speciesName(),
                 genusName(),
-                familyName(),
                 TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),

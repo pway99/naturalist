@@ -62,12 +62,11 @@ import java.util.function.Consumer;
  *       present, the child's typed ancestor-FK field must equal the
  *       ancestor's name. One {@code isTrue} check per direct FK on each
  *       rank entity: {@code .familyBelongsToOrder},
- *       {@code .genusBelongsToFamily}, {@code .genusBelongsToOrder},
- *       {@code .speciesBelongsToGenus}, {@code .speciesBelongsToFamily}.
- *       Each denormalized FK gets its own check — a {@code species.familyName}
- *       that drifts from the actual {@code family.name} is caught even when
- *       {@code species.genusName} and {@code genus.familyName} both still
- *       match.</li>
+ *       {@code .genusBelongsToFamily}, {@code .speciesBelongsToGenus}.
+ *       With the grandparent FKs removed there is exactly one path up the
+ *       tree, so the former skip-level checks ({@code genusBelongsToOrder},
+ *       {@code speciesBelongsToFamily}) are structurally impossible and
+ *       gone.</li>
  * </ul>
  *
  * <p>Cross-rank clade invariants (placement-chain monotonicity, resolvable
@@ -163,36 +162,30 @@ public record Insect(
         return i -> i
             .behavioralCollection(observations, "observations")
             .behavioralCollection(lifeStages, "lifeStages")
-            // One block per present rank. Each block uses aggregate(...) for
-            // every rank reference — it does both the presence check (null
-            // value fires a violation) and the descent into that rank's own
-            // invariants. Path-prefixed names (e.g. "species:genus") tag the
-            // descent with the child block that demanded it, so the same
-            // underlying rank issue surfaces under multiple paths when
-            // multiple descendants are present — useful diagnostic
-            // traceability per consumer perspective.
+            // One descent per present rank (R1): a rank's own invariants are
+            // walked exactly once, in its own block. Ancestor *presence* is a
+            // notNull check (not a re-descent), and the single remaining FK
+            // check per rank validates the immediate-parent typed FK. With the
+            // grandparent FKs removed there is exactly one path up the tree, so
+            // the former skip-level checks (speciesBelongsToFamily,
+            // genusBelongsToOrder) are structurally impossible and gone.
             .whenNotNull(order, o -> o
                 .aggregate(order, "order")
             )
             .whenNotNull(family, f -> f
                 .aggregate(family, "family")
-                .aggregate(order, "family:order")
+                .notNull(order, "family:order")
                 .isTrue(family.belongsToOrder(order), "familyBelongsToOrder")
             )
             .whenNotNull(genus, g -> g
                 .aggregate(genus, "genus")
-                .aggregate(family, "genus:family")
-                .aggregate(order, "genus:order")
+                .notNull(family, "genus:family")
                 .isTrue(genus.belongsToFamily(family), "genusBelongsToFamily")
-                .isTrue(genus.belongsToOrder(order), "genusBelongsToOrder")
             )
             .whenNotNull(species, s -> s
                 .aggregate(species, "species")
-                .aggregate(genus, "species:genus")
-                .aggregate(family, "species:family")
-                .aggregate(order, "species:order")
+                .notNull(genus, "species:genus")
                 .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus")
-                .isTrue(species.belongsToFamily(family), "speciesBelongsToFamily")
             )
         ;
     }

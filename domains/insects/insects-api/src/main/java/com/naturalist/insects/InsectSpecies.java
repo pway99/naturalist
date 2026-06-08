@@ -19,13 +19,11 @@ import java.util.function.Consumer;
 /**
  * A catalogued insect species (class Insecta) observed or documented at Oak Vista.
  * <p>
- * Each species carries typed upward FKs to its parent {@link InsectGenus} and
- * {@link InsectFamily} (both required — every catalogued species is identified to genus),
+ * Each species carries a typed upward FK to its parent {@link InsectGenus},
  * its own species epithet (e.g. {@code "philenor"}), and a four-level {@link Description}
  * embodying Durrell's principle — the same ecological truth rendered at preschool,
- * elementary, secondary, and university resolution. Order and family epithets are
- * derivable from the parent family record; the genus epithet is on the parent genus
- * record.
+ * elementary, secondary, and university resolution. Family and order are reached by
+ * resolving the parent genus's family FK.
  * <p>
  * Functional ecology — which {@link FunctionalGuild} roles the species fills and
  * whether it is a beneficial in the garden-management sense — is held in
@@ -83,7 +81,6 @@ import java.util.function.Consumer;
 public record InsectSpecies(
         InsectSpeciesName name,
         InsectGenusName genusName,
-        InsectFamilyName familyName,
         TaxonomicSpecies epithet,
         Description description,
         Set<CommonName> commonNames,
@@ -101,7 +98,7 @@ public record InsectSpecies(
 
     public InsectSpecies withPlacedIn(@Nullable Clade value) {
         return new InsectSpecies(
-                name, genusName, familyName, epithet, description, commonNames,
+                name, genusName, epithet, description, commonNames,
                 sightingNotes, identificationFeatures,
                 value,
                 chemicalDefense, voltinism, habitatProfile, habitatRequirements,
@@ -113,17 +110,11 @@ public record InsectSpecies(
         return this.genusName.equals(genusName);
     }
 
-    /** True iff this species's family FK equals the given family name. */
-    public boolean belongsToFamily(InsectFamilyName familyName) {
-        return this.familyName.equals(familyName);
-    }
-
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
                 .entityName(genusName, "genusName")
-                .entityName(familyName, "familyName")
                 .namedValue(epithet, "epithet")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames")

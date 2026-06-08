@@ -2,7 +2,6 @@
   {
     "name": "halictus",
     "familyName": "halictidae",
-    "orderName": "hymenoptera",
     "genus": "Halictus",
     "description": {
       "preschool": "Sweat bees are tiny shiny green or black bees. They love flowers and carry pollen from one flower to another, which helps our vegetables and fruit trees make seeds and fruit. They are gentle and very helpful.",
@@ -25,7 +24,6 @@
   {
     "name": "andrena",
     "familyName": "andrenidae",
-    "orderName": "hymenoptera",
     "genus": "Andrena",
     "description": {
       "preschool": "Mining bees dig little tunnels in the ground to make their nests. They are fuzzy and carry pollen on their back legs to feed their babies. Each mother bee builds her own tunnel and is a gentle garden helper.",
@@ -48,7 +46,6 @@
   {
     "name": "chrysoperla",
     "familyName": "chrysopidae",
-    "orderName": "neuroptera",
     "genus": "Chrysoperla",
     "description": {
       "preschool": "The green lacewing is one of the most beautiful insects in the garden — a brilliant lime green body, long feathery antennae, and enormous wings that look like lace. Its babies, called Aphid Lions, eat the tiny green bugs that hurt our tomatoes. The mother lays her eggs on magical little silk stalks standing up like lollipops from the leaf.",
@@ -67,7 +64,6 @@
   {
     "name": "empoasca",
     "familyName": "cicadellidae",
-    "orderName": "hemiptera",
     "genus": "Empoasca",
     "description": {
       "preschool": "This tiny bright green insect is called a leafhopper. It jumps away very quickly if you get too close — faster than a flea! It drinks sap from plant leaves the way you drink through a straw. Too many of them can make the edges of leaves turn yellow and brown, which means the plant is not feeling well.",
@@ -90,7 +86,6 @@
   {
     "name": "hippodamia",
     "familyName": "coccinellidae",
-    "orderName": "coleoptera",
     "genus": "Hippodamia",
     "description": {
       "preschool": "Hippodamia ladybugs are bright orange-red beetles with small black spots. They are some of the most common ladybugs in California. Both the adults and their little spiky larvae eat aphids by the hundreds, protecting our vegetables.",
@@ -109,7 +104,6 @@
   {
     "name": "blattella",
     "familyName": "ectobiidae",
-    "orderName": "blattodea",
     "genus": "Blattella",
     "description": {
       "preschool": "Blattella roaches are small outdoor cockroaches. They hide under stones and leaves during the day and come out to eat dead plant material at night. They are quiet garden cleaners — they break down old leaves into food for the soil.",
@@ -127,7 +121,6 @@
   {
     "name": "xylocopa",
     "familyName": "apidae",
-    "orderName": "hymenoptera",
     "genus": "Xylocopa",
     "description": {
       "preschool": "Carpenter bees are very big bees — bigger than your thumb! The males are bright golden and gentle and cannot sting. The females are shiny blue-black. They make their nests by chewing tunnels in old wood. They are very important pollinators because they can shake tomato flowers to release pollen.",
@@ -145,7 +138,6 @@
   {
     "name": "vanessa",
     "familyName": "nymphalidae",
-    "orderName": "lepidoptera",
     "genus": "Vanessa",
     "description": {
       "preschool": "Vanessa butterflies are colourful butterflies that fly very long distances. The Painted Lady comes all the way from Mexico every spring, sometimes in such big numbers that the sky looks like it is full of butterflies. We saw them at Oak Vista in April 2026.",
@@ -168,7 +160,6 @@
   {
     "name": "battus",
     "familyName": "papilionidae",
-    "orderName": "lepidoptera",
     "genus": "Battus",
     "description": {
       "preschool": "Battus butterflies are dark beautiful swallowtails with shining blue and green colours on their back wings. Their caterpillars only eat one kind of plant — Pipevine. Because the caterpillars eat Pipevine, they store a special chemical that makes them taste bad to birds, so the birds learn not to eat them.",
@@ -187,7 +178,6 @@
   {
     "name": "colias",
     "familyName": "pieridae",
-    "orderName": "lepidoptera",
     "genus": "Colias",
     "description": {
       "preschool": "Colias butterflies are bright yellow or orange butterflies with dark edges on their wings. The Orange Sulphur visits our crimson clover cover crop — its caterpillars eat clover leaves. The butterfly drinks nectar from many garden flowers.",
