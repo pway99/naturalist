@@ -7,31 +7,36 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-05-31 (Clades kernel Phase 5b complete: PRs 1 + 2 landed, PR 3 cancelled — cross-record clade validation moves to the new Insect aggregate plan, [`plans/insect-aggregate.md`](plans/insect-aggregate.md).)
+Last updated: 2026-06-07 (Insect rank-FK normalization + the ReadModel kernel type landed; both spun out of the [2026-06-03 bounded-context review](notes/2026-06-03-insect-aggregate-bounded-context-review.md).)
 
 ---
 
 ## Current phase
 
-**Identification roadmap Phase 0 — Taxonomic reorganization + navigation console** ([`plans/identification.md`](plans/identification.md)).
+**Identification roadmap Phase 1 — external-source seam (mock) + `kernels/bibliography`** ([`plans/identification.md`](plans/identification.md)). Phase 0 (taxonomic reorganization + family/genus console) is effectively complete — data reorg landed via PL-2 + the catalogue-completeness slices; family/genus list/detail pages shipped 2026-05-23.
 
 ## Current slice
 
-*None active — Phase 5b just landed; next slice TBD.* Candidate: Insect aggregate Phase 1 ([`plans/insect-aggregate.md`](plans/insect-aggregate.md)) — record + structural invariants in isolation.
+*None active.* The Insect aggregate (former candidate) was built, reviewed (2026-06-03), and partially reworked — see the read-model backlog below.
 
-**Candidate next slices** (pick when 5b lands):
+**Candidate next slices** (lead first):
+
+- **`kernels/bibliography`** (identification Phase 1) — `LiteratureReference` value object + the mock external-source seam; ADR-009 prerequisite for the identification workflow, and independent of the insect read-model cleanup.
+- **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
 
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 - **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
 
 ## Parking lot
 
-[`notes/parking-lot.md`](notes/parking-lot.md) — 9 entries today (PL-2 closed out 2026-05-24, moved to `parking-lot-resolved.md`). PL-12 (typed `LifeStage.parentName`) parked pending LinneanRank.
+[`notes/parking-lot.md`](notes/parking-lot.md) — PL-2 closed out 2026-05-24 (moved to `parking-lot-resolved.md`). PL-12 (typed `LifeStage.parentName`) **resolved 2026-06-07** by R6 of the rank-FK effort (`InsectRankName parentName` on `LifeStage`) — its parking-lot entry still needs moving to `parking-lot-resolved.md`.
 
 ## Recently completed
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| ReadModel kernel type — 6th identity-model marker; insect read-models retyped + renamed `*Aggregate`→`*View`/`InsectTaxonView`, `insect()`→`taxonView()` | 2026-06-07 | [`plans/2026-06-07-readmodel-kernel-type-design.md`](plans/2026-06-07-readmodel-kernel-type-design.md) | `abf5345` (+ docs) |
+| Insect rank-FK normalization — parent-only FKs (R8), trimmed `Insect` invariants (R1), typed `LifeStage.parentName` (R6); resolves PL-12 | 2026-06-07 | [`plans/2026-06-07-insect-rank-fk-normalization-design.md`](plans/2026-06-07-insect-rank-fk-normalization-design.md) | `730a218`    |
 | Clades kernel Phase 5b — life-stage inline removal + resolver walk-up (PRs 1 + 2; PR 3 cancelled — see [`plans/insect-aggregate.md`](plans/insect-aggregate.md)) | 2026-05-31 | [`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md) | `be4639a`    |
 | Insect page images — `BehavioralMap` kernel, `ImageGallery`, carousels on all listing/detail pages | 2026-05-25 | [`plans/archive/2026-05-24-insect-page-images.md`](plans/archive/2026-05-24-insect-page-images.md) | `a8f56f5`    |
 | Console clade context — lineage trail (Animalia › Arthropoda › Insecta), Class Insecta description on landing page | 2026-05-25 | [`plans/archive/console-clade-context-plan.md`](plans/archive/console-clade-context-plan.md) | `a540825`    |
@@ -60,7 +65,7 @@ Last updated: 2026-05-31 (Clades kernel Phase 5b complete: PRs 1 + 2 landed, PR 
 
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
-| 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md)                              |
+| 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md) — Phase 0 ✅ effectively complete; **Phase 1 next** (bibliography + external-source seam) |
 | 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 5b (inline removal + resolver walk-up) ✅ — PRs 1+2 landed, PR 3 cancelled (moved to [`plans/insect-aggregate.md`](plans/insect-aggregate.md)); Phase 6 (plants) deferred |
 | 3  | FU-1 — Family/Genus catalog tiers     | Plan (archived) | [`plans/archive/fu-1-plan.md`](plans/archive/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 4  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |
@@ -69,6 +74,7 @@ Last updated: 2026-05-31 (Clades kernel Phase 5b complete: PRs 1 + 2 landed, PR 
 | 7  | Pressure test — *Battus philenor*     | Pressure test  | [`pressure-test/battus-philenor/01-findings.md`](pressure-test/battus-philenor/01-findings.md) — **paused** while the identification roadmap builds the capability A1-F1 surfaced |
 | 8  | Backlog — Soil/Sensor services        | Notes          | [`notes/pending-implementation.md`](notes/pending-implementation.md)              |
 | 9  | Vision-assisted identification        | Plan (sketch)  | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md) — deferred |
+| 10 | Insect read-model review (R-backlog)  | Review notes   | [`notes/2026-06-03-insect-aggregate-bounded-context-review.md`](notes/2026-06-03-insect-aggregate-bounded-context-review.md) — R8/R1/R6 ✅, R7 half-done (ReadModel relabel); R2/R3/R4/R5 open |
 
 ---
 
