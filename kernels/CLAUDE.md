@@ -7,7 +7,7 @@ the entire codebase — treat them as stable contracts, not convenient places to
 
 ### framework
 
-DDD building blocks. `NamedEntity`, `Entity`, `Aggregate`, `ValueObject`,
+DDD building blocks. `NamedEntity`, `Entity`, `Aggregate`, `ReadModel`, `ValueObject`,
 `BehavioralCollection`, `Observable`, `Constraints`, `EntityName`, `EntityId`, `Observer`.
 No domain knowledge — pure structural vocabulary. Everything else depends on this.
 
@@ -188,6 +188,7 @@ from outside the parent (e.g. `namedEntity(this, FooAggregate::fooInfo, "fooInfo
 - `namedEntity(o, fn, name)` — validates a `NamedEntity` child and descends into its invariants
 - `valueObject(o, fn, name)` — validates a `ValueObject` child and descends into its invariants
 - `observable(o, fn, name)` — validates any `Observable` child (e.g. a `BehavioralCollection`)
+- `readModel(o, fn, name)` — validates a `ReadModel` child and descends into its invariants
 - `notNull(o, fn, name)` — general null check on a child property
 - `notBlank(o, fn, name)` — not-blank check on a child String property
 - `namedValue(o, fn, name)` — validates a `NamedValue<?>` child property
@@ -204,7 +205,7 @@ field documentation.
 
 ## Testing Observables
 
-Every domain type (`NamedEntity`, `Entity`, `Aggregate`, `ValueObject`,
+Every domain type (`NamedEntity`, `Entity`, `Aggregate`, `ReadModel`, `ValueObject`,
 `BehavioralCollection`) implements `Observable` and declares `invariants()`. Unit tests verify invariants via
 `Observer` → `MethodObserver` → `InvariantObservation` — never by calling `isValid()` on
 individual `Constraint` objects. The `InvariantObservation` gives the full set of failing
@@ -224,7 +225,7 @@ with `containsExactlyInAnyOrder`.
 Key rules:
 
 - `mo.forMethod(...)` must match the test method name exactly — it scopes the observation
-- `mo.namedEntity(e, label)` for `NamedEntity`/`Aggregate`; `mo.observable(o, label)` for any `Observable`
+- `mo.namedEntity(e, label)` for `NamedEntity`/`Aggregate`; `mo.observable(o, label)` for any other `Observable` (`ReadModel`, `BehavioralCollection`)
 - Invalid-case assertions use `containsExactlyInAnyOrder` — exact set, no extras, no missing
 - `observationPoint()` returns `ClassName.methodName` — the prefix before the label segment
 

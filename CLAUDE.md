@@ -37,7 +37,7 @@ When excluding directories from a broad search, pass these paths to
 ## Identity
 
 Every domain class implements exactly one of `NamedEntity`, `Entity`, `Aggregate`,
-`ValueObject`, `BehavioralCollection` (all from `kernels/framework`; all extend
+`ReadModel`, `ValueObject`, `BehavioralCollection` (all from `kernels/framework`; all extend
 `Observable` and declare `invariants()`). Signatures and rules in
 [`domains/CLAUDE.md`](domains/CLAUDE.md).
 
@@ -60,8 +60,8 @@ Java (ADR-022, superseding ADR-021).
 ```
 kernels/
   framework/          — NamedEntity, Entity, EntityName, EntityId, Aggregate,
-                        ValueObject, Observable, Observer, BehavioralCollection,
-                        Resilience facade
+                        ReadModel, ValueObject, Observable, Observer,
+                        BehavioralCollection, Resilience facade
   framework-test/     — NamedTestEntitySource, NamedTestEntitySourceTest, TestDataHelper
   field-notes/        — Description (four-level Durrell description)
   taxonomy/           — TaxonomicClassification (organism domains only)
@@ -124,7 +124,7 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
   (ADR-022).
 - **UUIDv7 only.** `EntityId.isValid()` enforces version 7. Do not call
   `UUID.randomUUID()` in domain or adapter code — use the kernel's generator.
-- **Records for NamedEntity/Entity/Aggregate/ValueObject.** `BehavioralCollection` is
+- **Records for NamedEntity/Entity/Aggregate/ReadModel/ValueObject.** `BehavioralCollection` is
   a `final class` (see [ADR-011](docs/adr/ADR-011-behavioral-collections.md)). Record
   rules in [`domains/CLAUDE.md`](domains/CLAUDE.md).
 - **Observations and Events are immutable** — records or final fields, no setters,

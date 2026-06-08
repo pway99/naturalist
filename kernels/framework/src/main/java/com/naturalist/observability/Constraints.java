@@ -54,9 +54,8 @@ public class Constraints {
      * Null-tolerant variant of {@link #aggregate}. A null reference passes
      * (the field's {@code @Nullable} declaration is respected); a non-null
      * reference is descended into and its own {@code invariants()} are walked
-     * by the graph walker. Use for {@code @Nullable Aggregate} record
-     * components — most commonly a {@code @Nullable} child read model on
-     * a parent read model.
+     * by the graph walker. Use for a {@code @Nullable Aggregate} record
+     * component — a nullable child aggregate on a parent aggregate.
      */
     public <A extends Aggregate> Constraints aggregateOrNull(A aggregate, String name) {
         return aggregateOrNull(aggregate, Function.identity(), name);

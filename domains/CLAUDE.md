@@ -7,12 +7,19 @@ repositories, and new-module scaffolding.
 
 ## Identity Model
 
-Every domain class implements one of four interfaces from `kernels/framework`:
+Every domain class implements one of six interfaces from `kernels/framework`:
 
 - **NamedEntity\<NAME extends EntityName\<?\>\>** — stable identity by `name()` alone.
   No `id()`, no `withId(...)`. Adapter keys live inside the adapter (ADR-021).
+- **Entity\<ID extends EntityId\>** — surrogate UUIDv7 identity. Observations and
+  events are Entity records: immutable, equality by value.
 - **Aggregate** — consistency boundary, owns child entities and value objects.
   Declares explicit `with*` methods per field.
+- **ReadModel** — read-side composition assembled from already-persisted parts.
+  Immutable, identity optional, NOT a consistency boundary; `invariants()` assert
+  the projection's structural well-formedness, not owned cross-entity consistency.
+  Use instead of `Aggregate` when the type owns nothing and is never mutated as a
+  unit (e.g. the insect `*View` read models).
 - **ValueObject** — immutable, no identity, equality by value. Must satisfy all four
   ADR-013 constraints: no Entity/Aggregate members, does not uniquely identify an entity,
   cohesive ubiquitous-language concept, members have collective meaning (not a projection
@@ -21,7 +28,7 @@ Every domain class implements one of four interfaces from `kernels/framework`:
   `kernels/framework` for multi-result query return types. Extended by `final class` per
   domain (e.g. `CompoundCollection`). Not a record. See ADR-011.
 
-All four extend `Observable` and require `invariants()`.
+All six extend `Observable` and require `invariants()`.
 
 ## Field Annotations
 
@@ -236,15 +243,15 @@ Short version:
   declaration in `<domain>-api` under any circumstance. A factory type surfacing
   in the api module is a review blocker: it leaks assembly concerns to consumers
   and makes the implementation detail Spring-injectable across module boundaries.
-- **Return types are `Optional<Entity>`, `Optional<Aggregate>`, or a
-  `BehavioralCollection` subclass.** Raw `List<T>` at the port boundary is a
+- **Return types are `Optional<Entity>`, `Optional<Aggregate>`, `Optional<ReadModel>`,
+  or a `BehavioralCollection` subclass.** Raw `List<T>` at the port boundary is a
   review flag.
 
 **Reference implementation:** `domains/insects/insects-api/` — `InsectRepository`
 (namespace class), `InsectQuery` (namespace interface), `InsectEntityCollections`
 (collection namespace), `InsectSpecies` (nested value-object graph). Adapters
 live in `insects-core/`: `InsectQueryImpl`, `SpeciesQueryImpl`, `ImageQueryImpl`,
-`InsectAggregateQueryImpl`, and the aggregate factory `InsectAggregateFactory`
+`TaxonViewQueryImpl`, and the aggregate factory `InsectTaxonViewFactory`
 (concrete, no interface — the template for factory placement).
 
 ## Test Fixtures Use Real Data
