@@ -20,7 +20,9 @@ class GenusQueryImplTest
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     GenusRepositoryMock repository = new GenusRepositoryMock(db);
-    InsectQuery.GenusQuery query = new GenusQueryImpl(repository);
+    FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
+    InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
+    InsectQuery.GenusQuery query = new GenusQueryImpl(repository, familyQuery);
 
     @Override
     public EntityQuery<InsectGenusName, InsectGenus, GenusCollection> query() {

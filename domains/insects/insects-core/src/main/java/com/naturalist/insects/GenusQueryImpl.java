@@ -4,6 +4,8 @@ import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectEntityCollections.GenusCollection;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @DomainService
@@ -15,8 +17,12 @@ class GenusQueryImpl
         InsectRepository.GenusRepository>
         implements InsectQuery.GenusQuery {
 
-    GenusQueryImpl(InsectRepository.GenusRepository repository) {
+    private final InsectQuery.FamilyQuery familyQuery;
+
+    GenusQueryImpl(InsectRepository.GenusRepository repository,
+                   InsectQuery.FamilyQuery familyQuery) {
         super(repository);
+        this.familyQuery = Objects.requireNonNull(familyQuery, "familyQuery");
     }
 
     @Override
@@ -39,6 +45,9 @@ class GenusQueryImpl
         observer().arguments("forOrderName",
                         i -> i.entityName(orderName, "orderName"))
                 .throwWhenInvalid();
-        return GenusCollection.of(repository().getByOrderName(orderName));
+        List<InsectGenus> genera = familyQuery.forOrderName(orderName).stream()
+                .flatMap(family -> forFamilyName(family.name()).stream())
+                .toList();
+        return GenusCollection.of(genera);
     }
 }
