@@ -16,7 +16,7 @@ import java.util.Optional;
  *
  * <p>Nested queries scope to a single consistency concern each:
  * <ul>
- *   <li>{@link InsectAggregateQuery} — the catalog-view {@link InsectAggregate}
+ *   <li>{@link TaxonViewQuery} — the catalog-view {@link InsectTaxonView}
  *       (rank entity + images), rooted at whichever Linnaean rank the parent name
  *       identifies (family, genus, or species).</li>
  *   <li>{@link SpeciesQuery} — {@link InsectSpecies} entities in isolation.</li>
@@ -30,22 +30,22 @@ import java.util.Optional;
  *
  * <p><b>Usage:</b>
  * <pre>{@code
- * insectQuery.species().getByName(speciesName);   // InsectSpecies
- * insectQuery.images().getByName(imageName);      // InsectImage
- * insectQuery.insect().getByName(speciesName);    // InsectSpeciesAggregate
- * insectQuery.insect().getByName(genusName);      // InsectGenusAggregate
- * insectQuery.insect().getByName(familyName);     // InsectFamilyAggregate
- * insectQuery.families().getByName(familyName);   // InsectFamily
- * insectQuery.genera().getByName(genusName);      // InsectGenus
- * insectQuery.genera().forFamilyName(familyName);  // genera under a family
- * insectQuery.species().forGenusName(genusName);   // species under a genus
- * insectQuery.species().forFamilyName(familyName); // species under a family (typed FK)
- * insectQuery.functionalRoles().getByGuild(guild);// InsectFunctionalRoleCollection
+ * insectQuery.species().getByName(speciesName);      // InsectSpecies
+ * insectQuery.images().getByName(imageName);         // InsectImage
+ * insectQuery.taxonView().getByName(speciesName);    // InsectSpeciesView
+ * insectQuery.taxonView().getByName(genusName);      // InsectGenusView
+ * insectQuery.taxonView().getByName(familyName);     // InsectFamilyView
+ * insectQuery.families().getByName(familyName);      // InsectFamily
+ * insectQuery.genera().getByName(genusName);         // InsectGenus
+ * insectQuery.genera().forFamilyName(familyName);    // genera under a family
+ * insectQuery.species().forGenusName(genusName);     // species under a genus
+ * insectQuery.species().forFamilyName(familyName);   // species under a family (typed FK)
+ * insectQuery.functionalRoles().getByGuild(guild);   // InsectFunctionalRoleCollection
  * }</pre>
  */
 public interface InsectQuery {
 
-    InsectAggregateQuery insect();
+    TaxonViewQuery taxonView();
 
     SpeciesQuery species();
 
@@ -59,16 +59,16 @@ public interface InsectQuery {
 
     OrderQuery orders();
 
-    interface InsectAggregateQuery {
+    interface TaxonViewQuery {
 
         /**
-         * Resolve the {@link InsectAggregate} rooted at the given rank name. The
+         * Resolve the {@link InsectTaxonView} rooted at the given rank name. The
          * concrete permit returned matches the {@link InsectRankName} permit passed in
-         * (species → {@link InsectSpeciesAggregate}, genus → {@link InsectGenusAggregate},
-         * family → {@link InsectFamilyAggregate}). Subspecies-rank names always return
+         * (species → {@link InsectSpeciesView}, genus → {@link InsectGenusView},
+         * family → {@link InsectFamilyView}). Subspecies-rank names always return
          * {@link Optional#empty()} — no subspecies entity exists in the catalog yet.
          */
-        Optional<InsectAggregate> getByName(InsectRankName name);
+        Optional<InsectTaxonView> getByName(InsectRankName name);
     }
 
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {

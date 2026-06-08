@@ -7,15 +7,15 @@ import com.naturalist.observability.Observer;
 import java.util.Optional;
 
 /**
- * Name-keyed, rank-polymorphic assembly of {@link InsectAggregate}. The {@code
- * InsectRankName} permit determines which rank entity is resolved and which aggregate
+ * Name-keyed, rank-polymorphic assembly of {@link InsectTaxonView}. The {@code
+ * InsectRankName} permit determines which rank entity is resolved and which view
  * permit is constructed:
  *
  * <ul>
- *   <li>{@link InsectSpeciesName}  → {@link InsectSpeciesAggregate}</li>
- *   <li>{@link InsectGenusName}    → {@link InsectGenusAggregate}</li>
- *   <li>{@link InsectFamilyName}   → {@link InsectFamilyAggregate}</li>
- *   <li>{@link InsectOrderName}      → {@link InsectOrderAggregate}</li>
+ *   <li>{@link InsectSpeciesName}  → {@link InsectSpeciesView}</li>
+ *   <li>{@link InsectGenusName}    → {@link InsectGenusView}</li>
+ *   <li>{@link InsectFamilyName}   → {@link InsectFamilyView}</li>
+ *   <li>{@link InsectOrderName}      → {@link InsectOrderView}</li>
  *   <li>{@link InsectSubspeciesName} → {@link Optional#empty()} (no entity exists yet)</li>
  * </ul>
  *
@@ -26,10 +26,10 @@ import java.util.Optional;
  *
  * <p>Observability follows the producer/consumer rule (ADR-017): the factory validates
  * its own arguments with {@code throwWhenInvalid()} — the producer's boundary contract —
- * but observes the assembled aggregate with {@code observe()} — metrics only. Control
- * over what to do with a structurally invalid aggregate belongs to the consumer.
+ * but observes the assembled view with {@code observe()} — metrics only. Control
+ * over what to do with a structurally invalid view belongs to the consumer.
  */
-class InsectAggregateFactory {
+class InsectTaxonViewFactory {
 
     private final Observer observer = Observer.forClass(getClass());
     private final InsectQuery.SpeciesQuery speciesQuery;
@@ -38,7 +38,7 @@ class InsectAggregateFactory {
     private final InsectQuery.FamilyQuery familyQuery;
     private final InsectQuery.OrderQuery orderQuery;
 
-    InsectAggregateFactory(InsectQuery.SpeciesQuery speciesQuery,
+    InsectTaxonViewFactory(InsectQuery.SpeciesQuery speciesQuery,
                            InsectQuery.ImageQuery imageQuery,
                            InsectQuery.GenusQuery genusQuery,
                            InsectQuery.FamilyQuery familyQuery,
@@ -57,27 +57,27 @@ class InsectAggregateFactory {
         this.orderQuery = orderQuery;
     }
 
-    Optional<InsectAggregate> buildByName(InsectRankName name) {
+    Optional<InsectTaxonView> buildByName(InsectRankName name) {
         observer.arguments("buildByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return switch (name) {
             case InsectSpeciesName speciesName -> speciesQuery.getByName(speciesName)
-                    .map(species -> observe(new InsectSpeciesAggregate(
+                    .map(species -> observe(new InsectSpeciesView(
                             species, imageQuery.forParentName(species.name()))));
             case InsectGenusName genusName -> genusQuery.getByName(genusName)
-                    .map(genus -> observe(new InsectGenusAggregate(
+                    .map(genus -> observe(new InsectGenusView(
                             genus, imageQuery.forParentName(genus.name()))));
             case InsectFamilyName familyName -> familyQuery.getByName(familyName)
-                    .map(family -> observe(new InsectFamilyAggregate(
+                    .map(family -> observe(new InsectFamilyView(
                             family, imageQuery.forParentName(family.name()))));
             case InsectOrderName on -> orderQuery.getByName(on)
-                    .map(order -> observe(new InsectOrderAggregate(
+                    .map(order -> observe(new InsectOrderView(
                             order, imageQuery.forParentName(order.name()))));
             case InsectSubspeciesName subspeciesName -> Optional.empty();
         };
     }
 
-    private <A extends InsectAggregate> A observe(A aggregate) {
-        observer.observable(aggregate, "insectAggregate").observe(Level.WARN);
-        return aggregate;
+    private <V extends InsectTaxonView> V observe(V taxonView) {
+        observer.observable(taxonView, "taxonView").observe(Level.WARN);
+        return taxonView;
     }
 }

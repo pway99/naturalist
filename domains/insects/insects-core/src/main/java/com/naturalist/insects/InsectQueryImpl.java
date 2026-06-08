@@ -10,7 +10,7 @@ class InsectQueryImpl implements InsectQuery {
     private final GenusQuery genusQuery;
     private final FunctionalRoleQuery functionalRoleQuery;
     private final OrderQuery orderQuery;
-    private final InsectAggregateQuery insectAggregateQuery;
+    private final TaxonViewQuery taxonViewQuery;
 
     InsectQueryImpl(SpeciesQuery speciesQuery,
                     ImageQuery imageQuery,
@@ -32,14 +32,14 @@ class InsectQueryImpl implements InsectQuery {
         this.genusQuery = genusQuery;
         this.functionalRoleQuery = functionalRoleQuery;
         this.orderQuery = orderQuery;
-        InsectAggregateFactory factory =
-                new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
-        this.insectAggregateQuery = new InsectAggregateQueryImpl(factory);
+        InsectTaxonViewFactory factory =
+                new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
+        this.taxonViewQuery = new TaxonViewQueryImpl(factory);
     }
 
     @Override
-    public InsectAggregateQuery insect() {
-        return insectAggregateQuery;
+    public TaxonViewQuery taxonView() {
+        return taxonViewQuery;
     }
 
     @Override

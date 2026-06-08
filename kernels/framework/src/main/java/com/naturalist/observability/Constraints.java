@@ -55,9 +55,8 @@ public class Constraints {
      * (the field's {@code @Nullable} declaration is respected); a non-null
      * reference is descended into and its own {@code invariants()} are walked
      * by the graph walker. Use for {@code @Nullable Aggregate} record
-     * components — most commonly nullable child aggregates on a parent
-     * aggregate (e.g. {@code @Nullable InsectSpeciesAggregate species} on
-     * {@code Insect}).
+     * components — most commonly a {@code @Nullable} child read model on
+     * a parent read model.
      */
     public <A extends Aggregate> Constraints aggregateOrNull(A aggregate, String name) {
         return aggregateOrNull(aggregate, Function.identity(), name);

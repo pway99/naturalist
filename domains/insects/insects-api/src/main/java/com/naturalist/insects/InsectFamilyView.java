@@ -7,22 +7,22 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * Family-rank {@link InsectAggregate} — used when only family is resolved
+ * Family-rank {@link InsectTaxonView} — used when only family is resolved
  * (e.g. <i>Tachinidae</i> sp., <i>Braconidae</i> sp.). Composes the family record
  * with the photographic field record. Root identity is the family's
  * {@link InsectFamilyName}.
  */
-public record InsectFamilyAggregate(
+public record InsectFamilyView(
         InsectFamily family,
         ImageCollection images
-) implements InsectAggregate {
+) implements InsectTaxonView {
 
-    public static InsectFamilyAggregate of(InsectFamily family, ImageCollection images) {
-        return new InsectFamilyAggregate(family, images);
+    public static InsectFamilyView of(InsectFamily family, ImageCollection images) {
+        return new InsectFamilyView(family, images);
     }
 
-    public static InsectFamilyAggregate of(InsectFamily family) {
-        return new InsectFamilyAggregate(family, ImageCollection.empty());
+    public static InsectFamilyView of(InsectFamily family) {
+        return new InsectFamilyView(family, ImageCollection.empty());
     }
 
     @Override
@@ -43,7 +43,7 @@ public record InsectFamilyAggregate(
      * monotonic-fill already reports the missing-order case via its own
      * violation.
      */
-    public boolean belongsToOrder(@Nullable InsectOrderAggregate order) {
+    public boolean belongsToOrder(@Nullable InsectOrderView order) {
         return order == null || family.belongsToOrder(order.name());
     }
 

@@ -19,9 +19,9 @@ import java.util.function.Consumer;
  *   <li>{@link ImageCollection observations} — the photographic working set
  *       driving identification (catalog-read use case loads the rank's images;
  *       workflow use case loads the naturalist's gathered photos).</li>
- *   <li>The rank chain — {@code @Nullable} {@link InsectOrderAggregate},
- *       {@link InsectFamilyAggregate}, {@link InsectGenusAggregate},
- *       {@link InsectSpeciesAggregate}. Populated to whatever depth
+ *   <li>The rank chain — {@code @Nullable} {@link InsectOrderView},
+ *       {@link InsectFamilyView}, {@link InsectGenusView},
+ *       {@link InsectSpeciesView}. Populated to whatever depth
  *       identification has reached, monotonically filled from the top down.</li>
  *   <li>{@link LifeStageCollection lifeStages} — the
  *       {@link com.naturalist.insects.lifestage.LifeStage} records attached to
@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * monotonic-fill violations, etc.) are reported by {@link #invariants()} when
  * a consumer asks the {@link com.naturalist.observability.Observer} to walk
  * them. This is the project's standard pattern (see {@code domains/CLAUDE.md}
- * and {@code InsectSpeciesAggregate} for reference). Consumers are responsible
+ * and {@code InsectSpeciesView} for reference). Consumers are responsible
  * for observing at boundaries before acting on a read model.
  *
  * <p>Structural invariants declared by {@link #invariants()}:
@@ -79,10 +79,10 @@ import java.util.function.Consumer;
  */
 public record Insect(
         ImageCollection observations,
-        @Nullable InsectOrderAggregate order,
-        @Nullable InsectFamilyAggregate family,
-        @Nullable InsectGenusAggregate genus,
-        @Nullable InsectSpeciesAggregate species,
+        @Nullable InsectOrderView order,
+        @Nullable InsectFamilyView family,
+        @Nullable InsectGenusView genus,
+        @Nullable InsectSpeciesView species,
         LifeStageCollection lifeStages
 ) implements ReadModel {
 
@@ -137,19 +137,19 @@ public record Insect(
         return new Insect(observations, order, family, genus, species, lifeStages);
     }
 
-    public Insect withOrder(@Nullable InsectOrderAggregate order) {
+    public Insect withOrder(@Nullable InsectOrderView order) {
         return new Insect(observations, order, family, genus, species, lifeStages);
     }
 
-    public Insect withFamily(@Nullable InsectFamilyAggregate family) {
+    public Insect withFamily(@Nullable InsectFamilyView family) {
         return new Insect(observations, order, family, genus, species, lifeStages);
     }
 
-    public Insect withGenus(@Nullable InsectGenusAggregate genus) {
+    public Insect withGenus(@Nullable InsectGenusView genus) {
         return new Insect(observations, order, family, genus, species, lifeStages);
     }
 
-    public Insect withSpecies(@Nullable InsectSpeciesAggregate species) {
+    public Insect withSpecies(@Nullable InsectSpeciesView species) {
         return new Insect(observations, order, family, genus, species, lifeStages);
     }
 

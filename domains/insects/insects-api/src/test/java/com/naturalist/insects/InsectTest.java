@@ -43,7 +43,7 @@ class InsectTest {
 
     @Test
     void identifiedToReturnsOrderNameWhenOnlyOrderSet() {
-        Insect insect = Insect.empty().withOrder(orderAggregate());
+        Insect insect = Insect.empty().withOrder(orderView());
 
         assertThat(insect.identifiedTo()).contains(orderName());
     }
@@ -51,8 +51,8 @@ class InsectTest {
     @Test
     void identifiedToReturnsFamilyNameWhenIdentifiedToFamily() {
         Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate());
+                .withOrder(orderView())
+                .withFamily(familyView());
 
         assertThat(insect.identifiedTo()).contains(familyName());
     }
@@ -60,9 +60,9 @@ class InsectTest {
     @Test
     void identifiedToReturnsGenusNameWhenIdentifiedToGenus() {
         Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate())
-                .withGenus(genusAggregate());
+                .withOrder(orderView())
+                .withFamily(familyView())
+                .withGenus(genusView());
 
         assertThat(insect.identifiedTo()).contains(genusName());
     }
@@ -70,10 +70,10 @@ class InsectTest {
     @Test
     void identifiedToReturnsSpeciesNameWhenIdentifiedToSpecies() {
         Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate())
-                .withGenus(genusAggregate())
-                .withSpecies(speciesAggregate());
+                .withOrder(orderView())
+                .withFamily(familyView())
+                .withGenus(genusView())
+                .withSpecies(speciesView());
 
         assertThat(insect.identifiedTo()).contains(speciesName());
     }
@@ -82,7 +82,7 @@ class InsectTest {
 
     @Test
     void withObservationsReplacesObservationsAndPreservesOtherFields() {
-        Insect base = Insect.empty().withOrder(orderAggregate());
+        Insect base = Insect.empty().withOrder(orderView());
         ImageCollection observations = ImageCollection.empty();
 
         Insect updated = base.withObservations(observations);
@@ -95,56 +95,56 @@ class InsectTest {
     @Test
     void withOrderReplacesOrderAndPreservesOtherFields() {
         Insect base = Insect.empty();
-        InsectOrderAggregate orderAgg = orderAggregate();
+        InsectOrderView orderView = orderView();
 
-        Insect updated = base.withOrder(orderAgg);
+        Insect updated = base.withOrder(orderView);
 
-        assertThat(updated.order()).isSameAs(orderAgg);
+        assertThat(updated.order()).isSameAs(orderView);
         assertThat(updated.observations()).isSameAs(base.observations());
         assertThat(updated.lifeStages()).isSameAs(base.lifeStages());
     }
 
     @Test
     void withFamilyReplacesFamilyAndPreservesOtherFields() {
-        Insect base = Insect.empty().withOrder(orderAggregate());
-        InsectFamilyAggregate familyAgg = familyAggregate();
+        Insect base = Insect.empty().withOrder(orderView());
+        InsectFamilyView familyView = familyView();
 
-        Insect updated = base.withFamily(familyAgg);
+        Insect updated = base.withFamily(familyView);
 
-        assertThat(updated.family()).isSameAs(familyAgg);
+        assertThat(updated.family()).isSameAs(familyView);
         assertThat(updated.order()).isSameAs(base.order());
     }
 
     @Test
     void withGenusReplacesGenusAndPreservesOtherFields() {
         Insect base = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate());
-        InsectGenusAggregate genusAgg = genusAggregate();
+                .withOrder(orderView())
+                .withFamily(familyView());
+        InsectGenusView genusView = genusView();
 
-        Insect updated = base.withGenus(genusAgg);
+        Insect updated = base.withGenus(genusView);
 
-        assertThat(updated.genus()).isSameAs(genusAgg);
+        assertThat(updated.genus()).isSameAs(genusView);
         assertThat(updated.family()).isSameAs(base.family());
     }
 
     @Test
     void withSpeciesReplacesSpeciesAndPreservesOtherFields() {
         Insect base = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate())
-                .withGenus(genusAggregate());
-        InsectSpeciesAggregate speciesAgg = speciesAggregate();
+                .withOrder(orderView())
+                .withFamily(familyView())
+                .withGenus(genusView());
+        InsectSpeciesView speciesView = speciesView();
 
-        Insect updated = base.withSpecies(speciesAgg);
+        Insect updated = base.withSpecies(speciesView);
 
-        assertThat(updated.species()).isSameAs(speciesAgg);
+        assertThat(updated.species()).isSameAs(speciesView);
         assertThat(updated.genus()).isSameAs(base.genus());
     }
 
     @Test
     void withLifeStagesReplacesLifeStagesAndPreservesOtherFields() {
-        Insect base = Insect.empty().withOrder(orderAggregate());
+        Insect base = Insect.empty().withOrder(orderView());
         LifeStageCollection lifeStages = LifeStageCollection.empty();
 
         Insect updated = base.withLifeStages(lifeStages);
@@ -157,7 +157,7 @@ class InsectTest {
     void withMutatorsReturnNewInstances() {
         Insect base = Insect.empty();
 
-        assertThat(base.withOrder(orderAggregate())).isNotSameAs(base);
+        assertThat(base.withOrder(orderView())).isNotSameAs(base);
     }
 
     // ----- invariants() valid cases -----
@@ -176,10 +176,10 @@ class InsectTest {
     void fullyIdentifiedAggregateIsValid() {
         var mo = observer.forMethod("fullyIdentifiedAggregateIsValid");
         Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate())
-                .withGenus(genusAggregate())
-                .withSpecies(speciesAggregate());
+                .withOrder(orderView())
+                .withFamily(familyView())
+                .withGenus(genusView())
+                .withSpecies(speciesView());
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -190,8 +190,8 @@ class InsectTest {
     void familyRootedAggregateIsValid() {
         var mo = observer.forMethod("familyRootedAggregateIsValid");
         Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate());
+                .withOrder(orderView())
+                .withFamily(familyView());
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -233,10 +233,10 @@ class InsectTest {
         var mo = observer.forMethod("speciesPresentWithoutGenusReportsSpeciesGenusViolation");
         Insect insect = new Insect(
                 ImageCollection.empty(),
-                orderAggregate(),
-                familyAggregate(),
+                orderView(),
+                familyView(),
                 null,
-                speciesAggregate(),
+                speciesView(),
                 LifeStageCollection.empty());
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -250,9 +250,9 @@ class InsectTest {
         var mo = observer.forMethod("genusPresentWithoutFamilyReportsGenusFamilyViolation");
         Insect insect = new Insect(
                 ImageCollection.empty(),
-                orderAggregate(),
+                orderView(),
                 null,
-                genusAggregate(),
+                genusView(),
                 null,
                 LifeStageCollection.empty());
 
@@ -268,7 +268,7 @@ class InsectTest {
         Insect insect = new Insect(
                 ImageCollection.empty(),
                 null,
-                familyAggregate(),
+                familyView(),
                 null,
                 null,
                 LifeStageCollection.empty());
@@ -282,9 +282,9 @@ class InsectTest {
     @Test
     void withSpeciesOnOrderOnlyAggregateConstructsButReportsAncestorViolations() {
         var mo = observer.forMethod("withSpeciesOnOrderOnlyAggregateConstructsButReportsAncestorViolations");
-        Insect orderOnly = Insect.empty().withOrder(orderAggregate());
+        Insect orderOnly = Insect.empty().withOrder(orderView());
 
-        Insect attempted = orderOnly.withSpecies(speciesAggregate());
+        Insect attempted = orderOnly.withSpecies(speciesView());
 
         InvariantObservation result = mo.observable(attempted, "attempted");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
@@ -296,7 +296,7 @@ class InsectTest {
     @Test
     void familyWithMismatchedOrderFkReportsFamilyBelongsToOrderViolation() {
         var mo = observer.forMethod("familyWithMismatchedOrderFkReportsFamilyBelongsToOrderViolation");
-        InsectFamilyAggregate mismatched = InsectFamilyAggregate.of(new InsectFamily(
+        InsectFamilyView mismatched = InsectFamilyView.of(new InsectFamily(
                 familyName(),
                 InsectOrderName.of("diptera"),
                 TaxonomicFamily.of("Papilionidae"),
@@ -304,7 +304,7 @@ class InsectTest {
                 Set.of(),
                 null));
         Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
+                .withOrder(orderView())
                 .withFamily(mismatched);
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -316,7 +316,7 @@ class InsectTest {
     @Test
     void genusWithMismatchedFamilyFkReportsGenusBelongsToFamilyViolation() {
         var mo = observer.forMethod("genusWithMismatchedFamilyFkReportsGenusBelongsToFamilyViolation");
-        InsectGenusAggregate mismatched = InsectGenusAggregate.of(new InsectGenus(
+        InsectGenusView mismatched = InsectGenusView.of(new InsectGenus(
                 genusName(),
                 InsectFamilyName.of("syrphidae"),
                 TaxonomicGenus.of("Battus"),
@@ -324,8 +324,8 @@ class InsectTest {
                 Set.of(),
                 null));
         Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate())
+                .withOrder(orderView())
+                .withFamily(familyView())
                 .withGenus(mismatched);
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -337,7 +337,7 @@ class InsectTest {
     @Test
     void speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation() {
         var mo = observer.forMethod("speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation");
-        InsectSpeciesAggregate mismatched = InsectSpeciesAggregate.of(new InsectSpecies(
+        InsectSpeciesView mismatched = InsectSpeciesView.of(new InsectSpecies(
                 speciesName(),
                 InsectGenusName.of("empoasca"),
                 TaxonomicSpecies.of("philenor"),
@@ -347,9 +347,9 @@ class InsectTest {
                 null,
                 null, null, null, null, null, null, null));
         Insect insect = Insect.empty()
-                .withOrder(orderAggregate())
-                .withFamily(familyAggregate())
-                .withGenus(genusAggregate())
+                .withOrder(orderView())
+                .withFamily(familyView())
+                .withGenus(genusView())
                 .withSpecies(mismatched);
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -376,8 +376,8 @@ class InsectTest {
         return InsectSpeciesName.of("battus-philenor");
     }
 
-    private static InsectOrderAggregate orderAggregate() {
-        return InsectOrderAggregate.of(new InsectOrder(
+    private static InsectOrderView orderView() {
+        return InsectOrderView.of(new InsectOrder(
                 orderName(),
                 TaxonomicOrder.of("Lepidoptera"),
                 description(),
@@ -385,8 +385,8 @@ class InsectTest {
                 null));
     }
 
-    private static InsectFamilyAggregate familyAggregate() {
-        return InsectFamilyAggregate.of(new InsectFamily(
+    private static InsectFamilyView familyView() {
+        return InsectFamilyView.of(new InsectFamily(
                 familyName(),
                 orderName(),
                 TaxonomicFamily.of("Papilionidae"),
@@ -395,8 +395,8 @@ class InsectTest {
                 null));
     }
 
-    private static InsectGenusAggregate genusAggregate() {
-        return InsectGenusAggregate.of(new InsectGenus(
+    private static InsectGenusView genusView() {
+        return InsectGenusView.of(new InsectGenus(
                 genusName(),
                 familyName(),
                 TaxonomicGenus.of("Battus"),
@@ -405,8 +405,8 @@ class InsectTest {
                 null));
     }
 
-    private static InsectSpeciesAggregate speciesAggregate() {
-        return InsectSpeciesAggregate.of(new InsectSpecies(
+    private static InsectSpeciesView speciesView() {
+        return InsectSpeciesView.of(new InsectSpecies(
                 speciesName(),
                 genusName(),
                 TaxonomicSpecies.of("philenor"),

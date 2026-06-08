@@ -4,17 +4,17 @@ import com.naturalist.observability.Observer;
 
 import java.util.Optional;
 
-class InsectAggregateQueryImpl implements InsectQuery.InsectAggregateQuery {
+class TaxonViewQueryImpl implements InsectQuery.TaxonViewQuery {
 
     private final Observer observer = Observer.forClass(getClass());
-    private final InsectAggregateFactory factory;
+    private final InsectTaxonViewFactory factory;
 
-    InsectAggregateQueryImpl(InsectAggregateFactory factory) {
+    TaxonViewQueryImpl(InsectTaxonViewFactory factory) {
         this.factory = factory;
     }
 
     @Override
-    public Optional<InsectAggregate> getByName(InsectRankName name) {
+    public Optional<InsectTaxonView> getByName(InsectRankName name) {
         observer.arguments("getByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return factory.buildByName(name);
     }

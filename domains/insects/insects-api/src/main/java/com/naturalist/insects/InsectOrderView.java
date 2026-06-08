@@ -6,21 +6,21 @@ import com.naturalist.observability.Constraints;
 import java.util.function.Consumer;
 
 /**
- * Order-rank {@link InsectAggregate} — used when only order is resolved
+ * Order-rank {@link InsectTaxonView} — used when only order is resolved
  * (e.g. <i>Diptera</i> sp.). Composes the order record with the photographic
  * field record. Root identity is the order's {@link InsectOrderName}.
  */
-public record InsectOrderAggregate(
+public record InsectOrderView(
         InsectOrder order,
         ImageCollection images
-) implements InsectAggregate {
+) implements InsectTaxonView {
 
-    public static InsectOrderAggregate of(InsectOrder order, ImageCollection images) {
-        return new InsectOrderAggregate(order, images);
+    public static InsectOrderView of(InsectOrder order, ImageCollection images) {
+        return new InsectOrderView(order, images);
     }
 
-    public static InsectOrderAggregate of(InsectOrder order) {
-        return new InsectOrderAggregate(order, ImageCollection.empty());
+    public static InsectOrderView of(InsectOrder order) {
+        return new InsectOrderView(order, ImageCollection.empty());
     }
 
     @Override

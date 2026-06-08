@@ -7,22 +7,22 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * Genus-rank {@link InsectAggregate} — used when identification firmed up to genus
+ * Genus-rank {@link InsectTaxonView} — used when identification firmed up to genus
  * but not to species (e.g. <i>Empoasca</i> sp., <i>Halictus</i> sp.). Composes the
  * genus record with the photographic field record. Root identity is the genus's
  * {@link InsectGenusName}.
  */
-public record InsectGenusAggregate(
+public record InsectGenusView(
         InsectGenus genus,
         ImageCollection images
-) implements InsectAggregate {
+) implements InsectTaxonView {
 
-    public static InsectGenusAggregate of(InsectGenus genus, ImageCollection images) {
-        return new InsectGenusAggregate(genus, images);
+    public static InsectGenusView of(InsectGenus genus, ImageCollection images) {
+        return new InsectGenusView(genus, images);
     }
 
-    public static InsectGenusAggregate of(InsectGenus genus) {
-        return new InsectGenusAggregate(genus, ImageCollection.empty());
+    public static InsectGenusView of(InsectGenus genus) {
+        return new InsectGenusView(genus, ImageCollection.empty());
     }
 
     @Override
@@ -43,7 +43,7 @@ public record InsectGenusAggregate(
      * (monotonic-fill catches missing-ancestor via its own
      * {@code .genus:family} violation).
      */
-    public boolean belongsToFamily(@Nullable InsectFamilyAggregate family) {
+    public boolean belongsToFamily(@Nullable InsectFamilyView family) {
         return family == null || genus.belongsToFamily(family.name());
     }
 

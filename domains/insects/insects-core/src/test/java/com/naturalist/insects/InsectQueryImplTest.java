@@ -36,7 +36,7 @@ class InsectQueryImplTest {
         assertThat(insectQuery.genera()).isSameAs(genusQuery);
         assertThat(insectQuery.functionalRoles()).isSameAs(functionalRoleQuery);
         assertThat(insectQuery.orders()).isSameAs(orderQuery);
-        assertThat(insectQuery.insect()).isNotNull();
+        assertThat(insectQuery.taxonView()).isNotNull();
     }
 
     @Test
@@ -47,7 +47,7 @@ class InsectQueryImplTest {
         assertThat(insectQuery.genera()).isSameAs(insectQuery.genera());
         assertThat(insectQuery.functionalRoles()).isSameAs(insectQuery.functionalRoles());
         assertThat(insectQuery.orders()).isSameAs(insectQuery.orders());
-        assertThat(insectQuery.insect()).isSameAs(insectQuery.insect());
+        assertThat(insectQuery.taxonView()).isSameAs(insectQuery.taxonView());
     }
 
     @Test

@@ -11,8 +11,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class InsectAggregateFactoryTest {
-    static final Observer observer = Observer.forClass(InsectAggregateFactoryTest.class);
+class InsectTaxonViewFactoryTest {
+    static final Observer observer = Observer.forClass(InsectTaxonViewFactoryTest.class);
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
@@ -29,17 +29,17 @@ class InsectAggregateFactoryTest {
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
     InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
 
-    InsectAggregateFactory factory =
-            new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
+    InsectTaxonViewFactory factory =
+            new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
 
     @Test
-    void buildByName_speciesWithImages_returnsSpeciesAggregateWithImagesAndReferentialIntegrity() {
-        Optional<InsectAggregate> aggregate =
+    void buildByName_speciesWithImages_returnsSpeciesViewWithImagesAndReferentialIntegrity() {
+        Optional<InsectTaxonView> view =
                 factory.buildByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
-        assertThat(aggregate).isPresent();
-        assertThat(aggregate.get()).isInstanceOf(InsectSpeciesAggregate.class);
-        InsectSpeciesAggregate value = (InsectSpeciesAggregate) aggregate.get();
+        assertThat(view).isPresent();
+        assertThat(view.get()).isInstanceOf(InsectSpeciesView.class);
+        InsectSpeciesView value = (InsectSpeciesView) view.get();
 
         assertThat(value.species().name())
                 .isEqualTo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
@@ -53,31 +53,31 @@ class InsectAggregateFactoryTest {
         assertThat(value.images().stream().map(InsectImage::name))
                 .contains(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.Images.PipevineSwallowtail.name);
 
-        assertThat(observer.observable(value, "insectAggregate").violations()).isEmpty();
+        assertThat(observer.observable(value, "taxonView").violations()).isEmpty();
     }
 
     @Test
-    void buildByName_speciesWithoutImages_returnsAggregateWithEmptyImageCollection() {
-        Optional<InsectAggregate> aggregate =
+    void buildByName_speciesWithoutImages_returnsViewWithEmptyImageCollection() {
+        Optional<InsectTaxonView> view =
                 factory.buildByName(TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
 
-        assertThat(aggregate).isPresent();
-        assertThat(aggregate.get()).isInstanceOf(InsectSpeciesAggregate.class);
-        InsectSpeciesAggregate value = (InsectSpeciesAggregate) aggregate.get();
+        assertThat(view).isPresent();
+        assertThat(view.get()).isInstanceOf(InsectSpeciesView.class);
+        InsectSpeciesView value = (InsectSpeciesView) view.get();
         assertThat(value.species().name())
                 .isEqualTo(TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
         assertThat(value.images().isEmpty()).isTrue();
-        assertThat(observer.observable(value, "insectAggregate").violations()).isEmpty();
+        assertThat(observer.observable(value, "taxonView").violations()).isEmpty();
     }
 
     @Test
-    void buildByName_genusWithImages_returnsGenusAggregateWithImagesAndReferentialIntegrity() {
-        Optional<InsectAggregate> aggregate =
+    void buildByName_genusWithImages_returnsGenusViewWithImagesAndReferentialIntegrity() {
+        Optional<InsectTaxonView> view =
                 factory.buildByName(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
 
-        assertThat(aggregate).isPresent();
-        assertThat(aggregate.get()).isInstanceOf(InsectGenusAggregate.class);
-        InsectGenusAggregate value = (InsectGenusAggregate) aggregate.get();
+        assertThat(view).isPresent();
+        assertThat(view.get()).isInstanceOf(InsectGenusView.class);
+        InsectGenusView value = (InsectGenusView) view.get();
 
         assertThat(value.genus().name())
                 .isEqualTo(TestInsectsIdentifiers.InsectGenus.Empoasca.name);
@@ -91,70 +91,70 @@ class InsectAggregateFactoryTest {
         assertThat(value.images().stream().map(InsectImage::name))
                 .contains(TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.name);
 
-        assertThat(observer.observable(value, "insectAggregate").violations()).isEmpty();
+        assertThat(observer.observable(value, "taxonView").violations()).isEmpty();
     }
 
     @Test
-    void buildByName_genusWithoutImages_returnsAggregateWithEmptyImageCollection() {
-        Optional<InsectAggregate> aggregate =
+    void buildByName_genusWithoutImages_returnsViewWithEmptyImageCollection() {
+        Optional<InsectTaxonView> view =
                 factory.buildByName(TestInsectsIdentifiers.InsectGenus.Halictus.name);
 
-        assertThat(aggregate).isPresent();
-        assertThat(aggregate.get()).isInstanceOf(InsectGenusAggregate.class);
-        InsectGenusAggregate value = (InsectGenusAggregate) aggregate.get();
+        assertThat(view).isPresent();
+        assertThat(view.get()).isInstanceOf(InsectGenusView.class);
+        InsectGenusView value = (InsectGenusView) view.get();
         assertThat(value.genus().name())
                 .isEqualTo(TestInsectsIdentifiers.InsectGenus.Halictus.name);
         assertThat(value.images().isEmpty()).isTrue();
-        assertThat(observer.observable(value, "insectAggregate").violations()).isEmpty();
+        assertThat(observer.observable(value, "taxonView").violations()).isEmpty();
     }
 
     @Test
-    void buildByName_familyWithoutImages_returnsFamilyAggregateWithEmptyImageCollection() {
-        Optional<InsectAggregate> aggregate =
+    void buildByName_familyWithoutImages_returnsFamilyViewWithEmptyImageCollection() {
+        Optional<InsectTaxonView> view =
                 factory.buildByName(TestInsectsIdentifiers.InsectFamily.Tachinidae.name);
 
-        assertThat(aggregate).isPresent();
-        assertThat(aggregate.get()).isInstanceOf(InsectFamilyAggregate.class);
-        InsectFamilyAggregate value = (InsectFamilyAggregate) aggregate.get();
+        assertThat(view).isPresent();
+        assertThat(view.get()).isInstanceOf(InsectFamilyView.class);
+        InsectFamilyView value = (InsectFamilyView) view.get();
 
         assertThat(value.family().name())
                 .isEqualTo(TestInsectsIdentifiers.InsectFamily.Tachinidae.name);
         assertThat(value.name())
                 .isEqualTo(TestInsectsIdentifiers.InsectFamily.Tachinidae.name);
         assertThat(value.images().isEmpty()).isTrue();
-        assertThat(observer.observable(value, "insectAggregate").violations()).isEmpty();
+        assertThat(observer.observable(value, "taxonView").violations()).isEmpty();
     }
 
     @Test
     void buildByName_unknownSpecies_returnsEmptyOptional() {
-        Optional<InsectAggregate> aggregate =
+        Optional<InsectTaxonView> view =
                 factory.buildByName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
 
-        assertThat(aggregate).isEmpty();
+        assertThat(view).isEmpty();
     }
 
     @Test
     void buildByName_unknownGenus_returnsEmptyOptional() {
-        Optional<InsectAggregate> aggregate =
+        Optional<InsectTaxonView> view =
                 factory.buildByName(TestInsectsIdentifiers.InsectGenus.NotFound.name);
 
-        assertThat(aggregate).isEmpty();
+        assertThat(view).isEmpty();
     }
 
     @Test
     void buildByName_unknownFamily_returnsEmptyOptional() {
-        Optional<InsectAggregate> aggregate =
+        Optional<InsectTaxonView> view =
                 factory.buildByName(TestInsectsIdentifiers.InsectFamily.NotFound.name);
 
-        assertThat(aggregate).isEmpty();
+        assertThat(view).isEmpty();
     }
 
     @Test
     void buildByName_subspecies_alwaysReturnsEmptyOptional() {
-        Optional<InsectAggregate> aggregate =
+        Optional<InsectTaxonView> view =
                 factory.buildByName(InsectSubspeciesName.of("battus-philenor-hirsuta"));
 
-        assertThat(aggregate)
+        assertThat(view)
                 .as("no InsectSubspecies entity exists yet — subspecies-rank requests are a graceful no-op")
                 .isEmpty();
     }
@@ -168,42 +168,42 @@ class InsectAggregateFactoryTest {
 
     @Test
     void constructor_rejectsNullSpeciesQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(null, imageQuery, genusQuery, familyQuery, orderQuery))
+        assertThatThrownBy(() -> new InsectTaxonViewFactory(null, imageQuery, genusQuery, familyQuery, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery");
     }
 
     @Test
     void constructor_rejectsNullImageQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, null, genusQuery, familyQuery, orderQuery))
+        assertThatThrownBy(() -> new InsectTaxonViewFactory(speciesQuery, null, genusQuery, familyQuery, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("imageQuery");
     }
 
     @Test
     void constructor_rejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, imageQuery, null, familyQuery, orderQuery))
+        assertThatThrownBy(() -> new InsectTaxonViewFactory(speciesQuery, imageQuery, null, familyQuery, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("genusQuery");
     }
 
     @Test
     void constructor_rejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, null, orderQuery))
+        assertThatThrownBy(() -> new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, null, orderQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("familyQuery");
     }
 
     @Test
     void constructor_rejectsNullOrderQuery() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(speciesQuery, imageQuery, genusQuery, familyQuery, null))
+        assertThatThrownBy(() -> new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, familyQuery, null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("orderQuery");
     }
 
     @Test
     void constructor_collectsAllViolationsInSinglePass() {
-        assertThatThrownBy(() -> new InsectAggregateFactory(null, null, null, null, null))
+        assertThatThrownBy(() -> new InsectTaxonViewFactory(null, null, null, null, null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery", "imageQuery", "genusQuery", "familyQuery", "orderQuery");
     }

@@ -7,21 +7,21 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * Species-rank {@link InsectAggregate} — the canonical "we know exactly what species
+ * Species-rank {@link InsectTaxonView} — the canonical "we know exactly what species
  * this is" view. Composes the species record with the photographic field record. Root
  * identity is the species's {@link InsectSpeciesName}.
  */
-public record InsectSpeciesAggregate(
+public record InsectSpeciesView(
         InsectSpecies species,
         ImageCollection images
-) implements InsectAggregate {
+) implements InsectTaxonView {
 
-    public static InsectSpeciesAggregate of(InsectSpecies species, ImageCollection images) {
-        return new InsectSpeciesAggregate(species, images);
+    public static InsectSpeciesView of(InsectSpecies species, ImageCollection images) {
+        return new InsectSpeciesView(species, images);
     }
 
-    public static InsectSpeciesAggregate of(InsectSpecies species) {
-        return new InsectSpeciesAggregate(species, ImageCollection.empty());
+    public static InsectSpeciesView of(InsectSpecies species) {
+        return new InsectSpeciesView(species, ImageCollection.empty());
     }
 
     @Override
@@ -40,7 +40,7 @@ public record InsectSpeciesAggregate(
      * inside a {@code whenNotNull(species, ...)} block without firing a
      * redundant {@code isTrue} violation when the genus is missing.
      */
-    public boolean belongsToGenus(@Nullable InsectGenusAggregate genus) {
+    public boolean belongsToGenus(@Nullable InsectGenusView genus) {
         return genus == null || species.belongsToGenus(genus.name());
     }
 
