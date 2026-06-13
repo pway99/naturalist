@@ -1,14 +1,15 @@
 # insects-domain — Chat Briefing
 
-**Purpose.** Domain vocabulary plus current shape of the `insects-api` module
-(species, image, life-stage sub-context), sized for a chat Claude session.
+**Purpose.** Domain vocabulary plus current shape of the insects module
+(four-level Linnaean hierarchy, species, image, functional role, life-stage
+sub-context), sized for a chat Claude session.
 Pair with `docs/briefings/framework-briefing.md` (framework / structural
 glue) and, when generating life-stage JSON,
 `docs/briefings/insect-lifestage-acquisition.md`.
 
 **Primary rule.** Names, packages, components, and visibility below are
-observed from the source tree at briefing time, not extrapolated. If you
-need a type not listed here, ask before inventing one.
+observed from the source tree at briefing time (2026-06-13), not
+extrapolated. If you need a type not listed here, ask before inventing one.
 
 ---
 
@@ -16,19 +17,20 @@ need a type not listed here, ask before inventing one.
 
 ```
 insects-api  →  framework, identifiers, field-notes, taxonomy, habitat,
-                plants-api (PlantName only — typed cross-domain reference)
+                clades, plants-api (PlantName only)
 ```
 
-`insects-api` declares `LarvaStage.hostPlants : List<PlantName>` and
-`AdultStage.nectarSources : List<PlantName>`, which is why it depends on
-`plants-api` (typed slug only — not on plants-core or any plants
-repository module). No taxonomy-light shortcut: every species carries a
-full `TaxonomicClassification`.
+`insects-api` depends on `plants-api` for `PlantName` (typed slug only —
+used by `LarvaStage.hostPlants` and `AdultStage.nectarSources`), and on
+`clades` for the `Clade` sealed type (each rank entity carries
+`@Nullable Clade placedIn`). No taxonomy-light shortcut: each rank carries
+its own `Taxonomic*` epithet from `kernels/taxonomy`.
 
 Cross-domain consumers reference insects only through the api — by
-`InsectSpeciesName`, `LifeStageName`, or `InsectImageId` (the last one
+`InsectSpeciesName`, `InsectGenusName`, `InsectFamilyName`,
+`InsectOrderName`, `LifeStageName`, or `InsectImageId` (the last one
 deliberately rare, since `Entity` ids do not cross domain boundaries by
-value — cross the parent's `EntityName` slug instead).
+value — cross the parent's `InsectRankName` slug instead).
 
 ---
 
@@ -38,16 +40,39 @@ value — cross the parent's `EntityName` slug instead).
 com.naturalist.insects/
   InsectsDomain                       — DomainId record (catalog kernel hook)
   FunctionalGuild                     — enum (8 ecological roles)
+
+  InsectOrder                         — NamedEntity<InsectOrderName>, LinnaeanOrder
+  InsectFamily                        — NamedEntity<InsectFamilyName>, LinnaeanFamily
+  InsectGenus                         — NamedEntity<InsectGenusName>, LinnaeanGenus
   InsectSpecies                       — @AggregateRoot, NamedEntity<InsectSpeciesName>
                                         + 7 nested ValueObject records
+
   InsectImage                         — Entity<InsectImageId>
-  InsectAggregate                     — Aggregate (species + ImageCollection)
+  InsectFunctionalRole                — Entity<InsectFunctionalRoleId>
+
+  InsectTaxonView                     — sealed ReadModel interface
+    InsectOrderView / InsectFamilyView  — record permits (rank + images)
+    InsectGenusView / InsectSpeciesView — record permits (rank + images)
+
+  Insect                              — ReadModel (rank-chain composite)
+
   InsectQuery                         — public namespace interface
-                                        (insect / species / images)
+                                        (taxonView / species / images /
+                                         families / genera / functionalRoles /
+                                         orders)
+  InsectCommand                       — public namespace interface
+                                        (species / images)
   InsectRepository                    — package-private namespace class
-                                        (SpeciesRepository, ImageRepository)
+                                        (SpeciesRepository, ImageRepository,
+                                         FamilyRepository, GenusRepository,
+                                         FunctionalRoleRepository,
+                                         OrderRepository)
   InsectEntityCollections             — public namespace interface
-                                        (SpeciesCollection, ImageCollection)
+                                        (SpeciesCollection, ImageCollection,
+                                         ImageGallery, FamilyCollection,
+                                         GenusCollection,
+                                         FunctionalRoleCollection,
+                                         OrderCollection)
 
   lifestage/
     LifeStage                         — sealed interface, NamedEntity<LifeStageName>
@@ -61,71 +86,143 @@ com.naturalist.insects/
     InsectLifeStageQuery              — public namespace interface
     InsectLifeStageEntityCollections  — public namespace interface
                                         (LifeStageCollection)
-    LifeStageRepository               — @Incubating; nested
-                                        LifeStageEntityRepository
+    LifeStageRepository               — LifeStageEntityRepository
 ```
 
 ### Identifier locations (in the `identifiers` module, not in insects-api)
 
-| Type                | Package                  |
-|---------------------|--------------------------|
-| `InsectSpeciesName` | `com.naturalist.insects` |
-| `LifeStageName`     | `com.naturalist.insects` |
-| `LifeStageKind`     | `com.naturalist.insects` |
-| `InsectImageId`     | `com.naturalist.insects` |
+| Type                     | Package                  |
+|--------------------------|--------------------------|
+| `InsectRankName`         | `com.naturalist.insects` |
+| `InsectOrderName`        | `com.naturalist.insects` |
+| `InsectFamilyName`       | `com.naturalist.insects` |
+| `InsectGenusName`        | `com.naturalist.insects` |
+| `InsectSpeciesName`      | `com.naturalist.insects` |
+| `InsectSubspeciesName`   | `com.naturalist.insects` |
+| `InsectImageId`          | `com.naturalist.insects` |
+| `InsectFunctionalRoleId` | `com.naturalist.insects` |
+| `LifeStageName`          | `com.naturalist.insects` |
+| `LifeStageKind`          | `com.naturalist.insects` |
 
 The *module* is `identifiers`; the *package* mirrors the home domain.
+`InsectRankName` is a sealed interface over the five rank names (order,
+family, genus, species, subspecies); it carries `value()` and `rank()`
+for polymorphic slug/rank access without down-casting.
 `LifeStageKind` is an enum (not an EntityName) but lives with the
 identifiers because it is a structural component of `LifeStageName`.
 
 ---
 
-## 3. The Two NamedEntity Branches + One Surrogate Entity
+## 3. Entity Summary
 
-| Type            | Identity            | Branch                         | Aggregate?                 |
-|-----------------|---------------------|--------------------------------|----------------------------|
-| `InsectSpecies` | `InsectSpeciesName` | `NamedEntity` (slug)           | **Yes** (`@AggregateRoot`) |
-| `LifeStage`     | `LifeStageName`     | `NamedEntity` (composite slug) | No (sealed family)         |
-| `InsectImage`   | `InsectImageId`     | `Entity` (UUIDv7)              | No                         |
+| Type                   | Identity                 | Branch                         | DDD role                           |
+|------------------------|--------------------------|--------------------------------|------------------------------------|
+| `InsectOrder`          | `InsectOrderName`        | `NamedEntity` (slug)           | Rank entity (hierarchy root)       |
+| `InsectFamily`         | `InsectFamilyName`       | `NamedEntity` (slug)           | Rank entity (parent-only FK)       |
+| `InsectGenus`          | `InsectGenusName`        | `NamedEntity` (slug)           | Rank entity (parent-only FK)       |
+| `InsectSpecies`        | `InsectSpeciesName`      | `NamedEntity` (slug)           | **@AggregateRoot** (value objects) |
+| `InsectImage`          | `InsectImageId`          | `Entity` (UUIDv7)              | Observation record                 |
+| `InsectFunctionalRole` | `InsectFunctionalRoleId` | `Entity` (UUIDv7)              | Cross-rank ecology assignment      |
+| `LifeStage` (sealed)   | `LifeStageName`          | `NamedEntity` (composite slug) | Sealed family (4 permits)          |
+| `InsectTaxonView`      | `InsectRankName`         | `ReadModel` (sealed)           | Rank + images view (4 permits)     |
+| `Insect`               | (no identity)            | `ReadModel`                    | Rank-chain composite               |
 
-`InsectAggregate` is the `Aggregate` shell composing `InsectSpecies` plus
-`ImageCollection` — its identity is the species's `InsectSpeciesName`. There
-is no `InsectAggregate` for life stages today; stages compose directly into
-the species record.
+### Parent-only FK chain (no grandparent skip-level references)
 
-### `LifeStageName` composite identity
+```
+InsectOrder  (no parent FK — hierarchy root)
+  ← InsectFamily.orderName
+    ← InsectGenus.familyName
+      ← InsectSpecies.genusName
+```
 
-Format: `{species-slug}-{stage-kind-slug}`, e.g.
-`battus-philenor-larva`, `green-lacewing-egg`. Parser splits on the **last**
-hyphen. Helpers: `speciesName()` and `stageKind()` walk the parts back. Max
-length 80.
+Each rank carries only its immediate parent's `EntityName` FK.
+Grandparent resolution (e.g. species → order) requires walking the
+chain through intermediate entities.
 
-Stage entities are referenced by name across the api surface
-(`InsectLifeStageQuery.lifeStages().getByName(LifeStageName)`), but they
-also appear *by value* nested directly under their parent
-`InsectSpecies.egg/larva/pupa/adult` because each stage is biologically
-inseparable from its species. Both representations are populated from JSON
-in parallel files (see §10).
+### Cross-rank `InsectRankName` pattern
+
+`InsectImage`, `InsectFunctionalRole`, and each `LifeStage` permit carry
+`parentName: InsectRankName` — a sealed polymorphic FK that can point to
+any insect rank (order, family, genus, species, or future subspecies).
+Jackson dispatch is declared at the consuming field
+(`@JsonTypeInfo(As.EXTERNAL_PROPERTY)`) with a `parentRank` discriminator,
+not on the `InsectRankName` interface itself.
 
 ---
 
-## 4. InsectSpecies — the Aggregate
+## 4. Linnaean Rank Entities
+
+### `InsectOrder`
 
 ```java
+public record InsectOrder(
+    InsectOrderName name,
+    TaxonomicOrder order,
+    Description description,
+    Set<CommonName> commonNames,
+    @Nullable Clade placedIn
+) implements NamedEntity<InsectOrderName>, LinnaeanOrder
+```
 
+Root of the hierarchy. No parent FK. `order` is the proper-cased Linnaean
+epithet (e.g. `"Diptera"`). Slug identity derived via
+`LinnaeanOrder.orderSlug()`.
+
+### `InsectFamily`
+
+```java
+public record InsectFamily(
+    InsectFamilyName name,
+    InsectOrderName orderName,
+    TaxonomicFamily family,
+    Description description,
+    Set<CommonName> commonNames,
+    @Nullable Clade placedIn
+) implements NamedEntity<InsectFamilyName>, LinnaeanFamily<InsectOrderName>
+```
+
+Typed upward FK `orderName` to parent order. `belongsToOrder(orderName)`
+convenience predicate.
+
+### `InsectGenus`
+
+```java
+public record InsectGenus(
+    InsectGenusName name,
+    InsectFamilyName familyName,
+    TaxonomicGenus genus,
+    Description description,
+    Set<CommonName> commonNames,
+    @Nullable Clade placedIn
+) implements NamedEntity<InsectGenusName>, LinnaeanGenus<InsectFamilyName>
+```
+
+Typed upward FK `familyName` to parent family. `belongsToFamily(familyName)`
+convenience predicate.
+
+### All three share
+
+- Four-level Durrell `Description`
+- `Set<CommonName>` for locale-tagged vernacular names
+- `@Nullable Clade placedIn` for clade-DAG placement
+- `withPlacedIn(Clade)` mutator
+
+---
+
+## 5. InsectSpecies — the Aggregate Root
+
+```java
 @AggregateRoot
 public record InsectSpecies(
         InsectSpeciesName name,
-        TaxonomicClassification taxonomy,
+        InsectGenusName genusName,
+        TaxonomicSpecies epithet,
         Description description,
-        Set<FunctionalGuild> guilds,
-        boolean beneficial,
+        Set<CommonName> commonNames,
         @Nullable String sightingNotes,
         @Nullable IdentificationFeatures identificationFeatures,
-        @Nullable EggStage egg,
-        @Nullable LarvaStage larva,
-        @Nullable PupaStage pupa,
-        @Nullable AdultStage adult,
+        @Nullable Clade placedIn,
         @Nullable ChemicalDefense chemicalDefense,
         @Nullable Voltinism voltinism,
         @Nullable HabitatProfile habitatProfile,
@@ -136,98 +233,31 @@ public record InsectSpecies(
 ) implements NamedEntity<InsectSpeciesName>
 ```
 
+### What changed from the old briefing
+
+- `taxonomy: TaxonomicClassification` replaced by `genusName: InsectGenusName`
+  (typed upward FK) + `epithet: TaxonomicSpecies` (species epithet).
+- `guilds: Set<FunctionalGuild>` and `beneficial: boolean` moved out to the
+  separate `InsectFunctionalRole` entity (PL-11). Guild predicates
+  (`isPollinator()`, `isKeystone()`, etc.) are gone from this record.
+- `commonNames: Set<CommonName>` added for locale-tagged vernacular names.
+- Inline stage fields (`egg`, `larva`, `pupa`, `adult`) **removed**. Life
+  stages are now independent `LifeStage` entities queried via
+  `InsectLifeStageQuery`, attached by `parentName: InsectRankName`.
+- `withPlacedIn(Clade)` mutator added.
+
 ### Required vs nullable fields
 
-- `name`, `taxonomy`, `description`, `guilds`, `beneficial` — always
+- `name`, `genusName`, `epithet`, `description`, `commonNames` — always
   populated.
-- All four stage fields and all eight value-object fields are nullable;
-  populated incrementally as the catalog matures. See §5 for nullability
-  semantics per stage.
-- `beneficialProfile` should only be populated when `beneficial == true`
-  (intent constraint, not invariant).
+- All seven value-object fields are nullable; populated incrementally as
+  the catalog matures.
+- `beneficialProfile` should only be populated when the species's
+  `InsectFunctionalRole.beneficial()` is `true` (intent constraint, not
+  invariant).
 - `chemicalDefense` is populated only on chemically defended species
   (*Battus philenor*, etc.). Empty/default `ChemicalDefense` is not a
   legal alternative encoding — use `null`.
-
-### Behavioral queries
-
-`isPollinator()`, `isKeystone()`, `isBiocontrolAgent()` — convenience
-predicates over `guilds`.
-
-### Mutators
-
-`InsectSpecies` carries no `with*` methods today. Updates go through full
-record reconstruction at the repository boundary.
-
-### Aggregate invariants (current)
-
-```java
-i.entityName(name, "name")
- .
-
-valueObject(taxonomy, "taxonomy")
- .
-
-valueObject(description, "description")
- .
-
-notNull(this,InsectSpecies::guilds, "guilds")
- .
-
-valueObjectOrNull(this,InsectSpecies::identificationFeatures, "identificationFeatures")
- .
-
-valueObjectOrNull(this,InsectSpecies::chemicalDefense, "chemicalDefense")
- .
-
-valueObjectOrNull(this,InsectSpecies::voltinism, "voltinism")
- .
-
-valueObjectOrNull(this,InsectSpecies::habitatProfile, "habitatProfile")
- .
-
-valueObjectOrNull(this,InsectSpecies::habitatRequirements, "habitatRequirements")
- .
-
-valueObjectOrNull(this,InsectSpecies::gardenConnections, "gardenConnections")
- .
-
-valueObjectOrNull(this,InsectSpecies::beneficialProfile, "beneficialProfile")
- .
-
-valueObjectOrNull(this,InsectSpecies::ecologicalSignificance, "ecologicalSignificance");
-// Stage children descended conditionally — Constraints has no
-// nullable-namedEntity helper today:
-if(egg !=null)i.
-
-namedEntity(this,InsectSpecies::egg,   "egg");
-if(larva !=null)i.
-
-namedEntity(this,InsectSpecies::larva, "larva");
-if(pupa !=null)i.
-
-namedEntity(this,InsectSpecies::pupa,  "pupa");
-if(adult !=null)i.
-
-namedEntity(this,InsectSpecies::adult, "adult");
-```
-
-The conditional descent is a known framework gap: there is no
-`namedEntityOrNull` on `Constraints`. Until it lands, mirror this pattern
-on any aggregate composing nullable `NamedEntity` children.
-
-### Cross-stage invariants enforced here, not on the stages
-
-- Metabolous-type consistency (hemimetabolous orders ⇒ `larva == null` and
-  `pupa == null`).
-- Chemistry-story coherence (EXPRESSION on adult requires upstream
-  ACQUISITION on larva or MATERNAL_TRANSFER on egg, etc.).
-- `chemicalDefense.protectedStages` should equal the set of stages
-  carrying a non-null `chemistryRole`.
-
-These are documented in `domains/insects/CLAUDE.md` and in the
-lifestage acquisition briefing (§5). They are not yet enforced as
-record-level invariants.
 
 ### Nested value-object graph
 
@@ -251,16 +281,129 @@ substitutes.
 
 ---
 
-## 5. Life Stage Sub-context
+## 6. InsectFunctionalRole — cross-rank ecology
+
+```java
+public record InsectFunctionalRole(
+    InsectFunctionalRoleId name,
+    InsectRankName parentName,
+    Set<FunctionalGuild> guilds,
+    boolean beneficial
+) implements Entity<InsectFunctionalRoleId>
+```
+
+Extracted from `InsectSpecies` (PL-11). Attaches to any rank via
+`parentName: InsectRankName`. One role record per organism (uniqueness
+enforced on `parentName`). `guilds` must be non-empty — "not yet
+documented" is expressed by the absence of a role record, not by an
+empty set on a present record. Jackson dispatch on `parentName` mirrors
+`InsectImage`.
+
+---
+
+## 7. InsectImage
+
+```java
+public record InsectImage(
+    InsectImageId name,
+    InsectRankName parentName,
+    Instant dateAdded,
+    FileName resourceName
+) implements Entity<InsectImageId>
+```
+
+`InsectImage` is a photographic observation record — identity by UUIDv7.
+`parentName` is `InsectRankName` (sealed polymorphic) — can attach to any
+rank the naturalist's confidence allows. Rank transitions ("we now know
+this is *Empoasca fabae*, not just an Empoasca") become a single-field
+update.
+
+`resourceName` is a `FileName` (kernel `NamedValue<String>`), not a path.
+The path prefix `insects/images/` is a stable convention — compose with
+`resourceName.path("insects/images/")` at the use site.
+
+---
+
+## 8. InsectTaxonView — sealed ReadModel
+
+```java
+public sealed interface InsectTaxonView extends ReadModel
+    permits InsectOrderView, InsectFamilyView, InsectGenusView, InsectSpeciesView
+```
+
+Catalog-view read model — rank entity + `ImageCollection`. Each permit
+composes a single rank entity with its photographs. Identity is the root
+rank's typed `InsectRankName`, returned polymorphically by `name()`.
+
+| Permit              | Composes        | Identity            |
+|---------------------|-----------------|---------------------|
+| `InsectOrderView`   | `InsectOrder`   | `InsectOrderName`   |
+| `InsectFamilyView`  | `InsectFamily`  | `InsectFamilyName`  |
+| `InsectGenusView`   | `InsectGenus`   | `InsectGenusName`   |
+| `InsectSpeciesView` | `InsectSpecies` | `InsectSpeciesName` |
+
+Each permit carries a `belongsTo*(parentView)` predicate (null-tolerant)
+used by the `Insect` read model's cross-rank FK invariants.
+
+`InsectSubspeciesName` is a permit on `InsectRankName` but has no view
+permit — no subspecies entity exists yet. The factory returns
+`Optional.empty()` for subspecies-rank requests.
+
+---
+
+## 9. Insect — rank-chain ReadModel
+
+```java
+public record Insect(
+    ImageCollection observations,
+    @Nullable InsectOrderView order,
+    @Nullable InsectFamilyView family,
+    @Nullable InsectGenusView genus,
+    @Nullable InsectSpeciesView species,
+    LifeStageCollection lifeStages
+) implements ReadModel
+```
+
+Sum-of-parts composition of everything known about an insect at whatever
+identification depth has been reached. Not persisted — assembled in memory
+from the constituent repositories.
+
+Structural invariants:
+
+- **Required collections** — `observations` and `lifeStages` non-null
+  (use `empty()` for zero state).
+- **Per-rank descent** — each present rank's own invariants are walked.
+- **Ancestor-presence** — when a child rank is set, all ancestor slots
+  must also be set.
+- **Cross-rank FK consistency** — child's typed parent FK must equal the
+  ancestor's name (one check per direct FK: `familyBelongsToOrder`,
+  `genusBelongsToFamily`, `speciesBelongsToGenus`).
+
+`identifiedTo()` returns the most-specific identified rank as
+`Optional<InsectRankName>`. `with*` mutators refine the read model.
+`Insect.empty()` is the zero-state starting point.
+
+Cross-rank clade invariants (placement-chain monotonicity, metaboly
+conformance) are deferred to Phase 3.
+
+---
+
+## 10. Life Stage Sub-context
 
 `LifeStage` is a sealed interface — four permitted records — implementing
 `NamedEntity<LifeStageName>`. Jackson polymorphic wiring is in place
 (`@JsonTypeInfo(property = "kind")`, four `@JsonSubTypes`).
 
+Life stages are **independent entities** queried via
+`InsectLifeStageQuery`, not inline fields on `InsectSpecies`. Each stage
+carries `parentName: InsectRankName` — can attach to any rank, not just
+species.
+
 ### Common stage fields (every populated stage)
 
 ```
 name           : LifeStageName            (composite slug)
+parentName     : InsectRankName           (sealed polymorphic FK)
 phenology      : StagePhenology           (non-empty windows list)
 habitat        : StageHabitat             (HabitatProfile + narrative)
 chemistryRole  : @Nullable StageChemistryRole
@@ -270,6 +413,13 @@ description    : Description              (four-level Durrell, all four levels n
 `kind() : LifeStageKind` is provided by each subtype (returns the matching
 enum constant). Cross-stage invariants live on the `InsectSpecies`
 aggregate root, not on `LifeStage`.
+
+### `LifeStageName` composite identity
+
+Format: `{parent-rank-slug}-{stage-kind-slug}`, e.g.
+`battus-philenor-larva`, `green-lacewing-egg`. Parser splits on the **last**
+hyphen. Helpers: `speciesName()` and `stageKind()` walk the parts back. Max
+length 80.
 
 ### Stage-specific fields
 
@@ -352,131 +502,82 @@ sealed interface DiapauseRegulation extends ValueObject permits
         NonDiapausing                 // positively documented absence
 ```
 
-**Known Jackson gap.** `DiapauseRegulation` does **not** carry
-`@JsonTypeInfo` / `@JsonSubTypes` on the source. JSON catalog entries
-must emit `"diapauseRegulation": null` until polymorphic wiring lands.
-Treat `null` as undocumented; treat `NonDiapausing` (once writable) as
-positively absent. This is the gap to close before back-filling pupal
-diapause data into the catalog.
-
-### Nullability semantics on the species
-
-| Field   | `null` means                                                                                                               |
-|---------|----------------------------------------------------------------------------------------------------------------------------|
-| `egg`   | Egg stage not yet documented at catalog level. Always populate-able.                                                       |
-| `larva` | Hemimetabolous (Blattodea, Orthoptera, Hemiptera) ⇒ semantically absent (nymph, not larva). Holometabolous ⇒ undocumented. |
-| `pupa`  | Hemimetabolous ⇒ semantically absent (no pupation). Holometabolous ⇒ undocumented.                                         |
-| `adult` | Adult stage not yet documented at catalog level. Always populate-able.                                                     |
-
-Hemimetabolous nymphs are explicitly **not** modeled as a stage today.
+`DiapauseRegulation` now has `@JsonTypeInfo` / `@JsonSubTypes` wiring
+via `valueObjectOrNull` in `PupaStage.invariants()`. Treat `null` as
+undocumented; treat `NonDiapausing` as positively absent.
 
 ---
 
-## 6. InsectImage
+## 11. FunctionalGuild — eight ecological roles
 
-```java
-public record InsectImage(
-        InsectImageId name,            // UUIDv7, generated at construction
-        InsectSpeciesName insectSpeciesName,   // soft FK to species
-        Instant dateAdded,
-        FileName resourceName          // bare filename, e.g. "IMG_9047.HEIC"
-) implements Entity<InsectImageId>
+```
+PARASITOID, PREDATOR, APEX_PREDATOR, POLLINATOR,
+DECOMPOSER, FOOD_WEB, MIGRATORY, KEYSTONE
 ```
 
-`InsectImage` is the reference implementation of the framework's
-`Entity` branch — surrogate UUIDv7 identity, surrogate keys private to
-the RDBMS adapter, cross-entity references by `EntityName` slug.
+A species (or genus, or family) belongs to multiple guilds — hoverfly
+is `PREDATOR` (larva) and `POLLINATOR` (adult). `KEYSTONE` flags species
+whose loss cascades broadly; *Battus philenor* + *Aristolochia californica*
+is the canonical keystone host pair.
 
-`resourceName` is a `FileName` (kernel `NamedValue<String>`), not a path.
-The path prefix `insects/images/` is a stable convention of the bounded
-context — compose with `resourceName.path("insects/images/")` at the use
-site. `resourceName.nameType()` returns the format suffix
-(`"HEIC"`, `"JPG"`) for conversion branching.
-
-`InsectImage` is referenced by surrogate id only in tests and through the
-`ImageQuery.getByName(InsectImageId)` port; in practice, consumers fetch
-images for a species via `forSpeciesName(InsectSpeciesName)`.
+Guild assignments now live on `InsectFunctionalRole`, not on
+`InsectSpecies`.
 
 ---
 
-## 7. InsectAggregate
-
-```java
-public record InsectAggregate(
-        InsectSpecies species,
-        ImageCollection images
-) implements Aggregate
-```
-
-Catalog-view assembly — species record + image collection. `images`
-is non-null, may be empty (a species can be catalogued without
-photographs). Two static factories: `of(species, images)` and
-`of(species)` (defaulting to `ImageCollection.empty()`).
-
-Referential integrity between `InsectImage.insectSpeciesName()` and
-`InsectSpecies.name()` is the assembly factory's responsibility — see
-`InsectAggregateFactory` in `insects-core` for the canonical
-factory-placement template (concrete, package-private, no interface, no
-`Impl` suffix, never declared in the api).
-
----
-
-## 8. Query / Repository / Collection Surface
+## 12. Query / Repository / Collection / Command Surface
 
 ### `InsectQuery` (public namespace interface)
 
 ```java
 public interface InsectQuery {
-    InsectAggregateQuery insect();
-
+    TaxonViewQuery taxonView();
     SpeciesQuery species();
-
     ImageQuery images();
 
-    interface InsectAggregateQuery {
-        Optional<InsectAggregate> getByName(InsectSpeciesName name);
+    FamilyQuery families();
+
+    GenusQuery genera();
+
+    FunctionalRoleQuery functionalRoles();
+
+    OrderQuery orders();
+
+    interface TaxonViewQuery {
+        Optional<InsectTaxonView> getByName(InsectRankName name);
     }
 
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
-        EntityNameSet<InsectSpeciesName> allSpeciesNames();
+        SpeciesCollection forGenusName(InsectGenusName genusName);
 
-        SpeciesCollection getByFunctionalGuild(FunctionalGuild functionalGuild);
+        SpeciesCollection forFamilyName(InsectFamilyName familyName);
     }
 
     interface ImageQuery extends EntityQuery<InsectImageId, InsectImage, ImageCollection> {
-        ImageCollection forSpeciesName(InsectSpeciesName speciesName);
+        ImageCollection forParentName(InsectRankName parentName);
+    }
+
+    interface FamilyQuery extends EntityQuery<InsectFamilyName, InsectFamily, FamilyCollection> {
+        FamilyCollection forOrderName(InsectOrderName orderName);
+    }
+
+    interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenus, GenusCollection> {
+        GenusCollection forFamilyName(InsectFamilyName familyName);
+
+        GenusCollection forOrderName(InsectOrderName orderName);
+    }
+
+    interface FunctionalRoleQuery
+        extends EntityQuery<InsectFunctionalRoleId, InsectFunctionalRole, FunctionalRoleCollection> {
+        FunctionalRoleCollection getByGuild(FunctionalGuild guild);
+
+        Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName);
+    }
+
+    interface OrderQuery extends EntityQuery<InsectOrderName, InsectOrder, OrderCollection> {
     }
 }
 ```
-
-### `InsectRepository` (package-private namespace class)
-
-```java
-class InsectRepository {                       // class (not interface) so
-    // nested types can be hidden
-    protected interface SpeciesRepository
-            extends EntityRepository<InsectSpeciesName, InsectSpecies> {
-        List<InsectSpeciesName> getAllSpeciesNames();
-
-        List<InsectSpecies> getByFunctionalGuild(FunctionalGuild functionalGuild);
-    }
-
-    protected interface ImageRepository
-            extends EntityRepository<InsectImageId, InsectImage> {
-        List<InsectImage> getBySpeciesName(InsectSpeciesName speciesName);
-    }
-}
-```
-
-Reference implementation of the namespace pattern (see
-`framework-briefing.md` §5). Foreign packages can use `InsectQuery` but
-cannot see `SpeciesRepository` / `ImageRepository`.
-
-### `InsectEntityCollections` (public namespace interface)
-
-`SpeciesCollection` and `ImageCollection` — both `final class extends
-BehavioralCollection<…>`, package-private constructor, public
-`of(Collection<…>)` / `empty()` factories.
 
 ### `InsectLifeStageQuery` (public namespace interface)
 
@@ -485,146 +586,205 @@ public interface InsectLifeStageQuery {
     LifeStageEntityQuery lifeStages();
 
     interface LifeStageEntityQuery
-            extends EntityQuery<LifeStageName, LifeStage, LifeStageCollection> {
-        LifeStageCollection forSpeciesName(InsectSpeciesName speciesName);
+        extends EntityQuery<LifeStageName, LifeStage, LifeStageCollection> {
+        LifeStageCollection forParentName(InsectRankName parentName);
     }
 }
 ```
 
-### `LifeStageRepository` — INCUBATING
+### `InsectCommand` (public namespace interface)
 
 ```java
-@Incubating("Investigating a pattern where EntityRepositories are nested
-within a
-single interface")
+public interface InsectCommand {
+    SpeciesCommand species();
 
-interface LifeStageRepository {
-    interface LifeStageEntityRepository extends EntityRepository<LifeStageName, LifeStage> {
-        List<LifeStage> getBySpeciesName(InsectSpeciesName speciesName);
+    ImageCommand images();
+
+    interface SpeciesCommand extends EntityCommand<InsectSpeciesName, InsectSpecies> {
+    }
+
+    interface ImageCommand extends EntityCommand<InsectImageId, InsectImage> {
     }
 }
 ```
 
-`LifeStageRepository` is declared as an `interface` (mirror of the
-`ElementRepository` experiment in `chemistry-api`), not a `class`. Do
-**not** "fix" this to the standard namespace shape (package-private
-`class` with nested `protected interface`) without checking with the
-user first — both deviations are a deliberate investigation of a
-single-entity collapse rule.
+Family and genus commands are not part of the pilot — add them when a
+write surface becomes a concrete requirement.
 
-### N=1 collapse not applied here
+### `InsectRepository` (package-private namespace class)
+
+```java
+class InsectRepository {
+    protected interface SpeciesRepository
+            extends EntityRepository<InsectSpeciesName, InsectSpecies> {
+        List<InsectSpecies> getByGenusName(InsectGenusName genusName);
+    }
+    protected interface ImageRepository
+            extends EntityRepository<InsectImageId, InsectImage> {
+        List<InsectImage> getByParentName(InsectRankName parentName);
+    }
+
+    protected interface FamilyRepository
+        extends EntityRepository<InsectFamilyName, InsectFamily> {
+        List<InsectFamily> getByOrderName(InsectOrderName orderName);
+    }
+
+    protected interface GenusRepository
+        extends EntityRepository<InsectGenusName, InsectGenus> {
+        List<InsectGenus> getByFamilyName(InsectFamilyName familyName);
+    }
+
+    protected interface FunctionalRoleRepository
+        extends EntityRepository<InsectFunctionalRoleId, InsectFunctionalRole> {
+        List<InsectFunctionalRole> getByGuild(FunctionalGuild guild);
+
+        Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName);
+    }
+
+    protected interface OrderRepository
+        extends EntityRepository<InsectOrderName, InsectOrder> {
+    }
+}
+```
+
+### `InsectEntityCollections` (public namespace interface)
+
+`SpeciesCollection`, `ImageCollection`, `FamilyCollection`,
+`GenusCollection`, `FunctionalRoleCollection`, `OrderCollection` — all
+`final class extends BehavioralCollection<…>`, package-private constructor,
+public `of(Collection<…>)` / `empty()` factories.
+
+`ImageGallery extends BehavioralMap<InsectRankName, InsectImage>` — groups
+images by their `parentName` for display. `forEntity(InsectRankName)`
+returns an `ImageCollection` for a specific rank entity.
+
+### `LifeStageRepository`
+
+```java
+interface LifeStageRepository {
+    interface LifeStageEntityRepository extends EntityRepository<LifeStageName, LifeStage> {
+        List<LifeStage> getByParentName(InsectRankName parentName);
+    }
+}
+```
+
+`LifeStageRepository` is declared as an `interface` (not the standard
+namespace `class`). Do **not** "fix" this to the standard namespace shape
+without checking with the user first — the deviation is a deliberate
+investigation.
+
+### N=1 collapse not applied to life stages
 
 `InsectLifeStageEntityCollections` carries one collection
 (`LifeStageCollection`) and `InsectLifeStageQuery` carries one nested
-query — by the N=1 collapse rule (`domains/CLAUDE.md` §"API Surface")
-they could be top-level. They remain namespaced today because the life
-stage sub-context is expected to grow secondary entities (moult records,
-phenology observations). Do not collapse without coordinating that
-roadmap.
+query — by the N=1 collapse rule they could be top-level. They remain
+namespaced today because the life stage sub-context is expected to grow
+secondary entities (moult records, phenology observations). Do not
+collapse without coordinating that roadmap.
 
 ---
 
-## 9. FunctionalGuild — eight ecological roles
+## 13. Clade Integration and Metaboly Resolution
 
-```
-PARASITOID, PREDATOR, APEX_PREDATOR, POLLINATOR,
-DECOMPOSER, FOOD_WEB, MIGRATORY, KEYSTONE
+Each rank entity (order, family, genus, species) carries
+`@Nullable Clade placedIn`. The clade placement drives life-stage kind
+resolution via the clade-DAG walk-up:
+
+```java
+// InsectLifeStages.stagesOf walk-up:
+//   species.placedIn → genus.placedIn → family.placedIn → order.placedIn
+//   first non-null → resolve MetabolyTrait → List<LifeStageKind>
 ```
 
-A species belongs to multiple guilds — hoverfly is `PREDATOR` (larva)
-and `POLLINATOR` (adult). `KEYSTONE` flags species whose loss cascades
-broadly; *Battus philenor* + *Aristolochia californica* is the canonical
-keystone host pair. Pesticide constraints triggered by `isKeystone()`
-are surfaced by the (future) PestManagement application module.
+`InsectClades.traitsFor(Clade)` declares:
+
+- `Holometabola` → `Holometabolous` → stages: `[EGG, LARVA, PUPA, ADULT]`
+- `Hemiptera` → `Hemimetabolous` → stages: `[EGG, NYMPH, ADULT]`
+
+`Metaboly` is a sealed interface in the lifestage package with permits
+`Ametabolous`, `Hemimetabolous`, `Holometabolous`.
 
 ---
 
-## 10. JSON Catalog Locations (insects-repository-test, NOT insects-api)
+## 14. JSON Catalog Locations (insects-repository-test, NOT insects-api)
 
 The api ships no JSON. Catalog files live in repository-test resources:
 
 ```
 insects-repository-test/src/main/resources/insects/
-  insect-species.json     — full InsectSpecies records (egg/larva/pupa/adult inline)
-  insect-images.json      — InsectImage records keyed by UUIDv7
-  life-stages.json        — flat LifeStage records keyed by LifeStageName
-  NOTES.md                — acquisition follow-up triage
-  images/                 — IMG_*.HEIC / .JPG photo binaries
+  insect-species.json         — InsectSpecies records
+  insect-images.json          — InsectImage records keyed by UUIDv7
+  insect-orders.json          — InsectOrder records
+  insect-families.json        — InsectFamily records
+  insect-genera.json          — InsectGenus records
+  insect-functional-roles.json — InsectFunctionalRole records
+  life-stages.json            — flat LifeStage records keyed by LifeStageName
+  NOTES.md                    — acquisition follow-up triage
+  images/                     — IMG_*.HEIC / .JPG photo binaries
 ```
 
-`insect-species.json` and `life-stages.json` are intentionally redundant:
+Life stages were previously embedded inline in the species file (`egg`,
+`larva`, `pupa`, `adult` fields). They are now independent records in
+`life-stages.json` only, loaded by `LifeStageTestEntitySource`.
 
-- The species file composes stages **by value** under each species record
-  (`InsectSpecies.egg`, `.larva`, `.pupa`, `.adult`).
-- `life-stages.json` exposes the same stage entities as a flat
-  `LifeStageName`-keyed collection, loaded by
-  `LifeStageTestEntitySource` so `InsectLifeStageQuery` can resolve them
-  by name without walking through species records.
+Catalog conventions:
 
-Keep both files in sync when adding or modifying a stage. The
-`insect-lifestage-acquisition` briefing covers stage-only updates; full
-species acquisition has no dedicated briefing yet.
-
-Catalog conventions (per insects `CLAUDE.md`):
-
-- `"name": "<slug>"` is the `InsectSpeciesName` / `LifeStageName`. No
-  `id` field on `InsectSpecies` or `LifeStage` — surrogate keys are
-  adapter-internal only.
-- `InsectImage` entries carry `"name"` as a UUIDv7 string.
+- `"name": "<slug>"` is the `EntityName` natural key. No `id` field on
+  any `NamedEntity` record.
+- `InsectImage` and `InsectFunctionalRole` entries carry `"name"` as a
+  UUIDv7 string, plus `"parentRank"` / `"parentName"` for polymorphic
+  Jackson dispatch.
 - Enum values serialize by constant name (`"PARASITOID"`,
   `"FOLIAR_BOTH"`, `"FOOD_WATER_CONTENT_REGULATED"`).
-- Cross-domain `PlantName` references on
-  `LarvaStage.hostPlants` and `AdultStage.nectarSources` are slug
-  strings — `"aristolochia-californica"`, `"medicago-sativa"`.
+- Cross-domain `PlantName` references on `LarvaStage.hostPlants` and
+  `AdultStage.nectarSources` are slug strings.
 - The `kind` discriminator (`"EGG"`, `"LARVA"`, `"PUPA"`, `"ADULT"`)
-  is required on every `LifeStage` entry in `life-stages.json`; in
-  `insect-species.json` the discriminator is implicit by field name.
+  is required on every `LifeStage` entry in `life-stages.json`.
 
 ---
 
-## 11. Site Context — Oak Vista (Chico, CA)
+## 15. Site Context — Oak Vista (Chico, CA)
 
-The April 2026 ecological assessment seeded the catalog. 16 species
-documented; the canonical reference set is:
+The April 2026 ecological assessment seeded the catalog. The catalog now
+spans orders, families, genera, and species. Representative species:
 
-| Slug                   | Order       | Metabolous | Note                                          |
-|------------------------|-------------|------------|-----------------------------------------------|
-| `tachinid-fly`         | Diptera     | Holo       | Endoparasitoid                                |
-| `braconid-wasp`        | Hymenoptera | Holo       | Aphid + lepidopteran parasitoid               |
-| `hoverfly`             | Diptera     | Holo       | Aphidophagous larva, nectar adult             |
-| `convergent-ladybug`   | Coleoptera  | Holo       | Confirmed breeding April 2026                 |
-| `ground-beetle`        | Coleoptera  | Holo       | APEX_PREDATOR                                 |
-| `crane-fly`            | Diptera     | Holo       | Saprophagous leatherjacket larva              |
-| `field-roach`          | Blattodea   | **Hemi**   | Egg + adult only                              |
-| `native-sweat-bee`     | Hymenoptera | Holo       | *Halictus* sp.                                |
-| `grey-mining-bee`      | Hymenoptera | Holo       | *Andrena* sp.                                 |
-| `valley-carpenter-bee` | Hymenoptera | Holo       | *Xylocopa varipuncta*                         |
-| `skipper-butterfly`    | Lepidoptera | Holo       | Hesperiidae family-level                      |
-| `painted-lady`         | Lepidoptera | Holo       | *Vanessa cardui* — migratory                  |
-| `green-lacewing`       | Neuroptera  | Holo       | Silk-stalked eggs                             |
-| `pipevine-swallowtail` | Lepidoptera | Holo       | **Keystone**, *Battus philenor*, AA chemistry |
-| `potato-leafhopper`    | Hemiptera   | **Hemi**   | Egg + adult only                              |
-| `orange-sulphur`       | Lepidoptera | Holo       | *Colias eurytheme*, Fabaceae host             |
+| Slug                    | Order       | Metabolous | Note                                          |
+|-------------------------|-------------|------------|-----------------------------------------------|
+| `battus-philenor`       | Lepidoptera | Holo       | **Keystone**, AA chemistry, *Battus philenor* |
+| `hippodamia-convergens` | Coleoptera  | Holo       | Convergent ladybug, confirmed breeding        |
+| `colias-eurytheme`      | Lepidoptera | Holo       | Orange sulphur, *Colias eurytheme*            |
+| `vanessa-cardui`        | Lepidoptera | Holo       | Painted lady, migratory                       |
 
-Hemimetabolous orders (Blattodea, Orthoptera, Hemiptera) — `larva` and
-`pupa` MUST be `null` on the species record. *Pipevine Swallowtail* +
-California Pipevine is the keystone host pair (`isKeystone() == true`,
-zero-pesticide rule on Pipevine).
+Hemimetabolous orders (Blattodea, Hemiptera) — life stages resolve to
+`[EGG, NYMPH, ADULT]` via clade DAG.
+
+Species slugs now use binomial form (`battus-philenor`) rather than
+common-name form (`pipevine-swallowtail`). Common names are in the
+`commonNames` field.
 
 ---
 
-## 12. Cross-domain References — by slug only
+## 16. Cross-domain References — by slug only
 
 A consumer of insects-api references its entities by name:
 
 ```java
-InsectSpeciesName.of("pipevine-swallowtail")
+InsectSpeciesName.of("battus-philenor")
+InsectGenusName.
+
+of("battus")
+InsectFamilyName.
+
+of("papilionidae")
+InsectOrderName.
+
+of("lepidoptera")
 LifeStageName.
 
-of(InsectSpeciesName.of("pipevine-swallowtail"),
+of(InsectSpeciesName.of("battus-philenor"),
 
-LifeStageKind.LARVA)            // "pipevine-swallowtail-larva"
-        PlantName.
+LifeStageKind.LARVA)            // "battus-philenor-larva"
+    PlantName.
 
 of("aristolochia-californica")          // referenced *from* insects
 ```
@@ -633,82 +793,67 @@ of("aristolochia-californica")          // referenced *from* insects
 (it is an enum, not a `NamedEntity`). Anything else that crosses a domain
 boundary crosses by `EntityName` slug.
 
-`InsectAggregate` is never referenced cross-domain by value; consumers
-fetch by `InsectSpeciesName` through their own port and let the insects
-side resolve.
-
 ---
 
-## 13. Current State — What's Built, What's Not
+## 17. Current State — What's Built, What's Not
 
 **Built and stable.**
 
-- `InsectSpecies` aggregate with full nested value-object graph and four
-  composed life-stage children.
-- `InsectImage` (the `Entity`-branch reference implementation) +
-  `ImageCollection`.
-- `InsectAggregate` + `InsectAggregateFactory` (the canonical factory
-  template for the project).
-- `InsectQuery` namespace + `SpeciesQuery` + `ImageQuery` +
-  `InsectAggregateQuery` adapters in `insects-core`.
-- `LifeStage` sealed family with Jackson polymorphic wiring on the
-  family-level discriminator.
-- `InsectLifeStageQuery` namespace + adapter.
-- All four `FunctionalGuild` predicates (`isPollinator`, `isKeystone`,
-  `isBiocontrolAgent`).
+- Four-level Linnaean hierarchy: `InsectOrder`, `InsectFamily`,
+  `InsectGenus`, `InsectSpecies` — all first-class catalog citizens with
+  parent-only FKs.
+- `InsectTaxonView` sealed ReadModel with four permits, assembled by
+  `InsectTaxonViewFactory` in `insects-core`.
+- `Insect` rank-chain ReadModel with structural invariants (ancestor-
+  presence, cross-rank FK consistency, per-rank descent).
+- `InsectImage` with polymorphic `InsectRankName parentName`.
+- `InsectFunctionalRole` — cross-rank ecology assignment (PL-11).
+- `InsectQuery` namespace with 7 nested queries (taxonView, species,
+  images, families, genera, functionalRoles, orders).
+- `InsectCommand` namespace (species + images).
+- All six `BehavioralCollection` types + `ImageGallery` map.
+- `LifeStage` sealed family with Jackson polymorphic wiring, independent
+  entities with `parentName: InsectRankName`.
+- `InsectLifeStageQuery` namespace.
 - `InsectsDomain` registered with the catalog kernel.
-
-**Built but explicitly experimental.**
-
-- `LifeStageRepository` — `@Incubating`, declared as an `interface` (not
-  the standard namespace `class`). Mirrors the chemistry
-  `ElementRepository` experiment.
-- `InsectLifeStageEntityCollections` is namespaced even though only one
-  collection lives there — see §8 (N=1 collapse not applied).
+- Clade integration + metaboly resolution via `InsectLifeStages`.
+- `InsectsCatalogContribution` — searchable tokens per species
+  (slug, genus epithet, scientific binomial, abbreviated binomial,
+  common names), plus family/genus/order contributions.
 
 **Known invariant gaps.**
 
+- Cross-rank clade invariants on `Insect` (placement-chain monotonicity,
+  metaboly conformance, life-stage kind conformance) are deferred to
+  Phase 3.
 - Cross-stage invariants on `InsectSpecies` (metabolous-type consistency,
   chemistry-story coherence, `protectedStages` ↔ `chemistryRole`
   coherence) are documented but not enforced by `invariants()`.
-- `Constraints.namedEntityOrNull` does not exist; the species aggregate
-  uses an `if (stage != null)` ladder for stage descent.
 - `ActivityWindow` does not enforce `onset <= tail` (wrap-around).
-
-**Known Jackson gap.**
-
-- `PupaStage.DiapauseRegulation` lacks `@JsonTypeInfo` /
-  `@JsonSubTypes`. Catalog entries emit `null` until wiring lands; see
-  the lifestage acquisition briefing for the back-fill plan.
 
 **Missing on the api surface.**
 
-- No `withSpecies(...)` / `withGuilds(...)` / etc. on `InsectSpecies`.
-  Updates flow through full record reconstruction at the boundary.
+- No `InsectSubspecies` entity (the `InsectSubspeciesName` permit exists
+  but yields `Optional.empty()` everywhere).
+- No family/genus commands on `InsectCommand` — species and image only.
 - No `ChemicalDefense.protectedStages` / per-stage `chemistryRole`
-  reconciliation — both encodings exist in parallel by design pending
-  removal of the species-level set once every stage is populated.
-
-These are the points where invented APIs are most likely to creep in. If
-chat is asked to "add a `with*` method on `InsectSpecies`" or "wire
-`DiapauseRegulation` Jackson polymorphism" or "add a hemimetabolous
-nymph stage", the honest answer is "that is a deliberate gap — confirm
-the scope before generating code".
+  reconciliation — both encodings exist in parallel by design.
 
 ---
 
-## 14. Anti-patterns Specific to insects-api
+## 18. Anti-patterns Specific to insects-api
 
 - **Do not invent an `InsectSpeciesId`.** Identity is `InsectSpeciesName`
-  (slug). Same for `LifeStage` — it is `LifeStageName` (composite slug),
-  never `LifeStageId`.
-- **Do not invent a `LifeStages` wrapper value object.** It was removed
-  in the refactor that motivated the lifestage acquisition briefing;
-  stages are four direct nullable fields on `InsectSpecies`.
-- **Do not model hemimetabolous nymphs as a stage.** Hemimetabolous
-  species (Blattodea, Orthoptera, Hemiptera) carry `larva == null` and
-  `pupa == null`. Adding a `nymph` stage is a domain-model change that
-  has not been agreed.
+  (slug). Same for all rank entities — identity is the respective
+  `EntityName`, never a surrogate id.
+- **Do not invent a `LifeStages` wrapper value object.** Stages are
+  independent `LifeStage` entities queried via `InsectLifeStageQuery`.
+- **Do not put stage fields back on `InsectSpecies`.** The inline
+  `egg`, `larva`, `pupa`, `adult` fields were deliberately removed.
+- **Do not model hemimetabolous nymphs as a `LifeStage` permit.**
+  Nymphs resolve via `LifeStageKind.NYMPH` in metaboly resolution
+  but there is no `NymphStage` record permit. Adding one is a
+  domain-model change that has not been agreed.
 - **Do not invent a `prey` / `preyTargets` field on `LarvaStage` or
   `AdultStage`.** Predatory stages carry only the strategy/habit label;
   prey relationships are reserved for a future ecology domain.
@@ -718,19 +863,19 @@ the scope before generating code".
 - **Do not put life-stage types in `com.naturalist.insects` directly.**
   They live in `com.naturalist.insects.lifestage` (sub-package). Only
   `LifeStageName` and `LifeStageKind` live in the identifiers module
-  under `com.naturalist.insects` because they are EntityName /
-  enum-component types shared with the parent package.
+  under `com.naturalist.insects`.
 - **Do not collapse `InsectLifeStageQuery` to a top-level
-  `LifeStageQuery`.** The N=1 collapse is intentional withheld — the
-  sub-context is planned to grow.
+  `LifeStageQuery`.** The N=1 collapse is intentionally withheld.
 - **Do not "fix" `LifeStageRepository` to a class** without confirming
   the experiment is over.
 - **Do not promote `InsectImageId` to a cross-domain reference.**
   `Entity` ids do not cross domain boundaries by value. Cross the
-  species slug instead.
-- **Do not add a numeric-id field to `InsectSpecies` or `LifeStage`.**
-  Both are `NamedEntity`; no `id`, no `withId`. There is no
-  `PersistenceId` type in Java — surrogate keys are adapter-internal
-  only.
-- **Do not emit `diapauseRegulation` in JSON catalog data.** The
-  polymorphic discriminator is not wired; emit `null` until it is.
+  `InsectRankName` slug instead.
+- **Do not add a numeric-id field to any rank entity.** All are
+  `NamedEntity`; no `id`, no `withId`. There is no `PersistenceId` type
+  in Java — surrogate keys are adapter-internal only.
+- **Do not put `guilds` or `beneficial` on `InsectSpecies`.** Functional
+  ecology lives on `InsectFunctionalRole` (PL-11). Do not move it back.
+- **Do not add grandparent FK fields to rank entities.** Each rank
+  carries only its immediate parent's FK. Walk the chain to resolve
+  ancestors.
