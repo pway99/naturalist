@@ -13,7 +13,7 @@ Last updated: 2026-06-13 (Citation + Library — `Citation` sealed NamedEntity i
 
 ## Current phase
 
-**Identification roadmap Phase 1 — external-authority seam (`kernels/authority` port + EOL mock client)** ([`plans/identification.md`](plans/identification.md)). Phase 0 (taxonomic reorganization + family/genus console) is effectively complete — data reorg landed via PL-2 + the catalogue-completeness slices; family/genus list/detail pages shipped 2026-05-23.
+**Identification roadmap** ([`plans/identification.md`](plans/identification.md)). Phase 0 ✅ (taxonomic reorganization + family/genus console). Phase 1 ✅ (external-authority seam — `kernels/authority` port + EOL mock client). Phase 2 citation/library ✅ (`Citation` sealed NamedEntity, `domains/library` domain stack, `Eol.citation()` factory). Consumer wiring next.
 
 ## Current slice
 
@@ -33,10 +33,10 @@ Last updated: 2026-06-13 (Citation + Library — `Citation` sealed NamedEntity i
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
-| Citation + Library — `Citation` sealed NamedEntity (+ `OnlineSource` permit) in `kernels/authority`; `domains/library` domain stack (repository, mock, contract tests, query); `Eol.citation()` factory | 2026-06-13 | [`plans/2026-06-13-citation-and-library-design.md`](plans/2026-06-13-citation-and-library-design.md) | pending      |
-| ReadModel kernel type — 6th identity-model marker; insect read-models retyped + renamed `*Aggregate`→`*View`/`InsectTaxonView`, `insect()`→`taxonView()` | 2026-06-07 | [`plans/2026-06-07-readmodel-kernel-type-design.md`](plans/2026-06-07-readmodel-kernel-type-design.md) | `abf5345` (+ docs) |
-| Insect rank-FK normalization — parent-only FKs (R8), trimmed `Insect` invariants (R1), typed `LifeStage.parentName` (R6); resolves PL-12 | 2026-06-07 | [`plans/2026-06-07-insect-rank-fk-normalization-design.md`](plans/2026-06-07-insect-rank-fk-normalization-design.md) | `730a218`    |
-| Clades kernel Phase 5b — life-stage inline removal + resolver walk-up (PRs 1 + 2; PR 3 cancelled — see [`plans/insect-aggregate.md`](plans/insect-aggregate.md)) | 2026-05-31 | [`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md) | `be4639a`    |
+| Citation + Library — `Citation` sealed NamedEntity (+ `OnlineSource` permit) in `kernels/authority`; `domains/library` domain stack (repository, mock, contract tests, query); `Eol.citation()` factory | 2026-06-13 | [`plans/archive/2026-06-13-citation-and-library-design.md`](plans/archive/2026-06-13-citation-and-library-design.md) | `16615a6`    |
+| ReadModel kernel type — 6th identity-model marker; insect read-models retyped + renamed `*Aggregate`→`*View`/`InsectTaxonView`, `insect()`→`taxonView()` | 2026-06-07 | [`plans/archive/2026-06-07-readmodel-kernel-type-design.md`](plans/archive/2026-06-07-readmodel-kernel-type-design.md) | `abf5345` (+ docs) |
+| Insect rank-FK normalization — parent-only FKs (R8), trimmed `Insect` invariants (R1), typed `LifeStage.parentName` (R6); resolves PL-12 | 2026-06-07 | [`plans/archive/2026-06-07-insect-rank-fk-normalization-design.md`](plans/archive/2026-06-07-insect-rank-fk-normalization-design.md) | `730a218`    |
+| Clades kernel Phase 5b — life-stage inline removal + resolver walk-up (PRs 1 + 2; PR 3 cancelled — see [`plans/insect-aggregate.md`](plans/insect-aggregate.md)) | 2026-05-31 | [`plans/archive/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/archive/clades-kernel-phase-5b-life-stage-inline-removal.md) | `be4639a`    |
 | Insect page images — `BehavioralMap` kernel, `ImageGallery`, carousels on all listing/detail pages | 2026-05-25 | [`plans/archive/2026-05-24-insect-page-images.md`](plans/archive/2026-05-24-insect-page-images.md) | `a8f56f5`    |
 | Console clade context — lineage trail (Animalia › Arthropoda › Insecta), Class Insecta description on landing page | 2026-05-25 | [`plans/archive/console-clade-context-plan.md`](plans/archive/console-clade-context-plan.md) | `a540825`    |
 | InsectOrder entity — order-rank entity, genus/family FK refactoring (Phase 1 + 2)       | 2026-05-25 | [`plans/archive/insect-order-phase2-plan.md`](plans/archive/insect-order-phase2-plan.md)   | `41562e1`    |

@@ -284,7 +284,7 @@ end-to-end against EOL itself, not a sidecar.
 > `kernels/bibliography` → types join `kernels/authority` (no new kernel);
 > `LiteratureReference` → `Citation` (sealed NamedEntity, format-polymorphic);
 > the domain is `domains/library`. See
-> [`2026-06-13-citation-and-library-design.md`](2026-06-13-citation-and-library-design.md).
+> [`2026-06-13-citation-and-library-design.md`](archive/2026-06-13-citation-and-library-design.md).
 
 **Why.** The actual identification module. Per-domain, per the
 FU-3 stance. **And** the bibliography kernel — ADR-009 requires
