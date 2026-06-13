@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-06-13 (External-authority Phase 1 — `kernels/authority` port + EOL mock client landed.)
+Last updated: 2026-06-13 (Citation + Library — `Citation` sealed NamedEntity in `kernels/authority`, `domains/library` domain stack, `Eol.citation()` factory.)
 
 ---
 
@@ -17,11 +17,9 @@ Last updated: 2026-06-13 (External-authority Phase 1 — `kernels/authority` por
 
 ## Current slice
 
-*None active.* The Insect aggregate (former candidate) was built, reviewed (2026-06-03), and partially reworked — see the read-model backlog below.
+*None active.*
 
 **Candidate next slices** (lead first):
-
-- **`kernels/bibliography`** (identification Phase 2) — `LiteratureReference` value object; ADR-009 prerequisite for the identification workflow, and independent of the insect read-model cleanup.
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
 
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
@@ -35,6 +33,7 @@ Last updated: 2026-06-13 (External-authority Phase 1 — `kernels/authority` por
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Citation + Library — `Citation` sealed NamedEntity (+ `OnlineSource` permit) in `kernels/authority`; `domains/library` domain stack (repository, mock, contract tests, query); `Eol.citation()` factory | 2026-06-13 | [`plans/2026-06-13-citation-and-library-design.md`](plans/2026-06-13-citation-and-library-design.md) | pending      |
 | ReadModel kernel type — 6th identity-model marker; insect read-models retyped + renamed `*Aggregate`→`*View`/`InsectTaxonView`, `insect()`→`taxonView()` | 2026-06-07 | [`plans/2026-06-07-readmodel-kernel-type-design.md`](plans/2026-06-07-readmodel-kernel-type-design.md) | `abf5345` (+ docs) |
 | Insect rank-FK normalization — parent-only FKs (R8), trimmed `Insect` invariants (R1), typed `LifeStage.parentName` (R6); resolves PL-12 | 2026-06-07 | [`plans/2026-06-07-insect-rank-fk-normalization-design.md`](plans/2026-06-07-insect-rank-fk-normalization-design.md) | `730a218`    |
 | Clades kernel Phase 5b — life-stage inline removal + resolver walk-up (PRs 1 + 2; PR 3 cancelled — see [`plans/insect-aggregate.md`](plans/insect-aggregate.md)) | 2026-05-31 | [`plans/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/clades-kernel-phase-5b-life-stage-inline-removal.md) | `be4639a`    |
@@ -65,7 +64,7 @@ Last updated: 2026-06-13 (External-authority Phase 1 — `kernels/authority` por
 
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
-| 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md) — Phase 0 ✅; **Phase 1** (external-authority seam) landed; **Phase 2 next** (bibliography + consumer wiring) |
+| 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md) — Phase 0 ✅; **Phase 1** (external-authority seam) ✅; **Phase 2** citation/library landed (naming: `kernels/bibliography`→`kernels/authority`, `LiteratureReference`→`Citation`, domain is `domains/library`); consumer wiring next |
 | 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 5b (inline removal + resolver walk-up) ✅ — PRs 1+2 landed, PR 3 cancelled (moved to [`plans/insect-aggregate.md`](plans/insect-aggregate.md)); Phase 6 (plants) deferred |
 | 3  | FU-1 — Family/Genus catalog tiers     | Plan (archived) | [`plans/archive/fu-1-plan.md`](plans/archive/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 4  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |

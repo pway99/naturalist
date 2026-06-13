@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>com.naturalist</groupId>
-        <artifactId>domains</artifactId>
+        <artifactId>library</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-
-    <artifactId>identifiers-test</artifactId>
-    <name>domains :: identifiers-test</name>
+    <artifactId>library-repository-test</artifactId>
+    <name>domains :: Library :: Repository Test</name>
 
     <dependencies>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>identifiers</artifactId>
+            <artifactId>library-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>authority</artifactId>
+            <artifactId>framework-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>identifiers-test</artifactId>
         </dependency>
     </dependencies>
-
 </project>

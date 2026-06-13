@@ -28,6 +28,7 @@
         <module>apiary</module>
         <module>fungi</module>
         <module>insects</module>
+        <module>library</module>
         <module>arachnids</module>
         <module>worms</module>
         <module>molluscs</module>

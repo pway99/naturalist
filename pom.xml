@@ -284,6 +284,22 @@
                 <artifactId>insects-test-context</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- LIBRARY -->
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>library-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>library-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>library-repository-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- MICROBES -->
             <dependency>
                 <groupId>com.naturalist</groupId>

@@ -1,0 +1,50 @@
+[
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-battus-philenor-1188585",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/1188585"
+    },
+    "title": "Battus philenor — Encyclopedia of Life",
+    "author": "EOL Curators",
+    "year": 2024,
+    "lastModified": "2024-03-15T00:00:00Z"
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-chrysoperla-rufilabris-2774541",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/2774541"
+    },
+    "title": "Chrysoperla rufilabris — Encyclopedia of Life",
+    "author": "EOL Curators",
+    "year": 2023,
+    "lastModified": "2023-11-20T00:00:00Z"
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-danaus-plexippus-151935",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/151935"
+    },
+    "title": "Danaus plexippus — Encyclopedia of Life",
+    "author": null,
+    "year": 2024,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-apis-mellifera-1045608",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/1045608"
+    },
+    "title": "Apis mellifera — Encyclopedia of Life",
+    "author": "EOL Curators",
+    "year": 2024,
+    "lastModified": "2024-06-01T00:00:00Z"
+  }
+]
