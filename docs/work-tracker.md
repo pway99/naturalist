@@ -7,13 +7,13 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-06-07 (Insect rank-FK normalization + the ReadModel kernel type landed; both spun out of the [2026-06-03 bounded-context review](notes/2026-06-03-insect-aggregate-bounded-context-review.md).)
+Last updated: 2026-06-13 (External-authority Phase 1 — `kernels/authority` port + EOL mock client landed.)
 
 ---
 
 ## Current phase
 
-**Identification roadmap Phase 1 — external-source seam (mock) + `kernels/bibliography`** ([`plans/identification.md`](plans/identification.md)). Phase 0 (taxonomic reorganization + family/genus console) is effectively complete — data reorg landed via PL-2 + the catalogue-completeness slices; family/genus list/detail pages shipped 2026-05-23.
+**Identification roadmap Phase 1 — external-authority seam (`kernels/authority` port + EOL mock client)** ([`plans/identification.md`](plans/identification.md)). Phase 0 (taxonomic reorganization + family/genus console) is effectively complete — data reorg landed via PL-2 + the catalogue-completeness slices; family/genus list/detail pages shipped 2026-05-23.
 
 ## Current slice
 
@@ -21,7 +21,7 @@ Last updated: 2026-06-07 (Insect rank-FK normalization + the ReadModel kernel ty
 
 **Candidate next slices** (lead first):
 
-- **`kernels/bibliography`** (identification Phase 1) — `LiteratureReference` value object + the mock external-source seam; ADR-009 prerequisite for the identification workflow, and independent of the insect read-model cleanup.
+- **`kernels/bibliography`** (identification Phase 2) — `LiteratureReference` value object; ADR-009 prerequisite for the identification workflow, and independent of the insect read-model cleanup.
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
 
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
@@ -65,7 +65,7 @@ Last updated: 2026-06-07 (Insect rank-FK normalization + the ReadModel kernel ty
 
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
-| 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md) — Phase 0 ✅ effectively complete; **Phase 1 next** (bibliography + external-source seam) |
+| 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md) — Phase 0 ✅; **Phase 1** (external-authority seam) landed; **Phase 2 next** (bibliography + consumer wiring) |
 | 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 5b (inline removal + resolver walk-up) ✅ — PRs 1+2 landed, PR 3 cancelled (moved to [`plans/insect-aggregate.md`](plans/insect-aggregate.md)); Phase 6 (plants) deferred |
 | 3  | FU-1 — Family/Genus catalog tiers     | Plan (archived) | [`plans/archive/fu-1-plan.md`](plans/archive/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 4  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |

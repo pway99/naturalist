@@ -26,6 +26,7 @@
     <modules>
         <module>framework</module>
         <module>framework-test</module>
+        <module>authority</module>
         <module>catalog</module>
         <module>catalog-inmem</module>
         <module>clades</module>

@@ -23,6 +23,7 @@
         <module>adapters</module>
         <module>apps</module>
         <module>domains</module>
+        <module>external-authorities</module>
         <module>kernels</module>
     </modules>
 
@@ -75,6 +76,11 @@
             </dependency>
 
             <!-- KERNELS -->
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>authority</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
                 <artifactId>biogeography</artifactId>
@@ -133,6 +139,17 @@
             <dependency>
                 <groupId>com.naturalist</groupId>
                 <artifactId>habitat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- EXTERNAL AUTHORITIES -->
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>eol-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>eol-client-mock</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- ADAPTERS -->
