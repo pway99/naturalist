@@ -1,8 +1,8 @@
-# Naturalist — Framework Kernel Briefing
+# Naturalist — Framework Core Briefing
 
 **Purpose.** Shared structural briefing — paired with **one or more**
 domain briefings (e.g. `insects-domain.md`, `chemistry-domain.md`,
-`plants-domain.md`) to give a chat Claude instance everything it needs
+`library-domain.md`) to give a chat Claude instance everything it needs
 to model an Aggregate, Entity, or ValueObject **for the api of those
 domains** and emit Java records that drop cleanly into the
 `com.naturalist` codebase. Cross-domain conversations (e.g. an insect
@@ -17,23 +17,11 @@ REST calls or messaging contracts. Do not propose distributed-systems
 patterns (service contracts, sagas, eventual-consistency reconciliation)
 at the api boundary.
 
-**Scope.** What an api consumer or api author needs:
-
-- Module layout (api-side only)
-- Identity model (six identity interfaces)
-- Record conventions
-- Annotations the api uses
-- Jackson rules that affect the api wire form
-- The complete `Constraints` API for `invariants()`
-- The api namespace pattern (`Query`, `Command`, `EntityCollections`,
-  `Repository` contract surface)
-- Data-layer ports (`EntityQuery`, `EntityCommand`, `EntityRepository`)
-- Anti-patterns
-
-**Out of scope.** Persistence adapters (`<domain>-core`,
-`<domain>-repository-test`, `<domain>-repository-rdms`), JTE templates,
-test scaffolding, JSON catalog files, ADR text. None of those affect the
-shape of the api a domain exposes.
+**Scope.** What an api consumer or api author needs for most modeling
+tasks. For the complete `Constraints` method table, data-layer port
+signatures, Observer ceremony, and Resilience facade, see
+`framework-reference.md` — upload it alongside this file when the
+session needs those details.
 
 **Primary rule.** When you don't know whether something exists (a method
 on `Constraints`, a package path, a type name), say so rather than
@@ -82,7 +70,7 @@ kernels/
 
 domains/
   identifiers/      EntityName + EntityId subclasses ONLY
-  <domain>/<domain>-api    ← what an api author or consumer touches
+  <domain>/<domain>-api    <- what an api author or consumer touches
 ```
 
 Other modules exist (`<domain>-core` adapters, `<domain>-repository-*`,
@@ -95,7 +83,7 @@ depends on or knows about them.
   `field-notes`, and (organism only) `taxonomy`, `habitat`, `clades`,
   `biogeography`, `measurements`.
 - A domain `api` may also reference another domain's `api` if it carries
-  that domain's typed `EntityName` (e.g. `insects-api → plants-api` to
+  that domain's typed `EntityName` (e.g. `insects-api -> plants-api` to
   type `LarvaStage.hostPlants` as `List<PlantName>`). This is a
   **slug-only** dependency — never reach across to another domain's
   records, queries, or aggregates.
@@ -133,12 +121,6 @@ free delegating default:
 - `Entity<ID>` declares `ID id()`;
   `default ID key() { return id(); }`
 
-This split lets `Entity` records carry their identity as `id` (accessor
-`id()`) while keeping the unified data-layer port intact. The data-layer
-method vocabulary is name-shaped (`getByName`, `getByNameSet`,
-`notFoundName()`, `knownEntityNames()`) — method names are independent
-of the accessor; their bodies pass `entity.key()`.
-
 `Aggregate`, `ReadModel`, and `ValueObject` do NOT extend `Named`.
 
 ### `ReadModel` vs `Aggregate`
@@ -147,9 +129,8 @@ An `Aggregate` is a consistency boundary that **owns** child entities
 and value objects and is **mutated as a unit**. A `ReadModel` is a
 read-side projection **assembled** from already-persisted parts — it
 owns nothing, is never persisted, and is never a write unit. Its
-`invariants()` assert the projection's structural well-formedness
-(required parts non-null, monotonic fill, cross-FK consistency), not
-cross-entity consistency.
+`invariants()` assert the projection's structural well-formedness,
+not cross-entity consistency.
 
 Use `ReadModel` when the type owns nothing and is never mutated as a
 unit (e.g. `InsectTaxonView`, `Insect`). Use `Aggregate` when it
@@ -172,9 +153,7 @@ is a transactional boundary (e.g. `Zone`, `SoilProfile`).
   the parent's `EntityName` slug instead.
 - The two identity branches (`NamedEntity` slug, `Entity` UUIDv7) are
   the **only** identity-shaped components on a domain record. No
-  `PersistenceId` type exists in Java; surrogate primary keys are
-  private to whichever adapter persists the record and never surface on
-  the api.
+  `PersistenceId` type exists in Java.
 
 ### Identifier placement — CRITICAL
 
@@ -190,13 +169,8 @@ Representative locations:
 | `InsectRankName`    | `com.naturalist.insects`            | `identifiers` |
 | `InsectImageId`     | `com.naturalist.insects`            | `identifiers` |
 | `PlantName`         | `com.naturalist.plants`             | `identifiers` |
-| `CultivarName`      | `com.naturalist.plants.cultivar`    | `identifiers` |
 | `CompoundName`      | `com.naturalist.chemistry.compound` | `identifiers` |
 | `ElementName`       | `com.naturalist.chemistry.element`  | `identifiers` |
-| `SoilProfileName`   | `com.naturalist.soil`               | `identifiers` |
-| `AmendmentEventId`  | `com.naturalist.soil.event`         | `identifiers` |
-| `ZoneName`          | `com.naturalist.zone`               | `identifiers` |
-| `NaturalistName`    | `com.naturalist.naturalist`         | `identifiers` |
 
 **There is no `com.naturalist.identifiers` package.** The *module* is
 `identifiers`; the *package* tracks the home domain.
@@ -277,9 +251,8 @@ Representative locations:
 - `@UniqueValue` — marks plain value components (`String`, `int`, enums)
   that must be unique.
 - `@DomainService` — runtime marker for domain-boundary classes.
-  No third-party meta-annotations; the `adapters/spring-runtime/` module
-  discovers via classpath scanning (ADR-025). No Spring import in domain
-  code.
+  No third-party meta-annotations; discovered via classpath scanning
+  (ADR-025). No Spring import in domain code.
 - `@Incubating("reason")` — marks experimental APIs still under
   investigation.
 - `@Nullable` — JSpecify (`org.jspecify.annotations.Nullable`) for
@@ -318,179 +291,43 @@ decimal domain values. Integer quantities use `NamedValue<Integer>`.
 
 ---
 
-## 4. Observability Framework — Complete `Constraints` API
+## 4. Observability — Key Constraints
 
 `Constraints` is the fluent invariants builder. Every `Observable`
-implements `Consumer<? extends Constraints> invariants()`. The graph
-walker descends through `ConstraintCollection` nodes automatically.
-
-### Method forms
+implements `Consumer<? extends Constraints> invariants()`. Two method
+forms:
 
 **Direct-value form** — pass the component value directly. Use inside
 `invariants()` on the record that owns the field.
 
 **By-function form** — pass the parent object and a method reference.
-Use when descending into a child from outside, or when the parent may be
-null (safe null-short-circuit). Do not use when the direct-value form
-suffices — the functional indirection adds no value when `this` can
-never be null.
+Use when descending into a child from outside. Do not use when the
+direct-value form suffices.
 
-### Complete method list (canonical, as of the current kernel)
+### Most-used methods
 
-#### Descent constraints (walk child invariants)
+| Method                       | Behavior                                                      |
+|------------------------------|---------------------------------------------------------------|
+| `notNull(value, name)`       | General null check                                            |
+| `notBlank(value, name)`      | Rejects null, empty, whitespace-only String                   |
+| `entityName(e, name)`        | Validates `EntityName` (kebab-case + subtype `maxLength()`)   |
+| `entityId(f, name)`          | Validates `EntityId` (UUIDv7)                                 |
+| `namedEntity(e, name)`       | Non-null `Named`, descends into child's invariants            |
+| `namedEntityOrNull(e, name)` | Null permitted; descends only when present                    |
+| `valueObject(v, name)`       | Non-null `ValueObject`, descends                              |
+| `valueObjectOrNull(v, name)` | Null permitted; descends only when present                    |
+| `aggregate(a, name)`         | Non-null `Aggregate`, descends                                |
+| `readModel(r, name)`         | Non-null `ReadModel`, descends                                |
+| `isTrue(value, name)`        | Generic boolean predicate — fires violation when `false`      |
+| `whenNotNull(value, block)`  | Control flow — runs block only when value is non-null         |
 
-| Method                               | Forms         | Behavior                                                                              |
-|--------------------------------------|---------------|---------------------------------------------------------------------------------------|
-| `namedEntity(e, name)`               | direct, by-fn | Non-null `Named`, descends into child's invariants                                    |
-| `namedEntityOrNull(e, name)`         | direct, by-fn | Null permitted; descends only when present                                            |
-| `aggregate(a, name)`                 | direct, by-fn | Non-null `Aggregate`, descends                                                        |
-| `aggregateOrNull(a, name)`           | direct, by-fn | Null-tolerant `Aggregate`, descends when present                                      |
-| `readModel(r, name)`                 | direct, by-fn | Non-null `ReadModel`, descends                                                        |
-| `valueObject(v, name)`               | direct, by-fn | Non-null `ValueObject`, descends                                                      |
-| `valueObjectOrNull(v, name)`         | direct, by-fn | Null permitted; descends only when present                                            |
-| `valueObjectCollection(o, fn, name)` | by-fn only    | Non-null `Collection<V extends ValueObject>`, descends each element with indexed path |
-| `behavioralCollection(b, name)`      | direct, by-fn | Non-null `BehavioralCollection`, descends                                             |
-| `observable(o, name)`                | direct, by-fn | Any non-null `Observable`, descends                                                   |
-
-#### Identifier constraints
-
-| Method                          | Forms         | Behavior                                                                |
-|---------------------------------|---------------|-------------------------------------------------------------------------|
-| `entityName(e, name)`           | direct only   | Validates `EntityName` (kebab-case + subtype `maxLength()`)             |
-| `entityNameOrNull(e, name)`     | direct only   | Null permitted; non-null must satisfy `EntityName.isValid()`            |
-| `entityId(f, name)`             | direct only   | Validates `EntityId` (UUIDv7)                                           |
-| `identifier(v, name)`           | direct only   | Polymorphic identifier — runtime dispatch on `EntityName` vs `EntityId` |
-| `identifierSet(set, name)`      | direct only   | Polymorphic identifier set                                              |
-| `entityNameCollection(c, name)` | direct only   | Collection of `EntityName`                                              |
-| `entityNameSet(set, name)`      | direct, by-fn | `EntityNameSet` wrapper                                                 |
-| `namedValue(v, name)`           | direct, by-fn | `NamedValue<?>` child                                                   |
-
-#### Scalar constraints
-
-| Method                           | Forms         | Behavior                                                 |
-|----------------------------------|---------------|----------------------------------------------------------|
-| `notNull(value, name)`           | direct, by-fn | General null check                                       |
-| `notBlank(value, name)`          | direct, by-fn | Rejects null, empty, whitespace-only String              |
-| `notEmpty(value, name)`          | direct, by-fn | Rejects null + empty Collection/Map/CharSequence         |
-| `kebabFormat(value, name)`       | direct, by-fn | Asserts String matches the kebab-case slug regex         |
-| `inRange(value, min, max, name)` | direct, by-fn | `Comparable` value in `[min, max]` inclusive             |
-| `atLeast(value, min, name)`      | direct, by-fn | `Comparable` value `>= min`                              |
-| `atMost(value, max, name)`       | direct, by-fn | `Comparable` value `<= max`                              |
-| `isTrue(value, name)`            | direct only   | Generic boolean predicate — fires violation when `false` |
-
-#### Control flow (not constraint types)
-
-| Method                      | Form        | Behavior                                                                                       |
-|-----------------------------|-------------|------------------------------------------------------------------------------------------------|
-| `whenNotNull(value, block)` | direct only | Runs the block only when `value != null`. Constraints inside append to the same builder (flat) |
-
-### Semantics
-
-- **`valueObjectOrNull` vs `valueObject`.** Nullable VO fields must use
-  `valueObjectOrNull` — the difference between "child is null" (valid)
-  and "child is structurally invalid" (its own invariants). An
-  empty-but-present VO must be rejected by the child's own invariants,
-  not tolerated by the parent.
-- **`namedEntityOrNull` vs `namedEntity`.** Same null-tolerance pattern
-  for nullable `NamedEntity` / `Named` children. `null` passes;
-  non-null triggers descent into the child's `invariants()`.
-- **`valueObjectCollection` vs `notEmpty`.** `valueObjectCollection`
-  asserts non-null + descends into each element. It does NOT assert
-  non-empty. Pair with `notEmpty` when empty is illegal.
-- **`whenNotNull` vs nullable constraints.** `whenNotNull` is pure
-  control flow — no `Constraint` object is created. Use for conditional
-  invariant blocks where multiple constraints depend on a nullable
-  field's presence (e.g. monotonic-fill rules). `valueObjectOrNull` /
-  `namedEntityOrNull` / `aggregateOrNull` are constraint types that
-  null-gate a single descent.
-- **`isTrue` for cross-field invariants.** Use for invariants expressed
-  as a domain-specific predicate (e.g. `belongsToOrder(order)`). Compose
-  with `whenNotNull` when the predicate depends on a nullable field.
-- **Indexed paths** for collections: `windows.[0].onset`,
-  `windows.[1].tail`. Matches the dotted-path convention in
-  `ConstraintCollection`.
+For the **complete** method table (all descent, identifier, scalar, and
+collection constraints with both forms), see `framework-reference.md`
+section 1.
 
 ---
 
-## 5. Data-Layer Ports
-
-### `EntityRepository<NAME, ENTITY extends Named<NAME>>`
-
-Pure vocabulary port — five public methods:
-
-```java
-Optional<ENTITY> getByName(NAME name);
-
-List<ENTITY> getByEntityNameSet(Set<NAME> nameSet);
-
-Page<ENTITY> getPage(PageRequest pageRequest);
-
-void insert(ENTITY entity);
-
-void update(ENTITY entity);
-```
-
-Identity at the port is the entity's `key()`. The type parameter is
-still named `NAME` and the methods still say `getByName` — these verb
-names are independent of the `key()`/`name()`/`id()` accessor split
-and were deliberately kept for stability. Serves both `NamedEntity`
-and `Entity` with one implementation via the `Named<NAME>` bound.
-
-`AbstractEntityRepository` provides the template-method layer:
-validation via `Observer.arguments(...)` in final public methods,
-delegation to `doGetByName()` / `doInsert()` / etc. hooks.
-
-### `EntityQuery<NAME, E extends Named<NAME>, EC extends BehavioralCollection<E>>`
-
-Query-side port — three public methods:
-
-```java
-Optional<E> getByName(NAME name);
-
-EC findByNameSet(Set<NAME> nameSet);
-
-Page<E> findPage(PageRequest pageRequest);
-```
-
-Single-result: `Optional`. Multi-result: domain-specific
-`BehavioralCollection` (not raw `List`).
-
-`AbstractEntityQuery` provides the adapter base: holds repository +
-observer, validates arguments, delegates.
-
-### `EntityCommand<NAME, E extends Named<NAME>>`
-
-Write-side port — two public methods:
-
-```java
-void insert(E entity);
-
-void update(E entity);
-```
-
-Symmetric analogue of `EntityQuery`. Errors propagate unchanged
-(fail-fast). `AbstractEntityCommand` provides the adapter base.
-
-### `Page<T>` and `PageRequest`
-
-`Page` carries `content`, `pageNumber`, `pageSize`, `pagesAheadKnown`,
-`moreBeyondLookahead`. No total count — horizon info from lookahead.
-
-`PageRequest` carries `pageNumber`, `pageSize`, `lookahead`. Constants:
-`MAX_PAGE_SIZE = 1000`, `MAX_LOOKAHEAD = 10`,
-`DEFAULT_CONSOLE_PAGE_SIZE = 25`. Factories: `of(...)`, `first(size)`,
-`console(pageNumber)`.
-
-### `FileName`
-
-Record implementing `NamedValue<String>` — filename only, no path.
-Methods: `path(directory)` to compose, `nameType()` for extension
-(upper-cased), `baseName()` for name without extension. The directory
-path is a stable convention of the bounded context, not stored.
-
----
-
-## 6. api Namespace Patterns
+## 5. api Namespace Patterns
 
 A domain api groups its consumer surface under four coordinated
 namespace types:
@@ -502,18 +339,14 @@ namespace types:
 | `<DomainNoun>Command`           | `interface` | public          | `<EntitySubject>Command`                              |
 | `<DomainNoun>EntityCollections` | `interface` | public          | `<EntitySubject>Collection` (`final class`)           |
 
-`EntitySubject` drops the domain prefix: `InsectSpecies` → `Species`,
-`InsectImage` → `Image`. The outer namespace carries the prefix.
+`EntitySubject` drops the domain prefix: `InsectSpecies` -> `Species`,
+`InsectImage` -> `Image`. The outer namespace carries the prefix.
 
 **Why class for repository, interface for query/command.** Nested types
 inside an interface are implicitly `public static` — visibility cannot be
 restricted. A class keeps repository contracts hidden (`protected` =
 package-private + subclass access). Queries and commands *want* their
 nested types public.
-
-**Repository contracts in the api are package-private.** They are part
-of the api module but not part of the api consumer surface. Cross-domain
-consumers go through `<DomainNoun>Query`.
 
 **N=1 collapse.** When a package has exactly one entity, skip the
 namespace: top-level package-private `<Entity>Repository` interface +
@@ -531,8 +364,6 @@ appears in more than one entity's graph.
   `Optional<Aggregate>`, `Optional<ReadModel>`,
   or a `BehavioralCollection` subclass.
 - **Raw `List<T>` on a public query method is a review flag.**
-- `Optional` carries "found / not found"; `BehavioralCollection` carries
-  multi-result with descent into each element's invariants.
 
 ### BehavioralCollection rules
 
@@ -545,71 +376,12 @@ appears in more than one entity's graph.
 - Domain-specific filtering methods return new instances via the
   package-private constructor.
 
-### BehavioralMap rules
-
-- Extends `BehavioralCollection<V>` with a keyed secondary index.
-- Two construction modes: element-derived grouping (key extractor) or
-  pre-computed grouping (caller supplies map).
-- `elementsForKey(K)` is `protected` — domain subclasses wrap it in a
-  typed method returning their own collection type.
-- `hasKey(K)` and `keys()` are public.
-- Lives alongside the domain's other collections.
+For `BehavioralMap` details (keyed secondary index, `elementsForKey`,
+construction modes), see `framework-reference.md` section 2.
 
 ---
 
-## 7. Observer Pattern
-
-`Observer` is the entry point for the observability framework:
-
-```java
-// Construction (one per class, stored as field)
-Observer observer = Observer.forClass(MyClass.class);
-
-// Argument validation — throws on violation
-observer.
-
-arguments("methodName",i ->i
-        .
-
-entityName(name, "name")
-).
-
-throwWhenInvalid();
-
-// Method-body observation — metrics only (producer rule)
-observer.
-
-namedEntity(entity, "label").
-
-observe(Level.WARN);
-
-// Method-scoped observer for tests
-MethodObserver mo = observer.forMethod("testMethod");
-mo.
-
-namedEntity(entity, "entity");
-```
-
-### Producer/consumer rule (ADR-017)
-
-- **Producer** observing its own output: `.observe(Level)` (metrics
-  only, no throw).
-- **Consumer** observing received state: `.throwWhenInvalid()`.
-- **Argument validation** always throws — boundary contract.
-
-### `InvariantObservation`
-
-Result of constraint graph walk. Key methods:
-
-- `violations()` — failing constraints
-- `violationNames()` — set of failing constraint dotted paths
-- `throwWhenInvalid()` — emits error metrics, throws
-  `InvariantViolationException` if any violation
-- `observe(Level)` — emits metrics at given level, no throw
-
----
-
-## 8. Shared Kernel Types
+## 6. Shared Kernel Types
 
 ### `Description` (field-notes)
 
@@ -667,37 +439,7 @@ Open interface — each domain ships its own `DomainId` subtype from its
 
 ---
 
-## 9. Resilience Facade
-
-Domain `*-core` code references only the facade
-(`com.naturalist.resilience`), never Resilience4j directly. Production
-implementation in `adapters/resilience-resilience4j/`.
-
-```java
-public interface Resilience {
-  Retry retry(String name);
-
-  Timeout timeout(String name);
-
-  CircuitBreaker circuitBreaker(String name);
-
-  Bulkhead bulkhead(String name);
-
-  static Resilience noOp();  // for unit tests
-}
-```
-
-Each primitive (`Retry`, `Timeout`, `CircuitBreaker`, `Bulkhead`) has:
-`<T> T execute(Supplier<T>)` and `void execute(Runnable)`.
-
-`@Resilient(name = "catalog.fanout")` applies all configured primitives.
-`@ResilienceExempt(reason = "...")` opts out with justification.
-`ResilienceConfig` (sealed, 4 permits) validates configuration at
-composition-root startup.
-
----
-
-## 10. Anti-Patterns — Specific Things Previous Chat Sessions Got Wrong
+## 7. Anti-Patterns — Specific Things Previous Chat Sessions Got Wrong
 
 **Do not invent package paths.**
 
@@ -707,8 +449,9 @@ composition-root startup.
 
 **Do not invent methods on `Constraints`.**
 
-- Check the table in section 4 before calling a method. If it's not in the
-  table, it doesn't exist.
+- Check the table in section 4 before calling a method. For the full
+  table, see `framework-reference.md`. If it's not in either, it
+  doesn't exist.
 
 **Do not call `UUID.randomUUID()` in api code.**
 
@@ -719,8 +462,7 @@ composition-root startup.
 - A `ValueObject` cannot contain `Entity` or `Aggregate` members,
   cannot uniquely identify an entity, must be a cohesive
   ubiquitous-language concept, and its members must have collective
-  meaning. The moment a nested type becomes an Entity, the wrapper
-  must reclassify or be removed.
+  meaning.
 
 **Do not add `@JsonCreator` to records.**
 
@@ -743,44 +485,32 @@ composition-root startup.
 - If the type owns nothing and is never mutated as a unit, it is a
   `ReadModel`, not an `Aggregate`.
 
-**Do not put `guilds` / `beneficial` on entity records directly when
-they belong on a separate functional-role entity.**
-
-- Functional ecology (guild assignments, beneficial flag) may be a
-  cross-rank concern — check the domain briefing for whether it's on
-  the entity or on a separate `FunctionalRole` entity.
-
 ---
 
-## 11. Glossary
+## 8. Glossary
 
 - **Module** (Maven) vs. **package** (Java). The `identifiers` module
   contains multiple packages (`com.naturalist.insects`,
-  `com.naturalist.plants`, etc.). "`identifiers`" alone refers to the
-  Maven artifact, not a Java package.
-- **api** — the `<domain>-api` Maven module: a domain's records,
-  identifiers, public query / command / collection namespace, and
-  package-private repository contracts. The only module a cross-domain
-  consumer ever touches by import.
-- **Sub-context** — a Java package within a domain api. Package-private
-  visibility is the enforcement mechanism. Not a separate bounded
-  context in the strict DDD sense.
+  `com.naturalist.plants`, etc.).
+- **api** — the `<domain>-api` Maven module: records, identifiers,
+  public query / command / collection namespace, and package-private
+  repository contracts.
+- **Sub-context** — a Java package within a domain api.
+  Package-private visibility is the enforcement mechanism.
 - **`Named<KEY>`** — common supertype of `NamedEntity` and `Entity`.
-  Declares `KEY key()` as the data-layer port accessor. Each branch
-  declares its own semantic accessor (`name()` / `id()`) and defaults
-  `key()` to it. Enables shared data-layer infrastructure.
-- **NamedEntity branch** vs. **Entity branch.** Two parallel identity
-  disciplines. `NamedEntity` records carry a `name` component (slug);
-  `Entity` records carry an `id` component (UUIDv7). Choose per entity
-  based on "does this thing have a natural key?"
+  Declares `KEY key()`.
+- **NamedEntity branch** vs. **Entity branch.** `NamedEntity` records
+  carry a `name` component (slug); `Entity` records carry an `id`
+  component (UUIDv7). Choose based on "does this thing have a natural
+  key?"
 - **Aggregate root** — the `NamedEntity` / `Entity` at the top of an
   aggregate's composition graph, marked `@AggregateRoot`.
 - **ReadModel** — read-side projection assembled from persisted parts.
   Not a consistency boundary, not persisted.
-- **Invariants** — structural rules the domain enforces always,
-  declared via `Constraints` inside `invariants()`. Walked by the
-  observability framework on every observation.
+- **Invariants** — structural rules declared via `Constraints` inside
+  `invariants()`. Walked by the observability framework on every
+  observation.
 - **Observable** — anything carrying invariants. All six identity
-  interfaces extend it; `BehavioralCollection` extends it directly.
+  interfaces extend it.
 - **NamedValue<T>** — typed single-value wrapper with domain meaning.
   Not `Observable`, not identity. `@JsonValue` on `value()`.

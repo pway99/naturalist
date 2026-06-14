@@ -1,9 +1,10 @@
 # Shared Kernels — Chat Briefing
 
 **Purpose.** Covers all shared kernels *except* the framework kernel
-(see `framework-kernel.md` for identity model, `Constraints` API,
-data-layer ports, and namespace patterns). Upload this alongside
-`framework-kernel.md` and one or more domain briefings when a chat
+(see `framework-core.md` for identity model, `Constraints` API,
+namespace patterns; `framework-reference.md` for data-layer ports,
+Observer ceremony, and full Constraints table). Upload this alongside
+`framework-core.md` and one or more domain briefings when a chat
 session needs the full structural vocabulary.
 
 **Primary rule.** Names, packages, components, and visibility below are

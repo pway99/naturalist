@@ -3,7 +3,7 @@
 **Purpose.** Domain vocabulary plus current shape of the insects module
 (four-level Linnaean hierarchy, species, image, functional role, life-stage
 sub-context), sized for a chat Claude session.
-Pair with `docs/briefings/framework-kernel.md` (framework / structural
+Pair with `docs/briefings/framework-core.md` (framework / structural
 glue) and, when generating life-stage JSON,
 `docs/briefings/insect-lifestage-acquisition.md`.
 

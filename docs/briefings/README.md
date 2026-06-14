@@ -17,16 +17,17 @@ unrelated guidance.
 
 | Task                                                                                                                                | Upload                                                                                                                                                                                                                                |
 |-------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Modeling Java** — design or generate an Aggregate, Entity, ValueObject, query / collection / repository contract for a domain api | `framework-kernel.md` + `shared-kernels.md` + one matching `<domain>-domain.md` per domain involved. Multi-domain conversations (e.g. insect chemical defense spanning insects + chemistry) upload one domain briefing per domain. Omit `shared-kernels.md` if the task touches no kernel types beyond framework. |
-| **Acquisition** — produce JSON catalog entries the codebase ingests                                                                 | The matching `*-acquisition.md` + `<domain>-domain.md` + the current target JSON file. **Do not** include `framework-kernel.md` — it covers Java conventions chat doesn't need for JSON output.                                     |
+| **Modeling Java** — design or generate an Aggregate, Entity, ValueObject, query / collection / repository contract for a domain api | `framework-core.md` + one matching `<domain>-domain.md` per domain involved. Add `shared-kernels.md` if the task touches kernel types beyond framework. Add `framework-reference.md` only when the session needs full Constraints tables, data-layer port signatures, Observer ceremony, or Resilience facade. |
+| **Acquisition** — produce JSON catalog entries the codebase ingests                                                                 | The matching `*-acquisition.md` + `<domain>-domain.md` + the current target JSON file. **Do not** include `framework-core.md` — it covers Java conventions chat doesn't need for JSON output.                                       |
 | **Domain research** — gather ecological / chemical / botanical context to inform a future task                                      | `<domain>-domain.md` only. Chat brings the wider domain knowledge.                                                                                                                                                                    |
 
 ## Framework / structural
 
 | Briefing                                       | Use case                                                                                                                                                  |
 |------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [framework-kernel.md](framework-kernel.md) | Framework APIs, identity model, module layout, complete `Constraints` API, naming conventions. Pair with any domain briefing for **Java modeling tasks**. |
-| [shared-kernels.md](shared-kernels.md)     | All shared kernels except framework: field-notes, taxonomy, clades, habitat, biogeography, measurements, catalog, authority. Pair with `framework-kernel.md`. |
+| [framework-core.md](framework-core.md)     | Identity model, record conventions, key Constraints methods, namespace patterns, anti-patterns. **Upload for every Java modeling session.** |
+| [framework-reference.md](framework-reference.md) | Complete Constraints API table, data-layer port signatures, Observer pattern, Resilience facade, BehavioralMap. Upload alongside core when needed. |
+| [shared-kernels.md](shared-kernels.md)     | All shared kernels except framework: field-notes, taxonomy, clades, habitat, biogeography, measurements, catalog, authority. Pair with `framework-core.md`. |
 
 ## Domain
 

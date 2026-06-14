@@ -3,7 +3,7 @@
 **Purpose.** Domain vocabulary plus current shape of the library module
 (three parallel sub-contexts: concept, citation, citation-association),
 sized for a chat Claude session. Pair with
-`docs/briefings/framework-kernel.md` (framework / structural glue).
+`docs/briefings/framework-core.md` (framework / structural glue).
 
 **Primary rule.** Names, packages, components, and visibility below are
 observed from the source tree at briefing time (2026-06-14), not
