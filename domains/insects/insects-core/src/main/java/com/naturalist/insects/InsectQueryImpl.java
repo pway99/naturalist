@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.observability.Observer;
 
 class InsectQueryImpl implements InsectQuery {
@@ -11,20 +12,23 @@ class InsectQueryImpl implements InsectQuery {
     private final FunctionalRoleQuery functionalRoleQuery;
     private final OrderQuery orderQuery;
     private final TaxonViewQuery taxonViewQuery;
+    private final CitationQuery citationQuery;
 
     InsectQueryImpl(SpeciesQuery speciesQuery,
                     ImageQuery imageQuery,
                     FamilyQuery familyQuery,
                     GenusQuery genusQuery,
                     FunctionalRoleQuery functionalRoleQuery,
-                    OrderQuery orderQuery) {
+                    OrderQuery orderQuery,
+                    CitationAssociationQuery citationAssociationQuery) {
         Observer.forClass(InsectQueryImpl.class).arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
                         .notNull(familyQuery, "familyQuery")
                         .notNull(genusQuery, "genusQuery")
                         .notNull(functionalRoleQuery, "functionalRoleQuery")
-                        .notNull(orderQuery, "orderQuery"))
+                        .notNull(orderQuery, "orderQuery")
+                        .notNull(citationAssociationQuery, "citationAssociationQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
@@ -35,6 +39,8 @@ class InsectQueryImpl implements InsectQuery {
         InsectTaxonViewFactory factory =
                 new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
         this.taxonViewQuery = new TaxonViewQueryImpl(factory);
+        this.citationQuery = new InsectCitationQueryImpl(
+                citationAssociationQuery, speciesQuery, genusQuery, familyQuery);
     }
 
     @Override
@@ -70,5 +76,10 @@ class InsectQueryImpl implements InsectQuery {
     @Override
     public OrderQuery orders() {
         return orderQuery;
+    }
+
+    @Override
+    public CitationQuery citations() {
+        return citationQuery;
     }
 }

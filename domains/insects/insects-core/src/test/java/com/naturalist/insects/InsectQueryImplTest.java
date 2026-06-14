@@ -25,8 +25,23 @@ class InsectQueryImplTest {
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
     InsectQuery.FunctionalRoleQuery functionalRoleQuery = new FunctionalRoleQueryImpl(functionalRoleRepository);
     InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
+    com.naturalist.library.CitationAssociationQuery citationAssociationQuery =
+            new com.naturalist.library.CitationAssociationQuery() {
+                @Override
+                public com.naturalist.library.CitationAssociationCollection findByCitationName(
+                        com.naturalist.authority.CitationName citationName) {
+                    return com.naturalist.library.CitationAssociationCollection.empty();
+                }
+
+                @Override
+                public com.naturalist.library.CitationAssociationCollection findBySubject(
+                        com.naturalist.catalog.EntityRef subject) {
+                    return com.naturalist.library.CitationAssociationCollection.empty();
+                }
+            };
     InsectQuery insectQuery = new InsectQueryImpl(
-            speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery, orderQuery);
+            speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
+            orderQuery, citationAssociationQuery);
 
     @Test
     void accessors_returnNonNullDelegates() {
@@ -37,6 +52,7 @@ class InsectQueryImplTest {
         assertThat(insectQuery.functionalRoles()).isSameAs(functionalRoleQuery);
         assertThat(insectQuery.orders()).isSameAs(orderQuery);
         assertThat(insectQuery.taxonView()).isNotNull();
+        assertThat(insectQuery.citations()).isNotNull();
     }
 
     @Test
@@ -48,54 +64,66 @@ class InsectQueryImplTest {
         assertThat(insectQuery.functionalRoles()).isSameAs(insectQuery.functionalRoles());
         assertThat(insectQuery.orders()).isSameAs(insectQuery.orders());
         assertThat(insectQuery.taxonView()).isSameAs(insectQuery.taxonView());
+        assertThat(insectQuery.citations()).isSameAs(insectQuery.citations());
     }
 
     @Test
     void constructor_rejectsNullSpeciesQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery, familyQuery, genusQuery, functionalRoleQuery, orderQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery");
     }
 
     @Test
     void constructor_rejectsNullImageQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null, familyQuery, genusQuery, functionalRoleQuery, orderQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("imageQuery");
     }
 
     @Test
     void constructor_rejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, null, genusQuery, functionalRoleQuery, orderQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, null, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("familyQuery");
     }
 
     @Test
     void constructor_rejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, null, functionalRoleQuery, orderQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, null, functionalRoleQuery, orderQuery, citationAssociationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("genusQuery");
     }
 
     @Test
     void constructor_rejectsNullFunctionalRoleQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, null, orderQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, null, orderQuery, citationAssociationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("functionalRoleQuery");
     }
 
     @Test
     void constructor_rejectsNullOrderQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery, null))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery, null, citationAssociationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("orderQuery");
     }
 
     @Test
-    void constructor_collectsAllViolationsInSinglePass() {
-        assertThatThrownBy(() -> new InsectQueryImpl(null, null, null, null, null, null))
+    void constructor_rejectsNullCitationAssociationQuery() {
+        assertThatThrownBy(() -> new InsectQueryImpl(
+                speciesQuery, imageQuery, familyQuery, genusQuery,
+                functionalRoleQuery, orderQuery, null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("speciesQuery", "imageQuery", "familyQuery", "genusQuery", "functionalRoleQuery", "orderQuery");
+                .hasMessageContainingAll("citationAssociationQuery");
+    }
+
+    @Test
+    void constructor_collectsAllViolationsInSinglePass() {
+        assertThatThrownBy(() -> new InsectQueryImpl(null, null, null, null, null, null, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("speciesQuery", "imageQuery", "familyQuery",
+                        "genusQuery", "functionalRoleQuery", "orderQuery",
+                        "citationAssociationQuery");
     }
 }

@@ -24,5 +24,13 @@
             <groupId>com.naturalist</groupId>
             <artifactId>insects-repository-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-test-context</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -1,7 +1,6 @@
 package com.naturalist.library;
 
 import com.naturalist.authority.CitationName;
-import com.naturalist.library.CitationAssociationId;
 
 import java.util.UUID;
 
@@ -10,7 +9,7 @@ public class TestLibraryIdentifiers {
     public static class Citations {
 
         public static final CitationName EolSwallowtail =
-                CitationName.of("eol-battus-philenor-1188585");
+                CitationName.of("eol-battus-philenor-130502");
 
         public static final CitationName EolGreenLacewing =
                 CitationName.of("eol-chrysoperla-rufilabris-2774541");

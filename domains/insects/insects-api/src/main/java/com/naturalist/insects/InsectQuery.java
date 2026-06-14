@@ -59,6 +59,8 @@ public interface InsectQuery {
 
     OrderQuery orders();
 
+    CitationQuery citations();
+
     interface TaxonViewQuery {
 
         /**
@@ -116,5 +118,9 @@ public interface InsectQuery {
     }
 
     interface OrderQuery extends EntityQuery<InsectOrderName, InsectOrder, OrderCollection> {
+    }
+
+    interface CitationQuery {
+        InsectCitationView findByRankName(InsectRankName rankName);
     }
 }

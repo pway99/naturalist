@@ -15,6 +15,7 @@ public class LibraryTestContext {
 
     private final ConceptQuery conceptQuery;
     private final CitationQuery citationQuery;
+    private final CitationAssociationQuery citationAssociationQuery;
 
     private LibraryTestContext(NaturalistDatabase db) {
         ConceptRepository conceptRepository = new ConceptRepositoryMock(db);
@@ -22,6 +23,11 @@ public class LibraryTestContext {
 
         CitationRepository citationRepository = new CitationRepositoryMock(db);
         this.citationQuery = new CitationQueryImpl(citationRepository);
+
+        CitationAssociationRepository citationAssociationRepository =
+                new CitationAssociationRepositoryMock(db);
+        this.citationAssociationQuery =
+                new CitationAssociationQueryImpl(citationAssociationRepository);
     }
 
     public static LibraryTestContext create(NaturalistDatabase db) {
@@ -34,5 +40,9 @@ public class LibraryTestContext {
 
     public CitationQuery citationQuery() {
         return citationQuery;
+    }
+
+    public CitationAssociationQuery citationAssociationQuery() {
+        return citationAssociationQuery;
     }
 }
