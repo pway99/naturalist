@@ -237,7 +237,7 @@ owning `<domain>-api`. Constructor is package-private;
 `public static of(...)` and `public static empty()` are the only external instantiation
 paths. `List.copyOf` defensive copy is inherited from the base class constructor.
 Domain-specific filtering methods return new instances via the package-private constructor.
-See ADR-011 and ADR-012. Reference implementation: `CompoundCollection` in `chemistry-api`.
+See ADR-011 and ADR-012. Reference implementation: `InsectEntityCollections` in `insects-api`.
 
 ## Kernel Testing Convention
 

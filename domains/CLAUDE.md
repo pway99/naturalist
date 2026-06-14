@@ -129,7 +129,7 @@ Conventions for JSON catalog files:
 - JSON location: `<domain>-repository-test/src/main/resources/<domain>/<subpackage>/`
   (resource sub-directory mirrors the Java sub-package)
 
-Reference implementation: `CompoundTestEntitySource` + `chemistry/compound/compounds.json`.
+Reference implementation: `InsectSpeciesTestEntitySource` + `insects/species/insect-species.json` in the insects module.
 
 ## Repository Architecture
 
