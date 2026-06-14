@@ -66,6 +66,6 @@ public record Papilionidae() implements Clade {
 
     @Override
     public Optional<Clade> parent() {
-        return Optional.of(new Lepidoptera());
+        return Optional.of(new Papilionoidea());
     }
 }

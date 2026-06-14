@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,14 +12,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CladeTest {
 
     private static final List<Clade> ALL = List.of(
-            new Eukaryota(),
             new Animalia(),
+            new Anthophila(),
+            new Apoidea(),
             new Arthropoda(),
-            new Insecta(),
+            new Blattodea(),
+            new DrosophilaSensuStricto(),
+            new Drosophilinae(),
+            new Eukaryota(),
             new Hemiptera(),
             new Holometabola(),
+            new Insecta(),
             new Lepidoptera(),
-            new Papilionidae());
+            new Papilionidae(),
+            new Papilionoidea(),
+            new Sophophora(),
+            new Termitoidae(),
+            new Troidini());
 
     @Test
     void everyPermitHasANonBlankSlug() {
@@ -55,14 +63,16 @@ class CladeTest {
     @Test
     void onlyEukaryotaHasEmptyParent() {
         assertThat(new Eukaryota().parent()).isEmpty();
-        Stream.of(new Animalia(), new Arthropoda(), new Insecta(),
-                  new Hemiptera(), new Holometabola(), new Lepidoptera(), new Papilionidae())
+        ALL.stream()
+                .filter(c -> !(c instanceof Eukaryota))
                 .forEach(c -> assertThat(c.parent()).as(c.slug() + ".parent").isPresent());
     }
 
     @Test
-    void parentChainResolvesFromPapilionidaeToEukaryota() {
-        assertThat(new Papilionidae().parent()).contains(new Lepidoptera());
+    void parentChainResolvesFromTroidiniToEukaryota() {
+        assertThat(new Troidini().parent()).contains(new Papilionidae());
+        assertThat(new Papilionidae().parent()).contains(new Papilionoidea());
+        assertThat(new Papilionoidea().parent()).contains(new Lepidoptera());
         assertThat(new Lepidoptera().parent()).contains(new Holometabola());
         assertThat(new Holometabola().parent()).contains(new Insecta());
         assertThat(new Insecta().parent()).contains(new Arthropoda());

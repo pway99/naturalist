@@ -37,12 +37,21 @@ import java.util.Optional;
 public sealed interface Clade
         permits Eukaryota,
         Animalia,
+        Anthophila,
+        Apoidea,
         Arthropoda,
-        Insecta,
+        Blattodea,
+        DrosophilaSensuStricto,
+        Drosophilinae,
         Hemiptera,
         Holometabola,
+        Insecta,
         Lepidoptera,
-        Papilionidae {
+        Papilionidae,
+        Papilionoidea,
+        Sophophora,
+        Termitoidae,
+        Troidini {
 
     @JsonValue
     String slug();
@@ -64,14 +73,23 @@ public sealed interface Clade
     @JsonCreator
     static Clade of(String slug) {
         return switch (slug) {
-            case "eukaryota" -> new Eukaryota();
+            case "anthophila" -> new Anthophila();
             case "animalia" -> new Animalia();
+            case "apoidea" -> new Apoidea();
             case "arthropoda" -> new Arthropoda();
-            case "insecta" -> new Insecta();
+            case "blattodea" -> new Blattodea();
+            case "drosophila-sensu-stricto" -> new DrosophilaSensuStricto();
+            case "drosophilinae" -> new Drosophilinae();
+            case "eukaryota" -> new Eukaryota();
             case "hemiptera" -> new Hemiptera();
             case "holometabola" -> new Holometabola();
+            case "insecta" -> new Insecta();
             case "lepidoptera" -> new Lepidoptera();
             case "papilionidae" -> new Papilionidae();
+            case "papilionoidea" -> new Papilionoidea();
+            case "sophophora" -> new Sophophora();
+            case "termitoidae" -> new Termitoidae();
+            case "troidini" -> new Troidini();
             default -> throw new IllegalArgumentException("Unknown clade: " + slug);
         };
     }
