@@ -246,6 +246,17 @@ main {
    summary. Auto-hides while no overflow links have been added. */
 .primary-nav-more {
     position: relative;
+    /* "More" is a <details>/<summary>, not a plain <a>. A <details> is a
+       block box by default, so its summary floats above the inline-flex link
+       siblings. Pin the item and its <details> to the same centered inline-flex
+       box so the summary shares the row's vertical centre. */
+    display: inline-flex;
+    align-items: center;
+}
+
+.primary-nav-more > details {
+    display: inline-flex;
+    align-items: center;
 }
 
 .primary-nav-more details[open] > summary {
