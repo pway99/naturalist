@@ -11,12 +11,14 @@
 @param String descriptionUniversity = ""
 
 @template.layout.page(title = displayName, content = @`
-    <nav class="breadcrumb" aria-label="Clade ancestry">
-        <a href="/clades">Tree of Life</a>
+    <nav class="breadcrumb-trail" aria-label="Clade ancestry">
+        <span class="breadcrumb-segment"><a href="/clades">Tree of Life</a></span>
         @for(var ancestor : ancestry)
-            &rsaquo; <a href="/clades/${ancestor.slug()}">${ancestor.displayName()}</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-segment"><a href="/clades/${ancestor.slug()}">${ancestor.displayName()}</a></span>
         @endfor
-        &rsaquo; <span aria-current="page">${displayName}</span>
+        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+        <span class="breadcrumb-segment breadcrumb-current"><strong>${displayName}</strong></span>
     </nav>
 
     <h1>${displayName}</h1>
