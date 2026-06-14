@@ -230,10 +230,19 @@ main {
     transition: background-color 0.12s ease, color 0.12s ease;
 }
 
+/* Kill the native <details> disclosure triangle — we render our own
+   .primary-nav-caret. list-style:none handles Firefox; the marker pseudos
+   handle Chrome/Safari. !important guards against UA specificity. This was
+   never visible until the populated "More" overflow first revealed the
+   summary. */
+.primary-nav-links > li > details > summary {
+    list-style: none !important;
+}
+
 .primary-nav-links > li > details > summary::-webkit-details-marker,
 .primary-nav-links > li > details > summary::marker {
-    display: none;
-    content: '';
+    display: none !important;
+    content: '' !important;
 }
 
 .primary-nav-links a:hover,
