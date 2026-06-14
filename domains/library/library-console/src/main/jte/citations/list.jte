@@ -9,7 +9,8 @@
     <ul class="citation-list">
         @for(var citation : citations)
             <li>
-                <a href="${citation.authorityReference().url().toString()}" target="_blank" rel="noopener">${citation.title()}</a>
+                <a href="${citation.authorityReference().url().toString()}" target="naturalist-citation"
+                   rel="noopener">${citation.title()}</a>
                 @if(citation instanceof OnlineSource os)
                     @if(os.author() != null || os.year() != null)
                         <span class="citation-meta">
