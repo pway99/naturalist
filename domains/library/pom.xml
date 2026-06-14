@@ -15,5 +15,6 @@
         <module>library-api</module>
         <module>library-core</module>
         <module>library-repository-test</module>
+        <module>library-test-context</module>
     </modules>
 </project>
