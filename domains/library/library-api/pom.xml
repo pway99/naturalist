@@ -20,6 +20,14 @@
             <groupId>com.naturalist</groupId>
             <artifactId>framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>identifiers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>field-notes</artifactId>
+        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency>
