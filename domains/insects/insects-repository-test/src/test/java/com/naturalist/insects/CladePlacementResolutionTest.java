@@ -5,6 +5,7 @@ import com.naturalist.clades.Hemiptera;
 import com.naturalist.clades.Holometabola;
 import com.naturalist.clades.Lepidoptera;
 import com.naturalist.clades.Papilionidae;
+import com.naturalist.clades.Troidini;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.insects.lifestage.Hemimetabolous;
 import com.naturalist.insects.lifestage.Holometabolous;
@@ -32,7 +33,7 @@ class CladePlacementResolutionTest {
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     @Test
-    void battusPhilenorPlacementResolvesToHolometabolyTraitViaPapilionidae() {
+    void battusPhilenorPlacementResolvesToHolometabolyTraitViaTroidini() {
         InsectSpeciesTestEntitySource species =
                 db.getNamed(InsectSpeciesTestEntitySource.class);
 
@@ -40,7 +41,7 @@ class CladePlacementResolutionTest {
                 .getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name)
                 .orElseThrow();
 
-        assertThat(battusPhilenor.placedIn()).isEqualTo(new Papilionidae());
+        assertThat(battusPhilenor.placedIn()).isEqualTo(new Troidini());
 
         Optional<MetabolyTrait> resolved = CladeTraversal.findTrait(
                 battusPhilenor.placedIn(),
