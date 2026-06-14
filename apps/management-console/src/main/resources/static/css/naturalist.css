@@ -1341,3 +1341,131 @@ figure.compound-depiction img {
     color: var(--sepia-ink) !important;
     font-weight: 700;
 }
+
+/* ── Clades & Concepts teaching pages ────────────────────────────────────
+   Light field-guide treatment for the cross-cutting /clades and /concepts
+   surfaces: a calm reading list of concepts, a nested tree-of-life with
+   faint indent guides, clade-child chips, and the muted concept cross-links.
+   All sepia-on-parchment, reusing the breadcrumb/nav link idioms. */
+
+/* Concepts index — a reading list of teaching notes. */
+.concept-list {
+    list-style: none;
+    margin: 1rem 0 1.5rem;
+    padding: 0;
+    max-width: 42rem;
+}
+
+.concept-list > li {
+    margin: 0;
+    border-bottom: 1px solid rgba(139, 107, 61, 0.25);
+}
+
+.concept-list > li:first-child {
+    border-top: 1px solid rgba(139, 107, 61, 0.25);
+}
+
+.concept-list a {
+    display: block;
+    padding: 0.6rem 0.25rem;
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--sepia-ink);
+    text-decoration: none;
+    border-bottom: 0;
+    transition: color 0.12s ease, padding-left 0.12s ease;
+}
+
+.concept-list a:hover {
+    color: var(--pico-primary);
+    padding-left: 0.6rem;
+}
+
+/* Tree of life — nested clade list with faint vertical indent guides. */
+.clade-tree,
+.clade-tree ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.clade-tree {
+    margin: 1rem 0 1.5rem;
+    font-family: 'Georgia', 'Cambria', serif;
+}
+
+.clade-tree ul {
+    margin-left: 0.6rem;
+    padding-left: 0.9rem;
+    border-left: 1px solid rgba(139, 107, 61, 0.3);
+}
+
+.clade-tree li {
+    margin: 0.15rem 0;
+}
+
+.clade-tree a {
+    color: var(--sepia-ink);
+    text-decoration: none;
+    border-bottom: 0;
+    font-style: italic;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.2rem;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.clade-tree a:hover {
+    background: var(--parchment-deep);
+    color: var(--pico-primary);
+}
+
+/* Direct descendants on a clade page — a light row of clade chips. */
+.clade-children {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.clade-children li {
+    margin: 0;
+}
+
+.clade-children a {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    background: var(--parchment-deep);
+    border: 1px solid rgba(139, 107, 61, 0.35);
+    border-radius: 1rem;
+    font-style: italic;
+    color: var(--sepia-ink);
+    text-decoration: none;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.clade-children a:hover {
+    background: var(--parchment);
+    color: var(--pico-primary);
+}
+
+/* Cross-links from a clade to the explanatory concept pages. */
+.clade-concept-links {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--sepia-ink-soft);
+    margin: 0.25rem 0 1rem;
+}
+
+.clade-concept-links a {
+    color: var(--sepia-ink-soft);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--sepia-rule);
+}
+
+.clade-concept-links a:hover {
+    color: var(--pico-primary);
+    border-bottom-color: var(--pico-primary);
+}
