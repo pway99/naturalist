@@ -40,6 +40,10 @@ public class TestInsectsIdentifiers {
         public static class Hymenoptera {
             public static final InsectOrderName name = InsectOrderName.of("hymenoptera");
         }
+
+        public static class Blattodea {
+            public static final InsectOrderName name = InsectOrderName.of("blattodea");
+        }
     }
 
     public static class InsectFamily {
@@ -128,6 +132,14 @@ public class TestInsectsIdentifiers {
             public static final InsectFamilyName name = InsectFamilyName.of("coccinellidae");
         }
 
+        public static class Crabronidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("crabronidae");
+        }
+
+        public static class Drosophilidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("drosophilidae");
+        }
+
         public static class Ectobiidae {
             public static final InsectFamilyName name = InsectFamilyName.of("ectobiidae");
         }
@@ -136,12 +148,20 @@ public class TestInsectsIdentifiers {
             public static final InsectFamilyName name = InsectFamilyName.of("apidae");
         }
 
+        public static class Blattidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("blattidae");
+        }
+
         public static class Nymphalidae {
             public static final InsectFamilyName name = InsectFamilyName.of("nymphalidae");
         }
 
         public static class Pieridae {
             public static final InsectFamilyName name = InsectFamilyName.of("pieridae");
+        }
+
+        public static class Rhinotermitidae {
+            public static final InsectFamilyName name = InsectFamilyName.of("rhinotermitidae");
         }
     }
 
@@ -164,6 +184,10 @@ public class TestInsectsIdentifiers {
 
         public static class Andrena {
             public static final InsectGenusName name = InsectGenusName.of("andrena");
+        }
+
+        public static class Apis {
+            public static final InsectGenusName name = InsectGenusName.of("apis");
         }
 
         public static class Chrysoperla {
@@ -218,6 +242,22 @@ public class TestInsectsIdentifiers {
         public static class Colias {
             public static final InsectGenusName name = InsectGenusName.of("colias");
         }
+
+        public static class Drosophila {
+            public static final InsectGenusName name = InsectGenusName.of("drosophila");
+        }
+
+        public static class Periplaneta {
+            public static final InsectGenusName name = InsectGenusName.of("periplaneta");
+        }
+
+        public static class Philanthus {
+            public static final InsectGenusName name = InsectGenusName.of("philanthus");
+        }
+
+        public static class Reticulitermes {
+            public static final InsectGenusName name = InsectGenusName.of("reticulitermes");
+        }
     }
 
     public static class InsectFunctionalRole {
@@ -253,6 +293,15 @@ public class TestInsectsIdentifiers {
                     UUID.fromString("019dbdb7-a4a2-7eac-a875-3ce641904649"));
             public static final LifeStageName lifeStageName =
                     LifeStageName.of(name, LifeStageKind.EGG);
+        }
+
+        public static class ApisMellifera {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("apis-mellifera");
+
+            public static class FunctionalRole {
+                public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                        UUID.fromString("019ec455-d43e-71de-9dab-deb3b09ad1de"));
+            }
         }
 
         public static class BattusPhilenor {
@@ -299,6 +348,14 @@ public class TestInsectsIdentifiers {
             }
         }
 
+        public static class DrosophilaFunebris {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("drosophila-funebris");
+        }
+
+        public static class DrosophilaMelanogaster {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("drosophila-melanogaster");
+        }
+
         public static class HippodamiaConvergens {
             public static final InsectSpeciesName name = InsectSpeciesName.of("hippodamia-convergens");
 
@@ -311,6 +368,18 @@ public class TestInsectsIdentifiers {
                 public static final LifeStageName Pupa = LifeStageName.of(name, LifeStageKind.PUPA);
                 public static final LifeStageName Adult = LifeStageName.of(name, LifeStageKind.ADULT);
             }
+        }
+
+        public static class PeriplanetaAmericana {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("periplaneta-americana");
+        }
+
+        public static class PhilanthusGibbosus {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("philanthus-gibbosus");
+        }
+
+        public static class ReticulitermesHesperus {
+            public static final InsectSpeciesName name = InsectSpeciesName.of("reticulitermes-hesperus");
         }
     }
 }
