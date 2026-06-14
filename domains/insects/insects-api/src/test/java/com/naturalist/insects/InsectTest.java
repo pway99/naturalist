@@ -1,6 +1,10 @@
 package com.naturalist.insects;
 
 import com.naturalist.RandomValue;
+import com.naturalist.authority.AuthorityReference;
+import com.naturalist.authority.AuthoritySource;
+import com.naturalist.authority.CitationName;
+import com.naturalist.authority.OnlineSource;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
@@ -12,6 +16,8 @@ import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +38,7 @@ class InsectTest {
         assertThat(insect.genus()).isNull();
         assertThat(insect.species()).isNull();
         assertThat(insect.lifeStages().stream()).isEmpty();
+        assertThat(insect.citations()).isNull();
     }
 
     // ----- identifiedTo() -----
@@ -154,6 +161,28 @@ class InsectTest {
     }
 
     @Test
+    void withCitationsReplacesCitationsAndPreservesOtherFields() {
+        Insect base = Insect.empty().withOrder(orderView());
+        InsectCitationView citations = new InsectCitationView(
+                InsectOrderName.of("lepidoptera"),
+                List.of(new InsectCitationView.RankedCitation(
+                        new OnlineSource(
+                                CitationName.of("eol-lepidoptera"),
+                                new AuthorityReference(
+                                        new AuthoritySource("eol", "Encyclopedia of Life"),
+                                        URI.create("https://eol.org/pages/747")),
+                                "EOL: Lepidoptera", null, null, null),
+                        InsectOrderName.of("lepidoptera"),
+                        null)));
+
+        Insect updated = base.withCitations(citations);
+
+        assertThat(updated.citations()).isSameAs(citations);
+        assertThat(updated.order()).isSameAs(base.order());
+        assertThat(updated.observations()).isSameAs(base.observations());
+    }
+
+    @Test
     void withMutatorsReturnNewInstances() {
         Insect base = Insect.empty();
 
@@ -206,7 +235,8 @@ class InsectTest {
         Insect insect = new Insect(
                 null,
                 null, null, null, null,
-                LifeStageCollection.empty());
+                LifeStageCollection.empty(),
+                null);
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -220,6 +250,7 @@ class InsectTest {
         Insect insect = new Insect(
                 ImageCollection.empty(),
                 null, null, null, null,
+                null,
                 null);
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -237,7 +268,8 @@ class InsectTest {
                 familyView(),
                 null,
                 speciesView(),
-                LifeStageCollection.empty());
+                LifeStageCollection.empty(),
+                null);
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -254,7 +286,8 @@ class InsectTest {
                 null,
                 genusView(),
                 null,
-                LifeStageCollection.empty());
+                LifeStageCollection.empty(),
+                null);
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -271,7 +304,8 @@ class InsectTest {
                 familyView(),
                 null,
                 null,
-                LifeStageCollection.empty());
+                LifeStageCollection.empty(),
+                null);
 
         InvariantObservation result = mo.observable(insect, "insect");
 
