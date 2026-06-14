@@ -94,6 +94,7 @@
     },
     "commonNames": [
       { "label": "cockroaches", "locale": "en" }
-    ]
+    ],
+    "placedIn": "blattodea"
   }
 ]

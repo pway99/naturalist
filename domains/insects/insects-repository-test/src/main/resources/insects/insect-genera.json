@@ -192,5 +192,91 @@
       }
     ],
     "placedIn": "lepidoptera"
+  },
+  {
+    "name": "drosophila",
+    "familyName": "drosophilidae",
+    "genus": "Drosophila",
+    "description": {
+      "preschool": "A group of tiny flies, the fruit flies.",
+      "elementary": "The fruit-fly genus; it holds many kinds of small flies.",
+      "secondary": "Genus Drosophila, the fruit flies — among the most studied genera in biology.",
+      "university": "A paraphyletic genus: Zaprionus, Scaptomyza and the Hawaiian drosophilids are nested within it, so it is placed at a containing clade (Drosophilinae) larger than the genus itself."
+    },
+    "commonNames": [
+      {
+        "label": "fruit flies",
+        "locale": "en"
+      }
+    ],
+    "placedIn": "drosophilinae"
+  },
+  {
+    "name": "periplaneta",
+    "familyName": "blattidae",
+    "genus": "Periplaneta",
+    "description": {
+      "preschool": "A group of big cockroaches.",
+      "elementary": "A genus of large cockroaches, including the American cockroach.",
+      "secondary": "Genus Periplaneta, large cockroaches in family Blattidae.",
+      "university": "A genus of cockroaches in the strict sense, within the paraphyletic roach grade of Blattodea."
+    },
+    "commonNames": [
+      {
+        "label": "large cockroaches",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "reticulitermes",
+    "familyName": "rhinotermitidae",
+    "genus": "Reticulitermes",
+    "description": {
+      "preschool": "A group of small wood-eating insects.",
+      "elementary": "A genus of subterranean termites that tunnel through wood and soil.",
+      "secondary": "Genus Reticulitermes, subterranean termites in family Rhinotermitidae.",
+      "university": "A termite genus within Termitoidae, the termite clade nested inside Blattodea."
+    },
+    "commonNames": [
+      {
+        "label": "subterranean termites",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "apis",
+    "familyName": "apidae",
+    "genus": "Apis",
+    "description": {
+      "preschool": "The honey bees.",
+      "elementary": "The genus of honey bees, which live in hives and make honey.",
+      "secondary": "Genus Apis, the honey bees, family Apidae.",
+      "university": "A genus within the bee clade Anthophila, itself nested inside the apoid wasps."
+    },
+    "commonNames": [
+      {
+        "label": "honey bees",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "philanthus",
+    "familyName": "crabronidae",
+    "genus": "Philanthus",
+    "description": {
+      "preschool": "The beewolves — wasps that hunt.",
+      "elementary": "A genus of wasps called beewolves that hunt bees and other insects.",
+      "secondary": "Genus Philanthus, beewolves, family Crabronidae.",
+      "university": "A genus of apoid wasps; the apoid wasps are paraphyletic relative to the bees."
+    },
+    "commonNames": [
+      {
+        "label": "beewolves",
+        "locale": "en"
+      }
+    ]
   }
 ]

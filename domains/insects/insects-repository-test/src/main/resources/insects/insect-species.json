@@ -92,7 +92,7 @@
         "Chrysalis: brown or green with delicate golden filigree — the only cryptic stage"
       ]
     },
-    "placedIn": "papilionidae",
+    "placedIn": "troidini",
     "chemicalDefense": {
       "mechanism": "Sequestration of aristolochic acids from the larval host plant (Aristolochia californica). Toxins are retained through pupation, carried by adults, and transferred maternally to the eggs — every stage of the life cycle is chemically defended.",
       "sourceCompounds": "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
@@ -160,6 +160,107 @@
     "commonNames": [
       {
         "label": "Orange Sulphur",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "drosophila-melanogaster",
+    "genusName": "drosophila",
+    "epithet": "melanogaster",
+    "description": {
+      "preschool": "A tiny fly you see near old bananas and fruit.",
+      "elementary": "The common fruit fly. Scientists study it more than almost any other animal because it breeds fast and is easy to raise.",
+      "secondary": "Drosophila melanogaster, a model organism in genetics. It sits in the subgenus Sophophora — only distantly related to the fly the genus is actually named for.",
+      "university": "Despite being the canonical 'Drosophila', D. melanogaster lies in subgenus Sophophora, far from the type species D. funebris. Genus Drosophila is paraphyletic, so the species' true clade (Sophophora) is finer than, and not derivable from, the genus."
+    },
+    "commonNames": [
+      {
+        "label": "common fruit fly",
+        "locale": "en"
+      }
+    ],
+    "placedIn": "sophophora"
+  },
+  {
+    "name": "drosophila-funebris",
+    "genusName": "drosophila",
+    "epithet": "funebris",
+    "description": {
+      "preschool": "Another small fly, a cousin of the fruit fly.",
+      "elementary": "A fly that gives its whole genus its name, even though it is less famous than the fruit fly people study.",
+      "secondary": "Drosophila funebris, the type species of genus Drosophila — the species that anchors the genus name.",
+      "university": "As the type species, D. funebris fixes the name Drosophila to subgenus Drosophila sensu stricto. Because the genus is paraphyletic, a split could leave the famous D. melanogaster needing a new genus name — the crux of the well-known nomenclatural case."
+    },
+    "commonNames": [],
+    "placedIn": "drosophila-sensu-stricto"
+  },
+  {
+    "name": "periplaneta-americana",
+    "genusName": "periplaneta",
+    "epithet": "americana",
+    "description": {
+      "preschool": "A big brown cockroach that scurries in warm places.",
+      "elementary": "The American cockroach, one of the largest house cockroaches.",
+      "secondary": "Periplaneta americana, a cockroach in family Blattidae, order Blattodea.",
+      "university": "A cockroach in the strict sense. 'Cockroaches excluding termites' is paraphyletic — termites are a clade nested within Blattodea — so this species' smallest honest clade is Blattodea itself; there is no roaches-only clade to place it in."
+    },
+    "commonNames": [
+      {
+        "label": "American cockroach",
+        "locale": "en"
+      }
+    ],
+    "placedIn": "blattodea"
+  },
+  {
+    "name": "reticulitermes-hesperus",
+    "genusName": "reticulitermes",
+    "epithet": "hesperus",
+    "description": {
+      "preschool": "A pale little insect that lives in wood with many brothers and sisters.",
+      "elementary": "The western subterranean termite. Termites live in big family colonies and eat wood.",
+      "secondary": "Reticulitermes hesperus, a termite. Termites were once their own order (Isoptera) but are now placed inside the cockroaches (Blattodea).",
+      "university": "A termite — a eusocial lineage nested within Blattodea, sister to the wood-feeding roach Cryptocercus. Eusociality is a derived trait of the termite clade (Termitoidae / Isoptera), below the ordinal level: a trait that resolves on a sub-ordinal clade, not on the order."
+    },
+    "commonNames": [
+      {
+        "label": "western subterranean termite",
+        "locale": "en"
+      }
+    ],
+    "placedIn": "termitoidae"
+  },
+  {
+    "name": "apis-mellifera",
+    "genusName": "apis",
+    "epithet": "mellifera",
+    "description": {
+      "preschool": "A honey bee that visits flowers and makes honey.",
+      "elementary": "The western honey bee. It carries pollen between flowers and lives in a hive.",
+      "secondary": "Apis mellifera, the western honey bee, family Apidae, order Hymenoptera — an important pollinator.",
+      "university": "A bee (clade Anthophila). Bees are a clade nested within the apoid wasps (Apoidea); the 'wasp' lineages of Apoidea are paraphyletic with respect to bees. Anthophila corresponds to no Linnaean rank — it spans several bee families — so a pollinator role attaches to a clade, not a rank."
+    },
+    "commonNames": [
+      {
+        "label": "western honey bee",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "philanthus-gibbosus",
+    "genusName": "philanthus",
+    "epithet": "gibbosus",
+    "description": {
+      "preschool": "A wasp that hunts other insects.",
+      "elementary": "A beewolf — a wasp that catches bees and other insects to feed its young.",
+      "secondary": "Philanthus gibbosus, a beewolf in family Crabronidae, the apoid wasps.",
+      "university": "An apoid wasp. The apoid wasps (Apoidea) are paraphyletic with respect to the bees (Anthophila), which arose from within them. Its smallest honest clade is Apoidea, which also contains the bees — the containing clade is broader than the rank."
+    },
+    "commonNames": [
+      {
+        "label": "beewolf",
         "locale": "en"
       }
     ]

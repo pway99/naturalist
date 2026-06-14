@@ -251,7 +251,8 @@
         "label": "Long-tongued Bee Family",
         "locale": "en"
       }
-    ]
+    ],
+    "placedIn": "anthophila"
   },
   {
     "name": "nymphalidae",
@@ -288,5 +289,74 @@
       }
     ],
     "placedIn": "lepidoptera"
+  },
+  {
+    "name": "drosophilidae",
+    "orderName": "diptera",
+    "family": "Drosophilidae",
+    "description": {
+      "preschool": "A family of tiny flies seen near fruit.",
+      "elementary": "The pomace or vinegar flies, small flies often found around ripe fruit.",
+      "secondary": "Family Drosophilidae, the pomace flies, order Diptera.",
+      "university": "A dipteran family containing the paraphyletic genus Drosophila and the lineages nested within it."
+    },
+    "commonNames": [
+      {
+        "label": "pomace flies",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "blattidae",
+    "orderName": "blattodea",
+    "family": "Blattidae",
+    "description": {
+      "preschool": "A family of big cockroaches.",
+      "elementary": "Large cockroaches often found around buildings.",
+      "secondary": "Family Blattidae, cockroaches in order Blattodea.",
+      "university": "A family of cockroaches in the strict sense, part of the paraphyletic roach grade within Blattodea."
+    },
+    "commonNames": [
+      {
+        "label": "common cockroaches",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "rhinotermitidae",
+    "orderName": "blattodea",
+    "family": "Rhinotermitidae",
+    "description": {
+      "preschool": "A family of wood-eating termites.",
+      "elementary": "Subterranean termites that build tunnels and eat wood.",
+      "secondary": "Family Rhinotermitidae, subterranean termites, within order Blattodea.",
+      "university": "A termite family within Termitoidae, the termite clade nested inside the cockroaches (Blattodea)."
+    },
+    "commonNames": [
+      {
+        "label": "subterranean termites",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "crabronidae",
+    "orderName": "hymenoptera",
+    "family": "Crabronidae",
+    "description": {
+      "preschool": "A family of hunting wasps.",
+      "elementary": "Apoid wasps that hunt insects; some are called beewolves.",
+      "secondary": "Family Crabronidae, the apoid wasps, order Hymenoptera.",
+      "university": "A family of apoid wasps. Apoidea (apoid wasps plus bees) is paraphyletic with respect to the bees (Anthophila), which arose from within these wasps."
+    },
+    "commonNames": [
+      {
+        "label": "apoid wasps",
+        "locale": "en"
+      }
+    ],
+    "placedIn": "apoidea"
   }
 ]

@@ -146,5 +146,14 @@
       "POLLINATOR"
     ],
     "beneficial": true
+  },
+  {
+    "name": "019ec455-d43e-71de-9dab-deb3b09ad1de",
+    "parentRank": "SPECIES",
+    "parentName": "apis-mellifera",
+    "guilds": [
+      "POLLINATOR"
+    ],
+    "beneficial": true
   }
 ]
