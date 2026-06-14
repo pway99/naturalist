@@ -18,6 +18,21 @@ public class TestLibraryIdentifiers {
         public static final CitationName EolHoneyBee =
                 CitationName.of("eol-apis-mellifera-1045608");
 
+        public static final CitationName EolFruitFly =
+                CitationName.of("eol-drosophila-melanogaster-733739");
+
+        public static final CitationName EolFunebris =
+                CitationName.of("eol-drosophila-funebris-733824");
+
+        public static final CitationName EolAmericanCockroach =
+                CitationName.of("eol-periplaneta-americana-1076920");
+
+        public static final CitationName EolWesternTermite =
+                CitationName.of("eol-reticulitermes-hesperus-469438");
+
+        public static final CitationName EolBeewolf =
+                CitationName.of("eol-philanthus-gibbosus-104130");
+
         public static class NotFound {
             public static final CitationName name =
                     CitationName.of("eol-unobtainium-bug-9999999");

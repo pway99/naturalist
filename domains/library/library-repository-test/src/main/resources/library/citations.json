@@ -46,5 +46,137 @@
     "author": "EOL Curators",
     "year": 2024,
     "lastModified": "2024-06-01T00:00:00Z"
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-drosophila-melanogaster-733739",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/733739"
+    },
+    "title": "Drosophila melanogaster Meigen 1830 (Common Fruit Fly)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-drosophila-funebris-733824",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/733824"
+    },
+    "title": "Drosophila funebris (Fabricius 1787)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-periplaneta-americana-1076920",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/1076920"
+    },
+    "title": "Periplaneta americana (Linnaeus 1758) (American Cockroach)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-reticulitermes-hesperus-469438",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/469438"
+    },
+    "title": "Reticulitermes hesperus Banks 1920 (Western Subterranean Termite)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-philanthus-gibbosus-104130",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/104130"
+    },
+    "title": "Philanthus gibbosus (Fabricius 1775) (Hump-backed Beewolf)",
+    "author": null,
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-periplaneta-31515",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/31515"
+    },
+    "title": "Periplaneta Burmeister 1838 (genus)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-philanthus-104130",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/104130"
+    },
+    "title": "Philanthus Fabricius 1790 (Beewolves, genus)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-apoidea-676",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/676"
+    },
+    "title": "Apoidea (Apoid Wasps)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-holometabola-3016961",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/3016961"
+    },
+    "title": "Endopterygota / Holometabola (Endopterygotes)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-hymenoptera-648",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/648"
+    },
+    "title": "Hymenoptera (Wasps, Bees, And Ants)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
+  },
+  {
+    "kind": "ONLINE_SOURCE",
+    "name": "eol-crabronidae-7493",
+    "authorityReference": {
+      "source": { "id": "eol", "displayName": "Encyclopedia of Life" },
+      "url": "https://eol.org/pages/7493"
+    },
+    "title": "Crabronidae (Crabronid Wasps)",
+    "author": "EOL Curators",
+    "year": 2026,
+    "lastModified": null
   }
 ]
