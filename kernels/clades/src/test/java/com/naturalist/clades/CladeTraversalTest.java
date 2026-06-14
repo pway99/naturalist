@@ -26,6 +26,7 @@ class CladeTraversalTest {
 
         assertThat(chain).containsExactly(
                 new Papilionidae(),
+                new Papilionoidea(),
                 new Lepidoptera(),
                 new Holometabola(),
                 new Insecta(),
