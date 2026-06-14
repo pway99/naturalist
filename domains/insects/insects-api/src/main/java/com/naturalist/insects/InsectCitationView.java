@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.authority.CitationName;
+import com.naturalist.authority.Citation;
 import com.naturalist.ddd.ReadModel;
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
@@ -22,7 +22,7 @@ public record InsectCitationView(
     }
 
     public record RankedCitation(
-            CitationName citationName,
+            Citation citation,
             InsectRankName attachedAt,
             @Nullable String note
     ) implements ValueObject {
@@ -30,7 +30,7 @@ public record InsectCitationView(
         @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i
-                    .entityName(citationName, "citationName")
+                    .namedEntity(citation, "citation")
                     .identifier(attachedAt, "attachedAt");
         }
     }

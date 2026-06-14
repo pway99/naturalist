@@ -1,6 +1,9 @@
 package com.naturalist.insects;
 
+import com.naturalist.authority.AuthorityReference;
+import com.naturalist.authority.AuthoritySource;
 import com.naturalist.authority.CitationName;
+import com.naturalist.authority.OnlineSource;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
@@ -14,6 +17,15 @@ class InsectCitationViewTest {
 
     private static final Observer observer = Observer.forClass(InsectCitationViewTest.class);
 
+    private static OnlineSource citation(String slug, String title) {
+        return new OnlineSource(
+                CitationName.of(slug),
+                new AuthorityReference(
+                        new AuthoritySource("eol", "Encyclopedia of Life"),
+                        java.net.URI.create("https://eol.org/pages/130502")),
+                title, null, null, null);
+    }
+
     @Test
     void validView_hasNoInvariantViolations() {
         MethodObserver mo = observer.forMethod("validView_hasNoInvariantViolations");
@@ -21,7 +33,7 @@ class InsectCitationViewTest {
         InsectCitationView view = new InsectCitationView(
                 InsectSpeciesName.of("battus-philenor"),
                 List.of(new InsectCitationView.RankedCitation(
-                        CitationName.of("eol-battus-philenor-130502"),
+                        citation("eol-battus-philenor-130502", "Battus philenor"),
                         InsectOrderName.of("lepidoptera"),
                         "EOL page")));
 
@@ -45,7 +57,7 @@ class InsectCitationViewTest {
         MethodObserver mo = observer.forMethod("validRankedCitation_hasNoInvariantViolations");
 
         InsectCitationView.RankedCitation rc = new InsectCitationView.RankedCitation(
-                CitationName.of("eol-battus-philenor-130502"),
+                citation("eol-battus-philenor-130502", "Battus philenor"),
                 InsectFamilyName.of("papilionidae"),
                 null);
 
@@ -62,6 +74,6 @@ class InsectCitationViewTest {
 
         InvariantObservation result = mo.observable(rc, "rankedCitation");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".rankedCitation.citationName", ".rankedCitation.attachedAt");
+                .containsExactlyInAnyOrder(".rankedCitation.citation", ".rankedCitation.attachedAt");
     }
 }
