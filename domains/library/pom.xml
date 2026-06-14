@@ -16,5 +16,6 @@
         <module>library-core</module>
         <module>library-repository-test</module>
         <module>library-test-context</module>
+        <module>library-console</module>
     </modules>
 </project>

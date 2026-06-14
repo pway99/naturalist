@@ -305,6 +305,11 @@
                 <artifactId>library-test-context</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>library-console</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- MICROBES -->
             <dependency>
                 <groupId>com.naturalist</groupId>

@@ -1,4 +1,4 @@
-@import com.naturalist.console.clade.CladesController.CladeNode
+@import com.naturalist.library.console.clade.CladesController.CladeNode
 @param CladeNode root
 
 @template.layout.page(title = "Tree of Life", content = @`

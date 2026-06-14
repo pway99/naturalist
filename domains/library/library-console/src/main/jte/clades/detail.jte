@@ -1,4 +1,4 @@
-@import com.naturalist.console.clade.CladesController.CladeLink
+@import com.naturalist.library.console.clade.CladesController.CladeLink
 @import java.util.List
 
 @param String displayName

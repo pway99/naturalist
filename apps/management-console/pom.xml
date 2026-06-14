@@ -70,21 +70,11 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>library-console</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>plants-console</artifactId>
-        </dependency>
-
-        <!-- DOMAIN MODULES (no console module) -->
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>library-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>library-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>library-test-context</artifactId>
         </dependency>
 
         <!-- TEST -->

@@ -1,4 +1,4 @@
-package com.naturalist.console.concept;
+package com.naturalist.library.console.concept;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;

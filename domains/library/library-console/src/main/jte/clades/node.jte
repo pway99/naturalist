@@ -1,4 +1,4 @@
-@import com.naturalist.console.clade.CladesController.CladeNode
+@import com.naturalist.library.console.clade.CladesController.CladeNode
 @param CladeNode node
 
 <li>
