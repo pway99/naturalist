@@ -7,17 +7,17 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-06-13 (Paraphyly fixtures — 9 clade permits, 3 teaching-exemplar lineages, monotonicity acceptance test, EOL citations.)
+Last updated: 2026-06-14 (Clades/taxonomy console complete; library-console module extracted; citations page landed.)
 
 ---
 
 ## Current phase
 
-**Identification roadmap** ([`plans/identification.md`](plans/identification.md)). Phase 0 ✅ (taxonomic reorganization + family/genus console). Phase 1 ✅ (external-authority seam — `kernels/authority` port + EOL mock client). Phase 2 citation/library ✅ (`Citation` sealed NamedEntity, `domains/library` domain stack, `Eol.citation()` factory). Consumer wiring next.
+**Identification roadmap** ([`plans/identification.md`](plans/identification.md)). Phase 0 ✅ (taxonomic reorganization + family/genus console). Phase 1 ✅ (external-authority seam — `kernels/authority` port + EOL mock client). Phase 2 citation/library ✅ (`Citation` sealed NamedEntity, `domains/library` domain stack, `Eol.citation()` factory). Phase 2 console ✅ (citations page at `/citations`). Citation association design spec drafted.
 
 ## Current slice
 
-**Clades & taxonomy console teaching surface** — in progress (other session). Concept pages, clade browser, cross-links from insect pages. Design + plan: [`plans/2026-06-13-clades-taxonomy-console-design.md`](plans/2026-06-13-clades-taxonomy-console-design.md), [`plans/2026-06-13-clades-taxonomy-console-plan.md`](plans/2026-06-13-clades-taxonomy-console-plan.md).
+**Citation association** — design spec drafted ([`plans/2026-06-14-citation-association-design.md`](plans/2026-06-14-citation-association-design.md)). Cross-domain citation associations via `CitationAssociation` entity + insect-specific hierarchical citation discovery.
 
 **Candidate next slices** (lead first):
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
@@ -33,6 +33,9 @@ Last updated: 2026-06-13 (Paraphyly fixtures — 9 clade permits, 3 teaching-exe
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Citations page — `/citations` single-page listing in library-console; `CitationQuery` wired into `LibraryTestContext`; nav link added | 2026-06-14 | conversation | `41aa0b3` |
+| Library-console module extraction — `CladesController`, `ConceptsController`, JTE templates, `LibraryDataConfiguration`, `LibraryLinker` moved from management-console to `domains/library/library-console` | 2026-06-14 | [`plans/archive/2026-06-14-library-console-module.md`](plans/archive/2026-06-14-library-console-module.md) | `7c3b8e6` |
+| Clades & taxonomy console — `Concept` entity + `CladeCatalog` + concept pages + clade browser + insect cross-links + nav; UI polish (breadcrumbs, field-guide styling, More→inline nav) | 2026-06-14 | [`plans/archive/2026-06-13-clades-taxonomy-console-plan.md`](plans/archive/2026-06-13-clades-taxonomy-console-plan.md) | `5ee23a6` |
 | Paraphyly fixtures — 9 clade permits (Papilionoidea, Troidini, Drosophilinae, Sophophora, DrosophilaSensuStricto, Blattodea, Termitoidae, Apoidea, Anthophila); 3 teaching-exemplar lineages; Blattodea→Hemimetabolous trait; monotonicity acceptance test (21 tests); 11 EOL citations | 2026-06-13 | [`plans/archive/2026-06-13-paraphyly-fixtures.md`](plans/archive/2026-06-13-paraphyly-fixtures.md) | `9fbed25`    |
 | Citation + Library — `Citation` sealed NamedEntity (+ `OnlineSource` permit) in `kernels/authority`; `domains/library` domain stack (repository, mock, contract tests, query); `Eol.citation()` factory | 2026-06-13 | [`plans/archive/2026-06-13-citation-and-library-design.md`](plans/archive/2026-06-13-citation-and-library-design.md) | `16615a6`    |
 | ReadModel kernel type — 6th identity-model marker; insect read-models retyped + renamed `*Aggregate`→`*View`/`InsectTaxonView`, `insect()`→`taxonView()` | 2026-06-07 | [`plans/archive/2026-06-07-readmodel-kernel-type-design.md`](plans/archive/2026-06-07-readmodel-kernel-type-design.md) | `abf5345` (+ docs) |
@@ -65,7 +68,7 @@ Last updated: 2026-06-13 (Paraphyly fixtures — 9 clade permits, 3 teaching-exe
 
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
-| 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md) — Phase 0 ✅; **Phase 1** (external-authority seam) ✅; **Phase 2** citation/library landed (naming: `kernels/bibliography`→`kernels/authority`, `LiteratureReference`→`Citation`, domain is `domains/library`); consumer wiring next |
+| 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md) — Phase 0 ✅; **Phase 1** (external-authority seam) ✅; **Phase 2** citation/library ✅ + console ✅; citation association design drafted |
 | 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 5b ✅; paraphyly fixtures ✅ (9 permits, 3 lineages, monotonicity test); Phase 6 (plants) deferred |
 | 3  | FU-1 — Family/Genus catalog tiers     | Plan (archived) | [`plans/archive/fu-1-plan.md`](plans/archive/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 4  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |
