@@ -1307,3 +1307,18 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - `mo.violationNamesRemovingPrefix(...)` is the exact method name on `InvariantObservation` — confirmed against `InsectOrderTest`. If the local method is named `violationNamesRemovingPrefix` vs `invalidInvariantNamesRemovingPrefix`, match `InsectOrderTest` verbatim.
 - JTE import of a nested record (`CladesController.CladeNode`) requires the enclosing controller to be `public` — handled (CladesController is public, mirroring SearchController).
 ```
+
+---
+
+## Post-implementation follow-ups (2026-06-14)
+
+Surfaced during code review and the post-merge UI fixes. None block the feature; all are deferrable.
+
+1. **Editorial pass on authored concept prose.** The repository contract `TestEntitySourceTest.hasAtLeastFourEntities()` requires ≥4 entities, but the source note authored only two meta-concepts. Three more were authored to land the build — `taxonomy`, `taxonomic-rank`, `binomial-nomenclature` (in `domains/library/library-repository-test/src/main/resources/library/concepts.json`). These are Claude-authored four-level Durrell prose, **not the user's voice** — review/edit for tone and accuracy. Also decide whether to keep `taxonomic-rank` (overlaps the broader `taxonomy`) or trim to a tighter set (must stay ≥4).
+2. **Mirror new concepts into the source note.** `docs/notes/clade-assignment-investigation/clades-taxonomy-durrell.md` still documents only the original two concepts. If it remains the authoring source of truth, add the three new ones so the prose and `concepts.json` stay in sync (per that note's own single-source principle).
+3. **Remove dead `BreadcrumbSegment.text(...)`.** `domains/insects/insects-console/src/main/java/com/naturalist/insects/console/BreadcrumbSegment.java` — the `text(...)` factories became unused repo-wide once `InsectsController.cladePrefix()` switched to always emit `BreadcrumbSegment.link(...)` (commit `21c2fc5`). Verify with `git grep "BreadcrumbSegment.text"` and remove. (A background-task chip was raised, but chips are not durable.)
+4. **Mobile primary-nav is non-functional (pre-existing; not introduced here).** `naturalist.css` styles `.primary-nav` as a `<details>` hamburger (`.primary-nav-toggle`, `.primary-nav[open]`, `.primary-nav:not([open]) .primary-nav-links { display:none !important }`), but `layout/page.jte` uses a plain `<nav>` with no toggle `<summary>`. Below 720px the links get `display:none` with no working toggle, so the nav disappears. Either add the `<details>` + `.primary-nav-toggle` summary the CSS expects, or drop the hamburger CSS and let the links wrap. Surfaced while inlining the Tree of Life / Concepts links (commit `5ee23a6`).
+
+Already captured elsewhere (no new tracking needed):
+- **Deferred non-goals** — clade→trait display on clade pages, and concept search via the catalog kernel — remain documented in the design doc (`2026-06-13-clades-taxonomy-console-design.md`).
+- **`CladeCatalog.childrenOf` recomputes `all()` per call** (O(N²) to render the whole tree) — noted in review as fine at the current low-hundreds permit scale; revisit only if a consumer renders very large trees.
