@@ -34,6 +34,7 @@
                 <li><a href="/plants">Plants</a></li>
                 <li><a href="/clades">Tree of Life</a></li>
                 <li><a href="/concepts">Concepts</a></li>
+                <li><a href="/citations">Citations</a></li>
             </ul>
         </nav>
     </div>

@@ -14,10 +14,14 @@ import com.naturalist.data.NaturalistDatabase;
 public class LibraryTestContext {
 
     private final ConceptQuery conceptQuery;
+    private final CitationQuery citationQuery;
 
     private LibraryTestContext(NaturalistDatabase db) {
-        ConceptRepository repository = new ConceptRepositoryMock(db);
-        this.conceptQuery = new ConceptQueryImpl(repository);
+        ConceptRepository conceptRepository = new ConceptRepositoryMock(db);
+        this.conceptQuery = new ConceptQueryImpl(conceptRepository);
+
+        CitationRepository citationRepository = new CitationRepositoryMock(db);
+        this.citationQuery = new CitationQueryImpl(citationRepository);
     }
 
     public static LibraryTestContext create(NaturalistDatabase db) {
@@ -26,5 +30,9 @@ public class LibraryTestContext {
 
     public ConceptQuery conceptQuery() {
         return conceptQuery;
+    }
+
+    public CitationQuery citationQuery() {
+        return citationQuery;
     }
 }
