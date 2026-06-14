@@ -138,10 +138,10 @@ public class InsectsController {
             "insecta", "Class");
 
     /**
-     * URL for clades that own a landing page in this console. Insecta points
-     * at the catalog root (the orders listing) so the breadcrumb's Insecta
-     * segment becomes a click-back-to-the-top affordance from anywhere in
-     * the insects domain. Clades without an entry render as plain text.
+     * URL overrides for clades that own a landing page elsewhere in this
+     * console. Insecta points at the catalog root (the orders listing) so its
+     * breadcrumb segment is a click-back-to-the-top affordance. Every other
+     * clade falls back to its tree-of-life page at {@code /clades/{slug}}.
      */
     private static final Map<String, String> CLADE_URL = Map.of(
             "insecta", "/insects/orders");
@@ -151,10 +151,8 @@ public class InsectsController {
                 .filter(c -> !(c instanceof Eukaryota))
                 .map(c -> {
                     String rank = CLADE_RANK_LABEL.get(c.slug());
-                    String url = CLADE_URL.get(c.slug());
-                    return url != null
-                            ? BreadcrumbSegment.link(c.displayName(), url, rank)
-                            : BreadcrumbSegment.text(c.displayName(), rank);
+                    String url = CLADE_URL.getOrDefault(c.slug(), "/clades/" + c.slug());
+                    return BreadcrumbSegment.link(c.displayName(), url, rank);
                 })
                 .toList();
     }

@@ -36,9 +36,8 @@
                     <details>
                         <summary>More <span class="primary-nav-caret" aria-hidden="true">&#9662;</span></summary>
                         <ul class="primary-nav-overflow">
-                            <%-- Add overflow domain links here as the catalog grows.
-                                 Items appear inside a parchment popover; the
-                                 "More" disclosure auto-hides while this list is empty. --%>
+                            <li><a href="/clades">Tree of Life</a></li>
+                            <li><a href="/concepts">Concepts</a></li>
                         </ul>
                     </details>
                 </li>
