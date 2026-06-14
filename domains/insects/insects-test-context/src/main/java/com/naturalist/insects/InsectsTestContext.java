@@ -54,13 +54,14 @@ public class InsectsTestContext {
         LibraryTestContext libraryContext = LibraryTestContext.create(db);
         CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
         CitationQuery libraryCitationQuery = libraryContext.citationQuery();
+        this.insectLifeStageQuery = InsectLifeStageTestContext.createQuery(db);
         this.insectQuery = new InsectQueryImpl(
                 speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
-                orderQuery, citationAssociationQuery, libraryCitationQuery);
+                orderQuery, citationAssociationQuery, libraryCitationQuery,
+                this.insectLifeStageQuery);
         InsectCommand.SpeciesCommand speciesCommand = new SpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new ImageCommandImpl(repository.imageRepository);
         this.insectCommand = new InsectCommandImpl(speciesCommand, imageCommand);
-        this.insectLifeStageQuery = InsectLifeStageTestContext.createQuery(db);
     }
 
     public static InsectsTestContext create(NaturalistDatabase db) {

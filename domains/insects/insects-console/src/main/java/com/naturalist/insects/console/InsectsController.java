@@ -256,12 +256,13 @@ public class InsectsController {
     @GetMapping("/families/{name}")
     String familyDetail(@PathVariable String name, Model model) {
         var familyName = InsectFamilyName.of(name);
-        var family = insectQuery.families().getByName(familyName);
-        if (family.isEmpty()) {
+        var insect = insectQuery.getByName(familyName);
+        if (insect.isEmpty()) {
             return "redirect:/insects/families";
         }
-        InsectOrder order = insectQuery.orders().getByName(family.get().orderName()).orElseThrow();
-        var description = family.get().description();
+        InsectFamily family = insect.get().family().family();
+        InsectOrder order = insect.get().order().order();
+        var description = family.description();
         var genera = insectQuery.genera().forFamilyName(familyName).stream()
                 .sorted(Comparator.comparing(g -> g.name().value()))
                 .toList();
@@ -270,15 +271,16 @@ public class InsectsController {
             imagesByGenus.put(g.name(), imagesForGenus(g.name()));
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByGenus);
-        model.addAttribute("family", family.get());
+        model.addAttribute("family", family);
         model.addAttribute("order", order);
         model.addAttribute("genera", genera);
         model.addAttribute("gallery", gallery);
+        model.addAttribute("citations", insect.get().citations());
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
-        model.addAttribute("breadcrumb", breadcrumbToFamily(family.get(), order));
+        model.addAttribute("breadcrumb", breadcrumbToFamily(family, order));
         model.addAttribute("ancestorIntros", introsForFamily(order));
         return "insects/family";
     }
@@ -302,11 +304,12 @@ public class InsectsController {
     @GetMapping("/orders/{name}")
     String orderDetail(@PathVariable String name, Model model) {
         var orderName = InsectOrderName.of(name);
-        var order = insectQuery.orders().getByName(orderName);
-        if (order.isEmpty()) {
+        var insect = insectQuery.getByName(orderName);
+        if (insect.isEmpty()) {
             return "redirect:/insects/orders";
         }
-        var description = order.get().description();
+        InsectOrder order = insect.get().order().order();
+        var description = order.description();
         var families = insectQuery.families().forOrderName(orderName).stream()
                 .sorted(Comparator.comparing(f -> f.name().value()))
                 .toList();
@@ -315,14 +318,15 @@ public class InsectsController {
             imagesByFamily.put(f.name(), imagesForFamily(f.name()));
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByFamily);
-        model.addAttribute("order", order.get());
+        model.addAttribute("order", order);
         model.addAttribute("families", families);
         model.addAttribute("gallery", gallery);
+        model.addAttribute("citations", insect.get().citations());
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
-        model.addAttribute("breadcrumb", breadcrumbToOrder(order.get()));
+        model.addAttribute("breadcrumb", breadcrumbToOrder(order));
         model.addAttribute("ancestorIntros", classOnlyIntros());
         return "insects/order";
     }
@@ -352,13 +356,14 @@ public class InsectsController {
     @GetMapping("/genera/{name}")
     String genusDetail(@PathVariable String name, Model model) {
         var genusName = InsectGenusName.of(name);
-        var genus = insectQuery.genera().getByName(genusName);
-        if (genus.isEmpty()) {
+        var insect = insectQuery.getByName(genusName);
+        if (insect.isEmpty()) {
             return "redirect:/insects/genera";
         }
-        InsectFamily family = insectQuery.families().getByName(genus.get().familyName()).orElseThrow();
-        InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
-        var description = genus.get().description();
+        InsectGenus genus = insect.get().genus().genus();
+        InsectFamily family = insect.get().family().family();
+        InsectOrder order = insect.get().order().order();
+        var description = genus.description();
         var members = insectQuery.species()
                 .forGenusName(genusName)
                 .stream()
@@ -370,16 +375,17 @@ public class InsectsController {
                     insectQuery.images().forParentName(s.name()).stream().toList());
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesBySpecies);
-        model.addAttribute("genus", genus.get());
+        model.addAttribute("genus", genus);
         model.addAttribute("family", family);
         model.addAttribute("order", order);
         model.addAttribute("species", members);
         model.addAttribute("gallery", gallery);
+        model.addAttribute("citations", insect.get().citations());
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
-        model.addAttribute("breadcrumb", breadcrumbToGenus(genus.get(), family, order));
+        model.addAttribute("breadcrumb", breadcrumbToGenus(genus, family, order));
         model.addAttribute("ancestorIntros", introsForGenus(order, family));
         return "insects/genus";
     }
@@ -406,25 +412,25 @@ public class InsectsController {
     @GetMapping("/{name}")
     String detail(@PathVariable String name, HttpServletRequest request, Model model) {
         var speciesName = InsectSpeciesName.of(name);
-        var species = insectQuery.species().getByName(speciesName);
-        if (species.isEmpty()) {
+        var insect = insectQuery.getByName(speciesName);
+        if (insect.isEmpty()) {
             return "redirect:/insects";
         }
-        InsectSpecies s = species.get();
-        InsectGenus genus = insectQuery.genera().getByName(s.genusName()).orElseThrow();
-        InsectFamily family = insectQuery.families().getByName(genus.familyName()).orElseThrow();
-        InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
-        InsectEntityCollections.ImageCollection images = insectQuery.images().forParentName(speciesName);
-        List<LifeStage> stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
-                .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
-                .toList();
+        Insect i = insect.get();
+        InsectSpecies s = i.species().species();
+        InsectGenus genus = i.genus().genus();
+        InsectFamily family = i.family().family();
+        InsectOrder order = i.order().order();
         var description = s.description();
         model.addAttribute("species", s);
         model.addAttribute("genus", genus);
         model.addAttribute("family", family);
         model.addAttribute("order", order);
-        model.addAttribute("stages", stages);
-        model.addAttribute("images", images.stream().toList());
+        model.addAttribute("stages", i.lifeStages().stream()
+                .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
+                .toList());
+        model.addAttribute("images", i.observations().stream().toList());
+        model.addAttribute("citations", i.citations());
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));

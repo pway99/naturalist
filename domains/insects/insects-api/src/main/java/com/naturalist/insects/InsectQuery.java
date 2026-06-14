@@ -61,6 +61,15 @@ public interface InsectQuery {
 
     CitationQuery citations();
 
+    /**
+     * Assembles the full {@link Insect} read model rooted at the given rank name.
+     * Resolves the rank chain from the given name up to the order, fetches images,
+     * life stages, and citations, then returns the composed result. Returns
+     * {@link Optional#empty()} when no entity exists at the given name, or when
+     * the name is an {@link InsectSubspeciesName} (no subspecies entity exists yet).
+     */
+    Optional<Insect> getByName(InsectRankName name);
+
     interface TaxonViewQuery {
 
         /**

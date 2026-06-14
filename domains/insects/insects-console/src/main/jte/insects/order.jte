@@ -1,3 +1,4 @@
+@import com.naturalist.insects.InsectCitationView
 @import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectOrder
@@ -7,6 +8,7 @@
 
 @param InsectOrder order
 @param List<InsectFamily> families
+@param InsectCitationView citations = null
 @param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
@@ -28,6 +30,8 @@
         elementary = descriptionElementary,
         secondary = descriptionSecondary,
         university = descriptionUniversity)
+
+    @template.insects.citations(citations = citations)
 
     <section>
         <h2>Families in this order</h2>

@@ -81,7 +81,7 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
             if (citation != null) {
                 citations.add(new InsectCitationView.RankedCitation(citation, p.attachedAt(), p.note()));
             } else {
-                observer.forMethod("findByRankName").value(p.citationName().value(), "unresolvedCitationName").observe(Level.WARN);
+                observer.forMethod("findByRankName").entityName(p.citationName(), "unresolvedCitationName").observe(Level.WARN);
             }
         }
 

@@ -1,3 +1,4 @@
+@import com.naturalist.insects.InsectCitationView
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectFunctionalRole
 @import com.naturalist.insects.InsectGenus
@@ -16,6 +17,7 @@
 @param List<InsectImage> images
 @param List<LifeStage> stages = List.of()
 @param InsectFunctionalRole role = null
+@param InsectCitationView citations = null
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -189,5 +191,7 @@
             @endif
         </section>
     @endif
+
+    @template.insects.citations(citations = citations)
 
 `)

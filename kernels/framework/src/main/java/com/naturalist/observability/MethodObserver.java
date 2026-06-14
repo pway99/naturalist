@@ -1,5 +1,6 @@
 package com.naturalist.observability;
 
+import com.naturalist.ddd.EntityName;
 import com.naturalist.ddd.Named;
 
 import java.util.LinkedHashSet;
@@ -43,6 +44,18 @@ public class MethodObserver {
 
     public String observationPoint() {
         return referenceClass.getSimpleName() + "." + methodName;
+    }
+
+    /**
+     * Observe an {@link EntityName} within this method scope. Validates the name's
+     * kebab-case format and length constraints. Returns an {@link InvariantObservation}
+     * the caller can inspect or observe.
+     */
+    public <E extends EntityName> InvariantObservation entityName(E name, String label) {
+        String scope = referenceClass.getSimpleName() + "." + methodName + "." + label;
+        Constraints accumulator = new Constraints();
+        accumulator.entityName(name, label);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
     }
 
     /**

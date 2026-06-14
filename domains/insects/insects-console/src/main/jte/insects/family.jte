@@ -1,3 +1,4 @@
+@import com.naturalist.insects.InsectCitationView
 @import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectGenus
@@ -9,6 +10,7 @@
 @param InsectFamily family
 @param InsectOrder order
 @param List<InsectGenus> genera
+@param InsectCitationView citations = null
 @param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
@@ -30,6 +32,8 @@
         elementary = descriptionElementary,
         secondary = descriptionSecondary,
         university = descriptionUniversity)
+
+    @template.insects.citations(citations = citations)
 
     <section>
         <h2>Genera in this family</h2>

@@ -1,9 +1,17 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.insects.lifestage.InsectLifeStageQuery;
+import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
+import com.naturalist.insects.lifestage.LifeStage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -60,9 +68,35 @@ class InsectQueryImplTest {
                             java.util.List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
                 }
             };
+    InsectLifeStageQuery insectLifeStageQuery = new InsectLifeStageQuery() {
+        @Override
+        public LifeStageEntityQuery lifeStages() {
+            return new LifeStageEntityQuery() {
+                @Override
+                public LifeStageCollection forParentName(InsectRankName parentName) {
+                    return LifeStageCollection.empty();
+                }
+
+                @Override
+                public Optional<LifeStage> getByName(com.naturalist.insects.LifeStageName name) {
+                    return Optional.empty();
+                }
+
+                @Override
+                public LifeStageCollection findByNameSet(Set<com.naturalist.insects.LifeStageName> names) {
+                    return LifeStageCollection.empty();
+                }
+
+                @Override
+                public Page<LifeStage> findPage(PageRequest pageRequest) {
+                    return new Page<>(java.util.List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
+                }
+            };
+        }
+    };
     InsectQuery insectQuery = new InsectQueryImpl(
             speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
-            orderQuery, citationAssociationQuery, libraryCitationQuery);
+            orderQuery, citationAssociationQuery, libraryCitationQuery, insectLifeStageQuery);
 
     @Test
     void accessors_returnNonNullDelegates() {
@@ -90,42 +124,42 @@ class InsectQueryImplTest {
 
     @Test
     void constructor_rejectsNullSpeciesQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery, insectLifeStageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery");
     }
 
     @Test
     void constructor_rejectsNullImageQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery, insectLifeStageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("imageQuery");
     }
 
     @Test
     void constructor_rejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, null, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, null, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery, insectLifeStageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("familyQuery");
     }
 
     @Test
     void constructor_rejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, null, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, null, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery, insectLifeStageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("genusQuery");
     }
 
     @Test
     void constructor_rejectsNullFunctionalRoleQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, null, orderQuery, citationAssociationQuery, libraryCitationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, null, orderQuery, citationAssociationQuery, libraryCitationQuery, insectLifeStageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("functionalRoleQuery");
     }
 
     @Test
     void constructor_rejectsNullOrderQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery, null, citationAssociationQuery, libraryCitationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery, null, citationAssociationQuery, libraryCitationQuery, insectLifeStageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("orderQuery");
     }
@@ -134,7 +168,7 @@ class InsectQueryImplTest {
     void constructor_rejectsNullCitationAssociationQuery() {
         assertThatThrownBy(() -> new InsectQueryImpl(
                 speciesQuery, imageQuery, familyQuery, genusQuery,
-                functionalRoleQuery, orderQuery, null, libraryCitationQuery))
+                functionalRoleQuery, orderQuery, null, libraryCitationQuery, insectLifeStageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("citationAssociationQuery");
     }
@@ -143,17 +177,37 @@ class InsectQueryImplTest {
     void constructor_rejectsNullLibraryCitationQuery() {
         assertThatThrownBy(() -> new InsectQueryImpl(
                 speciesQuery, imageQuery, familyQuery, genusQuery,
-                functionalRoleQuery, orderQuery, citationAssociationQuery, null))
+                functionalRoleQuery, orderQuery, citationAssociationQuery, null, insectLifeStageQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("libraryCitationQuery");
     }
 
     @Test
+    void constructor_rejectsNullInsectLifeStageQuery() {
+        assertThatThrownBy(() -> new InsectQueryImpl(
+                speciesQuery, imageQuery, familyQuery, genusQuery,
+                functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("insectLifeStageQuery");
+    }
+
+    @Test
     void constructor_collectsAllViolationsInSinglePass() {
-        assertThatThrownBy(() -> new InsectQueryImpl(null, null, null, null, null, null, null, null))
+        assertThatThrownBy(() -> new InsectQueryImpl(null, null, null, null, null, null, null, null, null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery", "imageQuery", "familyQuery",
                         "genusQuery", "functionalRoleQuery", "orderQuery",
-                        "citationAssociationQuery", "libraryCitationQuery");
+                        "citationAssociationQuery", "libraryCitationQuery", "insectLifeStageQuery");
+    }
+
+    @Test
+    void getByName_delegatesToFactory() {
+        Optional<Insect> result = insectQuery.getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+        assertThat(result).isPresent();
+        Insect insect = result.get();
+        assertThat(insect.speciesName()).hasValue(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+        assertThat(insect.genusName()).isPresent();
+        assertThat(insect.familyName()).isPresent();
+        assertThat(insect.orderName()).isPresent();
     }
 }
