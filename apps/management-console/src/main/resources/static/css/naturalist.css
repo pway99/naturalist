@@ -261,6 +261,10 @@ main {
     list-style: none;
     margin: 0;
     padding: 0.35rem 0;
+    /* Force a vertical menu — override Pico's base `nav ul { display: flex }`
+       and `nav li { display: inline-block }`, which otherwise lay the links
+       out in a row inside the popover. */
+    display: block !important;
     position: absolute;
     top: calc(100% + 0.25rem);
     left: 0;
@@ -273,6 +277,7 @@ main {
 }
 
 .primary-nav-overflow > li {
+    display: block;
     margin: 0;
     padding: 0;
 }
