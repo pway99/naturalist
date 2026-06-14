@@ -18,6 +18,8 @@ a row.
 
 | Plan                                                                   | Status                                 | Scope                                                                                                                                                              |
 |------------------------------------------------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [2026-06-13-clades-taxonomy-console-design.md](2026-06-13-clades-taxonomy-console-design.md) | active — in progress (other session) | Clade browser + concept pages + cross-links on insects console pages. |
+| [2026-06-13-clades-taxonomy-console-plan.md](2026-06-13-clades-taxonomy-console-plan.md) | active — in progress (other session) | Implementation plan for clades/taxonomy console teaching surface. |
 | [admin-console.md](admin-console.md)                                   | active — view 4+ pending               | Secure `/admin/**` surface in `apps/management-console`. Views 1–3 (`resilience`, `domain-services`, `catalog`) shipped.                                           |
 | [catalog-kernel.md](catalog-kernel.md)                                 | active — M9b / M10 / M11 / M12 pending | Cross-domain reference resolution kernel. Search + inverse-routing + URL-linker SPIs. The 2026-04-29 search-and-discovery redirect is folded into this single doc. |
 | [clades-kernel.md](clades-kernel.md)                                   | active — Phases 1–5 ✅; Phase 6 plants deferred | Curated evolutionary tree of life as a sealed-type vocabulary kernel. Phase slice plans archived under [`archive/clades-kernel/`](archive/clades-kernel/). |
@@ -67,6 +69,7 @@ not loaded by default.
 | [archive/2026-06-09-external-authority-phase1-implementation.md](archive/2026-06-09-external-authority-phase1-implementation.md) | 2026-06-09 | Implementation plan for external-authority Phase 1: `AuthorityReference`, `AuthoritySource`, `ExternalAuthority` port, `EolPageId`, EOL mock client. |
 | [archive/2026-06-13-citation-and-library-design.md](archive/2026-06-13-citation-and-library-design.md) | 2026-06-13 | Design spec for `Citation` sealed NamedEntity in `kernels/authority` + `domains/library` domain stack. Naming: `kernels/bibliography` → `kernels/authority`, `LiteratureReference` → `Citation`. |
 | [archive/2026-06-13-citation-and-library-plan.md](archive/2026-06-13-citation-and-library-plan.md) | 2026-06-13 | Implementation plan for citation + library: 11 tasks covering kernel types, domain scaffolding, repository stack, EOL factory, docs. |
+| [archive/2026-06-13-paraphyly-fixtures.md](archive/2026-06-13-paraphyly-fixtures.md) | 2026-06-13 | Paraphyly teaching-exemplar fixtures: 9 clade permits, 3 lineages (Drosophila genus paraphyly, Blattodea/termites, bees-in-wasps), monotonicity acceptance test, EOL citations. |
 
 ## Where else to look
 

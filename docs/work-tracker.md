@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-06-13 (Citation + Library — `Citation` sealed NamedEntity in `kernels/authority`, `domains/library` domain stack, `Eol.citation()` factory.)
+Last updated: 2026-06-13 (Paraphyly fixtures — 9 clade permits, 3 teaching-exemplar lineages, monotonicity acceptance test, EOL citations.)
 
 ---
 
@@ -17,7 +17,7 @@ Last updated: 2026-06-13 (Citation + Library — `Citation` sealed NamedEntity i
 
 ## Current slice
 
-*None active.*
+**Clades & taxonomy console teaching surface** — in progress (other session). Concept pages, clade browser, cross-links from insect pages. Design + plan: [`plans/2026-06-13-clades-taxonomy-console-design.md`](plans/2026-06-13-clades-taxonomy-console-design.md), [`plans/2026-06-13-clades-taxonomy-console-plan.md`](plans/2026-06-13-clades-taxonomy-console-plan.md).
 
 **Candidate next slices** (lead first):
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
@@ -33,6 +33,7 @@ Last updated: 2026-06-13 (Citation + Library — `Citation` sealed NamedEntity i
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Paraphyly fixtures — 9 clade permits (Papilionoidea, Troidini, Drosophilinae, Sophophora, DrosophilaSensuStricto, Blattodea, Termitoidae, Apoidea, Anthophila); 3 teaching-exemplar lineages; Blattodea→Hemimetabolous trait; monotonicity acceptance test (21 tests); 11 EOL citations | 2026-06-13 | [`plans/archive/2026-06-13-paraphyly-fixtures.md`](plans/archive/2026-06-13-paraphyly-fixtures.md) | `9fbed25`    |
 | Citation + Library — `Citation` sealed NamedEntity (+ `OnlineSource` permit) in `kernels/authority`; `domains/library` domain stack (repository, mock, contract tests, query); `Eol.citation()` factory | 2026-06-13 | [`plans/archive/2026-06-13-citation-and-library-design.md`](plans/archive/2026-06-13-citation-and-library-design.md) | `16615a6`    |
 | ReadModel kernel type — 6th identity-model marker; insect read-models retyped + renamed `*Aggregate`→`*View`/`InsectTaxonView`, `insect()`→`taxonView()` | 2026-06-07 | [`plans/archive/2026-06-07-readmodel-kernel-type-design.md`](plans/archive/2026-06-07-readmodel-kernel-type-design.md) | `abf5345` (+ docs) |
 | Insect rank-FK normalization — parent-only FKs (R8), trimmed `Insect` invariants (R1), typed `LifeStage.parentName` (R6); resolves PL-12 | 2026-06-07 | [`plans/archive/2026-06-07-insect-rank-fk-normalization-design.md`](plans/archive/2026-06-07-insect-rank-fk-normalization-design.md) | `730a218`    |
@@ -65,7 +66,7 @@ Last updated: 2026-06-13 (Citation + Library — `Citation` sealed NamedEntity i
 | #  | Effort                                | Type           | Source                                                                            |
 |----|---------------------------------------|----------------|-----------------------------------------------------------------------------------|
 | 1  | Identification roadmap                | Plan (sketch)  | [`plans/identification.md`](plans/identification.md) — Phase 0 ✅; **Phase 1** (external-authority seam) ✅; **Phase 2** citation/library landed (naming: `kernels/bibliography`→`kernels/authority`, `LiteratureReference`→`Citation`, domain is `domains/library`); consumer wiring next |
-| 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 5b (inline removal + resolver walk-up) ✅ — PRs 1+2 landed, PR 3 cancelled (moved to [`plans/insect-aggregate.md`](plans/insect-aggregate.md)); Phase 6 (plants) deferred |
+| 2  | Clades kernel + life-stage refactor   | Plan (sketch)  | [`plans/clades-kernel.md`](plans/clades-kernel.md) — Phases 1–5 ✅; Phase 5b ✅; paraphyly fixtures ✅ (9 permits, 3 lineages, monotonicity test); Phase 6 (plants) deferred |
 | 3  | FU-1 — Family/Genus catalog tiers     | Plan (archived) | [`plans/archive/fu-1-plan.md`](plans/archive/fu-1-plan.md) (PR-1 / PR-2a–e ✅; PR-2f / PR-2g / PR-3 folded into the identification roadmap) |
 | 4  | Catalog kernel — M9b/M10/M11/M12      | Plan           | [`plans/catalog-kernel.md`](plans/catalog-kernel.md)                              |
 | 5  | Command framework — follow-ups        | Plan           | [`plans/command-framework.md`](plans/command-framework.md)                        |
