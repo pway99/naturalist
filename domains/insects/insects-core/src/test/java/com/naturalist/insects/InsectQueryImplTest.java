@@ -39,9 +39,30 @@ class InsectQueryImplTest {
                     return com.naturalist.library.CitationAssociationCollection.empty();
                 }
             };
+    com.naturalist.library.CitationQuery libraryCitationQuery =
+            new com.naturalist.library.CitationQuery() {
+                @Override
+                public java.util.Optional<com.naturalist.authority.Citation> getByName(
+                        com.naturalist.authority.CitationName name) {
+                    return java.util.Optional.empty();
+                }
+
+                @Override
+                public com.naturalist.library.CitationCollection findByNameSet(
+                        java.util.Set<com.naturalist.authority.CitationName> nameSet) {
+                    return com.naturalist.library.CitationCollection.empty();
+                }
+
+                @Override
+                public com.naturalist.data.Page<com.naturalist.authority.Citation> findPage(
+                        com.naturalist.data.PageRequest pageRequest) {
+                    return new com.naturalist.data.Page<>(
+                            java.util.List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
+                }
+            };
     InsectQuery insectQuery = new InsectQueryImpl(
             speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
-            orderQuery, citationAssociationQuery);
+            orderQuery, citationAssociationQuery, libraryCitationQuery);
 
     @Test
     void accessors_returnNonNullDelegates() {
@@ -69,42 +90,42 @@ class InsectQueryImplTest {
 
     @Test
     void constructor_rejectsNullSpeciesQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(null, imageQuery, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery");
     }
 
     @Test
     void constructor_rejectsNullImageQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, null, familyQuery, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("imageQuery");
     }
 
     @Test
     void constructor_rejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, null, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, null, genusQuery, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("familyQuery");
     }
 
     @Test
     void constructor_rejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, null, functionalRoleQuery, orderQuery, citationAssociationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, null, functionalRoleQuery, orderQuery, citationAssociationQuery, libraryCitationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("genusQuery");
     }
 
     @Test
     void constructor_rejectsNullFunctionalRoleQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, null, orderQuery, citationAssociationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, null, orderQuery, citationAssociationQuery, libraryCitationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("functionalRoleQuery");
     }
 
     @Test
     void constructor_rejectsNullOrderQuery() {
-        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery, null, citationAssociationQuery))
+        assertThatThrownBy(() -> new InsectQueryImpl(speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery, null, citationAssociationQuery, libraryCitationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("orderQuery");
     }
@@ -113,17 +134,26 @@ class InsectQueryImplTest {
     void constructor_rejectsNullCitationAssociationQuery() {
         assertThatThrownBy(() -> new InsectQueryImpl(
                 speciesQuery, imageQuery, familyQuery, genusQuery,
-                functionalRoleQuery, orderQuery, null))
+                functionalRoleQuery, orderQuery, null, libraryCitationQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("citationAssociationQuery");
     }
 
     @Test
+    void constructor_rejectsNullLibraryCitationQuery() {
+        assertThatThrownBy(() -> new InsectQueryImpl(
+                speciesQuery, imageQuery, familyQuery, genusQuery,
+                functionalRoleQuery, orderQuery, citationAssociationQuery, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("libraryCitationQuery");
+    }
+
+    @Test
     void constructor_collectsAllViolationsInSinglePass() {
-        assertThatThrownBy(() -> new InsectQueryImpl(null, null, null, null, null, null, null))
+        assertThatThrownBy(() -> new InsectQueryImpl(null, null, null, null, null, null, null, null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContainingAll("speciesQuery", "imageQuery", "familyQuery",
                         "genusQuery", "functionalRoleQuery", "orderQuery",
-                        "citationAssociationQuery");
+                        "citationAssociationQuery", "libraryCitationQuery");
     }
 }

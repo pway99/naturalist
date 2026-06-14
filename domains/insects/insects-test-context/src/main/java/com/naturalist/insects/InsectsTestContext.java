@@ -4,6 +4,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.insects.lifestage.InsectLifeStageTestContext;
 import com.naturalist.library.CitationAssociationQuery;
+import com.naturalist.library.CitationQuery;
 import com.naturalist.library.LibraryTestContext;
 
 /**
@@ -50,11 +51,12 @@ public class InsectsTestContext {
         InsectQuery.FunctionalRoleQuery functionalRoleQuery =
                 new FunctionalRoleQueryImpl(repository.functionalRoleRepository);
         InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(repository.orderRepository);
-        CitationAssociationQuery citationAssociationQuery =
-                LibraryTestContext.create(db).citationAssociationQuery();
+        LibraryTestContext libraryContext = LibraryTestContext.create(db);
+        CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
+        CitationQuery libraryCitationQuery = libraryContext.citationQuery();
         this.insectQuery = new InsectQueryImpl(
                 speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
-                orderQuery, citationAssociationQuery);
+                orderQuery, citationAssociationQuery, libraryCitationQuery);
         InsectCommand.SpeciesCommand speciesCommand = new SpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new ImageCommandImpl(repository.imageRepository);
         this.insectCommand = new InsectCommandImpl(speciesCommand, imageCommand);

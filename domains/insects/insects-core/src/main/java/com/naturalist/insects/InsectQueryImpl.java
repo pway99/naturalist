@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.library.CitationAssociationQuery;
+import com.naturalist.library.CitationQuery;
 import com.naturalist.observability.Observer;
 
 class InsectQueryImpl implements InsectQuery {
@@ -20,7 +21,8 @@ class InsectQueryImpl implements InsectQuery {
                     GenusQuery genusQuery,
                     FunctionalRoleQuery functionalRoleQuery,
                     OrderQuery orderQuery,
-                    CitationAssociationQuery citationAssociationQuery) {
+                    CitationAssociationQuery citationAssociationQuery,
+                    CitationQuery libraryCitationQuery) {
         Observer.forClass(InsectQueryImpl.class).arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
@@ -28,7 +30,8 @@ class InsectQueryImpl implements InsectQuery {
                         .notNull(genusQuery, "genusQuery")
                         .notNull(functionalRoleQuery, "functionalRoleQuery")
                         .notNull(orderQuery, "orderQuery")
-                        .notNull(citationAssociationQuery, "citationAssociationQuery"))
+                        .notNull(citationAssociationQuery, "citationAssociationQuery")
+                        .notNull(libraryCitationQuery, "libraryCitationQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
@@ -40,7 +43,7 @@ class InsectQueryImpl implements InsectQuery {
                 new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
         this.taxonViewQuery = new TaxonViewQueryImpl(factory);
         this.citationQuery = new InsectCitationQueryImpl(
-                citationAssociationQuery, speciesQuery, genusQuery, familyQuery);
+                citationAssociationQuery, libraryCitationQuery, speciesQuery, genusQuery, familyQuery);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.library.CitationAssociationQuery;
+import com.naturalist.library.CitationQuery;
 import com.naturalist.library.LibraryTestContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -23,27 +24,28 @@ class InsectCitationQueryImplTest {
     InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
 
-    CitationAssociationQuery citationAssociationQuery =
-            LibraryTestContext.create(db).citationAssociationQuery();
+    LibraryTestContext libraryContext = LibraryTestContext.create(db);
+    CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
+    CitationQuery citationQuery = libraryContext.citationQuery();
 
-    InsectCitationQueryImpl citationQuery = new InsectCitationQueryImpl(
-            citationAssociationQuery, speciesQuery, genusQuery, familyQuery);
+    InsectCitationQueryImpl insectCitationQuery = new InsectCitationQueryImpl(
+            citationAssociationQuery, citationQuery, speciesQuery, genusQuery, familyQuery);
 
     @Test
     void findByRankName_rejectsNull() {
-        assertThatThrownBy(() -> citationQuery.findByRankName(null))
+        assertThatThrownBy(() -> insectCitationQuery.findByRankName(null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("rankName");
     }
 
     @Test
     void findByRankName_orderWithCitation_returnsCitation() {
-        InsectCitationView view = citationQuery.findByRankName(
+        InsectCitationView view = insectCitationQuery.findByRankName(
                 InsectOrderName.of("lepidoptera"));
 
         assertThat(view.subject().value()).isEqualTo("lepidoptera");
         assertThat(view.citations()).hasSize(1);
-        assertThat(view.citations().getFirst().citationName().value())
+        assertThat(view.citations().getFirst().citation().name().value())
                 .isEqualTo("eol-battus-philenor-130502");
         assertThat(view.citations().getFirst().attachedAt().value())
                 .isEqualTo("lepidoptera");
@@ -51,7 +53,7 @@ class InsectCitationQueryImplTest {
 
     @Test
     void findByRankName_familyInheritsFromOrder() {
-        InsectCitationView view = citationQuery.findByRankName(
+        InsectCitationView view = insectCitationQuery.findByRankName(
                 InsectFamilyName.of("papilionidae"));
 
         assertThat(view.subject().value()).isEqualTo("papilionidae");
@@ -63,7 +65,7 @@ class InsectCitationQueryImplTest {
 
     @Test
     void findByRankName_speciesInheritsFullChain() {
-        InsectCitationView view = citationQuery.findByRankName(
+        InsectCitationView view = insectCitationQuery.findByRankName(
                 InsectSpeciesName.of("battus-philenor"));
 
         assertThat(view.subject().value()).isEqualTo("battus-philenor");
@@ -76,7 +78,7 @@ class InsectCitationQueryImplTest {
     @Test
     void findByRankName_orderWithNoCitations_returnsEmpty() {
         // Use an order with no citation associations
-        InsectCitationView view = citationQuery.findByRankName(
+        InsectCitationView view = insectCitationQuery.findByRankName(
                 InsectOrderName.of("coleoptera"));
 
         assertThat(view.citations()).isEmpty();
