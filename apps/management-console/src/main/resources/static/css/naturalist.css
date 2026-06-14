@@ -211,8 +211,7 @@ main {
     padding: 0;
 }
 
-.primary-nav-links a,
-.primary-nav-links > li > details > summary {
+.primary-nav-links a {
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
@@ -230,98 +229,9 @@ main {
     transition: background-color 0.12s ease, color 0.12s ease;
 }
 
-/* Kill the native <details> disclosure triangle — we render our own
-   .primary-nav-caret. list-style:none handles Firefox; the marker pseudos
-   handle Chrome/Safari. !important guards against UA specificity. This was
-   never visible until the populated "More" overflow first revealed the
-   summary. */
-.primary-nav-links > li > details > summary {
-    list-style: none !important;
-}
-
-.primary-nav-links > li > details > summary::-webkit-details-marker,
-.primary-nav-links > li > details > summary::marker {
-    display: none !important;
-    content: '' !important;
-}
-
-.primary-nav-links a:hover,
-.primary-nav-links > li > details > summary:hover {
+.primary-nav-links a:hover {
     background: var(--parchment-deep);
     color: var(--sepia-ink) !important;
-}
-
-/* "More ▾" overflow disclosure — a parchment popover sitting below the
-   summary. Auto-hides while no overflow links have been added. */
-.primary-nav-more {
-    position: relative;
-    /* "More" is a <details>/<summary>, not a plain <a>. A <details> is a
-       block box by default, so its summary floats above the inline-flex link
-       siblings. Pin the item and its <details> to the same centered inline-flex
-       box so the summary shares the row's vertical centre. */
-    display: inline-flex;
-    align-items: center;
-}
-
-.primary-nav-more > details {
-    display: inline-flex;
-    align-items: center;
-}
-
-.primary-nav-more details[open] > summary {
-    background: var(--parchment-deep);
-}
-
-.primary-nav-caret {
-    font-size: 0.8em;
-    line-height: 1;
-}
-
-.primary-nav-overflow {
-    list-style: none;
-    margin: 0;
-    padding: 0.35rem 0;
-    /* Force a vertical menu — override Pico's base `nav ul { display: flex }`
-       and `nav li { display: inline-block }`, which otherwise lay the links
-       out in a row inside the popover. */
-    display: block !important;
-    position: absolute;
-    top: calc(100% + 0.25rem);
-    left: 0;
-    min-width: 12rem;
-    background: var(--parchment);
-    border: 1px solid var(--sepia-rule);
-    border-radius: 0.25rem;
-    box-shadow: var(--plate-shadow);
-    z-index: 30;
-}
-
-.primary-nav-overflow > li {
-    display: block;
-    margin: 0;
-    padding: 0;
-}
-
-.primary-nav-overflow a {
-    display: block;
-    padding: 0.4rem 0.85rem;
-    color: var(--sepia-ink) !important;
-    font-family: 'Georgia', 'Cambria', serif;
-    font-style: italic;
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 0;
-}
-
-.primary-nav-overflow a:hover {
-    background: var(--parchment-deep);
-}
-
-/* Hide the entire "More ▾" disclosure while the overflow list has no items.
-   :has() is supported in all current evergreen browsers. Using :not(:has(li))
-   instead of :empty so template whitespace inside the <ul> doesn't keep it visible. */
-.primary-nav-more:not(:has(.primary-nav-overflow > li)) {
-    display: none;
 }
 
 /* Narrow viewports — flip on the hamburger and collapse links vertically.
@@ -375,22 +285,9 @@ main {
         gap: 0.1rem;
     }
 
-    .primary-nav-links a,
-    .primary-nav-links > li > details > summary {
+    .primary-nav-links a {
         width: 100%;
         justify-content: flex-start;
-    }
-
-    .primary-nav-more {
-        width: 100%;
-    }
-
-    .primary-nav-overflow {
-        position: static;
-        box-shadow: none;
-        border: none;
-        background: transparent;
-        padding-left: 1rem;
     }
 }
 

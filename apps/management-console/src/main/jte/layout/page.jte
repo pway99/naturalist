@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=18">
+    <link rel="stylesheet" href="/css/naturalist.css?v=19">
     <script src="/js/htmx.min.js" defer></script>
     <%-- Rotates stacked images on .card-image[data-rotate] tiles across all
          catalog cards. No-op on pages without rotating cards. --%>
@@ -32,15 +32,8 @@
                 <li><a href="/chemistry">Chemistry</a></li>
                 <li><a href="/insects">Insects</a></li>
                 <li><a href="/plants">Plants</a></li>
-                <li class="primary-nav-more">
-                    <details>
-                        <summary>More <span class="primary-nav-caret" aria-hidden="true">&#9662;</span></summary>
-                        <ul class="primary-nav-overflow">
-                            <li><a href="/clades">Tree of Life</a></li>
-                            <li><a href="/concepts">Concepts</a></li>
-                        </ul>
-                    </details>
-                </li>
+                <li><a href="/clades">Tree of Life</a></li>
+                <li><a href="/concepts">Concepts</a></li>
             </ul>
         </nav>
     </div>
