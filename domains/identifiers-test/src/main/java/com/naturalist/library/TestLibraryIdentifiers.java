@@ -38,4 +38,16 @@ public class TestLibraryIdentifiers {
                     CitationName.of("eol-unobtainium-bug-9999999");
         }
     }
+
+    public static class Concepts {
+
+        public static final ConceptName Clade = ConceptName.of("clade");
+
+        public static final ConceptName CladeTaxonomyRelation =
+                ConceptName.of("clade-taxonomy-relation");
+
+        public static class NotFound {
+            public static final ConceptName name = ConceptName.of("unobtainium-concept");
+        }
+    }
 }
