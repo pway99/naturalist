@@ -1,0 +1,34 @@
+[
+  {
+    "name": "019f0001-a001-7001-8001-a00000000001",
+    "citationName": "eol-battus-philenor-130502",
+    "subjectDomain": "insects",
+    "subjectRank": "ORDER",
+    "subjectName": "lepidoptera",
+    "note": "EOL page covers the entire order with family-level diagnostic keys"
+  },
+  {
+    "name": "019f0001-a002-7002-8002-a00000000002",
+    "citationName": "eol-battus-philenor-130502",
+    "subjectDomain": "insects",
+    "subjectRank": "FAMILY",
+    "subjectName": "papilionidae",
+    "note": "Species-level photographs and life history for Papilionidae swallowtails"
+  },
+  {
+    "name": "019f0001-a003-7003-8003-a00000000003",
+    "citationName": "eol-danaus-plexippus-151935",
+    "subjectDomain": "insects",
+    "subjectRank": "ORDER",
+    "subjectName": "diptera",
+    "note": null
+  },
+  {
+    "name": "019f0001-a004-7004-8004-a00000000004",
+    "citationName": "eol-apis-mellifera-1045608",
+    "subjectDomain": "insects",
+    "subjectRank": "ORDER",
+    "subjectName": "hymenoptera",
+    "note": "EOL page covers Apis mellifera as the primary pollinator model"
+  }
+]

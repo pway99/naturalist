@@ -49,6 +49,14 @@ public class TestLibraryIdentifiers {
                     CitationAssociationId.of(
                             UUID.fromString("019f0001-a002-7002-8002-a00000000002"));
 
+            public static final CitationAssociationId EolMonarchOnDiptera =
+                    CitationAssociationId.of(
+                            UUID.fromString("019f0001-a003-7003-8003-a00000000003"));
+
+            public static final CitationAssociationId EolHoneyBeeOnHymenoptera =
+                    CitationAssociationId.of(
+                            UUID.fromString("019f0001-a004-7004-8004-a00000000004"));
+
             public static class NotFound {
                 public static final CitationAssociationId name =
                         CitationAssociationId.of(
