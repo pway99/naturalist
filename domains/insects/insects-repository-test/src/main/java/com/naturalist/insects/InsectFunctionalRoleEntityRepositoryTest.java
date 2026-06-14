@@ -36,15 +36,15 @@ interface InsectFunctionalRoleEntityRepositoryTest
 
     @Override
     default InsectFunctionalRoleId notFoundName() {
-        return TestInsectsIdentifiers.InsectFunctionalRole.NotFound.name;
+        return TestInsectsIdentifiers.InsectFunctionalRole.NotFound.id;
     }
 
     @Override
     default List<InsectFunctionalRoleId> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectFamily.Syrphidae.FunctionalRole.name,
-                TestInsectsIdentifiers.InsectGenus.Empoasca.FunctionalRole.name,
-                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.FunctionalRole.name);
+                TestInsectsIdentifiers.InsectFamily.Syrphidae.FunctionalRole.id,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.FunctionalRole.id,
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.FunctionalRole.id);
     }
 
     @Override
@@ -74,7 +74,7 @@ interface InsectFunctionalRoleEntityRepositoryTest
         // chrysopidae family record exists (FK passes) and has no role record
         // (unique-on-parentName passes after the original's row is overwritten).
         return new InsectFunctionalRole(
-                original.name(),
+                original.id(),
                 TestInsectsIdentifiers.InsectFamily.Chrysopidae.name,
                 Set.of(FunctionalGuild.PREDATOR),
                 false);

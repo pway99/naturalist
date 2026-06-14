@@ -85,6 +85,6 @@ class InsectFunctionalRoleTest {
         InvariantObservation result = mo.observable(role, "role");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".role.name", ".role.parentName", ".role.guilds");
+                .containsExactlyInAnyOrder(".role.id", ".role.parentName", ".role.guilds");
     }
 }

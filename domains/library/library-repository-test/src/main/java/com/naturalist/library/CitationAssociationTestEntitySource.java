@@ -67,7 +67,7 @@ public class CitationAssociationTestEntitySource
     }
 
     private record CitationAssociationDto(
-            String name,
+            String id,
             String citationName,
             String subjectDomain,
             String subjectRank,
@@ -76,7 +76,7 @@ public class CitationAssociationTestEntitySource
     ) {
         CitationAssociation toEntity() {
             return new CitationAssociation(
-                    CitationAssociationId.of(UUID.fromString(name)),
+                    CitationAssociationId.of(UUID.fromString(id)),
                     CitationName.of(citationName),
                     new EntityRef(resolveDomain(subjectDomain),
                             resolveEntityName(subjectDomain, subjectRank, subjectName)),

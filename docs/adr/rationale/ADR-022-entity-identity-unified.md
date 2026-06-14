@@ -43,19 +43,20 @@ and commits the project to UUIDv7 specifically.
 ### Two branches, one shared supertype
 
 ```
-Named<KEY>                 ← data-layer supertype; one repository/query port
-├─ NamedEntity<NAME extends EntityName>   — natural-key slug identity
-└─ Entity<ID extends EntityId>            — UUIDv7 surrogate identity
+Named<KEY>                 ← data-layer supertype; port method key()
+├─ NamedEntity<NAME extends EntityName>   — name(); key() delegates to name()
+└─ Entity<ID extends EntityId>            — id();   key() delegates to id()
 ```
 
 `Named<KEY>` is the kernel's infrastructural contract: *"this record carries a typed
-identity component."* `KEY` is open — the `data`-layer generics do not distinguish slug
-from UUID because they do not need to. `EntityRepository`, `AbstractEntityRepository`,
-`EntityQuery`, and `AbstractEntityQuery` bind once on `Named<KEY>` and serve both
-branches with one implementation.
+identity component accessible via `key()`."* `KEY` is open — the `data`-layer generics
+do not distinguish slug from UUID because they do not need to. `EntityRepository`,
+`AbstractEntityRepository`, `EntityQuery`, and `AbstractEntityQuery` bind once on
+`Named<KEY>` and serve both branches with one implementation.
 
-`NamedEntity<NAME>` and `Entity<ID>` are the *domain-facing* contracts. Each signals a
-different identity discipline:
+`NamedEntity<NAME>` and `Entity<ID>` are the *domain-facing* contracts. Each declares
+its own semantic accessor — `name()` for slugs, `id()` for UUIDv7 — and supplies
+`key()` as a free delegating default. Each signals a different identity discipline:
 
 - A `NamedEntity` has a stable natural-key slug that exists before the record is
   persisted and survives across deployments. Cross-domain references use this slug
@@ -160,6 +161,24 @@ thing have a natural key?* Slug-present → `NamedEntity`. Slug-absent → `Enti
   accepted cost. The fragmentation cost that historically argued against UUID PKs
   was a UUIDv4 artifact and does not apply here.
 
+### Accessor convention
+
+The shared `Named<KEY>` port declares a single accessor: `key()`. Each domain-facing
+branch declares its own semantic accessor and defaults `key()` to it:
+
+- `NamedEntity<NAME>` declares `name()` — the natural-key slug. `key()` returns
+  `name()`.
+- `Entity<ID>` declares `id()` — the surrogate UUIDv7. `key()` returns `id()`.
+
+Domain records implement the branch-specific accessor as a record component:
+`NamedEntity` records carry a `NAME name` component; `Entity` records carry an
+`ID id` component. The `key()` default is inherited; records do not override it.
+
+A JSON `"id"` field that carries the domain `EntityId` (UUIDv7) is correct — it is
+the record's identity component. The prohibition remains on `PersistenceId` /
+`Long` surrogate keys: those must never appear on a domain record or in a JSON
+catalog fixture.
+
 ## Applicability Signals
 
 Flag an ADR-022 violation in review when any of the following appears:
@@ -172,7 +191,9 @@ Flag an ADR-022 violation in review when any of the following appears:
 - A repository or query method accepts or returns an `EntityId` belonging to a
   different entity (cross-entity references to an `Entity` are through service
   interfaces, not by value).
-- A JSON catalog fixture declares an `id` field with a non-null value.
+- A `NamedEntity` JSON catalog fixture declares an `id` field (slug entities have
+  no surrogate id). An `Entity` fixture's `"id"` field carries its `EntityId`; that
+  is expected, not a violation.
 - A `NamedEntity`'s `EntityName` is used for a record that is clearly event-shaped
   (ask: does this thing have a natural key? if no, it is an `Entity`, not a
   `NamedEntity` with a synthesized slug).

@@ -105,7 +105,7 @@ public interface EntityCommandContractTest<
 
         command().insert(entity);
 
-        Optional<E> byName = query().getByName(entity.name());
+        Optional<E> byName = query().getByName(entity.key());
         assertThat(byName).isPresent();
         E persisted = byName.get();
         assertEntityEquals(persisted, entity);
@@ -137,8 +137,8 @@ public interface EntityCommandContractTest<
 
         command().update(modified);
 
-        E persisted = query().getByName(original.name()).orElseThrow();
-        assertThat(persisted.name()).isEqualTo(original.name());
+        E persisted = query().getByName(original.key()).orElseThrow();
+        assertThat(persisted.key()).isEqualTo(original.key());
         assertEntityEquals(persisted, modified);
 
         var mo = observer.forMethod("update_existingEntity_isRetrievableWithNewValues");

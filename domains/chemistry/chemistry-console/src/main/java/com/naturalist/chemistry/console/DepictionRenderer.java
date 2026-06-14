@@ -24,7 +24,7 @@ class DepictionRenderer {
     private final Map<DepictionId, String> svgCache = new ConcurrentHashMap<>();
 
     String renderSvg(CompoundDepiction depiction) {
-        return svgCache.computeIfAbsent(depiction.name(), key -> render(depiction.smiles()));
+        return svgCache.computeIfAbsent(depiction.id(), key -> render(depiction.smiles()));
     }
 
     private String render(String smiles) {

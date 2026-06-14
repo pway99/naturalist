@@ -44,7 +44,7 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record AmendmentEvent(
-        AmendmentEventId name,
+        AmendmentEventId id,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         CompoundName compoundName,
@@ -57,7 +57,7 @@ public record AmendmentEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .entityName(compoundName, "compoundName")

@@ -29,14 +29,14 @@ class ImageQueryImplTest
 
     @Override
     public InsectImageId notFoundName() {
-        return TestInsectsIdentifiers.InsectSpecies.NotFound.imageName;
+        return TestInsectsIdentifiers.InsectSpecies.NotFound.imageId;
     }
 
     @Override
     public List<InsectImageId> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.name,
-                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.name);
+                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.id,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.id);
     }
 
     @Test
@@ -48,10 +48,10 @@ class ImageQueryImplTest
         assertThat(collection.stream())
                 .allMatch(image -> image.parentName()
                         .equals(TestInsectsIdentifiers.InsectGenus.Empoasca.name));
-        assertThat(collection.stream().map(InsectImage::name))
+        assertThat(collection.stream().map(InsectImage::id))
                 .contains(
-                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.name,
-                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.name);
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.id,
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.id);
     }
 
     @Test

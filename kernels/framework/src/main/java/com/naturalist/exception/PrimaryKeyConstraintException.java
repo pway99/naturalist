@@ -7,7 +7,7 @@ public class PrimaryKeyConstraintException extends RuntimeException {
     final Observable entity;
 
     public PrimaryKeyConstraintException(Named<?> entity) {
-        super("Duplicate Primary Key: %s".formatted(entity.name()));
+        super("Duplicate Primary Key: %s".formatted(entity.key()));
         this.entity = entity;
     }
 }

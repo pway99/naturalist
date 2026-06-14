@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * interpreting these drainage recovery trajectories from sensor data.
  */
 public record IrrigationEvent(
-        IrrigationEventId name,
+        IrrigationEventId id,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         BigDecimal volumeGallons,
@@ -42,7 +42,7 @@ public record IrrigationEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(volumeGallons, "volumeGallons")

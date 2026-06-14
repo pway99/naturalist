@@ -234,8 +234,8 @@ public interface EntityRepositoryTest<
         Page<ENTITY> first = repository().getPage(PageRequest.first(pageSize()));
         Page<ENTITY> second = repository().getPage(PageRequest.first(pageSize()));
 
-        assertThat(first.content().stream().map(Named::name).toList())
-                .isEqualTo(second.content().stream().map(Named::name).toList());
+        assertThat(first.content().stream().map(Named::key).toList())
+                .isEqualTo(second.content().stream().map(Named::key).toList());
     }
 
     @Test
@@ -304,7 +304,7 @@ public interface EntityRepositoryTest<
 
         repository().insert(entity);
 
-        Optional<ENTITY> byName = repository().getByName(entity.name());
+        Optional<ENTITY> byName = repository().getByName(entity.key());
         assertThat(byName).isPresent();
         ENTITY persisted = byName.get();
         assertEntityEquals(persisted, entity);
@@ -336,8 +336,8 @@ public interface EntityRepositoryTest<
 
         repository().update(modified);
 
-        ENTITY persisted = repository().getByName(original.name()).orElseThrow();
-        assertThat(persisted.name()).isEqualTo(original.name());
+        ENTITY persisted = repository().getByName(original.key()).orElseThrow();
+        assertThat(persisted.key()).isEqualTo(original.key());
         assertEntityEquals(persisted, modified);
 
         var mo = observer.forMethod("update_existingEntity_isRetrievableWithNewValues");

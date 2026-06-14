@@ -28,7 +28,7 @@ interface CitationAssociationEntityRepositoryTest
 
     @Override
     default CitationAssociationId notFoundName() {
-        return TestLibraryIdentifiers.Citations.Associations.NotFound.name;
+        return TestLibraryIdentifiers.Citations.Associations.NotFound.id;
     }
 
     @Override

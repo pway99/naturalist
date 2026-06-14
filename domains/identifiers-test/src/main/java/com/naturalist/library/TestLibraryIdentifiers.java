@@ -57,7 +57,7 @@ public class TestLibraryIdentifiers {
                             UUID.fromString("019f0001-a004-7004-8004-a00000000004"));
 
             public static class NotFound {
-                public static final CitationAssociationId name =
+                public static final CitationAssociationId id =
                         CitationAssociationId.of(
                                 UUID.fromString("019f0001-ffff-7fff-bfff-ffffffffffff"));
             }

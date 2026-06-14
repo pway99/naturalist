@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record LabAnalysis(
-        LabAnalysisId name,
+        LabAnalysisId id,
         LocalDate sampleDate,
         String labId,
         String labSampleId,
@@ -81,7 +81,7 @@ public record LabAnalysis(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .notNull(sampleDate, "sampleDate")
                 .notNull(labId, "labId")
                 .notNull(labSampleId, "labSampleId")

@@ -38,7 +38,7 @@ import java.util.function.Consumer;
  * operational and the zone handler's full domain logic is defined.
  */
 public record ZonePrecipitationEvent(
-        ZonePrecipitationEventId name,
+        ZonePrecipitationEventId id,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         LocalDate startDate,
@@ -79,7 +79,7 @@ public record ZonePrecipitationEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(startDate, "startDate")

@@ -37,7 +37,7 @@ class LinnaeanSubspeciesTest {
 
     private record TestParent(String value) implements Named<String> {
         @Override
-        public String name() {
+        public String key() {
             return value;
         }
 

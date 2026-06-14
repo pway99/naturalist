@@ -32,15 +32,15 @@ class FunctionalRoleQueryImplTest
 
     @Override
     public InsectFunctionalRoleId notFoundName() {
-        return TestInsectsIdentifiers.InsectFunctionalRole.NotFound.name;
+        return TestInsectsIdentifiers.InsectFunctionalRole.NotFound.id;
     }
 
     @Override
     public List<InsectFunctionalRoleId> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectFamily.Syrphidae.FunctionalRole.name,
-                TestInsectsIdentifiers.InsectGenus.Empoasca.FunctionalRole.name,
-                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.FunctionalRole.name);
+                TestInsectsIdentifiers.InsectFamily.Syrphidae.FunctionalRole.id,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.FunctionalRole.id,
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.FunctionalRole.id);
     }
 
     @Test

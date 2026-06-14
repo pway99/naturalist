@@ -91,12 +91,18 @@ class ForeignKeyConstraintTest {
 
     record Parent(String name) implements Named<String> {
         @Override
+        public String key() { return name; }
+
+        @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i.notBlank(name, "name");
         }
     }
 
     record Child(String name, String parentName) implements Named<String> {
+        @Override
+        public String key() { return name; }
+
         @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i.notBlank(name, "name");

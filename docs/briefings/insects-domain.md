@@ -8,7 +8,7 @@ glue) and, when generating life-stage JSON,
 `docs/briefings/insect-lifestage-acquisition.md`.
 
 **Primary rule.** Names, packages, components, and visibility below are
-observed from the source tree at briefing time (2026-06-13), not
+observed from the source tree at briefing time (2026-06-14), not
 extrapolated. If you need a type not listed here, ask before inventing one.
 
 ---
@@ -59,7 +59,7 @@ com.naturalist.insects/
   InsectQuery                         — public namespace interface
                                         (taxonView / species / images /
                                          families / genera / functionalRoles /
-                                         orders)
+                                         orders / citations)
   InsectCommand                       — public namespace interface
                                         (species / images)
   InsectRepository                    — package-private namespace class
@@ -121,8 +121,8 @@ identifiers because it is a structural component of `LifeStageName`.
 | `InsectFamily`         | `InsectFamilyName`       | `NamedEntity` (slug)           | Rank entity (parent-only FK)       |
 | `InsectGenus`          | `InsectGenusName`        | `NamedEntity` (slug)           | Rank entity (parent-only FK)       |
 | `InsectSpecies`        | `InsectSpeciesName`      | `NamedEntity` (slug)           | **@AggregateRoot** (value objects) |
-| `InsectImage`          | `InsectImageId`          | `Entity` (UUIDv7)              | Observation record                 |
-| `InsectFunctionalRole` | `InsectFunctionalRoleId` | `Entity` (UUIDv7)              | Cross-rank ecology assignment      |
+| `InsectImage`          | `InsectImageId`          | `Entity` (UUIDv7, component `id`) | Observation record                 |
+| `InsectFunctionalRole` | `InsectFunctionalRoleId` | `Entity` (UUIDv7, component `id`) | Cross-rank ecology assignment      |
 | `LifeStage` (sealed)   | `LifeStageName`          | `NamedEntity` (composite slug) | Sealed family (4 permits)          |
 | `InsectTaxonView`      | `InsectRankName`         | `ReadModel` (sealed)           | Rank + images view (4 permits)     |
 | `Insect`               | (no identity)            | `ReadModel`                    | Rank-chain composite               |
@@ -285,13 +285,14 @@ substitutes.
 
 ```java
 public record InsectFunctionalRole(
-    InsectFunctionalRoleId name,
+    InsectFunctionalRoleId id,
     InsectRankName parentName,
     Set<FunctionalGuild> guilds,
     boolean beneficial
 ) implements Entity<InsectFunctionalRoleId>
 ```
 
+Identity by UUIDv7 — accessor `id()`, invariant `.entityId(id, "id")`.
 Extracted from `InsectSpecies` (PL-11). Attaches to any rank via
 `parentName: InsectRankName`. One role record per organism (uniqueness
 enforced on `parentName`). `guilds` must be non-empty — "not yet
@@ -305,18 +306,18 @@ empty set on a present record. Jackson dispatch on `parentName` mirrors
 
 ```java
 public record InsectImage(
-    InsectImageId name,
+    InsectImageId id,
     InsectRankName parentName,
     Instant dateAdded,
     FileName resourceName
 ) implements Entity<InsectImageId>
 ```
 
-`InsectImage` is a photographic observation record — identity by UUIDv7.
-`parentName` is `InsectRankName` (sealed polymorphic) — can attach to any
-rank the naturalist's confidence allows. Rank transitions ("we now know
-this is *Empoasca fabae*, not just an Empoasca") become a single-field
-update.
+`InsectImage` is a photographic observation record — identity by UUIDv7,
+accessor `id()`, invariant `.entityId(id, "id")`. `parentName` is
+`InsectRankName` (sealed polymorphic) — can attach to any rank the
+naturalist's confidence allows. Rank transitions ("we now know this is
+*Empoasca fabae*, not just an Empoasca") become a single-field update.
 
 `resourceName` is a `FileName` (kernel `NamedValue<String>`), not a path.
 The path prefix `insects/images/` is a stable convention — compose with
@@ -388,7 +389,44 @@ conformance) are deferred to Phase 3.
 
 ---
 
-## 10. Life Stage Sub-context
+## 10. InsectCitationView — hierarchy-inherited citations
+
+```java
+public record InsectCitationView(
+    InsectRankName subject,
+    List<RankedCitation> citations
+) implements ReadModel
+```
+
+Read model assembling all citation associations that apply to a given
+rank — both citations attached directly at that rank and citations
+inherited from ancestor ranks. Queried via
+`insectQuery.citations().findByRankName(rankName)`.
+
+The hierarchy walk resolves ancestry through the parent-only FK chain
+(species → genus → family → order) and collects
+`CitationAssociation` records from the library domain's
+`CitationAssociationQuery` at each level.
+
+### `RankedCitation` (nested ValueObject)
+
+```java
+public record RankedCitation(
+    CitationName citationName,
+    InsectRankName attachedAt,
+    @Nullable String note
+) implements ValueObject
+```
+
+`attachedAt` preserves provenance — which level in the hierarchy the
+citation was originally attached to. A species query for
+`battus-philenor` returns direct citations on the species plus inherited
+citations from genus Battus, family Papilionidae, and order Lepidoptera,
+each with `attachedAt` identifying the attachment point.
+
+---
+
+## 11. Life Stage Sub-context
 
 `LifeStage` is a sealed interface — four permitted records — implementing
 `NamedEntity<LifeStageName>`. Jackson polymorphic wiring is in place
@@ -508,7 +546,7 @@ undocumented; treat `NonDiapausing` as positively absent.
 
 ---
 
-## 11. FunctionalGuild — eight ecological roles
+## 12. FunctionalGuild — eight ecological roles
 
 ```
 PARASITOID, PREDATOR, APEX_PREDATOR, POLLINATOR,
@@ -525,7 +563,7 @@ Guild assignments now live on `InsectFunctionalRole`, not on
 
 ---
 
-## 12. Query / Repository / Collection / Command Surface
+## 13. Query / Repository / Collection / Command Surface
 
 ### `InsectQuery` (public namespace interface)
 
@@ -542,6 +580,8 @@ public interface InsectQuery {
     FunctionalRoleQuery functionalRoles();
 
     OrderQuery orders();
+
+    CitationQuery citations();
 
     interface TaxonViewQuery {
         Optional<InsectTaxonView> getByName(InsectRankName name);
@@ -575,6 +615,10 @@ public interface InsectQuery {
     }
 
     interface OrderQuery extends EntityQuery<InsectOrderName, InsectOrder, OrderCollection> {
+    }
+
+    interface CitationQuery {
+        InsectCitationView findByRankName(InsectRankName rankName);
     }
 }
 ```
@@ -684,7 +728,7 @@ collapse without coordinating that roadmap.
 
 ---
 
-## 13. Clade Integration and Metaboly Resolution
+## 14. Clade Integration and Metaboly Resolution
 
 Each rank entity (order, family, genus, species) carries
 `@Nullable Clade placedIn`. The clade placement drives life-stage kind
@@ -706,7 +750,7 @@ resolution via the clade-DAG walk-up:
 
 ---
 
-## 14. JSON Catalog Locations (insects-repository-test, NOT insects-api)
+## 15. JSON Catalog Locations (insects-repository-test, NOT insects-api)
 
 The api ships no JSON. Catalog files live in repository-test resources:
 
@@ -729,11 +773,11 @@ Life stages were previously embedded inline in the species file (`egg`,
 
 Catalog conventions:
 
-- `"name": "<slug>"` is the `EntityName` natural key. No `id` field on
-  any `NamedEntity` record.
-- `InsectImage` and `InsectFunctionalRole` entries carry `"name"` as a
-  UUIDv7 string, plus `"parentRank"` / `"parentName"` for polymorphic
-  Jackson dispatch.
+- `"name": "<slug>"` is the `EntityName` natural key on `NamedEntity`
+  records.
+- `InsectImage` and `InsectFunctionalRole` entries carry `"id"` as a
+  UUIDv7 string (the `Entity` identity component), plus `"parentRank"` /
+  `"parentName"` for polymorphic Jackson dispatch.
 - Enum values serialize by constant name (`"PARASITOID"`,
   `"FOLIAR_BOTH"`, `"FOOD_WATER_CONTENT_REGULATED"`).
 - Cross-domain `PlantName` references on `LarvaStage.hostPlants` and
@@ -743,7 +787,7 @@ Catalog conventions:
 
 ---
 
-## 15. Site Context — Oak Vista (Chico, CA)
+## 16. Site Context — Oak Vista (Chico, CA)
 
 The April 2026 ecological assessment seeded the catalog. The catalog now
 spans orders, families, genera, and species. Representative species:
@@ -764,7 +808,7 @@ common-name form (`pipevine-swallowtail`). Common names are in the
 
 ---
 
-## 16. Cross-domain References — by slug only
+## 17. Cross-domain References — by slug only
 
 A consumer of insects-api references its entities by name:
 
@@ -795,7 +839,7 @@ boundary crosses by `EntityName` slug.
 
 ---
 
-## 17. Current State — What's Built, What's Not
+## 18. Current State — What's Built, What's Not
 
 **Built and stable.**
 
@@ -808,8 +852,8 @@ boundary crosses by `EntityName` slug.
   presence, cross-rank FK consistency, per-rank descent).
 - `InsectImage` with polymorphic `InsectRankName parentName`.
 - `InsectFunctionalRole` — cross-rank ecology assignment (PL-11).
-- `InsectQuery` namespace with 7 nested queries (taxonView, species,
-  images, families, genera, functionalRoles, orders).
+- `InsectQuery` namespace with 8 nested queries (taxonView, species,
+  images, families, genera, functionalRoles, orders, citations).
 - `InsectCommand` namespace (species + images).
 - All six `BehavioralCollection` types + `ImageGallery` map.
 - `LifeStage` sealed family with Jackson polymorphic wiring, independent
@@ -841,7 +885,7 @@ boundary crosses by `EntityName` slug.
 
 ---
 
-## 18. Anti-patterns Specific to insects-api
+## 19. Anti-patterns Specific to insects-api
 
 - **Do not invent an `InsectSpeciesId`.** Identity is `InsectSpeciesName`
   (slug). Same for all rank entities — identity is the respective

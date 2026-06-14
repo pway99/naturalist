@@ -50,8 +50,8 @@ class InsectTaxonViewFactoryTest {
         assertThat(value.images().stream())
                 .as("every image carries the root species name (factory-owned referential integrity)")
                 .allMatch(image -> image.parentName().equals(value.species().name()));
-        assertThat(value.images().stream().map(InsectImage::name))
-                .contains(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.Images.PipevineSwallowtail.name);
+        assertThat(value.images().stream().map(InsectImage::id))
+                .contains(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.Images.PipevineSwallowtail.id);
 
         assertThat(observer.observable(value, "taxonView").violations()).isEmpty();
     }
@@ -88,8 +88,8 @@ class InsectTaxonViewFactoryTest {
         assertThat(value.images().stream())
                 .as("every image carries the root genus name (factory-owned referential integrity)")
                 .allMatch(image -> image.parentName().equals(value.genus().name()));
-        assertThat(value.images().stream().map(InsectImage::name))
-                .contains(TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.name);
+        assertThat(value.images().stream().map(InsectImage::id))
+                .contains(TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.id);
 
         assertThat(observer.observable(value, "taxonView").violations()).isEmpty();
     }

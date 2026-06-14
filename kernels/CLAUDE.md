@@ -11,12 +11,15 @@ DDD building blocks. `NamedEntity`, `Entity`, `Aggregate`, `ReadModel`, `ValueOb
 `BehavioralCollection`, `Observable`, `Constraints`, `EntityName`, `EntityId`, `Observer`.
 No domain knowledge — pure structural vocabulary. Everything else depends on this.
 
-Two entity branches sharing a `Named<KEY>` supertype (ADR-022):
+Two entity branches sharing a `Named<KEY>` supertype (ADR-022). The shared port
+method is `key()`; each branch declares its own semantic accessor and defaults
+`key()` to it:
 
-- `NamedEntity<NAME extends EntityName>` — natural-key slug identity.
+- `NamedEntity<NAME extends EntityName>` — natural-key slug identity. Declares
+  `name()`; `key()` delegates to `name()`.
 - `Entity<ID extends EntityId>` — surrogate UUIDv7 identity, generated at record
-  construction. `EntityId` validates `UUID.version() == 7` and qualifies equality by
-  concrete class.
+  construction. Declares `id()`; `key()` delegates to `id()`. `EntityId` validates
+  `UUID.version() == 7` and qualifies equality by concrete class.
 
 The framework also ships the **`Resilience` facade** (`com.naturalist.resilience`):
 `Retry`, `Timeout`, `CircuitBreaker`, `Bulkhead`, plus `@Resilient` and

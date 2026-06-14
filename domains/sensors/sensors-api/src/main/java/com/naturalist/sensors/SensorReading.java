@@ -54,7 +54,7 @@ import java.util.function.Consumer;
  * re-establishment in progress.
  */
 public record SensorReading(
-        SensorReadingId name,
+        SensorReadingId id,
         SensorName sensorName,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -149,7 +149,7 @@ public record SensorReading(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .entityName(sensorName, "sensorName")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")

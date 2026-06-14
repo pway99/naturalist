@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * clay sublayer restricts downward flow independently of biological structure.
  */
 public record TillageEvent(
-        TillageEventId name,
+        TillageEventId id,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         LocalDate tillageDate,
@@ -80,7 +80,7 @@ public record TillageEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(tillageDate, "tillageDate")

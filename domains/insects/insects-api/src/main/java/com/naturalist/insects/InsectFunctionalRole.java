@@ -49,7 +49,7 @@ import java.util.function.Consumer;
  * serializations.
  */
 public record InsectFunctionalRole(
-        InsectFunctionalRoleId name,
+        InsectFunctionalRoleId id,
         @JsonTypeInfo(use = Id.NAME, property = "parentRank", include = As.EXTERNAL_PROPERTY)
         @JsonSubTypes({
                 @Type(value = InsectOrderName.class, name = "ORDER"),
@@ -66,7 +66,7 @@ public record InsectFunctionalRole(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .identifier(parentName, "parentName")
                 .notEmpty(guilds, "guilds");
     }

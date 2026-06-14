@@ -32,14 +32,14 @@ interface DepictionEntityRepositoryTest
 
     @Override
     default DepictionId notFoundName() {
-        return TestChemistryIdentifiers.Compounds.NotFound.depictionName;
+        return TestChemistryIdentifiers.Compounds.NotFound.depictionId;
     }
 
     @Override
     default List<DepictionId> knownEntityNames() {
         return List.of(
-                TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.depictionName,
-                TestChemistryIdentifiers.Compounds.FormicAcid.depictionName);
+                TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.depictionId,
+                TestChemistryIdentifiers.Compounds.FormicAcid.depictionId);
     }
 
     @Override
@@ -68,7 +68,7 @@ interface DepictionEntityRepositoryTest
     @Override
     default CompoundDepiction modifiedEntity(CompoundDepiction original) {
         return new CompoundDepiction(
-                original.name(),
+                original.id(),
                 original.compoundName(),
                 RandomValue.string(),
                 RandomValue.string());
@@ -94,7 +94,7 @@ interface DepictionEntityRepositoryTest
     @Test
     default void getByCompoundName_knownCompound_returnsDepiction() {
         CompoundName knownCompound = TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.name;
-        DepictionId expectedId = TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.depictionName;
+        DepictionId expectedId = TestChemistryIdentifiers.Compounds.CalciumSulfateDihydrate.depictionId;
         CompoundDepiction expected = source().getByName(expectedId).orElseThrow();
 
         Optional<CompoundDepiction> result = repository().getByCompoundName(knownCompound);

@@ -41,7 +41,7 @@ import java.util.function.Consumer;
  * branch on format (e.g. {@code "HEIC"} vs {@code "JPG"}) when conversion is required.
  */
 public record InsectImage(
-        InsectImageId name,
+        InsectImageId id,
         @JsonTypeInfo(use = Id.NAME, property = "parentRank", include = As.EXTERNAL_PROPERTY)
         @JsonSubTypes({
                 @Type(value = InsectOrderName.class, name = "ORDER"),
@@ -58,7 +58,7 @@ public record InsectImage(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .identifier(parentName, "parentName")
                 .notNull(dateAdded, "dateAdded")
                 .namedValue(resourceName, "resourceName");

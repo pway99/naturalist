@@ -53,7 +53,7 @@ import java.util.function.Consumer;
  * </ul>
  */
 public record PrecipitationEvent(
-        PrecipitationEventId name,
+        PrecipitationEventId id,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         LocalDate startDate,
@@ -115,7 +115,7 @@ public record PrecipitationEvent(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(startDate, "startDate")

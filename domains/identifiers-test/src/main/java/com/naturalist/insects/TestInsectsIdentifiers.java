@@ -91,7 +91,7 @@ public class TestInsectsIdentifiers {
             public static final InsectFamilyName name = InsectFamilyName.of("syrphidae");
 
             public static class FunctionalRole {
-                public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                public static final InsectFunctionalRoleId id = InsectFunctionalRoleId.of(
                         UUID.fromString("019e5221-b000-70ab-8000-ee00cafef00d"));
             }
         }
@@ -198,7 +198,7 @@ public class TestInsectsIdentifiers {
             public static final InsectGenusName name = InsectGenusName.of("empoasca");
 
             public static class FunctionalRole {
-                public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                public static final InsectFunctionalRoleId id = InsectFunctionalRoleId.of(
                         UUID.fromString("019e5221-b007-77ab-8700-ee00cafef00d"));
             }
 
@@ -208,12 +208,12 @@ public class TestInsectsIdentifiers {
                 }
 
                 public static class Img9047 {
-                    public static final InsectImageId name = InsectImageId.of(
+                    public static final InsectImageId id = InsectImageId.of(
                             UUID.fromString("0066fe0f-a3e0-70d8-b557-c42f13e67067"));
                 }
 
                 public static class Img9048 {
-                    public static final InsectImageId name = InsectImageId.of(
+                    public static final InsectImageId id = InsectImageId.of(
                             UUID.fromString("6091691e-7900-7ed3-a35b-88c46e47b866"));
                 }
             }
@@ -274,7 +274,7 @@ public class TestInsectsIdentifiers {
          * so there is no single parent rank to nest under.
          */
         public static class NotFound {
-            public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+            public static final InsectFunctionalRoleId id = InsectFunctionalRoleId.of(
                     UUID.fromString("019dbdb8-aaaa-7eee-aaaa-aaaaaaaaaaaa"));
         }
     }
@@ -289,7 +289,7 @@ public class TestInsectsIdentifiers {
          */
         public static class NotFound {
             public static final InsectSpeciesName name = InsectSpeciesName.of("unobtainium-beetle");
-            public static final InsectImageId imageName = InsectImageId.of(
+            public static final InsectImageId imageId = InsectImageId.of(
                     UUID.fromString("019dbdb7-a4a2-7eac-a875-3ce641904649"));
             public static final LifeStageName lifeStageName =
                     LifeStageName.of(name, LifeStageKind.EGG);
@@ -299,7 +299,7 @@ public class TestInsectsIdentifiers {
             public static final InsectSpeciesName name = InsectSpeciesName.of("apis-mellifera");
 
             public static class FunctionalRole {
-                public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                public static final InsectFunctionalRoleId id = InsectFunctionalRoleId.of(
                         UUID.fromString("019ec455-d43e-71de-9dab-deb3b09ad1de"));
             }
         }
@@ -308,7 +308,7 @@ public class TestInsectsIdentifiers {
             public static final InsectSpeciesName name = InsectSpeciesName.of("battus-philenor");
 
             public static class FunctionalRole {
-                public static final InsectFunctionalRoleId name = InsectFunctionalRoleId.of(
+                public static final InsectFunctionalRoleId id = InsectFunctionalRoleId.of(
                         UUID.fromString("019e5221-b00e-7eab-8e00-ee00cafef00d"));
             }
 
@@ -328,7 +328,7 @@ public class TestInsectsIdentifiers {
                 }
 
                 public static class PipevineSwallowtail {
-                    public static final InsectImageId name = InsectImageId.of(
+                    public static final InsectImageId id = InsectImageId.of(
                             UUID.fromString("019e0f1b-71d0-7cdb-9d07-d8214037a4cb"));
                 }
             }

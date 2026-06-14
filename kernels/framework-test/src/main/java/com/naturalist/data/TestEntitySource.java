@@ -84,7 +84,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     public List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
         return entityMap.values().stream()
-                .filter(e -> nameSet.contains(e.name()))
+                .filter(e -> nameSet.contains(e.key()))
                 .toList();
     }
 
@@ -107,7 +107,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
      */
     public Page<ENTITY> pageOf(PageRequest pageRequest) {
         List<ENTITY> sorted = entityMap.values().stream()
-                .sorted(Comparator.comparing(e -> e.name().toString()))
+                .sorted(Comparator.comparing(e -> e.key().toString()))
                 .toList();
         int total = sorted.size();
         int offset = pageRequest.offset();
@@ -138,7 +138,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         for (UniqueConstraint<ENTITY> uniqueConstraint : uniqueConstraints()) {
             Object entityValue = uniqueConstraint.value(entity);
             if (entityValue != null && entityMap.values().stream()
-                    .filter(e -> excludeName == null || !e.name().equals(excludeName))
+                    .filter(e -> excludeName == null || !e.key().equals(excludeName))
                     .map(uniqueConstraint.valueFunction())
                     .anyMatch(entityValue::equals)) {
                 throw new UniqueConstraintException(entity, uniqueConstraint.name(), entityValue);
@@ -162,7 +162,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     public void insert(ENTITY entity) {
         insertCommon(entity);
-        NAME name = entity.name();
+        NAME name = entity.key();
         if (!originFile.containsKey(name)) {
             originFile.put(name, defaultInsertFile);
         }
@@ -172,7 +172,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     private void insertCommon(ENTITY entity) {
         final ENTITY argument = entity;
         observer.arguments("insert", i -> i.namedEntity(argument, "entity")).throwWhenInvalid();
-        NAME name = entity.name();
+        NAME name = entity.key();
         if (entityMap.containsKey(name)) {
             throw new PrimaryKeyConstraintException(entity);
         }
@@ -182,7 +182,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     public void update(ENTITY entity) {
         observer.arguments("update", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
-        NAME name = entity.name();
+        NAME name = entity.key();
         if (name == null || !entityMap.containsKey(name)) {
             throw new EntityNotFoundException(entity);
         }
@@ -209,7 +209,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         List<ENTITY> entities = TestDataHelper.readObjectsFromString(() -> json, entityClass());
         for (ENTITY entity : entities) {
             insertCommon(entity);
-            originFile.put(entity.name(), relativePath);
+            originFile.put(entity.key(), relativePath);
         }
     }
 
@@ -226,9 +226,9 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         // map is a HashMap, so iteration order is unstable; without a sort, every flush
         // reshuffles file contents and produces noisy diffs.
         Map<String, List<ENTITY>> byFile = entityMap.values().stream()
-                .filter(e -> originFile.get(e.name()) != null)
-                .sorted(Comparator.comparing(e -> e.name().toString()))
-                .collect(Collectors.groupingBy(e -> originFile.get(e.name())));
+                .filter(e -> originFile.get(e.key()) != null)
+                .sorted(Comparator.comparing(e -> e.key().toString()))
+                .collect(Collectors.groupingBy(e -> originFile.get(e.key())));
         for (Map.Entry<String, List<ENTITY>> entry : byFile.entrySet()) {
             Path target = resolveSourcePath(entry.getKey());
             if (target == null) continue;

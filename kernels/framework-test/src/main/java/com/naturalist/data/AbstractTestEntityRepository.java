@@ -53,7 +53,7 @@ public abstract class AbstractTestEntityRepository<
     @Override
     protected List<ENTITY> doGetByNameSet(Set<NAME> nameSet) {
         return testEntitySource().entityStream()
-                .filter(e -> nameSet.contains(e.name()))
+                .filter(e -> nameSet.contains(e.key()))
                 .toList();
     }
 

@@ -15,4 +15,10 @@ package com.naturalist.ddd;
  * @param <ID> the concrete {@link EntityId} subtype for this entity
  */
 public interface Entity<ID extends EntityId> extends Named<ID> {
+    ID id();
+
+    @Override
+    default ID key() {
+        return id();
+    }
 }

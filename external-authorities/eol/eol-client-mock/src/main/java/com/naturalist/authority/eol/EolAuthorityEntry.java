@@ -13,6 +13,9 @@ import java.util.function.Consumer;
 public record EolAuthorityEntry(String name, EolPageId pageId) implements Named<String> {
 
     @Override
+    public String key() { return name; }
+
+    @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .notBlank(name, "name")

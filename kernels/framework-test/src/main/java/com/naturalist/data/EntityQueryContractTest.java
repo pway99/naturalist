@@ -65,7 +65,7 @@ public interface EntityQueryContractTest<
         Optional<E> result = query().getByName(known);
 
         assertThat(result).isPresent();
-        assertThat(result.get().name()).isEqualTo(known);
+        assertThat(result.get().key()).isEqualTo(known);
     }
 
     @Test
@@ -101,7 +101,7 @@ public interface EntityQueryContractTest<
         EC collection = query().findByNameSet(names);
 
         assertThat(collection.size()).isEqualTo(2);
-        assertThat(collection.stream().map(e -> e.name()))
+        assertThat(collection.stream().map(e -> e.key()))
                 .containsExactlyInAnyOrder(known.get(0), known.get(1));
     }
 
@@ -113,7 +113,7 @@ public interface EntityQueryContractTest<
         EC collection = query().findByNameSet(names);
 
         assertThat(collection.size()).isEqualTo(2);
-        assertThat(collection.stream().map(e -> e.name()))
+        assertThat(collection.stream().map(e -> e.key()))
                 .containsExactlyInAnyOrder(known.get(0), known.get(1));
     }
 

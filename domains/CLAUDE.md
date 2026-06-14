@@ -11,8 +11,9 @@ Every domain class implements one of six interfaces from `kernels/framework`:
 
 - **NamedEntity\<NAME extends EntityName\<?\>\>** — stable identity by `name()` alone.
   No `id()`, no `withId(...)`. Adapter keys live inside the adapter (ADR-021).
-- **Entity\<ID extends EntityId\>** — surrogate UUIDv7 identity. Observations and
-  events are Entity records: immutable, equality by value.
+- **Entity\<ID extends EntityId\>** — surrogate UUIDv7 identity via `id()` (record
+  component `id`). Observations and events are Entity records: immutable, equality
+  by value.
 - **Aggregate** — consistency boundary, owns child entities and value objects.
   Declares explicit `with*` methods per field.
 - **ReadModel** — read-side composition assembled from already-persisted parts.
@@ -176,7 +177,9 @@ Concrete test interface hooks:
 | `modifiedEntity(original)` | The original with every mutable field changed via `RandomValue`                                   |
 
 `assertEntityEquals` defaults to recursive comparison — override for entities with custom
-equality semantics. There is no `id` field to ignore (ADR-021).
+equality semantics. `NamedEntity` records carry no surrogate id to ignore (ADR-022);
+`Entity` records carry an `id` component that is part of their identity and included
+in the comparison.
 
 **Update expected-result convention:** modify **every mutable field** to a value distinct
 from the original using `RandomValue` helpers where field constraints permit. `EntityName`

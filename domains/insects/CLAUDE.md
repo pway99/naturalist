@@ -10,8 +10,9 @@ recognised by the naturalist. Four-level Durrell `Description`. No `id()` at the
 layer; the RDBMS adapter carries a numeric primary key privately.
 
 **InsectImage** — `Entity<InsectImageId>`. A photograph of an observed individual.
-Carries `InsectSpeciesName` (slug) as its parent reference — no `insectSpeciesId`, no
-`withId`, no nullable id-shaped FK column.
+Carries `InsectImageId id`, accessor `id()`. Parent reference is an
+`InsectRankName parentName` (slug) — no `insectSpeciesId`, no `withId`, no nullable
+id-shaped FK column.
 
 **InsectTaxonView** — Sealed `ReadModel` over the four Linnaean ranks that carry
 catalog entities: `InsectSpeciesView`, `InsectGenusView`, `InsectFamilyView`,

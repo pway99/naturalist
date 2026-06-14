@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * The depiction is consumed by the chemistry console's CDK-based SVG renderer.
  */
 public record CompoundDepiction(
-        DepictionId name,
+        DepictionId id,
         @EntityIdentifier CompoundName compoundName,
         String smiles,
         String note
@@ -45,7 +45,7 @@ public record CompoundDepiction(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .entityId(name, "name")
+                .entityId(id, "id")
                 .entityName(compoundName, "compoundName")
                 .notBlank(smiles, "smiles")
                 .notBlank(note, "note");

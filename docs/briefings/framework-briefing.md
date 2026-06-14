@@ -45,7 +45,7 @@ failure mode.
 briefing carries that domain's vocabulary and the current state of its
 api; this briefing carries the structural glue every api shares.
 
-**Briefing date.** 2026-06-13. If a type or method listed here does not
+**Briefing date.** 2026-06-14. If a type or method listed here does not
 match what you observe in code, trust the code.
 
 ---
@@ -121,13 +121,25 @@ depends on or knows about them.
 
 All six extend `Observable` and declare `invariants()`.
 
-### `Named<NAME>` — shared supertype
+### `Named<KEY>` — shared data-layer port
 
-`NamedEntity` and `Entity` both extend `Named<NAME>`, which declares
-`NAME name()` and extends `Observable`. This shared supertype enables
-`EntityRepository`, `EntityQuery`, and `EntityCommand` to serve both
-slug-keyed and UUID-keyed entities with one implementation. `Aggregate`,
-`ReadModel`, and `ValueObject` do NOT extend `Named`.
+`NamedEntity` and `Entity` both extend `Named<KEY>`, which declares
+a single neutral accessor `KEY key()` and extends `Observable`. Each
+branch declares its own semantic accessor and supplies `key()` as a
+free delegating default:
+
+- `NamedEntity<NAME>` declares `NAME name()`;
+  `default NAME key() { return name(); }`
+- `Entity<ID>` declares `ID id()`;
+  `default ID key() { return id(); }`
+
+This split lets `Entity` records carry their identity as `id` (accessor
+`id()`) while keeping the unified data-layer port intact. The data-layer
+method vocabulary is name-shaped (`getByName`, `getByNameSet`,
+`notFoundName()`, `knownEntityNames()`) — method names are independent
+of the accessor; their bodies pass `entity.key()`.
+
+`Aggregate`, `ReadModel`, and `ValueObject` do NOT extend `Named`.
 
 ### `ReadModel` vs `Aggregate`
 
@@ -152,6 +164,9 @@ is a transactional boundary (e.g. `Zone`, `SoilProfile`).
   boundary, generated at record construction via `EntityId.newUUID()`.
 - **Do not call `UUID.randomUUID()` anywhere in api code.** Use the
   kernel generator only.
+- `NamedEntity` records carry their identity as the `name` component
+  (accessor `name()`). `Entity` records carry their identity as the
+  `id` component (accessor `id()`).
 - Cross-`NamedEntity` references are by `EntityName`.
 - `Entity` records are never referenced cross-domain by value — cross
   the parent's `EntityName` slug instead.
@@ -235,8 +250,11 @@ Representative locations:
 - Boolean components use plain names: `active`, `beneficial`. Predicate
   methods use `is*` prefix only when they are behavior methods, not
   component accessors.
-- Every mutable field on a concrete `NamedEntity` record needs an
-  explicit `with*` method; `name()` is immutable.
+- `NamedEntity` records: identity component is `name`, accessor
+  `name()`, immutable. `Entity` records: identity component is `id`,
+  accessor `id()`, immutable.
+- Every mutable field on a concrete `NamedEntity` or `Entity` record
+  needs an explicit `with*` method; the identity component is immutable.
 - Optional-returning query methods must not share a name with any
   component: a component `String biologicalCatalyst` needs accessor
   `biologicalCatalystOptional()`, not `biologicalCatalyst()`.
@@ -412,7 +430,10 @@ void insert(ENTITY entity);
 void update(ENTITY entity);
 ```
 
-Identity at the port is the entity's `name()`. Serves both `NamedEntity`
+Identity at the port is the entity's `key()`. The type parameter is
+still named `NAME` and the methods still say `getByName` — these verb
+names are independent of the `key()`/`name()`/`id()` accessor split
+and were deliberately kept for stability. Serves both `NamedEntity`
 and `Entity` with one implementation via the `Named<NAME>` bound.
 
 `AbstractEntityRepository` provides the template-method layer:
@@ -744,11 +765,14 @@ they belong on a separate functional-role entity.**
 - **Sub-context** — a Java package within a domain api. Package-private
   visibility is the enforcement mechanism. Not a separate bounded
   context in the strict DDD sense.
-- **`Named<NAME>`** — common supertype of `NamedEntity` and `Entity`.
-  Declares `NAME name()`. Enables shared data-layer infrastructure.
+- **`Named<KEY>`** — common supertype of `NamedEntity` and `Entity`.
+  Declares `KEY key()` as the data-layer port accessor. Each branch
+  declares its own semantic accessor (`name()` / `id()`) and defaults
+  `key()` to it. Enables shared data-layer infrastructure.
 - **NamedEntity branch** vs. **Entity branch.** Two parallel identity
-  disciplines. Choose per entity based on "does this thing have a
-  natural key?"
+  disciplines. `NamedEntity` records carry a `name` component (slug);
+  `Entity` records carry an `id` component (UUIDv7). Choose per entity
+  based on "does this thing have a natural key?"
 - **Aggregate root** — the `NamedEntity` / `Entity` at the top of an
   aggregate's composition graph, marked `@AggregateRoot`.
 - **ReadModel** — read-side projection assembled from persisted parts.

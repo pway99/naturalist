@@ -36,7 +36,7 @@ class CitationAssociationTest {
 
         InvariantObservation result = mo.observable(association, "association");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".association.name", ".association.citationName", ".association.subject");
+                .containsExactlyInAnyOrder(".association.id", ".association.citationName", ".association.subject");
     }
 
     /** Minimal DomainId for test isolation — no dependency on any real domain. */

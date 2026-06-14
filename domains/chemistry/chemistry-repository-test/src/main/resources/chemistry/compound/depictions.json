@@ -1,90 +1,90 @@
 [
   {
-    "name": "01970000-0001-7001-8001-000000000001",
+    "id": "01970000-0001-7001-8001-000000000001",
     "compoundName": "calcium-sulfate-dihydrate",
     "smiles": "[Ca+2].[O-]S(=O)(=O)[O-].O.O",
     "note": "Ionic depiction — Ca²⁺, the sulfate dianion, and two waters of crystallization (gypsum)."
   },
   {
-    "name": "01970000-0001-7001-8001-000000000002",
+    "id": "01970000-0001-7001-8001-000000000002",
     "compoundName": "formic-acid",
     "smiles": "OC=O",
     "note": "Simplest carboxylic acid (HCOOH) — the active fumigant used against Varroa destructor."
   },
   {
-    "name": "01970000-0001-7001-8001-000000000003",
+    "id": "01970000-0001-7001-8001-000000000003",
     "compoundName": "aristolochic-acid-i",
     "smiles": "COc1cc2ccc3c(C(=O)O)c4cc5OCOc5cc4c([N+]([O-])=O)c3c2cc1",
     "note": "Phenanthrene-derived nitro acid; the methoxy at C-8 distinguishes it from aristolochic acid II."
   },
   {
-    "name": "01970000-0001-7001-8001-000000000004",
+    "id": "01970000-0001-7001-8001-000000000004",
     "compoundName": "aristolochic-acid-ii",
     "smiles": "O=C(O)c1c2cc3OCOc3cc2c([N+]([O-])=O)c2ccc3ccccc3c12",
     "note": "Demethoxylated congener of aristolochic acid I; the nitro group at C-6 is shared with AA-I."
   },
   {
-    "name": "01970000-0001-7001-8001-000000000005",
+    "id": "01970000-0001-7001-8001-000000000005",
     "compoundName": "oxalic-acid",
     "smiles": "OC(=O)C(=O)O",
     "note": "Smallest dicarboxylic acid; an effective Varroa miticide applied by dribble or vapor."
   },
   {
-    "name": "01970000-0001-7001-8001-000000000006",
+    "id": "01970000-0001-7001-8001-000000000006",
     "compoundName": "thymol",
     "smiles": "Cc1ccc(C(C)C)c(O)c1",
     "note": "Monoterpenoid phenol from Thymus vulgaris essential oil."
   },
   {
-    "name": "01970000-0001-7001-8001-000000000007",
+    "id": "01970000-0001-7001-8001-000000000007",
     "compoundName": "azadirachtin",
     "smiles": "CC(=O)OC1C(O)C2(COC(=O)C)C(C=C)OC3(O)C24OC4C(C(=O)OC)C13C",
     "note": "Simplified depiction of the tetranortriterpenoid limonoid core from Azadirachta indica seeds; the full natural product is significantly more elaborate."
   },
   {
-    "name": "01970000-0001-7001-8001-000000000008",
+    "id": "01970000-0001-7001-8001-000000000008",
     "compoundName": "calcium-chloride",
     "smiles": "[Ca+2].[Cl-].[Cl-]",
     "note": "Ionic compound; Ca²⁺ paired with two chloride anions per formula unit."
   },
   {
-    "name": "01970000-0001-7001-8001-000000000009",
+    "id": "01970000-0001-7001-8001-000000000009",
     "compoundName": "potassium-sulfate",
     "smiles": "[K+].[K+].[O-]S(=O)(=O)[O-]",
     "note": "Ionic; two K⁺ balancing the sulfate dianion."
   },
   {
-    "name": "01970000-0001-7001-8001-00000000000a",
+    "id": "01970000-0001-7001-8001-00000000000a",
     "compoundName": "elemental-sulfur",
     "smiles": "S1SSSSSSS1",
     "note": "S₈ — the crown-shaped ring allotrope, the stable form of elemental sulfur at room temperature."
   },
   {
-    "name": "01970000-0001-7001-8001-00000000000b",
+    "id": "01970000-0001-7001-8001-00000000000b",
     "compoundName": "magnesium-sulfate",
     "smiles": "[Mg+2].[O-]S(=O)(=O)[O-]",
     "note": "Ionic; Mg²⁺ paired with the sulfate dianion (anhydrous form shown)."
   },
   {
-    "name": "01970000-0001-7001-8001-00000000000c",
+    "id": "01970000-0001-7001-8001-00000000000c",
     "compoundName": "calcium-carbonate",
     "smiles": "[Ca+2].[O-]C(=O)[O-]",
     "note": "Ionic; Ca²⁺ paired with the carbonate dianion."
   },
   {
-    "name": "01970000-0001-7001-8001-00000000000d",
+    "id": "01970000-0001-7001-8001-00000000000d",
     "compoundName": "calcium-pectate",
     "smiles": "OC1OC(C(=O)O)C(O)C(O)C1O",
     "note": "Stand-in: D-galacturonic acid, the monomer unit. Pectate in soil is a Ca²⁺-bridged polymer of α-1,4-linked galacturonate residues."
   },
   {
-    "name": "01970000-0001-7001-8001-00000000000e",
+    "id": "01970000-0001-7001-8001-00000000000e",
     "compoundName": "organic-acid-chelate",
     "smiles": "OC(=O)CC(O)(C(=O)O)CC(=O)O",
     "note": "Stand-in: citric acid — representative of the polycarboxylic acids used in TPS CalMag OAC to chelate Ca²⁺ and Mg²⁺ for foliar uptake."
   },
   {
-    "name": "01970000-0001-7001-8001-00000000000f",
+    "id": "01970000-0001-7001-8001-00000000000f",
     "compoundName": "potassium-fatty-acids",
     "smiles": "CCCCCCCC/C=C\\CCCCCCCC(=O)[O-].[K+]",
     "note": "Stand-in: potassium oleate — a typical long-chain fatty-acid potassium soap component."

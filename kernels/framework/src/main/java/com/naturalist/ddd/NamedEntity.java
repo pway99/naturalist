@@ -12,4 +12,10 @@ package com.naturalist.ddd;
  * @param <NAME> the entity's name type
  */
 public interface NamedEntity<NAME extends EntityName> extends Named<NAME> {
+    NAME name();
+
+    @Override
+    default NAME key() {
+        return name();
+    }
 }

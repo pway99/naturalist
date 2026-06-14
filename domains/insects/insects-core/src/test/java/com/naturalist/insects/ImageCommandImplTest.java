@@ -39,14 +39,14 @@ class ImageCommandImplTest
 
     @Override
     public InsectImageId notFoundName() {
-        return TestInsectsIdentifiers.InsectSpecies.NotFound.imageName;
+        return TestInsectsIdentifiers.InsectSpecies.NotFound.imageId;
     }
 
     @Override
     public List<InsectImageId> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.name,
-                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.name);
+                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.id,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.id);
     }
 
     @Override
@@ -70,7 +70,7 @@ class ImageCommandImplTest
     @Override
     public InsectImage modifiedEntity(InsectImage original) {
         return new InsectImage(
-                original.name(),
+                original.id(),
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-05-01T08:30:00Z"),
                 FileName.of("IMG_TEST_MODIFIED.HEIC"));
