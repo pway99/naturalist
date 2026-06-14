@@ -3,7 +3,7 @@
 **Purpose.** Domain vocabulary plus current shape of the insects module
 (four-level Linnaean hierarchy, species, image, functional role, life-stage
 sub-context), sized for a chat Claude session.
-Pair with `docs/briefings/framework-briefing.md` (framework / structural
+Pair with `docs/briefings/framework-kernel.md` (framework / structural
 glue) and, when generating life-stage JSON,
 `docs/briefings/insect-lifestage-acquisition.md`.
 
@@ -54,6 +54,8 @@ com.naturalist.insects/
     InsectOrderView / InsectFamilyView  — record permits (rank + images)
     InsectGenusView / InsectSpeciesView — record permits (rank + images)
 
+  InsectCitationView                  — ReadModel (hierarchy-inherited citations)
+                                        + nested RankedCitation ValueObject
   Insect                              — ReadModel (rank-chain composite)
 
   InsectQuery                         — public namespace interface
@@ -125,6 +127,7 @@ identifiers because it is a structural component of `LifeStageName`.
 | `InsectFunctionalRole` | `InsectFunctionalRoleId` | `Entity` (UUIDv7, component `id`) | Cross-rank ecology assignment      |
 | `LifeStage` (sealed)   | `LifeStageName`          | `NamedEntity` (composite slug) | Sealed family (4 permits)          |
 | `InsectTaxonView`      | `InsectRankName`         | `ReadModel` (sealed)           | Rank + images view (4 permits)     |
+| `InsectCitationView`   | (no identity)            | `ReadModel`                    | Hierarchy-inherited citations      |
 | `Insect`               | (no identity)            | `ReadModel`                    | Rank-chain composite               |
 
 ### Parent-only FK chain (no grandparent skip-level references)
@@ -859,6 +862,10 @@ boundary crosses by `EntityName` slug.
 - `LifeStage` sealed family with Jackson polymorphic wiring, independent
   entities with `parentName: InsectRankName`.
 - `InsectLifeStageQuery` namespace.
+- `InsectCitationView` read model — hierarchy-inherited citations via
+  `insectQuery.citations().findByRankName(rankName)`. Walks the
+  species→genus→family→order FK chain collecting
+  `CitationAssociation` records from the library domain.
 - `InsectsDomain` registered with the catalog kernel.
 - Clade integration + metaboly resolution via `InsectLifeStages`.
 - `InsectsCatalogContribution` — searchable tokens per species

@@ -8,7 +8,7 @@ stage entries when new species are added to the catalog.
 
 **Inputs this briefing assumes are attached to this conversation:**
 
-1. `framework-briefing.md` — framework, identity model, package
+1. `framework-kernel.md` — framework, identity model, package
    locations, the complete `Constraints` API, JSON conventions,
    anti-patterns. Read that first.
 2. `insects-domain.md` — insects-api shape and current catalog state. Pair

@@ -1,7 +1,7 @@
-# Naturalist — Framework Briefing
+# Naturalist — Framework Kernel Briefing
 
 **Purpose.** Shared structural briefing — paired with **one or more**
-domain briefings (e.g. `insects-domain.md`, `chemistry-api.md`,
+domain briefings (e.g. `insects-domain.md`, `chemistry-domain.md`,
 `plants-domain.md`) to give a chat Claude instance everything it needs
 to model an Aggregate, Entity, or ValueObject **for the api of those
 domains** and emit Java records that drop cleanly into the
