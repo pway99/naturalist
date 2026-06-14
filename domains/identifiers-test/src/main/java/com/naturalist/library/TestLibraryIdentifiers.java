@@ -1,6 +1,9 @@
 package com.naturalist.library;
 
 import com.naturalist.authority.CitationName;
+import com.naturalist.library.CitationAssociationId;
+
+import java.util.UUID;
 
 public class TestLibraryIdentifiers {
 
@@ -32,6 +35,26 @@ public class TestLibraryIdentifiers {
 
         public static final CitationName EolBeewolf =
                 CitationName.of("eol-philanthus-gibbosus-104130");
+
+        public static class Associations {
+
+            private Associations() {
+            }
+
+            public static final CitationAssociationId EolSwallowtailOnLepidoptera =
+                    CitationAssociationId.of(
+                            UUID.fromString("019f0001-a001-7001-8001-a00000000001"));
+
+            public static final CitationAssociationId EolSwallowtailOnPapilionidae =
+                    CitationAssociationId.of(
+                            UUID.fromString("019f0001-a002-7002-8002-a00000000002"));
+
+            public static class NotFound {
+                public static final CitationAssociationId name =
+                        CitationAssociationId.of(
+                                UUID.fromString("019f0001-ffff-7fff-bfff-ffffffffffff"));
+            }
+        }
 
         public static class NotFound {
             public static final CitationName name =
