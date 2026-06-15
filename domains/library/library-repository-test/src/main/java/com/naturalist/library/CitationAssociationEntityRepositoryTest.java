@@ -34,7 +34,7 @@ interface CitationAssociationEntityRepositoryTest
     @Override
     default List<CitationAssociationId> knownEntityNames() {
         return List.of(
-                TestLibraryIdentifiers.Citations.Associations.EolSwallowtailOnLepidoptera,
+            TestLibraryIdentifiers.Citations.Associations.EolLepidopteraOnLepidoptera,
                 TestLibraryIdentifiers.Citations.Associations.EolSwallowtailOnPapilionidae);
     }
 
@@ -84,7 +84,7 @@ interface CitationAssociationEntityRepositoryTest
         List<CitationAssociation> result = repository().getByCitationName(
                 CitationName.of("eol-battus-philenor-130502"));
 
-        assertThat(result).hasSize(2);
+        assertThat(result).hasSize(1);
     }
 
     // =========================================================================
@@ -114,6 +114,6 @@ interface CitationAssociationEntityRepositoryTest
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().citationName().value())
-                .isEqualTo("eol-battus-philenor-130502");
+            .isEqualTo("eol-lepidoptera-747");
     }
 }

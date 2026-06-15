@@ -17,12 +17,12 @@ class InsectCitationViewTest {
 
     private static final Observer observer = Observer.forClass(InsectCitationViewTest.class);
 
-    private static OnlineSource citation(String slug, String title) {
+    private static OnlineSource citation(String slug, String title, String url) {
         return new OnlineSource(
                 CitationName.of(slug),
                 new AuthorityReference(
                         new AuthoritySource("eol", "Encyclopedia of Life"),
-                        java.net.URI.create("https://eol.org/pages/130502")),
+                    java.net.URI.create(url)),
                 title, null, null, null);
     }
 
@@ -33,7 +33,8 @@ class InsectCitationViewTest {
         InsectCitationView view = new InsectCitationView(
                 InsectSpeciesName.of("battus-philenor"),
                 List.of(new InsectCitationView.RankedCitation(
-                        citation("eol-battus-philenor-130502", "Battus philenor"),
+                    citation("eol-lepidoptera-747", "Lepidoptera",
+                        "https://eol.org/pages/747"),
                         InsectOrderName.of("lepidoptera"),
                         "EOL page")));
 
@@ -57,7 +58,8 @@ class InsectCitationViewTest {
         MethodObserver mo = observer.forMethod("validRankedCitation_hasNoInvariantViolations");
 
         InsectCitationView.RankedCitation rc = new InsectCitationView.RankedCitation(
-                citation("eol-battus-philenor-130502", "Battus philenor"),
+            citation("eol-battus-philenor-130502", "Battus philenor",
+                "https://eol.org/pages/130502"),
                 InsectFamilyName.of("papilionidae"),
                 null);
 

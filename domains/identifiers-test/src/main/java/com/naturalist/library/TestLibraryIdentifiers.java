@@ -11,6 +11,9 @@ public class TestLibraryIdentifiers {
         public static final CitationName EolSwallowtail =
                 CitationName.of("eol-battus-philenor-130502");
 
+        public static final CitationName EolLepidoptera =
+            CitationName.of("eol-lepidoptera-747");
+
         public static final CitationName EolGreenLacewing =
                 CitationName.of("eol-chrysoperla-rufilabris-2774541");
 
@@ -40,7 +43,7 @@ public class TestLibraryIdentifiers {
             private Associations() {
             }
 
-            public static final CitationAssociationId EolSwallowtailOnLepidoptera =
+            public static final CitationAssociationId EolLepidopteraOnLepidoptera =
                     CitationAssociationId.of(
                             UUID.fromString("019f0001-a001-7001-8001-a00000000001"));
 

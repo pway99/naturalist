@@ -32,7 +32,7 @@ class CitationAssociationQueryImplTest {
         CitationAssociationCollection result = query.findByCitationName(
                 CitationName.of("eol-battus-philenor-130502"));
 
-        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.size()).isEqualTo(1);
     }
 
     @Test

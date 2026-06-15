@@ -169,6 +169,6 @@ class InsectFactoryTest {
         assertThat(insect.citations().citations()).isNotEmpty();
         assertThat(insect.citations().citations())
                 .extracting(c -> c.citation().name().value())
-                .contains("eol-battus-philenor-130502");
+            .contains("eol-battus-philenor-130502", "eol-lepidoptera-747");
     }
 }
