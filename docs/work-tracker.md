@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-06-14 (Clades/taxonomy console complete; library-console module extracted; citations page landed.)
+Last updated: 2026-06-25 (InsectFeature entity migration complete; citation association landed.)
 
 ---
 
@@ -16,8 +16,6 @@ Last updated: 2026-06-14 (Clades/taxonomy console complete; library-console modu
 **Identification roadmap** ([`plans/identification.md`](plans/identification.md)). Phase 0 ✅ (taxonomic reorganization + family/genus console). Phase 1 ✅ (external-authority seam — `kernels/authority` port + EOL mock client). Phase 2 citation/library ✅ (`Citation` sealed NamedEntity, `domains/library` domain stack, `Eol.citation()` factory). Phase 2 console ✅ (citations page at `/citations`). Citation association design spec drafted.
 
 ## Current slice
-
-**Citation association** — design spec drafted ([`plans/2026-06-14-citation-association-design.md`](plans/2026-06-14-citation-association-design.md)). Cross-domain citation associations via `CitationAssociation` entity + insect-specific hierarchical citation discovery.
 
 **Candidate next slices** (lead first):
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
@@ -33,6 +31,8 @@ Last updated: 2026-06-14 (Clades/taxonomy console complete; library-console modu
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| InsectFeature entity migration — `InsectFeature` promoted from embedded VO to independent `Entity<InsectFeatureId>` with many-to-many `InsectFeatureAssignment`; `InsectFeatureQueryImpl` lineage-composite resolution; `InsectAncestryResolver` extracted; `identificationFeatures` removed from rank entities | 2026-06-25 | [`plans/archive/2026-06-25-insect-feature-entity-design.md`](plans/archive/2026-06-25-insect-feature-entity-design.md) | `35451c7` |
+| Citation association — `CitationAssociation` entity + `InsectCitationQueryImpl` hierarchical citation discovery + `Insect` read model via `InsectFactory` + detail page rendering | 2026-06-25 | [`plans/archive/2026-06-14-citation-association-design.md`](plans/archive/2026-06-14-citation-association-design.md) | `34091d2` |
 | Citations page — `/citations` single-page listing in library-console; `CitationQuery` wired into `LibraryTestContext`; nav link added | 2026-06-14 | conversation | `41aa0b3` |
 | Library-console module extraction — `CladesController`, `ConceptsController`, JTE templates, `LibraryDataConfiguration`, `LibraryLinker` moved from management-console to `domains/library/library-console` | 2026-06-14 | [`plans/archive/2026-06-14-library-console-module.md`](plans/archive/2026-06-14-library-console-module.md) | `7c3b8e6` |
 | Clades & taxonomy console — `Concept` entity + `CladeCatalog` + concept pages + clade browser + insect cross-links + nav; UI polish (breadcrumbs, field-guide styling, More→inline nav) | 2026-06-14 | [`plans/archive/2026-06-13-clades-taxonomy-console-plan.md`](plans/archive/2026-06-13-clades-taxonomy-console-plan.md) | `5ee23a6` |
