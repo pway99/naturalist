@@ -14,6 +14,7 @@ import java.util.Map;
  * <ul>
  *   <li>{@link SpeciesCollection} — multi-result return type for {@link InsectSpecies}.</li>
  *   <li>{@link ImageCollection} — multi-result return type for {@link InsectImage}.</li>
+ *   <li>{@link FeatureCollection} — multi-result return type for {@link InsectFeature}.</li>
  *   <li>{@link FamilyCollection} — multi-result return type for {@link InsectFamily}.</li>
  *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenus}.</li>
  *   <li>{@link FunctionalRoleCollection} — multi-result return type for
@@ -54,6 +55,21 @@ public interface InsectEntityCollections {
 
         public static ImageCollection empty() {
             return new ImageCollection(List.of());
+        }
+    }
+
+    final class FeatureCollection extends BehavioralCollection<InsectFeature> {
+
+        FeatureCollection(Collection<InsectFeature> features) {
+            super(features);
+        }
+
+        public static FeatureCollection of(Collection<InsectFeature> features) {
+            return new FeatureCollection(features);
+        }
+
+        public static FeatureCollection empty() {
+            return new FeatureCollection(List.of());
         }
     }
 

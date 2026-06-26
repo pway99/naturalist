@@ -9,6 +9,7 @@ import com.naturalist.insects.InsectEntityCollections.OrderCollection;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Namespace query for the insects bounded context — the single discoverable entry point
@@ -60,6 +61,8 @@ public interface InsectQuery {
     OrderQuery orders();
 
     CitationQuery citations();
+
+    FeatureQuery features();
 
     /**
      * Assembles the full {@link Insect} read model rooted at the given rank name.
@@ -131,5 +134,22 @@ public interface InsectQuery {
 
     interface CitationQuery {
         InsectCitationView findByRankName(InsectRankName rankName);
+    }
+
+    interface FeatureQuery {
+
+        /**
+         * Returns the lineage-composited {@link InsectFeatureView} for the given rank —
+         * the full conspicuous-to-diagnostic feature list the organism inherits from its
+         * ancestry. Returns {@link Optional#empty()} when no entity exists at the given name.
+         */
+        Optional<InsectFeatureView> findByRankName(InsectRankName subject);
+
+        /**
+         * Returns the ranks carrying the given feature — the reverse lookup ("which taxa
+         * have chewing mouthparts"). Joins through {@link InsectFeatureAssignment} by
+         * {@link InsectFeatureId}.
+         */
+        Set<InsectRankName> findByFeature(InsectFeatureId featureId);
     }
 }

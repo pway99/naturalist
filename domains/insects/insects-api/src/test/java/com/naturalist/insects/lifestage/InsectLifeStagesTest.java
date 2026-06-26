@@ -200,7 +200,7 @@ class InsectLifeStagesTest {
                 TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),
-                null, null,
+                null,
                 placedIn,
                 null, null, null, null, null, null, null);
     }

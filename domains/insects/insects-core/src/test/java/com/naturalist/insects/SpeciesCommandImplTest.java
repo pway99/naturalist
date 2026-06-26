@@ -61,7 +61,7 @@ class SpeciesCommandImplTest
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
-                null, null,
+                null,
                 null,
                 null, null, null, null,
                 null, null, null);
@@ -75,7 +75,7 @@ class SpeciesCommandImplTest
                 TaxonomicSpecies.of("ghost"),
                 description(),
                 Set.of(),
-                null, null,
+                null,
                 null,
                 null, null, null, null,
                 null, null, null);
@@ -90,7 +90,6 @@ class SpeciesCommandImplTest
                 description(),
                 Set.of(),
                 RandomValue.string(),
-                new InsectSpecies.IdentificationFeatures(List.of(RandomValue.string())),
                 null,
                 null,
                 new InsectSpecies.Voltinism(

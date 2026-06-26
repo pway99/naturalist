@@ -31,12 +31,12 @@ class InsectTaxonViewTest {
     @Test
     void speciesViewIsNotValid() {
         var mo = observer.forMethod("speciesViewIsNotValid");
-        InsectSpeciesView view = new InsectSpeciesView(null, null);
+        InsectSpeciesView view = new InsectSpeciesView(null, null, null);
 
         InvariantObservation result = mo.observable(view, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".agg.species", ".agg.images");
+                .containsExactlyInAnyOrder(".agg.species", ".agg.images", ".agg.features");
     }
 
     @Test
@@ -53,12 +53,12 @@ class InsectTaxonViewTest {
     @Test
     void genusViewIsNotValid() {
         var mo = observer.forMethod("genusViewIsNotValid");
-        InsectGenusView view = new InsectGenusView(null, null);
+        InsectGenusView view = new InsectGenusView(null, null, null);
 
         InvariantObservation result = mo.observable(view, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".agg.genus", ".agg.images");
+                .containsExactlyInAnyOrder(".agg.genus", ".agg.images", ".agg.features");
     }
 
     @Test
@@ -75,12 +75,12 @@ class InsectTaxonViewTest {
     @Test
     void familyViewIsNotValid() {
         var mo = observer.forMethod("familyViewIsNotValid");
-        InsectFamilyView view = new InsectFamilyView(null, null);
+        InsectFamilyView view = new InsectFamilyView(null, null, null);
 
         InvariantObservation result = mo.observable(view, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".agg.family", ".agg.images");
+                .containsExactlyInAnyOrder(".agg.family", ".agg.images", ".agg.features");
     }
 
     @Test
@@ -96,12 +96,12 @@ class InsectTaxonViewTest {
     @Test
     void orderViewIsNotValid() {
         var mo = observer.forMethod("orderViewIsNotValid");
-        InsectOrderView view = new InsectOrderView(null, null);
+        InsectOrderView view = new InsectOrderView(null, null, null);
 
         InvariantObservation result = mo.observable(view, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".agg.order", ".agg.images");
+                .containsExactlyInAnyOrder(".agg.order", ".agg.images", ".agg.features");
     }
 
     private static InsectSpecies validSpecies() {
@@ -111,7 +111,7 @@ class InsectTaxonViewTest {
                 TaxonomicSpecies.of("convergens"),
                 description(),
                 Set.of(),
-                null, null,
+                null,
                 null,
                 null, null, null, null, null, null, null
         );

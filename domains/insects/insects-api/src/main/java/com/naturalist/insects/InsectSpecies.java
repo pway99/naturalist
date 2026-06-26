@@ -53,8 +53,8 @@ import java.util.function.Consumer;
  * coherence across larva / pupa / adult) are enforced on the species aggregate rather
  * than on any single stage.
  * <p>
- * All nullable fields — {@link #identificationFeatures}, {@link #chemicalDefense},
- * {@link #voltinism}, {@link #habitatProfile}, {@link #habitatRequirements},
+ * All nullable fields — {@link #chemicalDefense}, {@link #voltinism},
+ * {@link #habitatProfile}, {@link #habitatRequirements},
  * {@link #gardenConnections}, {@link #beneficialProfile}, and
  * {@link #ecologicalSignificance} — are populated incrementally as the catalog
  * matures. {@code beneficialProfile} is additionally constrained by intent: it should
@@ -68,12 +68,12 @@ import java.util.function.Consumer;
  * {@link Voltinism.VoltinismPattern#INDETERMINATE} case for species whose voltinism
  * varies within a site due to split diapause strategies.
  * <p>
- * The species's value-object graph — {@link IdentificationFeatures},
- * {@link ChemicalDefense}, {@link Voltinism}, {@link HabitatRequirements},
- * {@link GardenConnections}, {@link BeneficialProfile}, {@link EcologicalSignificance}
- * — is nested here. Each value object is exclusively owned by {@code InsectSpecies};
- * nesting expresses that ownership structurally and collapses the consumer's import
- * surface to this single type. {@link LifeStageKind} — the shared vocabulary in
+ * The species's value-object graph — {@link ChemicalDefense}, {@link Voltinism},
+ * {@link HabitatRequirements}, {@link GardenConnections}, {@link BeneficialProfile},
+ * {@link EcologicalSignificance} — is nested here. Each value object is exclusively
+ * owned by {@code InsectSpecies}; nesting expresses that ownership structurally and
+ * collapses the consumer's import surface to this single type.
+ * {@link LifeStageKind} — the shared vocabulary in
  * {@link com.naturalist.insects.lifestage} — is used by {@link ChemicalDefense} to
  * name one or more stages of the life cycle.
  */
@@ -85,7 +85,6 @@ public record InsectSpecies(
         Description description,
         Set<CommonName> commonNames,
         @Nullable String sightingNotes,
-        @Nullable IdentificationFeatures identificationFeatures,
         @Nullable Clade placedIn,
         @Nullable ChemicalDefense chemicalDefense,
         @Nullable Voltinism voltinism,
@@ -99,7 +98,7 @@ public record InsectSpecies(
     public InsectSpecies withPlacedIn(@Nullable Clade value) {
         return new InsectSpecies(
                 name, genusName, epithet, description, commonNames,
-                sightingNotes, identificationFeatures,
+                sightingNotes,
                 value,
                 chemicalDefense, voltinism, habitatProfile, habitatRequirements,
                 gardenConnections, beneficialProfile, ecologicalSignificance);
@@ -118,7 +117,6 @@ public record InsectSpecies(
                 .namedValue(epithet, "epithet")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames")
-                .valueObjectOrNull(identificationFeatures, "identificationFeatures")
                 .valueObjectOrNull(chemicalDefense, "chemicalDefense")
                 .valueObjectOrNull(voltinism, "voltinism")
                 .valueObjectOrNull(habitatProfile, "habitatProfile")
@@ -126,27 +124,6 @@ public record InsectSpecies(
                 .valueObjectOrNull(gardenConnections, "gardenConnections")
                 .valueObjectOrNull(beneficialProfile, "beneficialProfile")
                 .valueObjectOrNull(ecologicalSignificance, "ecologicalSignificance");
-    }
-
-    /**
-     * The observable physical characteristics by which a species is identified in the field.
-     * <p>
-     * Features are ordered from most conspicuous to most diagnostic — the same sequence
-     * a naturalist would follow when working through a field identification. Each entry
-     * is a discrete, observable trait: colour, proportion, posture, structural feature.
-     * <p>
-     * These are morphological and postural facts, not behavioural ones. Behaviour belongs
-     * in the stage entities under {@link com.naturalist.insects.lifestage} or
-     * {@link InsectSpecies#sightingNotes()}.
-     */
-    public record IdentificationFeatures(
-            List<String> features
-    ) implements ValueObject {
-
-        @Override
-        public Consumer<? extends Constraints> invariants() {
-            return i -> i.notNull(features, "features");
-        }
     }
 
     /**

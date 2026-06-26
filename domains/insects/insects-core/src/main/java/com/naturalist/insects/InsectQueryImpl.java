@@ -16,6 +16,7 @@ class InsectQueryImpl implements InsectQuery {
     private final OrderQuery orderQuery;
     private final TaxonViewQuery taxonViewQuery;
     private final CitationQuery citationQuery;
+    private final FeatureQuery featureQuery;
     private final InsectFactory insectFactory;
 
     InsectQueryImpl(SpeciesQuery speciesQuery,
@@ -26,7 +27,9 @@ class InsectQueryImpl implements InsectQuery {
                     OrderQuery orderQuery,
                     CitationAssociationQuery citationAssociationQuery,
                     com.naturalist.library.CitationQuery libraryCitationQuery,
-                    InsectLifeStageQuery insectLifeStageQuery) {
+                    InsectLifeStageQuery insectLifeStageQuery,
+                    InsectRepository.FeatureRepository featureRepository,
+                    InsectRepository.FeatureAssignmentRepository featureAssignmentRepository) {
         Observer.forClass(InsectQueryImpl.class).arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
@@ -36,7 +39,9 @@ class InsectQueryImpl implements InsectQuery {
                         .notNull(orderQuery, "orderQuery")
                         .notNull(citationAssociationQuery, "citationAssociationQuery")
                         .notNull(libraryCitationQuery, "libraryCitationQuery")
-                        .notNull(insectLifeStageQuery, "insectLifeStageQuery"))
+                        .notNull(insectLifeStageQuery, "insectLifeStageQuery")
+                        .notNull(featureRepository, "featureRepository")
+                        .notNull(featureAssignmentRepository, "featureAssignmentRepository"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
@@ -47,8 +52,12 @@ class InsectQueryImpl implements InsectQuery {
         InsectTaxonViewFactory factory =
                 new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
         this.taxonViewQuery = new TaxonViewQueryImpl(factory);
+        InsectAncestryResolver ancestryResolver =
+                new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
         this.citationQuery = new InsectCitationQueryImpl(
-                citationAssociationQuery, libraryCitationQuery, speciesQuery, genusQuery, familyQuery);
+                citationAssociationQuery, libraryCitationQuery, ancestryResolver);
+        this.featureQuery = new InsectFeatureQueryImpl(
+                featureRepository, featureAssignmentRepository, ancestryResolver);
         this.insectFactory = new InsectFactory(
                 speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
                 insectLifeStageQuery, this.citationQuery);
@@ -92,6 +101,11 @@ class InsectQueryImpl implements InsectQuery {
     @Override
     public CitationQuery citations() {
         return citationQuery;
+    }
+
+    @Override
+    public FeatureQuery features() {
+        return featureQuery;
     }
 
     @Override

@@ -43,7 +43,9 @@ public class InsectsTestContext {
                 new FamilyRepositoryMock(db),
                 new GenusRepositoryMock(db),
                 new InsectFunctionalRoleRepositoryMock(db),
-                new OrderRepositoryMock(db));
+                new OrderRepositoryMock(db),
+                new InsectFeatureRepositoryMock(db),
+                new InsectFeatureAssignmentRepositoryMock(db));
         InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(repository.familyRepository);
         InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(repository.genusRepository, familyQuery);
         InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository.speciesRepository, genusQuery);
@@ -58,7 +60,8 @@ public class InsectsTestContext {
         this.insectQuery = new InsectQueryImpl(
                 speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
                 orderQuery, citationAssociationQuery, libraryCitationQuery,
-                this.insectLifeStageQuery);
+                this.insectLifeStageQuery,
+                repository.featureRepository, repository.featureAssignmentRepository);
         InsectCommand.SpeciesCommand speciesCommand = new SpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new ImageCommandImpl(repository.imageRepository);
         this.insectCommand = new InsectCommandImpl(speciesCommand, imageCommand);

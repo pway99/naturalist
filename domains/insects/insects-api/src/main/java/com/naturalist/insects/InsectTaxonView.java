@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.ddd.ReadModel;
+import com.naturalist.insects.InsectEntityCollections.FeatureCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
 /**
@@ -52,4 +53,7 @@ public sealed interface InsectTaxonView extends ReadModel
 
     /** Photographs of this organism at the root rank — non-null, possibly empty. */
     ImageCollection images();
+
+    /** Direct features assigned to this rank — non-null, possibly empty. */
+    FeatureCollection features();
 }

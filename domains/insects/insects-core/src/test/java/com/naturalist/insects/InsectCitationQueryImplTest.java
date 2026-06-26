@@ -28,8 +28,10 @@ class InsectCitationQueryImplTest {
     CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
     CitationQuery citationQuery = libraryContext.citationQuery();
 
+    InsectAncestryResolver ancestryResolver = new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
+
     InsectCitationQueryImpl insectCitationQuery = new InsectCitationQueryImpl(
-            citationAssociationQuery, citationQuery, speciesQuery, genusQuery, familyQuery);
+            citationAssociationQuery, citationQuery, ancestryResolver);
 
     @Test
     void findByRankName_rejectsNull() {

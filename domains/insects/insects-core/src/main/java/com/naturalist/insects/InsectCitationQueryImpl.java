@@ -23,27 +23,19 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
     private final Observer observer = Observer.forClass(getClass());
     private final CitationAssociationQuery citationAssociationQuery;
     private final CitationQuery citationQuery;
-    private final InsectQuery.SpeciesQuery speciesQuery;
-    private final InsectQuery.GenusQuery genusQuery;
-    private final InsectQuery.FamilyQuery familyQuery;
+    private final InsectAncestryResolver ancestryResolver;
 
     InsectCitationQueryImpl(CitationAssociationQuery citationAssociationQuery,
                             CitationQuery citationQuery,
-                            InsectQuery.SpeciesQuery speciesQuery,
-                            InsectQuery.GenusQuery genusQuery,
-                            InsectQuery.FamilyQuery familyQuery) {
+                            InsectAncestryResolver ancestryResolver) {
         observer.arguments("constructor", i -> i
                         .notNull(citationAssociationQuery, "citationAssociationQuery")
                         .notNull(citationQuery, "citationQuery")
-                        .notNull(speciesQuery, "speciesQuery")
-                        .notNull(genusQuery, "genusQuery")
-                        .notNull(familyQuery, "familyQuery"))
+                        .notNull(ancestryResolver, "ancestryResolver"))
                 .throwWhenInvalid();
         this.citationAssociationQuery = citationAssociationQuery;
         this.citationQuery = citationQuery;
-        this.speciesQuery = speciesQuery;
-        this.genusQuery = genusQuery;
-        this.familyQuery = familyQuery;
+        this.ancestryResolver = ancestryResolver;
     }
 
     record PendingCitation(CitationName citationName, InsectRankName attachedAt, String note) {}
@@ -53,7 +45,7 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
         observer.arguments("findByRankName", i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
 
-        List<InsectRankName> ancestry = resolveAncestry(rankName);
+        List<InsectRankName> ancestry = ancestryResolver.resolveAncestry(rankName);
         List<PendingCitation> pending = new ArrayList<>();
 
         for (InsectRankName rank : ancestry) {
@@ -90,37 +82,4 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
         return view;
     }
 
-    private List<InsectRankName> resolveAncestry(InsectRankName rankName) {
-        List<InsectRankName> ancestry = new ArrayList<>();
-        ancestry.add(rankName);
-
-        return switch (rankName) {
-            case InsectSpeciesName speciesName -> {
-                speciesQuery.getByName(speciesName).ifPresent(species -> {
-                    ancestry.add(species.genusName());
-                    genusQuery.getByName(species.genusName()).ifPresent(genus -> {
-                        ancestry.add(genus.familyName());
-                        familyQuery.getByName(genus.familyName()).ifPresent(family ->
-                                ancestry.add(family.orderName()));
-                    });
-                });
-                yield ancestry;
-            }
-            case InsectGenusName genusName -> {
-                genusQuery.getByName(genusName).ifPresent(genus -> {
-                    ancestry.add(genus.familyName());
-                    familyQuery.getByName(genus.familyName()).ifPresent(family ->
-                            ancestry.add(family.orderName()));
-                });
-                yield ancestry;
-            }
-            case InsectFamilyName familyName -> {
-                familyQuery.getByName(familyName).ifPresent(family ->
-                        ancestry.add(family.orderName()));
-                yield ancestry;
-            }
-            case InsectOrderName _ -> ancestry;
-            case InsectSubspeciesName _ -> ancestry;
-        };
-    }
 }

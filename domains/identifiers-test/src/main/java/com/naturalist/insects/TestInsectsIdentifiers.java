@@ -279,6 +279,64 @@ public class TestInsectsIdentifiers {
         }
     }
 
+    public static class InsectFeature {
+
+        private InsectFeature() {
+        }
+
+        public static class NotFound {
+            public static final InsectFeatureId id = InsectFeatureId.of(
+                    UUID.fromString("019dbdb8-bbbb-7eee-bbbb-bbbbbbbbbbbb"));
+        }
+
+        /** "complete metamorphosis" — assigned to diptera, lepidoptera, coleoptera, hymenoptera. */
+        public static class CompleteMetamorphosis {
+            public static final InsectFeatureId id = InsectFeatureId.of(
+                    UUID.fromString("019f0161-22f6-710d-bae4-d24cb7bdbbb6"));
+        }
+
+        /** "incomplete metamorphosis" — assigned to hemiptera, blattodea. */
+        public static class IncompleteMetamorphosis {
+            public static final InsectFeatureId id = InsectFeatureId.of(
+                    UUID.fromString("019f0161-22f7-7226-9663-8c3611b8774b"));
+        }
+
+        /** "scaled wings" — assigned to lepidoptera. */
+        public static class ScaledWings {
+            public static final InsectFeatureId id = InsectFeatureId.of(
+                    UUID.fromString("019f0161-22f8-7e62-9046-d4e4883b80e5"));
+        }
+    }
+
+    public static class InsectFeatureAssignment {
+
+        private InsectFeatureAssignment() {
+        }
+
+        public static class NotFound {
+            public static final InsectFeatureAssignmentId id = InsectFeatureAssignmentId.of(
+                    UUID.fromString("019dbdb8-cccc-7eee-cccc-cccccccccccc"));
+        }
+
+        /** complete metamorphosis → diptera (ordinal 1). */
+        public static class CompleteMetamorphosisDiptera {
+            public static final InsectFeatureAssignmentId id = InsectFeatureAssignmentId.of(
+                    UUID.fromString("019f0161-22fd-75d7-b15a-2e92590eeb49"));
+        }
+
+        /** complete metamorphosis → lepidoptera (ordinal 1). */
+        public static class CompleteMetamorphosisLepidoptera {
+            public static final InsectFeatureAssignmentId id = InsectFeatureAssignmentId.of(
+                    UUID.fromString("019f0161-22ff-74dc-b7a9-4c4be21b8823"));
+        }
+
+        /** scaled wings → lepidoptera (ordinal 2). */
+        public static class ScaledWingsLepidoptera {
+            public static final InsectFeatureAssignmentId id = InsectFeatureAssignmentId.of(
+                    UUID.fromString("019f0161-2305-725b-a303-291202f6413f"));
+        }
+    }
+
     public static class InsectSpecies {
 
         private InsectSpecies() {

@@ -377,7 +377,7 @@ class InsectTest {
                 TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),
-                null, null,
+                null,
                 null,
                 null, null, null, null, null, null, null));
         Insect insect = Insect.empty()
@@ -446,7 +446,7 @@ class InsectTest {
                 TaxonomicSpecies.of("philenor"),
                 description(),
                 Set.of(),
-                null, null,
+                null,
                 null,
                 null, null, null, null, null, null, null));
     }

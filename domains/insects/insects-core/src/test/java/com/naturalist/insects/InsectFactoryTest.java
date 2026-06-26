@@ -43,8 +43,9 @@ class InsectFactoryTest {
     CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
     CitationQuery libraryCitationQuery = libraryContext.citationQuery();
 
+    InsectAncestryResolver ancestryResolver = new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
     InsectQuery.CitationQuery citationQuery = new InsectCitationQueryImpl(
-            citationAssociationQuery, libraryCitationQuery, speciesQuery, genusQuery, familyQuery);
+            citationAssociationQuery, libraryCitationQuery, ancestryResolver);
 
     /**
      * Stub lifestage query — returns empty collections. InsectLifeStageQueryImpl is

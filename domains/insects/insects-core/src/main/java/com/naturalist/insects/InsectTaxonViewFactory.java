@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.insects.InsectEntityCollections.FeatureCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
@@ -62,16 +63,20 @@ class InsectTaxonViewFactory {
         return switch (name) {
             case InsectSpeciesName speciesName -> speciesQuery.getByName(speciesName)
                     .map(species -> observe(new InsectSpeciesView(
-                            species, imageQuery.forParentName(species.name()))));
+                            species, imageQuery.forParentName(species.name()),
+                            FeatureCollection.empty())));
             case InsectGenusName genusName -> genusQuery.getByName(genusName)
                     .map(genus -> observe(new InsectGenusView(
-                            genus, imageQuery.forParentName(genus.name()))));
+                            genus, imageQuery.forParentName(genus.name()),
+                            FeatureCollection.empty())));
             case InsectFamilyName familyName -> familyQuery.getByName(familyName)
                     .map(family -> observe(new InsectFamilyView(
-                            family, imageQuery.forParentName(family.name()))));
+                            family, imageQuery.forParentName(family.name()),
+                            FeatureCollection.empty())));
             case InsectOrderName on -> orderQuery.getByName(on)
                     .map(order -> observe(new InsectOrderView(
-                            order, imageQuery.forParentName(order.name()))));
+                            order, imageQuery.forParentName(order.name()),
+                            FeatureCollection.empty())));
             case InsectSubspeciesName subspeciesName -> Optional.empty();
         };
     }

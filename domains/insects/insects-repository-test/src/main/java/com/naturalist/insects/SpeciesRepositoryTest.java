@@ -52,7 +52,7 @@ interface SpeciesRepositoryTest
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
-                null, null,
+                null,
                 null,
                 null, null, null, null,
                 null, null, null);
@@ -66,7 +66,7 @@ interface SpeciesRepositoryTest
                 TaxonomicSpecies.of("ghost"),
                 description(),
                 Set.of(),
-                null, null,
+                null,
                 null,
                 null, null, null, null,
                 null, null, null);
@@ -81,7 +81,6 @@ interface SpeciesRepositoryTest
                 description(),
                 Set.of(),
                 RandomValue.string(),
-                new InsectSpecies.IdentificationFeatures(List.of(RandomValue.string())),
                 null,
                 null,
                 new InsectSpecies.Voltinism(
@@ -123,8 +122,8 @@ interface SpeciesRepositoryTest
                 seeded.epithet(),
                 seeded.description(),
                 seeded.commonNames(),
-                null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null,
+                null, null, null, null, null);
         repository().insert(underHalictus);
 
         var results = repository().getByGenusName(halictus);

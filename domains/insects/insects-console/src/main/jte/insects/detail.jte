@@ -108,17 +108,6 @@
         </form>
     </section>
 
-    @if(species.identificationFeatures() != null)
-        <section>
-            <h2>Identification Features</h2>
-            <ul>
-                @for(var feature : species.identificationFeatures().features())
-                    <li>${feature}</li>
-                @endfor
-            </ul>
-        </section>
-    @endif
-
     @if(species.chemicalDefense() != null)
         <section>
             <h2>Chemical Defence</h2>

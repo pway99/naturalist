@@ -16,6 +16,8 @@ import java.util.List;
  *   <li>{@link GenusRepository} — {@link InsectGenus} entities.</li>
  *   <li>{@link FunctionalRoleRepository} — {@link InsectFunctionalRole} entities.</li>
  *   <li>{@link OrderRepository} — {@link InsectOrder} entities.</li>
+ *   <li>{@link FeatureRepository} — {@link InsectFeature} entities.</li>
+ *   <li>{@link FeatureAssignmentRepository} — {@link InsectFeatureAssignment} entities.</li>
  * </ul>
  *
  * <p>This is a {@code class}, not an {@code interface}, so the nested repository
@@ -32,6 +34,8 @@ class InsectRepository {
     final GenusRepository genusRepository;
     final FunctionalRoleRepository functionalRoleRepository;
     final OrderRepository orderRepository;
+    final FeatureRepository featureRepository;
+    final FeatureAssignmentRepository featureAssignmentRepository;
 
     private InsectRepository(
             SpeciesRepository speciesRepository,
@@ -39,13 +43,17 @@ class InsectRepository {
             FamilyRepository familyRepository,
             GenusRepository genusRepository,
             FunctionalRoleRepository functionalRoleRepository,
-            OrderRepository orderRepository) {
+            OrderRepository orderRepository,
+            FeatureRepository featureRepository,
+            FeatureAssignmentRepository featureAssignmentRepository) {
         this.speciesRepository = speciesRepository;
         this.imageRepository = imageRepository;
         this.familyRepository = familyRepository;
         this.genusRepository = genusRepository;
         this.functionalRoleRepository = functionalRoleRepository;
         this.orderRepository = orderRepository;
+        this.featureRepository = featureRepository;
+        this.featureAssignmentRepository = featureAssignmentRepository;
     }
 
     static InsectRepository create(
@@ -54,9 +62,12 @@ class InsectRepository {
             FamilyRepository familyRepository,
             GenusRepository genusRepository,
             FunctionalRoleRepository functionalRoleRepository,
-            OrderRepository orderRepository) {
+            OrderRepository orderRepository,
+            FeatureRepository featureRepository,
+            FeatureAssignmentRepository featureAssignmentRepository) {
         return new InsectRepository(speciesRepository, imageRepository, familyRepository,
-                genusRepository, functionalRoleRepository, orderRepository);
+                genusRepository, functionalRoleRepository, orderRepository,
+                featureRepository, featureAssignmentRepository);
     }
 
     SpeciesRepository speciesRepository() {
@@ -81,6 +92,14 @@ class InsectRepository {
 
     OrderRepository orderRepository() {
         return orderRepository;
+    }
+
+    FeatureRepository featureRepository() {
+        return featureRepository;
+    }
+
+    FeatureAssignmentRepository featureAssignmentRepository() {
+        return featureAssignmentRepository;
     }
 
     protected interface SpeciesRepository
@@ -117,5 +136,17 @@ class InsectRepository {
 
     protected interface OrderRepository
             extends EntityRepository<InsectOrderName, InsectOrder> {
+    }
+
+    protected interface FeatureRepository
+            extends EntityRepository<InsectFeatureId, InsectFeature> {
+    }
+
+    protected interface FeatureAssignmentRepository
+            extends EntityRepository<InsectFeatureAssignmentId, InsectFeatureAssignment> {
+
+        List<InsectFeatureAssignment> getByRankName(InsectRankName rankName);
+
+        List<InsectFeatureAssignment> getByFeatureId(InsectFeatureId featureId);
     }
 }

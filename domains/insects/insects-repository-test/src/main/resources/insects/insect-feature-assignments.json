@@ -1,0 +1,72 @@
+[
+  {
+    "id": "019f0161-22fd-75d7-b15a-2e92590eeb49",
+    "featureId": "019f0161-22f6-710d-bae4-d24cb7bdbbb6",
+    "rank": "ORDER",
+    "rankName": "diptera",
+    "ordinal": 1
+  },
+  {
+    "id": "019f0161-22ff-74dc-b7a9-4c4be21b8823",
+    "featureId": "019f0161-22f6-710d-bae4-d24cb7bdbbb6",
+    "rank": "ORDER",
+    "rankName": "lepidoptera",
+    "ordinal": 1
+  },
+  {
+    "id": "019f0161-2300-7180-beca-727a2998f1ae",
+    "featureId": "019f0161-22f6-710d-bae4-d24cb7bdbbb6",
+    "rank": "ORDER",
+    "rankName": "coleoptera",
+    "ordinal": 1
+  },
+  {
+    "id": "019f0161-2301-7b94-8af9-dd0713d94e59",
+    "featureId": "019f0161-22f6-710d-bae4-d24cb7bdbbb6",
+    "rank": "ORDER",
+    "rankName": "hymenoptera",
+    "ordinal": 1
+  },
+  {
+    "id": "019f0161-2303-7507-923d-0699d6c75094",
+    "featureId": "019f0161-22f7-7226-9663-8c3611b8774b",
+    "rank": "ORDER",
+    "rankName": "hemiptera",
+    "ordinal": 1
+  },
+  {
+    "id": "019f0161-2304-7017-88ca-765f9e11874c",
+    "featureId": "019f0161-22f7-7226-9663-8c3611b8774b",
+    "rank": "ORDER",
+    "rankName": "blattodea",
+    "ordinal": 1
+  },
+  {
+    "id": "019f0161-2305-725b-a303-291202f6413f",
+    "featureId": "019f0161-22f8-7e62-9046-d4e4883b80e5",
+    "rank": "ORDER",
+    "rankName": "lepidoptera",
+    "ordinal": 2
+  },
+  {
+    "id": "019f0161-2306-719d-90e7-b752b664e1c4",
+    "featureId": "019f0161-22fa-7880-a20d-96f10c255f1f",
+    "rank": "ORDER",
+    "rankName": "diptera",
+    "ordinal": 2
+  },
+  {
+    "id": "019f0161-2308-7af6-bd9b-3ab7e8d6e8ac",
+    "featureId": "019f0161-22fb-7e22-9e43-6b5c2c3cd4ce",
+    "rank": "ORDER",
+    "rankName": "hemiptera",
+    "ordinal": 2
+  },
+  {
+    "id": "019f0161-2309-7bfa-9125-3585d410777b",
+    "featureId": "019f0161-22fc-7a04-884c-f505ec00bdd1",
+    "rank": "ORDER",
+    "rankName": "coleoptera",
+    "ordinal": 2
+  }
+]
