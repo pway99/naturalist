@@ -1104,6 +1104,80 @@ figure.compound-depiction img {
     margin-top: 1.25rem;
 }
 
+/* Dual-strategy breadcrumb — two-row CSS Grid. Items are emitted in
+   strict (clade-row, rank-row) pairs, and grid-auto-flow: column places
+   each pair in the same column. Row 1 = phylogenetic lineage (clade names),
+   row 2 = Linnaean rank ladder (rank names or em-dash gaps). */
+.dual-breadcrumb {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    column-gap: 0.5rem;
+    row-gap: 0.15rem;
+    align-items: baseline;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--sepia-ink-soft);
+    padding: 0.4rem 0;
+    margin: 0 0 0.75rem;
+    line-height: 1.3;
+    overflow-x: auto;
+}
+
+.dual-breadcrumb-clade {
+    grid-row: 1;
+    white-space: nowrap;
+}
+
+.dual-breadcrumb-rank {
+    grid-row: 2;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(58, 42, 24, 0.55);
+}
+
+.dual-breadcrumb-sep {
+    color: rgba(58, 42, 24, 0.35);
+}
+
+.dual-breadcrumb-spacer {
+    /* Invisible placeholder keeping rank row aligned under separators. */
+}
+
+.dual-breadcrumb-gap {
+    color: rgba(58, 42, 24, 0.3);
+    font-style: italic;
+}
+
+.dual-breadcrumb a {
+    color: var(--sepia-ink-soft);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--sepia-rule);
+}
+
+.dual-breadcrumb a:hover {
+    color: var(--pico-primary);
+    border-bottom-color: var(--pico-primary);
+}
+
+.dual-breadcrumb-rank a {
+    color: rgba(58, 42, 24, 0.55);
+}
+
+.dual-breadcrumb-rank a:hover {
+    color: var(--pico-primary);
+}
+
+.dual-breadcrumb-current strong {
+    color: var(--sepia-ink);
+    font-weight: 700;
+    font-style: normal;
+}
+
 /* Taxonomic breadcrumb — multi-line field-guide layout. Each segment
    stacks a tiny uppercase Linnaean-rank eyebrow above the clickable name;
    the chevron separators sit on the name baseline.

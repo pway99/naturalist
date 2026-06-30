@@ -1,5 +1,5 @@
-@import com.naturalist.library.console.clade.CladesController.CladeNode
-@param CladeNode node
+@import com.naturalist.library.CladeQuery.CladeTreeNode
+@param CladeTreeNode node
 
 <li>
     <a href="/clades/${node.slug()}">${node.displayName()}</a>
