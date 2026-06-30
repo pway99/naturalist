@@ -22,6 +22,14 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>clades</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>field-notes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>framework</artifactId>
         </dependency>
         <dependency>
@@ -30,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>field-notes</artifactId>
+            <artifactId>taxonomy</artifactId>
         </dependency>
 
         <!-- TEST DEPENDENCIES -->
