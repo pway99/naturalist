@@ -48,5 +48,75 @@
       "secondary": "Taxonomy is the science of describing, naming, and classifying organisms. It gives each species a place in a ranked hierarchy of groups, or taxa — species, genus, family, order, and on upward — and a unique scientific name governed by international rules. Classical taxonomy grouped organisms by shared features; modern taxonomy increasingly aligns those groups with evolutionary relationships, so that a named group ideally corresponds to a real branch of the tree of life.",
       "university": "Taxonomy is the theory and practice of delimiting, naming, and classifying organisms: circumscribing taxa, assigning them to ranks in the Linnaean hierarchy, and fixing their names under the relevant nomenclatural code (ICZN for animals, ICN for plants). It is distinct from but coupled to systematics and phylogenetics — taxonomy supplies the named, ranked containers, while phylogenetics supplies the branching hypotheses those containers are increasingly required to match. The central modern tension is that ranks are stipulated and finite while the tree branches without limit, so taxa are continually recircumscribed toward monophyly, and the discipline absorbs the resulting nomenclatural churn through priority, typification, and synonymy. A working taxonomy is therefore at once an information-retrieval system — a stable, communicable set of names — and a set of testable evolutionary hypotheses."
     }
+  },
+  {
+    "name": "kingdom",
+    "title": "What is a kingdom?",
+    "description": {
+      "preschool": "A kingdom is one of the biggest groups of living things. Animals are in one kingdom, plants are in another. It is like having two giant toy bins — one for all the stuffed animals and one for all the building bricks.",
+      "elementary": "The kingdom is one of the broadest ranks in taxonomy — just below domain. All animals belong to one kingdom (Animalia), all plants to another (Plantae), all fungi to a third (Fungi). Each kingdom contains thousands of smaller groups nested inside it, each one more specific than the last.",
+      "secondary": "A kingdom is a high-level taxonomic rank traditionally used to divide all life into a small number of broad groups: Animalia, Plantae, Fungi, Protista, and the prokaryotic kingdoms. The boundaries have shifted repeatedly as molecular data replaced morphological criteria — for example, fungi were long placed with plants before ribosomal RNA analysis showed they are more closely related to animals. Today, domain (Bacteria, Archaea, Eukarya) sits above kingdom, and many lineages formerly lumped in Protista have been redistributed.",
+      "university": "Kingdom is the rank immediately below domain in the Linnaean hierarchy. Its circumscription has been revised from Linnaeus's original two kingdoms (Animalia, Plantae) through Whittaker's five-kingdom system (adding Fungi, Protista, Monera) to the current three-domain framework (Woese 1990), where kingdom-level divisions within Eukarya remain debated — molecular phylogenetics consistently recovers polyphyletic 'Protista,' and no consensus number of eukaryotic kingdoms has stabilised. For metazoan taxonomy the kingdom Animalia is uncontroversial: it is monophyletic, diagnosed by multicellularity with collagen-based extracellular matrix, and governed by the ICZN. Its utility is as a filing coordinate — 'kingdom: Animalia' tells you which code of nomenclature applies and roughly what cell biology to expect, but carries no finer phylogenetic signal than that."
+    }
+  },
+  {
+    "name": "phylum",
+    "title": "What is a phylum?",
+    "description": {
+      "preschool": "A phylum is a really big group inside a kingdom. All the animals with a backbone are in one phylum, and all the insects, crabs, and spiders are in another. It is like splitting the big animal bin into a few smaller bins by how their bodies are built.",
+      "elementary": "Inside the animal kingdom, animals are sorted into phyla based on their basic body plan. Arthropoda is the phylum for animals with jointed legs and a hard outer shell — that includes insects, spiders, and crabs. Chordata is the phylum for animals with a nerve cord running down their back, which includes fish, birds, and mammals. There are about 35 animal phyla.",
+      "secondary": "A phylum is the rank below kingdom that groups organisms by fundamental body plan. Arthropoda, the phylum containing insects, is defined by a segmented body, an exoskeleton of chitin, and paired jointed appendages. Most animal phyla appeared during the Cambrian explosion, roughly 540 million years ago, and the body-plan differences that separate phyla are deeper than those separating classes or orders within a phylum.",
+      "university": "Phylum is the highest rank below kingdom, grouping organisms that share a fundamental body plan — a suite of developmental and morphological characters conserved across the clade. In zoology the rank is governed by the ICZN but carries no mandatory name suffix. Most metazoan phyla are recovered as monophyletic by molecular phylogenetics, though internal relationships (e.g. Ecdysozoa vs. Articulata for the placement of arthropods relative to annelids) have been substantially revised by 18S/28S rRNA and phylogenomic data. Arthropoda — the phylum relevant to entomology — is diagnosed by tagmosis, a sclerotized cuticle, and biramous-to-uniramous appendage transformation series."
+    }
+  },
+  {
+    "name": "class",
+    "title": "What is a class?",
+    "description": {
+      "preschool": "A class is a group inside a phylum. Insects are a class — all the bugs with six legs and three body parts belong together in the class called Insecta.",
+      "elementary": "Inside the arthropod phylum, animals are divided into classes. Insecta is the class for six-legged arthropods — beetles, butterflies, ants, and flies all belong here. Arachnida is the class for eight-legged arthropods like spiders and scorpions. Each class shares a body layout that sets it apart from its cousins.",
+      "secondary": "A class is the rank below phylum and above order. Insecta, the class of six-legged arthropods, is diagnosed by a body divided into head, thorax, and abdomen, three pairs of thoracic legs, and (usually) wings. Insecta is by far the most species-rich class of animals, with over a million described species. Classification within Insecta — particularly the relationships among the winged orders — has been reshaped by molecular phylogenetics.",
+      "university": "Class is a principal Linnaean rank between phylum and order. Insecta (= Hexapoda sensu stricto in many treatments) is diagnosed by tagmosis into head, thorax, and abdomen, three pairs of thoracic legs, ectognathous mouthparts, and (primitively) two pairs of wings. The rank has no ICZN-mandated suffix. Internal classification follows the Pterygota–Palaeoptera–Neoptera topology, with Holometabola as the major derived clade. Class boundaries are stable for Insecta but contested elsewhere — the number of classes within Arthropoda (Myriapoda monophyletic vs. paraphyletic, Hexapoda nested within Crustacea as Pancrustacea) continues to shift with phylogenomic data."
+    }
+  },
+  {
+    "name": "order",
+    "title": "What is an order?",
+    "description": {
+      "preschool": "An order is a group of animals that are alike in a special way. Butterflies and moths are in the order Lepidoptera — they all have tiny scales on their wings that make the colours and patterns you see.",
+      "elementary": "An order groups together families that share a big, defining feature. Lepidoptera is the order of butterflies and moths — all the insects whose wings are covered in tiny overlapping scales. Coleoptera is the order of beetles — the ones with hard wing covers. Hymenoptera is the order of bees, wasps, and ants. Each order is a branch of the insect tree of life.",
+      "secondary": "An order is the rank below class and above family, grouping families that share a major suite of derived characters. Lepidoptera (butterflies and moths) is defined by scale-covered wings and a coiled proboscis. Orders are often the most practical level of insect identification — a naturalist learns to recognise ordinal characters (wing venation, mouthpart type, metamorphosis pattern) before refining to family or genus.",
+      "university": "Order is a principal rank between class and family. Insect orders are diagnosed by wing venation ground plan, mouthpart morphology, and metamorphosis type (holo- vs. hemimetabolous). Ordinal limits in Insecta are mostly stable — Lepidoptera, Coleoptera, Hymenoptera, Diptera are uncontroversially monophyletic — but some traditional orders have been revised: Isoptera was sunk into Blattodea when termites were shown to be social cockroaches, and Homoptera was dissolved when its constituent suborders proved non-monophyletic. The ICZN does not regulate names above family group, so ordinal names carry no mandatory suffix and no type genus."
+    }
+  },
+  {
+    "name": "family",
+    "title": "What is a family?",
+    "description": {
+      "preschool": "A family is a group of animals that are close relatives. The swallowtail butterflies all belong to one family because they share the same kind of tail-shaped wings and bright warning colours.",
+      "elementary": "A family is a group of genera that are closely related. Papilionidae is the swallowtail family — all the big, boldly coloured butterflies with tail-like extensions on their hindwings. Family names for animals always end in '-idae.' Inside a family, there are genera, and inside each genus, species.",
+      "secondary": "A family is the rank below order and above genus. In zoology, family names are governed by the ICZN and must end in '-idae,' anchored to a type genus. Papilionidae, the swallowtail family, is diagnosed by the forked osmeterium (a defensive gland unique to its larvae) and characteristic wing venation. Families are often the level at which field guides are organised — learning to recognise family-level characters is a key step in naturalist training.",
+      "university": "Family is a rank in the family group (superfamily, family, subfamily, tribe, subtribe) governed by the ICZN, carrying the mandatory suffix -idae and anchored to a type genus whose valid name fixes the family name. A family is circumscribed by a set of synapomorphies diagnostic at that rank — for Papilionidae these include the larval osmeterium, a single anal vein in the forewing, and the absence of a humeral vein in the hindwing. Family-level stability varies: some insect families (Papilionidae, Scarabaeidae) have been recognised since the early 19th century, while others are regularly split or merged as molecular data revise generic relationships."
+    }
+  },
+  {
+    "name": "genus",
+    "title": "What is a genus?",
+    "description": {
+      "preschool": "A genus is a small group of animals that are very close relatives — almost like brothers and sisters. The genus Battus holds a few kinds of swallowtail butterfly that look and act very much alike.",
+      "elementary": "A genus is a group of species that are each other's closest relatives. The genus name is the first word in a species' two-part scientific name. Battus is a genus of swallowtail butterflies — Battus philenor (the pipevine swallowtail) and Battus polydamas (the gold rim swallowtail) are two species in that genus. They share enough features that scientists group them together.",
+      "secondary": "A genus is the rank below family and above species, and it supplies the first word of the binomial name. A genus should be monophyletic — a clade — and its member species should share a set of diagnostic characters that distinguish them from species in sibling genera. In practice, generic limits are among the most frequently revised ranks in taxonomy, because what 'counts' as genus-level divergence is partly a judgment call. Splitting a genus changes every species' binomial, which is why genus revisions are both scientifically important and nomenclaturally disruptive.",
+      "university": "Genus is the rank that supplies the first element of the binomial and is the operative unit of Linnaean nomenclature: the specific epithet has no standing without it. Under the ICZN a genus is anchored to a type species, which fixes the name's application when the genus is split or merged. Generic monophyly is expected but not enforced by the code — paraphyletic genera persist where no formal revision has been published. The genus Drosophila illustrates the tension: molecular phylogenetics shows it to be massively paraphyletic, and a strict split would reassign D. melanogaster to Sophophora, disrupting one of biology's most familiar binomials. Priority and typification rules arbitrate such cases, but the community's tolerance for nomenclatural upheaval often delays formal action."
+    }
+  },
+  {
+    "name": "species",
+    "title": "What is a species?",
+    "description": {
+      "preschool": "A species is one exact kind of animal. Every pipevine swallowtail butterfly is the same species — they all look alike, live in similar places, and their babies grow up to be pipevine swallowtails too.",
+      "elementary": "A species is the most specific rank — one particular kind of living thing. The pipevine swallowtail, Battus philenor, is one species. Its scientific name has two parts: Battus (the genus, its group of close relatives) and philenor (which picks out this one kind). Members of the same species can breed with each other and produce healthy offspring.",
+      "secondary": "A species is the fundamental unit of biodiversity — a population or group of populations of organisms that share a recent common ancestor and are reproductively or genetically cohesive. In practice, entomologists diagnose species using morphological characters (wing pattern, genitalic structure), DNA barcoding (the mitochondrial COI gene), and ecological or behavioural differences. Cryptic species — populations that look identical but are genetically distinct — are increasingly being discovered through molecular work, especially in insects.",
+      "university": "Species is the base rank of the Linnaean hierarchy and the only rank with an operational (if contested) biological definition. The biological species concept (Mayr 1942) defines species by reproductive isolation; the phylogenetic species concept defines them as the smallest diagnosable monophyletic cluster; the unified species concept (de Queiroz 2007) treats speciation as a process and species as independently evolving metapopulation lineages, with various criteria (reproductive isolation, diagnosability, ecological distinctness) serving as lines of evidence rather than definitions. In entomology, integrative taxonomy combining morphology, molecular barcoding (typically COI), ecology, and behaviour is standard practice for species delimitation. The ICZN governs species-group names — each anchored to a type specimen — and arbitrates priority, homonymy, and synonymy when species are recombined across genera."
+    }
   }
 ]
