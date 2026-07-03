@@ -5,6 +5,7 @@
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
+@import com.naturalist.insects.console.CladeTrail
 @import java.util.List
 
 @param InsectFamily family
@@ -17,12 +18,13 @@
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
 @param List<BreadcrumbSegment> breadcrumb = List.of()
+@param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 
 !{var commonName = family.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(family.family().value());}
 
 @template.layout.page(title = family.family().value(), content = @`
-    @template.insects.nav(breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>${commonName}</h1>

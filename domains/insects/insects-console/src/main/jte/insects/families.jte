@@ -4,6 +4,7 @@
 @import com.naturalist.insects.InsectOrderName
 @import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
+@import com.naturalist.insects.console.CladeTrail
 @import com.naturalist.data.Page
 @import java.util.List
 @import java.util.Map
@@ -12,10 +13,11 @@
 @param Map<InsectOrderName, InsectOrder> orderByName
 @param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param List<BreadcrumbSegment> breadcrumb = List.of()
+@param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 
 @template.layout.page(title = "Insect Families", content = @`
-    @template.insects.nav(breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>Insect Families</h1>

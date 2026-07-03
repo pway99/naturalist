@@ -1245,6 +1245,65 @@ figure.compound-depiction img {
     margin: 0;
 }
 
+/* Phylogenetic clade trail — a single field-guide row beneath the Linnaean
+   breadcrumb. Nodes link into /clades; the ghost node marks a lineage the
+   tree of life has not mapped yet and links to research guidance. */
+.clade-trail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--sepia-ink-soft);
+    padding: 0.35rem 0.75rem 0.5rem;
+    margin: 0;
+}
+
+/* Header eyebrow that names the row — same tiny uppercase treatment as the
+   Linnaean-rank eyebrows above, so the reader knows the lower trail is the
+   evolutionary tree of life rather than a second rank ladder. `flex-basis: 100%`
+   makes it claim its own line so the clade links wrap beneath it, mirroring the
+   eyebrow-above-name layout of the rank breadcrumb. */
+.clade-trail-label {
+    flex-basis: 100%;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: 600;
+    color: rgba(58, 42, 24, 0.55);
+    margin-bottom: 0.05rem;
+}
+
+.clade-trail-node {
+    color: var(--sepia-ink-soft);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--sepia-rule);
+}
+
+.clade-trail-node:hover {
+    color: var(--pico-primary);
+    border-bottom-color: var(--pico-primary);
+}
+
+.clade-trail-sep {
+    color: rgba(58, 42, 24, 0.35);
+}
+
+.clade-trail-gap {
+    color: rgba(58, 42, 24, 0.55);
+    font-style: italic;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(58, 42, 24, 0.4);
+}
+
+.clade-trail-gap:hover {
+    color: var(--pico-primary);
+    border-bottom-color: var(--pico-primary);
+}
+
 /* Ancestor intros — stack of collapsible Class / Order / Family / Genus /
    Species descriptions above each detail page's primary content. Each
    <details> stays one summary-line tall when closed (cheap to scroll past)

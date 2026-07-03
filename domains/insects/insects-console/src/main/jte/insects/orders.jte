@@ -2,16 +2,18 @@
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
+@import com.naturalist.insects.console.CladeTrail
 @import com.naturalist.data.Page
 @import java.util.List
 
 @param Page<InsectOrder> orderPage
 @param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param List<BreadcrumbSegment> breadcrumb = List.of()
+@param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 
 @template.layout.page(title = "Insect Orders", content = @`
-    @template.insects.nav(breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>Insect Orders</h1>

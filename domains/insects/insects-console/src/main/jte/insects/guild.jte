@@ -2,16 +2,18 @@
 @import com.naturalist.insects.FunctionalGuild
 @import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
+@import com.naturalist.insects.console.CladeTrail
 @import java.util.List
 
 @param FunctionalGuild selectedGuild
 @param FunctionalGuild[] guilds
 @param List<InsectFunctionalRole> roles
 @param List<BreadcrumbSegment> breadcrumb = List.of()
+@param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 
 @template.layout.page(title = "Guild: " + selectedGuild.name(), content = @`
-    @template.insects.nav(breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>Functional Guild: ${selectedGuild.name()}</h1>

@@ -3,6 +3,7 @@
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
+@import com.naturalist.insects.console.CladeTrail
 @import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
 
@@ -11,12 +12,13 @@
 @param InsectOrder order
 @param List<LifeStage> stages
 @param List<BreadcrumbSegment> breadcrumb = List.of()
+@param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
 
 @template.layout.page(title = commonName + " — Life Stages", content = @`
-    @template.insects.nav(breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <section class="life-stages">

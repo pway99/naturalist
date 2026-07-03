@@ -6,6 +6,7 @@
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectImage
 @import com.naturalist.insects.console.BreadcrumbSegment
+@import com.naturalist.insects.console.CladeTrail
 @import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
 @import org.springframework.security.web.csrf.CsrfToken
@@ -24,13 +25,14 @@
 @param String descriptionUniversity = ""
 @param CsrfToken _csrf = null
 @param List<BreadcrumbSegment> breadcrumb = List.of()
+@param CladeTrail cladeTrail = null
 @param java.util.List<com.naturalist.insects.console.AncestorIntro> ancestorIntros = List.of()
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
 !{var binomial = genus.genus().value() + " " + species.epithet().value();}
 
 @template.layout.page(title = binomial, content = @`
-    @template.insects.nav(breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     @if(!stages.isEmpty())
