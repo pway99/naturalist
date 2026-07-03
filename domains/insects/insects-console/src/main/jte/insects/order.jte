@@ -20,7 +20,7 @@
 !{var commonName = order.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(order.order().value());}
 
 @template.layout.page(title = order.order().value(), content = @`
-    @template.insects.nav(active = "order", breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>${commonName}</h1>

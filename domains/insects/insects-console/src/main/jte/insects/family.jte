@@ -22,7 +22,7 @@
 !{var commonName = family.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(family.family().value());}
 
 @template.layout.page(title = family.family().value(), content = @`
-    @template.insects.nav(active = "family", breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>${commonName}</h1>

@@ -24,7 +24,7 @@
 !{var commonName = genus.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value());}
 
 @template.layout.page(title = genus.genus().value(), content = @`
-    @template.insects.nav(active = "genus", breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>${commonName}</h1>

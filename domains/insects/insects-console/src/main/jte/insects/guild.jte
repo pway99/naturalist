@@ -11,7 +11,7 @@
 @param List<AncestorIntro> ancestorIntros = List.of()
 
 @template.layout.page(title = "Guild: " + selectedGuild.name(), content = @`
-    @template.insects.nav(active = "species", breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>Functional Guild: ${selectedGuild.name()}</h1>

@@ -16,7 +16,7 @@
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
 
 @template.layout.page(title = commonName + " — Life Stages", content = @`
-    @template.insects.nav(active = "species", breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <section class="life-stages">

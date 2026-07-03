@@ -23,7 +23,7 @@
 @param List<AncestorIntro> ancestorIntros = List.of()
 
 @template.layout.page(title = "Insect Species", content = @`
-    @template.insects.nav(active = "species", breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>Insect Species</h1>

@@ -30,7 +30,7 @@
 !{var binomial = genus.genus().value() + " " + species.epithet().value();}
 
 @template.layout.page(title = binomial, content = @`
-    @template.insects.nav(active = "species", breadcrumb = breadcrumb)
+    @template.insects.nav(breadcrumb = breadcrumb)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     @if(!stages.isEmpty())
