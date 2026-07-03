@@ -1,5 +1,6 @@
 @import com.naturalist.library.CladeStep
 @import com.naturalist.library.CladeView
+@import com.naturalist.library.console.clade.CladeUrls
 
 @param CladeView view
 @param String descriptionPreschool = ""
@@ -19,7 +20,7 @@
             <span class="dual-breadcrumb-rank dual-breadcrumb-spacer"></span>
 
             <%-- Data column --%>
-            <span class="dual-breadcrumb-clade"><a href="/clades/${step.cladeSlug()}">${step.displayName()}</a></span>
+            <span class="dual-breadcrumb-clade"><a href="${CladeUrls.of(step.cladeSlug())}">${step.displayName()}</a></span>
             @if(step.rank().isPresent())
                 !{var r = step.rank().get().name();}
                 <span class="dual-breadcrumb-rank"><a href="/concepts/${r.toLowerCase()}">${r.substring(0, 1)}${r.substring(1).toLowerCase()}</a></span>
@@ -60,7 +61,7 @@
             <h2>Direct descendants</h2>
             <ul class="clade-children">
                 @for(var child : view.children())
-                    <li><a href="/clades/${child.cladeSlug()}">${child.displayName()}</a></li>
+                    <li><a href="${CladeUrls.of(child.cladeSlug())}">${child.displayName()}</a></li>
                 @endfor
             </ul>
         </section>
