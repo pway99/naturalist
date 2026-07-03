@@ -12,6 +12,10 @@ import com.naturalist.insects.*;
 import com.naturalist.insects.console.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.insects.lifestage.LifeStage;
+import com.naturalist.library.CladeQuery;
+import com.naturalist.library.CladeStep;
+import com.naturalist.library.CladeView;
+import com.naturalist.library.LibraryTestContext;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,6 +54,7 @@ public class InsectsController {
     private final InsectQuery insectQuery;
     private final InsectCommand insectCommand;
     private final InsectLifeStageQuery insectLifeStageQuery;
+    private final CladeQuery cladeQuery;
     private final Resilience resilience;
     private final DescriptionRenderer descriptionRenderer;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
@@ -62,6 +67,8 @@ public class InsectsController {
         this.insectLifeStageQuery = context.insectLifeStageQuery();
         this.resilience = resilience;
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
+        // TODO:: This will eventually be a spring managed bean
+        this.cladeQuery = LibraryTestContext.create(NaturalistDatabase.create()).cladeQuery();
     }
 
     /**
@@ -199,6 +206,47 @@ public class InsectsController {
         return segments;
     }
 
+    private CladeTrail cladeTrail(List<InsectCladeAnchors.LineageEntry> lineage) {
+        InsectCladeAnchors.Anchor anchor = InsectCladeAnchors.resolve(lineage);
+        CladeView view = cladeQuery.getBySlug(anchor.cladeSlug()).orElseThrow(
+                () -> new IllegalStateException("anchor clade not found: " + anchor.cladeSlug()));
+        List<CladeStep> steps = new ArrayList<>(view.ancestry());
+        steps.add(view.subject());
+        return new CladeTrail(steps, anchor.gapLabel());
+    }
+
+    private List<InsectCladeAnchors.LineageEntry> lineageToOrder(InsectOrder order) {
+        return List.of(new InsectCladeAnchors.LineageEntry(
+                order.name().value(), order.order().value()));
+    }
+
+    private List<InsectCladeAnchors.LineageEntry> lineageToFamily(InsectFamily family, InsectOrder order) {
+        return List.of(
+                new InsectCladeAnchors.LineageEntry(family.name().value(), family.family().value()),
+                new InsectCladeAnchors.LineageEntry(order.name().value(), order.order().value()));
+    }
+
+    private List<InsectCladeAnchors.LineageEntry> lineageToGenus(InsectGenus genus,
+                                                                 InsectFamily family,
+                                                                 InsectOrder order) {
+        return List.of(
+                new InsectCladeAnchors.LineageEntry(genus.name().value(), genus.genus().value()),
+                new InsectCladeAnchors.LineageEntry(family.name().value(), family.family().value()),
+                new InsectCladeAnchors.LineageEntry(order.name().value(), order.order().value()));
+    }
+
+    private List<InsectCladeAnchors.LineageEntry> lineageToSpecies(InsectSpecies species,
+                                                                   InsectGenus genus,
+                                                                   InsectFamily family,
+                                                                   InsectOrder order) {
+        String binomial = genus.genus().value() + " " + species.epithet().value();
+        return List.of(
+                new InsectCladeAnchors.LineageEntry(species.name().value(), binomial),
+                new InsectCladeAnchors.LineageEntry(genus.name().value(), genus.genus().value()),
+                new InsectCladeAnchors.LineageEntry(family.name().value(), family.family().value()),
+                new InsectCladeAnchors.LineageEntry(order.name().value(), order.order().value()));
+    }
+
     @GetMapping
     String index() {
         return "redirect:/insects/orders";
@@ -228,6 +276,7 @@ public class InsectsController {
         model.addAttribute("genusByName", genusByName);
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
+        model.addAttribute("cladeTrail", cladeTrail(List.of()));
         return "insects/list";
     }
 
@@ -250,6 +299,7 @@ public class InsectsController {
         model.addAttribute("gallery", gallery);
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
+        model.addAttribute("cladeTrail", cladeTrail(List.of()));
         return "insects/families";
     }
 
@@ -281,6 +331,7 @@ public class InsectsController {
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         model.addAttribute("breadcrumb", breadcrumbToFamily(family, order));
+        model.addAttribute("cladeTrail", cladeTrail(lineageToFamily(family, order)));
         model.addAttribute("ancestorIntros", introsForFamily(order));
         return "insects/family";
     }
@@ -298,6 +349,7 @@ public class InsectsController {
         model.addAttribute("gallery", gallery);
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
+        model.addAttribute("cladeTrail", cladeTrail(List.of()));
         return "insects/orders";
     }
 
@@ -327,6 +379,7 @@ public class InsectsController {
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         model.addAttribute("breadcrumb", breadcrumbToOrder(order));
+        model.addAttribute("cladeTrail", cladeTrail(lineageToOrder(order)));
         model.addAttribute("ancestorIntros", classOnlyIntros());
         return "insects/order";
     }
@@ -350,6 +403,7 @@ public class InsectsController {
         model.addAttribute("gallery", gallery);
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
+        model.addAttribute("cladeTrail", cladeTrail(List.of()));
         return "insects/genera";
     }
 
@@ -386,6 +440,7 @@ public class InsectsController {
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus, family, order));
+        model.addAttribute("cladeTrail", cladeTrail(lineageToGenus(genus, family, order)));
         model.addAttribute("ancestorIntros", introsForGenus(order, family));
         return "insects/genus";
     }
@@ -406,6 +461,7 @@ public class InsectsController {
         model.addAttribute("roles", roles);
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
+        model.addAttribute("cladeTrail", cladeTrail(List.of()));
         return "insects/guild";
     }
 
@@ -438,6 +494,7 @@ public class InsectsController {
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
         model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
         model.addAttribute("breadcrumb", breadcrumbToSpecies(s, genus, family, order));
+        model.addAttribute("cladeTrail", cladeTrail(lineageToSpecies(s, genus, family, order)));
         model.addAttribute("ancestorIntros", introsForSpecies(order, family, genus));
         Object csrf = request.getAttribute(CSRF_REQUEST_ATTRIBUTE);
         if (csrf != null) {
@@ -478,6 +535,7 @@ public class InsectsController {
         model.addAttribute("stages", stages);
         model.addAttribute("ancestorIntros", introsForLifeStages(order, family, genus, s));
         model.addAttribute("breadcrumb", breadcrumbToSpecies(s, genus, family, order));
+        model.addAttribute("cladeTrail", cladeTrail(lineageToSpecies(s, genus, family, order)));
         return "insects/life-stages";
     }
 
