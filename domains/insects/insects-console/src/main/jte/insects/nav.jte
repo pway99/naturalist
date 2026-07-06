@@ -5,7 +5,7 @@
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param CladeTrail cladeTrail = null
 
-<div class="insects-context-bar">
+<div class="context-bar">
     @if(!breadcrumb.isEmpty())
         @template.insects.breadcrumb(segments = breadcrumb)
     @endif
