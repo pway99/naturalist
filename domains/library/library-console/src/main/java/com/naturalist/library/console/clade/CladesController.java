@@ -33,9 +33,9 @@ public class CladesController {
 
     @GetMapping("/clades/{slug}")
     String detail(@PathVariable String slug, Model model) {
-        // Insecta is the single class owned by the insects catalogue; its
+        // Insecta is the single class owned by the insects catalog; its
         // tree-of-life page would list only the few insect orders modelled as
-        // clades, so send the naturalist to the full catalogue instead.
+        // clades, so send the naturalist to the full catalog instead.
         if ("insecta".equals(slug)) {
             return "redirect:/insects/orders";
         }

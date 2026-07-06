@@ -44,24 +44,54 @@ class InsectCladeAnchorsTest {
 
     @Test
     void deepGapAnchorsAtNearestMappedAncestor() {
-        // Species/genus/family unmapped; order lepidoptera is the mapped ancestor.
+        // Species unmapped; genus vanessa is curated to the Papilionoidea
+        // superfamily, so the trail descends there and gaps at the species.
         Anchor anchor = InsectCladeAnchors.resolve(List.of(
                 new LineageEntry("vanessa-cardui", "Vanessa cardui"),
                 new LineageEntry("vanessa", "Vanessa"),
                 new LineageEntry("nymphalidae", "Nymphalidae"),
                 new LineageEntry("lepidoptera", "Lepidoptera")));
-        assertThat(anchor.cladeSlug()).isEqualTo("lepidoptera");
+        assertThat(anchor.cladeSlug()).isEqualTo("papilionoidea");
         assertThat(anchor.gapLabel()).isEqualTo("Vanessa cardui");
     }
 
     @Test
     void fullyUnmappedLineageFallsToInsectaWithCurrentEntityGap() {
+        // Beetles have no clade at any rank the kernel models — an honest gap.
         Anchor anchor = InsectCladeAnchors.resolve(List.of(
-                new LineageEntry("harpalus-affinis", "Harpalus affinis"),
-                new LineageEntry("harpalus", "Harpalus"),
-                new LineageEntry("carabidae", "Carabidae"),
+                new LineageEntry("hippodamia-convergens", "Hippodamia convergens"),
+                new LineageEntry("hippodamia", "Hippodamia"),
+                new LineageEntry("coccinellidae", "Coccinellidae"),
                 new LineageEntry("coleoptera", "Coleoptera")));
         assertThat(anchor.cladeSlug()).isEqualTo("insecta");
-        assertThat(anchor.gapLabel()).isEqualTo("Harpalus affinis");
+        assertThat(anchor.gapLabel()).isEqualTo("Hippodamia convergens");
+    }
+
+    @Test
+    void beeGenusAnchorsAtAnthophila() {
+        Anchor anchor = InsectCladeAnchors.resolve(List.of(
+                new LineageEntry("apis", "Apis")));
+        assertThat(anchor.cladeSlug()).isEqualTo("anthophila");
+        assertThat(anchor.gapLabel()).isNull();
+    }
+
+    @Test
+    void drosophilaSpeciesAnchorAtTheirRespectiveSubgenera() {
+        assertThat(InsectCladeAnchors.resolve(List.of(
+                new LineageEntry("drosophila-melanogaster", "Drosophila melanogaster"),
+                new LineageEntry("drosophila", "Drosophila"))).cladeSlug())
+                .isEqualTo("sophophora");
+        assertThat(InsectCladeAnchors.resolve(List.of(
+                new LineageEntry("drosophila-funebris", "Drosophila funebris"),
+                new LineageEntry("drosophila", "Drosophila"))).cladeSlug())
+                .isEqualTo("drosophila-sensu-stricto");
+    }
+
+    @Test
+    void termiteGenusAnchorsAtTermitoidae() {
+        Anchor anchor = InsectCladeAnchors.resolve(List.of(
+                new LineageEntry("reticulitermes", "Reticulitermes")));
+        assertThat(anchor.cladeSlug()).isEqualTo("termitoidae");
+        assertThat(anchor.gapLabel()).isNull();
     }
 }

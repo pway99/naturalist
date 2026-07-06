@@ -1,5 +1,4 @@
 @import com.naturalist.insects.console.CladeTrail
-@import com.naturalist.library.CladeStep
 
 @param CladeTrail trail
 
