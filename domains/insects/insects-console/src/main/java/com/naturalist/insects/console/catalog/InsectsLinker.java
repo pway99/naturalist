@@ -5,6 +5,7 @@ import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectFamilyName;
 import com.naturalist.insects.InsectGenusName;
+import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectSpeciesName;
 
 /**
@@ -21,6 +22,7 @@ public class InsectsLinker implements EntityRefLinker {
             case InsectSpeciesName n -> "/insects/" + n.value();
             case InsectGenusName n -> "/insects/genera/" + n.value();
             case InsectFamilyName n -> "/insects/families/" + n.value();
+            case InsectOrderName n -> "/insects/orders/" + n.value();
             default -> null;
         };
     }
