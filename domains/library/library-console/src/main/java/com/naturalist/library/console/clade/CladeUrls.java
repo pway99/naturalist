@@ -1,15 +1,17 @@
 package com.naturalist.library.console.clade;
 
 /**
- * Maps a clade slug to the console URL that best represents it.
+ * Maps a clade slug to its tree-of-life page URL — the phylogenetic axis of
+ * clade navigation.
  *
- * <p>Insecta is the single class owned by the insects catalog, so it bridges
- * into that catalog's root ({@code /insects/orders}) rather than its sparse
- * tree-of-life page (which lists only the handful of insect orders modelled as
- * clades). Every other clade resolves to its {@code /clades/{slug}} tree-of-life
- * page. This mirrors the {@code insecta -> /insects/orders} override the insects
- * console applies to its own breadcrumb, keeping descent through the tree of life
- * and the catalog a single continuous path.
+ * <p>Clade <em>names</em> always stay in the tree of life ({@code /clades/{slug}}).
+ * The bridge into the Linnaean catalog is carried by the <em>rank eyebrow</em>
+ * instead (see {@link CladeRankLinks}), keeping the two axes distinct: the name
+ * traces evolutionary descent, the rank points at the taxon's catalog page.
+ *
+ * <p>Descent through the tree of life and the catalog stays a single continuous
+ * path because {@code CladesController} still redirects {@code /clades/insecta}
+ * (the class, which has no tree page of its own) to {@code /insects/orders}.
  */
 public final class CladeUrls {
 
@@ -17,6 +19,6 @@ public final class CladeUrls {
     }
 
     public static String of(String slug) {
-        return "insecta".equals(slug) ? "/insects/orders" : "/clades/" + slug;
+        return "/clades/" + slug;
     }
 }

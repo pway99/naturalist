@@ -1,5 +1,7 @@
 package com.naturalist.library.console.clade;
 
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.library.CladeQuery;
@@ -10,17 +12,25 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 @Controller
 public class CladesController {
 
     private final CladeQuery cladeQuery;
+    private final Catalog catalog;
+    private final EntityRefLinker linker;
     private final DescriptionRenderer descriptionRenderer = new DescriptionRenderer(List.of());
 
-    CladesController() {
-        // TODO:: This will eventually be a spring managed bean
+    CladesController(Catalog catalog, EntityRefLinker linker) {
+        // TODO:: cladeQuery will eventually be a spring managed bean; catalog and
+        // linker are already app beans injected here.
         this.cladeQuery = LibraryTestContext.create(NaturalistDatabase.create()).cladeQuery();
+        this.catalog = catalog;
+        this.linker = linker;
     }
 
     @GetMapping("/clades")
@@ -46,11 +56,26 @@ public class CladesController {
         CladeView v = view.get();
         var description = findCladeDescription(slug);
         model.addAttribute("view", v);
+        model.addAttribute("rankLinks", rankLinks(v));
         model.addAttribute("descriptionPreschool", description[0]);
         model.addAttribute("descriptionElementary", description[1]);
         model.addAttribute("descriptionSecondary", description[2]);
         model.addAttribute("descriptionUniversity", description[3]);
         return "clades/detail";
+    }
+
+    /**
+     * Clade slug → rank-eyebrow URL for the subject and every ranked ancestor.
+     * The eyebrow bridges into the Linnaean catalog when a taxon exists there,
+     * else falls back to the rank-definition concept — see {@link CladeRankLinks}.
+     */
+    private Map<String, String> rankLinks(CladeView v) {
+        Map<String, String> links = new HashMap<>();
+        Stream.concat(v.ancestry().stream(), Stream.of(v.subject()))
+                .filter(step -> step.rank().isPresent())
+                .forEach(step -> links.put(step.cladeSlug(),
+                        CladeRankLinks.forStep(catalog, linker, step.cladeSlug(), step.rank().get())));
+        return links;
     }
 
     /**

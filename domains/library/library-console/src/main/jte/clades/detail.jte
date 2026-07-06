@@ -1,7 +1,9 @@
 @import com.naturalist.library.CladeView
 @import com.naturalist.library.console.clade.CladeUrls
+@import java.util.Map
 
 @param CladeView view
+@param Map<String, String> rankLinks = java.util.Map.of()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -14,7 +16,7 @@
                 <span class="breadcrumb-segment">
                     @if(step.rank().isPresent())
                         !{var r = step.rank().get().name();}
-                        <span class="breadcrumb-rank"><a href="/concepts/${r.toLowerCase()}">${r.charAt(0) + r.substring(1).toLowerCase()}</a></span>
+                        <span class="breadcrumb-rank"><a href="${rankLinks.get(step.cladeSlug())}">${r.charAt(0) + r.substring(1).toLowerCase()}</a></span>
                     @endif
                     <a href="${CladeUrls.of(step.cladeSlug())}">${step.displayName()}</a>
                 </span>
@@ -23,7 +25,7 @@
             <span class="breadcrumb-segment">
                 @if(view.subject().rank().isPresent())
                     !{var sr = view.subject().rank().get().name();}
-                    <span class="breadcrumb-rank"><a href="/concepts/${sr.toLowerCase()}">${sr.charAt(0) + sr.substring(1).toLowerCase()}</a></span>
+                    <span class="breadcrumb-rank"><a href="${rankLinks.get(view.subject().cladeSlug())}">${sr.charAt(0) + sr.substring(1).toLowerCase()}</a></span>
                 @endif
                 <span class="breadcrumb-current"><strong>${view.subject().displayName()}</strong></span>
             </span>
