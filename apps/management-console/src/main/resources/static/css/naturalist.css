@@ -1230,6 +1230,88 @@ figure.compound-depiction img {
     border-bottom-color: var(--pico-primary);
 }
 
+/* Inline "?" info affordance — a small circled trigger sitting at the end of a
+   breadcrumb/trail that toggles a native popover explaining the clade↔rank
+   relationship. No JS: the HTML popover attribute owns open/dismiss. */
+.info-popover {
+    display: inline-flex;
+    align-items: center;
+}
+
+.info-popover-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    padding: 0;
+    margin: 0;
+    border: 1px solid rgba(58, 42, 24, 0.4);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--sepia-ink-soft);
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease;
+}
+
+.info-popover-trigger:hover,
+.info-popover-trigger:focus-visible {
+    color: var(--pico-primary);
+    border-color: var(--pico-primary);
+}
+
+/* The popover box lives in the top layer (centered by the UA), styled as a
+   small parchment card. */
+.info-popover-box[popover] {
+    max-width: 24rem;
+    margin: auto;
+    padding: 0.75rem 0.9rem;
+    background: var(--parchment);
+    color: var(--sepia-ink);
+    border: 1px solid rgba(139, 107, 61, 0.5);
+    border-radius: 0.4rem;
+    box-shadow: 0 4px 18px rgba(58, 42, 24, 0.28);
+    font-size: 0.85rem;
+    font-style: normal;
+    line-height: 1.45;
+}
+
+.info-popover-box[popover]::backdrop {
+    background: rgba(58, 42, 24, 0.15);
+}
+
+.info-popover-box a {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: var(--pico-primary);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--sepia-rule);
+}
+
+.info-popover-box a:hover {
+    border-bottom-color: var(--pico-primary);
+}
+
+/* Tuck the popover just under its "?" trigger, right-aligned so it opens
+   leftward and never runs off the viewport edge. A popover invoked via
+   popovertarget uses that button as its implicit anchor, so anchor() needs no
+   explicit anchor-name. Guarded by @supports: browsers without CSS anchor
+   positioning keep the UA-centered popover (still fully functional). */
+@supports (top: anchor(bottom)) {
+    .info-popover-box[popover] {
+        margin: 0;
+        inset: auto;
+        top: anchor(bottom);
+        right: anchor(right);
+        margin-top: 0.4rem;
+        position-try-fallbacks: flip-block;
+    }
+}
+
 /* Ancestor intros — stack of collapsible Class / Order / Family / Genus /
    Species descriptions above each detail page's primary content. Each
    <details> stays one summary-line tall when closed (cheap to scroll past)

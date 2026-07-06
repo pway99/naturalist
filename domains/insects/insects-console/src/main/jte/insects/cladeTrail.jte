@@ -18,4 +18,13 @@
             ${trail.gapLabel()} — not yet placed
         </a>
     @endif
+    @template.components.infoPopover(
+        id = "clade-trail-help",
+        label = "What is this Tree of Life row?",
+        text = "This row is the <strong>phylogenetic tree of life</strong> — the actual evolutionary"
+            + " branches. It runs parallel to the taxonomic breadcrumb above: most branches line up with"
+            + " a Linnaean rank, but some (like <em>Holometabola</em>) sit between ranks with no rank name"
+            + " of their own.",
+        moreHref = "/concepts/clade-taxonomy-relation",
+        moreLabel = "More on clades vs. taxonomy →")
 </nav>

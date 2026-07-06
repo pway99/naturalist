@@ -27,6 +27,14 @@
                 @endif
                 <span class="breadcrumb-current"><strong>${view.subject().displayName()}</strong></span>
             </span>
+            @template.components.infoPopover(
+                id = "clade-rank-help",
+                label = "Why do some of these clades show a Linnaean rank?",
+                text = "These names are <strong>clades</strong> — real branches of the tree of life. A few"
+                    + " also carry a famous Linnaean rank (Kingdom, Phylum, Class…), shown above the name;"
+                    + " branches like <em>Eukaryota</em> and <em>Holometabola</em> have no such rank.",
+                moreHref = "/concepts/clade-taxonomy-relation",
+                moreLabel = "More on clades vs. taxonomy →")
         </nav>
     </div>
 
