@@ -7,13 +7,13 @@ repositories, and new-module scaffolding.
 
 ## Identity Model
 
-Every domain class implements one of six interfaces from `kernels/framework`:
+Every domain class implements exactly one of six `kernels/framework` markers; all
+extend `Observable` and require `invariants()`. The two identity-bearing branches —
+`NamedEntity<NAME>` (natural-key slug) and `Entity<ID>` (surrogate UUIDv7) — and their
+`EntityName`/`EntityId` rules live in the root [`CLAUDE.md`](../CLAUDE.md#identity)
+(ADR-022; note it supersedes the older ADR-021 adapter-key framing). Observations and
+events are `Entity` records: immutable, equality by value. The other four markers:
 
-- **NamedEntity\<NAME extends EntityName\<?\>\>** — stable identity by `name()` alone.
-  No `id()`, no `withId(...)`. Adapter keys live inside the adapter (ADR-021).
-- **Entity\<ID extends EntityId\>** — surrogate UUIDv7 identity via `id()` (record
-  component `id`). Observations and events are Entity records: immutable, equality
-  by value.
 - **Aggregate** — consistency boundary, owns child entities and value objects.
   Declares explicit `with*` methods per field.
 - **ReadModel** — read-side composition assembled from already-persisted parts.
@@ -28,8 +28,6 @@ Every domain class implements one of six interfaces from `kernels/framework`:
 - **BehavioralCollection\<T extends Observable\>** — abstract base class in
   `kernels/framework` for multi-result query return types. Extended by `final class` per
   domain (e.g. `CompoundCollection`). Not a record. See ADR-011.
-
-All six extend `Observable` and require `invariants()`.
 
 ## Field Annotations
 
