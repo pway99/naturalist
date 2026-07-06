@@ -55,6 +55,7 @@ final class InMemoryCatalog implements Catalog {
 
     private final Map<String, Set<EntityRef>> tokenIndex;
     private final Set<String> slugTokens;
+    private final Map<String, EntityRef> refBySlug;
     private final Map<Class<? extends EntityName>, List<EntityReferences<?>>> providersByType;
     private final Resilience resilience;
 
@@ -68,6 +69,7 @@ final class InMemoryCatalog implements Catalog {
                 .throwWhenInvalid();
         Map<String, Set<EntityRef>> index = new HashMap<>();
         Set<String> slugs = new LinkedHashSet<>();
+        Map<String, EntityRef> bySlug = new HashMap<>();
         for (CatalogContribution contribution : contributions) {
             observer.arguments("constructor", i -> i.notNull(contribution, "contribution"))
                     .throwWhenInvalid();
@@ -77,14 +79,22 @@ final class InMemoryCatalog implements Catalog {
                 EntityRef target = entity.target();
                 String slug = target.name().value().toLowerCase();
                 slugs.add(slug);
+                bySlug.putIfAbsent(slug, target);
                 addAll(index, slug, target);
                 entity.tokens().forEach(token -> tokenise(token).forEach(t -> addAll(index, t, target)));
             });
         }
         this.tokenIndex = freezeIndex(index);
         this.slugTokens = Set.copyOf(slugs);
+        this.refBySlug = Map.copyOf(bySlug);
         this.providersByType = indexProviders(providers);
         this.resilience = resilience;
+    }
+
+    @Override
+    public Optional<EntityRef> findBySlug(String slug) {
+        if (slug == null || slug.isBlank()) return Optional.empty();
+        return Optional.ofNullable(refBySlug.get(slug.trim().toLowerCase()));
     }
 
     private static Map<Class<? extends EntityName>, List<EntityReferences<?>>> indexProviders(

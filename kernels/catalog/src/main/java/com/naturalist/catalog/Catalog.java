@@ -4,6 +4,7 @@ import com.naturalist.ddd.EntityName;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -117,4 +118,27 @@ public interface Catalog {
      * @return back-references grouped by domain; never null, possibly empty
      */
     Map<DomainId, List<EntityRef>> findReferencesTo(EntityName target);
+
+    /**
+     * Resolve a bare slug to the {@link EntityRef} that owns it, if any — the
+     * exact-match complement to {@link #search}.
+     * <p>
+     * Where {@link #search} is liberal (token splitting, prefix matching, an
+     * unresolved-input observation), this is a precise, <b>side-effect-free</b>
+     * lookup against the canonical slugs the catalog already indexes for
+     * {@link MatchKind#EXACT_SLUG}. It fires no observation on a miss: a caller
+     * asking "does any domain own an entity with exactly this slug, and where
+     * does it live?" is navigating, not searching, and a miss is an ordinary
+     * answer rather than a growth signal.
+     * <p>
+     * Matching is case-insensitive and against the <em>canonical</em> slug only
+     * ({@link EntityName#value()}) — never against a non-slug token that merely
+     * equals the string. Because {@code CatalogAssembly} enforces slug
+     * uniqueness across all contributions, a present slug resolves to exactly
+     * one {@link EntityRef}.
+     *
+     * @param slug the canonical slug to resolve; may be {@code null} or blank
+     * @return the owning reference, or empty if no entity carries that slug
+     */
+    Optional<EntityRef> findBySlug(String slug);
 }

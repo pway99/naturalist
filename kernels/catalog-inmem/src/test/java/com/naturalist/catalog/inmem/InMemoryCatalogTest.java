@@ -358,6 +358,57 @@ class InMemoryCatalogTest {
     }
 
     // -----------------------------------------------------------------
+    // Exact slug resolution (findBySlug)
+    // -----------------------------------------------------------------
+
+    @Test
+    void findBySlugResolvesCanonicalSlugToItsRef() {
+        Catalog catalog = CatalogAssembly.from(contribution(new Plants(),
+                entity(BORAGE, "borago officinalis")));
+
+        assertThat(catalog.findBySlug(BORAGE.name().value())).contains(BORAGE);
+    }
+
+    @Test
+    void findBySlugIsCaseInsensitiveAndTrimmed() {
+        Catalog catalog = CatalogAssembly.from(contribution(new Plants(),
+                entity(BORAGE, "borage")));
+
+        assertThat(catalog.findBySlug(BORAGE.name().value().toUpperCase())).contains(BORAGE);
+        assertThat(catalog.findBySlug("  " + BORAGE.name().value() + "  ")).contains(BORAGE);
+    }
+
+    @Test
+    void findBySlugMissReturnsEmpty() {
+        Catalog catalog = CatalogAssembly.from(contribution(new Plants(),
+                entity(BORAGE, "borage")));
+
+        assertThat(catalog.findBySlug("no-such-slug")).isEmpty();
+    }
+
+    @Test
+    void findBySlugNullOrBlankReturnsEmpty() {
+        Catalog catalog = CatalogAssembly.from(contribution(new Plants(),
+                entity(BORAGE, "borage")));
+
+        assertThat(catalog.findBySlug(null)).isEmpty();
+        assertThat(catalog.findBySlug("")).isEmpty();
+        assertThat(catalog.findBySlug("   ")).isEmpty();
+    }
+
+    @Test
+    void findBySlugMatchesCanonicalSlugNotACoincidentalToken() {
+        // BORAGE indexes THYMOL's slug ("thymol") as a mere search token;
+        // THYMOL is the entity whose *canonical slug* is "thymol".
+        // findBySlug resolves to the slug owner, never the token holder.
+        Catalog catalog = CatalogAssembly.from(
+                contribution(new Chemistry(), entity(THYMOL, "extra")),
+                contribution(new Plants(), entity(BORAGE, THYMOL.name().value())));
+
+        assertThat(catalog.findBySlug(THYMOL.name().value())).contains(THYMOL);
+    }
+
+    // -----------------------------------------------------------------
     // Inverse direction (unchanged from M3)
     // -----------------------------------------------------------------
 
