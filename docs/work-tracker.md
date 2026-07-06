@@ -7,17 +7,21 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-06-25 (InsectFeature entity migration complete; citation association landed.)
+Last updated: 2026-07-05 (Tree-of-Life console thread: dual-strategy clade nav, context-bar restyle, "?" info popovers, and clade rank→catalog bridge all shipped.)
 
 ---
 
 ## Current phase
 
-**Identification roadmap** ([`plans/identification.md`](plans/identification.md)). Phase 0 ✅ (taxonomic reorganization + family/genus console). Phase 1 ✅ (external-authority seam — `kernels/authority` port + EOL mock client). Phase 2 citation/library ✅ (`Citation` sealed NamedEntity, `domains/library` domain stack, `Eol.citation()` factory). Phase 2 console ✅ (citations page at `/citations`). Citation association design spec drafted.
+**Identification roadmap** ([`plans/identification.md`](plans/identification.md)). Phase 0 ✅ (taxonomic reorganization + family/genus console). Phase 1 ✅ (external-authority seam — `kernels/authority` port + EOL mock client). Phase 2 citation/library ✅ (`Citation` sealed NamedEntity, `domains/library` domain stack, `Eol.citation()` factory). Phase 2 console ✅ (citations page at `/citations`). Citation association ✅.
+
+An interleaved **Tree-of-Life console** thread landed on top of Phase 2 (2026-06-29 → 2026-07-05): the clade/rank navigation was reworked so the two axes read as distinct (phylogenetic lineage vs. Linnaean rank ladder), restyled onto the shared warm-tan context-bar, given inline "?" teaching popovers, and wired so rank eyebrows bridge into the catalog via the new `Catalog.findBySlug` seam. See **Recently completed**.
 
 ## Current slice
 
 **Candidate next slices** (lead first):
+- **Dual-strategy Slice 3 — collection lens** ([design `8eaadd5`](plans/archive/2026-06-29-dual-strategy-breadcrumb.md)) — each clade/rank node lists the user's catalogued insects under it. Cross-domain via the `catalog` kernel; the `Catalog.findBySlug` seam shipped 2026-07-05 is reusable here. (Slice 2 source-of-truth links reuses external-authority Phase 1.)
+- **`/concepts` restyle** — the library concept pages still use the plain breadcrumb; bring them onto the context-bar now that popovers link readers there.
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
 
 - **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
@@ -31,6 +35,10 @@ Last updated: 2026-06-25 (InsectFeature entity migration complete; citation asso
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Clade rank→catalog bridge — two-axis clade links: rank eyebrows resolve into the insects catalog via a new side-effect-free `Catalog.findBySlug` seam + `InsectsLinker` order case + `CladeRankLinks`; names stay on the tree axis | 2026-07-05 | [`plans/archive/2026-07-05-clade-rank-catalog-bridge.md`](plans/archive/2026-07-05-clade-rank-catalog-bridge.md) | `f608ba0` |
+| Clades console "?" info popovers — reusable `infoPopover` component (native HTML `popover`, anchor-positioned) on the clades breadcrumb + insects tree-of-life trail + Linnaean rank ladder | 2026-07-05 | conversation | `79fd174` |
+| Clades console context-bar restyle — `/clades` pages moved onto the shared `.context-bar`; awkward `.dual-breadcrumb` grid retired | 2026-07-05 | [`superpowers/specs/2026-07-05-clades-console-context-bar-restyle-design.md`](superpowers/specs/2026-07-05-clades-console-context-bar-restyle-design.md) | `973fd0d` |
+| Dual-strategy clade navigation + insect-console streamline — two parallel breadcrumb rows (phylogenetic lineage + Linnaean rank ladder), learnable nodes, clade trail with research-gap affordance; expanded clade override map | 2026-07-05 | [`plans/archive/2026-06-29-dual-strategy-breadcrumb.md`](plans/archive/2026-06-29-dual-strategy-breadcrumb.md), [`plans/archive/2026-07-02-insect-console-navigation.md`](plans/archive/2026-07-02-insect-console-navigation.md) | `558bd99` |
 | InsectFeature entity migration — `InsectFeature` promoted from embedded VO to independent `Entity<InsectFeatureId>` with many-to-many `InsectFeatureAssignment`; `InsectFeatureQueryImpl` lineage-composite resolution; `InsectAncestryResolver` extracted; `identificationFeatures` removed from rank entities | 2026-06-25 | [`plans/archive/2026-06-25-insect-feature-entity-design.md`](plans/archive/2026-06-25-insect-feature-entity-design.md) | `35451c7` |
 | Citation association — `CitationAssociation` entity + `InsectCitationQueryImpl` hierarchical citation discovery + `Insect` read model via `InsectFactory` + detail page rendering | 2026-06-25 | [`plans/archive/2026-06-14-citation-association-design.md`](plans/archive/2026-06-14-citation-association-design.md) | `34091d2` |
 | Citations page — `/citations` single-page listing in library-console; `CitationQuery` wired into `LibraryTestContext`; nav link added | 2026-06-14 | conversation | `41aa0b3` |
@@ -40,29 +48,7 @@ Last updated: 2026-06-25 (InsectFeature entity migration complete; citation asso
 | Citation + Library — `Citation` sealed NamedEntity (+ `OnlineSource` permit) in `kernels/authority`; `domains/library` domain stack (repository, mock, contract tests, query); `Eol.citation()` factory | 2026-06-13 | [`plans/archive/2026-06-13-citation-and-library-design.md`](plans/archive/2026-06-13-citation-and-library-design.md) | `16615a6`    |
 | ReadModel kernel type — 6th identity-model marker; insect read-models retyped + renamed `*Aggregate`→`*View`/`InsectTaxonView`, `insect()`→`taxonView()` | 2026-06-07 | [`plans/archive/2026-06-07-readmodel-kernel-type-design.md`](plans/archive/2026-06-07-readmodel-kernel-type-design.md) | `abf5345` (+ docs) |
 | Insect rank-FK normalization — parent-only FKs (R8), trimmed `Insect` invariants (R1), typed `LifeStage.parentName` (R6); resolves PL-12 | 2026-06-07 | [`plans/archive/2026-06-07-insect-rank-fk-normalization-design.md`](plans/archive/2026-06-07-insect-rank-fk-normalization-design.md) | `730a218`    |
-| Clades kernel Phase 5b — life-stage inline removal + resolver walk-up (PRs 1 + 2; PR 3 cancelled — see [`plans/insect-aggregate.md`](plans/insect-aggregate.md)) | 2026-05-31 | [`plans/archive/clades-kernel-phase-5b-life-stage-inline-removal.md`](plans/archive/clades-kernel-phase-5b-life-stage-inline-removal.md) | `be4639a`    |
-| Insect page images — `BehavioralMap` kernel, `ImageGallery`, carousels on all listing/detail pages | 2026-05-25 | [`plans/archive/2026-05-24-insect-page-images.md`](plans/archive/2026-05-24-insect-page-images.md) | `a8f56f5`    |
-| Console clade context — lineage trail (Animalia › Arthropoda › Insecta), Class Insecta description on landing page | 2026-05-25 | [`plans/archive/console-clade-context-plan.md`](plans/archive/console-clade-context-plan.md) | `a540825`    |
-| InsectOrder entity — order-rank entity, genus/family FK refactoring (Phase 1 + 2)       | 2026-05-25 | [`plans/archive/insect-order-phase2-plan.md`](plans/archive/insect-order-phase2-plan.md)   | `41562e1`    |
-| InsectGenus refactor — drop `TaxonomicOrder`/`TaxonomicFamily` local copies             | 2026-05-25 | [`plans/archive/insect-order-phase1-plan.md`](plans/archive/insect-order-phase1-plan.md)   | `11faa76`    |
-| Catalogue-completeness slice 2 — `InsectSpecies` drops `TaxonomicClassification`; honest non-null invariants | 2026-05-24 | conversation; closes the simplification arc opened by slice 1               | `db9623b`    |
-| PL-2 closeout — tachinid-fly + braconid-wasp → family rank; fixtures repointed          | 2026-05-24 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-2)      | `16ff792`    |
-| Catalogue-completeness slice 1 — 5 families + 6 genera + species FK wiring              | 2026-05-23 | conversation; prerequisite for stripping `TaxonomicClassification` from `InsectSpecies` | `412912f`    |
-| Family-page species enrichment — under-identified species on `/insects/families/{name}` | 2026-05-23 | conversation; uses `SpeciesQuery.forFamilyName` from PL-13 (reverted in PL-2 closeout) | `a81cccd`    |
-| PL-14 — rank-polymorphic `InsectAggregate` (sealed interface + 3 record permits)        | 2026-05-23 | [`plans/archive/pl-14-rank-polymorphic-insect-aggregate.md`](plans/archive/pl-14-rank-polymorphic-insect-aggregate.md) | `d698ac5`    |
-| PL-13 — typed `InsectGenusName` / `InsectFamilyName` FK on `InsectSpecies`              | 2026-05-23 | [`notes/parking-lot-resolved.md`](notes/parking-lot-resolved.md) (PL-13)     | `c91efc0`    |
-| Insects console — family + genus list/detail pages                                      | 2026-05-23 | [`plans/archive/insects-family-genus-console.md`](plans/archive/insects-family-genus-console.md) | `b1216de`    |
-| LifeStage query rank-polymorphism — `forParentName(InsectRankName)`                     | 2026-05-20 | [`plans/archive/insect-image-parent-rank.md`](plans/archive/insect-image-parent-rank.md) (mirror) | `f5878d7`    |
-| PL-11 Phase 4 — strip species fields; console fanout                                    | 2026-05-19 | [`plans/archive/insect-functional-role.md`](plans/archive/insect-functional-role.md)         | `327c5db`    |
-| PL-11 Phase 3 — cross-rank `getByGuild` query stack                                     | 2026-05-19 | [`plans/archive/insect-functional-role.md`](plans/archive/insect-functional-role.md)         | `2b0c38a`    |
-| PL-11 Phase 2 — seed 16 records + smoke + contract tests                                | 2026-05-19 | [`plans/archive/insect-functional-role.md`](plans/archive/insect-functional-role.md)         | `bcce0e0`    |
-| PL-11 Phase 1 — `InsectFunctionalRole` entity stack                                     | 2026-05-19 | [`plans/archive/insect-functional-role.md`](plans/archive/insect-functional-role.md)         | `8f6072a`    |
-| Path A step 3 — potato-leafhopper → empoasca + PL-11 raised                             | 2026-05-19 | [`plans/archive/insect-image-parent-rank.md`](plans/archive/insect-image-parent-rank.md)     | `05d430f`    |
-| Path A step 2 — Hemiptera Clade permit + Hemimetabolous trait declaration               | 2026-05-19 | conversation; [`kernels/clades/`](../kernels/clades/)                        | `2e469f0`    |
-| Path A step 1 — Insect-image parent-rank Steps 1–8 (retype to InsectRankName)           | 2026-05-19 | [`plans/archive/insect-image-parent-rank.md`](plans/archive/insect-image-parent-rank.md)     | `4c7449d`    |
-| Insect-image parent-rank — Step 0 (sealed marker + Jackson verify)                      | 2026-05-19 | [`plans/archive/insect-image-parent-rank.md`](plans/archive/insect-image-parent-rank.md)     | `600bc1d`    |
-| PL-2 — four family-rank corrections (hoverfly, ground-beetle, crane-fly, skipper-butterfly) | 2026-05-14 | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-2)                    | `c3a3f8d`    |
-| PL-2 — green-lacewing / halictus / andrena rank corrections                             | 2026-05-13 | [`notes/parking-lot.md`](notes/parking-lot.md) (PL-2)                        | `d12c3b2`    |
+| _Earlier efforts (2026-05-31 and before — clades kernel 5b, insect page images, InsectOrder, catalogue-completeness, PL-11/13/14, Path A, PL-2 rank corrections)_ | ≤2026-05-31 | see the archived-plans table in [`plans/README.md`](plans/README.md#archived) | — |
 
 ## Active efforts (read the source doc for status; this is just the index)
 

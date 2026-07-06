@@ -77,6 +77,9 @@ not loaded by default.
 | [archive/2026-06-14-insect-feature-api-plan.md](archive/2026-06-14-insect-feature-api-plan.md) | 2026-06-25 | Predecessor plan for `InsectFeature` — proposed `IdentificationFeatures` as embedded VO on rank entities. Superseded by the entity-design spec. |
 | [archive/2026-06-14-library-console-module.md](archive/2026-06-14-library-console-module.md) | 2026-06-14 | Extract `CladesController` + `ConceptsController` from management-console into `domains/library/library-console` module. |
 | [archive/2026-06-25-insect-feature-entity-design.md](archive/2026-06-25-insect-feature-entity-design.md) | 2026-06-25 | `InsectFeature` promoted to independent `Entity<InsectFeatureId>` with many-to-many `InsectFeatureAssignment`; lineage-composite `InsectFeatureView`; `InsectAncestryResolver` extracted. Supersedes the 2026-06-14 API plan. |
+| [archive/2026-06-29-dual-strategy-breadcrumb.md](archive/2026-06-29-dual-strategy-breadcrumb.md) | 2026-07-05 | Two-row phylogenetic/Linnaean clade breadcrumb; `library-api` gains `CladeStep`/`CladeView`/`CladeQuery`, `library-core` owns `CladeRanks` + `CladeViewFactory`. Design `8eaadd5`. |
+| [archive/2026-07-02-insect-console-navigation.md](archive/2026-07-02-insect-console-navigation.md) | 2026-07-05 | Insect-console streamline: drop the rank tab bar, add the phylogenetic clade trail with a "not yet placed" research affordance (`InsectCladeAnchors`, `/concepts/placing-clades`). |
+| [archive/2026-07-05-clade-rank-catalog-bridge.md](archive/2026-07-05-clade-rank-catalog-bridge.md) | 2026-07-05 | Two-axis clade links: rank eyebrows resolve into the insects catalog via the new `Catalog.findBySlug` seam + `InsectsLinker` order case + `CladeRankLinks`; names stay on `/clades/{slug}`. |
 
 ## Where else to look
 
