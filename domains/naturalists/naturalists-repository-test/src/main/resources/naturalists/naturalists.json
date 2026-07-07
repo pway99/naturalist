@@ -14,5 +14,21 @@
     "role": "TEACHER",
     "stage": "PRACTITIONER",
     "notes": "Leads school ecology visits at Oak Vista."
+  },
+  {
+    "name": "flora-mendez",
+    "givenName": "Flora",
+    "familyName": "Mendez",
+    "role": "STUDENT",
+    "stage": "CURIOUS",
+    "notes": "Secondary-school student cataloguing pollinators on the native hedgerow."
+  },
+  {
+    "name": "amir-hassan",
+    "givenName": "Amir",
+    "familyName": "Hassan",
+    "role": "KEEPER",
+    "stage": "PRACTITIONER",
+    "notes": "Assists with hive inspections and Varroa monitoring on the apiary."
   }
 ]
