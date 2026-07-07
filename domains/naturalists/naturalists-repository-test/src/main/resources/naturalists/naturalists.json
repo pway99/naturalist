@@ -6,5 +6,13 @@
     "role": "CARETAKER",
     "stage": "NATURALIST",
     "notes": "Principal caretaker and systems architect of Oak Vista. B.S. Environmental Science / Chemistry minor. 20+ years software engineering. Confirmed Pipevine Swallowtail eggs on Aristolochia californica April 2026. Manages Saskatraz honey bee colony and all soil amendment programmes."
+  },
+  {
+    "name": "delia-durrell",
+    "givenName": "Delia",
+    "familyName": "Durrell",
+    "role": "TEACHER",
+    "stage": "PRACTITIONER",
+    "notes": "Leads school ecology visits at Oak Vista."
   }
 ]
