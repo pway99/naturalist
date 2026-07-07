@@ -80,7 +80,9 @@ Establishes the naturalists domain's first read port. No auth yet — pure domai
 - Consumes: `Naturalist`, `NaturalistName` (existing); framework `NamedEntity`, `EntityQuery`, `AbstractEntityQuery`, `EntityRepository`, `AbstractTestEntityRepository`, `BehavioralCollection`, `NaturalistDatabase`, `@DomainService`; `NaturalistTestEntitySource` (existing).
 - Produces: `NaturalistQuery extends EntityQuery<NaturalistName, Naturalist, NaturalistCollection>`; `NaturalistRepository.NaturalistEntityRepository extends EntityRepository<NaturalistName, Naturalist>`; `NaturalistEntityCollections.NaturalistCollection`.
 
-- [ ] **Step 1: Add a second naturalist to the seed JSON** (contract tests need ≥2 known names)
+- [ ] **Step 1: Expand the seed JSON to ≥4 naturalists**
+
+The `EntityRepositoryTest` paging cases default to `pageSize() == 2` and are documented to run "against the typical NamedTestEntitySource fixture (≥4 entities)". With only 2 entities the multi-page assertions (`getPage_streamingThroughAllPages…`, the lookahead `hasNext` check guarded by `if (total > pageSize())`) still pass but collapse to a single page and stop exercising pagination. `knownEntityNames()` uses 2 of these entries; the source needs ≥4 so paging bites.
 
 Replace the contents of `domains/naturalists/naturalists-repository-test/src/main/resources/naturalists/naturalists.json` with:
 
@@ -101,6 +103,22 @@ Replace the contents of `domains/naturalists/naturalists-repository-test/src/mai
     "role": "TEACHER",
     "stage": "PRACTITIONER",
     "notes": "Leads school ecology visits at Oak Vista."
+  },
+  {
+    "name": "flora-mendez",
+    "givenName": "Flora",
+    "familyName": "Mendez",
+    "role": "STUDENT",
+    "stage": "CURIOUS",
+    "notes": "Secondary-school student cataloguing pollinators on the native hedgerow."
+  },
+  {
+    "name": "amir-hassan",
+    "givenName": "Amir",
+    "familyName": "Hassan",
+    "role": "KEEPER",
+    "stage": "PRACTITIONER",
+    "notes": "Assists with hive inspections and Varroa monitoring on the apiary."
   }
 ]
 ```
@@ -479,18 +497,14 @@ public class NaturalistCredentialTestEntitySource
 }
 ```
 
-Create `naturalist-credentials.json` with placeholder hashes — **the real `{bcrypt}` values are filled in Task 3, Step 1** (they require the app's `PasswordEncoder`). For now use any non-blank strings so the contract test (which does not verify hashes) passes:
+Create `naturalist-credentials.json` with ≥4 entries (one per naturalist, matching `naturalists.json`, so the credential paging contract also runs against a ≥4-entity source) and placeholder hashes — **the real `{bcrypt}` values are filled in Task 3, Step 1** (they require the app's `PasswordEncoder`). For now use any non-blank strings so the contract test (which does not verify hashes) passes:
 
 ```json
 [
-  {
-    "name": "patrick-way",
-    "passwordHash": "{noop}REPLACE_IN_TASK_3"
-  },
-  {
-    "name": "delia-durrell",
-    "passwordHash": "{noop}REPLACE_IN_TASK_3"
-  }
+  { "name": "patrick-way",   "passwordHash": "{noop}REPLACE_IN_TASK_3" },
+  { "name": "delia-durrell", "passwordHash": "{noop}REPLACE_IN_TASK_3" },
+  { "name": "flora-mendez",  "passwordHash": "{noop}REPLACE_IN_TASK_3" },
+  { "name": "amir-hassan",   "passwordHash": "{noop}REPLACE_IN_TASK_3" }
 ]
 ```
 
@@ -683,21 +697,25 @@ class SeedHashPrinter {
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         System.out.println("patrick-way -> " + encoder.encode("durrell"));
         System.out.println("delia-durrell -> " + encoder.encode("gerald"));
+        System.out.println("flora-mendez -> " + encoder.encode("marigold"));
+        System.out.println("amir-hassan -> " + encoder.encode("beeswax"));
     }
 }
 ```
 
 Run: `mvn -q -pl apps/management-console test -Dtest=SeedHashPrinter`
-Copy the two `{bcrypt}$2a$…` values from stdout into `naturalist-credentials.json`, replacing the `{noop}REPLACE_IN_TASK_3` placeholders:
+Copy the four `{bcrypt}$2a$…` values from stdout into `naturalist-credentials.json`, replacing every `{noop}REPLACE_IN_TASK_3` placeholder (no placeholder may remain committed):
 
 ```json
 [
   { "name": "patrick-way",   "passwordHash": "{bcrypt}$2a$10$PASTE_PATRICK_HASH" },
-  { "name": "delia-durrell", "passwordHash": "{bcrypt}$2a$10$PASTE_DELIA_HASH" }
+  { "name": "delia-durrell", "passwordHash": "{bcrypt}$2a$10$PASTE_DELIA_HASH" },
+  { "name": "flora-mendez",  "passwordHash": "{bcrypt}$2a$10$PASTE_FLORA_HASH" },
+  { "name": "amir-hassan",   "passwordHash": "{bcrypt}$2a$10$PASTE_AMIR_HASH" }
 ]
 ```
 
-Then delete `SeedHashPrinter.java`. (Passwords: `patrick-way`/`durrell`, `delia-durrell`/`gerald` — documented here so the login test and the user know them.)
+Then delete `SeedHashPrinter.java`. (Passwords: `patrick-way`/`durrell`, `delia-durrell`/`gerald`, `flora-mendez`/`marigold`, `amir-hassan`/`beeswax` — documented here so the login test and the user know them. Only patrick-way/durrell is used by the login test.)
 
 - [ ] **Step 2: Add naturalists dependencies to the app pom**
 
@@ -1314,43 +1332,109 @@ class HeaderWebMvcTest {
 Run: `mvn -q -pl apps/management-console test -Dtest=HeaderWebMvcTest`
 Expected: FAIL — the header does not yet render the name or logout form.
 
-- [ ] **Step 3: Edit the layout header**
+> **Plan correction (delivery mechanism).** `layout/page.jte` is a **shared** template: every domain-console module (chemistry/plants/insects/library) compiles it in its own template tests against its own classpath, and none of them have `spring-security-web` or the `com.naturalist.console.auth` package. So `page.jte` must NOT `@import` app or Spring-Security types (doing so breaks every domain-console template test — confirmed by `mvn verify`). Instead, an app-level interceptor publishes plain request attributes through the `CurrentNaturalistView` seam, and `page.jte` reads them using only `spring-web` (`RequestContextHolder`), which every console module already has on its classpath. This is the `@ControllerAdvice`-style app-level delivery the design (§5) intended.
 
-In `apps/management-console/src/main/jte/layout/page.jte`, add an import block at the top (after the existing `@param` lines) and a user area in the header. Replace the `<div class="container site-header-bar">…</div>` block with:
+- [ ] **Step 3a: Add the header interceptor (app)**
 
-```jte
-@import org.springframework.security.web.csrf.CsrfToken
-@import com.naturalist.console.auth.CurrentNaturalistView
+Create `apps/management-console/src/main/java/com/naturalist/console/auth/NaturalistHeaderInterceptor.java`:
 
-<div class="container site-header-bar">
-    <a class="site-brand" href="/">The Amateur Naturalist</a>
-    <div class="site-search">
-        @template.components.searchBox(query = query)
-    </div>
-    !{var displayName = CurrentNaturalistView.displayName();}
-    !{CsrfToken logoutCsrf = CurrentNaturalistView.csrfToken();}
-    @if(CurrentNaturalistView.isAuthenticated())
-        <div class="site-user">
-            @if(displayName != null)
-                <span class="site-user-name">Logged in as ${displayName}</span>
-            @endif
-            <form method="post" action="/logout" class="site-logout">
-                @if(logoutCsrf != null)
-                    <input type="hidden" name="${logoutCsrf.getParameterName()}" value="${logoutCsrf.getToken()}">
-                @endif
-                <button type="submit">Logout</button>
-            </form>
-        </div>
-    @endif
-</div>
+```java
+package com.naturalist.console.auth;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+/**
+ * Publishes the current session identity and CSRF token as plain request attributes for
+ * the shared {@code layout/page.jte} header. The layout is compiled against every
+ * domain-console classpath, so it may not reference Spring-Security or app-package types;
+ * this interceptor resolves those here (through the {@link CurrentNaturalistView} seam for
+ * identity) and hands the layout only Strings/booleans.
+ */
+@Component
+class NaturalistHeaderInterceptor implements HandlerInterceptor {
+
+    static final String DISPLAY_NAME = "naturalistDisplayName";
+    static final String AUTHENTICATED = "naturalistAuthenticated";
+    static final String CSRF_PARAM = "naturalistCsrfParam";
+    static final String CSRF_TOKEN = "naturalistCsrfToken";
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        request.setAttribute(DISPLAY_NAME, CurrentNaturalistView.displayName());
+        request.setAttribute(AUTHENTICATED, CurrentNaturalistView.isAuthenticated());
+        Object csrfAttr = request.getAttribute(CsrfToken.class.getName());
+        if (csrfAttr instanceof CsrfToken csrf) {
+            request.setAttribute(CSRF_PARAM, csrf.getParameterName());
+            request.setAttribute(CSRF_TOKEN, csrf.getToken());
+        }
+        return true;
+    }
+}
 ```
 
-> `@import` lines in JTE must appear at the top of the template with the other `@import`/`@param` directives. If the template already has an `@import` section, add these two lines there instead of inline.
+Create `apps/management-console/src/main/java/com/naturalist/console/WebConfiguration.java` (or add to an existing `WebMvcConfigurer` if one exists — check first):
+
+```java
+package com.naturalist.console;
+
+import com.naturalist.console.auth.NaturalistHeaderInterceptor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+class WebConfiguration implements WebMvcConfigurer {
+
+    private final NaturalistHeaderInterceptor headerInterceptor;
+
+    WebConfiguration(NaturalistHeaderInterceptor headerInterceptor) {
+        this.headerInterceptor = headerInterceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(headerInterceptor);
+    }
+}
+```
+
+> `NaturalistHeaderInterceptor` (in `com.naturalist.console.auth`) is a sanctioned identity reader — it goes through `CurrentNaturalistView`, not `SecurityContextHolder` directly, preserving seam discipline.
+
+- [ ] **Step 3b: Edit the layout header (spring-web only, no app/security imports)**
+
+In `apps/management-console/src/main/jte/layout/page.jte`, add the user area inside the existing header bar, reading the request attributes via fully-qualified `spring-web` types (no `@import` of app/security classes). Preserve the existing brand/search/nav exactly; adapt placement/class names to the real template:
+
+```jte
+!{var _attrs = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();}
+@if(_attrs instanceof org.springframework.web.context.request.ServletRequestAttributes _sra && Boolean.TRUE.equals(_sra.getRequest().getAttribute("naturalistAuthenticated")))
+    !{var _req = _sra.getRequest();}
+    !{var _name = (String) _req.getAttribute("naturalistDisplayName");}
+    !{var _csrfParam = (String) _req.getAttribute("naturalistCsrfParam");}
+    !{var _csrfValue = (String) _req.getAttribute("naturalistCsrfToken");}
+    <div class="site-user">
+        @if(_name != null)
+            <span class="site-user-name">Logged in as ${_name}</span>
+        @endif
+        <form method="post" action="/logout" class="site-logout">
+            @if(_csrfParam != null)
+                <input type="hidden" name="${_csrfParam}" value="${_csrfValue}">
+            @endif
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+@endif
+```
+
+In domain-console template tests there is no bound servlet request, so `getRequestAttributes()` returns null / a non-servlet type, the guard is false, and nothing renders — while the template still compiles (only `spring-web` referenced, which every console module has). If any domain-console module's template test fails to compile `RequestContextHolder`, add `spring-web` to that module's pom (justified, minimal).
 
 - [ ] **Step 4: Run to verify it passes**
 
 Run: `mvn -q -pl apps/management-console test -Dtest=HeaderWebMvcTest`
-Expected: PASS — the home page rendered as `patrick-way` contains "Logged in as Patrick" and a `/logout` form.
+Expected: PASS — the home page rendered as an authenticated `NaturalistPrincipal` contains "Logged in as Patrick" and a `/logout` form.
 
 - [ ] **Step 5: Write the domain note**
 

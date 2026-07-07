@@ -100,8 +100,13 @@ uses it to display the current naturalist.
 - A single resolver bean maps the authenticated principal → `Optional<Naturalist>`
   (empty when logged in as the bare admin, whose principal is not a `NaturalistPrincipal`).
   It is the **only** place, besides the `UserDetailsService`, that reads `SecurityContext`.
-- Surfaced to the shared header via a `@ControllerAdvice` model attribute; the header in
-  `layout/page.jte` gains a "logged in as _givenName_ · Logout" element.
+- Surfaced to the shared header via an app-level `HandlerInterceptor` that reads identity
+  through `CurrentNaturalistView` and publishes plain request attributes (display name,
+  authenticated flag, CSRF param/token); `layout/page.jte` reads those attributes using only
+  `spring-web` and gains a "logged in as _givenName_ · Logout" element. (An interceptor, not a
+  `@ControllerAdvice` model attribute, because `page.jte` is compiled by every domain-console
+  module against a classpath without Spring-Security or app packages — so the layout must not
+  reference those types directly.)
 - For this slice the resolver is app-local. Its cross-module shape (so domain consoles can
   consume it) is deferred to the collection spec, which is its first real consumer.
 
