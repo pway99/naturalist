@@ -77,6 +77,20 @@
             <artifactId>plants-console</artifactId>
         </dependency>
 
+        <!-- NATURALISTS -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>naturalists-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>naturalists-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>naturalists-repository-test</artifactId>
+        </dependency>
+
         <!-- TEST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

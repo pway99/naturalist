@@ -6,9 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -36,14 +35,8 @@ class SecurityConfiguration {
                 .build();
     }
 
-    @SuppressWarnings("deprecation")
     @Bean
-    UserDetailsService userDetailsService(AdminProperties admin) {
-        var user = User.withDefaultPasswordEncoder()
-                .username(admin.username())
-                .password(admin.password())
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user);
+    PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
