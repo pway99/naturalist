@@ -17,4 +17,8 @@ class NaturalistRepository {
     protected interface NaturalistEntityRepository
             extends EntityRepository<NaturalistName, Naturalist> {
     }
+
+    protected interface CredentialRepository
+            extends EntityRepository<NaturalistName, NaturalistCredential> {
+    }
 }

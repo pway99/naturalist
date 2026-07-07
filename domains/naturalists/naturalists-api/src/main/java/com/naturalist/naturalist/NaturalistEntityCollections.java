@@ -25,4 +25,19 @@ public interface NaturalistEntityCollections {
             return new NaturalistCollection(List.of());
         }
     }
+
+    final class NaturalistCredentialCollection extends BehavioralCollection<NaturalistCredential> {
+
+        NaturalistCredentialCollection(java.util.Collection<NaturalistCredential> credentials) {
+            super(credentials);
+        }
+
+        public static NaturalistCredentialCollection of(java.util.Collection<NaturalistCredential> credentials) {
+            return new NaturalistCredentialCollection(credentials);
+        }
+
+        public static NaturalistCredentialCollection empty() {
+            return new NaturalistCredentialCollection(java.util.List.of());
+        }
+    }
 }
