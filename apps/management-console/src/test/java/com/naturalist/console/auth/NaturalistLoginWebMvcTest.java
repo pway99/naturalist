@@ -11,6 +11,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,7 +39,8 @@ class NaturalistLoginWebMvcTest {
         mockMvc.perform(formLogin("/login").user("patrick-way").password("durrell"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(result ->
-                        assertThat(result.getResponse().getRedirectedUrl()).isEqualTo("/"));
+                        assertThat(result.getResponse().getRedirectedUrl()).isEqualTo("/"))
+                .andExpect(authenticated().withUsername("patrick-way").withRoles("NATURALIST"));
     }
 
     @Test
