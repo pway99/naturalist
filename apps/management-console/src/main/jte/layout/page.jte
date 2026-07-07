@@ -24,6 +24,30 @@
         <div class="site-search">
             @template.components.searchBox(query = query)
         </div>
+        <%-- The shared header reads plain request attributes published by
+             NaturalistHeaderInterceptor (management-console only). page.jte is
+             compiled by every domain-console template test against classpaths
+             lacking Spring-Security, the console.auth package, AND the jakarta
+             servlet-api. So it must reference only the RequestAttributes
+             interface (spring-web), never ServletRequestAttributes.getRequest()
+             — that would drag in jakarta.servlet.http.HttpServletRequest. --%>
+        !{var _attrs = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();}
+        @if(_attrs != null && Boolean.TRUE.equals(_attrs.getAttribute("naturalistAuthenticated", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST)))
+            !{var _name = (String) _attrs.getAttribute("naturalistDisplayName", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
+            !{var _csrfParam = (String) _attrs.getAttribute("naturalistCsrfParam", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
+            !{var _csrfValue = (String) _attrs.getAttribute("naturalistCsrfToken", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
+            <div class="site-user">
+                @if(_name != null)
+                    <span class="site-user-name">Logged in as ${_name}</span>
+                @endif
+                <form method="post" action="/logout" class="site-logout">
+                    @if(_csrfParam != null)
+                        <input type="hidden" name="${_csrfParam}" value="${_csrfValue}">
+                    @endif
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        @endif
     </div>
     <div class="container site-nav-row">
         <nav class="primary-nav" aria-label="Primary navigation">
