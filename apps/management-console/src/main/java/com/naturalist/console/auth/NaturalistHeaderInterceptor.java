@@ -24,8 +24,8 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         request.setAttribute(DISPLAY_NAME, CurrentNaturalistView.displayName());
         request.setAttribute(AUTHENTICATED, CurrentNaturalistView.isAuthenticated());
-        Object csrfAttr = request.getAttribute(CsrfToken.class.getName());
-        if (csrfAttr instanceof CsrfToken csrf) {
+        CsrfToken csrf = CurrentNaturalistView.csrfToken();
+        if (csrf != null) {
             request.setAttribute(CSRF_PARAM, csrf.getParameterName());
             request.setAttribute(CSRF_TOKEN, csrf.getToken());
         }

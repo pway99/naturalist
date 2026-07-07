@@ -44,6 +44,8 @@ class HeaderWebMvcTest {
         mockMvc.perform(get("/").with(authentication(auth)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Logged in as Patrick")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("action=\"/logout\"")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("action=\"/logout\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("type=\"hidden\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("name=\"_csrf\"")));
     }
 }
