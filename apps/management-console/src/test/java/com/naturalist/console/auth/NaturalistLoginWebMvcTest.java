@@ -64,4 +64,13 @@ class NaturalistLoginWebMvcTest {
         mockMvc.perform(get("/admin/anything").with(user("patrick-way").roles("NATURALIST")))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void admin_validCredentials_authenticatesWithAdminRole() throws Exception {
+        mockMvc.perform(formLogin("/login").user("test-admin").password("test-password"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(result ->
+                        assertThat(result.getResponse().getRedirectedUrl()).isEqualTo("/"))
+                .andExpect(authenticated().withUsername("test-admin").withRoles("ADMIN"));
+    }
 }
