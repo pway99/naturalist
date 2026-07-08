@@ -20,10 +20,19 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
     static final String CSRF_PARAM = "naturalistCsrfParam";
     static final String CSRF_TOKEN = "naturalistCsrfToken";
 
+    /** Header label for an authenticated session with no naturalist identity (the config admin). */
+    static final String ADMIN_LABEL = "Administrator";
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        request.setAttribute(DISPLAY_NAME, CurrentNaturalistView.displayName());
-        request.setAttribute(AUTHENTICATED, CurrentNaturalistView.isAuthenticated());
+        boolean authenticated = CurrentNaturalistView.isAuthenticated();
+        String displayName = CurrentNaturalistView.displayName();
+        if (displayName == null && authenticated) {
+            // Authenticated but no NaturalistPrincipal == the config admin; give it a label.
+            displayName = ADMIN_LABEL;
+        }
+        request.setAttribute(DISPLAY_NAME, displayName);
+        request.setAttribute(AUTHENTICATED, authenticated);
         CsrfToken csrf = CurrentNaturalistView.csrfToken();
         if (csrf != null) {
             request.setAttribute(CSRF_PARAM, csrf.getParameterName());
