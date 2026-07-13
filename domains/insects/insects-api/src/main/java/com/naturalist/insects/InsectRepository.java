@@ -36,6 +36,7 @@ class InsectRepository {
     final OrderRepository orderRepository;
     final FeatureRepository featureRepository;
     final FeatureAssignmentRepository featureAssignmentRepository;
+    final FieldObservationRepository fieldObservationRepository;
 
     private InsectRepository(
             SpeciesRepository speciesRepository,
@@ -45,7 +46,8 @@ class InsectRepository {
             FunctionalRoleRepository functionalRoleRepository,
             OrderRepository orderRepository,
             FeatureRepository featureRepository,
-            FeatureAssignmentRepository featureAssignmentRepository) {
+            FeatureAssignmentRepository featureAssignmentRepository,
+            FieldObservationRepository fieldObservationRepository) {
         this.speciesRepository = speciesRepository;
         this.imageRepository = imageRepository;
         this.familyRepository = familyRepository;
@@ -54,6 +56,7 @@ class InsectRepository {
         this.orderRepository = orderRepository;
         this.featureRepository = featureRepository;
         this.featureAssignmentRepository = featureAssignmentRepository;
+        this.fieldObservationRepository = fieldObservationRepository;
     }
 
     static InsectRepository create(
@@ -64,10 +67,11 @@ class InsectRepository {
             FunctionalRoleRepository functionalRoleRepository,
             OrderRepository orderRepository,
             FeatureRepository featureRepository,
-            FeatureAssignmentRepository featureAssignmentRepository) {
+            FeatureAssignmentRepository featureAssignmentRepository,
+            FieldObservationRepository fieldObservationRepository) {
         return new InsectRepository(speciesRepository, imageRepository, familyRepository,
                 genusRepository, functionalRoleRepository, orderRepository,
-                featureRepository, featureAssignmentRepository);
+                featureRepository, featureAssignmentRepository, fieldObservationRepository);
     }
 
     SpeciesRepository speciesRepository() {
@@ -100,6 +104,10 @@ class InsectRepository {
 
     FeatureAssignmentRepository featureAssignmentRepository() {
         return featureAssignmentRepository;
+    }
+
+    FieldObservationRepository fieldObservationRepository() {
+        return fieldObservationRepository;
     }
 
     protected interface SpeciesRepository

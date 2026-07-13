@@ -35,6 +35,8 @@ public interface InsectCommand {
 
     ImageCommand images();
 
+    FieldObservationCommand fieldObservations();
+
     /**
      * Entity-level command surface for {@link InsectSpecies}.
      */
@@ -45,5 +47,12 @@ public interface InsectCommand {
      * Entity-level command surface for {@link InsectImage}.
      */
     interface ImageCommand extends EntityCommand<InsectImageId, InsectImage> {
+    }
+
+    /**
+     * Entity-level command surface for {@link FieldObservation}.
+     */
+    interface FieldObservationCommand
+            extends EntityCommand<FieldObservationId, FieldObservation> {
     }
 }

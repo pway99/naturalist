@@ -45,11 +45,14 @@ public class InsectsTestContext {
                 new InsectFunctionalRoleRepositoryMock(db),
                 new OrderRepositoryMock(db),
                 new InsectFeatureRepositoryMock(db),
-                new InsectFeatureAssignmentRepositoryMock(db));
+                new InsectFeatureAssignmentRepositoryMock(db),
+                new FieldObservationRepositoryMock(db));
         InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(repository.familyRepository);
         InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(repository.genusRepository, familyQuery);
         InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository.speciesRepository, genusQuery);
         InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(repository.imageRepository);
+        InsectQuery.FieldObservationQuery fieldObservationQuery =
+                new FieldObservationQueryImpl(repository.fieldObservationRepository);
         InsectQuery.FunctionalRoleQuery functionalRoleQuery =
                 new FunctionalRoleQueryImpl(repository.functionalRoleRepository);
         InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(repository.orderRepository);
@@ -61,10 +64,13 @@ public class InsectsTestContext {
                 speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
                 orderQuery, citationAssociationQuery, libraryCitationQuery,
                 this.insectLifeStageQuery,
-                repository.featureRepository, repository.featureAssignmentRepository);
+                repository.featureRepository, repository.featureAssignmentRepository,
+                fieldObservationQuery);
         InsectCommand.SpeciesCommand speciesCommand = new SpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new ImageCommandImpl(repository.imageRepository);
-        this.insectCommand = new InsectCommandImpl(speciesCommand, imageCommand);
+        InsectCommand.FieldObservationCommand fieldObservationCommand =
+                new FieldObservationCommandImpl(repository.fieldObservationRepository);
+        this.insectCommand = new InsectCommandImpl(speciesCommand, imageCommand, fieldObservationCommand);
     }
 
     public static InsectsTestContext create(NaturalistDatabase db) {
