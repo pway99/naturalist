@@ -42,7 +42,8 @@ class ObserveWebMvcTest {
                         .with(authentication(flora())).with(csrf()))
                 .andExpect(status().is3xxRedirection());
 
-        mockMvc.perform(get("/insects/species").param("mine", "true").with(authentication(flora())))
+        mockMvc.perform(get("/insects/species").sessionAttr("insects.collectionLens", true)
+                        .with(authentication(flora())))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("battus-philenor")));
     }

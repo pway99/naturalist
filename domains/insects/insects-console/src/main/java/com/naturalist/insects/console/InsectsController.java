@@ -62,6 +62,21 @@ public class InsectsController {
                 : java.util.Optional.empty();
     }
 
+    // Session flag toggled by POST /insects/collection-lens; read on every insects browse request.
+    private static final String COLLECTION_LENS_ATTRIBUTE = "insects.collectionLens";
+
+    private static boolean collectionLensOn(HttpServletRequest request) {
+        var session = request.getSession(false);
+        return session != null && Boolean.TRUE.equals(session.getAttribute(COLLECTION_LENS_ATTRIBUTE));
+    }
+
+    private static String safeReturn(String returnTo) {
+        return returnTo != null
+                && returnTo.startsWith("/insects")
+                && !returnTo.startsWith("/insects/collection-lens")
+                ? returnTo : "/insects/species";
+    }
+
     private final InsectQuery insectQuery;
     private final InsectCommand insectCommand;
     private final InsectLifeStageQuery insectLifeStageQuery;
@@ -265,8 +280,8 @@ public class InsectsController {
 
     @GetMapping("/species")
     String list(@RequestParam(defaultValue = "0") int page,
-                @RequestParam(name = "mine", defaultValue = "false") boolean mine,
                 HttpServletRequest request, Model model) {
+        boolean mine = collectionLensOn(request);
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
         List<InsectImage> allImages = new ArrayList<>();
         Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = new LinkedHashMap<>();
@@ -537,6 +552,16 @@ public class InsectsController {
             model.addAttribute("_csrf", csrf);
         }
         return "insects/detail";
+    }
+
+    @PostMapping("/collection-lens")
+    String collectionLens(@RequestParam("on") boolean on,
+                          @RequestParam(name = "return", required = false) String returnTo,
+                          HttpServletRequest request) {
+        if (currentNaturalist(request).isPresent()) {
+            request.getSession(true).setAttribute(COLLECTION_LENS_ATTRIBUTE, on);
+        }
+        return "redirect:" + safeReturn(returnTo);
     }
 
     @PostMapping("/{name}/observe")

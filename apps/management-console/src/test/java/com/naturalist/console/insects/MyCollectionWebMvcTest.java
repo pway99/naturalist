@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,23 +37,28 @@ class MyCollectionWebMvcTest {
     }
 
     @Test
-    void mine_filtersToObservedSpecies() throws Exception {
-        mockMvc.perform(get("/insects/species").param("mine", "true").with(authentication(as("patrick-way", "Patrick"))))
+    void lensOn_filtersToObservedSpecies() throws Exception {
+        mockMvc.perform(get("/insects/species")
+                        .sessionAttr("insects.collectionLens", true)
+                        .with(authentication(as("patrick-way", "Patrick"))))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("battus-philenor")));
+                .andExpect(content().string(containsString("battus-philenor")))
+                .andExpect(content().string(not(containsString("apis-mellifera"))));
     }
 
     @Test
-    void allByDefault_showsFullCatalog() throws Exception {
+    void lensOff_showsFullCatalog() throws Exception {
         mockMvc.perform(get("/insects/species").with(authentication(as("patrick-way", "Patrick"))))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("apis-mellifera")));
+                .andExpect(content().string(containsString("apis-mellifera")));
     }
 
     @Test
-    void mine_excludesUnobservedSpecies() throws Exception {
-        mockMvc.perform(get("/insects/species").param("mine", "true").with(authentication(as("patrick-way", "Patrick"))))
+    void mineParam_isIgnored_afterRetirement() throws Exception {
+        // ?mine=true must no longer filter — only the session lens does.
+        mockMvc.perform(get("/insects/species").param("mine", "true")
+                        .with(authentication(as("patrick-way", "Patrick"))))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("apis-mellifera"))));
+                .andExpect(content().string(containsString("apis-mellifera")));
     }
 }

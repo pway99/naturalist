@@ -33,14 +33,6 @@
     <h1>Insect Species</h1>
     <p>Insect species documented at Oak Vista.</p>
 
-    <div class="collection-toggle">
-        @if(mine)
-            <a href="/insects/species">All insects</a> &middot; <strong>My collection</strong>
-        @else
-            <strong>All insects</strong> &middot; <a href="/insects/species?mine=true">My collection</a>
-        @endif
-    </div>
-
     <div class="entity-grid">
         @for(var s : speciesList)
             !{var images = gallery.forEntity(s.name()).stream().toList();}
