@@ -41,4 +41,13 @@ public final class CurrentNaturalistView {
         }
         return null;
     }
+
+    /** The current naturalist's slug (NaturalistName value), or {@code null} for admin/anonymous. */
+    public static String currentNaturalistSlug() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof NaturalistPrincipal p) {
+            return p.naturalistName().value();
+        }
+        return null;
+    }
 }

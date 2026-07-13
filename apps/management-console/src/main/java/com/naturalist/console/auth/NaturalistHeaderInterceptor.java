@@ -23,6 +23,9 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
     /** Header label for an authenticated session with no naturalist identity (the config admin). */
     static final String ADMIN_LABEL = "Administrator";
 
+    /** Request-attribute key read by insects-console (same literal, by convention). */
+    static final String CURRENT_NATURALIST_NAME = "naturalist.currentNaturalistName";
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         boolean authenticated = CurrentNaturalistView.isAuthenticated();
@@ -33,6 +36,7 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
         }
         request.setAttribute(DISPLAY_NAME, displayName);
         request.setAttribute(AUTHENTICATED, authenticated);
+        request.setAttribute(CURRENT_NATURALIST_NAME, CurrentNaturalistView.currentNaturalistSlug());
         CsrfToken csrf = CurrentNaturalistView.csrfToken();
         if (csrf != null) {
             request.setAttribute(CSRF_PARAM, csrf.getParameterName());
