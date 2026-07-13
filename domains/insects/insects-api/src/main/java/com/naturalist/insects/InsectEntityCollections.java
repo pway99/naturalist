@@ -17,6 +17,8 @@ import java.util.Map;
  *   <li>{@link FeatureCollection} — multi-result return type for {@link InsectFeature}.</li>
  *   <li>{@link FamilyCollection} — multi-result return type for {@link InsectFamily}.</li>
  *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenus}.</li>
+ *   <li>{@link FieldObservationCollection} — multi-result return type for
+ *       {@link FieldObservation}.</li>
  *   <li>{@link FunctionalRoleCollection} — multi-result return type for
  *       {@link InsectFunctionalRole}.</li>
  *   <li>{@link OrderCollection} — multi-result return type for {@link InsectOrder}.</li>

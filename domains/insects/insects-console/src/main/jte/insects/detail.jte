@@ -27,6 +27,7 @@
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
 @param java.util.List<com.naturalist.insects.console.AncestorIntro> ancestorIntros = List.of()
+@param boolean collected = false
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
 !{var binomial = genus.genus().value() + " " + species.epithet().value();}
@@ -51,6 +52,10 @@
     @endif
 
     <h1>${commonName}</h1>
+
+    @if(collected)
+        <p class="collected-badge">✓ In your collection</p>
+    @endif
 
     @if(role != null && (!role.guilds().isEmpty() || role.beneficial()))
         <div class="guilds">

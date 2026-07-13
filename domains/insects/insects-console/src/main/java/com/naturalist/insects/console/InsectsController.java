@@ -519,6 +519,12 @@ public class InsectsController {
         model.addAttribute("citations", i.citations());
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
+        boolean collected = currentNaturalist(request)
+                .map(me -> !insectQuery.fieldObservations()
+                        .forNaturalistAndSubjects(me, java.util.Set.<InsectRankName>of(speciesName))
+                        .isEmpty())
+                .orElse(false);
+        model.addAttribute("collected", collected);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
