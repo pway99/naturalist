@@ -1512,6 +1512,7 @@ figure.compound-depiction img {
 }
 .site-logout button {
     width: auto;
+    margin: 0;
     background: none;
     border: none;
     color: var(--sepia-ink);
@@ -1529,6 +1530,7 @@ figure.compound-depiction img {
 }
 .lens-chip {
     width: auto;
+    margin: 0;
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
