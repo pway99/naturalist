@@ -1518,26 +1518,36 @@ figure.compound-depiction img {
     font-size: 0.8rem;
     padding: 0.2rem 0.4rem;
     text-decoration: underline;
+    white-space: nowrap;
     cursor: pointer;
 }
+/* Segmented control: the active option is a rounded pill floating inside the
+   track. Avoids relying on `overflow: hidden` + border-radius clipping, which
+   Safari does not apply to child button backgrounds (square corners bled
+   through the rounded track). */
 .collection-toggle {
     display: inline-flex;
+    align-items: center;
     border: 1px solid var(--sepia-rule);
     border-radius: 999px;
-    overflow: hidden;
+    padding: 2px;
+    background: var(--parchment);
 }
 .collection-toggle .lens-form {
     display: inline-flex;
+    gap: 2px;
     margin: 0;
 }
 .lens-opt {
     width: auto;
-    background: var(--parchment);
+    background: transparent;
     color: var(--sepia-ink);
     border: none;
-    border-radius: 0;
-    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
     font-size: 0.8rem;
+    line-height: 1.3;
+    white-space: nowrap;
     cursor: pointer;
 }
 .lens-opt.active {
