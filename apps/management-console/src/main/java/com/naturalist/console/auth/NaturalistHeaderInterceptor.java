@@ -42,6 +42,13 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
             request.setAttribute(CSRF_PARAM, csrf.getParameterName());
             request.setAttribute(CSRF_TOKEN, csrf.getToken());
         }
+        request.setAttribute("insectSection", request.getRequestURI().startsWith("/insects"));
+        var session = request.getSession(false);
+        request.setAttribute("collectionLens",
+                session != null && Boolean.TRUE.equals(session.getAttribute("insects.collectionLens")));
+        String uri = request.getRequestURI();
+        String queryString = request.getQueryString();
+        request.setAttribute("requestUri", queryString == null ? uri : uri + "?" + queryString);
         return true;
     }
 }

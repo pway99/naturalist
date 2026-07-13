@@ -39,4 +39,27 @@ class NaturalistHeaderInterceptorTest {
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
         assertThat(request.getAttribute(NaturalistHeaderInterceptor.CURRENT_NATURALIST_NAME)).isNull();
     }
+
+    @Test
+    void publishesInsectSectionAndLensAndUri() {
+        var request = new org.springframework.mock.web.MockHttpServletRequest("GET", "/insects/species");
+        request.setQueryString("page=2");
+        var session = new org.springframework.mock.web.MockHttpSession();
+        session.setAttribute("insects.collectionLens", true);
+        request.setSession(session);
+
+        interceptor.preHandle(request, new org.springframework.mock.web.MockHttpServletResponse(), new Object());
+
+        org.assertj.core.api.Assertions.assertThat(request.getAttribute("insectSection")).isEqualTo(true);
+        org.assertj.core.api.Assertions.assertThat(request.getAttribute("collectionLens")).isEqualTo(true);
+        org.assertj.core.api.Assertions.assertThat(request.getAttribute("requestUri")).isEqualTo("/insects/species?page=2");
+    }
+
+    @Test
+    void insectSectionFalse_offInsectsPath() {
+        var request = new org.springframework.mock.web.MockHttpServletRequest("GET", "/chemistry");
+        interceptor.preHandle(request, new org.springframework.mock.web.MockHttpServletResponse(), new Object());
+        org.assertj.core.api.Assertions.assertThat(request.getAttribute("insectSection")).isEqualTo(false);
+        org.assertj.core.api.Assertions.assertThat(request.getAttribute("collectionLens")).isEqualTo(false);
+    }
 }
