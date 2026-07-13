@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=21">
+    <link rel="stylesheet" href="/css/naturalist.css?v=22">
     <script src="/js/htmx.min.js" defer></script>
     <%-- Rotates stacked images on .card-image[data-rotate] tiles across all
          catalog cards. No-op on pages without rotating cards. --%>
@@ -34,18 +34,37 @@
         !{var _attrs = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();}
         @if(_attrs != null && Boolean.TRUE.equals(_attrs.getAttribute("naturalistAuthenticated", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST)))
             !{var _name = (String) _attrs.getAttribute("naturalistDisplayName", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
+            !{var _slug = (String) _attrs.getAttribute("naturalist.currentNaturalistName", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
             !{var _csrfParam = (String) _attrs.getAttribute("naturalistCsrfParam", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
             !{var _csrfValue = (String) _attrs.getAttribute("naturalistCsrfToken", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
-            <div class="site-user">
-                @if(_name != null)
-                    <span class="site-user-name">Logged in as ${_name}</span>
+            !{var _insectSection = Boolean.TRUE.equals(_attrs.getAttribute("insectSection", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST));}
+            !{var _lensOn = Boolean.TRUE.equals(_attrs.getAttribute("collectionLens", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST));}
+            !{var _returnTo = (String) _attrs.getAttribute("requestUri", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
+            <div class="site-actions">
+                @if(_insectSection && _slug != null)
+                    <div class="collection-toggle" role="group" aria-label="Collection filter">
+                        <form method="post" action="/insects/collection-lens" class="lens-form">
+                            @if(_csrfParam != null)
+                                <input type="hidden" name="${_csrfParam}" value="${_csrfValue}">
+                            @endif
+                            <input type="hidden" name="return" value="${_returnTo}">
+                            <button type="submit" name="on" value="false" class="lens-opt ${!_lensOn ? "active" : ""}">All</button>
+                            <button type="submit" name="on" value="true" class="lens-opt ${_lensOn ? "active" : ""}">My collection</button>
+                        </form>
+                    </div>
                 @endif
-                <form method="post" action="/logout" class="site-logout">
-                    @if(_csrfParam != null)
-                        <input type="hidden" name="${_csrfParam}" value="${_csrfValue}">
+                <div class="site-user">
+                    @if(_name != null)
+                        <span class="site-user-badge">${_name.substring(0, 1)}</span>
+                        <span class="site-user-name">${_name}</span>
                     @endif
-                    <button type="submit">Logout</button>
-                </form>
+                    <form method="post" action="/logout" class="site-logout">
+                        @if(_csrfParam != null)
+                            <input type="hidden" name="${_csrfParam}" value="${_csrfValue}">
+                        @endif
+                        <button type="submit">Log out</button>
+                    </form>
+                </div>
             </div>
         @endif
     </div>

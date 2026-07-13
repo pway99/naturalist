@@ -44,7 +44,7 @@ class HeaderWebMvcTest {
 
         mockMvc.perform(get("/").with(authentication(auth)))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Logged in as Patrick")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Patrick")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("action=\"/logout\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("type=\"hidden\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("name=\"_csrf\"")));
@@ -56,7 +56,7 @@ class HeaderWebMvcTest {
         // so the header shows the "Administrator" fallback label rather than a naturalist name.
         mockMvc.perform(get("/").with(user("test-admin").roles("ADMIN")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Logged in as Administrator")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Administrator")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("action=\"/logout\"")));
     }
 }

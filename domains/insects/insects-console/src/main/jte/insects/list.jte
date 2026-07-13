@@ -77,5 +77,9 @@
         @endfor
     </div>
 
+    @if(mine && speciesList.isEmpty())
+        <p class="collection-empty">No insects in your collection yet — turn off "My collection" and go make some observations.</p>
+    @endif
+
     @template.components.pager(page = speciesPage, baseUrl = "/insects/species")
 `)
