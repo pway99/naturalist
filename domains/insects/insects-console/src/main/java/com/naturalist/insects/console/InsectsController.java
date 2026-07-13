@@ -51,6 +51,17 @@ public class InsectsController {
 
     private static final String CSRF_REQUEST_ATTRIBUTE = "org.springframework.security.web.csrf.CsrfToken";
 
+    // Written by the app's NaturalistHeaderInterceptor (same literal, by convention).
+    private static final String CURRENT_NATURALIST_ATTRIBUTE = "naturalist.currentNaturalistName";
+
+    private static java.util.Optional<com.naturalist.naturalist.NaturalistName> currentNaturalist(
+            HttpServletRequest request) {
+        Object slug = request.getAttribute(CURRENT_NATURALIST_ATTRIBUTE);
+        return slug instanceof String s && !s.isBlank()
+                ? java.util.Optional.of(com.naturalist.naturalist.NaturalistName.of(s))
+                : java.util.Optional.empty();
+    }
+
     private final InsectQuery insectQuery;
     private final InsectCommand insectCommand;
     private final InsectLifeStageQuery insectLifeStageQuery;
@@ -253,7 +264,9 @@ public class InsectsController {
     }
 
     @GetMapping("/species")
-    String list(@RequestParam(defaultValue = "0") int page, Model model) {
+    String list(@RequestParam(defaultValue = "0") int page,
+                @RequestParam(name = "mine", defaultValue = "false") boolean mine,
+                HttpServletRequest request, Model model) {
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
         List<InsectImage> allImages = new ArrayList<>();
         Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = new LinkedHashMap<>();
@@ -269,7 +282,24 @@ public class InsectsController {
                     n -> insectQuery.families().getByName(n).orElseThrow());
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.of(allImages);
+
+        java.util.Optional<com.naturalist.naturalist.NaturalistName> me = currentNaturalist(request);
+        List<InsectSpecies> speciesList;
+        if (mine && me.isPresent()) {
+            java.util.Set<InsectRankName> mySubjects = insectQuery.fieldObservations()
+                    .forNaturalist(me.get()).stream()
+                    .map(FieldObservation::subject)
+                    .collect(java.util.stream.Collectors.toSet());
+            speciesList = speciesPage.content().stream()
+                    .filter(s -> mySubjects.contains(s.name()))
+                    .toList();
+        } else {
+            speciesList = speciesPage.content();
+        }
+        model.addAttribute("mine", mine && me.isPresent());
+
         model.addAttribute("speciesPage", speciesPage);
+        model.addAttribute("speciesList", speciesList);
         model.addAttribute("gallery", gallery);
         model.addAttribute("rolesBySpecies", rolesBySpecies);
         model.addAttribute("familyByName", familyByName);

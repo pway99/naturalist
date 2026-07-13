@@ -16,6 +16,7 @@
 @import java.util.Set
 
 @param Page<InsectSpecies> speciesPage
+@param List<InsectSpecies> speciesList = List.of()
 @param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = Map.of()
 @param Map<InsectFamilyName, InsectFamily> familyByName = Map.of()
@@ -23,6 +24,7 @@
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
+@param boolean mine = false
 
 @template.layout.page(title = "Insect Species", content = @`
     @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
@@ -31,8 +33,16 @@
     <h1>Insect Species</h1>
     <p>Insect species documented at Oak Vista.</p>
 
+    <div class="collection-toggle">
+        @if(mine)
+            <a href="/insects/species">All insects</a> &middot; <strong>My collection</strong>
+        @else
+            <strong>All insects</strong> &middot; <a href="/insects/species?mine=true">My collection</a>
+        @endif
+    </div>
+
     <div class="entity-grid">
-        @for(var s : speciesPage.content())
+        @for(var s : speciesList)
             !{var images = gallery.forEntity(s.name()).stream().toList();}
             !{var role = rolesBySpecies.get(s.name());}
             !{var guilds = role == null ? Set.<FunctionalGuild>of() : role.guilds();}
