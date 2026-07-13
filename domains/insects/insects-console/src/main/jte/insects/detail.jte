@@ -28,6 +28,7 @@
 @param CladeTrail cladeTrail = null
 @param java.util.List<com.naturalist.insects.console.AncestorIntro> ancestorIntros = List.of()
 @param boolean collected = false
+@param boolean lens = false
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
 !{var binomial = genus.genus().value() + " " + species.epithet().value();}
@@ -95,6 +96,10 @@
                 @endfor
             </div>
         </section>
+    @endif
+
+    @if(lens && images.isEmpty())
+        <p class="collection-empty">No photos of yours here yet — add one below to start your collection.</p>
     @endif
 
     @if(_csrf != null)

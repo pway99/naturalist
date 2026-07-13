@@ -530,7 +530,20 @@ public class InsectsController {
         model.addAttribute("stages", i.lifeStages().stream()
                 .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
                 .toList());
-        model.addAttribute("images", i.observations().stream().toList());
+        boolean lens = collectionLensOn(request);
+        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
+        List<InsectImage> galleryImages = i.observations().stream().toList();
+        if (lens && viewer.isPresent()) {
+            java.util.Set<FieldObservationId> myObservationIds = insectQuery.fieldObservations()
+                    .forNaturalist(viewer.get()).stream()
+                    .map(FieldObservation::id)
+                    .collect(java.util.stream.Collectors.toSet());
+            galleryImages = galleryImages.stream()
+                    .filter(img -> img.observationId() != null && myObservationIds.contains(img.observationId()))
+                    .toList();
+        }
+        model.addAttribute("images", galleryImages);
+        model.addAttribute("lens", lens && viewer.isPresent());
         model.addAttribute("citations", i.citations());
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
