@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.naturalist.data.FileName;
 import com.naturalist.ddd.Entity;
 import com.naturalist.observability.Constraints;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.function.Consumer;
@@ -52,7 +53,8 @@ public record InsectImage(
         })
         InsectRankName parentName,
         Instant dateAdded,
-        FileName resourceName
+        FileName resourceName,
+        @Nullable FieldObservationId observationId
 ) implements Entity<InsectImageId> {
 
     @Override
@@ -61,6 +63,7 @@ public record InsectImage(
                 .entityId(id, "id")
                 .identifier(parentName, "parentName")
                 .notNull(dateAdded, "dateAdded")
-                .namedValue(resourceName, "resourceName");
+                .namedValue(resourceName, "resourceName")
+                .whenNotNull(observationId, c -> c.entityId(observationId, "observationId"));
     }
 }

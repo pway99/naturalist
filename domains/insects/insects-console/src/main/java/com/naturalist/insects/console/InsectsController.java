@@ -510,7 +510,8 @@ public class InsectsController {
                 InsectImageId.create(),
                 speciesName,
                 Instant.now(),
-                FileName.of(resourceName));
+                FileName.of(resourceName),
+                null);
         insectCommand.images().insert(image);
         return "redirect:/insects/" + name;
     }

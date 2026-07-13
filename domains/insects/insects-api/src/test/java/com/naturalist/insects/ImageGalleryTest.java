@@ -23,7 +23,8 @@ class ImageGalleryTest {
                 InsectImageId.create(),
                 parent,
                 Instant.now(),
-                FileName.of(filename));
+                FileName.of(filename),
+                null);
     }
 
     @Test

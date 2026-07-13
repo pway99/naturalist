@@ -55,7 +55,8 @@ class ImageCommandImplTest
                 InsectImageId.create(),
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-04-20T12:00:00Z"),
-                FileName.of("IMG_TEST_NEW.HEIC"));
+                FileName.of("IMG_TEST_NEW.HEIC"),
+                null);
     }
 
     @Override
@@ -64,7 +65,8 @@ class ImageCommandImplTest
                 InsectImageId.create(),
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-04-21T12:00:00Z"),
-                FileName.of("IMG_TEST_GHOST.HEIC"));
+                FileName.of("IMG_TEST_GHOST.HEIC"),
+                null);
     }
 
     @Override
@@ -73,6 +75,21 @@ class ImageCommandImplTest
                 original.id(),
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-05-01T08:30:00Z"),
-                FileName.of("IMG_TEST_MODIFIED.HEIC"));
+                FileName.of("IMG_TEST_MODIFIED.HEIC"),
+                null);
+    }
+
+    @org.junit.jupiter.api.Test
+    void image_withObservationId_roundTrips() {
+        FieldObservationId obs = TestInsectsIdentifiers.FieldObservation.PatrickBattus;
+        InsectImage img = new InsectImage(
+                InsectImageId.create(),
+                TestInsectsIdentifiers.InsectGenus.Empoasca.name,
+                java.time.Instant.parse("2026-06-20T08:00:00Z"),
+                com.naturalist.data.FileName.of("IMG_OBS.HEIC"),
+                obs);
+        command.insert(img);
+        InsectImage found = query.getByName(img.id()).orElseThrow();
+        org.assertj.core.api.Assertions.assertThat(found.observationId()).isEqualTo(obs);
     }
 }
