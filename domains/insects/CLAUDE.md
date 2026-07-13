@@ -22,3 +22,31 @@ boundary. Identity is the root's typed `InsectRankName`, returned polymorphicall
 by `name()`. Assembled by name through `InsectTaxonViewFactory` and read via
 `insectQuery.taxonView().getByName(rankName)`; `InsectSubspeciesName` is permitted
 on `InsectRankName` but yields `Optional.empty()` (no subspecies entity exists yet).
+
+## The Naturalist's Collection
+
+Design source: `docs/plans/2026-07-12-naturalist-insect-collection-design.md`.
+
+**FieldObservation** — `Entity<FieldObservationId>`. The collection unit: a
+naturalist's claim to have observed a subject. Carries `observedBy` (`NaturalistName`)
+and `subject` (`InsectRankName`) plus `observedOn`/`notes`. A naturalist "has
+collected" a species/genus/family/order iff a `FieldObservation` exists with that
+`subject` — membership dedups by `subject`, so repeated sightings of the same
+subject by the same naturalist do not multiply collection entries. Read via
+`insectQuery.fieldObservations()`, written via `insectCommand.fieldObservations()`.
+
+**InsectImage.observationId** — nullable `FieldObservationId` link from a photo to
+the `FieldObservation` it was captured under. `null` means a shared catalog image
+with no owning naturalist (the pre-collection default). `POST /insects/{name}/images`
+(`InsectsController.addImage`) creates a `FieldObservation` and sets this link when a
+naturalist is signed in; with no naturalist the image stays owner-less, exactly as
+before this feature. `POST /insects/{name}/observe` records a sighting (no photo)
+via the same `FieldObservation` insert, without touching `InsectImage`.
+
+**Current naturalist in insects-console** — `InsectsController` resolves the signed-in
+naturalist by reading the `"naturalist.currentNaturalistName"` request attribute
+(`currentNaturalist(HttpServletRequest)`), written upstream by the app's
+`NaturalistHeaderInterceptor`. The console module never depends on the security/auth
+types directly — only on this request-attribute convention — which is why the
+attribute key is duplicated as a same-literal constant on both sides rather than
+shared through a type.

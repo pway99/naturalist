@@ -552,14 +552,24 @@ public class InsectsController {
     }
 
     @PostMapping("/{name}/images")
-    String addImage(@PathVariable String name, @RequestParam("resourceName") String resourceName) {
+    String addImage(@PathVariable String name,
+                    @RequestParam("resourceName") String resourceName,
+                    HttpServletRequest request) {
         var speciesName = InsectSpeciesName.of(name);
+        java.util.Optional<com.naturalist.naturalist.NaturalistName> me = currentNaturalist(request);
+        FieldObservationId observationId = null;
+        if (me.isPresent()) {
+            var observation = new FieldObservation(
+                    FieldObservationId.create(), me.get(), speciesName, Instant.now(), null);
+            insectCommand.fieldObservations().insert(observation);
+            observationId = observation.id();
+        }
         var image = new InsectImage(
                 InsectImageId.create(),
                 speciesName,
                 Instant.now(),
                 FileName.of(resourceName),
-                null);
+                observationId);
         insectCommand.images().insert(image);
         return "redirect:/insects/" + name;
     }
