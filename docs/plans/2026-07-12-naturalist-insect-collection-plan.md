@@ -12,7 +12,7 @@
 
 - **Design source of truth:** `docs/plans/2026-07-12-naturalist-insect-collection-design.md`.
 - **Naming (avoid the legacy clash):** the `Insect` read model already has `observations()` returning **images**. The new concept is always the full name — `FieldObservation`, `FieldObservationId`, `FieldObservationCollection`, `FieldObservationRepository`, `FieldObservationQuery`, `FieldObservationCommand`, and the namespace accessor `fieldObservations()`. Never shorten to `observations()`.
-- **Identity:** `FieldObservation` is an `Entity<FieldObservationId>` (UUIDv7 surrogate). `observedBy: NaturalistName` (cross-`NamedEntity` reference by name; `NaturalistName` is on the `insects-api` classpath via `identifiers`). `subject: InsectRankName` (existing sealed type). `FieldObservationId` lives in `insects-api` alongside `InsectImageId`. Never `UUID.randomUUID()` — use `EntityId.newUUID()` via the `create()` factory.
+- **Identity:** `FieldObservation` is an `Entity<FieldObservationId>` (UUIDv7 surrogate). `observedBy: NaturalistName` (cross-`NamedEntity` reference by name; `NaturalistName` is on the `insects-api` classpath via `identifiers`). `subject: InsectRankName` (existing sealed type). `FieldObservationId` lives in `domains/identifiers` (package `com.naturalist.insects`), alongside `InsectImageId` and the other insects `EntityId` subclasses — the identifiers module, NOT insects-api (import is unchanged: `com.naturalist.insects.FieldObservationId`). Never `UUID.randomUUID()` — use `EntityId.newUUID()` via the `create()` factory.
 - **Immutability:** `FieldObservation` is a record; equality by value; no setters.
 - **Seam discipline:** only `NaturalistUserDetailsService`, `CurrentNaturalist`/`SecurityContextCurrentNaturalist`, and `CurrentNaturalistView` may read `SecurityContextHolder`. The interceptor reads identity through `CurrentNaturalistView`; `insects-console` reads a plain request-attribute String, never Spring-Security.
 - **Request-attribute key:** `"naturalist.currentNaturalistName"` — the app interceptor writes it; `insects-console` reads it. Both sides hardcode this literal with a cross-referencing comment (no shared code dependency; same convention as the CSRF attribute key).
@@ -24,8 +24,10 @@
 
 ## File Structure
 
+**identifiers (`domains/identifiers/src/main/java/com/naturalist/insects/`)**
+- `FieldObservationId.java` — new `EntityId` subclass (mirror `InsectImageId`, which lives here too).
+
 **insects-api (`domains/insects/insects-api/src/main/java/com/naturalist/insects/`)**
-- `FieldObservationId.java` — new `EntityId` subclass (mirror `InsectImageId`).
 - `FieldObservation.java` — new record.
 - `InsectEntityCollections.java` — **modify**: add `FieldObservationCollection`.
 - `InsectRepository.java` — **modify**: add nested `FieldObservationRepository`; add field + `create(...)` param (Task 2).
@@ -68,7 +70,7 @@
 ## Task 1: FieldObservation entity + data layer
 
 **Files:**
-- Create: `domains/insects/insects-api/src/main/java/com/naturalist/insects/FieldObservationId.java`
+- Create: `domains/identifiers/src/main/java/com/naturalist/insects/FieldObservationId.java`
 - Create: `domains/insects/insects-api/src/main/java/com/naturalist/insects/FieldObservation.java`
 - Modify: `domains/insects/insects-api/src/main/java/com/naturalist/insects/InsectEntityCollections.java`
 - Modify: `domains/insects/insects-api/src/main/java/com/naturalist/insects/InsectRepository.java` (add nested interface only)
