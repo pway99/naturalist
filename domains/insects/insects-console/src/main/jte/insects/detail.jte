@@ -92,6 +92,14 @@
         </section>
     @endif
 
+    @if(_csrf != null)
+        <form method="post" action="/insects/${species.name().value()}/observe" class="observe-form">
+            <input type="hidden" name="${_csrf.getParameterName()}" value="${_csrf.getToken()}">
+            <input type="text" name="notes" placeholder="Notes (optional)">
+            <button type="submit">Add to my collection</button>
+        </form>
+    @endif
+
     <section class="add-image">
         <h2>Add Photo</h2>
         <p>
