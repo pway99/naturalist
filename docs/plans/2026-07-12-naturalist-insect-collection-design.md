@@ -85,9 +85,12 @@ remain catalog images unaffected.
 
 ### Read / write stack (mirrors existing insect patterns)
 
-- `InsectQuery.observations()` → `ObservationQuery extends EntityQuery<FieldObservationId,
-  FieldObservation, ObservationCollection>` with `ObservationCollection forNaturalist(
-  NaturalistName)`.
+- `InsectQuery.fieldObservations()` → `FieldObservationQuery extends EntityQuery<
+  FieldObservationId, FieldObservation, FieldObservationCollection>` with:
+  - `forNaturalist(NaturalistName)` — all of a naturalist's observations (species-list "mine" filter);
+  - `forNaturalistAndSubjects(NaturalistName, Set<InsectRankName>)` — a bounded read port that
+    restricts to the given ranks, so the rank pages (order/family/genus/species detail) can render
+    a per-entity "collected" indicator by passing the ranks they display.
 - `InsectCommand.observations()` → `ObservationCommand extends EntityCommand<
   FieldObservationId, FieldObservation>` (insert).
 - `InsectRepository.ObservationRepository extends EntityRepository<FieldObservationId,
