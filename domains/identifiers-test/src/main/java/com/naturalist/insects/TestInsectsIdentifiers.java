@@ -440,4 +440,24 @@ public class TestInsectsIdentifiers {
             public static final InsectSpeciesName name = InsectSpeciesName.of("reticulitermes-hesperus");
         }
     }
+
+    public static class FieldObservation {
+
+        private FieldObservation() {
+        }
+
+        public static class NotFound {
+            public static final FieldObservationId id = FieldObservationId.of(
+                    UUID.fromString("019e9000-0000-7000-8000-0000deadbeef"));
+        }
+
+        public static final FieldObservationId PatrickBattus = FieldObservationId.of(
+                UUID.fromString("019e9000-0001-7000-8000-000000000001"));
+        public static final FieldObservationId PatrickEmpoasca = FieldObservationId.of(
+                UUID.fromString("019e9000-0002-7000-8000-000000000002"));
+        public static final FieldObservationId DeliaBattus = FieldObservationId.of(
+                UUID.fromString("019e9000-0003-7000-8000-000000000003"));
+        public static final FieldObservationId DeliaEmpoasca = FieldObservationId.of(
+                UUID.fromString("019e9000-0004-7000-8000-000000000004"));
+    }
 }

@@ -58,6 +58,21 @@ public interface InsectEntityCollections {
         }
     }
 
+    final class FieldObservationCollection extends BehavioralCollection<FieldObservation> {
+
+        FieldObservationCollection(Collection<FieldObservation> observations) {
+            super(observations);
+        }
+
+        public static FieldObservationCollection of(Collection<FieldObservation> observations) {
+            return new FieldObservationCollection(observations);
+        }
+
+        public static FieldObservationCollection empty() {
+            return new FieldObservationCollection(List.of());
+        }
+    }
+
     final class FeatureCollection extends BehavioralCollection<InsectFeature> {
 
         FeatureCollection(Collection<InsectFeature> features) {

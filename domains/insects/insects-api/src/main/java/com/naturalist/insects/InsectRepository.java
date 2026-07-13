@@ -114,6 +114,17 @@ class InsectRepository {
         List<InsectImage> getByParentName(InsectRankName parentName);
     }
 
+    protected interface FieldObservationRepository
+            extends EntityRepository<FieldObservationId, FieldObservation> {
+
+        java.util.List<FieldObservation> getByNaturalist(
+                com.naturalist.naturalist.NaturalistName observedBy);
+
+        java.util.List<FieldObservation> getByNaturalistAndSubjects(
+                com.naturalist.naturalist.NaturalistName observedBy,
+                java.util.Set<InsectRankName> subjects);
+    }
+
     protected interface FamilyRepository
             extends EntityRepository<InsectFamilyName, InsectFamily> {
 
