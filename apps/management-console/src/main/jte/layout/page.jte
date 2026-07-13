@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=24">
+    <link rel="stylesheet" href="/css/naturalist.css?v=25">
     <script src="/js/htmx.min.js" defer></script>
     <%-- Rotates stacked images on .card-image[data-rotate] tiles across all
          catalog cards. No-op on pages without rotating cards. --%>
@@ -42,16 +42,17 @@
             !{var _returnTo = (String) _attrs.getAttribute("requestUri", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
             <div class="site-actions">
                 @if(_insectSection && _slug != null)
-                    <div class="collection-toggle" role="group" aria-label="Collection filter">
-                        <form method="post" action="/insects/collection-lens" class="lens-form">
-                            @if(_csrfParam != null)
-                                <input type="hidden" name="${_csrfParam}" value="${_csrfValue}">
-                            @endif
-                            <input type="hidden" name="return" value="${_returnTo}">
-                            <button type="submit" name="on" value="false" class="lens-opt ${!_lensOn ? "active" : ""}">All</button>
-                            <button type="submit" name="on" value="true" class="lens-opt ${_lensOn ? "active" : ""}">My collection</button>
-                        </form>
-                    </div>
+                    <form method="post" action="/insects/collection-lens" class="lens-form">
+                        @if(_csrfParam != null)
+                            <input type="hidden" name="${_csrfParam}" value="${_csrfValue}">
+                        @endif
+                        <input type="hidden" name="return" value="${_returnTo}">
+                        <button type="submit" name="on" value="${_lensOn ? "false" : "true"}"
+                                class="lens-chip ${_lensOn ? "active" : ""}"
+                                aria-pressed="${_lensOn ? "true" : "false"}">
+                            ${_lensOn ? "✓ My collection" : "My collection"}
+                        </button>
+                    </form>
                 @endif
                 <div class="site-user">
                     @if(_name != null)

@@ -1521,38 +1521,34 @@ figure.compound-depiction img {
     white-space: nowrap;
     cursor: pointer;
 }
-/* Segmented control: the active option is a rounded pill floating inside the
-   track. Avoids relying on `overflow: hidden` + border-radius clipping, which
-   Safari does not apply to child button backgrounds (square corners bled
-   through the rounded track). */
-.collection-toggle {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--sepia-rule);
-    border-radius: 7px;
-    padding: 2px;
-    background: var(--parchment);
-}
-.collection-toggle .lens-form {
-    display: inline-flex;
-    gap: 2px;
+/* Single filter chip: one button, outline when the lens is off, filled when on.
+   A single element sidesteps the cross-browser alignment problems of a
+   multi-part segmented control. */
+.lens-form {
     margin: 0;
 }
-.lens-opt {
+.lens-chip {
     width: auto;
-    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--parchment);
     color: var(--sepia-ink);
-    border: none;
-    border-radius: 5px;
-    padding: 0.1rem 0.6rem;
-    font-size: 0.8rem;
-    line-height: 1.35;
+    border: 1px solid var(--sepia-rule);
+    border-radius: 999px;
+    padding: 0.2rem 0.85rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
     white-space: nowrap;
     cursor: pointer;
 }
-.lens-opt.active {
+.lens-chip:hover {
+    background: var(--parchment-deep);
+}
+.lens-chip.active {
     background: var(--sepia-ink);
     color: var(--parchment);
+    border-color: var(--sepia-ink);
 }
 .collection-empty {
     padding: 1rem;
