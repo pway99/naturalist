@@ -61,11 +61,14 @@ class CollectionToggleWebMvcTest {
 
     @Test
     void emptyCollection_showsNudge() throws Exception {
-        var flora = new NaturalistPrincipal(NaturalistName.of("flora-mendez"), "Flora", "{bcrypt}x");
-        var floraAuth = new UsernamePasswordAuthenticationToken(flora, "n/a", flora.getAuthorities());
+        // A synthetic naturalist that no other test records observations for, so the
+        // empty-collection assertion is order-independent (unlike a seeded naturalist,
+        // whose observations other tests mutate in the shared app context).
+        var empty = new NaturalistPrincipal(NaturalistName.of("empty-collector"), " Empty", "{bcrypt}x");
+        var emptyAuth = new UsernamePasswordAuthenticationToken(empty, "n/a", empty.getAuthorities());
         mockMvc.perform(get("/insects/species")
                         .sessionAttr("insects.collectionLens", true)
-                        .with(authentication(floraAuth)))
+                        .with(authentication(emptyAuth)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("No insects in your collection yet")));
     }
