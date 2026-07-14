@@ -19,8 +19,7 @@ import com.naturalist.library.LibraryTestContext;
  * <ul>
  *   <li>{@link #insectQuery()} — the public {@link InsectQuery} namespace for reads.</li>
  *   <li>{@link #insectCommand()} — the public {@link InsectCommand} namespace for writes
- *       (insert / update). The pilot covers {@link InsectSpecies} and {@link InsectImage};
- *       family and genus commands are not wired.</li>
+ *       (insert / update).</li>
  * </ul>
  * Bulk test-data seeding still goes through the supplied {@link NaturalistDatabase}
  * and the domain's {@code *TestEntitySource} classes — the command surface exists for
@@ -70,7 +69,12 @@ public class InsectsTestContext {
         InsectCommand.ImageCommand imageCommand = new ImageCommandImpl(repository.imageRepository);
         InsectCommand.FieldObservationCommand fieldObservationCommand =
                 new FieldObservationCommandImpl(repository.fieldObservationRepository);
-        this.insectCommand = new InsectCommandImpl(speciesCommand, imageCommand, fieldObservationCommand);
+        InsectCommand.OrderCommand orderCommand = new OrderCommandImpl(repository.orderRepository);
+        InsectCommand.FamilyCommand familyCommand = new FamilyCommandImpl(repository.familyRepository);
+        InsectCommand.GenusCommand genusCommand = new GenusCommandImpl(repository.genusRepository);
+        this.insectCommand = new InsectCommandImpl(
+                speciesCommand, imageCommand, fieldObservationCommand,
+                orderCommand, familyCommand, genusCommand);
     }
 
     public static InsectsTestContext create(NaturalistDatabase db) {

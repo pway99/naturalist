@@ -323,8 +323,11 @@ public class InsectsController {
                 new com.naturalist.vision.ImageMetadata(location, capturedInstant));
         var result = identificationService.identify(image);
 
-        // 3. Insert species into catalog if new
+        // 3. Ensure the full Linnaean path exists (order → family → genus → species)
+        var taxonomy = result.taxonomy();
         var speciesName = result.species().name();
+        ensureParentRanks(taxonomy, result.species().genusName());
+
         var existingSpecies = insectQuery.species().getByName(speciesName);
         if (existingSpecies.isEmpty()) {
             insectCommand.species().insert(result.species());
@@ -355,14 +358,7 @@ public class InsectsController {
                 result.confidence());
         insectCommand.fieldObservations().insert(observation);
 
-        // Only redirect to detail page if the rank chain is resolvable (genus exists).
-        // Novel genera from vision lack parent rank entities (no genus/family/order commands),
-        // so the detail page would NPE trying to build the rank-chain breadcrumb.
-        if (existingSpecies.isPresent()
-                || insectQuery.genera().getByName(result.species().genusName()).isPresent()) {
-            return "redirect:/insects/" + speciesName.value();
-        }
-        return "redirect:/insects/identify?identified=" + speciesName.value();
+        return "redirect:/insects/" + speciesName.value();
     }
 
     private String buildVisionNotes(String userNotes, InsectIdentificationResult result) {
@@ -378,6 +374,45 @@ public class InsectsController {
             sb.append("\nAlternatives: ").append(result.alternativesJson());
         }
         return sb.toString();
+    }
+
+    /**
+     * Creates any missing parent rank entities (order, family, genus) so the
+     * identified species has a complete Linnaean path back to Class Insecta.
+     * Existing ranks are left untouched.
+     */
+    private void ensureParentRanks(com.naturalist.taxonomy.TaxonomicClassification taxonomy,
+                                    InsectGenusName genusName) {
+        var placeholder = new com.naturalist.fieldnotes.Description(
+                "Identified via vision — description pending.",
+                "Identified via vision — description pending.",
+                "Identified via vision — description pending.",
+                "Identified via vision — description pending.");
+
+        // Order
+        var orderSlug = taxonomy.order().value().toLowerCase(java.util.Locale.ROOT);
+        var orderName = InsectOrderName.of(orderSlug);
+        if (insectQuery.orders().getByName(orderName).isEmpty()) {
+            insectCommand.orders().insert(new InsectOrder(
+                    orderName, taxonomy.order(), placeholder,
+                    java.util.Set.of(), null));
+        }
+
+        // Family
+        var familySlug = taxonomy.family().value().toLowerCase(java.util.Locale.ROOT);
+        var familyName = InsectFamilyName.of(familySlug);
+        if (insectQuery.families().getByName(familyName).isEmpty()) {
+            insectCommand.families().insert(new InsectFamily(
+                    familyName, orderName, taxonomy.family(), placeholder,
+                    java.util.Set.of(), null));
+        }
+
+        // Genus
+        if (insectQuery.genera().getByName(genusName).isEmpty()) {
+            insectCommand.genera().insert(new InsectGenus(
+                    genusName, familyName, taxonomy.genus(), placeholder,
+                    java.util.Set.of(), null));
+        }
     }
 
     @GetMapping("/species")

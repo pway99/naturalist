@@ -146,7 +146,7 @@ public class InsectIdentificationService {
             var alternativesJson = node.has("alternatives") && !node.get("alternatives").isNull()
                     ? node.get("alternatives").asText() : null;
 
-            return new InsectIdentificationResult(species, confidence, evidence, alternativesJson);
+            return new InsectIdentificationResult(species, taxonomy, confidence, evidence, alternativesJson);
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse vision identification result", e);
         }

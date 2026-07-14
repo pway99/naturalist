@@ -25,9 +25,6 @@ import com.naturalist.data.EntityCommand;
  * insectCommand.species().insert(newSpecies);
  * insectCommand.images().update(modifiedImage);
  * }</pre>
- *
- * <p>Family and genus commands are not part of the pilot — add them when a write
- * surface for those entities becomes a concrete requirement.
  */
 public interface InsectCommand {
 
@@ -36,6 +33,12 @@ public interface InsectCommand {
     ImageCommand images();
 
     FieldObservationCommand fieldObservations();
+
+    OrderCommand orders();
+
+    FamilyCommand families();
+
+    GenusCommand genera();
 
     /**
      * Entity-level command surface for {@link InsectSpecies}.
@@ -54,5 +57,23 @@ public interface InsectCommand {
      */
     interface FieldObservationCommand
             extends EntityCommand<FieldObservationId, FieldObservation> {
+    }
+
+    /**
+     * Entity-level command surface for {@link InsectOrder}.
+     */
+    interface OrderCommand extends EntityCommand<InsectOrderName, InsectOrder> {
+    }
+
+    /**
+     * Entity-level command surface for {@link InsectFamily}.
+     */
+    interface FamilyCommand extends EntityCommand<InsectFamilyName, InsectFamily> {
+    }
+
+    /**
+     * Entity-level command surface for {@link InsectGenus}.
+     */
+    interface GenusCommand extends EntityCommand<InsectGenusName, InsectGenus> {
     }
 }
