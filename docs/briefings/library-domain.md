@@ -1,12 +1,12 @@
 # library-domain — Chat Briefing
 
 **Purpose.** Domain vocabulary plus current shape of the library module
-(three parallel sub-contexts: concept, citation, citation-association),
-sized for a chat Claude session. Pair with
+(four parallel sub-contexts: concept, citation, citation-association,
+clade-navigation), sized for a chat Claude session. Pair with
 `docs/briefings/framework-core.md` (framework / structural glue).
 
 **Primary rule.** Names, packages, components, and visibility below are
-observed from the source tree at briefing time (2026-06-14), not
+observed from the source tree at briefing time (2026-07-13), not
 extrapolated. If you need a type not listed here, ask before inventing one.
 
 ---
@@ -14,16 +14,21 @@ extrapolated. If you need a type not listed here, ask before inventing one.
 ## 1. Module Scope and DAG
 
 ```
-library-api  →  framework, identifiers, field-notes, authority, catalog
+library-api  →  framework, identifiers, field-notes, authority, catalog,
+                clades, taxonomy
 ```
 
-`library-api` depends on two kernels beyond the standard set:
+`library-api` depends on four kernels beyond the standard set:
 
 - `kernels/authority` — for `Citation` (sealed `NamedEntity`),
   `CitationName`, `OnlineSource`, `AuthorityReference`, `AuthoritySource`.
   Citation is a kernel type, not a library-domain record.
 - `kernels/catalog` — for `EntityRef` (domain-agnostic entity reference
   used by `CitationAssociation` to point at any cataloged entity).
+- `kernels/clades` — for `Clade` (sealed interface), `CladeCatalog`,
+  `CladeTraversal`. Used by the clade-navigation sub-context.
+- `kernels/taxonomy` — for `LinealRank` (enum). Used by `CladeStep` and
+  `CladeRanks` to associate Linnaean ranks with clades.
 
 No cross-domain api dependencies. All external references go to kernels.
 
@@ -46,40 +51,54 @@ com.naturalist.library/
   CitationAssociationRepository      — package-private (N=1 collapse)
   CitationAssociationQuery           — public (standalone, not EntityQuery)
   CitationAssociationCollection      — BehavioralCollection<CitationAssociation>
+
+  CladeStep                          — ValueObject (clade traversal node)
+  CladeView                          — ReadModel (clade + ancestry + children)
+  CladeQuery                         — public (standalone, not EntityQuery)
 ```
 
-All three sub-contexts (concept, citation, citation-association) live in
-the same `com.naturalist.library` package. The N=1 collapse rule is
-applied to all three — no outer namespace wrappers.
+All four sub-contexts (concept, citation, citation-association,
+clade-navigation) live in the same `com.naturalist.library` package.
+The N=1 collapse rule is applied to the first three — no outer namespace
+wrappers. Clade-navigation has no repository or collection — it reads
+from the `kernels/clades` sealed permits.
 
 ### Identifier locations
 
-| Type                     | Package                  | Module        |
-|--------------------------|--------------------------|---------------|
-| `ConceptName`            | `com.naturalist.library` | `identifiers` |
-| `CitationAssociationId`  | `com.naturalist.library` | `identifiers` |
-| `CitationName`           | `com.naturalist.authority` | `authority` (kernel) |
+| Type                    | Package                    | Module               |
+|-------------------------|----------------------------|----------------------|
+| `ConceptName`           | `com.naturalist.library`   | `identifiers`        |
+| `CitationAssociationId` | `com.naturalist.library`   | `identifiers`        |
+| `CitationName`          | `com.naturalist.authority` | `authority` (kernel) |
 
 `CitationName` lives in the authority kernel alongside `Citation`, not
 in `domains/identifiers`. This follows the kernel-owns-its-names
 pattern — kernel-level `EntityName` subclasses stay with their entity.
 
+No identifiers are needed for clade-navigation — it uses plain string
+slugs (`Clade.slug()`), not `EntityName` types.
+
 ---
 
 ## 3. Entity Summary
 
-| Type                   | Identity                | Branch                              | DDD role                        |
-|------------------------|-------------------------|-------------------------------------|---------------------------------|
-| `Concept`              | `ConceptName`           | `NamedEntity` (slug)                | Teaching/reference entry        |
-| `Citation` (sealed)    | `CitationName`          | `NamedEntity` (slug, kernel type)   | External authority citation     |
-| `CitationAssociation`  | `CitationAssociationId` | `Entity` (UUIDv7, component `id`)   | Citation-to-entity binding      |
+| Type                  | Identity                | Branch                            | DDD role                        |
+|-----------------------|-------------------------|-----------------------------------|---------------------------------|
+| `Concept`             | `ConceptName`           | `NamedEntity` (slug)              | Teaching/reference entry        |
+| `Citation` (sealed)   | `CitationName`          | `NamedEntity` (slug, kernel type) | External authority citation     |
+| `CitationAssociation` | `CitationAssociationId` | `Entity` (UUIDv7, component `id`) | Citation-to-entity binding      |
+| `CladeStep`           | (no identity)           | `ValueObject`                     | Single clade in traversal chain |
+| `CladeView`           | (no identity)           | `ReadModel`                       | Clade position projection       |
 
 ### Sub-context independence
 
-`Concept` and `Citation`/`CitationAssociation` are explicitly
-non-interacting parallel sub-contexts within the library domain. The
-two never interact — a concept is never cited, and a citation never
-references a concept.
+The four sub-contexts are explicitly non-interacting:
+
+- **Concept** — teaching/reference entries, standalone.
+- **Citation + CitationAssociation** — external authority citations and
+  their cross-domain bindings. A citation never references a concept.
+- **Clade-navigation** — read-side projections over the clades kernel.
+  No interaction with concepts or citations.
 
 ---
 
@@ -200,7 +219,101 @@ public record EntityRef(
 
 ---
 
-## 7. Query / Repository / Collection Surface
+## 7. Clade-navigation — tree-of-life read models
+
+The clade-navigation sub-context provides read-side projections over
+the `kernels/clades` sealed `Clade` type. It has no repository, no
+collection, and no persisted entities — everything is derived from
+the kernel's sealed permits at query time.
+
+### `CladeStep` — ValueObject
+
+```java
+public record CladeStep(
+    String cladeSlug,
+    String displayName,
+    Optional<LinealRank> rank
+) implements ValueObject
+```
+
+A single clade in a traversal chain. `rank` is empty for clades that
+have no corresponding Linnaean rank (e.g. Holometabola is a clade but
+not a rank). When present, `rank` carries the `LinealRank` enum value
+(e.g. `ORDER` for Lepidoptera, `FAMILY` for Papilionidae).
+
+Invariants: `notBlank(cladeSlug)`, `notBlank(displayName)`,
+`notNull(rank)`.
+
+### `CladeView` — ReadModel
+
+```java
+public record CladeView(
+    CladeStep subject,
+    List<CladeStep> ancestry,
+    List<CladeStep> children
+) implements ReadModel
+```
+
+Read-side projection showing a clade's position in the tree of life:
+the subject clade plus its ancestor chain (root-first) and direct
+children (sorted by display name).
+
+Invariants: `valueObject(subject)`, `notNull(ancestry)`,
+`notNull(children)`.
+
+### `CladeQuery` — public, standalone
+
+```java
+public interface CladeQuery {
+    Optional<CladeView> getBySlug(String slug);
+    CladeTreeNode tree();
+
+    record CladeTreeNode(
+        String slug,
+        String displayName,
+        Optional<LinealRank> rank,
+        List<CladeTreeNode> children
+    ) {}
+}
+```
+
+`getBySlug` returns a `CladeView` for a specific clade slug — ancestry
+from root to parent, direct children sorted. `tree()` returns the full
+clade tree rooted at Eukaryota as a recursive `CladeTreeNode` structure.
+
+Does **not** extend `EntityQuery` — clades are kernel types (sealed
+permits), not library-domain entities. There is no `CladeRepository`
+or `CladeCollection`.
+
+### `CladeRanks` — curated rank mapping (package-private, in library-core)
+
+Static mapping of 8 clade slugs to `LinealRank` values:
+
+| Clade slug     | LinealRank |
+|----------------|------------|
+| `animalia`     | `KINGDOM`  |
+| `arthropoda`   | `PHYLUM`   |
+| `insecta`      | `CLASS`    |
+| `blattodea`    | `ORDER`    |
+| `hemiptera`    | `ORDER`    |
+| `lepidoptera`  | `ORDER`    |
+| `papilionidae` | `FAMILY`   |
+| `termitoidae`  | `FAMILY`   |
+
+Unranked clades (Holometabola, Apoidea, Anthophila, etc.) return
+`Optional.empty()`. The mapping is curated, not exhaustive — new
+entries are added when a clade gains a Linnaean-rank association in
+the domain.
+
+### `CladeViewFactory` — assembly (package-private, in library-core)
+
+Builds `CladeView` from the clade hierarchy using `CladeCatalog`,
+`CladeTraversal`, and `CladeRanks`. Also builds the full `CladeTreeNode`
+tree recursively from the Eukaryota root.
+
+---
+
+## 8. Query / Repository / Collection Surface
 
 ### `ConceptQuery` (public)
 
@@ -233,6 +346,11 @@ public interface CitationAssociationQuery {
 FK references (`citationName` or `subject`), not by its own surrogate
 id. No `getByName` — the UUID id is internal to the bounded context.
 
+### `CladeQuery` (public, standalone)
+
+See section 7 above. Does not extend `EntityQuery`. No repository or
+collection backing.
+
 ### Repositories (all package-private)
 
 ```java
@@ -256,20 +374,23 @@ the query's two lookup axes.
 
 `ConceptCollection`, `CitationCollection`,
 `CitationAssociationCollection` — all `final class extends
-BehavioralCollection<…>`, package-private constructor, public
-`of(Collection<…>)` / `empty()` factories. No domain-specific
+BehavioralCollection<...>`, package-private constructor, public
+`of(Collection<...>)` / `empty()` factories. No domain-specific
 filtering methods on any of them currently.
 
 ---
 
-## 8. JSON Catalog Locations (library-repository-test)
+## 9. JSON Catalog Locations (library-repository-test)
 
 ```
 library-repository-test/src/main/resources/library/
-  concepts.json               — Concept records (NamedEntity, keyed by slug)
-  citations.json              — Citation records (NamedEntity, keyed by slug)
-  citation-associations.json  — CitationAssociation records (Entity, keyed by UUIDv7)
+  concepts.json               — 9 Concept records (NamedEntity, keyed by slug)
+  citations.json              — 16 Citation records (NamedEntity, keyed by slug)
+  citation-associations.json  — 4 CitationAssociation records (Entity, keyed by UUIDv7)
 ```
+
+No JSON catalog files for clade-navigation — it reads from the kernel's
+sealed permits, not from persisted data.
 
 Catalog conventions:
 
@@ -282,9 +403,23 @@ Catalog conventions:
 - `CitationAssociation` entries carry `"subject"` as an object with
   `"domain"` and `"name"` fields matching `EntityRef`.
 
+### Concept catalog
+
+Concepts: `clade`, `clade-taxonomy-relation`, `taxonomic-rank`,
+`binomial-nomenclature`, `taxonomy`, `kingdom`, `phylum`, `class`,
+`order`, `family`, `genus`, `species`, `placing-clades`. Each carries
+a four-level Durrell description.
+
+### Citation catalog
+
+Online sources primarily from Encyclopedia of Life (EOL), covering
+species (*Battus philenor*, *Danaus plexippus*, *Apis mellifera*,
+*Drosophila melanogaster*, etc.) and higher taxa (Lepidoptera,
+Hymenoptera, Holometabola, Apoidea).
+
 ---
 
-## 9. Cross-domain References
+## 10. Cross-domain References
 
 | Reference      | Direction               | Type                         |
 |----------------|-------------------------|------------------------------|
@@ -306,7 +441,7 @@ the consuming domain owns the inheritance/aggregation logic.
 
 ---
 
-## 10. Current State — What's Built, What's Not
+## 11. Current State — What's Built, What's Not
 
 **Built and stable.**
 
@@ -320,6 +455,11 @@ the consuming domain owns the inheritance/aggregation logic.
 - `CitationAssociationQueryImpl` in `library-core`.
 - `LibraryTestContext` for cross-domain test wiring.
 - Console controllers for citations and concepts.
+- `CladeStep` ValueObject, `CladeView` ReadModel, `CladeQuery`
+  interface.
+- `CladeViewFactory` and `CladeRanks` in `library-core`.
+- Clade tree and single-clade view fully operational via
+  `CladeQuery.tree()` and `CladeQuery.getBySlug()`.
 
 **Not yet built.**
 
@@ -333,7 +473,7 @@ the consuming domain owns the inheritance/aggregation logic.
 
 ---
 
-## 11. Anti-patterns Specific to library-api
+## 12. Anti-patterns Specific to library-api
 
 - **Do not invent new `Citation` permits in the library domain.**
   `Citation` is a kernel sealed interface in `kernels/authority`. New
@@ -344,15 +484,24 @@ the consuming domain owns the inheritance/aggregation logic.
 - **Do not make `CitationAssociationQuery` extend `EntityQuery`.**
   The association is looked up by FK references, not by its own UUID.
   The standalone interface shape is deliberate.
+- **Do not make `CladeQuery` extend `EntityQuery`.** Clades are kernel
+  types (sealed permits), not library-domain entities. There is no
+  `CladeRepository` or `CladeCollection`.
+- **Do not create `CladeEntityName` or `CladeId` types.** Clade
+  navigation uses plain string slugs from `Clade.slug()`. Adding
+  identity types would imply clades are library-domain entities.
+- **Do not add a `CladeRepository` or `CladeCollection`.** The
+  clade-navigation sub-context reads from kernel sealed permits —
+  there is no persisted data to wrap.
 - **Do not create a `LibraryQuery` or `LibraryRepository` namespace
-  wrapper.** All three sub-contexts use N=1 collapse — top-level
-  interfaces, no grouping.
+  wrapper.** All sub-contexts use N=1 collapse or standalone
+  interfaces — no grouping.
 - **Do not make Concept and Citation interact.** They are parallel
   sub-contexts by design.
 - **Do not add domain-specific imports to library-api.** The library
   domain depends only on kernels (framework, identifiers, field-notes,
-  authority, catalog). Adding `insects-api` or `chemistry-api` would
-  create a cycle — the consuming domain depends on library, not the
-  reverse.
+  authority, catalog, clades, taxonomy). Adding `insects-api` or
+  `chemistry-api` would create a cycle — the consuming domain depends
+  on library, not the reverse.
 - **Do not invent an `AssociationId` or `BindingId`.** The type is
   `CitationAssociationId` — matches the entity name.
