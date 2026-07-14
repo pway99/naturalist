@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -15,6 +16,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -69,7 +71,7 @@ class InsectsControllerWebMvcTest {
         mockMvc.perform(get("/insects/battus-philenor").with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Add Photo")))
-                .andExpect(content().string(containsString("name=\"resourceName\"")))
+                .andExpect(content().string(containsString("name=\"image\"")))
                 .andExpect(content().string(containsString("name=\"_csrf\"")));
     }
 
@@ -89,21 +91,27 @@ class InsectsControllerWebMvcTest {
                 .andExpect(content().string(not(containsString("View Life Stages"))));
     }
 
+    /** Minimal valid JPEG: FF D8 FF E0 header + padding. */
+    private static final byte[] TINY_JPEG = {
+            (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    };
+
     @Test
     void addImage_authenticatedWithCsrf_redirectsToDetail() throws Exception {
-        mockMvc.perform(post("/insects/battus-philenor/images")
+        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .with(user("naturalist").roles("ADMIN"))
-                        .with(csrf())
-                        .param("resourceName", "IMG_TEST_NEW.HEIC"))
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
     }
 
     @Test
     void addImage_anonymous_redirectsToLogin() throws Exception {
-        mockMvc.perform(post("/insects/battus-philenor/images")
-                        .with(csrf())
-                        .param("resourceName", "IMG_ANON.HEIC"))
+        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(result ->
                         assertThat(result.getResponse().getRedirectedUrl()).contains("/login"));
@@ -111,9 +119,9 @@ class InsectsControllerWebMvcTest {
 
     @Test
     void addImage_missingCsrf_isForbidden() throws Exception {
-        mockMvc.perform(post("/insects/battus-philenor/images")
-                        .with(user("naturalist").roles("ADMIN"))
-                        .param("resourceName", "IMG_NO_CSRF.HEIC"))
+        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
+                        .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isForbidden());
     }
 }

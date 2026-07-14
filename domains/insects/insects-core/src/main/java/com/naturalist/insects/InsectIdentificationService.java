@@ -5,6 +5,9 @@ import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.taxonomy.TaxonomicClassification;
+import com.naturalist.taxonomy.TaxonomicFamily;
+import com.naturalist.taxonomy.TaxonomicGenus;
+import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import com.naturalist.vision.Image;
 import com.naturalist.vision.ToolResult;
@@ -105,10 +108,10 @@ public class InsectIdentificationService {
             var genusSlug = node.get("genus").asText().toLowerCase();
             var genusName = InsectGenusName.of(genusSlug);
             var taxonomy = new TaxonomicClassification(
-                    node.get("order").asText(),
-                    node.get("family").asText(),
-                    node.get("genus").asText(),
-                    node.get("species").asText());
+                    TaxonomicOrder.of(node.get("order").asText()),
+                    TaxonomicFamily.of(node.get("family").asText()),
+                    TaxonomicGenus.of(node.get("genus").asText()),
+                    TaxonomicSpecies.of(node.get("species").asText()));
             var description = new Description(
                     node.get("descriptionPreschool").asText(),
                     node.get("descriptionElementary").asText(),
@@ -123,9 +126,7 @@ public class InsectIdentificationService {
             var species = new InsectSpecies(
                     name,
                     genusName,
-                    taxonomy.species() != null
-                            ? TaxonomicSpecies.of(taxonomy.species())
-                            : null,
+                    taxonomy.species(),
                     description,
                     Set.of(CommonName.of(commonName)),
                     node.has("sightingNotes") && !node.get("sightingNotes").isNull()

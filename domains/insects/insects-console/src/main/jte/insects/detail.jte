@@ -114,7 +114,7 @@
                                         <input type="hidden" name="${_csrf.getParameterName()}"
                                                value="${_csrf.getToken()}">
                                     @endif
-                                    <input type="hidden" name="observationId" value="${obs.id().value()}">
+                                    <input type="hidden" name="observationId" value="${obs.id().value().toString()}">
                                     <textarea name="notes" rows="2"
                                               placeholder="Field notes...">${obs.notes() != null ? obs.notes() : ""}</textarea>
                                     <button type="submit">Save notes</button>
