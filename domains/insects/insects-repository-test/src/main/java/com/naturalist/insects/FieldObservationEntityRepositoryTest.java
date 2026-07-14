@@ -68,7 +68,10 @@ interface FieldObservationEntityRepositoryTest
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-06-03T08:00:00Z"),
                 "changed",
-                "Oak Vista, Chico, CA", null);
+                "Oak Vista, Chico, CA",
+                new Identification(0.77, "changed evidence",
+                        List.of(new Identification.Candidate(
+                                "Papilio rutulus", "Western Tiger Swallowtail", 0.15))));
     }
 
     @Test

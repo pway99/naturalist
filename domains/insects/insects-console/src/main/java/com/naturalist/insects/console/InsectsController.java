@@ -346,34 +346,19 @@ public class InsectsController {
                 observationId);
         insectCommand.images().insert(insectImage);
 
-        // 6. Create FieldObservation
-        var visionNotes = buildVisionNotes(notes, result);
+        // 6. Create FieldObservation — the naturalist's notes stay their own;
+        //    the machine identification is attached structurally, not welded into notes.
         var observation = new FieldObservation(
                 observationId,
                 me.get(),
                 speciesName,
                 capturedInstant != null ? capturedInstant : Instant.now(),
-                visionNotes,
+                (notes == null || notes.isBlank()) ? null : notes,
                 location,
-                result.confidence());
+                result.identification());
         insectCommand.fieldObservations().insert(observation);
 
         return "redirect:/insects/" + speciesName.value();
-    }
-
-    private String buildVisionNotes(String userNotes, InsectIdentificationResult result) {
-        var sb = new StringBuilder();
-        if (userNotes != null && !userNotes.isBlank()) {
-            sb.append(userNotes).append("\n\n");
-        }
-        sb.append("Vision identification (")
-          .append(String.format("%.0f%%", result.confidence() * 100))
-          .append(" confidence): ")
-          .append(result.evidence());
-        if (result.alternativesJson() != null) {
-            sb.append("\nAlternatives: ").append(result.alternativesJson());
-        }
-        return sb.toString();
     }
 
     /**
@@ -791,7 +776,7 @@ public class InsectsController {
         var updated = new FieldObservation(
                 obs.id(), obs.observedBy(), obs.subject(), obs.observedOn(),
                 (notes == null || notes.isBlank()) ? null : notes,
-                obs.location(), obs.confidence());
+                obs.location(), obs.identification());
         insectCommand.fieldObservations().update(updated);
         return "redirect:/insects/" + name;
     }
@@ -818,7 +803,7 @@ public class InsectsController {
         // Update observation subject
         var updatedObs = new FieldObservation(
                 obs.id(), obs.observedBy(), newRankName, obs.observedOn(),
-                obs.notes(), obs.location(), obs.confidence());
+                obs.notes(), obs.location(), obs.identification());
         insectCommand.fieldObservations().update(updatedObs);
 
         // TODO: update linked images' parentName to newRankName

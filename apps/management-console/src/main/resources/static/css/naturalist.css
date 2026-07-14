@@ -935,22 +935,175 @@ main > section:not(.life-stages) a:hover {
     }
 }
 
-/* Image gallery */
+/* Image gallery — one observation per full-width row: the photo on the left,
+   its identification and notes filling the room to the right. Each card wraps
+   to a vertical stack on narrow viewports. */
 .image-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
 }
 
 .image-gallery figure {
     margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 1.5rem;
+    align-items: flex-start;
 }
 
 .image-gallery img {
-    width: 100%;
+    flex: 0 0 auto;
+    width: 340px;
+    max-width: 100%;
     height: auto;
     border-radius: 0.5rem;
     border: 1px solid var(--pico-card-border-color);
+}
+
+.image-gallery figcaption {
+    flex: 1 1 340px;
+    min-width: 240px;
+    max-width: 600px;
+    margin-top: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.image-gallery .obs-location {
+    margin: 0.15rem 0 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--pico-color);
+}
+
+/* Read-only vision identification — visually distinct from the
+   naturalist's own editable notes below it. */
+.obs-identification {
+    margin: 0 0 0.65rem;
+    padding: 0.5rem 0.7rem;
+    background: rgba(139, 107, 61, 0.06);
+    border-left: 3px solid rgba(139, 107, 61, 0.4);
+    border-radius: 0.25rem;
+}
+
+.obs-identification p {
+    margin: 0;
+}
+
+.obs-confidence {
+    font-size: 0.85rem;
+    color: var(--pico-muted-color);
+}
+
+.obs-confidence-value {
+    font-weight: 700;
+    color: var(--pico-color);
+}
+
+/* A plain inline disclosure — override Pico's accordion chevron,
+   full-width summary, and offset focus outline (which read as a form field). */
+.id-evidence {
+    margin: 0.4rem 0 0;
+}
+
+.id-evidence summary {
+    display: inline-block;
+    width: auto;
+    list-style: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--pico-primary);
+}
+
+.id-evidence summary::-webkit-details-marker {
+    display: none;
+}
+
+.id-evidence summary::after {
+    content: none;
+}
+
+.id-evidence summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 0.3rem;
+    font-size: 0.7em;
+    transition: transform 0.15s ease;
+}
+
+.id-evidence[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.id-evidence summary:focus,
+.id-evidence summary:focus-visible {
+    outline: none;
+    color: var(--pico-primary);
+}
+
+/* Pico's `details summary:focus-visible:not([role])` outspecifies the rule
+   above (it was rendering as an offset blue box that read like a form field).
+   Match the section-plate specificity to suppress it. */
+main > section:not(.life-stages) .id-evidence summary:focus,
+main > section:not(.life-stages) .id-evidence summary:focus-visible {
+    outline: none !important;
+}
+
+.id-evidence > p {
+    margin: 0.35rem 0 0;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--pico-color);
+}
+
+.id-alternatives-label {
+    margin: 0.6rem 0 0.2rem !important;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--pico-muted-color);
+}
+
+.id-alternatives {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+
+.id-alternatives li {
+    margin: 0.12rem 0;
+}
+
+.id-alternative-confidence {
+    color: var(--pico-muted-color);
+}
+
+/* Your notes — modest, not a page-width primary action. */
+.obs-notes-form {
+    margin-top: 0.4rem;
+}
+
+.obs-notes-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--pico-color);
+}
+
+.obs-notes-form textarea {
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.obs-notes-form button {
+    width: auto;
+    margin: 0;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.82rem;
 }
 
 /* Chemistry — 2D structural depictions rendered by CDK */

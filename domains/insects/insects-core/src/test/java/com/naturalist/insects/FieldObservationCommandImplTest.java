@@ -79,6 +79,9 @@ class FieldObservationCommandImplTest
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-06-12T08:00:00Z"),
                 "changed",
-                "Deer Creek, Butte County, CA", null);
+                "Deer Creek, Butte County, CA",
+                new Identification(0.91, "changed evidence",
+                        List.of(new Identification.Candidate(
+                                "Papilio zelicaon", "Anise Swallowtail", 0.08))));
     }
 }

@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
@@ -14,6 +15,8 @@ import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
 import com.naturalist.vision.VisionService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -143,12 +146,45 @@ public class InsectIdentificationService {
 
             var confidence = node.get("confidence").asDouble();
             var evidence = node.get("evidence").asText();
-            var alternativesJson = node.has("alternatives") && !node.get("alternatives").isNull()
-                    ? node.get("alternatives").asText() : null;
+            var identification = new Identification(confidence, evidence, parseAlternatives(node));
 
-            return new InsectIdentificationResult(species, taxonomy, confidence, evidence, alternativesJson);
+            return new InsectIdentificationResult(species, taxonomy, identification);
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse vision identification result", e);
         }
+    }
+
+    /**
+     * Parses the tool's {@code alternatives} field into typed candidates. The
+     * schema declares it as a JSON-array string (or null), but a model may also
+     * return it as an array node directly — handle both, and treat anything
+     * unparseable or missing as no alternatives rather than failing the whole
+     * identification.
+     */
+    private List<Identification.Candidate> parseAlternatives(JsonNode node) {
+        if (!node.hasNonNull("alternatives")) {
+            return List.of();
+        }
+        var alt = node.get("alternatives");
+        JsonNode array;
+        try {
+            array = alt.isTextual() ? MAPPER.readTree(alt.asText()) : alt;
+        } catch (Exception e) {
+            return List.of();
+        }
+        if (array == null || !array.isArray()) {
+            return List.of();
+        }
+        var candidates = new ArrayList<Identification.Candidate>();
+        for (var candidate : array) {
+            var scientificName = candidate.hasNonNull("name") ? candidate.get("name").asText() : null;
+            if (scientificName == null || scientificName.isBlank()) {
+                continue;
+            }
+            var commonName = candidate.hasNonNull("commonName") ? candidate.get("commonName").asText() : null;
+            var candidateConfidence = candidate.hasNonNull("confidence") ? candidate.get("confidence").asDouble() : 0.0;
+            candidates.add(new Identification.Candidate(scientificName, commonName, candidateConfidence));
+        }
+        return List.copyOf(candidates);
     }
 }

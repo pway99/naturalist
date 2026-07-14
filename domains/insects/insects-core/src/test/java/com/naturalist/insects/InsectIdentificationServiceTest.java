@@ -47,8 +47,28 @@ class InsectIdentificationServiceTest {
 
         assertThat(result.species().name().value()).isEqualTo("vanessa-cardui");
         assertThat(result.species().description().preschool()).contains("orange and black");
-        assertThat(result.confidence()).isEqualTo(0.85);
-        assertThat(result.evidence()).contains("wing pattern");
+        assertThat(result.identification().confidence()).isEqualTo(0.85);
+        assertThat(result.identification().evidence()).contains("wing pattern");
+        assertThat(result.identification().alternatives()).isEmpty();
+    }
+
+    @Test
+    void identify_parsesAlternativesJsonArrayIntoTypedCandidates() {
+        var jsonWithAlternatives = SAMPLE_RESULT_JSON.replace(
+                "\"alternatives\": null",
+                "\"alternatives\": \"[{\\\"name\\\": \\\"Oncopeltus fasciatus\\\", "
+                        + "\\\"commonName\\\": \\\"Large Milkweed Bug\\\", \\\"confidence\\\": 0.12}]\"");
+        VisionService withAlternatives = (image, tool, prompt) ->
+                new ToolResult("propose_insect_species", jsonWithAlternatives);
+        var svc = new InsectIdentificationService(withAlternatives);
+        var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));
+
+        var alternatives = svc.identify(image).identification().alternatives();
+
+        assertThat(alternatives).hasSize(1);
+        assertThat(alternatives.getFirst().scientificName()).isEqualTo("Oncopeltus fasciatus");
+        assertThat(alternatives.getFirst().commonName()).isEqualTo("Large Milkweed Bug");
+        assertThat(alternatives.getFirst().confidence()).isEqualTo(0.12);
     }
 
     @Test

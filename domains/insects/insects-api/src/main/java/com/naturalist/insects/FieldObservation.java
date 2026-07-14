@@ -37,7 +37,7 @@ public record FieldObservation(
         Instant observedOn,
         @Nullable String notes,
         @Nullable String location,
-        @Nullable Double confidence
+        @Nullable Identification identification
 ) implements Entity<FieldObservationId> {
 
     @Override
@@ -46,6 +46,7 @@ public record FieldObservation(
                 .entityId(id, "id")
                 .identifier(observedBy, "observedBy")
                 .identifier(subject, "subject")
-                .notNull(observedOn, "observedOn");
+                .notNull(observedOn, "observedOn")
+                .valueObjectOrNull(identification, "identification");
     }
 }
