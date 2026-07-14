@@ -160,6 +160,11 @@
             <!-- ADAPTERS -->
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>anthropic-vision</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>resilience-resilience4j</artifactId>
                 <version>${project.version}</version>
             </dependency>

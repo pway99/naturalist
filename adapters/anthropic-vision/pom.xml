@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>naturalist-adapters</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>anthropic-vision</artifactId>
+    <name>adapters :: anthropic-vision</name>
+
+    <description>
+        Bridges the kernel VisionService facade to the Anthropic Java SDK.
+        Domain code references the kernel facade only; this adapter is the
+        only module that imports com.anthropic.*.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>vision</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.anthropic</groupId>
+            <artifactId>anthropic-java</artifactId>
+            <version>${anthropic-sdk-version}</version>
+        </dependency>
+    </dependencies>
+</project>

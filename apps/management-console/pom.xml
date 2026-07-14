@@ -48,6 +48,14 @@
         <!-- ADAPTERS -->
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>anthropic-vision</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>vision</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>resilience-resilience4j</artifactId>
         </dependency>
         <dependency>

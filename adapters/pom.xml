@@ -20,9 +20,11 @@
         <assertj-version>3.26.0</assertj-version>
         <resilience4j-version>2.2.0</resilience4j-version>
         <spring-context-version>6.2.7</spring-context-version>
+        <anthropic-sdk-version>2.48.0</anthropic-sdk-version>
     </properties>
 
     <modules>
+        <module>anthropic-vision</module>
         <module>resilience-resilience4j</module>
         <module>spring-runtime</module>
         <module>spring-test-data</module>
