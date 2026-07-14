@@ -636,14 +636,16 @@ public class InsectsController {
         model.addAttribute("images", galleryImages);
         model.addAttribute("lens", lens && viewer.isPresent());
 
-        // Build observation lookup for images with field notes
+        // Build observation lookup for images with field notes (reused for collected check)
         var observations = new java.util.HashMap<InsectImageId, FieldObservation>();
-        if (viewer.isPresent()) {
-            var obs = insectQuery.fieldObservations()
-                    .forNaturalistAndSubjects(viewer.get(), java.util.Set.<InsectRankName>of(speciesName));
+        var myObservations = viewer.isPresent()
+                ? insectQuery.fieldObservations()
+                        .forNaturalistAndSubjects(viewer.get(), java.util.Set.<InsectRankName>of(speciesName))
+                : null;
+        if (myObservations != null) {
             for (var img : galleryImages) {
                 if (img.observationId() != null) {
-                    obs.stream()
+                    myObservations.stream()
                             .filter(o -> o.id().equals(img.observationId()))
                             .findFirst()
                             .ifPresent(o -> observations.put(img.id(), o));
@@ -655,11 +657,7 @@ public class InsectsController {
         model.addAttribute("citations", i.citations());
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
-        boolean collected = currentNaturalist(request)
-                .map(me -> !insectQuery.fieldObservations()
-                        .forNaturalistAndSubjects(me, java.util.Set.<InsectRankName>of(speciesName))
-                        .isEmpty())
-                .orElse(false);
+        boolean collected = myObservations != null && !myObservations.isEmpty();
         model.addAttribute("collected", collected);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
