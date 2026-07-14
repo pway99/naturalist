@@ -19,6 +19,7 @@ import com.naturalist.library.LibraryTestContext;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -83,6 +84,7 @@ public class InsectsController {
     private final CladeQuery cladeQuery;
     private final Resilience resilience;
     private final DescriptionRenderer descriptionRenderer;
+    private final ImageStorageService imageStorageService;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
     InsectsController(Resilience resilience) {
@@ -93,6 +95,7 @@ public class InsectsController {
         this.insectLifeStageQuery = context.insectLifeStageQuery();
         this.resilience = resilience;
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
+        this.imageStorageService = new ImageStorageService(Path.of("data/images/insects"));
         // TODO:: This will eventually be a spring managed bean
         this.cladeQuery = LibraryTestContext.create(NaturalistDatabase.create()).cladeQuery();
     }
@@ -666,6 +669,21 @@ public class InsectsController {
             Files.deleteIfExists(heicTemp);
             Files.deleteIfExists(jpegTemp);
         }
+    }
+
+    @GetMapping("/uploads/{filename:.+}")
+    void serveUpload(@PathVariable String filename, HttpServletResponse response) throws IOException {
+        var path = imageStorageService.resolve(filename);
+        if (!Files.exists(path)) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        var contentType = Files.probeContentType(path);
+        if (contentType == null) contentType = "application/octet-stream";
+        response.setContentType(contentType);
+        response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
+        response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        Files.copy(path, response.getOutputStream());
     }
 
     private ResponseEntity<byte[]> convert(String filename,
