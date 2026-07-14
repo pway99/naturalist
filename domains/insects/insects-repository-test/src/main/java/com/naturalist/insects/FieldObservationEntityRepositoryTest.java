@@ -45,7 +45,8 @@ interface FieldObservationEntityRepositoryTest
                 PATRICK,
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-01T08:00:00Z"),
-                "new observation");
+                "new observation",
+                null, null);
     }
 
     @Override
@@ -55,7 +56,8 @@ interface FieldObservationEntityRepositoryTest
                 PATRICK,
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-02T08:00:00Z"),
-                null);
+                null,
+                null, null);
     }
 
     @Override
@@ -65,7 +67,8 @@ interface FieldObservationEntityRepositoryTest
                 DELIA,
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-06-03T08:00:00Z"),
-                "changed");
+                "changed",
+                "Oak Vista, Chico, CA", null);
     }
 
     @Test

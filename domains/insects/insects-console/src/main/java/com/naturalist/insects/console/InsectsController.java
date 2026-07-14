@@ -590,7 +590,8 @@ public class InsectsController {
                 me.get(),
                 InsectSpeciesName.of(name),
                 Instant.now(),
-                (notes == null || notes.isBlank()) ? null : notes);
+                (notes == null || notes.isBlank()) ? null : notes,
+                null, null);
         insectCommand.fieldObservations().insert(observation);
         return "redirect:/insects/" + name;
     }
@@ -604,7 +605,8 @@ public class InsectsController {
         FieldObservationId observationId = null;
         if (me.isPresent()) {
             var observation = new FieldObservation(
-                    FieldObservationId.create(), me.get(), speciesName, Instant.now(), null);
+                    FieldObservationId.create(), me.get(), speciesName, Instant.now(), null,
+                    null, null);
             insectCommand.fieldObservations().insert(observation);
             observationId = observation.id();
         }

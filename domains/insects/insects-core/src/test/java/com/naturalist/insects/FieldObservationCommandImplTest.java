@@ -56,7 +56,8 @@ class FieldObservationCommandImplTest
                 NaturalistName.of("patrick-way"),
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-10T08:00:00Z"),
-                "new");
+                "new",
+                null, null);
     }
 
     @Override
@@ -66,7 +67,8 @@ class FieldObservationCommandImplTest
                 NaturalistName.of("patrick-way"),
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-11T08:00:00Z"),
-                null);
+                null,
+                null, null);
     }
 
     @Override
@@ -76,6 +78,7 @@ class FieldObservationCommandImplTest
                 NaturalistName.of("delia-durrell"),
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-06-12T08:00:00Z"),
-                "changed");
+                "changed",
+                "Deer Creek, Butte County, CA", null);
     }
 }

@@ -35,7 +35,9 @@ public record FieldObservation(
         })
         InsectRankName subject,
         Instant observedOn,
-        @Nullable String notes
+        @Nullable String notes,
+        @Nullable String location,
+        @Nullable Double confidence
 ) implements Entity<FieldObservationId> {
 
     @Override
