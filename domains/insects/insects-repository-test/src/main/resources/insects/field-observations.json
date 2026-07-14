@@ -80,5 +80,30 @@
         }
       ]
     }
+  },
+  {
+    "id": "019f5f92-64d7-797a-832f-bf56b8556939",
+    "observedBy": "patrick-way",
+    "subject": "misumessus-oblongus",
+    "subjectRank": "SPECIES",
+    "observedOn": "2026-07-14T07:40:57.434149Z",
+    "notes": "Found on a Zinnia near passion fru",
+    "location": "Chico Ca, Oak Vista",
+    "identification": {
+      "confidence": 0.78,
+      "evidence": "Bright yellow-green globose abdomen; crab-like lateral leg posture with elongated anterior leg pairs (I & II); small cephalothorax; positioning on the underside of a flower calyx consistent with thomisid ambush behavior; overall body size and shape matches Misumessus oblongus known from California.",
+      "alternatives": [
+        {
+          "scientificName": "Misumena vatia",
+          "commonName": "Goldenrod Crab Spider",
+          "confidence": 0.15
+        },
+        {
+          "scientificName": "Mecaphesa species",
+          "commonName": "Running Crab Spider",
+          "confidence": 0.07
+        }
+      ]
+    }
   }
 ]

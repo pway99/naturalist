@@ -68,10 +68,10 @@
     "sourceCompounds" : "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
     "aposematicSignal" : "Iridescent blue hindwing coloration in adults; conspicuous brick-red egg clusters; warningly coloured dark larvae with reddish filaments. The pupa is the exception — cryptic rather than aposematic.",
     "protectedStages": [
-      "EGG",
       "ADULT",
-      "PUPA",
-      "LARVA"
+      "EGG",
+      "LARVA",
+      "PUPA"
     ]
   },
   "voltinism" : {
@@ -236,6 +236,32 @@
   "gardenConnections" : null,
   "beneficialProfile" : null,
   "ecologicalSignificance" : null
+},
+  {
+    "name": "misumessus-oblongus",
+    "genusName": "misumessus",
+    "epithet": "oblongus",
+    "description": {
+      "preschool": "Look at this tiny yellow-green spider hiding under the pink flower! It has a big round tummy and lots of little legs spread out like a crab. It's so little but it's a sneaky hunter waiting for bugs to visit the flower!",
+      "elementary": "This is a Green Crab Spider, a small spider that doesn't spin a web to catch food. Instead, it hides on flowers and waits for insects like bees and flies to come close. Its bright yellow-green body helps it blend in with leaves and flower parts. It has 8 legs held out to the sides, just like a crab — that's how it got its name! Females are larger than males and do most of the hunting.",
+      "secondary": "The Green Crab Spider (Misumessus oblongus) is an ambush predator in the family Thomisidae. It uses crypsis rather than webs to capture prey, positioning itself on or beneath flowers where pollinators frequently visit. Its bright yellow-green coloration provides camouflage against green sepals and leaves. The spider's anterior two pairs of legs are elongated and laterally oriented — a key thomisid adaptation for grasping prey. It is capable of subduing prey much larger than itself, including honeybees, using rapid cheliceral envenomation. This individual appears to be resting at the base of a mallow-type flower (possibly Malva or Sidalcea) on the underside of the calyx — a classic ambush site.",
+      "university": "Misumessus oblongus (Keyserling, 1880) is a North American thomisid spider broadly distributed across western North America, including California's Central Valley. Unlike Misumena vatia, which is often white or yellow and found on flower faces, M. oblongus tends to be vivid green to yellow-green and frequents the underside of floral structures and foliage. Thomisidae lack a silk capture web; instead they rely on sit-and-wait predation facilitated by highly developed forelegs (leg pairs I and II) for prey immobilization. Their visual system, while simpler than salticids, is sufficient for detecting approaching prey. Ecologically, crab spiders can exert measurable top-down pressure on pollinator communities. In the context of Chico, CA oak woodland-adjacent gardens, this species is frequently encountered on native and ornamental forbs. Taxonomic placement has been revised with molecular phylogenetics, and some California populations merit further study to confirm species-level delineation from close relatives."
+    },
+    "commonNames": [
+      {
+        "label": "Green Crab Spider",
+        "locale": "en"
+      }
+    ],
+    "sightingNotes": "Spider is positioned on the underside of the calyx of what appears to be a Malva or Sidalcea (mallow family) bloom — a classic ambush site where pollinators land. The vivid yellow-green coloration is a strong indicator for M. oblongus over the more commonly photographed M. vatia. Two small insects (possibly tiny flies or gnats) are also visible on the flower face, suggesting active prey opportunity at this location.",
+    "placedIn": null,
+    "chemicalDefense": null,
+    "voltinism": null,
+    "habitatProfile": null,
+    "habitatRequirements": null,
+    "gardenConnections": null,
+    "beneficialProfile": null,
+    "ecologicalSignificance": null
 }, {
   "name" : "periplaneta-americana",
   "genusName" : "periplaneta",

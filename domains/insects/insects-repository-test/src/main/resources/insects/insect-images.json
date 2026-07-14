@@ -28,6 +28,14 @@
   "observationId": "019f5f83-fcba-7bba-be1b-1bc18cf04d0c"
 },
   {
+    "id": "019f5f92-64d7-797a-8330-562960aafb5c",
+    "parentName": "misumessus-oblongus",
+    "parentRank": "SPECIES",
+    "dateAdded": "2026-07-14T07:40:57.431415Z",
+    "resourceName": "019f5f92-05e3-72ec-bc50-e6acdb7b9af4.jpg",
+    "observationId": "019f5f92-64d7-797a-832f-bf56b8556939"
+  },
+  {
   "id" : "15f21a09-13a9-7c7f-94df-538512876e6d",
   "parentName" : "colias-eurytheme",
   "parentRank" : "SPECIES",
