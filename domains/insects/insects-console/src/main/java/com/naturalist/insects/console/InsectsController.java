@@ -309,8 +309,11 @@ public class InsectsController {
         var storedFileName = imageStorageService.store(imageBytes);
 
         // 2. Identify via vision
-        var capturedInstant = capturedAt != null && !capturedAt.isBlank()
-                ? Instant.parse(capturedAt) : null;
+        Instant capturedInstant = null;
+        if (capturedAt != null && !capturedAt.isBlank()) {
+            try { capturedInstant = Instant.parse(capturedAt); }
+            catch (java.time.format.DateTimeParseException ignored) { }
+        }
         var image = new com.naturalist.vision.Image(
                 imageBytes, "image/jpeg",
                 new com.naturalist.vision.ImageMetadata(location, capturedInstant));
