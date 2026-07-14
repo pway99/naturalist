@@ -1,0 +1,53 @@
+@import org.springframework.security.web.csrf.CsrfToken
+
+@param CsrfToken _csrf = null
+
+!{var csrfName = _csrf != null ? _csrf.getParameterName() : "";}
+!{var csrfValue = _csrf != null ? _csrf.getToken() : "";}
+
+@template.layout.page(
+    title = "Identify Insect",
+    content = @`
+        <div class="identify-page">
+            <h1>Identify an Insect</h1>
+            <p>Upload a photo and Claude will suggest an identification.
+               You can verify the result against authoritative references.</p>
+
+            <form id="identify-form" action="/insects/identify" method="post"
+                  enctype="multipart/form-data">
+                <input type="hidden" name="${csrfName}" value="${csrfValue}">
+
+                <div class="form-group">
+                    <label for="image">Photo</label>
+                    <input type="file" id="image" name="image"
+                           accept="image/*" capture="environment" required>
+                </div>
+
+                <img id="image-preview" style="display:none; max-width:400px; margin:1rem 0;"
+                     alt="Preview">
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location"
+                           placeholder="e.g. Deer Creek, Butte County, CA">
+                </div>
+
+                <div class="form-group">
+                    <label for="capturedAt">Date observed</label>
+                    <input type="text" id="capturedAt" name="capturedAt"
+                           placeholder="auto-detected from photo">
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Field notes (optional)</label>
+                    <textarea id="notes" name="notes" rows="3"
+                              placeholder="Habitat, behavior, weather..."></textarea>
+                </div>
+
+                <button type="submit">Identify</button>
+            </form>
+        </div>
+
+        <script src="/js/image-upload.js"></script>
+    `
+)

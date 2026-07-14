@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -85,9 +86,10 @@ public class InsectsController {
     private final Resilience resilience;
     private final DescriptionRenderer descriptionRenderer;
     private final ImageStorageService imageStorageService;
+    private final InsectIdentificationService identificationService;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
-    InsectsController(Resilience resilience) {
+    InsectsController(Resilience resilience, InsectIdentificationService identificationService) {
         //TODO:: This will eventually be a spring managed bean
         InsectsTestContext context = InsectsTestContext.create(NaturalistDatabase.create());
         this.insectQuery = context.insectQuery();
@@ -98,6 +100,7 @@ public class InsectsController {
         this.imageStorageService = new ImageStorageService(Path.of("data/images/insects"));
         // TODO:: This will eventually be a spring managed bean
         this.cladeQuery = LibraryTestContext.create(NaturalistDatabase.create()).cladeQuery();
+        this.identificationService = identificationService;
     }
 
     /**
@@ -279,6 +282,88 @@ public class InsectsController {
     @GetMapping
     String index() {
         return "redirect:/insects/orders";
+    }
+
+    @GetMapping("/identify")
+    String identifyForm(HttpServletRequest request, Model model) {
+        Object csrf = request.getAttribute(CSRF_REQUEST_ATTRIBUTE);
+        if (csrf != null) {
+            model.addAttribute("_csrf", csrf);
+        }
+        return "insects/identify";
+    }
+
+    @PostMapping("/identify")
+    String identify(@RequestParam("image") MultipartFile imageFile,
+                    @RequestParam(name = "location", required = false) String location,
+                    @RequestParam(name = "capturedAt", required = false) String capturedAt,
+                    @RequestParam(name = "notes", required = false) String notes,
+                    HttpServletRequest request) throws IOException {
+        var me = currentNaturalist(request);
+        if (me.isEmpty()) {
+            return "redirect:/insects/identify";
+        }
+
+        // 1. Store the image
+        var imageBytes = imageFile.getBytes();
+        var storedFileName = imageStorageService.store(imageBytes);
+
+        // 2. Identify via vision
+        var capturedInstant = capturedAt != null && !capturedAt.isBlank()
+                ? Instant.parse(capturedAt) : null;
+        var image = new com.naturalist.vision.Image(
+                imageBytes, "image/jpeg",
+                new com.naturalist.vision.ImageMetadata(location, capturedInstant));
+        var result = identificationService.identify(image);
+
+        // 3. Insert species into catalog if new
+        var speciesName = result.species().name();
+        var existingSpecies = insectQuery.species().getByName(speciesName);
+        if (existingSpecies.isEmpty()) {
+            insectCommand.species().insert(result.species());
+        }
+
+        // 4. Create EOL citation association for the suggested species
+        // TODO: create EOL citation when library write API is available
+
+        // 5. Create InsectImage
+        var observationId = FieldObservationId.create();
+        var insectImage = new InsectImage(
+                InsectImageId.create(),
+                speciesName,
+                Instant.now(),
+                storedFileName,
+                observationId);
+        insectCommand.images().insert(insectImage);
+
+        // 6. Create FieldObservation
+        var visionNotes = buildVisionNotes(notes, result);
+        var observation = new FieldObservation(
+                observationId,
+                me.get(),
+                speciesName,
+                capturedInstant != null ? capturedInstant : Instant.now(),
+                visionNotes,
+                location,
+                result.confidence());
+        insectCommand.fieldObservations().insert(observation);
+
+        return "redirect:/insects/" + speciesName.value();
+    }
+
+    private String buildVisionNotes(String userNotes, InsectIdentificationResult result) {
+        var sb = new StringBuilder();
+        if (userNotes != null && !userNotes.isBlank()) {
+            sb.append(userNotes).append("\n\n");
+        }
+        sb.append("Vision identification (")
+          .append(String.format("%.0f%%", result.confidence() * 100))
+          .append(" confidence): ")
+          .append(result.evidence());
+        if (result.alternativesJson() != null) {
+            sb.append("\nAlternatives: ").append(result.alternativesJson());
+        }
+        return sb.toString();
     }
 
     @GetMapping("/species")
