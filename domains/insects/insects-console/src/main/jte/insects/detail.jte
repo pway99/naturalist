@@ -5,10 +5,13 @@
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectImage
+@import com.naturalist.insects.InsectImageId
+@import com.naturalist.insects.FieldObservation
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.insects.console.CladeTrail
 @import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
+@import java.util.Map
 @import org.springframework.security.web.csrf.CsrfToken
 
 @param InsectSpecies species
@@ -29,6 +32,7 @@
 @param java.util.List<com.naturalist.insects.console.AncestorIntro> ancestorIntros = List.of()
 @param boolean collected = false
 @param boolean lens = false
+@param Map<InsectImageId, FieldObservation> observations = java.util.Map.of()
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
 !{var binomial = genus.genus().value() + " " + species.epithet().value();}
@@ -88,10 +92,35 @@
             <h2>Photo Gallery</h2>
             <div class="image-gallery">
                 @for(var img : images)
-                    <figure>
-                        <img src="/insects/images/${img.resourceName().value()}"
+                    <figure class="observation-card">
+                        <img src="/insects/uploads/${img.resourceName().value()}"
                              alt="${species.name().value()}"
-                             loading="lazy">
+                             loading="lazy"
+                             onerror="this.src='/insects/images/${img.resourceName().value()}'">
+                        <%-- Fall back to classpath images for pre-upload catalog images --%>
+                        @if(observations.containsKey(img.id()))
+                            !{var obs = observations.get(img.id());}
+                            <figcaption>
+                                @if(obs.location() != null)
+                                    <small class="obs-location">${obs.location()}</small>
+                                @endif
+                                @if(obs.confidence() != null)
+                                    <small class="obs-confidence">
+                                        ${String.format("%.0f%%", obs.confidence() * 100)} confidence
+                                    </small>
+                                @endif
+                                <form method="post" action="/insects/${species.name().value()}/notes">
+                                    @if(_csrf != null)
+                                        <input type="hidden" name="${_csrf.getParameterName()}"
+                                               value="${_csrf.getToken()}">
+                                    @endif
+                                    <input type="hidden" name="observationId" value="${obs.id().value()}">
+                                    <textarea name="notes" rows="2"
+                                              placeholder="Field notes...">${obs.notes() != null ? obs.notes() : ""}</textarea>
+                                    <button type="submit">Save notes</button>
+                                </form>
+                            </figcaption>
+                        @endif
                     </figure>
                 @endfor
             </div>
@@ -112,20 +141,23 @@
 
     <section class="add-image">
         <h2>Add Photo</h2>
-        <p>
-            Drop the image file into
-            <code>insects-repository-test/src/main/resources/insects/images/</code>
-            first, then register its filename here.
-        </p>
-        <form method="post" action="/insects/${species.name().value()}/images">
+        <form id="identify-form" action="/insects/${species.name().value()}/images" method="post"
+              enctype="multipart/form-data">
             @if(_csrf != null)
                 <input type="hidden" name="${_csrf.getParameterName()}" value="${_csrf.getToken()}">
             @endif
-            <label for="resourceName">Filename</label>
-            <input type="text" id="resourceName" name="resourceName"
-                   placeholder="IMG_9047.HEIC" required>
-            <button type="submit">Register photo</button>
+            <div class="form-group">
+                <input type="file" name="image" accept="image/*" capture="environment" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="location" placeholder="Location (e.g. Oak Vista, Chico, CA)">
+            </div>
+            <div class="form-group">
+                <textarea name="notes" rows="2" placeholder="Field notes (optional)"></textarea>
+            </div>
+            <button type="submit">Add photo</button>
         </form>
+        <script src="/js/image-upload.js"></script>
     </section>
 
     @if(species.chemicalDefense() != null)

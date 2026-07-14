@@ -635,6 +635,23 @@ public class InsectsController {
         }
         model.addAttribute("images", galleryImages);
         model.addAttribute("lens", lens && viewer.isPresent());
+
+        // Build observation lookup for images with field notes
+        var observations = new java.util.HashMap<InsectImageId, FieldObservation>();
+        if (viewer.isPresent()) {
+            var obs = insectQuery.fieldObservations()
+                    .forNaturalistAndSubjects(viewer.get(), java.util.Set.<InsectRankName>of(speciesName));
+            for (var img : galleryImages) {
+                if (img.observationId() != null) {
+                    obs.stream()
+                            .filter(o -> o.id().equals(img.observationId()))
+                            .findFirst()
+                            .ifPresent(o -> observations.put(img.id(), o));
+                }
+            }
+        }
+        model.addAttribute("observations", observations);
+
         model.addAttribute("citations", i.citations());
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
@@ -689,26 +706,81 @@ public class InsectsController {
 
     @PostMapping("/{name}/images")
     String addImage(@PathVariable String name,
-                    @RequestParam("resourceName") String resourceName,
-                    HttpServletRequest request) {
-        var speciesName = InsectSpeciesName.of(name);
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> me = currentNaturalist(request);
+                    @RequestParam("image") MultipartFile imageFile,
+                    @RequestParam(name = "location", required = false) String location,
+                    @RequestParam(name = "notes", required = false) String notes,
+                    HttpServletRequest request) throws IOException {
+        var rankName = InsectSpeciesName.of(name);
+        var me = currentNaturalist(request);
+
+        var storedFileName = imageStorageService.store(imageFile.getBytes());
+
         FieldObservationId observationId = null;
         if (me.isPresent()) {
+            observationId = FieldObservationId.create();
             var observation = new FieldObservation(
-                    FieldObservationId.create(), me.get(), speciesName, Instant.now(), null,
-                    null, null);
+                    observationId, me.get(), rankName, Instant.now(),
+                    (notes == null || notes.isBlank()) ? null : notes,
+                    (location == null || location.isBlank()) ? null : location,
+                    null);
             insectCommand.fieldObservations().insert(observation);
-            observationId = observation.id();
         }
+
         var image = new InsectImage(
-                InsectImageId.create(),
-                speciesName,
-                Instant.now(),
-                FileName.of(resourceName),
-                observationId);
+                InsectImageId.create(), rankName, Instant.now(),
+                storedFileName, observationId);
         insectCommand.images().insert(image);
         return "redirect:/insects/" + name;
+    }
+
+    @PostMapping("/{name}/notes")
+    String updateNotes(@PathVariable String name,
+                       @RequestParam("observationId") String observationId,
+                       @RequestParam("notes") String notes,
+                       HttpServletRequest request) {
+        var obsId = FieldObservationId.of(java.util.UUID.fromString(observationId));
+        var existing = insectQuery.fieldObservations().getByName(obsId);
+        if (existing.isEmpty()) {
+            return "redirect:/insects/" + name;
+        }
+        var obs = existing.get();
+        var updated = new FieldObservation(
+                obs.id(), obs.observedBy(), obs.subject(), obs.observedOn(),
+                (notes == null || notes.isBlank()) ? null : notes,
+                obs.location(), obs.confidence());
+        insectCommand.fieldObservations().update(updated);
+        return "redirect:/insects/" + name;
+    }
+
+    @PostMapping("/{name}/re-identify")
+    String reIdentify(@PathVariable String name,
+                      @RequestParam("observationId") String observationId,
+                      @RequestParam("newSubject") String newSubject,
+                      @RequestParam("newSubjectRank") String newSubjectRank,
+                      HttpServletRequest request) {
+        var obsId = FieldObservationId.of(java.util.UUID.fromString(observationId));
+        var existing = insectQuery.fieldObservations().getByName(obsId);
+        if (existing.isEmpty()) return "redirect:/insects/" + name;
+
+        var obs = existing.get();
+        InsectRankName newRankName = switch (newSubjectRank) {
+            case "SPECIES" -> InsectSpeciesName.of(newSubject);
+            case "GENUS" -> InsectGenusName.of(newSubject);
+            case "FAMILY" -> InsectFamilyName.of(newSubject);
+            case "ORDER" -> InsectOrderName.of(newSubject);
+            default -> throw new IllegalArgumentException("Unknown rank: " + newSubjectRank);
+        };
+
+        // Update observation subject
+        var updatedObs = new FieldObservation(
+                obs.id(), obs.observedBy(), newRankName, obs.observedOn(),
+                obs.notes(), obs.location(), obs.confidence());
+        insectCommand.fieldObservations().update(updatedObs);
+
+        // TODO: update linked images' parentName to newRankName
+        // (no query method to find images by observationId yet)
+
+        return "redirect:/insects/" + newSubject;
     }
 
     @GetMapping("/{name}/life-stages")
