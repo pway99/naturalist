@@ -55,4 +55,30 @@
       "confidence" : 0.06
     } ]
   }
-} ]
+},
+  {
+    "id": "019f5f83-fcba-7bba-be1b-1bc18cf04d0c",
+    "observedBy": "patrick-way",
+    "subject": "bagrada-hilaris",
+    "subjectRank": "SPECIES",
+    "observedOn": "2026-07-14T07:25:13.276524Z",
+    "notes": "Found on a Tomatoe",
+    "location": "Oak Vista, Chico CA",
+    "identification": {
+      "confidence": 0.91,
+      "evidence": "Key visible features supporting this identification: (1) small, shield-shaped stink bug body (~5–7 mm) typical of Pentatomidae; (2) striking black-and-white/orange patterning with bold white spots and streaks on the dorsum — the diagnostic \"painted\" pattern of Bagrada hilaris; (3) orange-red transverse band visible across the abdomen/connexivum; (4) dark scutellum with white markings; (5) short, segmented antennae with alternating dark/pale banding; (6) found on what appears to be a ripe tomato in the Central Valley of California, consistent with the bug's known host range and invasive range in CA.",
+      "alternatives": [
+        {
+          "scientificName": "Eurydemus sp.",
+          "commonName": null,
+          "confidence": 0.03
+        },
+        {
+          "scientificName": "Murgantia histrionica (Harlequin Bug)",
+          "commonName": null,
+          "confidence": 0.06
+        }
+      ]
+    }
+  }
+]

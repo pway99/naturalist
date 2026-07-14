@@ -32,6 +32,19 @@
   } ],
   "placedIn" : null
 }, {
+  "name": "bagrada",
+  "familyName": "pentatomidae",
+  "genus": "Bagrada",
+  "description": {
+    "preschool": "Identified via vision — description pending.",
+    "elementary": "Identified via vision — description pending.",
+    "secondary": "Identified via vision — description pending.",
+    "university": "Identified via vision — description pending."
+  },
+  "commonNames": [],
+  "placedIn": null
+},
+  {
   "name" : "battus",
   "familyName" : "papilionidae",
   "genus" : "Battus",

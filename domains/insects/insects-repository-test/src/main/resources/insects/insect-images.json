@@ -20,6 +20,14 @@
   "resourceName" : "019f5f5a-1f3a-7055-9713-d53b80898ba0.jpg",
   "observationId" : "019f5f5a-9279-7389-9074-da251c4202b8"
 }, {
+  "id": "019f5f83-fcba-7bba-be1c-45ebc7cd4cbe",
+  "parentName": "bagrada-hilaris",
+  "parentRank": "SPECIES",
+  "dateAdded": "2026-07-14T07:25:13.274523Z",
+  "resourceName": "019f5f83-8561-749b-b8cb-92db036bebed.jpg",
+  "observationId": "019f5f83-fcba-7bba-be1b-1bc18cf04d0c"
+},
+  {
   "id" : "15f21a09-13a9-7c7f-94df-538512876e6d",
   "parentName" : "colias-eurytheme",
   "parentRank" : "SPECIES",

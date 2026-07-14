@@ -242,6 +242,19 @@
   } ],
   "placedIn" : "papilionidae"
 }, {
+  "name": "pentatomidae",
+  "orderName": "hemiptera",
+  "family": "Pentatomidae",
+  "description": {
+    "preschool": "Identified via vision — description pending.",
+    "elementary": "Identified via vision — description pending.",
+    "secondary": "Identified via vision — description pending.",
+    "university": "Identified via vision — description pending."
+  },
+  "commonNames": [],
+  "placedIn": null
+},
+  {
   "name" : "pieridae",
   "orderName" : "lepidoptera",
   "family" : "Pieridae",

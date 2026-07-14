@@ -17,6 +17,32 @@
   "chemicalDefense" : null,
   "voltinism" : null,
   "habitatProfile" : null,
+  "habitatRequirements": null,
+  "gardenConnections": null,
+  "beneficialProfile": null,
+  "ecologicalSignificance": null
+},
+  {
+    "name": "bagrada-hilaris",
+    "genusName": "bagrada",
+    "epithet": "hilaris",
+    "description": {
+      "preschool": "Look at this tiny bug sitting on a tomato! It has a pretty pattern of black, white, and orange on its back — like it's wearing a little painted costume. It has six legs and two little feelers called antennae. Even though it looks pretty, this bug likes to eat garden plants, so gardeners don't like to find it!",
+      "elementary": "The Bagrada Bug is a small stink bug, only about the size of a watermelon seed (5–7 mm). It belongs to the true bug order Hemiptera, meaning it has a piercing, needle-like mouthpart it uses to suck juice from plants. Its back has a distinctive black, white, and orange pattern that makes it easy to recognize. Like other stink bugs, it can release a smelly chemical when threatened. It started out in Africa and Asia but has spread to California and other southwestern U.S. states, where it damages crops like broccoli, kale, mustard, and other plants in the cabbage family.",
+      "secondary": "Bagrada hilaris is an invasive pentatomid first detected in Los Angeles County in 2008 and now widespread throughout California's Central Valley, including the Chico area. It feeds via phytophagy, inserting its stylet mouthparts into plant tissue to extract phloem and mesophyll contents, causing characteristic \"starburst\" feeding scars and wilting in young plants. Its primary hosts are Brassicaceae (mustards, arugula, kale), but it is an opportunistic feeder recorded on Solanaceae (tomatoes, peppers) and other vegetables. Adults overwinter in soil and leaf litter, producing multiple overlapping generations per year in warm climates. Its rapid population growth and lack of established natural enemies in North America make it a significant agricultural pest. The bold aposematic-like coloration may serve as a warning signal, though it is not known to be chemically defended in the same way as some other pentatomids.",
+      "university": "Bagrada hilaris (Burmeister, 1835) (Hemiptera: Pentatomidae: Strachiini) is a paleotropical species native to sub-Saharan Africa, the Middle East, and South Asia, introduced to the Western Hemisphere ca. 2008. Its invasion biology in California has been extensively studied; it achieves high voltinism (up to 6+ generations/year under warm conditions), contributing to explosive population growth. Phylogeographic analyses suggest the California introduction originated from a Pakistani or Indian source population. Management strategies under investigation include releases of the egg parasitoid Gryon gonikopalense (Scelionidae), which shows promise in classical biological control trials. The species has a known host breadth spanning >30 plant families, though Brassicaceae remain primary hosts. On Solanaceous hosts like tomato (as observed here), feeding damage is typically less severe but the bug can vector secondary pathogens. Diagnostic features distinguishing B. hilaris from superficially similar species include the white costal spots on the hemelytral corium, the distinctive white-on-black pronotal pattern, and the pale-banded antennae. No close congeners are established in the Central Valley, making misidentification unlikely in this geographic context."
+    },
+    "commonNames": [
+      {
+        "label": "Bagrada Bug (Painted Bug)",
+        "locale": "en"
+      }
+    ],
+    "sightingNotes": "Found on a ripe tomato at Oak Vista, Chico CA — within the well-established Central Valley invasion zone for this species. While Brassicaceae are preferred hosts, Bagrada bugs are commonly observed on tomatoes especially late in the season when preferred hosts dry up. Worth monitoring surrounding garden plants, particularly any brassicas, for population buildup. Multiple generations may be active simultaneously in Chico's warm climate through fall.",
+    "placedIn": null,
+    "chemicalDefense": null,
+    "voltinism": null,
+    "habitatProfile": null,
   "habitatRequirements" : null,
   "gardenConnections" : null,
   "beneficialProfile" : null,
@@ -41,7 +67,12 @@
     "mechanism" : "Sequestration of aristolochic acids from the larval host plant (Aristolochia californica). Toxins are retained through pupation, carried by adults, and transferred maternally to the eggs — every stage of the life cycle is chemically defended.",
     "sourceCompounds" : "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
     "aposematicSignal" : "Iridescent blue hindwing coloration in adults; conspicuous brick-red egg clusters; warningly coloured dark larvae with reddish filaments. The pupa is the exception — cryptic rather than aposematic.",
-    "protectedStages" : [ "ADULT", "EGG", "LARVA", "PUPA" ]
+    "protectedStages": [
+      "EGG",
+      "ADULT",
+      "PUPA",
+      "LARVA"
+    ]
   },
   "voltinism" : {
     "pattern" : "INDETERMINATE",
