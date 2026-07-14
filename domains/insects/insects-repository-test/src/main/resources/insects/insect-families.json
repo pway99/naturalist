@@ -1,362 +1,319 @@
-[
-  {
-    "name": "tachinidae",
-    "orderName": "diptera",
-    "family": "Tachinidae",
-    "description": {
-      "preschool": "This fuzzy fly is a garden helper. It looks like a housefly with extra bristles, and it lays its tiny eggs on caterpillars and other insects that eat our plants. Once the eggs hatch, they protect the garden from the inside.",
-      "elementary": "Tachinid flies are parasites of caterpillars, beetles, and bugs that damage vegetable plants. The mother fly glues her eggs onto a pest insect or hides them on leaves where the pest will eat them. The fly larva hatches inside the pest and slowly eats it, which kills the pest before it can do much more damage.",
-      "secondary": "Tachinidae is the largest family of parasitoid flies (Diptera). Most species are koinobiont parasitoids — the host continues feeding and growing while the endoparasitic larva develops inside it. The female deposits eggs directly on the host cuticle, in host tissue via ovipositor, or on foliage as microtype eggs consumed by feeding hosts. The larva pupates inside the host or in the soil after killing it. Tachinids collectively parasitise lepidopteran, coleopteran, hemipteran, and orthopteran pests; several species are important biocontrol agents for tobacco hornworm, armyworm, and imported cabbageworm.",
-      "university": "Family Tachinidae (Diptera) — over 10,000 described species worldwide; the dominant parasitoid family at Oak Vista based on April 2026 sweep-net transects. Primary host guilds at Oak Vista: Lepidoptera larvae (Noctuidae, Sphingidae), with secondary records on Hemiptera and Coleoptera. Most are koinobiont endoparasitoids; the larva undergoes three instars inside the living host, emerging to pupate in soil following host death. Adults are nectarivores requiring open-structured flowers for mandibular access — Apiaceae, Asteraceae, and Lamiaceae support adult foraging at Oak Vista. No pesticide treatment of flowering Apiaceae border plantings during tachinid flight periods (April–October)."
-    },
-    "commonNames": [
-      {
-        "label": "tachinid fly",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+[ {
+  "name" : "andrenidae",
+  "orderName" : "hymenoptera",
+  "family" : "Andrenidae",
+  "description" : {
+    "preschool" : "Mining bees in this family dig little tunnels in the ground to make their nests. Their entrances look like tiny anthills with a hole in the middle. They are some of the very first bees to fly in springtime when the early flowers open.",
+    "elementary" : "Andrenidae is the family of mining bees — solitary native bees that nest in the soil. Each female digs her own burrow and works alone. They are early-spring pollinators, emerging when fruit trees and the first wildflowers bloom. The family does not produce honey and does not live in colonies, but it is one of the most important pollinator families for early-season gardens.",
+    "secondary" : "Andrenidae are obligate ground-nesting solitary bees with characteristic facial fovea (depressed grooves between the eyes). Approximately 3,000 species globally, with Andrena dominating the diversity. Spring emergence often precedes Apidae and Halictidae by 2–3 weeks, making the family critical for early-season pollination of stone fruits (Rosaceae) and early Brassicaceae bloom. Pollen-host specialisation is widespread — some species are strictly oligolectic on a single plant family, others are broad generalists. Bare-soil patches with low compaction are obligate nesting habitat.",
+    "university" : "Family Andrenidae (Hymenoptera: Apoidea) — approximately 3,000 species in 41 genera. Andrena is the dominant genus globally and at Oak Vista. Defining feature: facial fovea bordered with appressed pubescence in females, used in nest construction. Phenology: early-season activity (March–May at Oak Vista latitude) precedes most other bee families; flight cessation below 10°C ambient. Nesting biology: deep vertical burrows (10–30 cm) with lateral pollen-provisioned cells; mass-provisioning oviposition. Conservation relevance: bare mineral soil at bed margins must be retained — uniform mulch coverage eliminates nesting substrate."
   },
-  {
-    "name": "braconidae",
-    "orderName": "hymenoptera",
-    "family": "Braconidae",
-    "description": {
-      "preschool": "This tiny wasp is smaller than your fingernail and it is one of the garden's best protectors. It finds caterpillars and aphids and lays eggs inside them or on them. The babies that hatch eat the pest and protect our tomatoes.",
-      "elementary": "Braconid wasps are tiny insects that lay their eggs inside or on pest insects like aphids and caterpillars. When the eggs hatch, the wasp larvae eat the pest from the inside out, eventually killing it. You can sometimes find caterpillars covered with little white cocoons — those are the braconid pupae, and the caterpillar is already dying. Braconid wasps help protect our tomato plants without any sprays.",
-      "secondary": "Braconidae is the second-largest family of parasitoid Hymenoptera. Oak Vista species are primarily endoparasitoids of lepidopteran and aphid hosts. The Aphidiinae subfamily (formerly a separate family) are primary parasitoids of aphids — a single female can parasitise hundreds of aphids per day, and mummified aphids (round, papery, and darker than live aphids) are the visible field indicator of Aphidiinae activity. Microgastrinae are specialist caterpillar parasitoids; eggs are laid inside the host larva and the gregarious larvae emerge to spin white silk cocoons externally before pupation. Adults require nectar sources; Apiaceae and Asteraceae floral resources are critical for braconid retention in the garden system.",
-      "university": "Family Braconidae (Hymenoptera: Ichneumonoidea). Approximately 17,000 described species. Primary functional role at Oak Vista: suppression of aphid populations (Aphidiinae) and lepidopteran larvae (Microgastrinae). Aphidiinae females detect host-infested plants via volatile semiochemicals (E-β-farnesene and host-plant VOCs induced by aphid feeding). The parasitoid egg is laid into the aphid haemocoele; the larva develops through 4 instars consuming host tissues progressively, with the host dying as the final instar larva spins its cocoon within the aphid cuticle (mummification). Ichnoviruses in Microgastrinae venom suppress host immune encapsulation response. Retention strategy: maintain Apiaceae (dill, fennel, coriander) and Asteraceae flowering border adjacent to tomato beds throughout the season."
-    },
-    "commonNames": [
-      {
-        "label": "braconid wasp",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+  "commonNames" : [ {
+    "label" : "Mining Bee Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "apidae",
+  "orderName" : "hymenoptera",
+  "family" : "Apidae",
+  "description" : {
+    "preschool" : "Apidae is the family that includes bumble bees, carpenter bees, and honey bees. They are big strong bees that visit flowers all day long, collecting pollen and nectar to feed their babies. They are some of the best pollinators in the world — they help our tomatoes, squash, and fruit trees make food.",
+    "elementary" : "Apidae is the largest family of bees, including bumble bees, carpenter bees, honey bees, and many others. Some Apidae live in colonies (honey bees, bumble bees) and some live alone (carpenter bees, digger bees). They are powerful pollinators because their bodies are large enough to carry lots of pollen and they fly long distances between flowers. Many Apidae are buzz pollinators — they shake their flight muscles to make tomato and eggplant flowers release pollen that other insects cannot reach.",
+    "secondary" : "Apidae is the most species-rich bee family, encompassing solitary, communal, primitively eusocial, and advanced eusocial life histories within a single family. At Oak Vista, the documented genus is Xylocopa (valley carpenter bee) — a solitary, wood-nesting genus whose females are key buzz pollinators of Solanaceae (tomato, eggplant, pepper) and Lamiaceae (sage, basil). Apidae buzz pollination capability is essential for fruit set in poricidal-anther crops; honey bees (Apis mellifera) cannot perform sonication and contribute little to tomato fruit set despite ubiquitous garden presence. Carpenter bee nests in unfinished or weathered wood are not structural pest activity in the garden context — old fence posts, lumber piles, and pithy plant stems are appropriate nesting substrate that supports the resident pollinator population.",
+    "university" : "Family Apidae (Hymenoptera: Apoidea) — approximately 5,800 species in 200 genera. Subfamily Apinae (honey bees, bumble bees, stingless bees, orchid bees, digger bees, carpenter bees) dominates by species count and ecological impact. Pollination ecology: Apidae account for the majority of agricultural pollination service value globally; native Apidae (Bombus, Xylocopa, Habropoda, Anthophora) provide pollination services to crops where Apis mellifera is ineffective — notably buzz-pollinated Solanaceae, Ericaceae (blueberry), and Cucurbitaceae. Xylocopa varipuncta nesting biology at Oak Vista: adults excavate galleries in soft or weathered wood (old fence posts, dead branches); single females produce small numbers of large offspring with extended parental investment. Management: preserve dead wood and pithy stems as nesting substrate; avoid neonicotinoid systemic insecticides during bee flight periods."
   },
-  {
-    "name": "syrphidae",
-    "orderName": "diptera",
-    "family": "Syrphidae",
-    "description": {
-      "preschool": "Hoverflies look like tiny bees or wasps with yellow and black stripes, but they cannot sting. Watch them hover in one spot in the air — they can fly perfectly still! Their babies eat the aphids that hurt our tomatoes.",
-      "elementary": "Hoverflies trick birds into leaving them alone by looking like bees, but they are actually flies and cannot sting. The adult hoverflies drink nectar from flowers and help pollinate them. But the hoverfly larvae — the babies — hunt aphids and eat them one by one. A single hoverfly larva can eat hundreds of aphids before it grows up. They are both pollinators and pest controllers.",
-      "secondary": "Syrphidae (hoverflies) exhibit Batesian mimicry of stinging Hymenoptera, deterring avian predators through visual warning coloration. Adults are important pollinators of Apiaceae and Asteraceae; many species require pollen as a protein source for egg development. Most Oak Vista species are aphidophagous at the larval stage — larvae are eyeless, legless maggots that hunt aphids by chemosensory detection and consume them by piercing and ingesting haemolymph. The degree of aphid suppression per larva varies by species: Episyrphus balteatus (not yet confirmed at Oak Vista) can consume 400+ aphids per larval instar. Adults frequent open flowers and are a reliable indicator of garden ecological health.",
-      "university": "Family Syrphidae (Diptera) — approximately 6,000 species in 200 genera. At Oak Vista, adults documented as abundant floral visitors on Apiaceae (dill, fennel) and Asteraceae in April 2026. Larval ecology: aphidophagous species (subfamilies Syrphinae) oviposit directly into aphid colonies; eggs are translucent white, elongate, laid singly on or near aphid aggregations. Larvae are obligate predators — chemoreceptors on the mouthparts detect aphid cuticular hydrocarbons. Larval-stage aphid consumption rate: 30–50 aphids per day (species-dependent). Pupal stage occurs in soil or plant litter. Adult feeding biology: pollen protein drives ovarian development; floral constancy documented in foraging bouts. Management: Apiaceae border plantings are essential for adult retention and egg-laying site selection."
-    },
-    "commonNames": [
-      {
-        "label": "hoverfly",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+  "commonNames" : [ {
+    "label" : "Bee Family",
+    "locale" : "en"
+  }, {
+    "label" : "Long-tongued Bee Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : "anthophila"
+}, {
+  "name" : "blattidae",
+  "orderName" : "blattodea",
+  "family" : "Blattidae",
+  "description" : {
+    "preschool" : "A family of big cockroaches.",
+    "elementary" : "Large cockroaches often found around buildings.",
+    "secondary" : "Family Blattidae, cockroaches in order Blattodea.",
+    "university" : "A family of cockroaches in the strict sense, part of the paraphyletic roach grade within Blattodea."
   },
-  {
-    "name": "carabidae",
-    "orderName": "coleoptera",
-    "family": "Carabidae",
-    "description": {
-      "preschool": "Ground beetles are shiny black beetles that live under rocks and in the soil. They run very fast at night hunting for insects, slugs, and other pests that eat our plants. They are nocturnal garden helpers — they work while we sleep.",
-      "elementary": "Ground beetles are fast, shiny black beetles that hide under rocks and mulch during the day and hunt at night. They eat cutworms, slugs, snails, weed seeds, and many other garden pests. One ground beetle can eat many hundreds of pest insects and eggs in a season. They need places to hide during the day — rocks, boards, and thick mulch give them shelter. The Oak Vista garden has confirmed resident ground beetles.",
-      "secondary": "Carabidae is one of the most species-rich beetle families, with over 40,000 described species globally. Oak Vista representatives are in the subfamily Carabinae — large, fast, flightless (or flight-reduced) cursorial predators that occupy the apex of the soil-surface invertebrate food web. Diet is opportunistic: lepidopteran larvae (cutworms), dipteran pupae, slug eggs, weed seeds (many carabids are omnivores with granivorous behaviour supplementing predation). Nocturnal activity reduces overlap with diurnal parasitoid wasps. Confirmed resident at Oak Vista — ground beetles require undisturbed soil refugia and will abandon heavily tilled beds. The 21-day macropore recovery period post-rototilling applies equally to carabid population displacement.",
-      "university": "Family Carabidae (Coleoptera) — confirmed resident apex invertebrate predator at Oak Vista, April 2026 ecological assessment. Functional role: top-down regulation of soil-surface prey including lepidopteran larvae, dipteran pupae, and slug populations. Foraging mode: olfactory detection of prey cuticle and movement vibration; stridulatory communication documented in some species. Habitat requirements: coarse soil refugia or surface debris for diurnal concealment; absence of broad-spectrum soil insecticide. Key management interaction: soil rototilling disrupts carabid refugia and eliminates pupal chambers — tillage event documentation in the soil domain enables recovery-period modelling. Granivory supplements predation: Carabidae consume weed seeds at rates up to 1,200 seeds/individual/day, providing measurable weed suppression where populations are maintained at high density."
-    },
-    "commonNames": [
-      {
-        "label": "ground beetle",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+  "commonNames" : [ {
+    "label" : "common cockroaches",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "braconidae",
+  "orderName" : "hymenoptera",
+  "family" : "Braconidae",
+  "description" : {
+    "preschool" : "This tiny wasp is smaller than your fingernail and it is one of the garden's best protectors. It finds caterpillars and aphids and lays eggs inside them or on them. The babies that hatch eat the pest and protect our tomatoes.",
+    "elementary" : "Braconid wasps are tiny insects that lay their eggs inside or on pest insects like aphids and caterpillars. When the eggs hatch, the wasp larvae eat the pest from the inside out, eventually killing it. You can sometimes find caterpillars covered with little white cocoons — those are the braconid pupae, and the caterpillar is already dying. Braconid wasps help protect our tomato plants without any sprays.",
+    "secondary" : "Braconidae is the second-largest family of parasitoid Hymenoptera. Oak Vista species are primarily endoparasitoids of lepidopteran and aphid hosts. The Aphidiinae subfamily (formerly a separate family) are primary parasitoids of aphids — a single female can parasitise hundreds of aphids per day, and mummified aphids (round, papery, and darker than live aphids) are the visible field indicator of Aphidiinae activity. Microgastrinae are specialist caterpillar parasitoids; eggs are laid inside the host larva and the gregarious larvae emerge to spin white silk cocoons externally before pupation. Adults require nectar sources; Apiaceae and Asteraceae floral resources are critical for braconid retention in the garden system.",
+    "university" : "Family Braconidae (Hymenoptera: Ichneumonoidea). Approximately 17,000 described species. Primary functional role at Oak Vista: suppression of aphid populations (Aphidiinae) and lepidopteran larvae (Microgastrinae). Aphidiinae females detect host-infested plants via volatile semiochemicals (E-β-farnesene and host-plant VOCs induced by aphid feeding). The parasitoid egg is laid into the aphid haemocoele; the larva develops through 4 instars consuming host tissues progressively, with the host dying as the final instar larva spins its cocoon within the aphid cuticle (mummification). Ichnoviruses in Microgastrinae venom suppress host immune encapsulation response. Retention strategy: maintain Apiaceae (dill, fennel, coriander) and Asteraceae flowering border adjacent to tomato beds throughout the season."
   },
-  {
-    "name": "tipulidae",
-    "orderName": "diptera",
-    "family": "Tipulidae",
-    "description": {
-      "preschool": "A crane fly looks like a giant mosquito with very long legs, but it is harmless. It cannot bite you. Its babies live in the soil and help break down old leaves and roots into food for the plants.",
-      "elementary": "Crane flies look like enormous mosquitoes but they do not bite and they do not drink blood. The adults live only a few days and do not even eat much. Their larvae live in the soil for months and break down dead plant material — old leaves, roots, and compost — into nutrients that feed the garden. They are decomposers, like nature's recyclers.",
-      "secondary": "Tipulidae larvae (leatherjackets) are saprophagous decomposers — they feed primarily on decomposing organic matter in the soil, shredding dead roots, leaf litter, and compost into smaller fragments and inoculating material with gut bacteria that accelerate decomposition. In agricultural contexts with monocultures, leatherjacket density can occasionally exceed levels at which root feeding damage occurs, but in diverse garden settings with adequate organic matter the species occupies a benign decomposer niche. Adults are short-lived (3–5 days), feeding minimally if at all; their ecological service is to transfer soil organic matter nutrients into the aerial food web as prey for birds (especially robins and thrushes) and arachnids.",
-      "university": "Family Tipulidae (Diptera) — one of the largest dipteran families. At Oak Vista, larvae function as saprophagous decomposers in the soil food web, contributing to litter comminution and nutrient cycling. Larval ecology: Tipula spp. leatherjackets are univoltine or bivoltine; larvae overwinter in soil, pupate in spring, and adults emerge April–June in California. The larval gut microbiome (Enterobacteriaceae, Bacteroidetes) degrades lignocellulosic material via enzymatic pathways — each larva represents a concentrated microbial bioreactor for cellulose degradation. Population density at Oak Vista is consistent with decomposer function (not pest-level root feeding). Adult phenology aligns with spring emergence of avian insectivore breeding season, making crane flies a significant food web transfer node from soil organic matter to vertebrate biomass."
-    },
-    "commonNames": [
-      {
-        "label": "crane fly",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+  "commonNames" : [ {
+    "label" : "braconid wasp",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "carabidae",
+  "orderName" : "coleoptera",
+  "family" : "Carabidae",
+  "description" : {
+    "preschool" : "Ground beetles are shiny black beetles that live under rocks and in the soil. They run very fast at night hunting for insects, slugs, and other pests that eat our plants. They are nocturnal garden helpers — they work while we sleep.",
+    "elementary" : "Ground beetles are fast, shiny black beetles that hide under rocks and mulch during the day and hunt at night. They eat cutworms, slugs, snails, weed seeds, and many other garden pests. One ground beetle can eat many hundreds of pest insects and eggs in a season. They need places to hide during the day — rocks, boards, and thick mulch give them shelter. The Oak Vista garden has confirmed resident ground beetles.",
+    "secondary" : "Carabidae is one of the most species-rich beetle families, with over 40,000 described species globally. Oak Vista representatives are in the subfamily Carabinae — large, fast, flightless (or flight-reduced) cursorial predators that occupy the apex of the soil-surface invertebrate food web. Diet is opportunistic: lepidopteran larvae (cutworms), dipteran pupae, slug eggs, weed seeds (many carabids are omnivores with granivorous behaviour supplementing predation). Nocturnal activity reduces overlap with diurnal parasitoid wasps. Confirmed resident at Oak Vista — ground beetles require undisturbed soil refugia and will abandon heavily tilled beds. The 21-day macropore recovery period post-rototilling applies equally to carabid population displacement.",
+    "university" : "Family Carabidae (Coleoptera) — confirmed resident apex invertebrate predator at Oak Vista, April 2026 ecological assessment. Functional role: top-down regulation of soil-surface prey including lepidopteran larvae, dipteran pupae, and slug populations. Foraging mode: olfactory detection of prey cuticle and movement vibration; stridulatory communication documented in some species. Habitat requirements: coarse soil refugia or surface debris for diurnal concealment; absence of broad-spectrum soil insecticide. Key management interaction: soil rototilling disrupts carabid refugia and eliminates pupal chambers — tillage event documentation in the soil domain enables recovery-period modelling. Granivory supplements predation: Carabidae consume weed seeds at rates up to 1,200 seeds/individual/day, providing measurable weed suppression where populations are maintained at high density."
   },
-  {
-    "name": "hesperiidae",
-    "orderName": "lepidoptera",
-    "family": "Hesperiidae",
-    "description": {
-      "preschool": "Skippers are small butterflies that skip and dart through the air very fast instead of floating slowly like bigger butterflies. They have chunky fuzzy bodies and little hooked antennae. They drink nectar from flowers and help the garden while they eat.",
-      "elementary": "Skippers are small, fast-flying butterflies with thick bodies. They visit flowers to drink nectar and carry pollen from plant to plant, making them pollinators. Their caterpillars eat grasses and some plants but do not damage vegetable crops. Skippers are part of a healthy garden community and their presence shows that the garden has plenty of flowers for wildlife.",
-      "secondary": "Hesperiidae (skippers) are a basal lineage of Lepidoptera intermediate between true butterflies and moths — their robust, hairy thorax and hooked antennae reflect this transitional position. Adults are nectarivores and incidental pollinators of a wide range of garden flowers; their rapid, dart-and-hover flight makes them effective at visiting many flower types. Caterpillars feed on grasses and select forb species but are not recorded as vegetable crop pests. Several California species are partial to Asteraceae and Lamiaceae nectar sources. Skipper presence reflects broad-based nectar resource availability and low pesticide loading in the garden landscape.",
-      "university": "Family Hesperiidae (Lepidoptera) — approximately 3,500 species in 8 subfamilies. At Oak Vista, multiple species documented as floral visitors, April 2026. Taxonomic position: phylogenetically sister to Papilionoidea but traditionally treated separately; adult morphology (hooked antennal clubs, crochet-bearing tornal region on hindwing) distinguishes them from 'true' butterflies. Pollination ecology: adults exhibit legitimate floral visitation (proboscis insertion into nectary) across Asteraceae, Lamiaceae, and Boraginaceae; incidental pollen transfer efficiency is lower than specialist bee pollinators but contributes to cross-pollination of border plantings. Larval host plants at Oak Vista: grasses (Poaceae) and some Fabaceae — no threat to Solanaceae crops. Indicator function: skipper diversity is a reliable proxy for floral resource diversity and low-pesticide management history in landscape context."
-    },
-    "commonNames": [
-      {
-        "label": "skipper butterfly",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "lepidoptera"
+  "commonNames" : [ {
+    "label" : "ground beetle",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "chrysopidae",
+  "orderName" : "neuroptera",
+  "family" : "Chrysopidae",
+  "description" : {
+    "preschool" : "Green lacewings are delicate insects with see-through wings shaped like lace. The grown-up lacewing eats nectar from flowers, but its babies — called Aphid Lions — eat hundreds of aphids and other tiny pests that hurt our plants.",
+    "elementary" : "Chrysopidae is the family of green lacewings. Adults are bright green with golden eyes and beautiful net-veined wings, and they drink nectar from flowers. Their larvae, called Aphid Lions, are fast little hunters that eat aphids, mites, thrips, and small caterpillars. The mother lacewing lays each egg on a thin silk stalk so the babies do not eat each other when they hatch.",
+    "secondary" : "Chrysopidae (green lacewings) are neuropteran insects with a textbook example of complete metamorphosis driving a guild shift between life stages: adults are nectarivorous and incidentally pollinating, while larvae are voracious generalist predators consuming 200+ aphids per week. Egg morphology is diagnostic — long silk stalks elevate eggs above the leaf surface, an adaptive structure that delays sibling encounters at hatching and reduces cannibalism. Adults are attracted to artificial light and to flat, open flowers (Apiaceae, Brassicaceae) where the proboscis can reach exposed nectar.",
+    "university" : "Family Chrysopidae (Neuroptera) — approximately 2,000 species in 90 genera; cosmopolitan distribution. Larval predation guild: generalist predators of soft-bodied arthropods (Aphididae, Tetranychidae, Thysanoptera, Aleyrodidae, lepidopteran eggs) using suctorial mandibles and proteolytic saliva. Adult guild: polyphagous nectarivore, occasional pollen-feeder; many species exhibit pollinator behaviour at open umbellate flowers. Stalked egg morphology is a family-defining ovipositional adaptation. At Oak Vista, Chrysoperla is the documented genus; natural colonisation indicates floral resource availability adequate for adult retention without commercial release. The family supports ecosystem stability through inter-stage dietary partitioning and is among the most reliable indicators of low-pesticide garden management."
   },
-  {
-    "name": "halictidae",
-    "orderName": "hymenoptera",
-    "family": "Halictidae",
-    "description": {
-      "preschool": "Sweat bees are small bees in this family — sometimes shiny green, sometimes plain black. They live in tunnels in the ground and visit flowers for pollen. Most are very gentle and rarely sting, even though one or two species are attracted to the salt in human sweat.",
-      "elementary": "Halictidae is a family of mostly small native bees. Many species nest in the ground in little tunnels, and some live in small social groups while others live alone. Halictid bees are some of the most important pollinators in the garden — they perform a special trick called buzz pollination that releases pollen from tomato and pepper flowers, something honey bees cannot do.",
-      "secondary": "Halictidae (sweat bees) is the second-largest family of bees globally, with social organization ranging from strictly solitary to primitively eusocial within a single genus. The family is dominated by ground-nesting species. Crucially for vegetable gardens, many Halictidae are buzz-pollination capable — thoracic vibration releases pollen from poricidal anthers in Solanaceae, a behaviour absent in honey bees. Maintaining bare-soil patches at bed margins preserves the obligate nesting substrate.",
-      "university": "Family Halictidae (Hymenoptera: Apoidea) — approximately 4,500 species globally. Defining synapomorphy: strongly recurved basal vein of the forewing. Social organization within Halictidae spans the entire spectrum from strict solitary nesting to primitively eusocial (queen plus seasonal female workers), with intra-generic variation in Halictus, Lasioglossum, and Augochlora. Buzz-pollination capability is widespread, making Halictidae infrastructure-critical for Solanum lycopersicum yield at Oak Vista. Pesticide management: ground nests aggregate systemic-insecticide residues; soil-applied imidacloprid is contraindicated within 5 m of bare-soil nesting aggregations."
-    },
-    "commonNames": [
-      {
-        "label": "Sweat Bee Family",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "Green Lacewing Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "cicadellidae",
+  "orderName" : "hemiptera",
+  "family" : "Cicadellidae",
+  "description" : {
+    "preschool" : "Leafhoppers are tiny insects that jump away in a flash if you get too close. They drink sap from plant leaves like drinking through a straw. Some are bright green, some are striped, and a few are even patterned with bright colors.",
+    "elementary" : "Cicadellidae is the family of leafhoppers — small jumping insects that drink plant sap. There are thousands of species, most of which feed on grasses, weeds, or wild plants and never come near vegetable gardens. A few species cause damage to crops, but a healthy garden with spiders, lacewings, and tiny parasitic wasps usually keeps leafhopper numbers under control without any pest sprays.",
+    "secondary" : "Cicadellidae are the largest family of phloem-feeding hemipterans, with approximately 22,000 described species globally. Most species are host-specialist or oligophagous on grasses, herbaceous perennials, or specific shrubs; relatively few rise to economic pest status in vegetable production. The family includes important agricultural pests in Empoasca, Erythroneura, and Circulifer, but the overwhelming majority of species are food-web participants without significant management concern. Egg parasitoids (Anagrus spp., Mymaridae) provide robust natural control where adult parasitoid nutrition is supported by floral resources.",
+    "university" : "Family Cicadellidae (Hemiptera: Membracoidea) — approximately 22,000 species in 40+ subfamilies. Defining feature: numerous stout setae on the hind tibiae arranged in two longitudinal rows. Feeding biology: stylet penetration to phloem sieve elements, salivary sheath formation; saliva enzymatic activity (pectinases, cellulases, proteinases) varies by subfamily and drives differential plant pathology. Vector competence: many Cicadellidae transmit phytoplasmas and plant viruses; vector species at Oak Vista latitude include Circulifer tenellus (beet leafhopper) and Macrosteles spp. Biological control infrastructure: Anagrus egg parasitoids achieve high parasitism rates where Apiaceae and Asteraceae floral borders provide adult parasitoid nectar."
   },
-  {
-    "name": "andrenidae",
-    "orderName": "hymenoptera",
-    "family": "Andrenidae",
-    "description": {
-      "preschool": "Mining bees in this family dig little tunnels in the ground to make their nests. Their entrances look like tiny anthills with a hole in the middle. They are some of the very first bees to fly in springtime when the early flowers open.",
-      "elementary": "Andrenidae is the family of mining bees — solitary native bees that nest in the soil. Each female digs her own burrow and works alone. They are early-spring pollinators, emerging when fruit trees and the first wildflowers bloom. The family does not produce honey and does not live in colonies, but it is one of the most important pollinator families for early-season gardens.",
-      "secondary": "Andrenidae are obligate ground-nesting solitary bees with characteristic facial fovea (depressed grooves between the eyes). Approximately 3,000 species globally, with Andrena dominating the diversity. Spring emergence often precedes Apidae and Halictidae by 2–3 weeks, making the family critical for early-season pollination of stone fruits (Rosaceae) and early Brassicaceae bloom. Pollen-host specialisation is widespread — some species are strictly oligolectic on a single plant family, others are broad generalists. Bare-soil patches with low compaction are obligate nesting habitat.",
-      "university": "Family Andrenidae (Hymenoptera: Apoidea) — approximately 3,000 species in 41 genera. Andrena is the dominant genus globally and at Oak Vista. Defining feature: facial fovea bordered with appressed pubescence in females, used in nest construction. Phenology: early-season activity (March–May at Oak Vista latitude) precedes most other bee families; flight cessation below 10°C ambient. Nesting biology: deep vertical burrows (10–30 cm) with lateral pollen-provisioned cells; mass-provisioning oviposition. Conservation relevance: bare mineral soil at bed margins must be retained — uniform mulch coverage eliminates nesting substrate."
-    },
-    "commonNames": [
-      {
-        "label": "Mining Bee Family",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "Leafhopper Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "coccinellidae",
+  "orderName" : "coleoptera",
+  "family" : "Coccinellidae",
+  "description" : {
+    "preschool" : "Ladybugs are small round beetles with red or orange backs and black spots. They walk and fly around the garden looking for tiny pests called aphids, and they eat lots and lots of them. A single ladybug can eat hundreds of aphids in its life — it is one of the garden's best helpers.",
+    "elementary" : "Lady beetles, also called ladybugs, are small round beetles in the family Coccinellidae. Both the adults and their alligator-shaped larvae hunt aphids, mites, and other soft-bodied insects that hurt our plants. A ladybug colony can clear an aphid outbreak in days. Buying boxes of overwintered adults rarely works because they fly away — protecting the resident lady beetles by avoiding pesticides and keeping aphid refugia on border plants works much better.",
+    "secondary" : "Coccinellidae are predaceous beetles whose adults and larvae both feed on aphids, scale insects, mites, mealybugs, and other soft-bodied arthropods. The family is one of the most important groups of insect biocontrol agents in vegetable and orchard systems. Larvae are elongated and dark with bright spots — easily misidentified as pests by gardeners unfamiliar with their morphology. Adults overwinter in aggregations under bark, in leaf litter, or in protected microsites; commercial release of overwintered Hippodamia is largely ineffective because adults immediately disperse. The key management lever is in-place population conservation: avoid broad-spectrum insecticides and maintain modest aphid refugia on border plants to retain breeding populations through the season.",
+    "university" : "Family Coccinellidae (Coleoptera: Cucujoidea) — approximately 6,000 species globally. Predominantly aphidophagous, with secondary guilds including coccidophagy, acarophagy, and (in a few subfamilies) mycophagy and phytophagy. The dominant Oak Vista representative is Hippodamia convergens — a confirmed breeding resident, not a transient. Released-adult retention failure is a well-documented commercial-IPM phenomenon: post-overwintering adults possess strong dispersal drive and abandon release sites within 24–48 hours, making conservation biocontrol (in-place population management) the only reliable approach. Defensive alkaloids (coccinelline, harmonine) in adult haemolymph deter most vertebrate predators; reflexive bleeding at the leg joints delivers the chemical defence on attack. Larval development through 4 instars; pupation occurs attached to foliage by the abdominal terminus."
   },
-  {
-    "name": "chrysopidae",
-    "orderName": "neuroptera",
-    "family": "Chrysopidae",
-    "description": {
-      "preschool": "Green lacewings are delicate insects with see-through wings shaped like lace. The grown-up lacewing eats nectar from flowers, but its babies — called Aphid Lions — eat hundreds of aphids and other tiny pests that hurt our plants.",
-      "elementary": "Chrysopidae is the family of green lacewings. Adults are bright green with golden eyes and beautiful net-veined wings, and they drink nectar from flowers. Their larvae, called Aphid Lions, are fast little hunters that eat aphids, mites, thrips, and small caterpillars. The mother lacewing lays each egg on a thin silk stalk so the babies do not eat each other when they hatch.",
-      "secondary": "Chrysopidae (green lacewings) are neuropteran insects with a textbook example of complete metamorphosis driving a guild shift between life stages: adults are nectarivorous and incidentally pollinating, while larvae are voracious generalist predators consuming 200+ aphids per week. Egg morphology is diagnostic — long silk stalks elevate eggs above the leaf surface, an adaptive structure that delays sibling encounters at hatching and reduces cannibalism. Adults are attracted to artificial light and to flat, open flowers (Apiaceae, Brassicaceae) where the proboscis can reach exposed nectar.",
-      "university": "Family Chrysopidae (Neuroptera) — approximately 2,000 species in 90 genera; cosmopolitan distribution. Larval predation guild: generalist predators of soft-bodied arthropods (Aphididae, Tetranychidae, Thysanoptera, Aleyrodidae, lepidopteran eggs) using suctorial mandibles and proteolytic saliva. Adult guild: polyphagous nectarivore, occasional pollen-feeder; many species exhibit pollinator behaviour at open umbellate flowers. Stalked egg morphology is a family-defining ovipositional adaptation. At Oak Vista, Chrysoperla is the documented genus; natural colonisation indicates floral resource availability adequate for adult retention without commercial release. The family supports ecosystem stability through inter-stage dietary partitioning and is among the most reliable indicators of low-pesticide garden management."
-    },
-    "commonNames": [
-      {
-        "label": "Green Lacewing Family",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "Ladybug Family",
+    "locale" : "en"
+  }, {
+    "label" : "Lady Beetle Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "crabronidae",
+  "orderName" : "hymenoptera",
+  "family" : "Crabronidae",
+  "description" : {
+    "preschool" : "A family of hunting wasps.",
+    "elementary" : "Apoid wasps that hunt insects; some are called beewolves.",
+    "secondary" : "Family Crabronidae, the apoid wasps, order Hymenoptera.",
+    "university" : "A family of apoid wasps. Apoidea (apoid wasps plus bees) is paraphyletic with respect to the bees (Anthophila), which arose from within these wasps."
   },
-  {
-    "name": "cicadellidae",
-    "orderName": "hemiptera",
-    "family": "Cicadellidae",
-    "description": {
-      "preschool": "Leafhoppers are tiny insects that jump away in a flash if you get too close. They drink sap from plant leaves like drinking through a straw. Some are bright green, some are striped, and a few are even patterned with bright colors.",
-      "elementary": "Cicadellidae is the family of leafhoppers — small jumping insects that drink plant sap. There are thousands of species, most of which feed on grasses, weeds, or wild plants and never come near vegetable gardens. A few species cause damage to crops, but a healthy garden with spiders, lacewings, and tiny parasitic wasps usually keeps leafhopper numbers under control without any pest sprays.",
-      "secondary": "Cicadellidae are the largest family of phloem-feeding hemipterans, with approximately 22,000 described species globally. Most species are host-specialist or oligophagous on grasses, herbaceous perennials, or specific shrubs; relatively few rise to economic pest status in vegetable production. The family includes important agricultural pests in Empoasca, Erythroneura, and Circulifer, but the overwhelming majority of species are food-web participants without significant management concern. Egg parasitoids (Anagrus spp., Mymaridae) provide robust natural control where adult parasitoid nutrition is supported by floral resources.",
-      "university": "Family Cicadellidae (Hemiptera: Membracoidea) — approximately 22,000 species in 40+ subfamilies. Defining feature: numerous stout setae on the hind tibiae arranged in two longitudinal rows. Feeding biology: stylet penetration to phloem sieve elements, salivary sheath formation; saliva enzymatic activity (pectinases, cellulases, proteinases) varies by subfamily and drives differential plant pathology. Vector competence: many Cicadellidae transmit phytoplasmas and plant viruses; vector species at Oak Vista latitude include Circulifer tenellus (beet leafhopper) and Macrosteles spp. Biological control infrastructure: Anagrus egg parasitoids achieve high parasitism rates where Apiaceae and Asteraceae floral borders provide adult parasitoid nectar."
-    },
-    "commonNames": [
-      {
-        "label": "Leafhopper Family",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "apoid wasps",
+    "locale" : "en"
+  } ],
+  "placedIn" : "apoidea"
+}, {
+  "name" : "drosophilidae",
+  "orderName" : "diptera",
+  "family" : "Drosophilidae",
+  "description" : {
+    "preschool" : "A family of tiny flies seen near fruit.",
+    "elementary" : "The pomace or vinegar flies, small flies often found around ripe fruit.",
+    "secondary" : "Family Drosophilidae, the pomace flies, order Diptera.",
+    "university" : "A dipteran family containing the paraphyletic genus Drosophila and the lineages nested within it."
   },
-  {
-    "name": "papilionidae",
-    "orderName": "lepidoptera",
-    "family": "Papilionidae",
-    "description": {
-      "preschool": "Swallowtails are big colourful butterflies with little tails on their back wings, like a swallow bird. Many of them are yellow and black, and some are dark with shining blue. You can see them in the garden visiting flowers in the summer.",
-      "elementary": "Papilionidae is the family of butterflies called swallowtails. They are usually large, brightly coloured, and most species have a thin tail-like extension on each hind wing. Pipevine Swallowtail, Western Tiger Swallowtail, and Anise Swallowtail are all members of this family. Swallowtail caterpillars have a strange defence: they can pop out a forked orange organ called an osmeterium that gives off a smelly chemical to scare off ants and birds. The Pipevine Swallowtail caterpillar takes this further — it eats only one kind of plant (Pipevine) and stores its poison so birds learn to leave it alone.",
-      "secondary": "Family Papilionidae (Papilionoidea) — approximately 570 species worldwide, including the swallowtails, apollos, and birdwings. Adults are typically large butterflies; many have tailed hindwings, hence the common name. Caterpillars possess an eversible osmeterium — a Y-shaped gland behind the head that emits volatile terpenoids when disturbed — and several lineages sequester or synthesise host-plant chemical defences for use in all life stages. Larval host plants are taxonomically narrow within tribes: Troidini specialise on Aristolochiaceae, Papilionini on Rutaceae and Apiaceae, Parnassiini on Crassulaceae and Papaveraceae. At Oak Vista, the family is represented by Battus philenor (Pipevine Swallowtail) — a Troidini species whose breeding presence is gated entirely on Aristolochia californica availability.",
-      "university": "Family Papilionidae — sister to Hedylidae within Papilionoidea; fossil record from the Eocene (~50 Ma). Subfamily structure: Baroniinae (monotypic, Mexican relict), Parnassiinae (apollos and festoons, Holarctic), and Papilioninae (true swallowtails and birdwings, cosmopolitan). The tribe Troidini contains the Battus philenor validation case for the clades kernel — its larval host-plant specialisation on Aristolochia (Aristolochiaceae) underlies its aristolochic-acid-based chemical defence and the Müllerian/Batesian mimicry rings that surround it (Spicebush Swallowtail, dark-morph female Tiger Swallowtail, Red-spotted Purple). The chemical defence is not a clade-level trait — it is restricted to a subset of Troidini and a few related Papilionidae — and is therefore declared on the species-level record rather than on the family clade. The family-level clade carries only what is true of every Papilionidae member: Holometabola-inherited complete metamorphosis with the egg → larva → pupa → adult stage set."
-    },
-    "commonNames": [
-      {
-        "label": "Swallowtail Family",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "papilionidae"
+  "commonNames" : [ {
+    "label" : "pomace flies",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "ectobiidae",
+  "orderName" : "blattodea",
+  "family" : "Ectobiidae",
+  "description" : {
+    "preschool" : "Field roaches are small outdoor cockroaches that live under stones and leaves in the garden. They do not come into the house. They help clean up the garden by eating old leaves and other bits of dead plant material — they are decomposers, just like worms.",
+    "elementary" : "Ectobiidae is a family of small cockroaches. Most species live entirely outdoors under stones, in leaf litter, or in mulch, where they break down dead plant material into soil nutrients. They are decomposers, not pests, and have nothing to do with the German or American cockroaches that infest buildings. Outdoor populations support the garden food web — lizards, toads, ground beetles, and birds all eat them, transferring soil nutrients into the larger ecosystem.",
+    "secondary" : "Ectobiidae (formerly Blattellidae) are small cockroaches with predominantly outdoor lifecycles, distinct from the household pest species in Blattidae (American cockroach) and the indoor-adapted Ectobiidae species (Blattella germanica, the German cockroach). The Oak Vista representative, Blattella vaga (field roach), is a strictly outdoor species occupying the leaf-litter and mulch decomposer guild. Females produce ootheca (egg cases) deposited in protected microhabitats; nymphs pass through 5–7 instars before reaching adulthood. The family contributes to soil organic matter cycling and provides a substantial prey base for garden vertebrates and large predaceous arthropods.",
+    "university" : "Family Ectobiidae (Blattodea) — taxonomic revision in 2007 (Inward, Beccaloni & Eggleton) reorganised Blattaria into a clade nested within Isoptera (termites), reflecting the molecular phylogeny that termites are derived eusocial cockroaches; Ectobiidae remains within the cockroach grade. Most species are decomposer detritivores of leaf litter, fungi, and decaying plant matter; only a small minority of species across all Blattodea families are synanthropic indoor pests. At Oak Vista, Blattella vaga represents an undisturbed soil-surface decomposer guild whose population health is a positive indicator of habitat complexity. Management implication: outdoor cockroach control measures are biologically inappropriate and would degrade the soil decomposer community without any human-health justification."
   },
-  {
-    "name": "coccinellidae",
-    "orderName": "coleoptera",
-    "family": "Coccinellidae",
-    "description": {
-      "preschool": "Ladybugs are small round beetles with red or orange backs and black spots. They walk and fly around the garden looking for tiny pests called aphids, and they eat lots and lots of them. A single ladybug can eat hundreds of aphids in its life — it is one of the garden's best helpers.",
-      "elementary": "Lady beetles, also called ladybugs, are small round beetles in the family Coccinellidae. Both the adults and their alligator-shaped larvae hunt aphids, mites, and other soft-bodied insects that hurt our plants. A ladybug colony can clear an aphid outbreak in days. Buying boxes of overwintered adults rarely works because they fly away — protecting the resident lady beetles by avoiding pesticides and keeping aphid refugia on border plants works much better.",
-      "secondary": "Coccinellidae are predaceous beetles whose adults and larvae both feed on aphids, scale insects, mites, mealybugs, and other soft-bodied arthropods. The family is one of the most important groups of insect biocontrol agents in vegetable and orchard systems. Larvae are elongated and dark with bright spots — easily misidentified as pests by gardeners unfamiliar with their morphology. Adults overwinter in aggregations under bark, in leaf litter, or in protected microsites; commercial release of overwintered Hippodamia is largely ineffective because adults immediately disperse. The key management lever is in-place population conservation: avoid broad-spectrum insecticides and maintain modest aphid refugia on border plants to retain breeding populations through the season.",
-      "university": "Family Coccinellidae (Coleoptera: Cucujoidea) — approximately 6,000 species globally. Predominantly aphidophagous, with secondary guilds including coccidophagy, acarophagy, and (in a few subfamilies) mycophagy and phytophagy. The dominant Oak Vista representative is Hippodamia convergens — a confirmed breeding resident, not a transient. Released-adult retention failure is a well-documented commercial-IPM phenomenon: post-overwintering adults possess strong dispersal drive and abandon release sites within 24–48 hours, making conservation biocontrol (in-place population management) the only reliable approach. Defensive alkaloids (coccinelline, harmonine) in adult haemolymph deter most vertebrate predators; reflexive bleeding at the leg joints delivers the chemical defence on attack. Larval development through 4 instars; pupation occurs attached to foliage by the abdominal terminus."
-    },
-    "commonNames": [
-      {
-        "label": "Lady Beetle Family",
-        "locale": "en"
-      },
-      {
-        "label": "Ladybug Family",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+  "commonNames" : [ {
+    "label" : "Field Roach Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "halictidae",
+  "orderName" : "hymenoptera",
+  "family" : "Halictidae",
+  "description" : {
+    "preschool" : "Sweat bees are small bees in this family — sometimes shiny green, sometimes plain black. They live in tunnels in the ground and visit flowers for pollen. Most are very gentle and rarely sting, even though one or two species are attracted to the salt in human sweat.",
+    "elementary" : "Halictidae is a family of mostly small native bees. Many species nest in the ground in little tunnels, and some live in small social groups while others live alone. Halictid bees are some of the most important pollinators in the garden — they perform a special trick called buzz pollination that releases pollen from tomato and pepper flowers, something honey bees cannot do.",
+    "secondary" : "Halictidae (sweat bees) is the second-largest family of bees globally, with social organization ranging from strictly solitary to primitively eusocial within a single genus. The family is dominated by ground-nesting species. Crucially for vegetable gardens, many Halictidae are buzz-pollination capable — thoracic vibration releases pollen from poricidal anthers in Solanaceae, a behaviour absent in honey bees. Maintaining bare-soil patches at bed margins preserves the obligate nesting substrate.",
+    "university" : "Family Halictidae (Hymenoptera: Apoidea) — approximately 4,500 species globally. Defining synapomorphy: strongly recurved basal vein of the forewing. Social organization within Halictidae spans the entire spectrum from strict solitary nesting to primitively eusocial (queen plus seasonal female workers), with intra-generic variation in Halictus, Lasioglossum, and Augochlora. Buzz-pollination capability is widespread, making Halictidae infrastructure-critical for Solanum lycopersicum yield at Oak Vista. Pesticide management: ground nests aggregate systemic-insecticide residues; soil-applied imidacloprid is contraindicated within 5 m of bare-soil nesting aggregations."
   },
-  {
-    "name": "ectobiidae",
-    "orderName": "blattodea",
-    "family": "Ectobiidae",
-    "description": {
-      "preschool": "Field roaches are small outdoor cockroaches that live under stones and leaves in the garden. They do not come into the house. They help clean up the garden by eating old leaves and other bits of dead plant material — they are decomposers, just like worms.",
-      "elementary": "Ectobiidae is a family of small cockroaches. Most species live entirely outdoors under stones, in leaf litter, or in mulch, where they break down dead plant material into soil nutrients. They are decomposers, not pests, and have nothing to do with the German or American cockroaches that infest buildings. Outdoor populations support the garden food web — lizards, toads, ground beetles, and birds all eat them, transferring soil nutrients into the larger ecosystem.",
-      "secondary": "Ectobiidae (formerly Blattellidae) are small cockroaches with predominantly outdoor lifecycles, distinct from the household pest species in Blattidae (American cockroach) and the indoor-adapted Ectobiidae species (Blattella germanica, the German cockroach). The Oak Vista representative, Blattella vaga (field roach), is a strictly outdoor species occupying the leaf-litter and mulch decomposer guild. Females produce ootheca (egg cases) deposited in protected microhabitats; nymphs pass through 5–7 instars before reaching adulthood. The family contributes to soil organic matter cycling and provides a substantial prey base for garden vertebrates and large predaceous arthropods.",
-      "university": "Family Ectobiidae (Blattodea) — taxonomic revision in 2007 (Inward, Beccaloni & Eggleton) reorganised Blattaria into a clade nested within Isoptera (termites), reflecting the molecular phylogeny that termites are derived eusocial cockroaches; Ectobiidae remains within the cockroach grade. Most species are decomposer detritivores of leaf litter, fungi, and decaying plant matter; only a small minority of species across all Blattodea families are synanthropic indoor pests. At Oak Vista, Blattella vaga represents an undisturbed soil-surface decomposer guild whose population health is a positive indicator of habitat complexity. Management implication: outdoor cockroach control measures are biologically inappropriate and would degrade the soil decomposer community without any human-health justification."
-    },
-    "commonNames": [
-      {
-        "label": "Field Roach Family",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "Sweat Bee Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "hesperiidae",
+  "orderName" : "lepidoptera",
+  "family" : "Hesperiidae",
+  "description" : {
+    "preschool" : "Skippers are small butterflies that skip and dart through the air very fast instead of floating slowly like bigger butterflies. They have chunky fuzzy bodies and little hooked antennae. They drink nectar from flowers and help the garden while they eat.",
+    "elementary" : "Skippers are small, fast-flying butterflies with thick bodies. They visit flowers to drink nectar and carry pollen from plant to plant, making them pollinators. Their caterpillars eat grasses and some plants but do not damage vegetable crops. Skippers are part of a healthy garden community and their presence shows that the garden has plenty of flowers for wildlife.",
+    "secondary" : "Hesperiidae (skippers) are a basal lineage of Lepidoptera intermediate between true butterflies and moths — their robust, hairy thorax and hooked antennae reflect this transitional position. Adults are nectarivores and incidental pollinators of a wide range of garden flowers; their rapid, dart-and-hover flight makes them effective at visiting many flower types. Caterpillars feed on grasses and select forb species but are not recorded as vegetable crop pests. Several California species are partial to Asteraceae and Lamiaceae nectar sources. Skipper presence reflects broad-based nectar resource availability and low pesticide loading in the garden landscape.",
+    "university" : "Family Hesperiidae (Lepidoptera) — approximately 3,500 species in 8 subfamilies. At Oak Vista, multiple species documented as floral visitors, April 2026. Taxonomic position: phylogenetically sister to Papilionoidea but traditionally treated separately; adult morphology (hooked antennal clubs, crochet-bearing tornal region on hindwing) distinguishes them from 'true' butterflies. Pollination ecology: adults exhibit legitimate floral visitation (proboscis insertion into nectary) across Asteraceae, Lamiaceae, and Boraginaceae; incidental pollen transfer efficiency is lower than specialist bee pollinators but contributes to cross-pollination of border plantings. Larval host plants at Oak Vista: grasses (Poaceae) and some Fabaceae — no threat to Solanaceae crops. Indicator function: skipper diversity is a reliable proxy for floral resource diversity and low-pesticide management history in landscape context."
   },
-  {
-    "name": "apidae",
-    "orderName": "hymenoptera",
-    "family": "Apidae",
-    "description": {
-      "preschool": "Apidae is the family that includes bumble bees, carpenter bees, and honey bees. They are big strong bees that visit flowers all day long, collecting pollen and nectar to feed their babies. They are some of the best pollinators in the world — they help our tomatoes, squash, and fruit trees make food.",
-      "elementary": "Apidae is the largest family of bees, including bumble bees, carpenter bees, honey bees, and many others. Some Apidae live in colonies (honey bees, bumble bees) and some live alone (carpenter bees, digger bees). They are powerful pollinators because their bodies are large enough to carry lots of pollen and they fly long distances between flowers. Many Apidae are buzz pollinators — they shake their flight muscles to make tomato and eggplant flowers release pollen that other insects cannot reach.",
-      "secondary": "Apidae is the most species-rich bee family, encompassing solitary, communal, primitively eusocial, and advanced eusocial life histories within a single family. At Oak Vista, the documented genus is Xylocopa (valley carpenter bee) — a solitary, wood-nesting genus whose females are key buzz pollinators of Solanaceae (tomato, eggplant, pepper) and Lamiaceae (sage, basil). Apidae buzz pollination capability is essential for fruit set in poricidal-anther crops; honey bees (Apis mellifera) cannot perform sonication and contribute little to tomato fruit set despite ubiquitous garden presence. Carpenter bee nests in unfinished or weathered wood are not structural pest activity in the garden context — old fence posts, lumber piles, and pithy plant stems are appropriate nesting substrate that supports the resident pollinator population.",
-      "university": "Family Apidae (Hymenoptera: Apoidea) — approximately 5,800 species in 200 genera. Subfamily Apinae (honey bees, bumble bees, stingless bees, orchid bees, digger bees, carpenter bees) dominates by species count and ecological impact. Pollination ecology: Apidae account for the majority of agricultural pollination service value globally; native Apidae (Bombus, Xylocopa, Habropoda, Anthophora) provide pollination services to crops where Apis mellifera is ineffective — notably buzz-pollinated Solanaceae, Ericaceae (blueberry), and Cucurbitaceae. Xylocopa varipuncta nesting biology at Oak Vista: adults excavate galleries in soft or weathered wood (old fence posts, dead branches); single females produce small numbers of large offspring with extended parental investment. Management: preserve dead wood and pithy stems as nesting substrate; avoid neonicotinoid systemic insecticides during bee flight periods."
-    },
-    "commonNames": [
-      {
-        "label": "Bee Family",
-        "locale": "en"
-      },
-      {
-        "label": "Long-tongued Bee Family",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "anthophila"
+  "commonNames" : [ {
+    "label" : "skipper butterfly",
+    "locale" : "en"
+  } ],
+  "placedIn" : "lepidoptera"
+}, {
+  "name" : "lygaeidae",
+  "orderName" : "hemiptera",
+  "family" : "Lygaeidae",
+  "description" : {
+    "preschool" : "Identified via vision — description pending.",
+    "elementary" : "Identified via vision — description pending.",
+    "secondary" : "Identified via vision — description pending.",
+    "university" : "Identified via vision — description pending."
   },
-  {
-    "name": "nymphalidae",
-    "orderName": "lepidoptera",
-    "family": "Nymphalidae",
-    "description": {
-      "preschool": "Brush-footed butterflies are colourful butterflies that look like they only have four legs. Their two front legs are tiny and brushy, hidden against their chests. The Painted Lady is one of them — it flies all the way from Mexico across California every year, stopping in our garden to drink nectar.",
-      "elementary": "Nymphalidae is the largest family of butterflies — it includes the Painted Lady, Monarch, Red Admiral, Mourning Cloak, and many others. They are named brush-footed butterflies because their front pair of legs is reduced and covered in tiny brushy hairs, so they look like they walk on only four legs. Many species migrate long distances. At Oak Vista, we see Painted Ladies during the spring migration when millions of butterflies pass through California from their breeding grounds in the deserts further south.",
-      "secondary": "Nymphalidae is the largest family of butterflies — approximately 6,000 species globally. The diagnostic morphological feature is the reduction of the prothoracic legs in both sexes, which are short, brush-like, and held against the thorax (the family is also called brush-footed butterflies). Larval host plants are taxonomically diverse across the family but tend toward specialisation within subfamilies: Danainae on Apocynaceae, Heliconiinae on Passifloraceae and related, Nymphalinae (which includes Vanessa) on Asteraceae, Malvaceae, Urticaceae, and Boraginaceae. Vanessa cardui (Painted Lady) is the world's most cosmopolitan butterfly species, occurring on every continent except Antarctica, with documented intercontinental migration patterns including the California spring irruption events.",
-      "university": "Family Nymphalidae (Lepidoptera: Papilionoidea) — approximately 6,000 species in 12 subfamilies. At Oak Vista, the documented species is Vanessa cardui (Painted Lady) — a migratory rather than resident species, observed during the exceptional spring 2026 migration event. Vanessa cardui ecological strategy: rapid generation turnover (3–4 weeks egg-to-adult under summer conditions), broad larval host range across Asteraceae and other forb families, and adult migratory flight enabling continent-scale population dynamics. North American spring migration originates in northwestern Mexico and southwestern Arizona desert breeding grounds; irruption years (driven by abundant winter rainfall promoting larval host availability) produce visible migration waves through California. The Oak Vista 2026 observation correlates with documented above-average winter precipitation in the source range. The family-level clade inherits Holometabola → Lepidoptera complete metamorphosis; family-specific traits (prothoracic leg reduction, larval host range patterns) are declared at the family rank rather than promoted to the clade."
-    },
-    "commonNames": [
-      {
-        "label": "Brush-footed Butterfly Family",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "lepidoptera"
+  "commonNames" : [ ],
+  "placedIn" : null
+}, {
+  "name" : "nymphalidae",
+  "orderName" : "lepidoptera",
+  "family" : "Nymphalidae",
+  "description" : {
+    "preschool" : "Brush-footed butterflies are colourful butterflies that look like they only have four legs. Their two front legs are tiny and brushy, hidden against their chests. The Painted Lady is one of them — it flies all the way from Mexico across California every year, stopping in our garden to drink nectar.",
+    "elementary" : "Nymphalidae is the largest family of butterflies — it includes the Painted Lady, Monarch, Red Admiral, Mourning Cloak, and many others. They are named brush-footed butterflies because their front pair of legs is reduced and covered in tiny brushy hairs, so they look like they walk on only four legs. Many species migrate long distances. At Oak Vista, we see Painted Ladies during the spring migration when millions of butterflies pass through California from their breeding grounds in the deserts further south.",
+    "secondary" : "Nymphalidae is the largest family of butterflies — approximately 6,000 species globally. The diagnostic morphological feature is the reduction of the prothoracic legs in both sexes, which are short, brush-like, and held against the thorax (the family is also called brush-footed butterflies). Larval host plants are taxonomically diverse across the family but tend toward specialisation within subfamilies: Danainae on Apocynaceae, Heliconiinae on Passifloraceae and related, Nymphalinae (which includes Vanessa) on Asteraceae, Malvaceae, Urticaceae, and Boraginaceae. Vanessa cardui (Painted Lady) is the world's most cosmopolitan butterfly species, occurring on every continent except Antarctica, with documented intercontinental migration patterns including the California spring irruption events.",
+    "university" : "Family Nymphalidae (Lepidoptera: Papilionoidea) — approximately 6,000 species in 12 subfamilies. At Oak Vista, the documented species is Vanessa cardui (Painted Lady) — a migratory rather than resident species, observed during the exceptional spring 2026 migration event. Vanessa cardui ecological strategy: rapid generation turnover (3–4 weeks egg-to-adult under summer conditions), broad larval host range across Asteraceae and other forb families, and adult migratory flight enabling continent-scale population dynamics. North American spring migration originates in northwestern Mexico and southwestern Arizona desert breeding grounds; irruption years (driven by abundant winter rainfall promoting larval host availability) produce visible migration waves through California. The Oak Vista 2026 observation correlates with documented above-average winter precipitation in the source range. The family-level clade inherits Holometabola → Lepidoptera complete metamorphosis; family-specific traits (prothoracic leg reduction, larval host range patterns) are declared at the family rank rather than promoted to the clade."
   },
-  {
-    "name": "pieridae",
-    "orderName": "lepidoptera",
-    "family": "Pieridae",
-    "description": {
-      "preschool": "Pierid butterflies are usually white, yellow, or orange. The Orange Sulphur is one of them — a small bright yellow butterfly with dark edges on its wings. Their caterpillars eat plants in the pea family, like the crimson clover that grows under our trees as a cover crop.",
-      "elementary": "Pieridae is the family of white, yellow, and sulphur butterflies. The Cabbage White is the most famous member, but at Oak Vista we mostly see the Orange Sulphur. Their caterpillars eat plants in two big families: Brassicaceae (the cabbage family) and Fabaceae (the pea and clover family). Crimson clover is a Fabaceae cover crop in our garden, and Orange Sulphurs lay their eggs on clover plants, so they are connected to our garden's soil-building practices.",
-      "secondary": "Pieridae (whites and sulphurs) is the third-largest butterfly family globally — approximately 1,100 species. Caterpillar host plants split between two major angiosperm clades: Brassicales (including Brassicaceae, Capparaceae, Tropaeolaceae) and Fabales (Fabaceae, particularly Trifolium and Medicago). The chemical basis is glucosinolate-detoxification capability in the Pierinae and Coliadinae lineages — the family co-evolved with glucosinolate-producing Brassicales hosts but retains capacity to use Fabaceae alkaloids in some lineages. At Oak Vista, the documented species is Colias eurytheme (Orange Sulphur) — a Fabaceae specialist whose larval host range includes Trifolium incarnatum (crimson clover) used as a cover crop. The cover crop directly supports a documented pollinator population.",
-      "university": "Family Pieridae (Lepidoptera: Papilionoidea) — approximately 1,100 species in 4 subfamilies (Pseudopontiinae, Dismorphiinae, Coliadinae, Pierinae). The family is a model system in chemical co-evolution: the Pierinae–Brassicaceae arms race involves nitrile-specifier proteins (NSP) in the larval midgut that detoxify glucosinolate-derived isothiocyanates, a counter-adaptation to the host plant's induced chemical defence. The Coliadinae (including Colias) primarily host on Fabaceae and use a distinct biochemical pathway — sequestration of plant alkaloids without active detoxification. Adult wing pigmentation includes pterins (yellow, white, orange) and melanin (black borders, spots) — Colias eurytheme exhibits sexual and seasonal pterin polyphenism with summer-form individuals expressing more intense orange. At Oak Vista, Trifolium incarnatum (crimson clover) cover crop functions as larval host substrate for Colias eurytheme — the cover crop's soil-nitrogen-fixation primary role is augmented by an unintended but documented pollinator-host secondary role."
-    },
-    "commonNames": [
-      {
-        "label": "White and Sulphur Butterfly Family",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "lepidoptera"
+  "commonNames" : [ {
+    "label" : "Brush-footed Butterfly Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : "lepidoptera"
+}, {
+  "name" : "papilionidae",
+  "orderName" : "lepidoptera",
+  "family" : "Papilionidae",
+  "description" : {
+    "preschool" : "Swallowtails are big colourful butterflies with little tails on their back wings, like a swallow bird. Many of them are yellow and black, and some are dark with shining blue. You can see them in the garden visiting flowers in the summer.",
+    "elementary" : "Papilionidae is the family of butterflies called swallowtails. They are usually large, brightly coloured, and most species have a thin tail-like extension on each hind wing. Pipevine Swallowtail, Western Tiger Swallowtail, and Anise Swallowtail are all members of this family. Swallowtail caterpillars have a strange defence: they can pop out a forked orange organ called an osmeterium that gives off a smelly chemical to scare off ants and birds. The Pipevine Swallowtail caterpillar takes this further — it eats only one kind of plant (Pipevine) and stores its poison so birds learn to leave it alone.",
+    "secondary" : "Family Papilionidae (Papilionoidea) — approximately 570 species worldwide, including the swallowtails, apollos, and birdwings. Adults are typically large butterflies; many have tailed hindwings, hence the common name. Caterpillars possess an eversible osmeterium — a Y-shaped gland behind the head that emits volatile terpenoids when disturbed — and several lineages sequester or synthesise host-plant chemical defences for use in all life stages. Larval host plants are taxonomically narrow within tribes: Troidini specialise on Aristolochiaceae, Papilionini on Rutaceae and Apiaceae, Parnassiini on Crassulaceae and Papaveraceae. At Oak Vista, the family is represented by Battus philenor (Pipevine Swallowtail) — a Troidini species whose breeding presence is gated entirely on Aristolochia californica availability.",
+    "university" : "Family Papilionidae — sister to Hedylidae within Papilionoidea; fossil record from the Eocene (~50 Ma). Subfamily structure: Baroniinae (monotypic, Mexican relict), Parnassiinae (apollos and festoons, Holarctic), and Papilioninae (true swallowtails and birdwings, cosmopolitan). The tribe Troidini contains the Battus philenor validation case for the clades kernel — its larval host-plant specialisation on Aristolochia (Aristolochiaceae) underlies its aristolochic-acid-based chemical defence and the Müllerian/Batesian mimicry rings that surround it (Spicebush Swallowtail, dark-morph female Tiger Swallowtail, Red-spotted Purple). The chemical defence is not a clade-level trait — it is restricted to a subset of Troidini and a few related Papilionidae — and is therefore declared on the species-level record rather than on the family clade. The family-level clade carries only what is true of every Papilionidae member: Holometabola-inherited complete metamorphosis with the egg → larva → pupa → adult stage set."
   },
-  {
-    "name": "drosophilidae",
-    "orderName": "diptera",
-    "family": "Drosophilidae",
-    "description": {
-      "preschool": "A family of tiny flies seen near fruit.",
-      "elementary": "The pomace or vinegar flies, small flies often found around ripe fruit.",
-      "secondary": "Family Drosophilidae, the pomace flies, order Diptera.",
-      "university": "A dipteran family containing the paraphyletic genus Drosophila and the lineages nested within it."
-    },
-    "commonNames": [
-      {
-        "label": "pomace flies",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "Swallowtail Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : "papilionidae"
+}, {
+  "name" : "pieridae",
+  "orderName" : "lepidoptera",
+  "family" : "Pieridae",
+  "description" : {
+    "preschool" : "Pierid butterflies are usually white, yellow, or orange. The Orange Sulphur is one of them — a small bright yellow butterfly with dark edges on its wings. Their caterpillars eat plants in the pea family, like the crimson clover that grows under our trees as a cover crop.",
+    "elementary" : "Pieridae is the family of white, yellow, and sulphur butterflies. The Cabbage White is the most famous member, but at Oak Vista we mostly see the Orange Sulphur. Their caterpillars eat plants in two big families: Brassicaceae (the cabbage family) and Fabaceae (the pea and clover family). Crimson clover is a Fabaceae cover crop in our garden, and Orange Sulphurs lay their eggs on clover plants, so they are connected to our garden's soil-building practices.",
+    "secondary" : "Pieridae (whites and sulphurs) is the third-largest butterfly family globally — approximately 1,100 species. Caterpillar host plants split between two major angiosperm clades: Brassicales (including Brassicaceae, Capparaceae, Tropaeolaceae) and Fabales (Fabaceae, particularly Trifolium and Medicago). The chemical basis is glucosinolate-detoxification capability in the Pierinae and Coliadinae lineages — the family co-evolved with glucosinolate-producing Brassicales hosts but retains capacity to use Fabaceae alkaloids in some lineages. At Oak Vista, the documented species is Colias eurytheme (Orange Sulphur) — a Fabaceae specialist whose larval host range includes Trifolium incarnatum (crimson clover) used as a cover crop. The cover crop directly supports a documented pollinator population.",
+    "university" : "Family Pieridae (Lepidoptera: Papilionoidea) — approximately 1,100 species in 4 subfamilies (Pseudopontiinae, Dismorphiinae, Coliadinae, Pierinae). The family is a model system in chemical co-evolution: the Pierinae–Brassicaceae arms race involves nitrile-specifier proteins (NSP) in the larval midgut that detoxify glucosinolate-derived isothiocyanates, a counter-adaptation to the host plant's induced chemical defence. The Coliadinae (including Colias) primarily host on Fabaceae and use a distinct biochemical pathway — sequestration of plant alkaloids without active detoxification. Adult wing pigmentation includes pterins (yellow, white, orange) and melanin (black borders, spots) — Colias eurytheme exhibits sexual and seasonal pterin polyphenism with summer-form individuals expressing more intense orange. At Oak Vista, Trifolium incarnatum (crimson clover) cover crop functions as larval host substrate for Colias eurytheme — the cover crop's soil-nitrogen-fixation primary role is augmented by an unintended but documented pollinator-host secondary role."
   },
-  {
-    "name": "blattidae",
-    "orderName": "blattodea",
-    "family": "Blattidae",
-    "description": {
-      "preschool": "A family of big cockroaches.",
-      "elementary": "Large cockroaches often found around buildings.",
-      "secondary": "Family Blattidae, cockroaches in order Blattodea.",
-      "university": "A family of cockroaches in the strict sense, part of the paraphyletic roach grade within Blattodea."
-    },
-    "commonNames": [
-      {
-        "label": "common cockroaches",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "White and Sulphur Butterfly Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : "lepidoptera"
+}, {
+  "name" : "rhinotermitidae",
+  "orderName" : "blattodea",
+  "family" : "Rhinotermitidae",
+  "description" : {
+    "preschool" : "A family of wood-eating termites.",
+    "elementary" : "Subterranean termites that build tunnels and eat wood.",
+    "secondary" : "Family Rhinotermitidae, subterranean termites, within order Blattodea.",
+    "university" : "A termite family within Termitoidae, the termite clade nested inside the cockroaches (Blattodea)."
   },
-  {
-    "name": "rhinotermitidae",
-    "orderName": "blattodea",
-    "family": "Rhinotermitidae",
-    "description": {
-      "preschool": "A family of wood-eating termites.",
-      "elementary": "Subterranean termites that build tunnels and eat wood.",
-      "secondary": "Family Rhinotermitidae, subterranean termites, within order Blattodea.",
-      "university": "A termite family within Termitoidae, the termite clade nested inside the cockroaches (Blattodea)."
-    },
-    "commonNames": [
-      {
-        "label": "subterranean termites",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "subterranean termites",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "syrphidae",
+  "orderName" : "diptera",
+  "family" : "Syrphidae",
+  "description" : {
+    "preschool" : "Hoverflies look like tiny bees or wasps with yellow and black stripes, but they cannot sting. Watch them hover in one spot in the air — they can fly perfectly still! Their babies eat the aphids that hurt our tomatoes.",
+    "elementary" : "Hoverflies trick birds into leaving them alone by looking like bees, but they are actually flies and cannot sting. The adult hoverflies drink nectar from flowers and help pollinate them. But the hoverfly larvae — the babies — hunt aphids and eat them one by one. A single hoverfly larva can eat hundreds of aphids before it grows up. They are both pollinators and pest controllers.",
+    "secondary" : "Syrphidae (hoverflies) exhibit Batesian mimicry of stinging Hymenoptera, deterring avian predators through visual warning coloration. Adults are important pollinators of Apiaceae and Asteraceae; many species require pollen as a protein source for egg development. Most Oak Vista species are aphidophagous at the larval stage — larvae are eyeless, legless maggots that hunt aphids by chemosensory detection and consume them by piercing and ingesting haemolymph. The degree of aphid suppression per larva varies by species: Episyrphus balteatus (not yet confirmed at Oak Vista) can consume 400+ aphids per larval instar. Adults frequent open flowers and are a reliable indicator of garden ecological health.",
+    "university" : "Family Syrphidae (Diptera) — approximately 6,000 species in 200 genera. At Oak Vista, adults documented as abundant floral visitors on Apiaceae (dill, fennel) and Asteraceae in April 2026. Larval ecology: aphidophagous species (subfamilies Syrphinae) oviposit directly into aphid colonies; eggs are translucent white, elongate, laid singly on or near aphid aggregations. Larvae are obligate predators — chemoreceptors on the mouthparts detect aphid cuticular hydrocarbons. Larval-stage aphid consumption rate: 30–50 aphids per day (species-dependent). Pupal stage occurs in soil or plant litter. Adult feeding biology: pollen protein drives ovarian development; floral constancy documented in foraging bouts. Management: Apiaceae border plantings are essential for adult retention and egg-laying site selection."
   },
-  {
-    "name": "crabronidae",
-    "orderName": "hymenoptera",
-    "family": "Crabronidae",
-    "description": {
-      "preschool": "A family of hunting wasps.",
-      "elementary": "Apoid wasps that hunt insects; some are called beewolves.",
-      "secondary": "Family Crabronidae, the apoid wasps, order Hymenoptera.",
-      "university": "A family of apoid wasps. Apoidea (apoid wasps plus bees) is paraphyletic with respect to the bees (Anthophila), which arose from within these wasps."
-    },
-    "commonNames": [
-      {
-        "label": "apoid wasps",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "apoidea"
-  }
-]
+  "commonNames" : [ {
+    "label" : "hoverfly",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "tachinidae",
+  "orderName" : "diptera",
+  "family" : "Tachinidae",
+  "description" : {
+    "preschool" : "This fuzzy fly is a garden helper. It looks like a housefly with extra bristles, and it lays its tiny eggs on caterpillars and other insects that eat our plants. Once the eggs hatch, they protect the garden from the inside.",
+    "elementary" : "Tachinid flies are parasites of caterpillars, beetles, and bugs that damage vegetable plants. The mother fly glues her eggs onto a pest insect or hides them on leaves where the pest will eat them. The fly larva hatches inside the pest and slowly eats it, which kills the pest before it can do much more damage.",
+    "secondary" : "Tachinidae is the largest family of parasitoid flies (Diptera). Most species are koinobiont parasitoids — the host continues feeding and growing while the endoparasitic larva develops inside it. The female deposits eggs directly on the host cuticle, in host tissue via ovipositor, or on foliage as microtype eggs consumed by feeding hosts. The larva pupates inside the host or in the soil after killing it. Tachinids collectively parasitise lepidopteran, coleopteran, hemipteran, and orthopteran pests; several species are important biocontrol agents for tobacco hornworm, armyworm, and imported cabbageworm.",
+    "university" : "Family Tachinidae (Diptera) — over 10,000 described species worldwide; the dominant parasitoid family at Oak Vista based on April 2026 sweep-net transects. Primary host guilds at Oak Vista: Lepidoptera larvae (Noctuidae, Sphingidae), with secondary records on Hemiptera and Coleoptera. Most are koinobiont endoparasitoids; the larva undergoes three instars inside the living host, emerging to pupate in soil following host death. Adults are nectarivores requiring open-structured flowers for mandibular access — Apiaceae, Asteraceae, and Lamiaceae support adult foraging at Oak Vista. No pesticide treatment of flowering Apiaceae border plantings during tachinid flight periods (April–October)."
+  },
+  "commonNames" : [ {
+    "label" : "tachinid fly",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "tipulidae",
+  "orderName" : "diptera",
+  "family" : "Tipulidae",
+  "description" : {
+    "preschool" : "A crane fly looks like a giant mosquito with very long legs, but it is harmless. It cannot bite you. Its babies live in the soil and help break down old leaves and roots into food for the plants.",
+    "elementary" : "Crane flies look like enormous mosquitoes but they do not bite and they do not drink blood. The adults live only a few days and do not even eat much. Their larvae live in the soil for months and break down dead plant material — old leaves, roots, and compost — into nutrients that feed the garden. They are decomposers, like nature's recyclers.",
+    "secondary" : "Tipulidae larvae (leatherjackets) are saprophagous decomposers — they feed primarily on decomposing organic matter in the soil, shredding dead roots, leaf litter, and compost into smaller fragments and inoculating material with gut bacteria that accelerate decomposition. In agricultural contexts with monocultures, leatherjacket density can occasionally exceed levels at which root feeding damage occurs, but in diverse garden settings with adequate organic matter the species occupies a benign decomposer niche. Adults are short-lived (3–5 days), feeding minimally if at all; their ecological service is to transfer soil organic matter nutrients into the aerial food web as prey for birds (especially robins and thrushes) and arachnids.",
+    "university" : "Family Tipulidae (Diptera) — one of the largest dipteran families. At Oak Vista, larvae function as saprophagous decomposers in the soil food web, contributing to litter comminution and nutrient cycling. Larval ecology: Tipula spp. leatherjackets are univoltine or bivoltine; larvae overwinter in soil, pupate in spring, and adults emerge April–June in California. The larval gut microbiome (Enterobacteriaceae, Bacteroidetes) degrades lignocellulosic material via enzymatic pathways — each larva represents a concentrated microbial bioreactor for cellulose degradation. Population density at Oak Vista is consistent with decomposer function (not pest-level root feeding). Adult phenology aligns with spring emergence of avian insectivore breeding season, making crane flies a significant food web transfer node from soil organic matter to vertebrate biomass."
+  },
+  "commonNames" : [ {
+    "label" : "crane fly",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+} ]

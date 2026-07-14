@@ -1,6 +1,46 @@
-[
-  { "id": "019e9000-0001-7000-8000-000000000001", "observedBy": "patrick-way",   "subjectRank": "SPECIES", "subject": "battus-philenor", "observedOn": "2026-04-20T09:00:00Z", "notes": "On the pipevine by the gate.", "location": "Oak Vista, Chico, CA", "confidence": null },
-  { "id": "019e9000-0002-7000-8000-000000000002", "observedBy": "patrick-way",   "subjectRank": "GENUS",   "subject": "empoasca",        "observedOn": "2026-04-22T14:30:00Z", "notes": null, "location": null, "confidence": null },
-  { "id": "019e9000-0003-7000-8000-000000000003", "observedBy": "delia-durrell", "subjectRank": "SPECIES", "subject": "battus-philenor", "observedOn": "2026-05-02T11:00:00Z", "notes": "Shown to the school group.", "location": null, "confidence": null },
-  { "id": "019e9000-0004-7000-8000-000000000004", "observedBy": "delia-durrell", "subjectRank": "GENUS",   "subject": "empoasca",        "observedOn": "2026-05-03T10:15:00Z", "notes": null, "location": null, "confidence": null }
-]
+[ {
+  "id" : "019e9000-0001-7000-8000-000000000001",
+  "observedBy" : "patrick-way",
+  "subject" : "battus-philenor",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-04-20T09:00:00Z",
+  "notes" : "On the pipevine by the gate.",
+  "location" : "Oak Vista, Chico, CA",
+  "confidence" : null
+}, {
+  "id" : "019e9000-0002-7000-8000-000000000002",
+  "observedBy" : "patrick-way",
+  "subject" : "empoasca",
+  "subjectRank" : "GENUS",
+  "observedOn" : "2026-04-22T14:30:00Z",
+  "notes" : null,
+  "location" : null,
+  "confidence" : null
+}, {
+  "id" : "019e9000-0003-7000-8000-000000000003",
+  "observedBy" : "delia-durrell",
+  "subject" : "battus-philenor",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-05-02T11:00:00Z",
+  "notes" : "Shown to the school group.",
+  "location" : null,
+  "confidence" : null
+}, {
+  "id" : "019e9000-0004-7000-8000-000000000004",
+  "observedBy" : "delia-durrell",
+  "subject" : "empoasca",
+  "subjectRank" : "GENUS",
+  "observedOn" : "2026-05-03T10:15:00Z",
+  "notes" : null,
+  "location" : null,
+  "confidence" : null
+}, {
+  "id" : "019f5f5a-9279-7389-9074-da251c4202b8",
+  "observedBy" : "patrick-way",
+  "subject" : "lygaeus-kalmii",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-07-14T06:39:59.100142Z",
+  "notes" : "Buckwheat\n\nVision identification (82% confidence): Dark/black dorsal coloration with distinct orange-red lateral and dorsal markings along the wing margins and pronotum edge — characteristic of Lygaeus kalmii. Oval, somewhat flattened true-bug body shape (Hemiptera), long slender antennae, and six slender legs visible. Size relative to human finger consistent with ~12–14 mm adult. Orange banding pattern along wing edges matches Lygaeus kalmii more closely than the large milkweed bug (Oncopeltus fasciatus), which has broader, bolder orange patches. Found on broadleaf vegetation in Chico, CA, well within the California range of L. kalmii.\nAlternatives: [{\"name\": \"Oncopeltus fasciatus\", \"commonName\": \"Large Milkweed Bug\", \"confidence\": 0.12}, {\"name\": \"Melanocoryphus bicrucis\", \"commonName\": \"Two-cross Seed Bug\", \"confidence\": 0.06}]",
+  "location" : "Chico Ca, Oak Vista",
+  "confidence" : 0.82
+} ]

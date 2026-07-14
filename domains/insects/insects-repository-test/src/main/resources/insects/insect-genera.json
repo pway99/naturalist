@@ -1,282 +1,250 @@
-[
-  {
-    "name": "halictus",
-    "familyName": "halictidae",
-    "genus": "Halictus",
-    "description": {
-      "preschool": "Sweat bees are tiny shiny green or black bees. They love flowers and carry pollen from one flower to another, which helps our vegetables and fruit trees make seeds and fruit. They are gentle and very helpful.",
-      "elementary": "Sweat bees are small native bees named because some species are attracted to the salt in human sweat. In the garden, they are important pollinators — they carry pollen from flower to flower, which tomatoes and other plants need to make fruit. Unlike honey bees, sweat bees are solitary or live in small groups and nest in the soil. They are gentle and rarely sting. Seeing many sweat bees means the garden has healthy soil and good flowers.",
-      "secondary": "Halictus spp. (sweat bees) are primitively eusocial bees — colonies consist of a mated queen and a small number of female workers, persisting only through one season. They are ground-nesting, excavating burrows in bare or sparsely vegetated soil. As pollinators, Halictus are polylectic (broad flower generalists) and effective cross-pollinators of Solanaceae, Asteraceae, and Cucurbitaceae. They carry pollen in scopae on the hind legs rather than in corbiculae (as honey bees do), releasing more pollen during foraging, which improves cross-pollination efficiency. In tomato cultivation, buzz pollination (sonication) — vibrational pollen release — is performed by native bees including Halictus, but not by honey bees, making native bee communities essential for tomato yield.",
-      "university": "Genus Halictus (Hymenoptera: Halictidae) — primitively eusocial, ground-nesting pollinators. At Oak Vista, confirmed floral visitor to tomato, dill, and Asteraceae flowers, April 2026. Pollination ecology: Halictus performs buzz pollination (sonication) on tomato flowers — thoracic muscles decouple from wings and vibrate at 200–400 Hz, releasing pollen from poricidal anthers; honey bees are incapable of this behaviour. Nesting habitat: bare mineral soil or sparsely vegetated areas adjacent to flower sources — management implication: retain unvegetated soil patches at bed margins. Pesticide sensitivity: ground nests concentrate topically applied systemic insecticides; imidacloprid soil drenches are contraindicated in sweat bee habitat. Population density tracks floral resource availability — diversity of bloom periods across the season sustains populations."
-    },
-    "commonNames": [
-      {
-        "label": "Sweat Bee",
-        "locale": "en"
-      },
-      {
-        "label": "Native Sweat Bee",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+[ {
+  "name" : "andrena",
+  "familyName" : "andrenidae",
+  "genus" : "Andrena",
+  "description" : {
+    "preschool" : "Mining bees dig little tunnels in the ground to make their nests. They are fuzzy and carry pollen on their back legs to feed their babies. Each mother bee builds her own tunnel and is a gentle garden helper.",
+    "elementary" : "Mining bees are solitary native bees that dig small burrows in the ground for nests. Each female works alone to build her nest, lay eggs, and collect pollen to feed her larva. Unlike honey bees, mining bees do not live in colonies or make honey. They are excellent pollinators for vegetable gardens, fruit trees, and flowering plants. Their burrows in bare soil look like tiny anthills — a sign of a healthy garden.",
+    "secondary" : "Andrena spp. (mining bees) are solitary ground-nesting bees with one of the earliest spring flight periods of any California bee genus, making them critical pollinators for early-season crops and flowering plants when colony-founding queens of social species are not yet active. Females excavate vertical burrows 10–30 cm deep with lateral cells provisioned with pollen-nectar masses (bee bread). Andrena are oligolectic — some species are highly specialised on particular plant families, though many Oak Vista residents are generalist pollinators of Rosaceae, Solanaceae, and Asteraceae. The male emergence (often 1–2 weeks before females) and nuptial flight create a brief but visible spring emergence spectacle.",
+    "university" : "Genus Andrena (Hymenoptera: Andrenidae) — solitary ground-nesting bees; >300 California species. At Oak Vista, documented in April 2026 foraging on early-season flowers and tomato blooms. Nesting biology: females excavate individual burrows in compacted bare soil; nest provisions consist of pollen-nectar masses (bee bread) oviposited directly and sealed per cell — no progressive provisioning. Pollen-host specialisation varies: some Andrena spp. are strictly oligolectic on Apiaceae or Asteraceae; generalist species forage across multiple plant families. Management relevance: bare soil patches are obligate nesting habitat — mulch coverage over the entire garden surface would eliminate nesting substrate and drive local population collapse. Andrena are strongly temperature-sensitive: flight activity ceases below 10°C; optimal foraging temperature 18–25°C."
   },
-  {
-    "name": "andrena",
-    "familyName": "andrenidae",
-    "genus": "Andrena",
-    "description": {
-      "preschool": "Mining bees dig little tunnels in the ground to make their nests. They are fuzzy and carry pollen on their back legs to feed their babies. Each mother bee builds her own tunnel and is a gentle garden helper.",
-      "elementary": "Mining bees are solitary native bees that dig small burrows in the ground for nests. Each female works alone to build her nest, lay eggs, and collect pollen to feed her larva. Unlike honey bees, mining bees do not live in colonies or make honey. They are excellent pollinators for vegetable gardens, fruit trees, and flowering plants. Their burrows in bare soil look like tiny anthills — a sign of a healthy garden.",
-      "secondary": "Andrena spp. (mining bees) are solitary ground-nesting bees with one of the earliest spring flight periods of any California bee genus, making them critical pollinators for early-season crops and flowering plants when colony-founding queens of social species are not yet active. Females excavate vertical burrows 10–30 cm deep with lateral cells provisioned with pollen-nectar masses (bee bread). Andrena are oligolectic — some species are highly specialised on particular plant families, though many Oak Vista residents are generalist pollinators of Rosaceae, Solanaceae, and Asteraceae. The male emergence (often 1–2 weeks before females) and nuptial flight create a brief but visible spring emergence spectacle.",
-      "university": "Genus Andrena (Hymenoptera: Andrenidae) — solitary ground-nesting bees; >300 California species. At Oak Vista, documented in April 2026 foraging on early-season flowers and tomato blooms. Nesting biology: females excavate individual burrows in compacted bare soil; nest provisions consist of pollen-nectar masses (bee bread) oviposited directly and sealed per cell — no progressive provisioning. Pollen-host specialisation varies: some Andrena spp. are strictly oligolectic on Apiaceae or Asteraceae; generalist species forage across multiple plant families. Management relevance: bare soil patches are obligate nesting habitat — mulch coverage over the entire garden surface would eliminate nesting substrate and drive local population collapse. Andrena are strongly temperature-sensitive: flight activity ceases below 10°C; optimal foraging temperature 18–25°C."
-    },
-    "commonNames": [
-      {
-        "label": "Mining Bee",
-        "locale": "en"
-      },
-      {
-        "label": "Grey Mining Bee",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+  "commonNames" : [ {
+    "label" : "Mining Bee",
+    "locale" : "en"
+  }, {
+    "label" : "Grey Mining Bee",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "apis",
+  "familyName" : "apidae",
+  "genus" : "Apis",
+  "description" : {
+    "preschool" : "The honey bees.",
+    "elementary" : "The genus of honey bees, which live in hives and make honey.",
+    "secondary" : "Genus Apis, the honey bees, family Apidae.",
+    "university" : "A genus within the bee clade Anthophila, itself nested inside the apoid wasps."
   },
-  {
-    "name": "chrysoperla",
-    "familyName": "chrysopidae",
-    "genus": "Chrysoperla",
-    "description": {
-      "preschool": "The green lacewing is one of the most beautiful insects in the garden — a brilliant lime green body, long feathery antennae, and enormous wings that look like lace. Its babies, called Aphid Lions, eat the tiny green bugs that hurt our tomatoes. The mother lays her eggs on magical little silk stalks standing up like lollipops from the leaf.",
-      "elementary": "Green lacewings are delicate green insects with large net-veined wings and golden eyes. They are attracted to lights at night, which is how we first noticed one at Oak Vista. Their larvae are called Aphid Lions — fierce, spiky hunters that eat over 200 aphids per week. The larva even disguises itself by carrying dead insects and debris on its back. Adults drink nectar and pollen from flowers, making them both pest controllers as larvae and pollinators as adults — a rare double role.",
-      "secondary": "Chrysoperla (green lacewings) are neuropteran insects exhibiting one of the most striking examples of complete metamorphosis in beneficial insects. The adult is a polyphagous nectarivore and incidental pollinator; the larva (colloquially Aphid Lion) is a voracious generalist predator of soft-bodied arthropods — aphids, mites, thrips, whitefly, and small caterpillars — consuming 200+ prey items per week. Eggs are laid on silk stalks 10–15 mm tall, a remarkable adaptive structure: newly hatched larvae are themselves predatory, and the stalk delays sibling encounters until dispersal reduces cannibalism. Adults are attracted to artificial lights and to shallow open flowers — umbellifers (Apiaceae) and alyssum are the primary nectar sources at Oak Vista. The genus arrived at Oak Vista naturally, indicating habitat quality sufficient to support the adult nectar requirements.",
-      "university": "Genus Chrysoperla (Neuroptera: Chrysopidae) — confirmed natural colonist at Oak Vista, Spring 2026 (census observation #17). Larval ecology: obligate predator with suctorial mandibles delivering proteolytic saliva; prey includes Aphididae, Tetranychidae, Thysanoptera, Aleyrodidae, and lepidopteran eggs. Larval consumption rate: 200+ aphids/week (3 larval instars); camouflage behaviour — carrying debris and prey remains on dorsal setae-lined trough — is unique among Neuroptera and reduces predation risk from ants guarding aphid colonies. Egg morphology: stalked oviposition on silk pedicels prevents hatching larvae from consuming unhatched siblings before dispersal. Adult guild assignment: POLLINATOR (nectarivore visiting Apiaceae, Alyssum, Trifolium, Pelargonium) and PREDATOR (larval stage). Commercial release for IPM is well established; natural arrival to Oak Vista confirms habitat criterion satisfaction without augmentation. Warm Central Valley climate (Chico) supports multiple voltine cycles per season."
-    },
-    "commonNames": [
-      {
-        "label": "Green Lacewing",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+  "commonNames" : [ {
+    "label" : "honey bees",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "battus",
+  "familyName" : "papilionidae",
+  "genus" : "Battus",
+  "description" : {
+    "preschool" : "Battus butterflies are dark beautiful swallowtails with shining blue and green colours on their back wings. Their caterpillars only eat one kind of plant — Pipevine. Because the caterpillars eat Pipevine, they store a special chemical that makes them taste bad to birds, so the birds learn not to eat them.",
+    "elementary" : "Battus is the genus of pipevine swallowtails. There are about 14 species, all in the Americas, and all of them have caterpillars that eat only plants in the pipevine family (Aristolochiaceae). The caterpillars store a special chemical from the Pipevine that makes them and the adult butterflies poisonous to birds. Other harmless butterflies and moths mimic the Battus colour pattern to trick birds into thinking they are also poisonous — this is called Batesian mimicry. At Oak Vista, Battus philenor (Pipevine Swallowtail) is breeding on our California Pipevine plant.",
+    "secondary" : "Battus (Lepidoptera: Papilionidae: Papilioninae: Troidini) is a genus of Aristolochia-specialist swallowtails restricted to the Americas. All members of Troidini (Battus, Parides, Atrophaneura, Pachliopta, Troides, Ornithoptera) are obligately monophagous on Aristolochiaceae host plants; larvae sequester host-derived aristolochic acids and retain them through pupation into adult tissues, conferring chemical defence at every life stage. The genus is the model system for the North American Battus mimicry complex — a multispecies Müllerian/Batesian mimicry ring in which palatable (Limenitis arthemis astyanax) and partially-palatable (Papilio troilus, Papilio polyxenes asterius, dark female-morph Papilio glaucus) butterflies converge on the Battus aposematic pattern of dark wings with iridescent blue scaling. At Oak Vista, Battus philenor breeds on the planted Aristolochia californica (California Pipevine) — an irreversible ecological commitment requiring strict pesticide exclusion within the breeding zone.",
+    "university" : "Genus Battus (Lepidoptera: Papilionidae: Papilioninae: Troidini) — 14 Neotropical and Nearctic species. The genus is a textbook case in Lepidoptera chemical ecology: obligate Aristolochiaceae specialisation, larval sequestration of host-plant aristolochic acids (specifically aristolochic acid I and aristolochic acid II), retention of these compounds through all life stages including adults, and the multispecies Batesian/Müllerian mimicry ring that has co-evolved around the Battus aposematic signal. Aristolochic acids are nephrotoxic and carcinogenic to vertebrates including birds (one-trial taste aversion learning is documented in naive avian predators after a single Battus encounter). The Oak Vista breeding population of Battus philenor on planted Aristolochia californica represents a documented ecological keystone — confirmed eggs April 2026, breeding documented through multiple generations. Management constraint: pesticide exclusion zone within 3 m of all Aristolochia plantings during the full April–October Battus activity window; no broad-spectrum sprays in the same garden zone year-round to preserve nectaring adults and overwintering pupae. This is the validation species for the chemical-defence pathway in the species-level chemistry domain (see InsectSpecies.chemicalDefense)."
   },
-  {
-    "name": "empoasca",
-    "familyName": "cicadellidae",
-    "genus": "Empoasca",
-    "description": {
-      "preschool": "This tiny bright green insect is called a leafhopper. It jumps away very quickly if you get too close — faster than a flea! It drinks sap from plant leaves the way you drink through a straw. Too many of them can make the edges of leaves turn yellow and brown, which means the plant is not feeling well.",
-      "elementary": "Leafhoppers are named for the way they jump sideways in a flash when disturbed — up to 150 times their own body length in a single leap. The potato leafhopper is one of the most common garden pests on legumes and vegetables. It pierces plant stems and leaves to drink sap, and it also injects saliva that blocks the plant's plumbing, causing the edges of leaves to yellow and brown — gardeners call this hopperburn. A healthy garden with spiders, lacewings, and tiny parasitic wasps can keep leafhopper numbers under control without any sprays.",
-      "secondary": "Empoasca spp. (Cicadellidae: Typhlocybinae) are phloem-feeding hemipterans common on legumes, Solanaceae, and other broadleaf crops. Damage occurs through two mechanisms: direct removal of phloem contents during feeding, and salivary toxicosis — injection of enzymatic compounds that disrupt phloem sieve tube function and cause systemic chlorosis with marginal leaf necrosis (hopperburn). Adults jump or fly explosively on disturbance, making contact insecticide application largely ineffective. At population densities typical in a diverse garden supporting natural enemies, impact usually remains below economic threshold. Eggs are endophytically inserted into leaf and stem tissue; nymphs are wingless and pale green, easily mistaken for aphid crawlers. Primary natural enemies at Oak Vista are likely Anagrus spp. (Mymaridae) egg parasitoids, which are conserved by the crimson clover cover crop reservoir.",
-      "university": "Empoasca spp. (Hemiptera: Cicadellidae: Typhlocybinae) — photo-identified to genus by the characteristic wedge-shaped body profile and uniform bright-green coloration at Oak Vista, April 2026. Species determination requires specimen examination or COI barcoding; the California Central Valley hosts multiple Empoasca species including E. fabae (potato leafhopper) and E. filamenta. Feeding biology: stylet penetration targets phloem sieve elements via intercellular salivary sheath; saliva contains pectinase, cellulase, and proteinase activities that degrade middle lamella and trigger callose deposition in sieve plates, producing systemic hopperburn symptomatology independent of plant water status. Biological control: Anagrus spp. (Mymaridae) are obligate egg parasitoids of Cicadellidae achieving up to 80% parasitism in vineyards where floral resources support adult parasitoid nutrition — the crimson clover cover crop at Oak Vista provides equivalent habitat function. Population presence on Trifolium incarnatum is ecologically expected; the cover crop acts as a reservoir for both Empoasca and its natural enemies, with net food-web value exceeding suppression benefit of elimination."
-    },
-    "commonNames": [
-      {
-        "label": "Leafhopper",
-        "locale": "en"
-      },
-      {
-        "label": "Potato Leafhopper",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "hemiptera"
+  "commonNames" : [ {
+    "label" : "Pipevine Swallowtail Genus",
+    "locale" : "en"
+  } ],
+  "placedIn" : "papilionidae"
+}, {
+  "name" : "blattella",
+  "familyName" : "ectobiidae",
+  "genus" : "Blattella",
+  "description" : {
+    "preschool" : "Blattella roaches are small outdoor cockroaches. They hide under stones and leaves during the day and come out to eat dead plant material at night. They are quiet garden cleaners — they break down old leaves into food for the soil.",
+    "elementary" : "Blattella is a genus of small cockroaches. Most species live outdoors and never enter buildings. The famous indoor pest German cockroach is one species in this genus (Blattella germanica), but our garden has Blattella vaga, the Field Roach, which only lives outdoors under rocks, mulch, and leaf litter. Outdoor Blattella species are decomposers — they eat dead plant material and recycle it back into the soil — and they provide food for the lizards, toads, and birds in the garden.",
+    "secondary" : "Blattella (Blattodea: Ectobiidae) — a genus that diverged early into synanthropic indoor and strictly outdoor lineages. Blattella germanica (German cockroach) is the most economically significant indoor pest cockroach globally; Blattella vaga (field roach) is a phylogenetically close but strictly outdoor sister species occupying the soil-surface detritivore guild. At Oak Vista, B. vaga occurs under flat stones, around the irrigation valve box, and in straw-mulched bed margins. The species does not enter buildings and does not warrant indoor control measures; outdoor population suppression would be ecologically counterproductive given its decomposer and prey-base roles.",
+    "university" : "Genus Blattella (Blattodea: Blattoidea: Ectobiidae: Blattellinae) — approximately 50 described species, the majority of which are outdoor litter-dwelling decomposers. The synanthropic ancestral state hypothesis for Blattella germanica (indoor pest) places its association with human habitation in the Holocene; the outdoor sister species (B. vaga, B. asahinai) retain the ancestral ecological niche. Oak Vista B. vaga ecology: thigmotactic (preferring physical contact with substrate), nocturnal foraging, ootheca deposition in protected soil-surface microsites. The species is a substantial component of the garden invertebrate decomposer guild and a prey item for resident reptiles (alligator lizard, fence lizard), amphibians (Pacific tree frog), and arthropod predators (carabid beetles, large salticid spiders). Pesticide implication: indoor cockroach control products (fipronil baits, pyrethroid sprays) applied to outdoor surfaces would cause significant non-target mortality across the soil-surface invertebrate community."
   },
-  {
-    "name": "hippodamia",
-    "familyName": "coccinellidae",
-    "genus": "Hippodamia",
-    "description": {
-      "preschool": "Hippodamia ladybugs are bright orange-red beetles with small black spots. They are some of the most common ladybugs in California. Both the adults and their little spiky larvae eat aphids by the hundreds, protecting our vegetables.",
-      "elementary": "Hippodamia is a genus of small to medium-sized lady beetles common across California. The Convergent Lady Beetle (Hippodamia convergens) is the species most often sold in garden stores as bottled adults, but releasing those does not work — they all fly away. The lady beetles that already live in your garden are the ones doing the real work. Both adults and the alligator-shaped larvae hunt aphids, mites, and small insect eggs. A breeding population in the garden is much more valuable than a one-time release.",
-      "secondary": "Hippodamia (Coleoptera: Coccinellidae: Coccinellinae) — a Holarctic genus of aphidophagous lady beetles. Hippodamia convergens is the dominant species in California gardens and the species commercially packaged for IPM release. The commercial-release failure mode is well documented: overwintering aggregations in California foothills are field-collected, refrigerated, and sold to gardeners, but on warming the adults exhibit obligate post-diapause dispersal flight, abandoning release sites within 24–48 hours regardless of prey availability. Field-resident breeding populations (eggs laid on aphid-infested foliage, larval development through 4 instars in 2–3 weeks, pupation on foliage) are the only reliable Hippodamia presence pattern for biological control. Defensive alkaloid: hippodamine and convergine in adult haemolymph, reflexively bled at femoral-tibial joints on disturbance.",
-      "university": "Genus Hippodamia (Coleoptera: Coccinellidae: Coccinellinae) — circumboreal genus, dominant aphidophagous lady beetle taxon in temperate North America. At Oak Vista, Hippodamia convergens is the confirmed breeding resident (April 2026 — adults and larvae both observed). Commercial-release context: H. convergens overwintering aggregations in the California foothills are the source of nearly all bottled lady beetles sold in North American garden centres; the post-diapause dispersal flight that triggers on temperature elevation is functionally obligate and cannot be suppressed by feeding adults before release. The behavioural shift means released adults are net exported from the garden, not retained. Conservation biocontrol — pesticide avoidance, modest aphid refugia on tolerant border plants, undisturbed overwintering microhabitat — is the only reliable management approach for Hippodamia. Larval predation rate: 200–500 aphids per individual across the larval period; adult predation rate continues at 30–50 aphids per day through reproductive lifespan."
-    },
-    "commonNames": [
-      {
-        "label": "Convergent Lady Beetle Genus",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "holometabola"
+  "commonNames" : [ {
+    "label" : "Field Roach Genus",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "chrysoperla",
+  "familyName" : "chrysopidae",
+  "genus" : "Chrysoperla",
+  "description" : {
+    "preschool" : "The green lacewing is one of the most beautiful insects in the garden — a brilliant lime green body, long feathery antennae, and enormous wings that look like lace. Its babies, called Aphid Lions, eat the tiny green bugs that hurt our tomatoes. The mother lays her eggs on magical little silk stalks standing up like lollipops from the leaf.",
+    "elementary" : "Green lacewings are delicate green insects with large net-veined wings and golden eyes. They are attracted to lights at night, which is how we first noticed one at Oak Vista. Their larvae are called Aphid Lions — fierce, spiky hunters that eat over 200 aphids per week. The larva even disguises itself by carrying dead insects and debris on its back. Adults drink nectar and pollen from flowers, making them both pest controllers as larvae and pollinators as adults — a rare double role.",
+    "secondary" : "Chrysoperla (green lacewings) are neuropteran insects exhibiting one of the most striking examples of complete metamorphosis in beneficial insects. The adult is a polyphagous nectarivore and incidental pollinator; the larva (colloquially Aphid Lion) is a voracious generalist predator of soft-bodied arthropods — aphids, mites, thrips, whitefly, and small caterpillars — consuming 200+ prey items per week. Eggs are laid on silk stalks 10–15 mm tall, a remarkable adaptive structure: newly hatched larvae are themselves predatory, and the stalk delays sibling encounters until dispersal reduces cannibalism. Adults are attracted to artificial lights and to shallow open flowers — umbellifers (Apiaceae) and alyssum are the primary nectar sources at Oak Vista. The genus arrived at Oak Vista naturally, indicating habitat quality sufficient to support the adult nectar requirements.",
+    "university" : "Genus Chrysoperla (Neuroptera: Chrysopidae) — confirmed natural colonist at Oak Vista, Spring 2026 (census observation #17). Larval ecology: obligate predator with suctorial mandibles delivering proteolytic saliva; prey includes Aphididae, Tetranychidae, Thysanoptera, Aleyrodidae, and lepidopteran eggs. Larval consumption rate: 200+ aphids/week (3 larval instars); camouflage behaviour — carrying debris and prey remains on dorsal setae-lined trough — is unique among Neuroptera and reduces predation risk from ants guarding aphid colonies. Egg morphology: stalked oviposition on silk pedicels prevents hatching larvae from consuming unhatched siblings before dispersal. Adult guild assignment: POLLINATOR (nectarivore visiting Apiaceae, Alyssum, Trifolium, Pelargonium) and PREDATOR (larval stage). Commercial release for IPM is well established; natural arrival to Oak Vista confirms habitat criterion satisfaction without augmentation. Warm Central Valley climate (Chico) supports multiple voltine cycles per season."
   },
-  {
-    "name": "blattella",
-    "familyName": "ectobiidae",
-    "genus": "Blattella",
-    "description": {
-      "preschool": "Blattella roaches are small outdoor cockroaches. They hide under stones and leaves during the day and come out to eat dead plant material at night. They are quiet garden cleaners — they break down old leaves into food for the soil.",
-      "elementary": "Blattella is a genus of small cockroaches. Most species live outdoors and never enter buildings. The famous indoor pest German cockroach is one species in this genus (Blattella germanica), but our garden has Blattella vaga, the Field Roach, which only lives outdoors under rocks, mulch, and leaf litter. Outdoor Blattella species are decomposers — they eat dead plant material and recycle it back into the soil — and they provide food for the lizards, toads, and birds in the garden.",
-      "secondary": "Blattella (Blattodea: Ectobiidae) — a genus that diverged early into synanthropic indoor and strictly outdoor lineages. Blattella germanica (German cockroach) is the most economically significant indoor pest cockroach globally; Blattella vaga (field roach) is a phylogenetically close but strictly outdoor sister species occupying the soil-surface detritivore guild. At Oak Vista, B. vaga occurs under flat stones, around the irrigation valve box, and in straw-mulched bed margins. The species does not enter buildings and does not warrant indoor control measures; outdoor population suppression would be ecologically counterproductive given its decomposer and prey-base roles.",
-      "university": "Genus Blattella (Blattodea: Blattoidea: Ectobiidae: Blattellinae) — approximately 50 described species, the majority of which are outdoor litter-dwelling decomposers. The synanthropic ancestral state hypothesis for Blattella germanica (indoor pest) places its association with human habitation in the Holocene; the outdoor sister species (B. vaga, B. asahinai) retain the ancestral ecological niche. Oak Vista B. vaga ecology: thigmotactic (preferring physical contact with substrate), nocturnal foraging, ootheca deposition in protected soil-surface microsites. The species is a substantial component of the garden invertebrate decomposer guild and a prey item for resident reptiles (alligator lizard, fence lizard), amphibians (Pacific tree frog), and arthropod predators (carabid beetles, large salticid spiders). Pesticide implication: indoor cockroach control products (fipronil baits, pyrethroid sprays) applied to outdoor surfaces would cause significant non-target mortality across the soil-surface invertebrate community."
-    },
-    "commonNames": [
-      {
-        "label": "Field Roach Genus",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "Green Lacewing",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "colias",
+  "familyName" : "pieridae",
+  "genus" : "Colias",
+  "description" : {
+    "preschool" : "Colias butterflies are bright yellow or orange butterflies with dark edges on their wings. The Orange Sulphur visits our crimson clover cover crop — its caterpillars eat clover leaves. The butterfly drinks nectar from many garden flowers.",
+    "elementary" : "Colias is the genus of sulphur butterflies — small to medium-sized yellow or orange butterflies common in meadows, fields, and gardens. Their caterpillars feed on plants in the pea family (Fabaceae) including alfalfa, clover, and vetch. The Orange Sulphur (Colias eurytheme) is the species we see at Oak Vista — it visits our crimson clover cover crop both as a nectar source for the adults and as a host plant where females lay eggs on the leaves. The cover crop helps both our soil and our butterflies.",
+    "secondary" : "Colias (Lepidoptera: Pieridae: Coliadinae) is a genus of approximately 90 species of sulphur butterflies with Holarctic distribution. Caterpillars are Fabaceae specialists, feeding on Trifolium (clovers), Medicago (alfalfa, burclover), Vicia (vetches), Astragalus (locoweeds), and related legume genera. Adult wing pigmentation combines pterins (yellow, orange, white) and melanin (dark borders); seasonal and sexual polyphenism is documented in most species. Colias eurytheme exhibits a summer form with intensified orange pterin expression and a more developed dark border, and a spring form with reduced pterin saturation. The cover crop linkage at Oak Vista — Trifolium incarnatum (crimson clover) used for soil nitrogen fixation supports adult and larval Colias eurytheme — is an example of beneficial-by-default integration of conservation agriculture and pollinator habitat.",
+    "university" : "Genus Colias (Lepidoptera: Pieridae: Coliadinae) — approximately 90 species, Holarctic distribution with strong representation in temperate grasslands, alpine meadows, and agricultural landscapes. The genus is a model system for wing-pattern pigment biochemistry: pterins synthesised de novo in pupal wing scales, modulated by photoperiod and temperature signals during pupal development, producing the documented seasonal polyphenism. Colias eurytheme (Orange Sulphur) is the dominant California Central Valley species, broadly polyvoltine (multiple generations per year) with larval host range across Trifolium, Medicago, and Vicia. At Oak Vista, the species was photo-documented April 17 2026 nectaring on Raphanus sativus; the Trifolium incarnatum cover crop is a confirmed larval host substrate, integrating soil-improvement and pollinator-conservation agricultural functions. The Coliadinae chemical-ecology pathway differs from Pierinae (glucosinolate detoxification via nitrile-specifier protein) — Coliadinae sequester or tolerate Fabaceae alkaloids (especially quinolizidine alkaloids in lupine-feeding species) via a distinct biochemical strategy. Conservation: maintain Fabaceae cover crops and avoid broad-spectrum insecticide application during adult flight periods (March–November in the Central Valley)."
   },
-  {
-    "name": "xylocopa",
-    "familyName": "apidae",
-    "genus": "Xylocopa",
-    "description": {
-      "preschool": "Carpenter bees are very big bees — bigger than your thumb! The males are bright golden and gentle and cannot sting. The females are shiny blue-black. They make their nests by chewing tunnels in old wood. They are very important pollinators because they can shake tomato flowers to release pollen.",
-      "elementary": "Xylocopa is the genus of large carpenter bees. Female carpenter bees chew long tunnels in soft or weathered wood (like an old fence post) to make nests for their eggs. The bees do not eat the wood — they just hollow it out. At Oak Vista, the Valley Carpenter Bee lives in the back fence post, and dozens of bees visit our tomato, sage, and squash flowers every day. They are buzz pollinators — they shake their flight muscles fast to release pollen from tomato flowers, which honey bees cannot do.",
-      "secondary": "Xylocopa (Hymenoptera: Apidae: Xylocopinae) — large-bodied, solitary, wood-nesting bees with substantial pollination significance for buzz-pollinated crops. Females excavate galleries in soft or weathered wood (cedar fence posts, dead branches, structural lumber); each gallery contains a series of brood cells partitioned by chewed-wood septa. Males of many species (including Xylocopa varipuncta, the valley carpenter bee) are golden-pubescent and lack stings entirely; females are dark blue-black with the capacity to sting but rarely do so unprovoked. Buzz pollination (sonication) is delivered by thoracic muscle decoupling at 200–400 Hz, releasing pollen from poricidal anthers — Solanaceae (tomato, eggplant, pepper) fruit set depends on this in the absence of bumble bees. Old fence posts and weathered structural wood are not pest infestation sites; they are functional pollinator habitat.",
-      "university": "Genus Xylocopa (Hymenoptera: Apidae: Xylocopinae) — approximately 500 species globally; Xylocopa varipuncta is the dominant species in the California Central Valley. At Oak Vista, X. varipuncta is confirmed as a resident breeding population (April 2026 — multiple females and golden-pubescent males observed foraging on Solanum lycopersicum, Salvia officinalis, and Foeniculum vulgare; nest site confirmed in fence post). Pollination ecology: Xylocopa females deliver buzz pollination (sonication) on Solanaceae poricidal anthers at thoracic muscle vibration frequencies of 200–400 Hz, achieving complete pollen release per visit. Honey bees (Apis mellifera) are incapable of sonication and contribute negligible tomato fruit-set value despite ubiquitous garden presence. Nesting biology: females excavate galleries in pre-weathered or soft wood (cedar, redwood, pine); each gallery typically contains 6–10 sequential brood cells provisioned with pollen-nectar bee bread; the female persists in the gallery and provides limited extended parental care — an unusual trait among non-eusocial bees. Conservation: preserve dead wood, pithy stems, and weathered structural lumber as nesting substrate; avoid neonicotinoid systemic insecticides on bee-attractive forage."
-    },
-    "commonNames": [
-      {
-        "label": "Carpenter Bee",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "Sulphur Butterfly Genus",
+    "locale" : "en"
+  } ],
+  "placedIn" : "lepidoptera"
+}, {
+  "name" : "drosophila",
+  "familyName" : "drosophilidae",
+  "genus" : "Drosophila",
+  "description" : {
+    "preschool" : "A group of tiny flies, the fruit flies.",
+    "elementary" : "The fruit-fly genus; it holds many kinds of small flies.",
+    "secondary" : "Genus Drosophila, the fruit flies — among the most studied genera in biology.",
+    "university" : "A paraphyletic genus: Zaprionus, Scaptomyza and the Hawaiian drosophilids are nested within it, so it is placed at a containing clade (Drosophilinae) larger than the genus itself."
   },
-  {
-    "name": "vanessa",
-    "familyName": "nymphalidae",
-    "genus": "Vanessa",
-    "description": {
-      "preschool": "Vanessa butterflies are colourful butterflies that fly very long distances. The Painted Lady comes all the way from Mexico every spring, sometimes in such big numbers that the sky looks like it is full of butterflies. We saw them at Oak Vista in April 2026.",
-      "elementary": "Vanessa is a genus of medium-sized butterflies including the Painted Lady, Red Admiral, and West Coast Lady. They are some of the most widespread butterflies in the world. The Painted Lady is famous for making one of the longest insect migrations on Earth — millions of butterflies fly from the Mexican deserts up across California and onward to Canada and Alaska every spring. They do not breed at Oak Vista; they pass through, drinking nectar from our flowers as they travel.",
-      "secondary": "Vanessa (Lepidoptera: Nymphalidae: Nymphalini) is a small genus (5–7 species depending on classification) of globally distributed brush-footed butterflies, including the cosmopolitan Vanessa cardui (Painted Lady), Vanessa atalanta (Red Admiral), Vanessa annabella (West Coast Lady), and Vanessa virginiensis (American Lady). Vanessa cardui has the broadest natural distribution of any butterfly species on Earth, occurring on every continent except Antarctica. Larval host plants are generalist across Asteraceae (especially Cirsium, Carduus, and other thistles), Malvaceae, Boraginaceae, and other forb families, contributing to the genus's continental migratory range. North American Vanessa cardui populations exhibit periodic spring irruption events from southwestern desert breeding grounds, with above-average winter rainfall driving abundant larval host availability and subsequent multi-generation northward range expansion.",
-      "university": "Genus Vanessa (Lepidoptera: Nymphalidae: Nymphalini) — well-studied model genus for migratory Lepidoptera ecology. Vanessa cardui (Painted Lady) is the most cosmopolitan butterfly species globally, with documented intercontinental migration including the Trans-Saharan migration (Europe ↔ sub-Saharan Africa, ~12,000 km annual round-trip) and the North American spring irruption migration (Mexican-Sonoran desert breeding grounds → US west and midwest → Canada). Migration is multigenerational: individual butterflies travel substantial distances (hundreds to thousands of kilometres) but successive generations are required to complete the full migration cycle. At Oak Vista, the April 2026 observation correlates with the 2026 Central Valley irruption event driven by above-average 2025–2026 winter precipitation in the source breeding range. Larval host generalism across Asteraceae, Malvaceae, Boraginaceae, and Urticaceae is the ecological basis for transcontinental movement: hosts are available throughout the migration corridor. Vanessa is not a documented breeding resident at Oak Vista; observation is transient nectaring activity during migration."
-    },
-    "commonNames": [
-      {
-        "label": "Lady Butterfly Genus",
-        "locale": "en"
-      },
-      {
-        "label": "Vanessa Butterfly",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "lepidoptera"
+  "commonNames" : [ {
+    "label" : "fruit flies",
+    "locale" : "en"
+  } ],
+  "placedIn" : "drosophilinae"
+}, {
+  "name" : "empoasca",
+  "familyName" : "cicadellidae",
+  "genus" : "Empoasca",
+  "description" : {
+    "preschool" : "This tiny bright green insect is called a leafhopper. It jumps away very quickly if you get too close — faster than a flea! It drinks sap from plant leaves the way you drink through a straw. Too many of them can make the edges of leaves turn yellow and brown, which means the plant is not feeling well.",
+    "elementary" : "Leafhoppers are named for the way they jump sideways in a flash when disturbed — up to 150 times their own body length in a single leap. The potato leafhopper is one of the most common garden pests on legumes and vegetables. It pierces plant stems and leaves to drink sap, and it also injects saliva that blocks the plant's plumbing, causing the edges of leaves to yellow and brown — gardeners call this hopperburn. A healthy garden with spiders, lacewings, and tiny parasitic wasps can keep leafhopper numbers under control without any sprays.",
+    "secondary" : "Empoasca spp. (Cicadellidae: Typhlocybinae) are phloem-feeding hemipterans common on legumes, Solanaceae, and other broadleaf crops. Damage occurs through two mechanisms: direct removal of phloem contents during feeding, and salivary toxicosis — injection of enzymatic compounds that disrupt phloem sieve tube function and cause systemic chlorosis with marginal leaf necrosis (hopperburn). Adults jump or fly explosively on disturbance, making contact insecticide application largely ineffective. At population densities typical in a diverse garden supporting natural enemies, impact usually remains below economic threshold. Eggs are endophytically inserted into leaf and stem tissue; nymphs are wingless and pale green, easily mistaken for aphid crawlers. Primary natural enemies at Oak Vista are likely Anagrus spp. (Mymaridae) egg parasitoids, which are conserved by the crimson clover cover crop reservoir.",
+    "university" : "Empoasca spp. (Hemiptera: Cicadellidae: Typhlocybinae) — photo-identified to genus by the characteristic wedge-shaped body profile and uniform bright-green coloration at Oak Vista, April 2026. Species determination requires specimen examination or COI barcoding; the California Central Valley hosts multiple Empoasca species including E. fabae (potato leafhopper) and E. filamenta. Feeding biology: stylet penetration targets phloem sieve elements via intercellular salivary sheath; saliva contains pectinase, cellulase, and proteinase activities that degrade middle lamella and trigger callose deposition in sieve plates, producing systemic hopperburn symptomatology independent of plant water status. Biological control: Anagrus spp. (Mymaridae) are obligate egg parasitoids of Cicadellidae achieving up to 80% parasitism in vineyards where floral resources support adult parasitoid nutrition — the crimson clover cover crop at Oak Vista provides equivalent habitat function. Population presence on Trifolium incarnatum is ecologically expected; the cover crop acts as a reservoir for both Empoasca and its natural enemies, with net food-web value exceeding suppression benefit of elimination."
   },
-  {
-    "name": "battus",
-    "familyName": "papilionidae",
-    "genus": "Battus",
-    "description": {
-      "preschool": "Battus butterflies are dark beautiful swallowtails with shining blue and green colours on their back wings. Their caterpillars only eat one kind of plant — Pipevine. Because the caterpillars eat Pipevine, they store a special chemical that makes them taste bad to birds, so the birds learn not to eat them.",
-      "elementary": "Battus is the genus of pipevine swallowtails. There are about 14 species, all in the Americas, and all of them have caterpillars that eat only plants in the pipevine family (Aristolochiaceae). The caterpillars store a special chemical from the Pipevine that makes them and the adult butterflies poisonous to birds. Other harmless butterflies and moths mimic the Battus colour pattern to trick birds into thinking they are also poisonous — this is called Batesian mimicry. At Oak Vista, Battus philenor (Pipevine Swallowtail) is breeding on our California Pipevine plant.",
-      "secondary": "Battus (Lepidoptera: Papilionidae: Papilioninae: Troidini) is a genus of Aristolochia-specialist swallowtails restricted to the Americas. All members of Troidini (Battus, Parides, Atrophaneura, Pachliopta, Troides, Ornithoptera) are obligately monophagous on Aristolochiaceae host plants; larvae sequester host-derived aristolochic acids and retain them through pupation into adult tissues, conferring chemical defence at every life stage. The genus is the model system for the North American Battus mimicry complex — a multispecies Müllerian/Batesian mimicry ring in which palatable (Limenitis arthemis astyanax) and partially-palatable (Papilio troilus, Papilio polyxenes asterius, dark female-morph Papilio glaucus) butterflies converge on the Battus aposematic pattern of dark wings with iridescent blue scaling. At Oak Vista, Battus philenor breeds on the planted Aristolochia californica (California Pipevine) — an irreversible ecological commitment requiring strict pesticide exclusion within the breeding zone.",
-      "university": "Genus Battus (Lepidoptera: Papilionidae: Papilioninae: Troidini) — 14 Neotropical and Nearctic species. The genus is a textbook case in Lepidoptera chemical ecology: obligate Aristolochiaceae specialisation, larval sequestration of host-plant aristolochic acids (specifically aristolochic acid I and aristolochic acid II), retention of these compounds through all life stages including adults, and the multispecies Batesian/Müllerian mimicry ring that has co-evolved around the Battus aposematic signal. Aristolochic acids are nephrotoxic and carcinogenic to vertebrates including birds (one-trial taste aversion learning is documented in naive avian predators after a single Battus encounter). The Oak Vista breeding population of Battus philenor on planted Aristolochia californica represents a documented ecological keystone — confirmed eggs April 2026, breeding documented through multiple generations. Management constraint: pesticide exclusion zone within 3 m of all Aristolochia plantings during the full April–October Battus activity window; no broad-spectrum sprays in the same garden zone year-round to preserve nectaring adults and overwintering pupae. This is the validation species for the chemical-defence pathway in the species-level chemistry domain (see InsectSpecies.chemicalDefense)."
-    },
-    "commonNames": [
-      {
-        "label": "Pipevine Swallowtail Genus",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "papilionidae"
+  "commonNames" : [ {
+    "label" : "Leafhopper",
+    "locale" : "en"
+  }, {
+    "label" : "Potato Leafhopper",
+    "locale" : "en"
+  } ],
+  "placedIn" : "hemiptera"
+}, {
+  "name" : "halictus",
+  "familyName" : "halictidae",
+  "genus" : "Halictus",
+  "description" : {
+    "preschool" : "Sweat bees are tiny shiny green or black bees. They love flowers and carry pollen from one flower to another, which helps our vegetables and fruit trees make seeds and fruit. They are gentle and very helpful.",
+    "elementary" : "Sweat bees are small native bees named because some species are attracted to the salt in human sweat. In the garden, they are important pollinators — they carry pollen from flower to flower, which tomatoes and other plants need to make fruit. Unlike honey bees, sweat bees are solitary or live in small groups and nest in the soil. They are gentle and rarely sting. Seeing many sweat bees means the garden has healthy soil and good flowers.",
+    "secondary" : "Halictus spp. (sweat bees) are primitively eusocial bees — colonies consist of a mated queen and a small number of female workers, persisting only through one season. They are ground-nesting, excavating burrows in bare or sparsely vegetated soil. As pollinators, Halictus are polylectic (broad flower generalists) and effective cross-pollinators of Solanaceae, Asteraceae, and Cucurbitaceae. They carry pollen in scopae on the hind legs rather than in corbiculae (as honey bees do), releasing more pollen during foraging, which improves cross-pollination efficiency. In tomato cultivation, buzz pollination (sonication) — vibrational pollen release — is performed by native bees including Halictus, but not by honey bees, making native bee communities essential for tomato yield.",
+    "university" : "Genus Halictus (Hymenoptera: Halictidae) — primitively eusocial, ground-nesting pollinators. At Oak Vista, confirmed floral visitor to tomato, dill, and Asteraceae flowers, April 2026. Pollination ecology: Halictus performs buzz pollination (sonication) on tomato flowers — thoracic muscles decouple from wings and vibrate at 200–400 Hz, releasing pollen from poricidal anthers; honey bees are incapable of this behaviour. Nesting habitat: bare mineral soil or sparsely vegetated areas adjacent to flower sources — management implication: retain unvegetated soil patches at bed margins. Pesticide sensitivity: ground nests concentrate topically applied systemic insecticides; imidacloprid soil drenches are contraindicated in sweat bee habitat. Population density tracks floral resource availability — diversity of bloom periods across the season sustains populations."
   },
-  {
-    "name": "colias",
-    "familyName": "pieridae",
-    "genus": "Colias",
-    "description": {
-      "preschool": "Colias butterflies are bright yellow or orange butterflies with dark edges on their wings. The Orange Sulphur visits our crimson clover cover crop — its caterpillars eat clover leaves. The butterfly drinks nectar from many garden flowers.",
-      "elementary": "Colias is the genus of sulphur butterflies — small to medium-sized yellow or orange butterflies common in meadows, fields, and gardens. Their caterpillars feed on plants in the pea family (Fabaceae) including alfalfa, clover, and vetch. The Orange Sulphur (Colias eurytheme) is the species we see at Oak Vista — it visits our crimson clover cover crop both as a nectar source for the adults and as a host plant where females lay eggs on the leaves. The cover crop helps both our soil and our butterflies.",
-      "secondary": "Colias (Lepidoptera: Pieridae: Coliadinae) is a genus of approximately 90 species of sulphur butterflies with Holarctic distribution. Caterpillars are Fabaceae specialists, feeding on Trifolium (clovers), Medicago (alfalfa, burclover), Vicia (vetches), Astragalus (locoweeds), and related legume genera. Adult wing pigmentation combines pterins (yellow, orange, white) and melanin (dark borders); seasonal and sexual polyphenism is documented in most species. Colias eurytheme exhibits a summer form with intensified orange pterin expression and a more developed dark border, and a spring form with reduced pterin saturation. The cover crop linkage at Oak Vista — Trifolium incarnatum (crimson clover) used for soil nitrogen fixation supports adult and larval Colias eurytheme — is an example of beneficial-by-default integration of conservation agriculture and pollinator habitat.",
-      "university": "Genus Colias (Lepidoptera: Pieridae: Coliadinae) — approximately 90 species, Holarctic distribution with strong representation in temperate grasslands, alpine meadows, and agricultural landscapes. The genus is a model system for wing-pattern pigment biochemistry: pterins synthesised de novo in pupal wing scales, modulated by photoperiod and temperature signals during pupal development, producing the documented seasonal polyphenism. Colias eurytheme (Orange Sulphur) is the dominant California Central Valley species, broadly polyvoltine (multiple generations per year) with larval host range across Trifolium, Medicago, and Vicia. At Oak Vista, the species was photo-documented April 17 2026 nectaring on Raphanus sativus; the Trifolium incarnatum cover crop is a confirmed larval host substrate, integrating soil-improvement and pollinator-conservation agricultural functions. The Coliadinae chemical-ecology pathway differs from Pierinae (glucosinolate detoxification via nitrile-specifier protein) — Coliadinae sequester or tolerate Fabaceae alkaloids (especially quinolizidine alkaloids in lupine-feeding species) via a distinct biochemical strategy. Conservation: maintain Fabaceae cover crops and avoid broad-spectrum insecticide application during adult flight periods (March–November in the Central Valley)."
-    },
-    "commonNames": [
-      {
-        "label": "Sulphur Butterfly Genus",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "lepidoptera"
+  "commonNames" : [ {
+    "label" : "Sweat Bee",
+    "locale" : "en"
+  }, {
+    "label" : "Native Sweat Bee",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "hippodamia",
+  "familyName" : "coccinellidae",
+  "genus" : "Hippodamia",
+  "description" : {
+    "preschool" : "Hippodamia ladybugs are bright orange-red beetles with small black spots. They are some of the most common ladybugs in California. Both the adults and their little spiky larvae eat aphids by the hundreds, protecting our vegetables.",
+    "elementary" : "Hippodamia is a genus of small to medium-sized lady beetles common across California. The Convergent Lady Beetle (Hippodamia convergens) is the species most often sold in garden stores as bottled adults, but releasing those does not work — they all fly away. The lady beetles that already live in your garden are the ones doing the real work. Both adults and the alligator-shaped larvae hunt aphids, mites, and small insect eggs. A breeding population in the garden is much more valuable than a one-time release.",
+    "secondary" : "Hippodamia (Coleoptera: Coccinellidae: Coccinellinae) — a Holarctic genus of aphidophagous lady beetles. Hippodamia convergens is the dominant species in California gardens and the species commercially packaged for IPM release. The commercial-release failure mode is well documented: overwintering aggregations in California foothills are field-collected, refrigerated, and sold to gardeners, but on warming the adults exhibit obligate post-diapause dispersal flight, abandoning release sites within 24–48 hours regardless of prey availability. Field-resident breeding populations (eggs laid on aphid-infested foliage, larval development through 4 instars in 2–3 weeks, pupation on foliage) are the only reliable Hippodamia presence pattern for biological control. Defensive alkaloid: hippodamine and convergine in adult haemolymph, reflexively bled at femoral-tibial joints on disturbance.",
+    "university" : "Genus Hippodamia (Coleoptera: Coccinellidae: Coccinellinae) — circumboreal genus, dominant aphidophagous lady beetle taxon in temperate North America. At Oak Vista, Hippodamia convergens is the confirmed breeding resident (April 2026 — adults and larvae both observed). Commercial-release context: H. convergens overwintering aggregations in the California foothills are the source of nearly all bottled lady beetles sold in North American garden centres; the post-diapause dispersal flight that triggers on temperature elevation is functionally obligate and cannot be suppressed by feeding adults before release. The behavioural shift means released adults are net exported from the garden, not retained. Conservation biocontrol — pesticide avoidance, modest aphid refugia on tolerant border plants, undisturbed overwintering microhabitat — is the only reliable management approach for Hippodamia. Larval predation rate: 200–500 aphids per individual across the larval period; adult predation rate continues at 30–50 aphids per day through reproductive lifespan."
   },
-  {
-    "name": "drosophila",
-    "familyName": "drosophilidae",
-    "genus": "Drosophila",
-    "description": {
-      "preschool": "A group of tiny flies, the fruit flies.",
-      "elementary": "The fruit-fly genus; it holds many kinds of small flies.",
-      "secondary": "Genus Drosophila, the fruit flies — among the most studied genera in biology.",
-      "university": "A paraphyletic genus: Zaprionus, Scaptomyza and the Hawaiian drosophilids are nested within it, so it is placed at a containing clade (Drosophilinae) larger than the genus itself."
-    },
-    "commonNames": [
-      {
-        "label": "fruit flies",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "drosophilinae"
+  "commonNames" : [ {
+    "label" : "Convergent Lady Beetle Genus",
+    "locale" : "en"
+  } ],
+  "placedIn" : "holometabola"
+}, {
+  "name" : "lygaeus",
+  "familyName" : "lygaeidae",
+  "genus" : "Lygaeus",
+  "description" : {
+    "preschool" : "Identified via vision — description pending.",
+    "elementary" : "Identified via vision — description pending.",
+    "secondary" : "Identified via vision — description pending.",
+    "university" : "Identified via vision — description pending."
   },
-  {
-    "name": "periplaneta",
-    "familyName": "blattidae",
-    "genus": "Periplaneta",
-    "description": {
-      "preschool": "A group of big cockroaches.",
-      "elementary": "A genus of large cockroaches, including the American cockroach.",
-      "secondary": "Genus Periplaneta, large cockroaches in family Blattidae.",
-      "university": "A genus of cockroaches in the strict sense, within the paraphyletic roach grade of Blattodea."
-    },
-    "commonNames": [
-      {
-        "label": "large cockroaches",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ ],
+  "placedIn" : null
+}, {
+  "name" : "periplaneta",
+  "familyName" : "blattidae",
+  "genus" : "Periplaneta",
+  "description" : {
+    "preschool" : "A group of big cockroaches.",
+    "elementary" : "A genus of large cockroaches, including the American cockroach.",
+    "secondary" : "Genus Periplaneta, large cockroaches in family Blattidae.",
+    "university" : "A genus of cockroaches in the strict sense, within the paraphyletic roach grade of Blattodea."
   },
-  {
-    "name": "reticulitermes",
-    "familyName": "rhinotermitidae",
-    "genus": "Reticulitermes",
-    "description": {
-      "preschool": "A group of small wood-eating insects.",
-      "elementary": "A genus of subterranean termites that tunnel through wood and soil.",
-      "secondary": "Genus Reticulitermes, subterranean termites in family Rhinotermitidae.",
-      "university": "A termite genus within Termitoidae, the termite clade nested inside Blattodea."
-    },
-    "commonNames": [
-      {
-        "label": "subterranean termites",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "large cockroaches",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "philanthus",
+  "familyName" : "crabronidae",
+  "genus" : "Philanthus",
+  "description" : {
+    "preschool" : "The beewolves — wasps that hunt.",
+    "elementary" : "A genus of wasps called beewolves that hunt bees and other insects.",
+    "secondary" : "Genus Philanthus, beewolves, family Crabronidae.",
+    "university" : "A genus of apoid wasps; the apoid wasps are paraphyletic relative to the bees."
   },
-  {
-    "name": "apis",
-    "familyName": "apidae",
-    "genus": "Apis",
-    "description": {
-      "preschool": "The honey bees.",
-      "elementary": "The genus of honey bees, which live in hives and make honey.",
-      "secondary": "Genus Apis, the honey bees, family Apidae.",
-      "university": "A genus within the bee clade Anthophila, itself nested inside the apoid wasps."
-    },
-    "commonNames": [
-      {
-        "label": "honey bees",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "beewolves",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "reticulitermes",
+  "familyName" : "rhinotermitidae",
+  "genus" : "Reticulitermes",
+  "description" : {
+    "preschool" : "A group of small wood-eating insects.",
+    "elementary" : "A genus of subterranean termites that tunnel through wood and soil.",
+    "secondary" : "Genus Reticulitermes, subterranean termites in family Rhinotermitidae.",
+    "university" : "A termite genus within Termitoidae, the termite clade nested inside Blattodea."
   },
-  {
-    "name": "philanthus",
-    "familyName": "crabronidae",
-    "genus": "Philanthus",
-    "description": {
-      "preschool": "The beewolves — wasps that hunt.",
-      "elementary": "A genus of wasps called beewolves that hunt bees and other insects.",
-      "secondary": "Genus Philanthus, beewolves, family Crabronidae.",
-      "university": "A genus of apoid wasps; the apoid wasps are paraphyletic relative to the bees."
-    },
-    "commonNames": [
-      {
-        "label": "beewolves",
-        "locale": "en"
-      }
-    ]
-  }
-]
+  "commonNames" : [ {
+    "label" : "subterranean termites",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "vanessa",
+  "familyName" : "nymphalidae",
+  "genus" : "Vanessa",
+  "description" : {
+    "preschool" : "Vanessa butterflies are colourful butterflies that fly very long distances. The Painted Lady comes all the way from Mexico every spring, sometimes in such big numbers that the sky looks like it is full of butterflies. We saw them at Oak Vista in April 2026.",
+    "elementary" : "Vanessa is a genus of medium-sized butterflies including the Painted Lady, Red Admiral, and West Coast Lady. They are some of the most widespread butterflies in the world. The Painted Lady is famous for making one of the longest insect migrations on Earth — millions of butterflies fly from the Mexican deserts up across California and onward to Canada and Alaska every spring. They do not breed at Oak Vista; they pass through, drinking nectar from our flowers as they travel.",
+    "secondary" : "Vanessa (Lepidoptera: Nymphalidae: Nymphalini) is a small genus (5–7 species depending on classification) of globally distributed brush-footed butterflies, including the cosmopolitan Vanessa cardui (Painted Lady), Vanessa atalanta (Red Admiral), Vanessa annabella (West Coast Lady), and Vanessa virginiensis (American Lady). Vanessa cardui has the broadest natural distribution of any butterfly species on Earth, occurring on every continent except Antarctica. Larval host plants are generalist across Asteraceae (especially Cirsium, Carduus, and other thistles), Malvaceae, Boraginaceae, and other forb families, contributing to the genus's continental migratory range. North American Vanessa cardui populations exhibit periodic spring irruption events from southwestern desert breeding grounds, with above-average winter rainfall driving abundant larval host availability and subsequent multi-generation northward range expansion.",
+    "university" : "Genus Vanessa (Lepidoptera: Nymphalidae: Nymphalini) — well-studied model genus for migratory Lepidoptera ecology. Vanessa cardui (Painted Lady) is the most cosmopolitan butterfly species globally, with documented intercontinental migration including the Trans-Saharan migration (Europe ↔ sub-Saharan Africa, ~12,000 km annual round-trip) and the North American spring irruption migration (Mexican-Sonoran desert breeding grounds → US west and midwest → Canada). Migration is multigenerational: individual butterflies travel substantial distances (hundreds to thousands of kilometres) but successive generations are required to complete the full migration cycle. At Oak Vista, the April 2026 observation correlates with the 2026 Central Valley irruption event driven by above-average 2025–2026 winter precipitation in the source breeding range. Larval host generalism across Asteraceae, Malvaceae, Boraginaceae, and Urticaceae is the ecological basis for transcontinental movement: hosts are available throughout the migration corridor. Vanessa is not a documented breeding resident at Oak Vista; observation is transient nectaring activity during migration."
+  },
+  "commonNames" : [ {
+    "label" : "Lady Butterfly Genus",
+    "locale" : "en"
+  }, {
+    "label" : "Vanessa Butterfly",
+    "locale" : "en"
+  } ],
+  "placedIn" : "lepidoptera"
+}, {
+  "name" : "xylocopa",
+  "familyName" : "apidae",
+  "genus" : "Xylocopa",
+  "description" : {
+    "preschool" : "Carpenter bees are very big bees — bigger than your thumb! The males are bright golden and gentle and cannot sting. The females are shiny blue-black. They make their nests by chewing tunnels in old wood. They are very important pollinators because they can shake tomato flowers to release pollen.",
+    "elementary" : "Xylocopa is the genus of large carpenter bees. Female carpenter bees chew long tunnels in soft or weathered wood (like an old fence post) to make nests for their eggs. The bees do not eat the wood — they just hollow it out. At Oak Vista, the Valley Carpenter Bee lives in the back fence post, and dozens of bees visit our tomato, sage, and squash flowers every day. They are buzz pollinators — they shake their flight muscles fast to release pollen from tomato flowers, which honey bees cannot do.",
+    "secondary" : "Xylocopa (Hymenoptera: Apidae: Xylocopinae) — large-bodied, solitary, wood-nesting bees with substantial pollination significance for buzz-pollinated crops. Females excavate galleries in soft or weathered wood (cedar fence posts, dead branches, structural lumber); each gallery contains a series of brood cells partitioned by chewed-wood septa. Males of many species (including Xylocopa varipuncta, the valley carpenter bee) are golden-pubescent and lack stings entirely; females are dark blue-black with the capacity to sting but rarely do so unprovoked. Buzz pollination (sonication) is delivered by thoracic muscle decoupling at 200–400 Hz, releasing pollen from poricidal anthers — Solanaceae (tomato, eggplant, pepper) fruit set depends on this in the absence of bumble bees. Old fence posts and weathered structural wood are not pest infestation sites; they are functional pollinator habitat.",
+    "university" : "Genus Xylocopa (Hymenoptera: Apidae: Xylocopinae) — approximately 500 species globally; Xylocopa varipuncta is the dominant species in the California Central Valley. At Oak Vista, X. varipuncta is confirmed as a resident breeding population (April 2026 — multiple females and golden-pubescent males observed foraging on Solanum lycopersicum, Salvia officinalis, and Foeniculum vulgare; nest site confirmed in fence post). Pollination ecology: Xylocopa females deliver buzz pollination (sonication) on Solanaceae poricidal anthers at thoracic muscle vibration frequencies of 200–400 Hz, achieving complete pollen release per visit. Honey bees (Apis mellifera) are incapable of sonication and contribute negligible tomato fruit-set value despite ubiquitous garden presence. Nesting biology: females excavate galleries in pre-weathered or soft wood (cedar, redwood, pine); each gallery typically contains 6–10 sequential brood cells provisioned with pollen-nectar bee bread; the female persists in the gallery and provides limited extended parental care — an unusual trait among non-eusocial bees. Conservation: preserve dead wood, pithy stems, and weathered structural lumber as nesting substrate; avoid neonicotinoid systemic insecticides on bee-attractive forage."
+  },
+  "commonNames" : [ {
+    "label" : "Carpenter Bee",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+} ]

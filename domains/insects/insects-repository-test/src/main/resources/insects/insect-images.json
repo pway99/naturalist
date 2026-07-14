@@ -1,67 +1,85 @@
 [ {
   "id" : "0066fe0f-a3e0-70d8-b557-c42f13e67067",
-  "parentRank" : "GENUS",
   "parentName" : "empoasca",
+  "parentRank" : "GENUS",
   "dateAdded" : "2026-04-16T00:00:00Z",
-  "resourceName" : "IMG_9047.HEIC"
+  "resourceName" : "IMG_9047.HEIC",
+  "observationId" : null
 }, {
   "id" : "019e0f1b-71d0-7cdb-9d07-d8214037a4cb",
-  "parentRank" : "SPECIES",
   "parentName" : "battus-philenor",
+  "parentRank" : "SPECIES",
   "dateAdded" : "2026-05-09T23:38:37.392285Z",
-  "resourceName" : "pipevine-swallow-tail.HEIC"
+  "resourceName" : "pipevine-swallow-tail.HEIC",
+  "observationId" : null
+}, {
+  "id" : "019f5f5a-9279-7389-9075-cc7486dd5d32",
+  "parentName" : "lygaeus-kalmii",
+  "parentRank" : "SPECIES",
+  "dateAdded" : "2026-07-14T06:39:59.097592Z",
+  "resourceName" : "019f5f5a-1f3a-7055-9713-d53b80898ba0.jpg",
+  "observationId" : "019f5f5a-9279-7389-9074-da251c4202b8"
 }, {
   "id" : "15f21a09-13a9-7c7f-94df-538512876e6d",
-  "parentRank" : "SPECIES",
   "parentName" : "colias-eurytheme",
+  "parentRank" : "SPECIES",
   "dateAdded" : "2026-04-17T22:39:00Z",
-  "resourceName" : "IMG_9060.HEIC"
+  "resourceName" : "IMG_9060.HEIC",
+  "observationId" : null
 }, {
   "id" : "1992662c-46f1-718b-904f-57639287aee5",
-  "parentRank" : "SPECIES",
   "parentName" : "colias-eurytheme",
+  "parentRank" : "SPECIES",
   "dateAdded" : "2026-04-17T22:39:00Z",
-  "resourceName" : "IMG_9059.HEIC"
+  "resourceName" : "IMG_9059.HEIC",
+  "observationId" : null
 }, {
   "id" : "4ba0a0ae-770d-70a6-9ef8-aeea3e46f7d7",
-  "parentRank" : "SPECIES",
   "parentName" : "colias-eurytheme",
+  "parentRank" : "SPECIES",
   "dateAdded" : "2026-04-17T22:39:00Z",
-  "resourceName" : "IMG_9061.HEIC"
+  "resourceName" : "IMG_9061.HEIC",
+  "observationId" : null
 }, {
   "id" : "6091691e-7900-7ed3-a35b-88c46e47b866",
-  "parentRank" : "GENUS",
   "parentName" : "empoasca",
+  "parentRank" : "GENUS",
   "dateAdded" : "2026-04-16T00:00:00Z",
-  "resourceName" : "IMG_9048.HEIC"
+  "resourceName" : "IMG_9048.HEIC",
+  "observationId" : null
 }, {
   "id" : "691ae671-90ad-7779-8afe-693950d7cc47",
-  "parentRank" : "SPECIES",
   "parentName" : "colias-eurytheme",
+  "parentRank" : "SPECIES",
   "dateAdded" : "2026-04-17T22:39:00Z",
-  "resourceName" : "IMG_9057.HEIC"
+  "resourceName" : "IMG_9057.HEIC",
+  "observationId" : null
 }, {
   "id" : "8c14f59c-bba0-7a75-8f80-62e454ea3f8e",
-  "parentRank" : "GENUS",
   "parentName" : "empoasca",
+  "parentRank" : "GENUS",
   "dateAdded" : "2026-04-16T00:00:00Z",
-  "resourceName" : "IMG_9049.HEIC"
+  "resourceName" : "IMG_9049.HEIC",
+  "observationId" : null
 }, {
   "id" : "d85df27c-9dbb-739c-8200-1b02b3e7674f",
-  "parentRank" : "SPECIES",
   "parentName" : "colias-eurytheme",
+  "parentRank" : "SPECIES",
   "dateAdded" : "2026-04-17T22:39:00Z",
-  "resourceName" : "IMG_9062.HEIC"
+  "resourceName" : "IMG_9062.HEIC",
+  "observationId" : null
 }, {
   "id" : "f859f5cf-f2fe-7947-833d-7713051f9575",
-  "parentRank" : "GENUS",
   "parentName" : "empoasca",
+  "parentRank" : "GENUS",
   "dateAdded" : "2026-04-16T00:00:00Z",
-  "resourceName" : "IMG_9050.HEIC"
+  "resourceName" : "IMG_9050.HEIC",
+  "observationId" : null
 }, {
   "id" : "fc230566-10e7-74e1-977b-75154d64defc",
-  "parentRank" : "SPECIES",
   "parentName" : "colias-eurytheme",
+  "parentRank" : "SPECIES",
   "dateAdded" : "2026-04-17T22:39:00Z",
-  "resourceName" : "IMG_9058.HEIC"
+  "resourceName" : "IMG_9058.HEIC",
+  "observationId" : null
 } ]

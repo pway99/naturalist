@@ -1,258 +1,323 @@
-[
-  {
-    "name": "hippodamia-convergens",
-    "genusName": "hippodamia",
-    "epithet": "convergens",
-    "description": {
-      "preschool": "The ladybug has a bright red shell with black spots. Both the ladybug and its funny-looking spiky black baby eat aphids — the tiny green bugs that hurt our tomato plants. If you see a ladybug in the garden, it is doing important work!",
-      "elementary": "Ladybugs are beetles that eat aphids, which are small insects that suck the juice from tomato and other plants. A single ladybug can eat 50 to 100 aphids every day! The ladybug larva — which looks like a tiny orange and black alligator — is an even hungrier predator than the adult. If you see ladybug eggs (tiny yellow cylinders in clusters) or larvae in the garden, it means there are enough aphids to feed a whole ladybug family.",
-      "secondary": "Hippodamia convergens (convergent ladybug) is the most abundant aphidophagous coccinellid in California's Central Valley. Adults and larvae are generalist aphid predators, capable of consuming 200–400 aphids per day at high prey density. Breeding at Oak Vista was confirmed in April 2026 with larval observations. Overwintered adults aestivate in montane sites and return to valley agricultural landscapes in spring, forming dense aggregations on aphid-infested plants. Unlike some coccinellids, H. convergens does not engage in suicidal dispersal away from high-quality habitat if prey density is sufficient. The species is native to California — do not purchase and release overwintered adults (aggregation-collected adults disperse immediately on release, providing no pest control value).",
-      "university": "Hippodamia convergens (Guérin-Méneville, 1842) — Coleoptera: Coccinellidae. Confirmed breeding resident at Oak Vista, April 2026. Life history: 4 larval instars, each progressively more active; pupal stage on plant surface 3–7 days; adult lifespan up to 2 years with diapause. Functional response: Type II (inversely density-dependent above threshold); mean attack rate 11.4 aphids/hour in laboratory; field rate constrained by aphid alarm pheromone dispersal (E-β-farnesene). Overwintering ecology: adults migrate to Sierra Nevada foothill aggregation sites (>90,000 individuals/m²) following the first autumn cold front; return triggered by photoperiod and temperature cues in early March. Purchased overwintered adults are collected from aggregation sites — they are hormonally primed to disperse, rendering commercial release ecologically ineffective. Captive rearing from on-site stock is the only efficacious augmentation strategy."
-    },
-    "sightingNotes": "Adults and larvae confirmed at Oak Vista April 2026. Breeding population established — do not release purchased overwintered adults. Preserve aphid refugia on border plants to maintain prey base.",
-    "commonNames": [
-      {
-        "label": "Convergent Ladybug",
-        "locale": "en"
-      }
-    ]
+[ {
+  "name" : "apis-mellifera",
+  "genusName" : "apis",
+  "epithet" : "mellifera",
+  "description" : {
+    "preschool" : "A honey bee that visits flowers and makes honey.",
+    "elementary" : "The western honey bee. It carries pollen between flowers and lives in a hive.",
+    "secondary" : "Apis mellifera, the western honey bee, family Apidae, order Hymenoptera — an important pollinator.",
+    "university" : "A bee (clade Anthophila). Bees are a clade nested within the apoid wasps (Apoidea); the 'wasp' lineages of Apoidea are paraphyletic with respect to bees. Anthophila corresponds to no Linnaean rank — it spans several bee families — so a pollinator role attaches to a clade, not a rank."
   },
-  {
-    "name": "blattella-vaga",
-    "genusName": "blattella",
-    "epithet": "vaga",
-    "description": {
-      "preschool": "This little brown roach lives outside in the garden — not inside the house. It hides under leaves and rocks and helps clean up dead plant pieces. It is also food for lizards, toads, and birds that visit the garden.",
-      "elementary": "The field roach (Blattella vaga) is a small, light-coloured cockroach that lives outside in the garden, under rocks and leaf mulch. Unlike house cockroaches, it does not come indoors and is not a pest. It eats dead plant material, helping to recycle nutrients back into the soil. It is also an important food source for lizards, toads, and birds — if the garden has field roaches, it can support a richer wildlife community.",
-      "secondary": "Blattella vaga is a native outdoor cockroach species widespread in California gardens and scrubland. Unlike the synanthropic German and American cockroaches, B. vaga is strictly outdoor-dwelling and feeds primarily on decomposing plant material and detritus. It occupies a dual ecological role: saprophagous decomposer in the detrital food web, and basal prey item for insectivorous vertebrates (lizards, toads, songbirds). The species is oothecal — females carry the egg case externally until near hatching, giving it high reproductive resilience to microhabitat disturbance. Ground-level surface refugia (coarse mulch, rocks, boards) support population persistence. Its presence is a reliable indicator of structural habitat heterogeneity supporting invertebrate biodiversity.",
-      "university": "Blattella vaga (Hebard, 1917) — Blattodea: Ectobiidae. A phytosaprophagous, peridomestic outdoor species with no synanthropic tendency. Ecological function: detritivore-decomposer processing leaf litter and dead root material in the garden soil surface layer; simultaneously transfers stored energy into the vertebrate food web as prey. Oothecal biology: the egg case is carried externally by the female for approximately 28 days, protecting eggs from soil-borne fungi and predation until near-term. Oak Vista management note: coarse mulch layers provide optimal B. vaga microhabitat — their decomposer function complements the mulch decomposition pathway, and their presence maintains vertebrate insectivore populations that in turn suppress flying pest insects."
-    },
-    "sightingNotes": "Confirmed Oak Vista resident; found under flat stones and straw mulch. Strictly outdoor species — no indoor control warranted. Population supports garden lizard and toad activity.",
-    "commonNames": [
-      {
-        "label": "Field Roach",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "western honey bee",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : null,
+  "placedIn" : null,
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "battus-philenor",
+  "genusName" : "battus",
+  "epithet" : "philenor",
+  "description" : {
+    "preschool" : "The Pipevine Swallowtail is a beautiful dark butterfly with blue and green shining wings. Its caterpillars only eat one special plant — the California Pipevine. We found their eggs on our Pipevine plant in April! We must never spray anything on the Pipevine because it would hurt these special butterflies.",
+    "elementary" : "The Pipevine Swallowtail is one of the most beautiful butterflies in California. It has dark wings that shine blue and green in the light. The caterpillars can only survive by eating California Pipevine leaves — no other plant will do. We found Pipevine Swallowtail eggs on our Pipevine plant in April 2026, which is very exciting! Because the caterpillars eat Pipevine, they store a poison that makes them and the adult butterflies taste terrible to birds, protecting them. We must never spray any pesticides on the Pipevine or nearby plants during butterfly season.",
+    "secondary" : "Battus philenor (Pipevine Swallowtail) is a Batesian-Müllerian chemical defence complex species with deep host-plant specialisation. Females are obligately ovipositing on Aristolochia species (Pipevine, birthwort) — California populations primarily use Aristolochia californica (California Pipevine). Caterpillars sequester aristolochic acids from their host plant, rendering themselves and adult butterflies chemically unpalatable (aposematic). Adults exhibit iridescent blue hindwing colouration that serves as a warning signal reinforced by multiple unrelated species mimicking the pattern (Battus mimicry complex including Papilio troilus and Limenitis arthemis). Eggs confirmed at Oak Vista April 2026 on Aristolochia californica — this is a keystone ecological record. CRITICAL management constraint: zero pesticide application to Aristolochia or adjacent vegetation while eggs, larvae, or adults are present.",
+    "university" : "Battus philenor (Linnaeus, 1771) — Lepidoptera: Papilionidae: Troidini. Confirmed breeding at Oak Vista, April 2026 — eggs observed on Aristolochia californica (California Pipevine). Ecological status: KEYSTONE SPECIES for California riparian and garden ecosystems. Host specificity: larval feeding restricted to Aristolochia spp. (Aristolochiaceae); females use volatile semiochemical (aristolochic acid derivatives) for host-plant selection. Chemical sequestration: aristolochic acids (particularly aristolochic acid I and II) are accumulated in larval and adult tissues; bitter taste and probable mutagenicity in avian digestive systems create aversive conditioning in bird predators. Mimicry complex: the Pipevine Swallowtail aposematic pattern is replicated by multiple palatable Papilionidae and Nymphalidae (Müllerian and Batesian mimics), amplifying predator avoidance learning. Conservation management: Aristolochia californica must be maintained as a permanent garden element without any pesticide application; the plant is the non-negotiable prerequisite for breeding presence. Nick's Italian Pear heirloom conservation ethic extends to this species — both are irreplaceable Oak Vista genetic heritage."
   },
-  {
-    "name": "xylocopa-varipuncta",
-    "genusName": "xylocopa",
-    "epithet": "varipuncta",
-    "description": {
-      "preschool": "The Valley Carpenter Bee is the biggest bee in California! The females are all black and shiny, and the males are golden and fuzzy. They drill holes in wood to make their nests. They are very loud but gentle — the boys cannot even sting.",
-      "elementary": "The Valley Carpenter Bee is a large native bee found all over California's Central Valley. Females are shiny black and males are golden or tan. They drill perfectly round holes in dead wood or fence posts for nests, which is how they got their name. They are excellent pollinators for tomatoes, peppers, and other vegetables because they are strong enough to vibrate the flower and shake the pollen loose — a trick called buzz pollination. Male bees are territorial but harmless because they cannot sting.",
-      "secondary": "Xylocopa varipuncta is one of California's largest bees and the dominant native pollinator at Oak Vista based on April 2026 observations. Sexual dimorphism is extreme: females are solid metallic black; males are golden-tan. Females nest in dry dead wood, excavating galleries with jaws and vibrating mandibles. As large-bodied bees with powerful thoracic musculature, X. varipuncta are among the most effective buzz pollinators of poricidal-anthered crops (tomatoes, peppers, eggplants). They are robustness specialists — their size and vibration frequency (300–400 Hz) efficiently releases pollen from Solanum-type anthers where smaller bees struggle. Xylocopa are solitary with minimal social structure: a single female provisions each cell independently.",
-      "university": "Xylocopa varipuncta (Patton, 1879) — Hymenoptera: Apidae: Xylocopinae. The most visually prominent native bee at Oak Vista; abundant throughout April 2026 assessment. Buzz pollination physiology: thoracic indirect flight muscles decouple from wing movement and contract isometrically at frequencies of 280–420 Hz, generating vibrations transmitted to the flower via contact; this releases pollen from poricidal anthers of Solanaceae (tomato, pepper) at rates 2–5× higher than wind dispersal alone. Nesting biology: females excavate galleries 15–30 cm deep in dry seasoned wood; each gallery contains 6–10 cells provisioned with pollen-nectar paste; multivoltine in Chico with emergence peaks April and August. Longevity: adult females live up to 3 years — among the longest-lived North American bees. Management: retain dead wood snags and unpainted fence posts as nesting substrate."
-    },
-    "sightingNotes": "Abundant at Oak Vista April 2026 — multiple males and females observed foraging on tomato, sage, and dill flowers. Nesting in old fence post at property edge confirmed. Key pollinator for tomato buzz pollination.",
-    "commonNames": [
-      {
-        "label": "Valley Carpenter Bee",
-        "locale": "en"
-      }
-    ]
+  "commonNames" : [ {
+    "label" : "Pipevine Swallowtail",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : "CRITICAL — eggs confirmed on Aristolochia californica (California Pipevine) at Oak Vista, April 2026. Never apply pesticides to Pipevine plant or within 3 meters of it during the growing season. This is an irreversible ecological commitment. Breeding confirmed.",
+  "placedIn" : "troidini",
+  "chemicalDefense" : {
+    "mechanism" : "Sequestration of aristolochic acids from the larval host plant (Aristolochia californica). Toxins are retained through pupation, carried by adults, and transferred maternally to the eggs — every stage of the life cycle is chemically defended.",
+    "sourceCompounds" : "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
+    "aposematicSignal" : "Iridescent blue hindwing coloration in adults; conspicuous brick-red egg clusters; warningly coloured dark larvae with reddish filaments. The pupa is the exception — cryptic rather than aposematic.",
+    "protectedStages" : [ "ADULT", "EGG", "LARVA", "PUPA" ]
   },
-  {
-    "name": "vanessa-cardui",
-    "genusName": "vanessa",
-    "epithet": "cardui",
-    "description": {
-      "preschool": "The Painted Lady butterfly has orange, black, and white wings with beautiful patterns. Every year it travels a very long way — farther than any other butterfly in the world. When it visits our garden flowers, it helps pollinate them.",
-      "elementary": "The Painted Lady is one of the most common butterflies in the world and it makes an amazing journey every year. In California, millions of them fly north in spring and south in autumn — a migration longer than the monarch butterfly's. Adults drink nectar from flowers and carry pollen. Their caterpillars eat thistle, mallow, and some other plants but do not harm tomatoes or vegetables. Seeing a Painted Lady means the garden is part of a much larger ecological story.",
-      "secondary": "Vanessa cardui is the most widely distributed butterfly in the world, found on every continent except Antarctica and Australia. In California, it undertakes a multi-generational migratory circuit: spring migration northward from the Sonoran Desert follows the Pacific Coast and Central Valley, with populations peaking in the Bay Area and Sacramento Valley in March–April. Adults are polylectic nectarivores visiting hundreds of flower species; their large body size and active foraging make them effective pollen vectors for garden Asteraceae, Boraginaceae, and Lamiaceae. Caterpillars feed on Asteraceae (especially thistles) and Malvaceae — no Solanaceae feeding recorded. The spring 2026 Painted Lady emergence was reported as an exceptional year for Central Valley populations following wet winter conditions producing abundant larval host plant growth.",
-      "university": "Vanessa cardui (Linnaeus, 1758) — Lepidoptera: Nymphalidae: Nymphalinae. Cosmopolitan. At Oak Vista, documented as spring migrant foraging on Asteraceae and sage, April 2026. Migration ecology: multigenerational circuit (2–6 generations depending on year) spanning 9,000–15,000 km round-trip from overwintering grounds in sub-Saharan Africa (or, for California populations, the Sonoran Desert); migration orientation governed by a circadian-linked sun compass and polarized light detection. Population irruptions correlated with El Niño Southern Oscillation events producing wet winters that drive Cirsium (thistle) and Malva larval host plant abundance in the Mojave and Sonoran Deserts. Pollination role: adults carry viable pollen on ventral wing scales and proboscis; floral visitation rates at Oak Vista suggest meaningful contribution to Asteraceae cross-pollination during migration peaks. Conservation note: no pesticide treatment warranted — population regulated by landscape-scale processes."
-    },
-    "sightingNotes": "Observed Oak Vista April 2026 during exceptional Central Valley spring migration event. Adults feeding on dill, sage, and Asteraceae border flowers. Migratory population — not a breeding resident.",
-    "commonNames": [
-      {
-        "label": "Painted Lady",
-        "locale": "en"
-      }
-    ]
+  "voltinism" : {
+    "pattern" : "INDETERMINATE",
+    "notes" : "Every female's offspring include both direct-developers and diapausers, and some diapausing pupae eclose later the same year rather than overwintering. Site-level voltinism cannot be reduced to a single integer — at any given site it may be two, three, four broods, or all of these overlapping at once. Uniquely among local swallowtails, the species is unresponsive to day length; pupal dormancy appears regulated by the water content of the larval food."
   },
-  {
-    "name": "battus-philenor",
-    "genusName": "battus",
-    "epithet": "philenor",
-    "description": {
-      "preschool": "The Pipevine Swallowtail is a beautiful dark butterfly with blue and green shining wings. Its caterpillars only eat one special plant — the California Pipevine. We found their eggs on our Pipevine plant in April! We must never spray anything on the Pipevine because it would hurt these special butterflies.",
-      "elementary": "The Pipevine Swallowtail is one of the most beautiful butterflies in California. It has dark wings that shine blue and green in the light. The caterpillars can only survive by eating California Pipevine leaves — no other plant will do. We found Pipevine Swallowtail eggs on our Pipevine plant in April 2026, which is very exciting! Because the caterpillars eat Pipevine, they store a poison that makes them and the adult butterflies taste terrible to birds, protecting them. We must never spray any pesticides on the Pipevine or nearby plants during butterfly season.",
-      "secondary": "Battus philenor (Pipevine Swallowtail) is a Batesian-Müllerian chemical defence complex species with deep host-plant specialisation. Females are obligately ovipositing on Aristolochia species (Pipevine, birthwort) — California populations primarily use Aristolochia californica (California Pipevine). Caterpillars sequester aristolochic acids from their host plant, rendering themselves and adult butterflies chemically unpalatable (aposematic). Adults exhibit iridescent blue hindwing colouration that serves as a warning signal reinforced by multiple unrelated species mimicking the pattern (Battus mimicry complex including Papilio troilus and Limenitis arthemis). Eggs confirmed at Oak Vista April 2026 on Aristolochia californica — this is a keystone ecological record. CRITICAL management constraint: zero pesticide application to Aristolochia or adjacent vegetation while eggs, larvae, or adults are present.",
-      "university": "Battus philenor (Linnaeus, 1771) — Lepidoptera: Papilionidae: Troidini. Confirmed breeding at Oak Vista, April 2026 — eggs observed on Aristolochia californica (California Pipevine). Ecological status: KEYSTONE SPECIES for California riparian and garden ecosystems. Host specificity: larval feeding restricted to Aristolochia spp. (Aristolochiaceae); females use volatile semiochemical (aristolochic acid derivatives) for host-plant selection. Chemical sequestration: aristolochic acids (particularly aristolochic acid I and II) are accumulated in larval and adult tissues; bitter taste and probable mutagenicity in avian digestive systems create aversive conditioning in bird predators. Mimicry complex: the Pipevine Swallowtail aposematic pattern is replicated by multiple palatable Papilionidae and Nymphalidae (Müllerian and Batesian mimics), amplifying predator avoidance learning. Conservation management: Aristolochia californica must be maintained as a permanent garden element without any pesticide application; the plant is the non-negotiable prerequisite for breeding presence. Nick's Italian Pear heirloom conservation ethic extends to this species — both are irreplaceable Oak Vista genetic heritage."
-    },
-    "sightingNotes": "CRITICAL — eggs confirmed on Aristolochia californica (California Pipevine) at Oak Vista, April 2026. Never apply pesticides to Pipevine plant or within 3 meters of it during the growing season. This is an irreversible ecological commitment. Breeding confirmed.",
-    "placedIn": "troidini",
-    "chemicalDefense": {
-      "mechanism": "Sequestration of aristolochic acids from the larval host plant (Aristolochia californica). Toxins are retained through pupation, carried by adults, and transferred maternally to the eggs — every stage of the life cycle is chemically defended.",
-      "sourceCompounds": "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
-      "aposematicSignal": "Iridescent blue hindwing coloration in adults; conspicuous brick-red egg clusters; warningly coloured dark larvae with reddish filaments. The pupa is the exception — cryptic rather than aposematic.",
-      "protectedStages": [
-        "EGG",
-        "LARVA",
-        "PUPA",
-        "ADULT"
-      ]
-    },
-    "voltinism": {
-      "pattern": "INDETERMINATE",
-      "notes": "Every female's offspring include both direct-developers and diapausers, and some diapausing pupae eclose later the same year rather than overwintering. Site-level voltinism cannot be reduced to a single integer — at any given site it may be two, three, four broods, or all of these overlapping at once. Uniquely among local swallowtails, the species is unresponsive to day length; pupal dormancy appears regulated by the water content of the larval food."
-    },
-    "habitatProfile": null,
-    "habitatRequirements": {
-      "nectarSources": "Native flowers including Wild Radish, California Buckeye, Blue Dicks, Ithuriel's Spear, and Yerba Santa. In summer, adults regularly nectar at Yellow Star Thistle when no native plants are in bloom.",
-      "shelter": null,
-      "preyAvailability": null,
-      "lighting": null,
-      "elevationRange": "Breeds in foothill canyons and on the Central Valley floor, wherever its obligate host Aristolochia californica occurs. Also occurs in coastal scrub (no transect sites). Strays to mid-elevation in river bottoms but is absent from the high country."
-    },
-    "gardenConnections": {
-      "supportingPlants": [
-        "aristolochia-californica",
-        "wild-radish",
-        "california-buckeye",
-        "blue-dicks",
-        "ithuriels-spear",
-        "yerba-santa",
-        "yellow-star-thistle"
-      ],
-      "relationshipToOtherBeneficials": null,
-      "naturalEnemies": "Chemical defence largely exempts this species from vertebrate predation across all life stages; no significant natural enemies documented at Oak Vista."
-    },
-    "beneficialProfile": {
-      "significance": "Keystone riparian butterfly of California's foothill canyons and Central Valley floor. Obligate on California Pipevine (Aristolochia californica) — the breeding population at Oak Vista confirmed in April 2026 is tied permanently to the garden's Pipevine planting. Loss of the host plant ends the local population; there is no alternative host and no relocation option.",
-      "pestManagementValue": null,
-      "ipmNotes": "Never apply pesticides to Aristolochia californica or within 3 metres of it at any season. The larvae are obligate on this host; any pesticide exposure to the host eliminates the local population. This is not an IPM-adjustable constraint — it is an ecological commitment made when the host plant was established."
-    },
-    "ecologicalSignificance": {
-      "indicatorValue": "A breeding population indicates intact Aristolochia californica with sufficient young, tender growing shoots for oviposition and an adequate adult nectar community carrying the species from late winter through summer.",
-      "foodWebPosition": "Primary consumer highly specialised to a single host-plant genus (Aristolochia); chemically defended at every life stage, occupying a near-predator-free position in the vertebrate food web. Functions as a Müllerian/Batesian model across much of its range, though no mimics have evolved in California.",
-      "regionalContext": "California populations are treated as subspecies hirsuta, isolated from the nearest populations in the desert Southwest and not currently exchanging genes with them. Molecular-genetic evidence refutes the hypothesis of ancient Tertiary relict status — Battus philenor arrived in California relatively recently (late Quaternary), probably from farther east. The absence of local mimics in the California range, despite its being the species' most abundant portion of range, is further evidence of recent arrival — there has not been time for mimics to evolve here. Resident and sedentary rather than migratory. Host plant typically stops growing in June and ceases providing oviposition sites thereafter; off-season breeding is triggered only by post-catastrophe host regeneration."
-    },
-    "commonNames": [
-      {
-        "label": "Pipevine Swallowtail",
-        "locale": "en"
-      }
-    ]
+  "habitatProfile" : null,
+  "habitatRequirements" : {
+    "nectarSources" : "Native flowers including Wild Radish, California Buckeye, Blue Dicks, Ithuriel's Spear, and Yerba Santa. In summer, adults regularly nectar at Yellow Star Thistle when no native plants are in bloom.",
+    "shelter" : null,
+    "preyAvailability" : null,
+    "lighting" : null,
+    "elevationRange" : "Breeds in foothill canyons and on the Central Valley floor, wherever its obligate host Aristolochia californica occurs. Also occurs in coastal scrub (no transect sites). Strays to mid-elevation in river bottoms but is absent from the high country."
   },
-  {
-    "name": "colias-eurytheme",
-    "genusName": "colias",
-    "epithet": "eurytheme",
-    "description": {
-      "preschool": "This bright yellow butterfly has wings the colour of sunshine with a little dark edge, like someone drew a frame around them. It loves to visit flowers in the garden, sipping nectar and carrying pollen from one bloom to the next. It is one of the most common butterflies you will see flying over our garden.",
-      "elementary": "The Orange Sulphur is one of the most common butterflies in North America. Its wings are yellow to orange with dark borders, and it has a small dark spot on each hindwing. Adults drink nectar from many kinds of flowers and help pollinate them. The caterpillars eat clover, alfalfa, and other legumes — plants in the pea family. You can see Orange Sulphurs flying low over fields and gardens from spring through autumn, and they are so common that watching their flight patterns is a good way to learn butterfly behaviour.",
-      "secondary": "Colias eurytheme (Orange Sulphur) is one of the most abundant pierid butterflies in North America, particularly in California's Central Valley where alfalfa and clover agriculture provides extensive larval habitat. Adults are polylectic nectarivores visiting Asteraceae, Brassicaceae, Fabaceae, and Lamiaceae. Wing coloration is sexually dimorphic — males are bright orange-yellow dorsally with solid black borders; females are paler yellow with lighter, spotted borders and a white morph (alba form) occurs in some populations. Colias eurytheme hybridises extensively with C. philodice (Clouded Sulphur) in areas of sympatry, producing intermediates that are difficult to separate without genitalic or molecular analysis. Larval host plants are Fabaceae: Medicago sativa (alfalfa), Trifolium spp. (clovers), and Astragalus spp. At Oak Vista, the crimson clover cover crop provides both adult nectar and potential larval host plant resources.",
-      "university": "Colias eurytheme (Boisduval, 1852) — Lepidoptera: Pieridae: Coliadinae. Documented at Oak Vista nectaring on Raphanus sativus (wild radish, Brassicaceae), April 2026. Population ecology: multivoltine in Central Valley California (4–6 generations per year); continuous flight period March–November. Wing pigmentation: pterins (erythropterin, xanthopterin) produce the yellow-orange coloration; UV-reflective patches on male dorsal forewing function in mate recognition and species isolation from C. philodice. Hybridisation with C. philodice is well-documented across the Great Basin and Central Valley — F1 hybrids are fertile and backcross in both directions, creating a hybrid zone that has persisted for at least 10,000 years; some systematists treat the two as conspecific. Larval feeding: obligate on Fabaceae; larvae sequester no defensive compounds and rely on cryptic green coloration for predator avoidance. At Oak Vista, the Trifolium incarnatum (crimson clover) cover crop is a plausible oviposition target — larval feeding on cover crop biomass is ecologically neutral (cover crop function is nitrogen fixation and biomass, not seed harvest). Adults contribute to pollination of Brassicaceae and Asteraceae border plantings."
-    },
-    "sightingNotes": "Single individual photographed nectaring on wild radish (Raphanus sativus) flowers at Oak Vista, April 17 2026. Species-level identification confident based on orange-yellow wing coloration, dark forewing borders, and dark discal spot on hindwing — diagnostic for C. eurytheme. Crimson clover cover crop provides potential larval host plant (Fabaceae). Six photos taken from multiple angles.",
-    "commonNames": [
-      {
-        "label": "Orange Sulphur",
-        "locale": "en"
-      }
-    ]
+  "gardenConnections" : {
+    "supportingPlants" : [ "aristolochia-californica", "wild-radish", "california-buckeye", "blue-dicks", "ithuriels-spear", "yerba-santa", "yellow-star-thistle" ],
+    "relationshipToOtherBeneficials" : null,
+    "naturalEnemies" : "Chemical defence largely exempts this species from vertebrate predation across all life stages; no significant natural enemies documented at Oak Vista."
   },
-  {
-    "name": "drosophila-melanogaster",
-    "genusName": "drosophila",
-    "epithet": "melanogaster",
-    "description": {
-      "preschool": "A tiny fly you see near old bananas and fruit.",
-      "elementary": "The common fruit fly. Scientists study it more than almost any other animal because it breeds fast and is easy to raise.",
-      "secondary": "Drosophila melanogaster, a model organism in genetics. It sits in the subgenus Sophophora — only distantly related to the fly the genus is actually named for.",
-      "university": "Despite being the canonical 'Drosophila', D. melanogaster lies in subgenus Sophophora, far from the type species D. funebris. Genus Drosophila is paraphyletic, so the species' true clade (Sophophora) is finer than, and not derivable from, the genus."
-    },
-    "commonNames": [
-      {
-        "label": "common fruit fly",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "sophophora"
+  "beneficialProfile" : {
+    "significance" : "Keystone riparian butterfly of California's foothill canyons and Central Valley floor. Obligate on California Pipevine (Aristolochia californica) — the breeding population at Oak Vista confirmed in April 2026 is tied permanently to the garden's Pipevine planting. Loss of the host plant ends the local population; there is no alternative host and no relocation option.",
+    "pestManagementValue" : null,
+    "ipmNotes" : "Never apply pesticides to Aristolochia californica or within 3 metres of it at any season. The larvae are obligate on this host; any pesticide exposure to the host eliminates the local population. This is not an IPM-adjustable constraint — it is an ecological commitment made when the host plant was established."
   },
-  {
-    "name": "drosophila-funebris",
-    "genusName": "drosophila",
-    "epithet": "funebris",
-    "description": {
-      "preschool": "Another small fly, a cousin of the fruit fly.",
-      "elementary": "A fly that gives its whole genus its name, even though it is less famous than the fruit fly people study.",
-      "secondary": "Drosophila funebris, the type species of genus Drosophila — the species that anchors the genus name.",
-      "university": "As the type species, D. funebris fixes the name Drosophila to subgenus Drosophila sensu stricto. Because the genus is paraphyletic, a split could leave the famous D. melanogaster needing a new genus name — the crux of the well-known nomenclatural case."
-    },
-    "commonNames": [],
-    "placedIn": "drosophila-sensu-stricto"
-  },
-  {
-    "name": "periplaneta-americana",
-    "genusName": "periplaneta",
-    "epithet": "americana",
-    "description": {
-      "preschool": "A big brown cockroach that scurries in warm places.",
-      "elementary": "The American cockroach, one of the largest house cockroaches.",
-      "secondary": "Periplaneta americana, a cockroach in family Blattidae, order Blattodea.",
-      "university": "A cockroach in the strict sense. 'Cockroaches excluding termites' is paraphyletic — termites are a clade nested within Blattodea — so this species' smallest honest clade is Blattodea itself; there is no roaches-only clade to place it in."
-    },
-    "commonNames": [
-      {
-        "label": "American cockroach",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "blattodea"
-  },
-  {
-    "name": "reticulitermes-hesperus",
-    "genusName": "reticulitermes",
-    "epithet": "hesperus",
-    "description": {
-      "preschool": "A pale little insect that lives in wood with many brothers and sisters.",
-      "elementary": "The western subterranean termite. Termites live in big family colonies and eat wood.",
-      "secondary": "Reticulitermes hesperus, a termite. Termites were once their own order (Isoptera) but are now placed inside the cockroaches (Blattodea).",
-      "university": "A termite — a eusocial lineage nested within Blattodea, sister to the wood-feeding roach Cryptocercus. Eusociality is a derived trait of the termite clade (Termitoidae / Isoptera), below the ordinal level: a trait that resolves on a sub-ordinal clade, not on the order."
-    },
-    "commonNames": [
-      {
-        "label": "western subterranean termite",
-        "locale": "en"
-      }
-    ],
-    "placedIn": "termitoidae"
-  },
-  {
-    "name": "apis-mellifera",
-    "genusName": "apis",
-    "epithet": "mellifera",
-    "description": {
-      "preschool": "A honey bee that visits flowers and makes honey.",
-      "elementary": "The western honey bee. It carries pollen between flowers and lives in a hive.",
-      "secondary": "Apis mellifera, the western honey bee, family Apidae, order Hymenoptera — an important pollinator.",
-      "university": "A bee (clade Anthophila). Bees are a clade nested within the apoid wasps (Apoidea); the 'wasp' lineages of Apoidea are paraphyletic with respect to bees. Anthophila corresponds to no Linnaean rank — it spans several bee families — so a pollinator role attaches to a clade, not a rank."
-    },
-    "commonNames": [
-      {
-        "label": "western honey bee",
-        "locale": "en"
-      }
-    ]
-  },
-  {
-    "name": "philanthus-gibbosus",
-    "genusName": "philanthus",
-    "epithet": "gibbosus",
-    "description": {
-      "preschool": "A wasp that hunts other insects.",
-      "elementary": "A beewolf — a wasp that catches bees and other insects to feed its young.",
-      "secondary": "Philanthus gibbosus, a beewolf in family Crabronidae, the apoid wasps.",
-      "university": "An apoid wasp. The apoid wasps (Apoidea) are paraphyletic with respect to the bees (Anthophila), which arose from within them. Its smallest honest clade is Apoidea, which also contains the bees — the containing clade is broader than the rank."
-    },
-    "commonNames": [
-      {
-        "label": "beewolf",
-        "locale": "en"
-      }
-    ]
+  "ecologicalSignificance" : {
+    "indicatorValue" : "A breeding population indicates intact Aristolochia californica with sufficient young, tender growing shoots for oviposition and an adequate adult nectar community carrying the species from late winter through summer.",
+    "foodWebPosition" : "Primary consumer highly specialised to a single host-plant genus (Aristolochia); chemically defended at every life stage, occupying a near-predator-free position in the vertebrate food web. Functions as a Müllerian/Batesian model across much of its range, though no mimics have evolved in California.",
+    "regionalContext" : "California populations are treated as subspecies hirsuta, isolated from the nearest populations in the desert Southwest and not currently exchanging genes with them. Molecular-genetic evidence refutes the hypothesis of ancient Tertiary relict status — Battus philenor arrived in California relatively recently (late Quaternary), probably from farther east. The absence of local mimics in the California range, despite its being the species' most abundant portion of range, is further evidence of recent arrival — there has not been time for mimics to evolve here. Resident and sedentary rather than migratory. Host plant typically stops growing in June and ceases providing oviposition sites thereafter; off-season breeding is triggered only by post-catastrophe host regeneration."
   }
-]
+}, {
+  "name" : "blattella-vaga",
+  "genusName" : "blattella",
+  "epithet" : "vaga",
+  "description" : {
+    "preschool" : "This little brown roach lives outside in the garden — not inside the house. It hides under leaves and rocks and helps clean up dead plant pieces. It is also food for lizards, toads, and birds that visit the garden.",
+    "elementary" : "The field roach (Blattella vaga) is a small, light-coloured cockroach that lives outside in the garden, under rocks and leaf mulch. Unlike house cockroaches, it does not come indoors and is not a pest. It eats dead plant material, helping to recycle nutrients back into the soil. It is also an important food source for lizards, toads, and birds — if the garden has field roaches, it can support a richer wildlife community.",
+    "secondary" : "Blattella vaga is a native outdoor cockroach species widespread in California gardens and scrubland. Unlike the synanthropic German and American cockroaches, B. vaga is strictly outdoor-dwelling and feeds primarily on decomposing plant material and detritus. It occupies a dual ecological role: saprophagous decomposer in the detrital food web, and basal prey item for insectivorous vertebrates (lizards, toads, songbirds). The species is oothecal — females carry the egg case externally until near hatching, giving it high reproductive resilience to microhabitat disturbance. Ground-level surface refugia (coarse mulch, rocks, boards) support population persistence. Its presence is a reliable indicator of structural habitat heterogeneity supporting invertebrate biodiversity.",
+    "university" : "Blattella vaga (Hebard, 1917) — Blattodea: Ectobiidae. A phytosaprophagous, peridomestic outdoor species with no synanthropic tendency. Ecological function: detritivore-decomposer processing leaf litter and dead root material in the garden soil surface layer; simultaneously transfers stored energy into the vertebrate food web as prey. Oothecal biology: the egg case is carried externally by the female for approximately 28 days, protecting eggs from soil-borne fungi and predation until near-term. Oak Vista management note: coarse mulch layers provide optimal B. vaga microhabitat — their decomposer function complements the mulch decomposition pathway, and their presence maintains vertebrate insectivore populations that in turn suppress flying pest insects."
+  },
+  "commonNames" : [ {
+    "label" : "Field Roach",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : "Confirmed Oak Vista resident; found under flat stones and straw mulch. Strictly outdoor species — no indoor control warranted. Population supports garden lizard and toad activity.",
+  "placedIn" : null,
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "colias-eurytheme",
+  "genusName" : "colias",
+  "epithet" : "eurytheme",
+  "description" : {
+    "preschool" : "This bright yellow butterfly has wings the colour of sunshine with a little dark edge, like someone drew a frame around them. It loves to visit flowers in the garden, sipping nectar and carrying pollen from one bloom to the next. It is one of the most common butterflies you will see flying over our garden.",
+    "elementary" : "The Orange Sulphur is one of the most common butterflies in North America. Its wings are yellow to orange with dark borders, and it has a small dark spot on each hindwing. Adults drink nectar from many kinds of flowers and help pollinate them. The caterpillars eat clover, alfalfa, and other legumes — plants in the pea family. You can see Orange Sulphurs flying low over fields and gardens from spring through autumn, and they are so common that watching their flight patterns is a good way to learn butterfly behaviour.",
+    "secondary" : "Colias eurytheme (Orange Sulphur) is one of the most abundant pierid butterflies in North America, particularly in California's Central Valley where alfalfa and clover agriculture provides extensive larval habitat. Adults are polylectic nectarivores visiting Asteraceae, Brassicaceae, Fabaceae, and Lamiaceae. Wing coloration is sexually dimorphic — males are bright orange-yellow dorsally with solid black borders; females are paler yellow with lighter, spotted borders and a white morph (alba form) occurs in some populations. Colias eurytheme hybridises extensively with C. philodice (Clouded Sulphur) in areas of sympatry, producing intermediates that are difficult to separate without genitalic or molecular analysis. Larval host plants are Fabaceae: Medicago sativa (alfalfa), Trifolium spp. (clovers), and Astragalus spp. At Oak Vista, the crimson clover cover crop provides both adult nectar and potential larval host plant resources.",
+    "university" : "Colias eurytheme (Boisduval, 1852) — Lepidoptera: Pieridae: Coliadinae. Documented at Oak Vista nectaring on Raphanus sativus (wild radish, Brassicaceae), April 2026. Population ecology: multivoltine in Central Valley California (4–6 generations per year); continuous flight period March–November. Wing pigmentation: pterins (erythropterin, xanthopterin) produce the yellow-orange coloration; UV-reflective patches on male dorsal forewing function in mate recognition and species isolation from C. philodice. Hybridisation with C. philodice is well-documented across the Great Basin and Central Valley — F1 hybrids are fertile and backcross in both directions, creating a hybrid zone that has persisted for at least 10,000 years; some systematists treat the two as conspecific. Larval feeding: obligate on Fabaceae; larvae sequester no defensive compounds and rely on cryptic green coloration for predator avoidance. At Oak Vista, the Trifolium incarnatum (crimson clover) cover crop is a plausible oviposition target — larval feeding on cover crop biomass is ecologically neutral (cover crop function is nitrogen fixation and biomass, not seed harvest). Adults contribute to pollination of Brassicaceae and Asteraceae border plantings."
+  },
+  "commonNames" : [ {
+    "label" : "Orange Sulphur",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : "Single individual photographed nectaring on wild radish (Raphanus sativus) flowers at Oak Vista, April 17 2026. Species-level identification confident based on orange-yellow wing coloration, dark forewing borders, and dark discal spot on hindwing — diagnostic for C. eurytheme. Crimson clover cover crop provides potential larval host plant (Fabaceae). Six photos taken from multiple angles.",
+  "placedIn" : null,
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "drosophila-funebris",
+  "genusName" : "drosophila",
+  "epithet" : "funebris",
+  "description" : {
+    "preschool" : "Another small fly, a cousin of the fruit fly.",
+    "elementary" : "A fly that gives its whole genus its name, even though it is less famous than the fruit fly people study.",
+    "secondary" : "Drosophila funebris, the type species of genus Drosophila — the species that anchors the genus name.",
+    "university" : "As the type species, D. funebris fixes the name Drosophila to subgenus Drosophila sensu stricto. Because the genus is paraphyletic, a split could leave the famous D. melanogaster needing a new genus name — the crux of the well-known nomenclatural case."
+  },
+  "commonNames" : [ ],
+  "sightingNotes" : null,
+  "placedIn" : "drosophila-sensu-stricto",
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "drosophila-melanogaster",
+  "genusName" : "drosophila",
+  "epithet" : "melanogaster",
+  "description" : {
+    "preschool" : "A tiny fly you see near old bananas and fruit.",
+    "elementary" : "The common fruit fly. Scientists study it more than almost any other animal because it breeds fast and is easy to raise.",
+    "secondary" : "Drosophila melanogaster, a model organism in genetics. It sits in the subgenus Sophophora — only distantly related to the fly the genus is actually named for.",
+    "university" : "Despite being the canonical 'Drosophila', D. melanogaster lies in subgenus Sophophora, far from the type species D. funebris. Genus Drosophila is paraphyletic, so the species' true clade (Sophophora) is finer than, and not derivable from, the genus."
+  },
+  "commonNames" : [ {
+    "label" : "common fruit fly",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : null,
+  "placedIn" : "sophophora",
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "hippodamia-convergens",
+  "genusName" : "hippodamia",
+  "epithet" : "convergens",
+  "description" : {
+    "preschool" : "The ladybug has a bright red shell with black spots. Both the ladybug and its funny-looking spiky black baby eat aphids — the tiny green bugs that hurt our tomato plants. If you see a ladybug in the garden, it is doing important work!",
+    "elementary" : "Ladybugs are beetles that eat aphids, which are small insects that suck the juice from tomato and other plants. A single ladybug can eat 50 to 100 aphids every day! The ladybug larva — which looks like a tiny orange and black alligator — is an even hungrier predator than the adult. If you see ladybug eggs (tiny yellow cylinders in clusters) or larvae in the garden, it means there are enough aphids to feed a whole ladybug family.",
+    "secondary" : "Hippodamia convergens (convergent ladybug) is the most abundant aphidophagous coccinellid in California's Central Valley. Adults and larvae are generalist aphid predators, capable of consuming 200–400 aphids per day at high prey density. Breeding at Oak Vista was confirmed in April 2026 with larval observations. Overwintered adults aestivate in montane sites and return to valley agricultural landscapes in spring, forming dense aggregations on aphid-infested plants. Unlike some coccinellids, H. convergens does not engage in suicidal dispersal away from high-quality habitat if prey density is sufficient. The species is native to California — do not purchase and release overwintered adults (aggregation-collected adults disperse immediately on release, providing no pest control value).",
+    "university" : "Hippodamia convergens (Guérin-Méneville, 1842) — Coleoptera: Coccinellidae. Confirmed breeding resident at Oak Vista, April 2026. Life history: 4 larval instars, each progressively more active; pupal stage on plant surface 3–7 days; adult lifespan up to 2 years with diapause. Functional response: Type II (inversely density-dependent above threshold); mean attack rate 11.4 aphids/hour in laboratory; field rate constrained by aphid alarm pheromone dispersal (E-β-farnesene). Overwintering ecology: adults migrate to Sierra Nevada foothill aggregation sites (>90,000 individuals/m²) following the first autumn cold front; return triggered by photoperiod and temperature cues in early March. Purchased overwintered adults are collected from aggregation sites — they are hormonally primed to disperse, rendering commercial release ecologically ineffective. Captive rearing from on-site stock is the only efficacious augmentation strategy."
+  },
+  "commonNames" : [ {
+    "label" : "Convergent Ladybug",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : "Adults and larvae confirmed at Oak Vista April 2026. Breeding population established — do not release purchased overwintered adults. Preserve aphid refugia on border plants to maintain prey base.",
+  "placedIn" : null,
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "lygaeus-kalmii",
+  "genusName" : "lygaeus",
+  "epithet" : "kalmii",
+  "description" : {
+    "preschool" : "Look at this little bug — it's mostly dark and shiny like a tiny black shield, but it has pretty orange-red stripes around its edges, like it's wearing a colorful costume! It has long wiggly antennae on its head and six skinny legs to hold onto the leaf. Isn't it beautiful?",
+    "elementary" : "The Small Milkweed Bug is a true bug — that means it belongs to the insect order Hemiptera and has a special needle-like beak it uses to suck juices from seeds. Its body is dark greenish-black with bright orange-red markings along the sides and top edges of its wings. Adults are about half an inch long. Like many brightly colored insects, it uses those warning colors to tell predators: \"I taste bad — don't eat me!\" It often feeds on milkweed seeds but can feed on other plants too. It goes through incomplete metamorphosis: egg → nymph (looks like a smaller, wingless version) → adult.",
+    "secondary" : "Lygaeus kalmii is an aposematically colored seed bug whose orange-and-black patterning signals chemical defense derived from cardenolide compounds sequestered from milkweed (Asclepias spp.) host plants. This chemical sequestration makes them unpalatable to many vertebrate predators. Adults and nymphs are primarily seed predators (seed-sucking), though they are opportunistically omnivorous, occasionally scavenging on other insects. The species is widespread across North America and is one of the more common milkweed-associated true bugs in California's Central Valley oak woodland edges and riparian zones, exactly the habitat at \"Oak Vista\" in Chico. Adults overwinter and may aggregate. Their resemblance to other aposematic milkweed bugs (Müllerian mimicry complex) reinforces predator avoidance learning.",
+    "university" : "Lygaeus kalmii (Stål, 1874) is a member of the family Lygaeidae (sensu stricto), subfamily Lygaeinae, and represents one of the most extensively studied North American seed bugs in the context of chemical ecology and aposematism. The species participates in a well-documented Müllerian mimicry complex alongside Oncopeltus fasciatus and other milkweed-associated Hemiptera. Cardenolide sequestration from Asclepias spp. has been pharmacologically characterized, with inter-population variation in sequestration efficiency correlating with local milkweed chemistry. Phylogeographic studies place L. kalmii within a broadly distributed clade ranging from southern Canada through Mexico. In the Sacramento Valley / Sierra Nevada foothill interface (Butte County, CA), the species is associated with oak woodland-grassland ecotones and riparian corridors where Asclepias fascicularis (Narrowleaf Milkweed) is a primary host. No special conservation concern; populations are generally stable. Research interest includes its use as a model organism for aposematism, mimicry signaling, and host-plant chemical ecology."
+  },
+  "commonNames" : [ {
+    "label" : "Small Milkweed Bug",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : "Observed on broadleaf vegetation (possibly Asclepias or associated riparian plant) at Oak Vista, Chico, CA. The white flowers visible in the background may be a clue to the host plant. Adult coloration fully expressed — likely a mature adult. Bright aposematic orange-red lateral markings clearly visible. Chico's oak woodland edge habitat is well within the known range and preferred microhabitat of this species.",
+  "placedIn" : null,
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "periplaneta-americana",
+  "genusName" : "periplaneta",
+  "epithet" : "americana",
+  "description" : {
+    "preschool" : "A big brown cockroach that scurries in warm places.",
+    "elementary" : "The American cockroach, one of the largest house cockroaches.",
+    "secondary" : "Periplaneta americana, a cockroach in family Blattidae, order Blattodea.",
+    "university" : "A cockroach in the strict sense. 'Cockroaches excluding termites' is paraphyletic — termites are a clade nested within Blattodea — so this species' smallest honest clade is Blattodea itself; there is no roaches-only clade to place it in."
+  },
+  "commonNames" : [ {
+    "label" : "American cockroach",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : null,
+  "placedIn" : "blattodea",
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "philanthus-gibbosus",
+  "genusName" : "philanthus",
+  "epithet" : "gibbosus",
+  "description" : {
+    "preschool" : "A wasp that hunts other insects.",
+    "elementary" : "A beewolf — a wasp that catches bees and other insects to feed its young.",
+    "secondary" : "Philanthus gibbosus, a beewolf in family Crabronidae, the apoid wasps.",
+    "university" : "An apoid wasp. The apoid wasps (Apoidea) are paraphyletic with respect to the bees (Anthophila), which arose from within them. Its smallest honest clade is Apoidea, which also contains the bees — the containing clade is broader than the rank."
+  },
+  "commonNames" : [ {
+    "label" : "beewolf",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : null,
+  "placedIn" : null,
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "reticulitermes-hesperus",
+  "genusName" : "reticulitermes",
+  "epithet" : "hesperus",
+  "description" : {
+    "preschool" : "A pale little insect that lives in wood with many brothers and sisters.",
+    "elementary" : "The western subterranean termite. Termites live in big family colonies and eat wood.",
+    "secondary" : "Reticulitermes hesperus, a termite. Termites were once their own order (Isoptera) but are now placed inside the cockroaches (Blattodea).",
+    "university" : "A termite — a eusocial lineage nested within Blattodea, sister to the wood-feeding roach Cryptocercus. Eusociality is a derived trait of the termite clade (Termitoidae / Isoptera), below the ordinal level: a trait that resolves on a sub-ordinal clade, not on the order."
+  },
+  "commonNames" : [ {
+    "label" : "western subterranean termite",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : null,
+  "placedIn" : "termitoidae",
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "vanessa-cardui",
+  "genusName" : "vanessa",
+  "epithet" : "cardui",
+  "description" : {
+    "preschool" : "The Painted Lady butterfly has orange, black, and white wings with beautiful patterns. Every year it travels a very long way — farther than any other butterfly in the world. When it visits our garden flowers, it helps pollinate them.",
+    "elementary" : "The Painted Lady is one of the most common butterflies in the world and it makes an amazing journey every year. In California, millions of them fly north in spring and south in autumn — a migration longer than the monarch butterfly's. Adults drink nectar from flowers and carry pollen. Their caterpillars eat thistle, mallow, and some other plants but do not harm tomatoes or vegetables. Seeing a Painted Lady means the garden is part of a much larger ecological story.",
+    "secondary" : "Vanessa cardui is the most widely distributed butterfly in the world, found on every continent except Antarctica and Australia. In California, it undertakes a multi-generational migratory circuit: spring migration northward from the Sonoran Desert follows the Pacific Coast and Central Valley, with populations peaking in the Bay Area and Sacramento Valley in March–April. Adults are polylectic nectarivores visiting hundreds of flower species; their large body size and active foraging make them effective pollen vectors for garden Asteraceae, Boraginaceae, and Lamiaceae. Caterpillars feed on Asteraceae (especially thistles) and Malvaceae — no Solanaceae feeding recorded. The spring 2026 Painted Lady emergence was reported as an exceptional year for Central Valley populations following wet winter conditions producing abundant larval host plant growth.",
+    "university" : "Vanessa cardui (Linnaeus, 1758) — Lepidoptera: Nymphalidae: Nymphalinae. Cosmopolitan. At Oak Vista, documented as spring migrant foraging on Asteraceae and sage, April 2026. Migration ecology: multigenerational circuit (2–6 generations depending on year) spanning 9,000–15,000 km round-trip from overwintering grounds in sub-Saharan Africa (or, for California populations, the Sonoran Desert); migration orientation governed by a circadian-linked sun compass and polarized light detection. Population irruptions correlated with El Niño Southern Oscillation events producing wet winters that drive Cirsium (thistle) and Malva larval host plant abundance in the Mojave and Sonoran Deserts. Pollination role: adults carry viable pollen on ventral wing scales and proboscis; floral visitation rates at Oak Vista suggest meaningful contribution to Asteraceae cross-pollination during migration peaks. Conservation note: no pesticide treatment warranted — population regulated by landscape-scale processes."
+  },
+  "commonNames" : [ {
+    "label" : "Painted Lady",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : "Observed Oak Vista April 2026 during exceptional Central Valley spring migration event. Adults feeding on dill, sage, and Asteraceae border flowers. Migratory population — not a breeding resident.",
+  "placedIn" : null,
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+}, {
+  "name" : "xylocopa-varipuncta",
+  "genusName" : "xylocopa",
+  "epithet" : "varipuncta",
+  "description" : {
+    "preschool" : "The Valley Carpenter Bee is the biggest bee in California! The females are all black and shiny, and the males are golden and fuzzy. They drill holes in wood to make their nests. They are very loud but gentle — the boys cannot even sting.",
+    "elementary" : "The Valley Carpenter Bee is a large native bee found all over California's Central Valley. Females are shiny black and males are golden or tan. They drill perfectly round holes in dead wood or fence posts for nests, which is how they got their name. They are excellent pollinators for tomatoes, peppers, and other vegetables because they are strong enough to vibrate the flower and shake the pollen loose — a trick called buzz pollination. Male bees are territorial but harmless because they cannot sting.",
+    "secondary" : "Xylocopa varipuncta is one of California's largest bees and the dominant native pollinator at Oak Vista based on April 2026 observations. Sexual dimorphism is extreme: females are solid metallic black; males are golden-tan. Females nest in dry dead wood, excavating galleries with jaws and vibrating mandibles. As large-bodied bees with powerful thoracic musculature, X. varipuncta are among the most effective buzz pollinators of poricidal-anthered crops (tomatoes, peppers, eggplants). They are robustness specialists — their size and vibration frequency (300–400 Hz) efficiently releases pollen from Solanum-type anthers where smaller bees struggle. Xylocopa are solitary with minimal social structure: a single female provisions each cell independently.",
+    "university" : "Xylocopa varipuncta (Patton, 1879) — Hymenoptera: Apidae: Xylocopinae. The most visually prominent native bee at Oak Vista; abundant throughout April 2026 assessment. Buzz pollination physiology: thoracic indirect flight muscles decouple from wing movement and contract isometrically at frequencies of 280–420 Hz, generating vibrations transmitted to the flower via contact; this releases pollen from poricidal anthers of Solanaceae (tomato, pepper) at rates 2–5× higher than wind dispersal alone. Nesting biology: females excavate galleries 15–30 cm deep in dry seasoned wood; each gallery contains 6–10 cells provisioned with pollen-nectar paste; multivoltine in Chico with emergence peaks April and August. Longevity: adult females live up to 3 years — among the longest-lived North American bees. Management: retain dead wood snags and unpainted fence posts as nesting substrate."
+  },
+  "commonNames" : [ {
+    "label" : "Valley Carpenter Bee",
+    "locale" : "en"
+  } ],
+  "sightingNotes" : "Abundant at Oak Vista April 2026 — multiple males and females observed foraging on tomato, sage, and dill flowers. Nesting in old fence post at property edge confirmed. Key pollinator for tomato buzz pollination.",
+  "placedIn" : null,
+  "chemicalDefense" : null,
+  "voltinism" : null,
+  "habitatProfile" : null,
+  "habitatRequirements" : null,
+  "gardenConnections" : null,
+  "beneficialProfile" : null,
+  "ecologicalSignificance" : null
+} ]
