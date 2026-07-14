@@ -353,7 +353,9 @@ public record FieldObservation(
     NaturalistName observedBy,
     InsectRankName subject,
     Instant observedOn,
-    @Nullable String notes
+    @Nullable String notes,
+    @Nullable String location,
+    @Nullable Double confidence
 ) implements Entity<FieldObservationId>
 ```
 
@@ -361,6 +363,10 @@ Records that a naturalist (`observedBy`) encountered an insect at a
 taxonomic rank (`subject`) at a point in time. Identity by UUIDv7.
 Photographic evidence is optional and lives on `InsectImage` via its
 `observationId` link — an observation needs no photo.
+
+`location` is a free-text string (e.g. "Deer Creek, Butte County, CA"),
+null for observations without location data. `confidence` is the vision
+model's identification confidence (0.0–1.0), null for manual sightings.
 
 "Insects I've collected" is the distinct set of `subject`s across a
 naturalist's observations. Multiple observations of the same subject
@@ -1085,6 +1091,15 @@ boundary crosses by `EntityName` slug.
 - `InsectsCatalogContribution` — searchable tokens per species
   (slug, genus epithet, scientific binomial, abbreviated binomial,
   common names), plus family/genus/order contributions.
+- Vision-assisted identification via `InsectIdentificationService`
+  (`insects-core`, `@DomainService`). Photo → structured tool_use →
+  `InsectSpecies` + `FieldObservation` + `InsectImage` catalog insert.
+  See `docs/briefings/vision-identification.md` for the full pipeline.
+- Client-side image resize (1024px, JPEG 0.85) and server-side
+  `ImageStorageService` with magic-byte validation (JPEG/PNG/WebP).
+- Console routes: `GET/POST /insects/identify` (identify new species),
+  `POST /{name}/images` (multipart upload), `POST /{name}/notes`
+  (field notes), `POST /{name}/re-identify` (reclassification).
 
 **Known invariant gaps.**
 
@@ -1101,9 +1116,13 @@ boundary crosses by `EntityName` slug.
 - No `InsectSubspecies` entity (the `InsectSubspeciesName` permit exists
   but yields `Optional.empty()` everywhere).
 - No family/genus/order/feature/featureAssignment commands on
-  `InsectCommand` — species, image, and fieldObservation only.
+  `InsectCommand` — species, image, and fieldObservation only. This means
+  vision-identified species whose genus is not already in the catalog
+  cannot be fully cataloged (the detail page redirect guard handles this).
 - No `ChemicalDefense.protectedStages` / per-stage `chemistryRole`
   reconciliation — both encodings exist in parallel by design.
+- No `ImageQuery` method to find images by `observationId` — the
+  re-identify flow cannot update image `parentName` yet.
 
 ---
 
