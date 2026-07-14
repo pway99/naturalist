@@ -1,5 +1,6 @@
 package com.naturalist.console;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -36,6 +41,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 class InsectsControllerWebMvcTest {
+
+    private static final Path IMAGE_DIR = Path.of("data/images/insects");
+
+    @AfterAll
+    static void cleanUpTestImages() throws IOException {
+        if (Files.isDirectory(IMAGE_DIR)) {
+            try (var files = Files.list(IMAGE_DIR)) {
+                files.forEach(f -> { try { Files.delete(f); } catch (IOException ignored) { } });
+            }
+        }
+    }
 
     @Autowired
     WebApplicationContext context;

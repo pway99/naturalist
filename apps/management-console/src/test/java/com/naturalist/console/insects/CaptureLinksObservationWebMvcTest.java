@@ -2,16 +2,20 @@ package com.naturalist.console.insects;
 
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.console.auth.NaturalistPrincipal;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import org.springframework.mock.web.MockMultipartFile;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -23,6 +27,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 class CaptureLinksObservationWebMvcTest {
+
+    private static final Path IMAGE_DIR = Path.of("data/images/insects");
+
+    @AfterAll
+    static void cleanUpTestImages() throws IOException {
+        if (Files.isDirectory(IMAGE_DIR)) {
+            try (var files = Files.list(IMAGE_DIR)) {
+                files.forEach(f -> { try { Files.delete(f); } catch (IOException ignored) { } });
+            }
+        }
+    }
 
     @Autowired
     WebApplicationContext context;
