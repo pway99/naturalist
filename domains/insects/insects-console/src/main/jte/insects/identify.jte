@@ -1,6 +1,7 @@
 @import org.springframework.security.web.csrf.CsrfToken
 
 @param CsrfToken _csrf = null
+@param String identified = null
 
 !{var csrfName = _csrf != null ? _csrf.getParameterName() : "";}
 !{var csrfValue = _csrf != null ? _csrf.getToken() : "";}
@@ -10,6 +11,10 @@
     content = @`
         <div class="identify-page">
             <h1>Identify an Insect</h1>
+            @if(identified != null)
+                <p class="success-message">Identified as <strong>${identified}</strong>.
+                   The species has been added to the catalog with your observation and photo.</p>
+            @endif
             <p>Upload a photo and Claude will suggest an identification.
                You can verify the result against authoritative references.</p>
 

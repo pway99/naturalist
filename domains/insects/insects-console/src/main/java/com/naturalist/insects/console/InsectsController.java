@@ -285,10 +285,14 @@ public class InsectsController {
     }
 
     @GetMapping("/identify")
-    String identifyForm(HttpServletRequest request, Model model) {
+    String identifyForm(@RequestParam(name = "identified", required = false) String identified,
+                        HttpServletRequest request, Model model) {
         Object csrf = request.getAttribute(CSRF_REQUEST_ATTRIBUTE);
         if (csrf != null) {
             model.addAttribute("_csrf", csrf);
+        }
+        if (identified != null && !identified.isBlank()) {
+            model.addAttribute("identified", identified);
         }
         return "insects/identify";
     }
@@ -351,7 +355,14 @@ public class InsectsController {
                 result.confidence());
         insectCommand.fieldObservations().insert(observation);
 
-        return "redirect:/insects/" + speciesName.value();
+        // Only redirect to detail page if the rank chain is resolvable (genus exists).
+        // Novel genera from vision lack parent rank entities (no genus/family/order commands),
+        // so the detail page would NPE trying to build the rank-chain breadcrumb.
+        if (existingSpecies.isPresent()
+                || insectQuery.genera().getByName(result.species().genusName()).isPresent()) {
+            return "redirect:/insects/" + speciesName.value();
+        }
+        return "redirect:/insects/identify?identified=" + speciesName.value();
     }
 
     private String buildVisionNotes(String userNotes, InsectIdentificationResult result) {
@@ -839,7 +850,8 @@ public class InsectsController {
         var contentType = Files.probeContentType(path);
         if (contentType == null) contentType = "application/octet-stream";
         response.setContentType(contentType);
-        response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
+        var safeName = path.getFileName().toString();
+        response.setHeader("Content-Disposition", "inline; filename=\"" + safeName + "\"");
         response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
         Files.copy(path, response.getOutputStream());
     }
