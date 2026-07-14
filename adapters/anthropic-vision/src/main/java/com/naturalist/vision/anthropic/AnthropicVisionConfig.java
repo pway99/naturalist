@@ -10,6 +10,6 @@ public record AnthropicVisionConfig(
         int maxTokens
 ) {
     public static AnthropicVisionConfig defaults() {
-        return new AnthropicVisionConfig("claude-sonnet-4-5", 4096);
+        return new AnthropicVisionConfig("claude-sonnet-4-5-20250514", 4096);
     }
 }
