@@ -2,16 +2,16 @@ package com.naturalist.insects;
 
 import com.naturalist.taxonomy.TaxonomicClassification;
 
+import java.util.List;
+
 /**
- * The domain-typed result of a vision identification. Carries the candidate
- * {@link InsectSpecies} record (ready for catalog insert if new), the full
- * {@link TaxonomicClassification} (so the caller can create missing parent
- * ranks), and the {@link Identification} — confidence, supporting evidence,
- * and typed alternative candidates — ready to attach to a
- * {@link com.naturalist.insects.FieldObservation}.
+ * Domain-typed result of vision identification — carries the identified rank
+ * entity (polymorphic), taxonomy, identification metadata, and structured
+ * features. Ready to feed into authority validation and catalog persistence.
  */
-public record InsectIdentificationResult(
-        InsectSpecies species,
+record InsectIdentificationResult(
+        IdentifiedRankEntity identifiedEntity,
         TaxonomicClassification taxonomy,
-        Identification identification
+        Identification identification,
+        List<String> features
 ) {}

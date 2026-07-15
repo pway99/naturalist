@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,7 +69,9 @@ class InsectCatalogIdentificationTransactionTest {
                 secondObsId, NaturalistName.of("pat"), SPECIES_NAME,
                 Instant.now(), "second sighting", null, null);
         var second = new CatalogIdentification(
-                species(), taxonomy(), secondImage, secondObs);
+                new IdentifiedRankEntity.Species(species()),
+                taxonomy(), secondImage, secondObs,
+                List.of(), List.of(), Map.of());
 
         transaction.execute(second);
 
@@ -104,7 +108,9 @@ class InsectCatalogIdentificationTransactionTest {
                 secondObsId, NaturalistName.of("pat"), secondSpeciesName,
                 Instant.now(), null, null, null);
         var second = new CatalogIdentification(
-                secondSpecies, taxonomy(), secondImage, secondObs);
+                new IdentifiedRankEntity.Species(secondSpecies),
+                taxonomy(), secondImage, secondObs,
+                List.of(), List.of(), Map.of());
 
         transaction.execute(second);
 
@@ -125,7 +131,10 @@ class InsectCatalogIdentificationTransactionTest {
     private static final FieldObservationId OBSERVATION_ID = FieldObservationId.create();
 
     private static CatalogIdentification catalogIdentification() {
-        return new CatalogIdentification(species(), taxonomy(), image(), observation());
+        return new CatalogIdentification(
+                new IdentifiedRankEntity.Species(species()),
+                taxonomy(), image(), observation(),
+                List.of(), List.of(), Map.of());
     }
 
     private static InsectSpecies species() {

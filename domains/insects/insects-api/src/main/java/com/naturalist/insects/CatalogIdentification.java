@@ -1,54 +1,66 @@
 package com.naturalist.insects;
 
 import com.naturalist.ddd.Aggregate;
+import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.TaxonomicClassification;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
  * Write-side consistency boundary for insect catalog identification — the
- * aggregate that an {@link com.naturalist.data.Transaction} persists
+ * aggregate that a {@link com.naturalist.data.Transaction} persists
  * atomically when a naturalist identifies an insect from a photograph.
  *
- * <p>Carries the four entities the transaction must persist (species,
- * image, observation) plus the full {@link TaxonomicClassification} needed
- * to create any missing parent ranks (order, family, genus). Cross-entity
- * invariants enforce FK consistency: the image and observation must
- * reference the same species, and the image must link to the observation.
- *
- * <p>Read/write symmetry: {@link Insect} is the read-side composition
- * (ReadModel); this record is the write-side boundary (Aggregate).
+ * <p>Carries the identified rank entity (polymorphic — species, genus,
+ * family, or order), taxonomy, image, observation, structured features,
+ * and pre-resolved parent rank descriptions. Cross-entity invariants
+ * enforce FK consistency: the image and observation must reference the
+ * identified rank.
  */
 public record CatalogIdentification(
-        InsectSpecies species,
+        IdentifiedRankEntity identifiedEntity,
         TaxonomicClassification taxonomy,
         InsectImage image,
-        FieldObservation observation
+        FieldObservation observation,
+        List<InsectFeature> newFeatures,
+        List<InsectFeatureAssignment> featureAssignments,
+        Map<InsectRankName, Description> parentDescriptions
 ) implements Aggregate {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .namedEntity(species, "species")
+                .notNull(identifiedEntity, "identifiedEntity")
                 .valueObject(taxonomy, "taxonomy")
                 .namedEntity(image, "image")
                 .namedEntity(observation, "observation")
-                .isTrue(imageParentMatchesSpecies(), "imageParentMatchesSpecies")
-                .isTrue(observationSubjectMatchesSpecies(), "observationSubjectMatchesSpecies")
-                .isTrue(imageObservationIdMatchesObservation(), "imageObservationIdMatchesObservation");
+                .notNull(newFeatures, "newFeatures")
+                .notNull(featureAssignments, "featureAssignments")
+                .notNull(parentDescriptions, "parentDescriptions")
+                .isTrue(imageParentMatchesIdentifiedRank(),
+                        "imageParentMatchesIdentifiedRank")
+                .isTrue(observationSubjectMatchesIdentifiedRank(),
+                        "observationSubjectMatchesIdentifiedRank")
+                .isTrue(imageObservationIdMatchesObservation(),
+                        "imageObservationIdMatchesObservation");
     }
 
-    private boolean imageParentMatchesSpecies() {
-        return species == null || image == null || image.parentName().equals(species.name());
+    private boolean imageParentMatchesIdentifiedRank() {
+        return identifiedEntity == null || image == null
+                || image.parentName().equals(identifiedEntity.rankName());
     }
 
-    private boolean observationSubjectMatchesSpecies() {
-        return species == null || observation == null || observation.subject().equals(species.name());
+    private boolean observationSubjectMatchesIdentifiedRank() {
+        return identifiedEntity == null || observation == null
+                || observation.subject().equals(identifiedEntity.rankName());
     }
 
     private boolean imageObservationIdMatchesObservation() {
-        return image == null || observation == null || Objects.equals(image.observationId(), observation.id());
+        return image == null || observation == null
+                || Objects.equals(image.observationId(), observation.id());
     }
 }

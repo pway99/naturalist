@@ -20,6 +20,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,9 +69,11 @@ public class InsectIdentificationCommand {
         var capturedAt = image.metadata().capturedAt() != null
                 ? image.metadata().capturedAt() : Instant.now();
 
+        var rankName = result.identifiedEntity().rankName();
+
         var insectImage = new InsectImage(
                 InsectImageId.create(),
-                result.species().name(),
+                rankName,
                 Instant.now(),
                 storedFileName,
                 observationId);
@@ -78,18 +81,20 @@ public class InsectIdentificationCommand {
         var observation = new FieldObservation(
                 observationId,
                 naturalist,
-                result.species().name(),
+                rankName,
                 capturedAt,
                 (notes == null || notes.isBlank()) ? null : notes,
                 image.metadata().location(),
                 result.identification());
 
         var catalogId = new CatalogIdentification(
-                result.species(), result.taxonomy(), insectImage, observation);
+                result.identifiedEntity(), result.taxonomy(), insectImage, observation,
+                List.of(), List.of(), Map.of());
 
         transaction.execute(catalogId);
 
-        return result.species().name();
+        var species = ((IdentifiedRankEntity.Species) result.identifiedEntity()).species();
+        return species.name();
     }
 
     // ----- vision identification (unchanged from InsectIdentificationService) -----
@@ -202,7 +207,7 @@ public class InsectIdentificationCommand {
             var evidence = node.get("evidence").asText();
             var identification = new Identification(confidence, evidence, parseAlternatives(node));
 
-            return new InsectIdentificationResult(species, taxonomy, identification);
+            return new InsectIdentificationResult(new IdentifiedRankEntity.Species(species), taxonomy, identification, List.of());
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse vision identification result", e);
         }

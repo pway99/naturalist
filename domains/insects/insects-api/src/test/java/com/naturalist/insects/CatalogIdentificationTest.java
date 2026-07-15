@@ -16,6 +16,8 @@ import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,22 +37,23 @@ class CatalogIdentificationTest {
     }
 
     @Test
-    void nullSpeciesReportsViolation() {
-        MethodObserver mo = observer.forMethod("nullSpeciesReportsViolation");
+    void nullIdentifiedEntityReportsViolation() {
+        MethodObserver mo = observer.forMethod("nullIdentifiedEntityReportsViolation");
         CatalogIdentification id = new CatalogIdentification(
-                null, taxonomy(), image(), observation());
+                null, taxonomy(), image(), observation(), List.of(), List.of(), Map.of());
 
         InvariantObservation result = mo.observable(id, "catalogIdentification");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .contains(".catalogIdentification.species");
+                .contains(".catalogIdentification.identifiedEntity");
     }
 
     @Test
     void nullTaxonomyReportsViolation() {
         MethodObserver mo = observer.forMethod("nullTaxonomyReportsViolation");
         CatalogIdentification id = new CatalogIdentification(
-                species(), null, image(), observation());
+                new IdentifiedRankEntity.Species(species()), null, image(), observation(),
+                List.of(), List.of(), Map.of());
 
         InvariantObservation result = mo.observable(id, "catalogIdentification");
 
@@ -62,7 +65,8 @@ class CatalogIdentificationTest {
     void nullImageReportsViolation() {
         MethodObserver mo = observer.forMethod("nullImageReportsViolation");
         CatalogIdentification id = new CatalogIdentification(
-                species(), taxonomy(), null, observation());
+                new IdentifiedRankEntity.Species(species()), taxonomy(), null, observation(),
+                List.of(), List.of(), Map.of());
 
         InvariantObservation result = mo.observable(id, "catalogIdentification");
 
@@ -74,7 +78,8 @@ class CatalogIdentificationTest {
     void nullObservationReportsViolation() {
         MethodObserver mo = observer.forMethod("nullObservationReportsViolation");
         CatalogIdentification id = new CatalogIdentification(
-                species(), taxonomy(), image(), null);
+                new IdentifiedRankEntity.Species(species()), taxonomy(), image(), null,
+                List.of(), List.of(), Map.of());
 
         InvariantObservation result = mo.observable(id, "catalogIdentification");
 
@@ -92,12 +97,13 @@ class CatalogIdentificationTest {
                 FileName.of("IMG_0001.jpg"),
                 OBSERVATION_ID);
         CatalogIdentification id = new CatalogIdentification(
-                species(), taxonomy(), wrongParent, observation());
+                new IdentifiedRankEntity.Species(species()), taxonomy(), wrongParent, observation(),
+                List.of(), List.of(), Map.of());
 
         InvariantObservation result = mo.observable(id, "catalogIdentification");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .contains(".catalogIdentification.imageParentMatchesSpecies");
+                .contains(".catalogIdentification.imageParentMatchesIdentifiedRank");
     }
 
     @Test
@@ -110,12 +116,13 @@ class CatalogIdentificationTest {
                 Instant.now(),
                 null, null, null);
         CatalogIdentification id = new CatalogIdentification(
-                species(), taxonomy(), image(), wrongSubject);
+                new IdentifiedRankEntity.Species(species()), taxonomy(), image(), wrongSubject,
+                List.of(), List.of(), Map.of());
 
         InvariantObservation result = mo.observable(id, "catalogIdentification");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .contains(".catalogIdentification.observationSubjectMatchesSpecies");
+                .contains(".catalogIdentification.observationSubjectMatchesIdentifiedRank");
     }
 
     @Test
@@ -129,7 +136,8 @@ class CatalogIdentificationTest {
                 FileName.of("IMG_0001.jpg"),
                 differentObservationId);
         CatalogIdentification id = new CatalogIdentification(
-                species(), taxonomy(), imageWithWrongObsId, observation());
+                new IdentifiedRankEntity.Species(species()), taxonomy(), imageWithWrongObsId, observation(),
+                List.of(), List.of(), Map.of());
 
         InvariantObservation result = mo.observable(id, "catalogIdentification");
 
@@ -144,7 +152,9 @@ class CatalogIdentificationTest {
     private static final FieldObservationId OBSERVATION_ID = FieldObservationId.create();
 
     private static CatalogIdentification validCatalogIdentification() {
-        return new CatalogIdentification(species(), taxonomy(), image(), observation());
+        return new CatalogIdentification(
+                new IdentifiedRankEntity.Species(species()), taxonomy(), image(), observation(),
+                List.of(), List.of(), Map.of());
     }
 
     private static InsectSpecies species() {
