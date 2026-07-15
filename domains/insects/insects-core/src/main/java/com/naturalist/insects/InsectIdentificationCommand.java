@@ -2,15 +2,26 @@ package com.naturalist.insects;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.naturalist.authority.AuthorityContent;
+import com.naturalist.authority.AuthorityReference;
+import com.naturalist.authority.CitationName;
+import com.naturalist.authority.ExternalAuthority;
+import com.naturalist.authority.OnlineSource;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.ddd.EntityName;
 import com.naturalist.data.FileName;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.library.CitationAssociation;
+import com.naturalist.library.CitationAssociationId;
+import com.naturalist.library.LibraryCommand;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
+import com.naturalist.textgeneration.TextGenerationService;
 import com.naturalist.vision.Image;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
@@ -19,22 +30,23 @@ import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
- * Orchestrates the full insect identification flow: vision identification →
- * aggregate construction → transactional persistence. Replaces the three-step
- * controller orchestration (identify → ensureParentRanks → insert entities)
- * with a single command call.
+ * Orchestrates the full insect identification flow: vision identification
+ * authority validation  parent rank enrichment  feature resolution
+ * citation creation  transactional persistence. All external calls
+ * (vision, authority lookup, content fetch, text generation) complete
+ * before the transaction boundary. The transaction does pure DB writes.
  *
- * <p>Owns the tool schema, system prompt, and result deserialization for
- * vision identification. The identify-insect Claude Code skill has working
- * prompts that informed this implementation.
- *
- * <p>Returns {@link InsectSpeciesName} — a pragmatic CQS exception so the
- * caller can redirect to the species page without a follow-up query.
+ * <p>Returns {@code Optional<InsectRankName>} -- empty when authority
+ * validation rejects the identification at all ranks.
  */
 public class InsectIdentificationCommand {
 
@@ -42,62 +54,99 @@ public class InsectIdentificationCommand {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final VisionService visionService;
+    private final TextGenerationService textGenerationService;
+    private final ExternalAuthority externalAuthority;
+    private final LibraryCommand libraryCommand;
+    private final InsectQuery insectQuery;
     private final InsectCatalogIdentificationTransaction transaction;
 
     public InsectIdentificationCommand(VisionService visionService,
+                                        TextGenerationService textGenerationService,
+                                        ExternalAuthority externalAuthority,
+                                        LibraryCommand libraryCommand,
+                                        InsectQuery insectQuery,
                                         InsectCatalogIdentificationTransaction transaction) {
         this.visionService = visionService;
+        this.textGenerationService = textGenerationService;
+        this.externalAuthority = externalAuthority;
+        this.libraryCommand = libraryCommand;
+        this.insectQuery = insectQuery;
         this.transaction = transaction;
     }
 
     /**
-     * Identifies an insect from a photograph and persists the result —
-     * species, parent ranks, image, and field observation — atomically.
+     * Identifies an insect from a photograph, validates against an external
+     * authority, enriches parent ranks with grounded descriptions and features,
+     * creates citations, and persists everything atomically.
      *
-     * @param image          the photograph with metadata (location, captured instant)
-     * @param storedFileName the already-stored image file name (infrastructure concern)
-     * @param naturalist     the naturalist who captured the image
-     * @param notes          optional field notes from the naturalist
-     * @return the species name for redirect
+     * <p>All external calls (vision, authority lookup, content fetch, text
+     * generation) complete before the transaction boundary. The transaction
+     * does pure DB writes.
+     *
+     * @return the confirmed rank name for redirect, or empty if authority
+     *         validation rejected the identification at all ranks
      */
-    public InsectSpeciesName identify(Image image, FileName storedFileName,
-                                      NaturalistName naturalist,
-                                      @Nullable String notes) {
-        var result = identifyViaVision(image);
+    public Optional<InsectRankName> identify(Image image, FileName storedFileName,
+                                              NaturalistName naturalist,
+                                              @Nullable String notes) {
+        // 1. VISION -- external call
+        var visionResult = identifyViaVision(image);
 
+        // 2. AUTHORITY VALIDATION -- external calls, top-down fallback
+        var confirmed = validateWithAuthority(visionResult);
+        if (confirmed == null) {
+            return Optional.empty();
+        }
+
+        // 3. PARENT RANK ENRICHMENT -- external calls, only for new ranks
+        var parentDescriptions = enrichParentRanks(confirmed.taxonomy());
+        var parentFeatures = new ArrayList<RankFeatures>();
+        parentDescriptions.forEach((rankName, enrichment) ->
+                parentFeatures.add(new RankFeatures(rankName, enrichment.features())));
+
+        // 4. FEATURE RESOLUTION -- queries only
+        var identifiedRankFeatures = new RankFeatures(
+                confirmed.identifiedEntity().rankName(), visionResult.features());
+        var combined = new ArrayList<RankFeatures>();
+        combined.add(identifiedRankFeatures);
+        combined.addAll(parentFeatures);
+        var featureResolution = resolveFeatures(combined);
+
+        // 5. CITATION PREPARATION + LIBRARY WRITES -- cross-domain
+        writeCitations(confirmed.authorityReferences());
+
+        // 6. INSECT TRANSACTION -- pure DB writes
         var observationId = FieldObservationId.create();
         var capturedAt = image.metadata().capturedAt() != null
                 ? image.metadata().capturedAt() : Instant.now();
-
-        var rankName = result.identifiedEntity().rankName();
+        var rankName = confirmed.identifiedEntity().rankName();
 
         var insectImage = new InsectImage(
-                InsectImageId.create(),
-                rankName,
-                Instant.now(),
-                storedFileName,
-                observationId);
+                InsectImageId.create(), rankName, Instant.now(),
+                storedFileName, observationId);
 
         var observation = new FieldObservation(
-                observationId,
-                naturalist,
-                rankName,
-                capturedAt,
+                observationId, naturalist, rankName, capturedAt,
                 (notes == null || notes.isBlank()) ? null : notes,
                 image.metadata().location(),
-                result.identification());
+                confirmed.identification());
+
+        var descriptionMap = new HashMap<InsectRankName, Description>();
+        parentDescriptions.forEach((name, enrichment) ->
+                descriptionMap.put(name, enrichment.description()));
 
         var catalogId = new CatalogIdentification(
-                result.identifiedEntity(), result.taxonomy(), insectImage, observation,
-                List.of(), List.of(), Map.of());
+                confirmed.identifiedEntity(), confirmed.taxonomy(),
+                insectImage, observation,
+                featureResolution.newFeatures(), featureResolution.assignments(),
+                descriptionMap);
 
         transaction.execute(catalogId);
 
-        var species = ((IdentifiedRankEntity.Species) result.identifiedEntity()).species();
-        return species.name();
+        return Optional.of(rankName);
     }
 
-    // ----- vision identification (unchanged from InsectIdentificationService) -----
+    // ----- vision identification -----
 
     private InsectIdentificationResult identifyViaVision(Image image) {
         var toolSchema = buildToolSchema();
@@ -105,6 +154,303 @@ public class InsectIdentificationCommand {
         var result = visionService.identify(image, toolSchema, systemPrompt);
         return parseResult(result);
     }
+
+    // ----- authority validation -----
+
+    private record ConfirmedIdentification(
+            IdentifiedRankEntity identifiedEntity,
+            TaxonomicClassification taxonomy,
+            Identification identification,
+            Map<InsectRankName, Set<AuthorityReference>> authorityReferences
+    ) {}
+
+    private @Nullable ConfirmedIdentification validateWithAuthority(
+            InsectIdentificationResult visionResult) {
+        var taxonomy = visionResult.taxonomy();
+        var authorityRefs = new LinkedHashMap<InsectRankName, Set<AuthorityReference>>();
+
+        // Build the rank chain from most specific to least
+        var rankChain = buildRankChain(visionResult, taxonomy);
+
+        // Validate top-down (most specific first)
+        IdentifiedRankEntity confirmedEntity = null;
+        for (var candidate : rankChain) {
+            var refs = externalAuthority.lookup((EntityName) candidate.rankName());
+            if (!refs.isEmpty()) {
+                confirmedEntity = candidate;
+                authorityRefs.put(candidate.rankName(), refs);
+                break;
+            }
+        }
+
+        if (confirmedEntity == null) {
+            return null; // all ranks failed -- reject identification
+        }
+
+        // Collect authority refs for parent ranks above the confirmed one
+        collectParentAuthorityRefs(confirmedEntity, taxonomy, authorityRefs);
+
+        // Rebuild taxonomy to match confirmed rank
+        var confirmedTaxonomy = trimTaxonomy(confirmedEntity, taxonomy);
+
+        return new ConfirmedIdentification(
+                confirmedEntity, confirmedTaxonomy,
+                visionResult.identification(), authorityRefs);
+    }
+
+    private List<IdentifiedRankEntity> buildRankChain(
+            InsectIdentificationResult result, TaxonomicClassification taxonomy) {
+        var chain = new ArrayList<IdentifiedRankEntity>();
+        chain.add(result.identifiedEntity());
+
+        // Add parent ranks as fallback candidates (genus -> family -> order)
+        var entity = result.identifiedEntity();
+        if (entity instanceof IdentifiedRankEntity.Species && taxonomy.genus() != null) {
+            var genusSlug = taxonomy.genus().value().toLowerCase(Locale.ROOT);
+            var familySlug = taxonomy.family().value().toLowerCase(Locale.ROOT);
+            chain.add(new IdentifiedRankEntity.Genus(new InsectGenus(
+                    InsectGenusName.of(genusSlug), InsectFamilyName.of(familySlug),
+                    taxonomy.genus(), FALLBACK_DESCRIPTION, Set.of(), null)));
+        }
+        if ((entity instanceof IdentifiedRankEntity.Species
+                || entity instanceof IdentifiedRankEntity.Genus)
+                && taxonomy.family() != null) {
+            var familySlug = taxonomy.family().value().toLowerCase(Locale.ROOT);
+            var orderSlug = taxonomy.order().value().toLowerCase(Locale.ROOT);
+            chain.add(new IdentifiedRankEntity.Family(new InsectFamily(
+                    InsectFamilyName.of(familySlug), InsectOrderName.of(orderSlug),
+                    taxonomy.family(), FALLBACK_DESCRIPTION, Set.of(), null)));
+        }
+        var orderSlug = taxonomy.order().value().toLowerCase(Locale.ROOT);
+        if (!(entity instanceof IdentifiedRankEntity.Order)) {
+            chain.add(new IdentifiedRankEntity.Order(new InsectOrder(
+                    InsectOrderName.of(orderSlug), taxonomy.order(),
+                    FALLBACK_DESCRIPTION, Set.of(), null)));
+        }
+        return chain;
+    }
+
+    private static final Description FALLBACK_DESCRIPTION = new Description(
+            "Identified via vision -- description pending.",
+            "Identified via vision -- description pending.",
+            "Identified via vision -- description pending.",
+            "Identified via vision -- description pending.");
+
+    private void collectParentAuthorityRefs(IdentifiedRankEntity confirmed,
+                                             TaxonomicClassification taxonomy,
+                                             Map<InsectRankName, Set<AuthorityReference>> refs) {
+        // Look up parent ranks above the confirmed one
+        if (confirmed instanceof IdentifiedRankEntity.Species && taxonomy.genus() != null) {
+            var genusName = InsectGenusName.of(
+                    taxonomy.genus().value().toLowerCase(Locale.ROOT));
+            var genusRefs = externalAuthority.lookup(genusName);
+            if (!genusRefs.isEmpty()) refs.put(genusName, genusRefs);
+        }
+        if (!(confirmed instanceof IdentifiedRankEntity.Order)) {
+            if (taxonomy.family() != null) {
+                var familyName = InsectFamilyName.of(
+                        taxonomy.family().value().toLowerCase(Locale.ROOT));
+                if (!refs.containsKey(familyName)) {
+                    var familyRefs = externalAuthority.lookup(familyName);
+                    if (!familyRefs.isEmpty()) refs.put(familyName, familyRefs);
+                }
+            }
+            var orderName = InsectOrderName.of(
+                    taxonomy.order().value().toLowerCase(Locale.ROOT));
+            if (!refs.containsKey(orderName)) {
+                var orderRefs = externalAuthority.lookup(orderName);
+                if (!orderRefs.isEmpty()) refs.put(orderName, orderRefs);
+            }
+        }
+    }
+
+    private TaxonomicClassification trimTaxonomy(IdentifiedRankEntity confirmed,
+                                                  TaxonomicClassification original) {
+        return switch (confirmed) {
+            case IdentifiedRankEntity.Species _ -> original;
+            case IdentifiedRankEntity.Genus _ -> new TaxonomicClassification(
+                    original.order(), original.family(), original.genus(), null);
+            case IdentifiedRankEntity.Family _ -> new TaxonomicClassification(
+                    original.order(), original.family(), null, null);
+            case IdentifiedRankEntity.Order _ -> new TaxonomicClassification(
+                    original.order(), null, null, null);
+        };
+    }
+
+    // ----- parent rank enrichment -----
+
+    private record RankEnrichment(Description description, List<String> features) {}
+
+    private Map<InsectRankName, RankEnrichment> enrichParentRanks(
+            TaxonomicClassification taxonomy) {
+        var enrichments = new LinkedHashMap<InsectRankName, RankEnrichment>();
+
+        // Check each parent rank -- only enrich if it doesn't already exist
+        if (taxonomy.genus() != null) {
+            var genusName = InsectGenusName.of(
+                    taxonomy.genus().value().toLowerCase(Locale.ROOT));
+            enrichIfNew(genusName, taxonomy.genus().value(), enrichments);
+        }
+        if (taxonomy.family() != null) {
+            var familyName = InsectFamilyName.of(
+                    taxonomy.family().value().toLowerCase(Locale.ROOT));
+            enrichIfNew(familyName, taxonomy.family().value(), enrichments);
+        }
+        var orderName = InsectOrderName.of(
+                taxonomy.order().value().toLowerCase(Locale.ROOT));
+        enrichIfNew(orderName, taxonomy.order().value(), enrichments);
+
+        return enrichments;
+    }
+
+    private void enrichIfNew(InsectRankName rankName, String displayName,
+                             Map<InsectRankName, RankEnrichment> enrichments) {
+        // Check existence by querying the appropriate rank
+        boolean exists = switch (rankName) {
+            case InsectOrderName n -> insectQuery.orders().getByName(n).isPresent();
+            case InsectFamilyName n -> insectQuery.families().getByName(n).isPresent();
+            case InsectGenusName n -> insectQuery.genera().getByName(n).isPresent();
+            default -> true; // species/subspecies not parent ranks
+        };
+        if (exists) return;
+
+        try {
+            var refs = externalAuthority.lookup((EntityName) rankName);
+            if (refs.isEmpty()) {
+                enrichments.put(rankName, new RankEnrichment(FALLBACK_DESCRIPTION, List.of()));
+                return;
+            }
+            var ref = refs.iterator().next();
+            var content = externalAuthority.fetchContent(ref);
+            var enrichment = generateEnrichment(displayName, content);
+            enrichments.put(rankName, enrichment);
+        } catch (Exception e) {
+            enrichments.put(rankName, new RankEnrichment(FALLBACK_DESCRIPTION, List.of()));
+        }
+    }
+
+    private RankEnrichment generateEnrichment(String taxonName, AuthorityContent content) {
+        var schema = """
+                {
+                  "type": "object",
+                  "required": ["descriptionPreschool", "descriptionElementary",
+                               "descriptionSecondary", "descriptionUniversity", "features"],
+                  "properties": {
+                    "descriptionPreschool":    { "type": "string", "description": "Durrell preschool-level description" },
+                    "descriptionElementary":   { "type": "string", "description": "Durrell elementary-level description" },
+                    "descriptionSecondary":    { "type": "string", "description": "Durrell secondary-level description" },
+                    "descriptionUniversity":   { "type": "string", "description": "Durrell university-level description" },
+                    "features":                { "type": "array", "items": { "type": "string" }, "description": "Diagnostic morphological features for this rank, ordered conspicuous to diagnostic" }
+                  }
+                }
+                """;
+        var tool = new ToolSchema("describe_taxon",
+                "Generate Durrell descriptions and diagnostic features for a taxon.", schema);
+        var systemPrompt = """
+                You are an expert entomologist. Given authoritative reference content about
+                an insect taxon, produce four Durrell-level descriptions grounded in the
+                provided content. Do not invent facts -- only reshape what the source says.
+                Also extract the diagnostic morphological features that characterise this
+                taxon, ordered from most conspicuous to most diagnostic.
+                """;
+        var userPrompt = "Taxon: " + taxonName + "\n\nAuthority content:\n" + content.content();
+
+        var result = textGenerationService.generate(tool, systemPrompt, userPrompt);
+        try {
+            var node = MAPPER.readTree(result.argumentsJson());
+            var description = new Description(
+                    node.get("descriptionPreschool").asText(),
+                    node.get("descriptionElementary").asText(),
+                    node.get("descriptionSecondary").asText(),
+                    node.get("descriptionUniversity").asText());
+            var features = new ArrayList<String>();
+            if (node.hasNonNull("features") && node.get("features").isArray()) {
+                for (var f : node.get("features")) {
+                    if (f.isTextual() && !f.asText().isBlank()) {
+                        features.add(f.asText());
+                    }
+                }
+            }
+            return new RankEnrichment(description, List.copyOf(features));
+        } catch (Exception e) {
+            return new RankEnrichment(FALLBACK_DESCRIPTION, List.of());
+        }
+    }
+
+    // ----- feature resolution -----
+
+    private record RankFeatures(InsectRankName rankName, List<String> featureValues) {}
+
+    private record FeatureResolution(
+            List<InsectFeature> newFeatures,
+            List<InsectFeatureAssignment> assignments
+    ) {}
+
+    private FeatureResolution resolveFeatures(List<RankFeatures> allRankFeatures) {
+        var newFeatures = new ArrayList<InsectFeature>();
+        var assignments = new ArrayList<InsectFeatureAssignment>();
+        // Track features we've already created in this invocation
+        var createdFeatures = new HashMap<String, InsectFeatureId>();
+
+        for (var rankFeatures : allRankFeatures) {
+            int ordinal = 0;
+            for (var value : rankFeatures.featureValues()) {
+                var normalized = value.trim().toLowerCase();
+                if (normalized.isBlank()) continue;
+
+                InsectFeatureId featureId;
+                if (createdFeatures.containsKey(normalized)) {
+                    featureId = createdFeatures.get(normalized);
+                } else {
+                    featureId = InsectFeatureId.create();
+                    newFeatures.add(InsectFeature.of(featureId, normalized));
+                    createdFeatures.put(normalized, featureId);
+                }
+
+                assignments.add(InsectFeatureAssignment.of(
+                        InsectFeatureAssignmentId.create(),
+                        featureId, rankFeatures.rankName(), ordinal++));
+            }
+        }
+
+        return new FeatureResolution(List.copyOf(newFeatures), List.copyOf(assignments));
+    }
+
+    // ----- citation creation -----
+
+    private static final InsectsDomain INSECTS_DOMAIN = new InsectsDomain();
+
+    private void writeCitations(Map<InsectRankName, Set<AuthorityReference>> authorityRefs) {
+        for (var entry : authorityRefs.entrySet()) {
+            var rankName = entry.getKey();
+            for (var ref : entry.getValue()) {
+                try {
+                    var citationSlug = ref.source().id() + "-" + rankName.value();
+                    var citationName = CitationName.of(citationSlug);
+                    var title = capitalize(rankName.value()) + " -- " + ref.source().displayName();
+                    var citation = new OnlineSource(
+                            citationName, ref, title, null, null, null);
+                    libraryCommand.citations().insert(citation);
+
+                    var association = new CitationAssociation(
+                            CitationAssociationId.create(),
+                            citationName,
+                            new EntityRef(INSECTS_DOMAIN, (EntityName) rankName),
+                            "Identified via vision -- authority-validated");
+                    libraryCommand.citationAssociations().insert(association);
+                } catch (Exception e) {
+                    // Degraded -- identification proceeds without this citation
+                }
+            }
+        }
+    }
+
+    private static String capitalize(String s) {
+        if (s == null || s.isEmpty()) return s;
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
+    // ----- tool schema + parsing (unchanged from Task 6) -----
 
     private ToolSchema buildToolSchema() {
         var schema = """
@@ -148,7 +494,7 @@ public class InsectIdentificationCommand {
 
                 1. Examine the photograph carefully, noting morphological features (wing
                    venation, body shape, coloration, antennae, leg structure).
-                2. Consider the geographic location if provided — use it to narrow range maps
+                2. Consider the geographic location if provided -- use it to narrow range maps
                    and eliminate look-alike species from other regions.
                 3. Identify to the MOST SPECIFIC Linnaean rank your confidence supports:
                    - SPECIES: you can confidently name the species (e.g. Battus philenor)
@@ -157,7 +503,7 @@ public class InsectIdentificationCommand {
                    - ORDER: you can only identify the order
                    Set identifiedRank accordingly. Only provide genus/species fields when
                    your identifiedRank includes them. Do NOT guess a species if you are
-                   not confident — identify at family or order level instead.
+                   not confident -- identify at family or order level instead.
                 4. Provide four Durrell-level descriptions for the identified rank:
                    - Preschool: simple, sensory, wonder-focused (what a 4-year-old would notice)
                    - Elementary: observable features, life cycle basics (what a 10-year-old learns)
@@ -208,7 +554,7 @@ public class InsectIdentificationCommand {
             var identifiedEntity = buildIdentifiedEntity(
                     identifiedRank, slug, description, commonName, sightingNotes, taxonomy);
 
-            var features = new java.util.ArrayList<String>();
+            var features = new ArrayList<String>();
             if (node.hasNonNull("features") && node.get("features").isArray()) {
                 for (var f : node.get("features")) {
                     if (f.isTextual() && !f.asText().isBlank()) {
@@ -235,7 +581,7 @@ public class InsectIdentificationCommand {
             case "SPECIES" -> {
                 var speciesName = InsectSpeciesName.of(slug);
                 var genusName = InsectGenusName.of(
-                        taxonomy.genus().value().toLowerCase(java.util.Locale.ROOT));
+                        taxonomy.genus().value().toLowerCase(Locale.ROOT));
                 yield new IdentifiedRankEntity.Species(new InsectSpecies(
                         speciesName, genusName, taxonomy.species(), description,
                         Set.of(CommonName.of(commonName)), sightingNotes,
@@ -244,7 +590,7 @@ public class InsectIdentificationCommand {
             case "GENUS" -> {
                 var genusName = InsectGenusName.of(slug);
                 var familyName = InsectFamilyName.of(
-                        taxonomy.family().value().toLowerCase(java.util.Locale.ROOT));
+                        taxonomy.family().value().toLowerCase(Locale.ROOT));
                 yield new IdentifiedRankEntity.Genus(new InsectGenus(
                         genusName, familyName, taxonomy.genus(), description,
                         Set.of(CommonName.of(commonName)), null));
@@ -252,7 +598,7 @@ public class InsectIdentificationCommand {
             case "FAMILY" -> {
                 var familyName = InsectFamilyName.of(slug);
                 var orderName = InsectOrderName.of(
-                        taxonomy.order().value().toLowerCase(java.util.Locale.ROOT));
+                        taxonomy.order().value().toLowerCase(Locale.ROOT));
                 yield new IdentifiedRankEntity.Family(new InsectFamily(
                         familyName, orderName, taxonomy.family(), description,
                         Set.of(CommonName.of(commonName)), null));
@@ -288,9 +634,9 @@ public class InsectIdentificationCommand {
             if (scientificName == null || scientificName.isBlank()) {
                 continue;
             }
-            var commonName = candidate.hasNonNull("commonName") ? candidate.get("commonName").asText() : null;
+            var candidateCommonName = candidate.hasNonNull("commonName") ? candidate.get("commonName").asText() : null;
             var candidateConfidence = candidate.hasNonNull("confidence") ? candidate.get("confidence").asDouble() : 0.0;
-            candidates.add(new Identification.Candidate(scientificName, commonName, candidateConfidence));
+            candidates.add(new Identification.Candidate(scientificName, candidateCommonName, candidateConfidence));
         }
         return List.copyOf(candidates);
     }

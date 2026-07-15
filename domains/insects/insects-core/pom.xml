@@ -18,15 +18,23 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>authority</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>catalog</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>vision</artifactId>
+            <artifactId>library-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>library-api</artifactId>
+            <artifactId>text-generation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>vision</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
@@ -37,6 +45,11 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>catalog-inmem</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>eol-client-mock</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

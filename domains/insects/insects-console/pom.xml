@@ -29,7 +29,15 @@
     <dependencies>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>authority</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>catalog</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>eol-client-mock</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
@@ -42,6 +50,10 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>library-test-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>text-generation</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

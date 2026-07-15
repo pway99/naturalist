@@ -36,8 +36,8 @@ class InsectCatalogIdentificationTransactionTest {
         transaction.execute(id);
 
         // Parent ranks created
-        assertThat(query.orders().getByName(InsectOrderName.of("diptera"))).isPresent();
-        assertThat(query.families().getByName(InsectFamilyName.of("syrphidae"))).isPresent();
+        assertThat(query.orders().getByName(ORDER_NAME)).isPresent();
+        assertThat(query.families().getByName(FAMILY_NAME)).isPresent();
         assertThat(query.genera().getByName(GENUS_NAME)).isPresent();
 
         // Species created
@@ -93,13 +93,13 @@ class InsectCatalogIdentificationTransactionTest {
         transaction.execute(catalogIdentification());
 
         // Second species in same genus — parent ranks already exist
-        var secondSpeciesName = InsectSpeciesName.of("eupeodes-volucris");
+        var secondSpeciesName = InsectSpeciesName.of("fabricatus-secundus");
         var secondObsId = FieldObservationId.create();
         var secondSpecies = new InsectSpecies(
                 secondSpeciesName, GENUS_NAME,
-                TaxonomicSpecies.of("volucris"),
+                TaxonomicSpecies.of("secundus"),
                 description(),
-                Set.of(CommonName.of("Bird Hover Fly")),
+                Set.of(CommonName.of("Second Test Fly")),
                 null, null, null, null, null, null, null, null, null);
         var secondImage = new InsectImage(
                 InsectImageId.create(), secondSpeciesName, Instant.now(),
@@ -119,22 +119,22 @@ class InsectCatalogIdentificationTransactionTest {
         assertThat(query.species().getByName(secondSpeciesName)).isPresent();
 
         // Parent ranks still exist (not duplicated — no PrimaryKeyConstraintException)
-        assertThat(query.orders().getByName(InsectOrderName.of("diptera"))).isPresent();
-        assertThat(query.families().getByName(InsectFamilyName.of("syrphidae"))).isPresent();
+        assertThat(query.orders().getByName(ORDER_NAME)).isPresent();
+        assertThat(query.families().getByName(FAMILY_NAME)).isPresent();
         assertThat(query.genera().getByName(GENUS_NAME)).isPresent();
     }
 
     @Test
     void executePersistsFamilyLevelIdentification() {
-        var familyName = InsectFamilyName.of("syrphidae");
-        var orderName = InsectOrderName.of("diptera");
+        var familyName = InsectFamilyName.of("bogusidae");
+        var orderName = InsectOrderName.of("neuroptera"); // real seeded order — FK valid
         var obsId = FieldObservationId.create();
         var family = new InsectFamily(
                 familyName, orderName,
-                TaxonomicFamily.of("Syrphidae"), description(),
-                Set.of(CommonName.of("Hover Flies")), null);
+                TaxonomicFamily.of("Bogusidae"), description(),
+                Set.of(CommonName.of("Bogus Lacewings")), null);
         var taxonomy = new TaxonomicClassification(
-                TaxonomicOrder.of("Diptera"), TaxonomicFamily.of("Syrphidae"),
+                TaxonomicOrder.of("Neuroptera"), TaxonomicFamily.of("Bogusidae"),
                 null, null);
         var image = new InsectImage(
                 InsectImageId.create(), familyName, Instant.now(),
@@ -159,7 +159,7 @@ class InsectCatalogIdentificationTransactionTest {
     @Test
     void executePersistsFeatures() {
         var featureId = InsectFeatureId.create();
-        var feature = InsectFeature.of(featureId, "halteres");
+        var feature = InsectFeature.of(featureId, "hovering flight");
         var assignment = InsectFeatureAssignment.of(
                 InsectFeatureAssignmentId.create(), featureId,
                 SPECIES_NAME, 0);
@@ -174,18 +174,18 @@ class InsectCatalogIdentificationTransactionTest {
         assertThat(featureView).isPresent();
         assertThat(featureView.get().features()).hasSize(1);
         assertThat(featureView.get().features().getFirst().feature().value())
-                .isEqualTo("halteres");
+                .isEqualTo("hovering flight");
     }
 
     @Test
     void executeUsesPreResolvedDescriptionForNewParentRank() {
         var resolvedDescription = new Description(
-                "Flies are everywhere!",
-                "Diptera have one pair of wings and halteres.",
-                "Order Diptera demonstrates remarkable ecological diversity.",
-                "Diptera is one of the four megadiverse insect orders.");
+                "Testoptera are imaginary!",
+                "Testoptera have no real wings at all.",
+                "Order Testoptera demonstrates remarkable fictitious diversity.",
+                "Testoptera is a purely synthetic test order.");
         var parentDescriptions = Map.<InsectRankName, Description>of(
-                InsectOrderName.of("diptera"), resolvedDescription);
+                ORDER_NAME, resolvedDescription);
         var id = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(species()), taxonomy(),
                 image(), observation(),
@@ -193,16 +193,19 @@ class InsectCatalogIdentificationTransactionTest {
 
         transaction.execute(id);
 
-        var order = query.orders().getByName(InsectOrderName.of("diptera"));
+        var order = query.orders().getByName(ORDER_NAME);
         assertThat(order).isPresent();
         assertThat(order.get().description().preschool())
-                .isEqualTo("Flies are everywhere!");
+                .isEqualTo("Testoptera are imaginary!");
     }
 
     // ----- fixtures -----
 
-    private static final InsectSpeciesName SPECIES_NAME = InsectSpeciesName.of("eupeodes-fumipennis");
-    private static final InsectGenusName GENUS_NAME = InsectGenusName.of("eupeodes");
+    // Fictitious taxa — must not collide with any seeded catalog data
+    private static final InsectSpeciesName SPECIES_NAME = InsectSpeciesName.of("fabricatus-imaginarius");
+    private static final InsectGenusName GENUS_NAME = InsectGenusName.of("fabricatus");
+    private static final InsectFamilyName FAMILY_NAME = InsectFamilyName.of("fictitiidae");
+    private static final InsectOrderName ORDER_NAME = InsectOrderName.of("testoptera");
     private static final FieldObservationId OBSERVATION_ID = FieldObservationId.create();
 
     private static CatalogIdentification catalogIdentification() {
@@ -215,18 +218,18 @@ class InsectCatalogIdentificationTransactionTest {
     private static InsectSpecies species() {
         return new InsectSpecies(
                 SPECIES_NAME, GENUS_NAME,
-                TaxonomicSpecies.of("fumipennis"),
+                TaxonomicSpecies.of("imaginarius"),
                 description(),
-                Set.of(CommonName.of("Pacific Hover Fly")),
+                Set.of(CommonName.of("Imaginary Test Fly")),
                 null, null, null, null, null, null, null, null, null);
     }
 
     private static TaxonomicClassification taxonomy() {
         return new TaxonomicClassification(
-                TaxonomicOrder.of("Diptera"),
-                TaxonomicFamily.of("Syrphidae"),
-                TaxonomicGenus.of("Eupeodes"),
-                TaxonomicSpecies.of("fumipennis"));
+                TaxonomicOrder.of("Testoptera"),
+                TaxonomicFamily.of("Fictitiidae"),
+                TaxonomicGenus.of("Fabricatus"),
+                TaxonomicSpecies.of("imaginarius"));
     }
 
     private static InsectImage image() {

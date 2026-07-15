@@ -12,11 +12,13 @@ import com.naturalist.insects.*;
 import com.naturalist.insects.console.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.insects.lifestage.LifeStage;
+import com.naturalist.authority.eol.EolClientMock;
 import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.resilience.Resilience;
+import com.naturalist.textgeneration.NoOpTextGenerationService;
 import com.naturalist.resilience.Resilient;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -92,7 +94,9 @@ public class InsectsController {
 
     InsectsController(Resilience resilience, com.naturalist.vision.VisionService visionService) {
         //TODO:: This will eventually be a spring managed bean
-        InsectsTestContext context = InsectsTestContext.create(NaturalistDatabase.create());
+        NaturalistDatabase db = NaturalistDatabase.create();
+        InsectsTestContext context = InsectsTestContext.create(db);
+        LibraryTestContext libraryContext = LibraryTestContext.create(db);
         this.insectQuery = context.insectQuery();
         this.insectCommand = context.insectCommand();
         this.insectLifeStageQuery = context.insectLifeStageQuery();
@@ -100,9 +104,14 @@ public class InsectsController {
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
         this.imageStorageService = new ImageStorageService(Path.of("data/images/insects"));
         // TODO:: This will eventually be a spring managed bean
-        this.cladeQuery = LibraryTestContext.create(NaturalistDatabase.create()).cladeQuery();
+        this.cladeQuery = libraryContext.cladeQuery();
         this.identificationCommand = new InsectIdentificationCommand(
-                visionService, context.catalogIdentificationTransaction());
+                visionService,
+                new NoOpTextGenerationService(),
+                new EolClientMock(db),
+                libraryContext.libraryCommand(),
+                context.insectQuery(),
+                context.catalogIdentificationTransaction());
         this.addPhotoCommand = new InsectAddPhotoCommand(context.addPhotoTransaction());
     }
 
@@ -323,10 +332,14 @@ public class InsectsController {
                 imageBytes, "image/jpeg",
                 new com.naturalist.vision.ImageMetadata(location, capturedInstant));
 
-        var speciesName = identificationCommand.identify(
+        var rankName = identificationCommand.identify(
                 image, storedFileName, me.get(), notes);
 
-        return "redirect:/insects/" + speciesName.value();
+        if (rankName.isEmpty()) {
+            // Authority validation rejected identification at all ranks
+            return "redirect:/insects?error=identification-unverified";
+        }
+        return "redirect:/insects/" + rankName.get().value();
     }
 
     @GetMapping("/species")
