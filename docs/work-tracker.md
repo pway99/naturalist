@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-07-05 (Tree-of-Life console thread: dual-strategy clade nav, context-bar restyle, "?" info popovers, and clade rank→catalog bridge all shipped.)
+Last updated: 2026-07-14 (Vision-assisted identification MVP shipped end-to-end; identification transaction refactored into insects-core; TestContextInternal pattern documented.)
 
 ---
 
@@ -15,16 +15,17 @@ Last updated: 2026-07-05 (Tree-of-Life console thread: dual-strategy clade nav, 
 
 **Identification roadmap** ([`plans/identification.md`](plans/identification.md)). Phase 0 ✅ (taxonomic reorganization + family/genus console). Phase 1 ✅ (external-authority seam — `kernels/authority` port + EOL mock client). Phase 2 citation/library ✅ (`Citation` sealed NamedEntity, `domains/library` domain stack, `Eol.citation()` factory). Phase 2 console ✅ (citations page at `/citations`). Citation association ✅.
 
-An interleaved **Tree-of-Life console** thread landed on top of Phase 2 (2026-06-29 → 2026-07-05): the clade/rank navigation was reworked so the two axes read as distinct (phylogenetic lineage vs. Linnaean rank ladder), restyled onto the shared warm-tan context-bar, given inline "?" teaching popovers, and wired so rank eyebrows bridge into the catalog via the new `Catalog.findBySlug` seam. See **Recently completed**.
+**Vision-assisted identification** shipped end-to-end (2026-07-12 → 2026-07-14): `kernels/vision` port + Anthropic adapter, `InsectIdentificationService` (now `InsectIdentificationCommand`), console `/insects/identify` route with photo upload, filesystem image storage, field notes, re-identify. The identification logic was refactored from the console controller into `insects-core` via `Transaction<CatalogIdentification>` + `InsectIdentificationCommand`, establishing the `TestContextInternal` pattern for core tests that need the full wired graph.
+
+**Naturalist login** shipped 2026-07-06; **collection feature** (FieldObservation, collection lens, header filter chip) shipped 2026-07-12.
 
 ## Current slice
 
 **Candidate next slices** (lead first):
+- **Hierarchical image query** ([`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md)) — move `imagesForGenus`/`imagesForFamily`/`imagesForOrder` from the console controller into `ImageQuery.forRankHierarchy()`. Ready to implement.
 - **Dual-strategy Slice 3 — collection lens** ([design `8eaadd5`](plans/archive/2026-06-29-dual-strategy-breadcrumb.md)) — each clade/rank node lists the user's catalogued insects under it. Cross-domain via the `catalog` kernel; the `Catalog.findBySlug` seam shipped 2026-07-05 is reusable here. (Slice 2 source-of-truth links reuses external-authority Phase 1.)
 - **`/concepts` restyle** — the library concept pages still use the plain breadcrumb; bring them onto the context-bar now that popovers link readers there.
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
-
-- **Sightings entity (identification roadmap Phase 1+).** The PL-11 closeout flagged two facts unique to the deleted potato-leafhopper record that need rehoming when a sightings entity arrives: the dated crimson-clover April 2026 observation, and the "first pest species documented in Oak Vista census" sequencing fact.
 - **Taxonomic-scope breadcrumb primitive.** Phase 0's reusable breadcrumb (also reused by Phase 2). Deferred out of the family/genus pages slice.
 
 ## Parking lot
@@ -35,6 +36,11 @@ An interleaved **Tree-of-Life console** thread landed on top of Phase 2 (2026-06
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Identification transaction refactor — `Transaction<CatalogIdentification>`, `InsectIdentificationCommand` (replaces `InsectIdentificationService`), `InsectsTestContextInternal` pattern for core tests that need the full wired graph | 2026-07-14 | conversation (plan was inline) | `e5fb481` |
+| Domain record helpers — `InsectRankName.of(slug, rank)` static factory, `FieldObservation.withNotes`/`.withSubject` mutation helpers, controller simplification | 2026-07-14 | [`plans/archive/2026-07-14-insect-record-helpers.md`](plans/archive/2026-07-14-insect-record-helpers.md) | `17a84e2` |
+| Vision-assisted identification MVP — `kernels/vision` port + Anthropic adapter, `InsectIdentificationService`, console `/insects/identify` route, filesystem image storage, field notes editing, re-identify, novel-species parent-rank creation | 2026-07-14 | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md) | `3403023` |
+| Naturalist collection — `FieldObservation` entity, collection lens header chip, species/rank "in your collection" indicators, observe/un-observe endpoints, per-naturalist photo ownership | 2026-07-12 | [`plans/archive/2026-07-12-naturalist-insect-collection-plan.md`](plans/archive/2026-07-12-naturalist-insect-collection-plan.md) | `7633ac3` |
+| Naturalist login — form login, `NaturalistHeaderInterceptor`, `ROLE_NATURALIST` authority, composite `UserDetailsService` | 2026-07-06 | conversation | `d609b2e` |
 | Clade rank→catalog bridge — two-axis clade links: rank eyebrows resolve into the insects catalog via a new side-effect-free `Catalog.findBySlug` seam + `InsectsLinker` order case + `CladeRankLinks`; names stay on the tree axis | 2026-07-05 | [`plans/archive/2026-07-05-clade-rank-catalog-bridge.md`](plans/archive/2026-07-05-clade-rank-catalog-bridge.md) | `f608ba0` |
 | Clades console "?" info popovers — reusable `infoPopover` component (native HTML `popover`, anchor-positioned) on the clades breadcrumb + insects tree-of-life trail + Linnaean rank ladder | 2026-07-05 | conversation | `79fd174` |
 | Clades console context-bar restyle — `/clades` pages moved onto the shared `.context-bar`; awkward `.dual-breadcrumb` grid retired | 2026-07-05 | [`superpowers/specs/2026-07-05-clades-console-context-bar-restyle-design.md`](superpowers/specs/2026-07-05-clades-console-context-bar-restyle-design.md) | `973fd0d` |
@@ -62,8 +68,9 @@ An interleaved **Tree-of-Life console** thread landed on top of Phase 2 (2026-06
 | 6  | Admin console — view 4 (deferred)     | Plan           | [`plans/admin-console.md`](plans/admin-console.md)                                |
 | 7  | Pressure test — *Battus philenor*     | Pressure test  | [`pressure-test/battus-philenor/01-findings.md`](pressure-test/battus-philenor/01-findings.md) — **paused** while the identification roadmap builds the capability A1-F1 surfaced |
 | 8  | Backlog — Soil/Sensor services        | Notes          | [`notes/pending-implementation.md`](notes/pending-implementation.md)              |
-| 9  | Vision-assisted identification        | Plan (sketch)  | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md) — deferred |
+| 9  | Vision-assisted identification        | Plan           | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md) — **shipped** 2026-07-14 (vision kernel, Anthropic adapter, console route, identification command, transaction refactor) |
 | 10 | Insect read-model review (R-backlog)  | Review notes   | [`notes/2026-06-03-insect-aggregate-bounded-context-review.md`](notes/2026-06-03-insect-aggregate-bounded-context-review.md) — R8/R1/R6 ✅, R7 half-done (ReadModel relabel); R2/R3/R4/R5 open |
+| 11 | Hierarchical image query              | Plan           | [`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md) — not started |
 
 ---
 
