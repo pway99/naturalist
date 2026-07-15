@@ -23,4 +23,14 @@ public interface ExternalAuthority {
      * Never null; an empty set means "nothing known", not an error.
      */
     Set<AuthorityReference> lookup(EntityName subject);
+
+    /**
+     * Retrieves the textual content from the authority's page at the given
+     * reference. Used to ground description generation in authoritative
+     * source material rather than AI training data.
+     *
+     * <p>Returns {@link AuthorityContent} with the page's textual summary.
+     * Network-backed implementations MUST be Resilience-wrapped per ADR-026.
+     */
+    AuthorityContent fetchContent(AuthorityReference ref);
 }

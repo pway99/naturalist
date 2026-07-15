@@ -1,5 +1,6 @@
 package com.naturalist.authority.eol;
 
+import com.naturalist.authority.AuthorityContent;
 import com.naturalist.authority.AuthorityReference;
 import com.naturalist.authority.AuthoritySource;
 import com.naturalist.authority.ExternalAuthority;
@@ -40,6 +41,13 @@ public final class EolClientMock implements ExternalAuthority {
                 .findFirst()
                 .map(entry -> Set.of(new AuthorityReference(Eol.SOURCE, Eol.deepLink(entry.pageId()))))
                 .orElse(Set.of());
+    }
+
+    @Override
+    public AuthorityContent fetchContent(AuthorityReference ref) {
+        return new AuthorityContent(ref,
+                "Stub authority content for " + ref.url()
+                + ". This is placeholder text from the EOL mock client.");
     }
 
     private EolAuthorityTestEntitySource entitySource() {
