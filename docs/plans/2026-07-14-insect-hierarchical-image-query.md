@@ -227,9 +227,9 @@ private void collectForOrder(java.util.List<InsectImage> images,
 The constructor signature changed — every call site needs the new parameters.
 
 **In `InsectQueryImpl` constructor** (the main wiring point):
-Find where `ImageQueryImpl` is created (it's created externally and passed in — check whether `InsectQueryImpl` constructs it or receives it). If received, the construction is in `InsectsTestContextInternal`:
+Find where `ImageQueryImpl` is created (it's created externally and passed in — check whether `InsectQueryImpl` constructs it or receives it). If received, the construction is in `InsectsTestContext`:
 
-Update `InsectsTestContextInternal.java` — change:
+Update `InsectsTestContext.java` — change:
 ```java
 InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(repository.imageRepository);
 ```
@@ -239,7 +239,9 @@ InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(
         repository.imageRepository, speciesQuery, genusQuery, familyQuery);
 ```
 
-Note: `speciesQuery`, `genusQuery`, and `familyQuery` are already constructed before `imageQuery` in `InsectsTestContextInternal`. Verify the declaration order; if `imageQuery` is constructed before `speciesQuery`, reorder so `speciesQuery`, `genusQuery`, and `familyQuery` are created first.
+Note: `speciesQuery`, `genusQuery`, and `familyQuery` are already constructed before `imageQuery` in `InsectsTestContext`. Verify the declaration order; if `imageQuery` is constructed before `speciesQuery`, reorder so `speciesQuery`, `genusQuery`, and `familyQuery` are created first.
+
+**In `InsectsTestContextInternal`** (`insects-core/src/test/java/`) — apply the same constructor change. This is the core-local test context that mirrors `InsectsTestContext` for tests that can't depend on the test-context module.
 
 **In `ImageQueryImplTest`** — update the field initialization:
 ```java
@@ -267,7 +269,8 @@ git add domains/insects/insects-core/src/main/java/com/naturalist/insects/ImageQ
 git add domains/insects/insects-core/src/test/java/com/naturalist/insects/ImageQueryImplHierarchyTest.java
 git add domains/insects/insects-core/src/test/java/com/naturalist/insects/ImageQueryImplTest.java
 git add domains/insects/insects-core/src/test/java/com/naturalist/insects/InsectFactoryTest.java
-git add domains/insects/insects-test-context/src/main/java/com/naturalist/insects/InsectsTestContextInternal.java
+git add domains/insects/insects-core/src/test/java/com/naturalist/insects/InsectsTestContextInternal.java
+git add domains/insects/insects-test-context/src/main/java/com/naturalist/insects/InsectsTestContext.java
 git commit -m "feat(insects-core): implement forRankHierarchy on ImageQueryImpl"
 ```
 

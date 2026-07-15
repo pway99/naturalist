@@ -23,6 +23,7 @@ Last updated: 2026-07-14 (Vision-assisted identification MVP shipped end-to-end;
 
 **Candidate next slices** (lead first):
 - **Hierarchical image query** ([`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md)) — move `imagesForGenus`/`imagesForFamily`/`imagesForOrder` from the console controller into `ImageQuery.forRankHierarchy()`. Ready to implement.
+- **Add-photo command** ([`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md)) — extract `addImage()` coordination (optional FieldObservation + InsectImage with linked observationId) from controller into `InsectAddPhotoCommand` in `insects-core`. Ready to implement.
 - **Dual-strategy Slice 3 — collection lens** ([design `8eaadd5`](plans/archive/2026-06-29-dual-strategy-breadcrumb.md)) — each clade/rank node lists the user's catalogued insects under it. Cross-domain via the `catalog` kernel; the `Catalog.findBySlug` seam shipped 2026-07-05 is reusable here. (Slice 2 source-of-truth links reuses external-authority Phase 1.)
 - **`/concepts` restyle** — the library concept pages still use the plain breadcrumb; bring them onto the context-bar now that popovers link readers there.
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
@@ -71,6 +72,7 @@ Last updated: 2026-07-14 (Vision-assisted identification MVP shipped end-to-end;
 | 9  | Vision-assisted identification        | Plan           | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md) — **shipped** 2026-07-14 (vision kernel, Anthropic adapter, console route, identification command, transaction refactor) |
 | 10 | Insect read-model review (R-backlog)  | Review notes   | [`notes/2026-06-03-insect-aggregate-bounded-context-review.md`](notes/2026-06-03-insect-aggregate-bounded-context-review.md) — R8/R1/R6 ✅, R7 half-done (ReadModel relabel); R2/R3/R4/R5 open |
 | 11 | Hierarchical image query              | Plan           | [`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md) — not started |
+| 12 | Add-photo command                     | Plan           | [`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md) — not started |
 
 ---
 
