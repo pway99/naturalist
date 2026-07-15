@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-07-14 (Vision-assisted identification MVP shipped end-to-end; identification transaction refactored into insects-core; TestContextInternal pattern documented.)
+Last updated: 2026-07-14 (Hierarchical image query and add-photo command shipped; controller logic continues migrating into insects-core.)
 
 ---
 
@@ -22,8 +22,6 @@ Last updated: 2026-07-14 (Vision-assisted identification MVP shipped end-to-end;
 ## Current slice
 
 **Candidate next slices** (lead first):
-- **Hierarchical image query** ([`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md)) — move `imagesForGenus`/`imagesForFamily`/`imagesForOrder` from the console controller into `ImageQuery.forRankHierarchy()`. Ready to implement.
-- **Add-photo command** ([`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md)) — extract `addImage()` coordination (optional FieldObservation + InsectImage with linked observationId) from controller into `InsectAddPhotoCommand` in `insects-core`. Ready to implement.
 - **Dual-strategy Slice 3 — collection lens** ([design `8eaadd5`](plans/archive/2026-06-29-dual-strategy-breadcrumb.md)) — each clade/rank node lists the user's catalogued insects under it. Cross-domain via the `catalog` kernel; the `Catalog.findBySlug` seam shipped 2026-07-05 is reusable here. (Slice 2 source-of-truth links reuses external-authority Phase 1.)
 - **`/concepts` restyle** — the library concept pages still use the plain breadcrumb; bring them onto the context-bar now that popovers link readers there.
 - **Insect read-model backlog** ([2026-06-03 review](notes/2026-06-03-insect-aggregate-bounded-context-review.md)) — R8/R1/R6 ✅ done; R7 half-done (types relabeled via the ReadModel effort, but the keep-and-adopt-vs-delete decision for the `InsectTaxonView` stack is open); R2/R3/R4/R5 parked (the `Insect` read-model reshape is a deferred WIP).
@@ -37,6 +35,7 @@ Last updated: 2026-07-14 (Vision-assisted identification MVP shipped end-to-end;
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Hierarchical image query + add-photo command — `ImageQuery.forRankHierarchy()` replaces three controller helpers; `InsectAddPhotoCommand` + `PhotoAddition` aggregate + `InsectAddPhotoTransaction` for atomic observation+image insert at any rank | 2026-07-14 | [`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md), [`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md) | `4a5a71b` |
 | Identification transaction refactor — `Transaction<CatalogIdentification>`, `InsectIdentificationCommand` (replaces `InsectIdentificationService`), `InsectsTestContextInternal` pattern for core tests that need the full wired graph | 2026-07-14 | conversation (plan was inline) | `e5fb481` |
 | Domain record helpers — `InsectRankName.of(slug, rank)` static factory, `FieldObservation.withNotes`/`.withSubject` mutation helpers, controller simplification | 2026-07-14 | [`plans/archive/2026-07-14-insect-record-helpers.md`](plans/archive/2026-07-14-insect-record-helpers.md) | `17a84e2` |
 | Vision-assisted identification MVP — `kernels/vision` port + Anthropic adapter, `InsectIdentificationService`, console `/insects/identify` route, filesystem image storage, field notes editing, re-identify, novel-species parent-rank creation | 2026-07-14 | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md) | `3403023` |
@@ -71,8 +70,8 @@ Last updated: 2026-07-14 (Vision-assisted identification MVP shipped end-to-end;
 | 8  | Backlog — Soil/Sensor services        | Notes          | [`notes/pending-implementation.md`](notes/pending-implementation.md)              |
 | 9  | Vision-assisted identification        | Plan           | [`plans/vision-assisted-identification.md`](plans/vision-assisted-identification.md) — **shipped** 2026-07-14 (vision kernel, Anthropic adapter, console route, identification command, transaction refactor) |
 | 10 | Insect read-model review (R-backlog)  | Review notes   | [`notes/2026-06-03-insect-aggregate-bounded-context-review.md`](notes/2026-06-03-insect-aggregate-bounded-context-review.md) — R8/R1/R6 ✅, R7 half-done (ReadModel relabel); R2/R3/R4/R5 open |
-| 11 | Hierarchical image query              | Plan           | [`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md) — not started |
-| 12 | Add-photo command                     | Plan           | [`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md) — not started |
+| 11 | Hierarchical image query              | Plan           | [`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md) — **shipped** 2026-07-14 |
+| 12 | Add-photo command                     | Plan           | [`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md) — **shipped** 2026-07-14 (`PhotoAddition` aggregate + `InsectAddPhotoTransaction`; accepts `InsectRankName`) |
 
 ---
 
