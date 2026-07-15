@@ -20,7 +20,14 @@ class ImageQueryImplTest
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     InsectImageRepositoryMock repository = new InsectImageRepositoryMock(db);
-    InsectQuery.ImageQuery query = new ImageQueryImpl(repository);
+    FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
+    GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
+    SpeciesRepositoryMock speciesRepository = new SpeciesRepositoryMock(db);
+    InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
+    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
+    InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
+    InsectQuery.ImageQuery query = new ImageQueryImpl(
+            repository, speciesQuery, genusQuery, familyQuery);
 
     @Override
     public EntityQuery<InsectImageId, InsectImage, ImageCollection> query() {

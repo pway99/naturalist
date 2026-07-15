@@ -30,11 +30,12 @@ class InsectQueryImplTest {
     InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(db);
     InsectFeatureAssignmentRepositoryMock featureAssignmentRepository = new InsectFeatureAssignmentRepositoryMock(db);
     FieldObservationRepositoryMock fieldObservationRepository = new FieldObservationRepositoryMock(db);
-    InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
     InsectQuery.FieldObservationQuery fieldObservationQuery = new FieldObservationQueryImpl(fieldObservationRepository);
     InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
+    InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(
+            imageRepository, speciesQuery, genusQuery, familyQuery);
     InsectQuery.FunctionalRoleQuery functionalRoleQuery = new FunctionalRoleQueryImpl(functionalRoleRepository);
     InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
     com.naturalist.library.CitationAssociationQuery citationAssociationQuery =

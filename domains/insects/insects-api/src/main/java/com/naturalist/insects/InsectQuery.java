@@ -109,6 +109,15 @@ public interface InsectQuery {
             extends EntityQuery<InsectImageId, InsectImage, ImageCollection> {
 
         ImageCollection forParentName(InsectRankName parentName);
+
+        /**
+         * Returns all images for the given rank and all descendant ranks in the
+         * Linnaean hierarchy. For a species, this is just the species' own images.
+         * For a genus, it includes the genus' images plus all member species' images.
+         * For a family, it walks genera and their species. For an order, it walks
+         * families, genera, and species.
+         */
+        ImageCollection forRankHierarchy(InsectRankName rankName);
     }
 
     interface FieldObservationQuery

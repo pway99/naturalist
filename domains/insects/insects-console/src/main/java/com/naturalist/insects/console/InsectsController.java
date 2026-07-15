@@ -87,6 +87,7 @@ public class InsectsController {
     private final DescriptionRenderer descriptionRenderer;
     private final ImageStorageService imageStorageService;
     private final InsectIdentificationCommand identificationCommand;
+    private final InsectAddPhotoCommand addPhotoCommand;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
     InsectsController(Resilience resilience, com.naturalist.vision.VisionService visionService) {
@@ -102,6 +103,7 @@ public class InsectsController {
         this.cladeQuery = LibraryTestContext.create(NaturalistDatabase.create()).cladeQuery();
         this.identificationCommand = new InsectIdentificationCommand(
                 visionService, context.catalogIdentificationTransaction());
+        this.addPhotoCommand = new InsectAddPhotoCommand(context.addPhotoTransaction());
     }
 
     /**
@@ -385,7 +387,8 @@ public class InsectsController {
         }
         Map<InsectRankName, Collection<InsectImage>> imagesByFamily = new LinkedHashMap<>();
         for (var family : familyPage.content()) {
-            imagesByFamily.put(family.name(), imagesForFamily(family.name()));
+            imagesByFamily.put(family.name(),
+                    insectQuery.images().forRankHierarchy(family.name()).stream().toList());
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByFamily);
         model.addAttribute("familyPage", familyPage);
@@ -412,7 +415,8 @@ public class InsectsController {
                 .toList();
         Map<InsectRankName, Collection<InsectImage>> imagesByGenus = new LinkedHashMap<>();
         for (var g : genera) {
-            imagesByGenus.put(g.name(), imagesForGenus(g.name()));
+            imagesByGenus.put(g.name(),
+                    insectQuery.images().forRankHierarchy(g.name()).stream().toList());
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByGenus);
         model.addAttribute("family", family);
@@ -436,7 +440,8 @@ public class InsectsController {
                 .findPage(PageRequest.console(Math.max(0, page)));
         Map<InsectRankName, Collection<InsectImage>> imagesByOrder = new LinkedHashMap<>();
         for (var order : orderPage.content()) {
-            imagesByOrder.put(order.name(), imagesForOrder(order.name()));
+            imagesByOrder.put(order.name(),
+                    insectQuery.images().forRankHierarchy(order.name()).stream().toList());
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByOrder);
         model.addAttribute("orderPage", orderPage);
@@ -461,7 +466,8 @@ public class InsectsController {
                 .toList();
         Map<InsectRankName, Collection<InsectImage>> imagesByFamily = new LinkedHashMap<>();
         for (var f : families) {
-            imagesByFamily.put(f.name(), imagesForFamily(f.name()));
+            imagesByFamily.put(f.name(),
+                    insectQuery.images().forRankHierarchy(f.name()).stream().toList());
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByFamily);
         model.addAttribute("order", order);
@@ -489,7 +495,8 @@ public class InsectsController {
         }
         Map<InsectRankName, Collection<InsectImage>> imagesByGenus = new LinkedHashMap<>();
         for (var genus : genusPage.content()) {
-            imagesByGenus.put(genus.name(), imagesForGenus(genus.name()));
+            imagesByGenus.put(genus.name(),
+                    insectQuery.images().forRankHierarchy(genus.name()).stream().toList());
         }
         InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByGenus);
         model.addAttribute("genusPage", genusPage);
@@ -666,26 +673,11 @@ public class InsectsController {
                     @RequestParam(name = "location", required = false) String location,
                     @RequestParam(name = "notes", required = false) String notes,
                     HttpServletRequest request) throws IOException {
-        var rankName = InsectSpeciesName.of(name);
+        var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
-
         var storedFileName = imageStorageService.store(imageFile.getBytes());
-
-        FieldObservationId observationId = null;
-        if (me.isPresent()) {
-            observationId = FieldObservationId.create();
-            var observation = new FieldObservation(
-                    observationId, me.get(), rankName, Instant.now(),
-                    (notes == null || notes.isBlank()) ? null : notes,
-                    (location == null || location.isBlank()) ? null : location,
-                    null);
-            insectCommand.fieldObservations().insert(observation);
-        }
-
-        var image = new InsectImage(
-                InsectImageId.create(), rankName, Instant.now(),
-                storedFileName, observationId);
-        insectCommand.images().insert(image);
+        addPhotoCommand.addPhoto(species, storedFileName,
+                me.orElse(null), notes, location);
         return "redirect:/insects/" + name;
     }
 
@@ -825,30 +817,4 @@ public class InsectsController {
                 .body(jpeg);
     }
 
-    private List<InsectImage> imagesForGenus(InsectGenusName genusName) {
-        List<InsectImage> images = new ArrayList<>(
-                insectQuery.images().forParentName(genusName).stream().toList());
-        for (var species : insectQuery.species().forGenusName(genusName).stream().toList()) {
-            images.addAll(insectQuery.images().forParentName(species.name()).stream().toList());
-        }
-        return images;
-    }
-
-    private List<InsectImage> imagesForFamily(InsectFamilyName familyName) {
-        List<InsectImage> images = new ArrayList<>(
-                insectQuery.images().forParentName(familyName).stream().toList());
-        for (var genus : insectQuery.genera().forFamilyName(familyName).stream().toList()) {
-            images.addAll(imagesForGenus(genus.name()));
-        }
-        return images;
-    }
-
-    private List<InsectImage> imagesForOrder(InsectOrderName orderName) {
-        List<InsectImage> images = new ArrayList<>(
-                insectQuery.images().forParentName(orderName).stream().toList());
-        for (var family : insectQuery.families().forOrderName(orderName).stream().toList()) {
-            images.addAll(imagesForFamily(family.name()));
-        }
-        return images;
-    }
 }

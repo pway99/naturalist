@@ -23,10 +23,11 @@ class TaxonViewQueryImplTest {
     FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
     OrderRepositoryMock orderRepository = new OrderRepositoryMock(db);
 
-    InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(imageRepository);
     InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
+    InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(
+            imageRepository, speciesQuery, genusQuery, familyQuery);
     InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
 
     InsectQuery.TaxonViewQuery taxonViewQuery =

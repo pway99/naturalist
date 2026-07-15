@@ -29,7 +29,7 @@ This plan is independent of the hierarchical image query plan.
 
 **Interfaces:**
 - Consumes: `InsectCommand.images().insert(InsectImage)`, `InsectCommand.fieldObservations().insert(FieldObservation)`
-- Produces: `InsectAddPhotoCommand.addPhoto(InsectSpeciesName, FileName, @Nullable NaturalistName, @Nullable String notes, @Nullable String location)` → `void`
+- Produces: `InsectAddPhotoCommand.addPhoto(InsectRankName, FileName, @Nullable NaturalistName, @Nullable String notes, @Nullable String location)` → `void`
 
 - [ ] **Step 1: Read the controller's `addImage()` method**
 
@@ -153,7 +153,7 @@ public class InsectAddPhotoCommand {
         this.insectCommand = insectCommand;
     }
 
-    public void addPhoto(InsectSpeciesName species, FileName storedFileName,
+    public void addPhoto(InsectRankName species, FileName storedFileName,
                          @Nullable NaturalistName naturalist,
                          @Nullable String notes, @Nullable String location) {
         observer.arguments("addPhoto", i -> i
@@ -201,7 +201,7 @@ git commit -m "feat(insects-core): extract addPhoto coordination into InsectAddP
 - Modify: `domains/insects/insects-console/src/main/java/com/naturalist/insects/console/InsectsController.java`
 
 **Interfaces:**
-- Consumes: `InsectAddPhotoCommand.addPhoto(InsectSpeciesName, FileName, @Nullable NaturalistName, @Nullable String notes, @Nullable String location)` → `void`
+- Consumes: `InsectAddPhotoCommand.addPhoto(InsectRankName, FileName, @Nullable NaturalistName, @Nullable String notes, @Nullable String location)` → `void`
 
 - [ ] **Step 1: Read the controller constructor and `addImage()` method**
 
@@ -232,7 +232,7 @@ String addImage(@PathVariable String name,
                 @RequestParam(name = "location", required = false) String location,
                 @RequestParam(name = "notes", required = false) String notes,
                 HttpServletRequest request) throws IOException {
-    var species = InsectSpeciesName.of(name);
+    var species = InsectRankName.of(name);
     var me = currentNaturalist(request);
     var storedFileName = imageStorageService.store(imageFile.getBytes());
     addPhotoCommand.addPhoto(species, storedFileName,

@@ -35,6 +35,7 @@ public class InsectsTestContext {
     private final InsectCommand insectCommand;
     private final InsectLifeStageQuery insectLifeStageQuery;
     private final InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
+    private final InsectAddPhotoTransaction addPhotoTransaction;
 
     private InsectsTestContext(NaturalistDatabase db) {
         InsectRepository repository = InsectRepository.create(
@@ -50,7 +51,8 @@ public class InsectsTestContext {
         InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(repository.familyRepository);
         InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(repository.genusRepository, familyQuery);
         InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository.speciesRepository, genusQuery);
-        InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(repository.imageRepository);
+        InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(
+                repository.imageRepository, speciesQuery, genusQuery, familyQuery);
         InsectQuery.FieldObservationQuery fieldObservationQuery =
                 new FieldObservationQueryImpl(repository.fieldObservationRepository);
         InsectQuery.FunctionalRoleQuery functionalRoleQuery =
@@ -78,6 +80,7 @@ public class InsectsTestContext {
                 orderCommand, familyCommand, genusCommand);
         this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
                 this.insectCommand, this.insectQuery);
+        this.addPhotoTransaction = new InsectAddPhotoTransaction(this.insectCommand);
     }
 
     public static InsectsTestContext create(NaturalistDatabase db) {
@@ -98,5 +101,9 @@ public class InsectsTestContext {
 
     public InsectCatalogIdentificationTransaction catalogIdentificationTransaction() {
         return catalogIdentificationTransaction;
+    }
+
+    public InsectAddPhotoTransaction addPhotoTransaction() {
+        return addPhotoTransaction;
     }
 }

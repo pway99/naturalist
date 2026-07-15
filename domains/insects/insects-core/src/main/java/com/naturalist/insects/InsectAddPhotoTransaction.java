@@ -1,0 +1,25 @@
+package com.naturalist.insects;
+
+import com.naturalist.data.Transaction;
+
+/**
+ * Persists a {@link PhotoAddition} aggregate atomically — inserts the
+ * optional {@link FieldObservation} before the {@link InsectImage} so the
+ * image's {@code observationId} FK is satisfied on insert.
+ */
+class InsectAddPhotoTransaction extends Transaction<PhotoAddition> {
+
+    private final InsectCommand insectCommand;
+
+    InsectAddPhotoTransaction(InsectCommand insectCommand) {
+        this.insectCommand = insectCommand;
+    }
+
+    @Override
+    protected void doExecute(PhotoAddition addition) {
+        if (addition.observation() != null) {
+            insectCommand.fieldObservations().insert(addition.observation());
+        }
+        insectCommand.images().insert(addition.image());
+    }
+}
