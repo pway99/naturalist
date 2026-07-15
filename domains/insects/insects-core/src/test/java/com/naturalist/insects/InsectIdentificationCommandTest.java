@@ -1,15 +1,18 @@
 package com.naturalist.insects;
 
+import com.naturalist.data.FileName;
+import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.vision.Image;
 import com.naturalist.vision.ImageMetadata;
 import com.naturalist.vision.ToolResult;
-import com.naturalist.vision.ToolSchema;
 import com.naturalist.vision.VisionService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InsectIdentificationServiceTest {
+class InsectIdentificationCommandTest {
 
     static final String SAMPLE_RESULT_JSON = """
             {
@@ -32,24 +35,47 @@ class InsectIdentificationServiceTest {
             }
             """;
 
+    @RegisterExtension
+    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+
+    InsectsTestContext context = InsectsTestContext.create(db);
+
     private final VisionService stubService = (image, tool, prompt) ->
             new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
 
-    private final InsectIdentificationService service = new InsectIdentificationService(stubService);
+    private final InsectIdentificationCommand command = new InsectIdentificationCommand(
+            stubService, context.catalogIdentificationTransaction());
 
     @Test
-    void identify_parsesSpeciesFromToolResult() {
+    void identify_returnsSpeciesNameAndPersistsEntities() {
         var image = new Image(
                 new byte[]{1, 2, 3}, "image/jpeg",
                 new ImageMetadata("Chico, CA", null));
 
-        var result = service.identify(image);
+        var speciesName = command.identify(
+                image, FileName.of("IMG_0001.jpg"),
+                NaturalistName.of("pat"), null);
 
-        assertThat(result.species().name().value()).isEqualTo("vanessa-cardui");
-        assertThat(result.species().description().preschool()).contains("orange and black");
-        assertThat(result.identification().confidence()).isEqualTo(0.85);
-        assertThat(result.identification().evidence()).contains("wing pattern");
-        assertThat(result.identification().alternatives()).isEmpty();
+        assertThat(speciesName.value()).isEqualTo("vanessa-cardui");
+
+        // Species persisted with parsed description
+        var species = context.insectQuery().species().getByName(speciesName);
+        assertThat(species).isPresent();
+        assertThat(species.get().description().preschool()).contains("orange and black");
+
+        // Parent ranks created
+        assertThat(context.insectQuery().orders().getByName(InsectOrderName.of("lepidoptera")))
+                .isPresent();
+        assertThat(context.insectQuery().families().getByName(InsectFamilyName.of("nymphalidae")))
+                .isPresent();
+        assertThat(context.insectQuery().genera().getByName(InsectGenusName.of("vanessa")))
+                .isPresent();
+
+        // Image persisted
+        var images = context.insectQuery().images().forParentName(speciesName);
+        assertThat(images.stream().toList()).hasSize(1);
+        assertThat(images.stream().toList().getFirst().resourceName())
+                .isEqualTo(FileName.of("IMG_0001.jpg"));
     }
 
     @Test
@@ -60,15 +86,24 @@ class InsectIdentificationServiceTest {
                         + "\\\"commonName\\\": \\\"Large Milkweed Bug\\\", \\\"confidence\\\": 0.12}]\"");
         VisionService withAlternatives = (image, tool, prompt) ->
                 new ToolResult("propose_insect_species", jsonWithAlternatives);
-        var svc = new InsectIdentificationService(withAlternatives);
+        var cmd = new InsectIdentificationCommand(
+                withAlternatives, context.catalogIdentificationTransaction());
         var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));
 
-        var alternatives = svc.identify(image).identification().alternatives();
+        var speciesName = cmd.identify(
+                image, FileName.of("IMG_0002.jpg"),
+                NaturalistName.of("pat"), null);
 
-        assertThat(alternatives).hasSize(1);
-        assertThat(alternatives.getFirst().scientificName()).isEqualTo("Oncopeltus fasciatus");
-        assertThat(alternatives.getFirst().commonName()).isEqualTo("Large Milkweed Bug");
-        assertThat(alternatives.getFirst().confidence()).isEqualTo(0.12);
+        // Observation carries the identification with alternatives
+        var obsPage = context.insectQuery().fieldObservations()
+                .findPage(com.naturalist.data.PageRequest.console(0));
+        var withId = obsPage.content().stream()
+                .filter(o -> o.identification() != null)
+                .findFirst();
+        assertThat(withId).isPresent();
+        assertThat(withId.get().identification().alternatives()).hasSize(1);
+        assertThat(withId.get().identification().alternatives().getFirst().scientificName())
+                .isEqualTo("Oncopeltus fasciatus");
     }
 
     @Test
@@ -78,12 +113,14 @@ class InsectIdentificationServiceTest {
             promptCapture[0] = prompt;
             return new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
         };
-        var svc = new InsectIdentificationService(capturing);
+        var cmd = new InsectIdentificationCommand(
+                capturing, context.catalogIdentificationTransaction());
         var image = new Image(
                 new byte[]{1}, "image/jpeg",
                 new ImageMetadata("Deer Creek, Butte County, CA", null));
 
-        svc.identify(image);
+        cmd.identify(image, FileName.of("IMG_0003.jpg"),
+                NaturalistName.of("pat"), null);
 
         assertThat(promptCapture[0]).contains("Deer Creek, Butte County, CA");
     }
@@ -95,10 +132,12 @@ class InsectIdentificationServiceTest {
             promptCapture[0] = prompt;
             return new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
         };
-        var svc = new InsectIdentificationService(capturing);
+        var cmd = new InsectIdentificationCommand(
+                capturing, context.catalogIdentificationTransaction());
         var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));
 
-        svc.identify(image);
+        cmd.identify(image, FileName.of("IMG_0004.jpg"),
+                NaturalistName.of("pat"), null);
 
         assertThat(promptCapture[0]).doesNotContain("Location context:");
     }

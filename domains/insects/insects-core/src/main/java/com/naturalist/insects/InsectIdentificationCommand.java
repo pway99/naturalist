@@ -2,9 +2,11 @@ package com.naturalist.insects;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.naturalist.data.FileName;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.infrastructure.DomainService;
+import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
@@ -14,29 +16,87 @@ import com.naturalist.vision.Image;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
 import com.naturalist.vision.VisionService;
+import org.jspecify.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Orchestrates vision identification for insects. Owns the tool schema,
- * system prompt, and result deserialization. The identify-insect Claude Code
- * skill has working prompts that informed this implementation.
+ * Orchestrates the full insect identification flow: vision identification →
+ * aggregate construction → transactional persistence. Replaces the three-step
+ * controller orchestration (identify → ensureParentRanks → insert entities)
+ * with a single command call.
+ *
+ * <p>Owns the tool schema, system prompt, and result deserialization for
+ * vision identification. The identify-insect Claude Code skill has working
+ * prompts that informed this implementation.
+ *
+ * <p>Returns {@link InsectSpeciesName} — a pragmatic CQS exception so the
+ * caller can redirect to the species page without a follow-up query.
  */
 @DomainService
-public class InsectIdentificationService {
+public class InsectIdentificationCommand {
 
     private static final String TOOL_NAME = "propose_insect_species";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final VisionService visionService;
+    private final InsectCatalogIdentificationTransaction transaction;
 
-    public InsectIdentificationService(VisionService visionService) {
+    public InsectIdentificationCommand(VisionService visionService,
+                                        InsectCatalogIdentificationTransaction transaction) {
         this.visionService = visionService;
+        this.transaction = transaction;
     }
 
-    public InsectIdentificationResult identify(Image image) {
+    /**
+     * Identifies an insect from a photograph and persists the result —
+     * species, parent ranks, image, and field observation — atomically.
+     *
+     * @param image          the photograph with metadata (location, captured instant)
+     * @param storedFileName the already-stored image file name (infrastructure concern)
+     * @param naturalist     the naturalist who captured the image
+     * @param notes          optional field notes from the naturalist
+     * @return the species name for redirect
+     */
+    public InsectSpeciesName identify(Image image, FileName storedFileName,
+                                      NaturalistName naturalist,
+                                      @Nullable String notes) {
+        var result = identifyViaVision(image);
+
+        var observationId = FieldObservationId.create();
+        var capturedAt = image.metadata().capturedInstant() != null
+                ? image.metadata().capturedInstant() : Instant.now();
+
+        var insectImage = new InsectImage(
+                InsectImageId.create(),
+                result.species().name(),
+                Instant.now(),
+                storedFileName,
+                observationId);
+
+        var observation = new FieldObservation(
+                observationId,
+                naturalist,
+                result.species().name(),
+                capturedAt,
+                (notes == null || notes.isBlank()) ? null : notes,
+                image.metadata().location(),
+                result.identification());
+
+        var catalogId = new CatalogIdentification(
+                result.species(), result.taxonomy(), insectImage, observation);
+
+        transaction.execute(catalogId);
+
+        return result.species().name();
+    }
+
+    // ----- vision identification (unchanged from InsectIdentificationService) -----
+
+    private InsectIdentificationResult identifyViaVision(Image image) {
         var toolSchema = buildToolSchema();
         var systemPrompt = buildSystemPrompt(image.metadata().location());
         var result = visionService.identify(image, toolSchema, systemPrompt);
@@ -122,10 +182,6 @@ public class InsectIdentificationService {
                     node.get("descriptionUniversity").asText());
             var commonName = node.get("commonName").asText();
 
-            // Build the InsectSpecies — use the current 14-component constructor shape.
-            // Nullable value-object fields (chemicalDefense, voltinism, habitatProfile,
-            // habitatRequirements, gardenConnections, beneficialProfile, ecologicalSignificance)
-            // are null; they are populated incrementally by the naturalist.
             var species = new InsectSpecies(
                     name,
                     genusName,
@@ -154,13 +210,6 @@ public class InsectIdentificationService {
         }
     }
 
-    /**
-     * Parses the tool's {@code alternatives} field into typed candidates. The
-     * schema declares it as a JSON-array string (or null), but a model may also
-     * return it as an array node directly — handle both, and treat anything
-     * unparseable or missing as no alternatives rather than failing the whole
-     * identification.
-     */
     private List<Identification.Candidate> parseAlternatives(JsonNode node) {
         if (!node.hasNonNull("alternatives")) {
             return List.of();

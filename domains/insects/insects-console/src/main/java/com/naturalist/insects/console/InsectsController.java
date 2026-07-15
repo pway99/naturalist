@@ -86,10 +86,10 @@ public class InsectsController {
     private final Resilience resilience;
     private final DescriptionRenderer descriptionRenderer;
     private final ImageStorageService imageStorageService;
-    private final InsectIdentificationService identificationService;
+    private final InsectIdentificationCommand identificationCommand;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
-    InsectsController(Resilience resilience, InsectIdentificationService identificationService) {
+    InsectsController(Resilience resilience, com.naturalist.vision.VisionService visionService) {
         //TODO:: This will eventually be a spring managed bean
         InsectsTestContext context = InsectsTestContext.create(NaturalistDatabase.create());
         this.insectQuery = context.insectQuery();
@@ -100,7 +100,8 @@ public class InsectsController {
         this.imageStorageService = new ImageStorageService(Path.of("data/images/insects"));
         // TODO:: This will eventually be a spring managed bean
         this.cladeQuery = LibraryTestContext.create(NaturalistDatabase.create()).cladeQuery();
-        this.identificationService = identificationService;
+        this.identificationCommand = new InsectIdentificationCommand(
+                visionService, context.catalogIdentificationTransaction());
     }
 
     /**
@@ -308,11 +309,9 @@ public class InsectsController {
             return "redirect:/insects/identify";
         }
 
-        // 1. Store the image
         var imageBytes = imageFile.getBytes();
         var storedFileName = imageStorageService.store(imageBytes);
 
-        // 2. Identify via vision
         Instant capturedInstant = null;
         if (capturedAt != null && !capturedAt.isBlank()) {
             try { capturedInstant = Instant.parse(capturedAt); }
@@ -321,83 +320,11 @@ public class InsectsController {
         var image = new com.naturalist.vision.Image(
                 imageBytes, "image/jpeg",
                 new com.naturalist.vision.ImageMetadata(location, capturedInstant));
-        var result = identificationService.identify(image);
 
-        // 3. Ensure the full Linnaean path exists (order → family → genus → species)
-        var taxonomy = result.taxonomy();
-        var speciesName = result.species().name();
-        ensureParentRanks(taxonomy, result.species().genusName());
-
-        var existingSpecies = insectQuery.species().getByName(speciesName);
-        if (existingSpecies.isEmpty()) {
-            insectCommand.species().insert(result.species());
-        }
-
-        // 4. Create EOL citation association for the suggested species
-        // TODO: create EOL citation when library write API is available
-
-        // 5. Create InsectImage
-        var observationId = FieldObservationId.create();
-        var insectImage = new InsectImage(
-                InsectImageId.create(),
-                speciesName,
-                Instant.now(),
-                storedFileName,
-                observationId);
-        insectCommand.images().insert(insectImage);
-
-        // 6. Create FieldObservation — the naturalist's notes stay their own;
-        //    the machine identification is attached structurally, not welded into notes.
-        var observation = new FieldObservation(
-                observationId,
-                me.get(),
-                speciesName,
-                capturedInstant != null ? capturedInstant : Instant.now(),
-                (notes == null || notes.isBlank()) ? null : notes,
-                location,
-                result.identification());
-        insectCommand.fieldObservations().insert(observation);
+        var speciesName = identificationCommand.identify(
+                image, storedFileName, me.get(), notes);
 
         return "redirect:/insects/" + speciesName.value();
-    }
-
-    /**
-     * Creates any missing parent rank entities (order, family, genus) so the
-     * identified species has a complete Linnaean path back to Class Insecta.
-     * Existing ranks are left untouched.
-     */
-    private void ensureParentRanks(com.naturalist.taxonomy.TaxonomicClassification taxonomy,
-                                    InsectGenusName genusName) {
-        var placeholder = new com.naturalist.fieldnotes.Description(
-                "Identified via vision — description pending.",
-                "Identified via vision — description pending.",
-                "Identified via vision — description pending.",
-                "Identified via vision — description pending.");
-
-        // Order
-        var orderSlug = taxonomy.order().value().toLowerCase(java.util.Locale.ROOT);
-        var orderName = InsectOrderName.of(orderSlug);
-        if (insectQuery.orders().getByName(orderName).isEmpty()) {
-            insectCommand.orders().insert(new InsectOrder(
-                    orderName, taxonomy.order(), placeholder,
-                    java.util.Set.of(), null));
-        }
-
-        // Family
-        var familySlug = taxonomy.family().value().toLowerCase(java.util.Locale.ROOT);
-        var familyName = InsectFamilyName.of(familySlug);
-        if (insectQuery.families().getByName(familyName).isEmpty()) {
-            insectCommand.families().insert(new InsectFamily(
-                    familyName, orderName, taxonomy.family(), placeholder,
-                    java.util.Set.of(), null));
-        }
-
-        // Genus
-        if (insectQuery.genera().getByName(genusName).isEmpty()) {
-            insectCommand.genera().insert(new InsectGenus(
-                    genusName, familyName, taxonomy.genus(), placeholder,
-                    java.util.Set.of(), null));
-        }
     }
 
     @GetMapping("/species")

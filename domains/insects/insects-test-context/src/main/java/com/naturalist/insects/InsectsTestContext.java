@@ -34,6 +34,7 @@ public class InsectsTestContext {
     private final InsectQuery insectQuery;
     private final InsectCommand insectCommand;
     private final InsectLifeStageQuery insectLifeStageQuery;
+    private final InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
 
     private InsectsTestContext(NaturalistDatabase db) {
         InsectRepository repository = InsectRepository.create(
@@ -75,6 +76,8 @@ public class InsectsTestContext {
         this.insectCommand = new InsectCommandImpl(
                 speciesCommand, imageCommand, fieldObservationCommand,
                 orderCommand, familyCommand, genusCommand);
+        this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
+                this.insectCommand, this.insectQuery);
     }
 
     public static InsectsTestContext create(NaturalistDatabase db) {
@@ -91,5 +94,9 @@ public class InsectsTestContext {
 
     public InsectLifeStageQuery insectLifeStageQuery() {
         return insectLifeStageQuery;
+    }
+
+    public InsectCatalogIdentificationTransaction catalogIdentificationTransaction() {
+        return catalogIdentificationTransaction;
     }
 }
