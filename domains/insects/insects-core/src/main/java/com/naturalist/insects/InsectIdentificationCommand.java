@@ -110,23 +110,25 @@ public class InsectIdentificationCommand {
         var schema = """
                 {
                   "type": "object",
-                  "required": ["name", "order", "family", "genus", "species", "commonName",
+                  "required": ["name", "identifiedRank", "order", "family", "commonName",
                                "descriptionPreschool", "descriptionElementary",
                                "descriptionSecondary", "descriptionUniversity",
-                               "guilds", "beneficial", "confidence", "evidence"],
+                               "guilds", "beneficial", "confidence", "evidence", "features"],
                   "properties": {
-                    "name":                    { "type": "string", "description": "Kebab-case slug for the species, e.g. battus-philenor" },
+                    "name":                    { "type": "string", "description": "Kebab-case slug for the identified rank, e.g. battus-philenor for species, syrphidae for family" },
+                    "identifiedRank":          { "type": "string", "enum": ["ORDER", "FAMILY", "GENUS", "SPECIES"], "description": "The most specific Linnaean rank you can confidently identify" },
                     "order":                   { "type": "string", "description": "Taxonomic order, e.g. Lepidoptera" },
-                    "family":                  { "type": "string", "description": "Taxonomic family, e.g. Papilionidae" },
-                    "genus":                   { "type": "string", "description": "Taxonomic genus, e.g. Battus" },
-                    "species":                 { "type": "string", "description": "Species epithet, e.g. philenor" },
-                    "commonName":              { "type": "string", "description": "Most widely used common name" },
+                    "family":                  { "type": "string", "description": "Taxonomic family, e.g. Papilionidae. Required for FAMILY, GENUS, and SPECIES ranks." },
+                    "genus":                   { "type": ["string", "null"], "description": "Taxonomic genus, e.g. Battus. Required for GENUS and SPECIES ranks, null otherwise." },
+                    "species":                 { "type": ["string", "null"], "description": "Species epithet, e.g. philenor. Required for SPECIES rank, null otherwise." },
+                    "commonName":              { "type": "string", "description": "Most widely used common name for the identified rank" },
                     "descriptionPreschool":    { "type": "string", "description": "Durrell preschool-level description (simple, sensory, wonder-focused)" },
                     "descriptionElementary":   { "type": "string", "description": "Durrell elementary-level description (observable features, life cycle basics)" },
                     "descriptionSecondary":    { "type": "string", "description": "Durrell secondary-level description (ecology, adaptations, relationships)" },
                     "descriptionUniversity":   { "type": "string", "description": "Durrell university-level description (taxonomy, research context, conservation)" },
                     "guilds":                  { "type": "array", "items": { "type": "string", "enum": ["PARASITOID","PREDATOR","APEX_PREDATOR","POLLINATOR","DECOMPOSER","FOOD_WEB","MIGRATORY","KEYSTONE"] }, "description": "Functional ecological guilds" },
                     "beneficial":              { "type": "boolean", "description": "Whether this insect is beneficial in a garden/agricultural context" },
+                    "features":                { "type": "array", "items": { "type": "string" }, "description": "Morphological field marks observed, ordered conspicuous to diagnostic: wing shape, coloration, antennae type, mouthparts, body segmentation, etc." },
                     "sightingNotes":           { "type": ["string", "null"], "description": "Notable observations about this sighting" },
                     "confidence":              { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence in identification (0.0-1.0)" },
                     "evidence":                { "type": "string", "description": "Which visible features support this identification" },
@@ -135,7 +137,7 @@ public class InsectIdentificationCommand {
                 }
                 """;
         return new ToolSchema(TOOL_NAME,
-                "Propose an insect species identification based on the provided photograph.",
+                "Propose an insect identification based on the provided photograph.",
                 schema);
     }
 
@@ -148,17 +150,29 @@ public class InsectIdentificationCommand {
                    venation, body shape, coloration, antennae, leg structure).
                 2. Consider the geographic location if provided — use it to narrow range maps
                    and eliminate look-alike species from other regions.
-                3. Provide four Durrell-level descriptions:
+                3. Identify to the MOST SPECIFIC Linnaean rank your confidence supports:
+                   - SPECIES: you can confidently name the species (e.g. Battus philenor)
+                   - GENUS: you can identify the genus but not the species
+                   - FAMILY: you can identify the family but not the genus
+                   - ORDER: you can only identify the order
+                   Set identifiedRank accordingly. Only provide genus/species fields when
+                   your identifiedRank includes them. Do NOT guess a species if you are
+                   not confident — identify at family or order level instead.
+                4. Provide four Durrell-level descriptions for the identified rank:
                    - Preschool: simple, sensory, wonder-focused (what a 4-year-old would notice)
                    - Elementary: observable features, life cycle basics (what a 10-year-old learns)
                    - Secondary: ecology, adaptations, relationships (high school biology level)
                    - University: taxonomy, research context, conservation status (expert level)
-                4. Assess your confidence honestly. Below 0.7, name the specific features you
+                5. List the morphological features you observed in the photo, ordered from
+                   most conspicuous to most diagnostic. These should be specific, normalised
+                   field marks (e.g. "halteres", "clubbed antennae", "elytra").
+                6. Assess your confidence honestly. Below 0.7, name the specific features you
                    cannot confirm from the photo.
-                5. List alternative candidates if confidence is below 0.9.
-                6. Assign functional ecological guilds from the allowed list.
+                7. List alternative candidates if confidence is below 0.9.
+                8. Assign functional ecological guilds from the allowed list.
 
-                Generate the kebab-case slug name from the binomial name (e.g. battus-philenor).
+                Generate the kebab-case slug name from the identified rank's name
+                (e.g. battus-philenor for a species, syrphidae for a family).
                 Use the propose_insect_species tool to return your identification.
                 """;
         if (location != null && !location.isBlank()) {
@@ -170,47 +184,88 @@ public class InsectIdentificationCommand {
     private InsectIdentificationResult parseResult(ToolResult result) {
         try {
             var node = MAPPER.readTree(result.argumentsJson());
-            var name = InsectSpeciesName.of(node.get("name").asText());
-            var genusSlug = node.get("genus").asText().toLowerCase();
-            var genusName = InsectGenusName.of(genusSlug);
-            var taxonomy = new TaxonomicClassification(
-                    TaxonomicOrder.of(node.get("order").asText()),
-                    TaxonomicFamily.of(node.get("family").asText()),
-                    TaxonomicGenus.of(node.get("genus").asText()),
-                    TaxonomicSpecies.of(node.get("species").asText()));
+            var identifiedRank = node.get("identifiedRank").asText();
+            var slug = node.get("name").asText();
             var description = new Description(
                     node.get("descriptionPreschool").asText(),
                     node.get("descriptionElementary").asText(),
                     node.get("descriptionSecondary").asText(),
                     node.get("descriptionUniversity").asText());
             var commonName = node.get("commonName").asText();
+            var sightingNotes = node.hasNonNull("sightingNotes")
+                    ? node.get("sightingNotes").asText() : null;
 
-            var species = new InsectSpecies(
-                    name,
-                    genusName,
-                    taxonomy.species(),
-                    description,
-                    Set.of(CommonName.of(commonName)),
-                    node.has("sightingNotes") && !node.get("sightingNotes").isNull()
-                            ? node.get("sightingNotes").asText() : null,
-                    null,  // placedIn (Clade) — not vision-determinable
-                    null,  // chemicalDefense
-                    null,  // voltinism
-                    null,  // habitatProfile
-                    null,  // habitatRequirements
-                    null,  // gardenConnections
-                    null,  // beneficialProfile
-                    null   // ecologicalSignificance
-            );
+            var taxonomicOrder = TaxonomicOrder.of(node.get("order").asText());
+            var taxonomicFamily = node.hasNonNull("family")
+                    ? TaxonomicFamily.of(node.get("family").asText()) : null;
+            var taxonomicGenus = node.hasNonNull("genus")
+                    ? TaxonomicGenus.of(node.get("genus").asText()) : null;
+            var taxonomicSpecies = node.hasNonNull("species")
+                    ? TaxonomicSpecies.of(node.get("species").asText()) : null;
+            var taxonomy = new TaxonomicClassification(
+                    taxonomicOrder, taxonomicFamily, taxonomicGenus, taxonomicSpecies);
+
+            var identifiedEntity = buildIdentifiedEntity(
+                    identifiedRank, slug, description, commonName, sightingNotes, taxonomy);
+
+            var features = new java.util.ArrayList<String>();
+            if (node.hasNonNull("features") && node.get("features").isArray()) {
+                for (var f : node.get("features")) {
+                    if (f.isTextual() && !f.asText().isBlank()) {
+                        features.add(f.asText());
+                    }
+                }
+            }
 
             var confidence = node.get("confidence").asDouble();
             var evidence = node.get("evidence").asText();
             var identification = new Identification(confidence, evidence, parseAlternatives(node));
 
-            return new InsectIdentificationResult(new IdentifiedRankEntity.Species(species), taxonomy, identification, List.of());
+            return new InsectIdentificationResult(identifiedEntity, taxonomy, identification,
+                    List.copyOf(features));
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse vision identification result", e);
         }
+    }
+
+    private IdentifiedRankEntity buildIdentifiedEntity(
+            String rank, String slug, Description description, String commonName,
+            @Nullable String sightingNotes, TaxonomicClassification taxonomy) {
+        return switch (rank) {
+            case "SPECIES" -> {
+                var speciesName = InsectSpeciesName.of(slug);
+                var genusName = InsectGenusName.of(
+                        taxonomy.genus().value().toLowerCase(java.util.Locale.ROOT));
+                yield new IdentifiedRankEntity.Species(new InsectSpecies(
+                        speciesName, genusName, taxonomy.species(), description,
+                        Set.of(CommonName.of(commonName)), sightingNotes,
+                        null, null, null, null, null, null, null, null));
+            }
+            case "GENUS" -> {
+                var genusName = InsectGenusName.of(slug);
+                var familyName = InsectFamilyName.of(
+                        taxonomy.family().value().toLowerCase(java.util.Locale.ROOT));
+                yield new IdentifiedRankEntity.Genus(new InsectGenus(
+                        genusName, familyName, taxonomy.genus(), description,
+                        Set.of(CommonName.of(commonName)), null));
+            }
+            case "FAMILY" -> {
+                var familyName = InsectFamilyName.of(slug);
+                var orderName = InsectOrderName.of(
+                        taxonomy.order().value().toLowerCase(java.util.Locale.ROOT));
+                yield new IdentifiedRankEntity.Family(new InsectFamily(
+                        familyName, orderName, taxonomy.family(), description,
+                        Set.of(CommonName.of(commonName)), null));
+            }
+            case "ORDER" -> {
+                var orderName = InsectOrderName.of(slug);
+                yield new IdentifiedRankEntity.Order(new InsectOrder(
+                        orderName, taxonomy.order(), description,
+                        Set.of(CommonName.of(commonName)), null));
+            }
+            default -> throw new IllegalArgumentException(
+                    "Unknown identified rank: " + rank);
+        };
     }
 
     private List<Identification.Candidate> parseAlternatives(JsonNode node) {
