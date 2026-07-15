@@ -124,6 +124,81 @@ class InsectCatalogIdentificationTransactionTest {
         assertThat(query.genera().getByName(GENUS_NAME)).isPresent();
     }
 
+    @Test
+    void executePersistsFamilyLevelIdentification() {
+        var familyName = InsectFamilyName.of("syrphidae");
+        var orderName = InsectOrderName.of("diptera");
+        var obsId = FieldObservationId.create();
+        var family = new InsectFamily(
+                familyName, orderName,
+                TaxonomicFamily.of("Syrphidae"), description(),
+                Set.of(CommonName.of("Hover Flies")), null);
+        var taxonomy = new TaxonomicClassification(
+                TaxonomicOrder.of("Diptera"), TaxonomicFamily.of("Syrphidae"),
+                null, null);
+        var image = new InsectImage(
+                InsectImageId.create(), familyName, Instant.now(),
+                FileName.of("IMG_0010.jpg"), obsId);
+        var observation = new FieldObservation(
+                obsId, NaturalistName.of("pat"), familyName,
+                Instant.now(), null, null, null);
+        var id = new CatalogIdentification(
+                new IdentifiedRankEntity.Family(family), taxonomy,
+                image, observation, List.of(), List.of(), Map.of());
+
+        transaction.execute(id);
+
+        assertThat(query.orders().getByName(orderName)).isPresent();
+        var persistedFamily = query.families().getByName(familyName);
+        assertThat(persistedFamily).isPresent();
+        assertThat(persistedFamily.get().description()).isEqualTo(description());
+        assertThat(query.images().forParentName(familyName).stream().toList()).hasSize(1);
+        assertThat(query.fieldObservations().getByName(obsId)).isPresent();
+    }
+
+    @Test
+    void executePersistsFeatures() {
+        var featureId = InsectFeatureId.create();
+        var feature = InsectFeature.of(featureId, "halteres");
+        var assignment = InsectFeatureAssignment.of(
+                InsectFeatureAssignmentId.create(), featureId,
+                SPECIES_NAME, 0);
+        var id = new CatalogIdentification(
+                new IdentifiedRankEntity.Species(species()), taxonomy(),
+                image(), observation(),
+                List.of(feature), List.of(assignment), Map.of());
+
+        transaction.execute(id);
+
+        var featureView = query.features().findByRankName(SPECIES_NAME);
+        assertThat(featureView).isPresent();
+        assertThat(featureView.get().features()).hasSize(1);
+        assertThat(featureView.get().features().getFirst().feature().value())
+                .isEqualTo("halteres");
+    }
+
+    @Test
+    void executeUsesPreResolvedDescriptionForNewParentRank() {
+        var resolvedDescription = new Description(
+                "Flies are everywhere!",
+                "Diptera have one pair of wings and halteres.",
+                "Order Diptera demonstrates remarkable ecological diversity.",
+                "Diptera is one of the four megadiverse insect orders.");
+        var parentDescriptions = Map.<InsectRankName, Description>of(
+                InsectOrderName.of("diptera"), resolvedDescription);
+        var id = new CatalogIdentification(
+                new IdentifiedRankEntity.Species(species()), taxonomy(),
+                image(), observation(),
+                List.of(), List.of(), parentDescriptions);
+
+        transaction.execute(id);
+
+        var order = query.orders().getByName(InsectOrderName.of("diptera"));
+        assertThat(order).isPresent();
+        assertThat(order.get().description().preschool())
+                .isEqualTo("Flies are everywhere!");
+    }
+
     // ----- fixtures -----
 
     private static final InsectSpeciesName SPECIES_NAME = InsectSpeciesName.of("eupeodes-fumipennis");
