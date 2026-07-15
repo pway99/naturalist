@@ -13,7 +13,6 @@ import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import com.naturalist.data.PageRequest;
 import java.time.Instant;
 import java.util.Set;
 
@@ -24,7 +23,7 @@ class InsectCatalogIdentificationTransactionTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    InsectsTestContext context = InsectsTestContext.create(db);
+    InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
     InsectQuery query = context.insectQuery();
     InsectCatalogIdentificationTransaction transaction = context.catalogIdentificationTransaction();
 
@@ -48,7 +47,7 @@ class InsectCatalogIdentificationTransactionTest {
         assertThat(images.stream().toList().getFirst().resourceName())
                 .isEqualTo(FileName.of("IMG_0001.jpg"));
 
-        // Observation persisted — look up by ID since FieldObservationQuery has no forSubjectName
+        // Observation persisted
         assertThat(query.fieldObservations().getByName(OBSERVATION_ID)).isPresent();
         assertThat(query.fieldObservations().getByName(OBSERVATION_ID).get().observedBy())
                 .isEqualTo(NaturalistName.of("pat"));

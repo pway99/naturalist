@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.PageRequest;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.vision.Image;
 import com.naturalist.vision.ImageMetadata;
@@ -16,21 +17,21 @@ class InsectIdentificationCommandTest {
 
     static final String SAMPLE_RESULT_JSON = """
             {
-              "name": "vanessa-cardui",
-              "order": "Lepidoptera",
-              "family": "Nymphalidae",
-              "genus": "Vanessa",
-              "species": "cardui",
-              "commonName": "Painted Lady",
-              "descriptionPreschool": "A pretty orange and black butterfly with spots on its wings.",
-              "descriptionElementary": "The Painted Lady is one of the most widespread butterflies in the world, found on every continent except Antarctica.",
-              "descriptionSecondary": "Vanessa cardui is a highly migratory species known for its remarkable long-distance movements across continents.",
-              "descriptionUniversity": "V. cardui exhibits one of the longest insect migration patterns known, with multi-generational movements spanning thousands of kilometers.",
-              "guilds": ["POLLINATOR", "MIGRATORY"],
+              "name": "testus-fabricatus",
+              "order": "Diptera",
+              "family": "Syrphidae",
+              "genus": "Testus",
+              "species": "fabricatus",
+              "commonName": "Fabricated Hover Fly",
+              "descriptionPreschool": "A tiny fly that hovers in the air like a helicopter.",
+              "descriptionElementary": "The Fabricated Hover Fly is an imaginary species used for testing.",
+              "descriptionSecondary": "Testus fabricatus is a fictitious Syrphid fly created for test purposes.",
+              "descriptionUniversity": "T. fabricatus does not exist outside of unit tests.",
+              "guilds": ["POLLINATOR"],
               "beneficial": true,
-              "sightingNotes": "Nectaring on lantana in afternoon sun",
+              "sightingNotes": "Hovering near test fixture",
               "confidence": 0.85,
-              "evidence": "Orange and black wing pattern with distinctive white spots on dark wing tips, four small eyespots on hindwing underside",
+              "evidence": "Distinctive test coloration with unmistakable fabricated wing venation",
               "alternatives": null
             }
             """;
@@ -38,13 +39,14 @@ class InsectIdentificationCommandTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    InsectsTestContext context = InsectsTestContext.create(db);
+    InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
+    InsectQuery query = context.insectQuery();
 
     private final VisionService stubService = (image, tool, prompt) ->
             new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
 
-    private final InsectIdentificationCommand command = new InsectIdentificationCommand(
-            stubService, context.catalogIdentificationTransaction());
+    private final InsectIdentificationCommand command =
+            new InsectIdentificationCommand(stubService, context.catalogIdentificationTransaction());
 
     @Test
     void identify_returnsSpeciesNameAndPersistsEntities() {
@@ -56,23 +58,20 @@ class InsectIdentificationCommandTest {
                 image, FileName.of("IMG_0001.jpg"),
                 NaturalistName.of("pat"), null);
 
-        assertThat(speciesName.value()).isEqualTo("vanessa-cardui");
+        assertThat(speciesName.value()).isEqualTo("testus-fabricatus");
 
         // Species persisted with parsed description
-        var species = context.insectQuery().species().getByName(speciesName);
+        var species = query.species().getByName(speciesName);
         assertThat(species).isPresent();
-        assertThat(species.get().description().preschool()).contains("orange and black");
+        assertThat(species.get().description().preschool()).contains("hovers in the air");
 
         // Parent ranks created
-        assertThat(context.insectQuery().orders().getByName(InsectOrderName.of("lepidoptera")))
-                .isPresent();
-        assertThat(context.insectQuery().families().getByName(InsectFamilyName.of("nymphalidae")))
-                .isPresent();
-        assertThat(context.insectQuery().genera().getByName(InsectGenusName.of("vanessa")))
-                .isPresent();
+        assertThat(query.orders().getByName(InsectOrderName.of("diptera"))).isPresent();
+        assertThat(query.families().getByName(InsectFamilyName.of("syrphidae"))).isPresent();
+        assertThat(query.genera().getByName(InsectGenusName.of("testus"))).isPresent();
 
         // Image persisted
-        var images = context.insectQuery().images().forParentName(speciesName);
+        var images = query.images().forParentName(speciesName);
         assertThat(images.stream().toList()).hasSize(1);
         assertThat(images.stream().toList().getFirst().resourceName())
                 .isEqualTo(FileName.of("IMG_0001.jpg"));
@@ -86,19 +85,17 @@ class InsectIdentificationCommandTest {
                         + "\\\"commonName\\\": \\\"Large Milkweed Bug\\\", \\\"confidence\\\": 0.12}]\"");
         VisionService withAlternatives = (image, tool, prompt) ->
                 new ToolResult("propose_insect_species", jsonWithAlternatives);
-        var cmd = new InsectIdentificationCommand(
-                withAlternatives, context.catalogIdentificationTransaction());
+        var cmd = new InsectIdentificationCommand(withAlternatives, context.catalogIdentificationTransaction());
         var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));
 
         var speciesName = cmd.identify(
                 image, FileName.of("IMG_0002.jpg"),
                 NaturalistName.of("pat"), null);
 
-        // Observation carries the identification with alternatives
-        var obsPage = context.insectQuery().fieldObservations()
-                .findPage(com.naturalist.data.PageRequest.console(0));
-        var withId = obsPage.content().stream()
-                .filter(o -> o.identification() != null)
+        var obs = query.fieldObservations().findPage(PageRequest.console(0));
+        var withId = obs.content().stream()
+                .filter(o -> o.subject().equals(speciesName)
+                        && o.identification() != null)
                 .findFirst();
         assertThat(withId).isPresent();
         assertThat(withId.get().identification().alternatives()).hasSize(1);
@@ -113,8 +110,7 @@ class InsectIdentificationCommandTest {
             promptCapture[0] = prompt;
             return new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
         };
-        var cmd = new InsectIdentificationCommand(
-                capturing, context.catalogIdentificationTransaction());
+        var cmd = new InsectIdentificationCommand(capturing, context.catalogIdentificationTransaction());
         var image = new Image(
                 new byte[]{1}, "image/jpeg",
                 new ImageMetadata("Deer Creek, Butte County, CA", null));
@@ -132,8 +128,7 @@ class InsectIdentificationCommandTest {
             promptCapture[0] = prompt;
             return new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
         };
-        var cmd = new InsectIdentificationCommand(
-                capturing, context.catalogIdentificationTransaction());
+        var cmd = new InsectIdentificationCommand(capturing, context.catalogIdentificationTransaction());
         var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));
 
         cmd.identify(image, FileName.of("IMG_0004.jpg"),

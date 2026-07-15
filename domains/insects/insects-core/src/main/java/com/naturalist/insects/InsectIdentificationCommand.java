@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.data.FileName;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicFamily;
@@ -36,7 +35,6 @@ import java.util.Set;
  * <p>Returns {@link InsectSpeciesName} — a pragmatic CQS exception so the
  * caller can redirect to the species page without a follow-up query.
  */
-@DomainService
 public class InsectIdentificationCommand {
 
     private static final String TOOL_NAME = "propose_insect_species";
@@ -67,8 +65,8 @@ public class InsectIdentificationCommand {
         var result = identifyViaVision(image);
 
         var observationId = FieldObservationId.create();
-        var capturedAt = image.metadata().capturedInstant() != null
-                ? image.metadata().capturedInstant() : Instant.now();
+        var capturedAt = image.metadata().capturedAt() != null
+                ? image.metadata().capturedAt() : Instant.now();
 
         var insectImage = new InsectImage(
                 InsectImageId.create(),

@@ -2,7 +2,6 @@ package com.naturalist.insects;
 
 import com.naturalist.data.Transaction;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.infrastructure.DomainService;
 import com.naturalist.taxonomy.TaxonomicClassification;
 
 import java.util.Locale;
@@ -17,7 +16,6 @@ import java.util.Set;
  * it is left untouched and only the image and observation are inserted.
  * Parent ranks follow the same pattern — existing ranks are never overwritten.
  */
-@DomainService
 class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentification> {
 
     private static final Description PLACEHOLDER = new Description(

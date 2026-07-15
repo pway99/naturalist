@@ -35,11 +35,20 @@ public record CatalogIdentification(
                 .valueObject(taxonomy, "taxonomy")
                 .namedEntity(image, "image")
                 .namedEntity(observation, "observation")
-                .isTrue(image.parentName().equals(species.name()),
-                        "imageParentMatchesSpecies")
-                .isTrue(observation.subject().equals(species.name()),
-                        "observationSubjectMatchesSpecies")
-                .isTrue(Objects.equals(image.observationId(), observation.id()),
-                        "imageObservationIdMatchesObservation");
+                .isTrue(imageParentMatchesSpecies(), "imageParentMatchesSpecies")
+                .isTrue(observationSubjectMatchesSpecies(), "observationSubjectMatchesSpecies")
+                .isTrue(imageObservationIdMatchesObservation(), "imageObservationIdMatchesObservation");
+    }
+
+    private boolean imageParentMatchesSpecies() {
+        return species == null || image == null || image.parentName().equals(species.name());
+    }
+
+    private boolean observationSubjectMatchesSpecies() {
+        return species == null || observation == null || observation.subject().equals(species.name());
+    }
+
+    private boolean imageObservationIdMatchesObservation() {
+        return image == null || observation == null || Objects.equals(image.observationId(), observation.id());
     }
 }
