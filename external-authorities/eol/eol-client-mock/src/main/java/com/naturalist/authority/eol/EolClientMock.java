@@ -16,6 +16,11 @@ import java.util.Set;
  * an {@link EolAuthorityTestEntitySource} resolved from the shared
  * {@link NaturalistDatabase}. The Phase-1 stand-in for the real EOL
  * HTTP client.
+ *
+ * <p>Lookup is permissive: seeded entries return their real page IDs,
+ * but any unrecognised subject still gets a synthetic reference. This
+ * mirrors the real EOL — most valid taxa have a page — and prevents the
+ * mock from silently rejecting identifications at dev time.
  */
 @ResilienceExempt(reason = "in-memory fixture client; performs no I/O")
 public final class EolClientMock implements ExternalAuthority {
@@ -40,7 +45,8 @@ public final class EolClientMock implements ExternalAuthority {
                 .filter(entry -> entry.name().equals(subject.value()))
                 .findFirst()
                 .map(entry -> Set.of(new AuthorityReference(Eol.SOURCE, Eol.deepLink(entry.pageId()))))
-                .orElse(Set.of());
+                .orElseGet(() -> Set.of(new AuthorityReference(
+                        Eol.SOURCE, Eol.deepLink(new EolPageId("mock-" + subject.value())))));
     }
 
     @Override

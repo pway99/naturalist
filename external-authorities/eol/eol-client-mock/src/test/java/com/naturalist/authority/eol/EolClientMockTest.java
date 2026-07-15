@@ -37,8 +37,12 @@ class EolClientMockTest {
     }
 
     @Test
-    void unknownSubjectReturnsEmptySet() {
-        assertThat(client.lookup(UNKNOWN)).isEmpty();
+    void unknownSubjectReturnsSyntheticReference() {
+        var refs = client.lookup(UNKNOWN);
+        assertThat(refs).hasSize(1);
+        var ref = refs.iterator().next();
+        assertThat(ref.source()).isEqualTo(Eol.SOURCE);
+        assertThat(ref.url().toString()).isEqualTo("https://eol.org/pages/mock-unobtainium-bug");
     }
 
     @Test
