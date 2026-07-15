@@ -43,6 +43,24 @@ naturalist is signed in; with no naturalist the image stays owner-less, exactly 
 before this feature. `POST /insects/{name}/observe` records a sighting (no photo)
 via the same `FieldObservation` insert, without touching `InsectImage`.
 
+**CatalogIdentification** — `Aggregate`. Write-side consistency boundary for insect
+catalog identification. Carries four entities the transaction persists (species,
+taxonomy, image, observation) with cross-entity FK invariants: image parent must
+match species, observation subject must match species, image observation ID must
+match observation. Each invariant is a named private method that returns true
+vacuously when null (Observer validates nullity separately via `namedEntity`/
+`valueObject`).
+
+**InsectCatalogIdentificationTransaction** — `Transaction<CatalogIdentification>`
+in `insects-core`. Persists a `CatalogIdentification` atomically: resolves parent
+ranks (order → family → genus) idempotently, inserts species if new, then inserts
+image and field observation.
+
+**InsectIdentificationCommand** — in `insects-core`. Orchestrates vision
+identification → aggregate construction → transactional persistence. Takes
+`VisionService` and `InsectCatalogIdentificationTransaction`. Returns
+`InsectSpeciesName` (pragmatic CQS exception for controller redirect).
+
 **Current naturalist in insects-console** — `InsectsController` resolves the signed-in
 naturalist by reading the `"naturalist.currentNaturalistName"` request attribute
 (`currentNaturalist(HttpServletRequest)`), written upstream by the app's

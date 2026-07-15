@@ -3,7 +3,7 @@
 Per-domain CLAUDE.md files under each domain directory cover domain-specific vocabulary
 (chemistry, soil, plants, apiary, etc.). This file covers conventions shared across all
 domains: identity model, record conventions, field annotations, test fixtures,
-repositories, and new-module scaffolding.
+test contexts, repositories, and new-module scaffolding.
 
 ## Identity Model
 
@@ -129,6 +129,52 @@ Conventions for JSON catalog files:
   (resource sub-directory mirrors the Java sub-package)
 
 Reference implementation: `InsectSpeciesTestEntitySource` + `insects/species/insect-species.json` in the insects module.
+
+## Test Contexts
+
+Each domain has a `<Domain>sTestContext` class in `<domain>-test-context/src/main/java/`
+that simulates DI by constructing the full object graph — mock repositories, `*QueryImpl`
+adapters, `*CommandImpl` adapters, and `Transaction` subclasses — then exposing the
+assembled result through public methods (`insectQuery()`, `insectCommand()`,
+`catalogIdentificationTransaction()`, etc.).
+
+The pattern works because the test-context class lives in the **same package** as the
+`*-core` implementations (split-package across Maven modules). Package-private `*Impl`
+constructors are visible to it. Consumers — controller bootstraps, integration tests —
+see only the public contract and never wire dependencies directly.
+
+### TestContextInternal — breaking the Maven cycle
+
+`<domain>-test-context` depends on `<domain>-core` (compile scope) to access the
+package-private implementations. This means `<domain>-core` **cannot** depend on
+`<domain>-test-context` (even at test scope) — Maven rejects the direct cycle.
+
+When a `<domain>-core` test needs the full wired object graph (e.g. testing a
+`Transaction` or `Command` that touches multiple repositories), it uses a
+**`<Domain>sTestContextInternal`** class in `<domain>-core/src/test/java/`. This
+class follows the identical pattern — same package, same split-package access to
+package-private impls, same public contract — but lives in core's own test classpath
+instead of a separate module.
+
+Rules:
+
+- **Naming:** `<Domain>sTestContextInternal` — the `Internal` suffix distinguishes it
+  from the module-level `<Domain>sTestContext`.
+- **Scope:** package-private class, visible only to tests in `<domain>-core`.
+- **No-op stubs for cross-domain queries:** the internal context may stub out
+  cross-domain dependencies (citations, life stages) that the test doesn't exercise,
+  rather than pulling in their full test contexts.
+- **Not a replacement.** `<Domain>sTestContext` in `<domain>-test-context/` remains
+  the canonical wiring used by console controllers and integration tests in other
+  modules. The internal variant exists only to serve `<domain>-core`'s own tests.
+- **Both go away** when Spring DI replaces the manual composition.
+
+Tests in `<domain>-core` that only need a single repository or query (e.g.
+`SpeciesQueryImplTest`) continue to wire their dependencies directly — the internal
+test context is for tests that need the **full assembled graph**.
+
+Reference implementation: `InsectsTestContext` + `InsectsTestContextInternal` in the
+insects domain.
 
 ## Repository Architecture
 
