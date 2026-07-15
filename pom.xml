@@ -165,6 +165,11 @@
             <!-- ADAPTERS -->
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>anthropic-text-generation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>anthropic-vision</artifactId>
                 <version>${project.version}</version>
             </dependency>

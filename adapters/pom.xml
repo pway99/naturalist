@@ -24,6 +24,7 @@
     </properties>
 
     <modules>
+        <module>anthropic-text-generation</module>
         <module>anthropic-vision</module>
         <module>resilience-resilience4j</module>
         <module>spring-runtime</module>
