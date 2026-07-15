@@ -49,4 +49,12 @@ public record FieldObservation(
                 .notNull(observedOn, "observedOn")
                 .valueObjectOrNull(identification, "identification");
     }
+
+    public FieldObservation withNotes(@Nullable String notes) {
+        return new FieldObservation(id, observedBy, subject, observedOn, notes, location, identification);
+    }
+
+    public FieldObservation withSubject(InsectRankName subject) {
+        return new FieldObservation(id, observedBy, subject, observedOn, notes, location, identification);
+    }
 }

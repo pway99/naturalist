@@ -700,10 +700,7 @@ public class InsectsController {
             return "redirect:/insects/" + name;
         }
         var obs = existing.get();
-        var updated = new FieldObservation(
-                obs.id(), obs.observedBy(), obs.subject(), obs.observedOn(),
-                (notes == null || notes.isBlank()) ? null : notes,
-                obs.location(), obs.identification());
+        var updated = obs.withNotes((notes == null || notes.isBlank()) ? null : notes);
         insectCommand.fieldObservations().update(updated);
         return "redirect:/insects/" + name;
     }
@@ -719,18 +716,10 @@ public class InsectsController {
         if (existing.isEmpty()) return "redirect:/insects/" + name;
 
         var obs = existing.get();
-        InsectRankName newRankName = switch (newSubjectRank) {
-            case "SPECIES" -> InsectSpeciesName.of(newSubject);
-            case "GENUS" -> InsectGenusName.of(newSubject);
-            case "FAMILY" -> InsectFamilyName.of(newSubject);
-            case "ORDER" -> InsectOrderName.of(newSubject);
-            default -> throw new IllegalArgumentException("Unknown rank: " + newSubjectRank);
-        };
+        var newRankName = InsectRankName.of(
+                newSubject, com.naturalist.taxonomy.LinealRank.valueOf(newSubjectRank));
 
-        // Update observation subject
-        var updatedObs = new FieldObservation(
-                obs.id(), obs.observedBy(), newRankName, obs.observedOn(),
-                obs.notes(), obs.location(), obs.identification());
+        var updatedObs = obs.withSubject(newRankName);
         insectCommand.fieldObservations().update(updatedObs);
 
         // TODO: update linked images' parentName to newRankName

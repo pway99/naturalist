@@ -79,4 +79,20 @@ public sealed interface InsectRankName
      * badge being the canonical case.
      */
     LinealRank rank();
+
+    /**
+     * Creates the appropriate {@code InsectRankName} permit for the given slug
+     * and Linnaean rank. Only the five insect-side ranks are supported; higher
+     * ranks (Kingdom, Phylum, Class) throw {@link IllegalArgumentException}.
+     */
+    static InsectRankName of(String slug, LinealRank rank) {
+        return switch (rank) {
+            case ORDER -> InsectOrderName.of(slug);
+            case FAMILY -> InsectFamilyName.of(slug);
+            case GENUS -> InsectGenusName.of(slug);
+            case SPECIES -> InsectSpeciesName.of(slug);
+            case SUBSPECIES -> InsectSubspeciesName.of(slug);
+            default -> throw new IllegalArgumentException("Unsupported insect rank: " + rank);
+        };
+    }
 }
