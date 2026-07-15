@@ -75,9 +75,14 @@ public class InsectsTestContext {
         InsectCommand.OrderCommand orderCommand = new OrderCommandImpl(repository.orderRepository);
         InsectCommand.FamilyCommand familyCommand = new FamilyCommandImpl(repository.familyRepository);
         InsectCommand.GenusCommand genusCommand = new GenusCommandImpl(repository.genusRepository);
+        InsectCommand.FeatureCommand featureCommand =
+                new FeatureCommandImpl(repository.featureRepository);
+        InsectCommand.FeatureAssignmentCommand featureAssignmentCommand =
+                new FeatureAssignmentCommandImpl(repository.featureAssignmentRepository);
         this.insectCommand = new InsectCommandImpl(
                 speciesCommand, imageCommand, fieldObservationCommand,
-                orderCommand, familyCommand, genusCommand);
+                orderCommand, familyCommand, genusCommand,
+                featureCommand, featureAssignmentCommand);
         this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
                 this.insectCommand, this.insectQuery);
         this.addPhotoTransaction = new InsectAddPhotoTransaction(this.insectCommand);

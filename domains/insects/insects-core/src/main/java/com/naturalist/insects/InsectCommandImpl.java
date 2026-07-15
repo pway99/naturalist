@@ -10,18 +10,23 @@ class InsectCommandImpl implements InsectCommand {
     private final OrderCommand orderCommand;
     private final FamilyCommand familyCommand;
     private final GenusCommand genusCommand;
+    private final FeatureCommand featureCommand;
+    private final FeatureAssignmentCommand featureAssignmentCommand;
 
     InsectCommandImpl(SpeciesCommand speciesCommand, ImageCommand imageCommand,
                        FieldObservationCommand fieldObservationCommand,
                        OrderCommand orderCommand, FamilyCommand familyCommand,
-                       GenusCommand genusCommand) {
+                       GenusCommand genusCommand, FeatureCommand featureCommand,
+                       FeatureAssignmentCommand featureAssignmentCommand) {
         Observer.forClass(InsectCommandImpl.class).arguments("constructor", i -> i
                         .notNull(speciesCommand, "speciesCommand")
                         .notNull(imageCommand, "imageCommand")
                         .notNull(fieldObservationCommand, "fieldObservationCommand")
                         .notNull(orderCommand, "orderCommand")
                         .notNull(familyCommand, "familyCommand")
-                        .notNull(genusCommand, "genusCommand"))
+                        .notNull(genusCommand, "genusCommand")
+                        .notNull(featureCommand, "featureCommand")
+                        .notNull(featureAssignmentCommand, "featureAssignmentCommand"))
                 .throwWhenInvalid();
         this.speciesCommand = speciesCommand;
         this.imageCommand = imageCommand;
@@ -29,6 +34,8 @@ class InsectCommandImpl implements InsectCommand {
         this.orderCommand = orderCommand;
         this.familyCommand = familyCommand;
         this.genusCommand = genusCommand;
+        this.featureCommand = featureCommand;
+        this.featureAssignmentCommand = featureAssignmentCommand;
     }
 
     @Override
@@ -59,5 +66,15 @@ class InsectCommandImpl implements InsectCommand {
     @Override
     public GenusCommand genera() {
         return genusCommand;
+    }
+
+    @Override
+    public FeatureCommand features() {
+        return featureCommand;
+    }
+
+    @Override
+    public FeatureAssignmentCommand featureAssignments() {
+        return featureAssignmentCommand;
     }
 }

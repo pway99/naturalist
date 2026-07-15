@@ -40,6 +40,10 @@ public interface InsectCommand {
 
     GenusCommand genera();
 
+    FeatureCommand features();
+
+    FeatureAssignmentCommand featureAssignments();
+
     /**
      * Entity-level command surface for {@link InsectSpecies}.
      */
@@ -75,5 +79,18 @@ public interface InsectCommand {
      * Entity-level command surface for {@link InsectGenus}.
      */
     interface GenusCommand extends EntityCommand<InsectGenusName, InsectGenus> {
+    }
+
+    /**
+     * Entity-level command surface for {@link InsectFeature}.
+     */
+    interface FeatureCommand extends EntityCommand<InsectFeatureId, InsectFeature> {
+    }
+
+    /**
+     * Entity-level command surface for {@link InsectFeatureAssignment}.
+     */
+    interface FeatureAssignmentCommand
+            extends EntityCommand<InsectFeatureAssignmentId, InsectFeatureAssignment> {
     }
 }
