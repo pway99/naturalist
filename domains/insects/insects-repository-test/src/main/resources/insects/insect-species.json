@@ -120,10 +120,10 @@
     "sourceCompounds" : "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
     "aposematicSignal" : "Iridescent blue hindwing coloration in adults; conspicuous brick-red egg clusters; warningly coloured dark larvae with reddish filaments. The pupa is the exception — cryptic rather than aposematic.",
     "protectedStages": [
-      "EGG",
-      "LARVA",
       "ADULT",
-      "PUPA"
+      "PUPA",
+      "LARVA",
+      "EGG"
     ]
   },
   "voltinism" : {
@@ -265,6 +265,32 @@
   "gardenConnections" : null,
   "beneficialProfile" : null,
   "ecologicalSignificance" : null
+},
+  {
+    "name": "libellula-saturata",
+    "genusName": "libellula",
+    "epithet": "saturata",
+    "description": {
+      "preschool": "Look at this big, beautiful bug with shiny orange wings! It looks like a tiny helicopter hovering and then sitting very still. Its eyes are huge and sparkly, almost like jewels. If you watch it, it might zoom away super fast to catch a little fly for lunch — it's one of the fastest fliers in the whole bug world!",
+      "elementary": "This is a Flame Skimmer dragonfly, one of the most colorful dragonflies in North America. The whole body and wings glow a deep orange-red color, especially in males like this one. Dragonflies start life as eggs laid in water, then hatch into nymphs that breathe underwater through gills. After months or even years underwater, the nymph crawls out, its skin splits open, and a brand-new winged adult emerges. Adult Flame Skimmers are expert hunters that catch mosquitoes and gnats in mid-air using their spiny legs like a basket.",
+      "secondary": "Libellula saturata is a large skimmer dragonfly (family Libellulidae) whose mature males develop striking erythrism — full-body orange-red pigmentation including the wing venation and a broad amber wash across the wing membrane. This coloration signals reproductive fitness to females and territorial dominance to rival males. Flame Skimmers are thermophilic, favoring warm, still or slow-moving water bodies such as hot springs, ponds, and irrigation ditches, which is consistent with an Oak Vista / California setting. As aerial predators they regulate populations of small dipterans (mosquitoes, midges) and are themselves prey for birds, spiders, and robber flies, placing them as critical mid-trophic links. Males establish and vigorously defend perches near water — exactly the behavior shown in this photo.",
+      "university": "Libellula saturata Burmeister, 1839 (Odonata: Libellulidae) is a robust skimmer with a wingspan reaching 90 mm, among the largest in its genus. Phylogenetically, Libellula sits within the cosmopolitan skimmer clade, with saturata closely related to L. luctuosa and L. forensis. The species' range spans the western United States into Baja California and northern Mexico, with a strong association with geothermally or solar-heated lentic and lotic habitats. Males exhibit complete androchromic coloration via deposition of ommochrome and pterobilin pigments. Territoriality studies (e.g., Campanella & Wolf 1974) have documented high site fidelity and sequential mate-guarding in this species. As bioindicators, libellulid assemblages are used in freshwater quality assessments; L. saturata's tolerance of warmer, slightly eutrophic water makes it a useful marker of thermally stressed or degraded wetlands. No special conservation concern (IUCN Least Concern), though localized populations tied to spring-fed habitats may be vulnerable to groundwater depletion in the American Southwest."
+    },
+    "commonNames": [
+      {
+        "label": "Flame Skimmer",
+        "locale": "en"
+      }
+    ],
+    "sightingNotes": "Mature male perched on a metal garden stake amid dense foliage, classic thermoregulatory and territorial perching behavior. The deep uniform amber-orange coloration and large size are consistent with a fully mature male. Location (Oak Vista) fits well within the known range of this western U.S. species.",
+    "placedIn": null,
+    "chemicalDefense": null,
+    "voltinism": null,
+    "habitatProfile": null,
+    "habitatRequirements": null,
+    "gardenConnections": null,
+    "beneficialProfile": null,
+    "ecologicalSignificance": null
 }, {
   "name" : "lygaeus-kalmii",
   "genusName" : "lygaeus",
@@ -306,6 +332,32 @@
       }
     ],
     "sightingNotes": "Spider is positioned on the underside of the calyx of what appears to be a Malva or Sidalcea (mallow family) bloom — a classic ambush site where pollinators land. The vivid yellow-green coloration is a strong indicator for M. oblongus over the more commonly photographed M. vatia. Two small insects (possibly tiny flies or gnats) are also visible on the flower face, suggesting active prey opportunity at this location.",
+    "placedIn": null,
+    "chemicalDefense": null,
+    "voltinism": null,
+    "habitatProfile": null,
+    "habitatRequirements": null,
+    "gardenConnections": null,
+    "beneficialProfile": null,
+    "ecologicalSignificance": null
+  },
+  {
+    "name": "papilio-glaucus",
+    "genusName": "papilio",
+    "epithet": "glaucus",
+    "description": {
+      "preschool": "Look at this beautiful butterfly! It has big, bright yellow wings with black stripes, just like a tiger! It has a long tail on each of its back wings, like a little flag waving in the breeze. Right now it's drinking sweet nectar from a pretty pink flower — it's like the butterfly is having a yummy snack!",
+      "elementary": "The Eastern Tiger Swallowtail is one of North America's largest and most recognizable butterflies. Its forewings are bright yellow with bold black tiger stripes, and its hindwings have distinctive elongated \"tails\" — a feature of the swallowtail family. Along the edges of the hindwings you can see blue and orange spots. In this photo, the butterfly is nectaring on a zinnia flower, using its long, coiled proboscis to sip nectar. Like all butterflies, it goes through complete metamorphosis: egg → caterpillar → chrysalis → adult butterfly.",
+      "secondary": "Papilio glaucus is a highly adaptable species found across eastern North America, thriving in a range of habitats including woodlands, gardens, roadsides, and parks — consistent with an \"Oak Vista\" setting. Adults are powerful fliers and important pollinators, visiting a wide variety of flowering plants. The species exhibits sexual dimorphism: males are always yellow and black, while females can be either yellow (like this individual) or a dark morph that mimics the toxic Pipevine Swallowtail (Battus philenor) for protection. Larvae feed on host plants including wild cherry, tulip tree, and ash. The distinctive hindwing tails are thought to deflect predator strikes away from the body.",
+      "university": "Papilio glaucus (Linnaeus, 1771) is a member of the tribe Papilionini within the family Papilionidae. It is one of the most studied North American Lepidoptera, frequently used in research on Batesian mimicry, sexual dimorphism, and host-plant plasticity. The dark female morph is a well-documented example of female-limited polymorphism driven by frequency-dependent selection pressure from avian predators familiar with unpalatable Battus philenor. Molecular phylogenetic studies place it within the glaucus species group alongside P. canadensis and P. appalachiensis, with which it has documented hybrid zones. Wingspan typically ranges from 79–140 mm. Conservation status is Least Concern; populations are stable and the species benefits from garden plantings of native and ornamental flowering plants."
+    },
+    "commonNames": [
+      {
+        "label": "Eastern Tiger Swallowtail",
+        "locale": "en"
+      }
+    ],
+    "sightingNotes": "Individual observed nectaring on a hot-pink zinnia (Zinnia elegans) in a garden setting at Oak Vista. Wings held in a characteristic half-open basking posture. The yellow coloration indicates either a male or a yellow-morph female. Hindwing tails appear intact, suggesting a recently eclosed or undamaged adult.",
     "placedIn": null,
     "chemicalDefense": null,
     "voltinism": null,

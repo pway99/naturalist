@@ -149,5 +149,74 @@
       "evidence": "Vivid orange dorsal wing coloration with bold black venation lines and small black-rimmed white spots are unmistakable field marks of Agraulis vanillae. Wing shape shows the slightly elongated forewing typical of Heliconiinae. The butterfly is nectaring on a zinnia, consistent with known adult behavior. Location in Chico, CA is well within the established California range. The silvery ventral spots are partially visible and consistent with this species.",
       "alternatives": []
   }
+  },
+  {
+    "id": "019f6649-f6a1-7c46-ac72-f375564ebc5f",
+    "observedBy": "patrick-way",
+    "subject": "libellula-saturata",
+    "subjectRank": "SPECIES",
+    "observedOn": "2026-07-15T14:59:11.137234Z",
+    "notes": null,
+    "location": "Oak Vista",
+    "identification": {
+      "confidence": 0.88,
+      "evidence": "Deep reddish-orange to amber coloration saturating the entire body and wing venation; large compound eyes with a reddish-purple hue; broad hindwing bases with amber/orange wash extending well into the wing membrane; robust thorax; perching posture on a vertical metal support — all hallmarks of Libellula saturata. The overall warm rust-orange tone and size are consistent with a mature male Flame Skimmer.",
+      "alternatives": [
+        {
+          "scientificName": "libellula-luctuosa",
+          "commonName": null,
+          "confidence": 0.04
+        },
+        {
+          "scientificName": "sympetrum-illotum",
+          "commonName": null,
+          "confidence": 0.05
+        },
+        {
+          "scientificName": "tramea-onusta",
+          "commonName": null,
+          "confidence": 0.03
+        }
+      ]
+    }
+  },
+  {
+    "id": "019f664c-3334-7117-ad90-68ba5018f454",
+    "observedBy": "patrick-way",
+    "subject": "papilio-glaucus",
+    "subjectRank": "SPECIES",
+    "observedOn": "2026-07-15T15:01:37.716707Z",
+    "notes": null,
+    "location": "Oak Vista",
+    "identification": {
+      "confidence": 0.96,
+      "evidence": "Yellow and black tiger-striped forewing pattern; elongated hindwing tails characteristic of Papilionidae; blue and orange marginal spots on hindwing; large wingspan consistent with P. glaucus; nectaring behavior on zinnia; yellow coloration indicates male or yellow-morph female; geographic context (Oak Vista, eastern North America) aligns with species range.",
+      "alternatives": [
+        {
+          "scientificName": "Papilio rutulus",
+          "commonName": "Western Tiger Swallowtail",
+          "confidence": 0.03
+        },
+        {
+          "scientificName": "Papilio canadensis",
+          "commonName": "Canadian Tiger Swallowtail",
+          "confidence": 0.01
+        }
+      ]
+    }
+  },
+  {
+    "id": "019f6650-4e6b-7222-9289-b983fd9bb7fb",
+    "observedBy": "patrick-way",
+    "subject": "vanessa-cardui",
+    "subjectRank": "SPECIES",
+    "observedOn": "2026-07-15T15:06:06.827558Z",
+    "notes": "Found on the Rose Gerranium",
+    "location": "Oak Vista",
+    "identification": {
+      "confidence": 0.97,
+      "evidence": "Dorsal wing surface shows the classic Painted Lady pattern: tawny orange base with bold black markings, prominent white subapical spots on the forewing, and a mottled brown hindwing border with small white spots. Body is stout with a brushfoot posture consistent with Nymphalidae. Wing shape and size proportion match V. cardui closely. The ventral hindwing glimpsed at the wing edges shows the characteristic brown-cream mosaic pattern. No bold red band (ruling out Vanessa atalanta) and no blue eyespots on dorsal surface (ruling out Junonia coenia).",
+      "alternatives": []
+    }
   }
 ]
