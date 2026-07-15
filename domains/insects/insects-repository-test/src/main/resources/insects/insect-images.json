@@ -36,6 +36,22 @@
     "observationId": "019f5f92-64d7-797a-832f-bf56b8556939"
   },
   {
+    "id": "019f644f-8123-7ddd-a86c-b915bf9a959a",
+    "parentName": "anax-junius",
+    "parentRank": "SPECIES",
+    "dateAdded": "2026-07-15T05:45:59.843431Z",
+    "resourceName": "019f644f-1092-72c4-8e7d-4a8ab18d068c.jpg",
+    "observationId": "019f644f-8123-7ddd-a86b-f1ee50b0ed4d"
+  },
+  {
+    "id": "019f6452-1dea-7617-abf7-d780fdf25050",
+    "parentName": "agraulis-vanillae",
+    "parentRank": "SPECIES",
+    "dateAdded": "2026-07-15T05:48:51.050386Z",
+    "resourceName": "019f6451-c43c-720e-b29a-255cb30b285e.jpg",
+    "observationId": "019f6452-1dea-7617-abf6-4b9c7b9d3182"
+  },
+  {
   "id" : "15f21a09-13a9-7c7f-94df-538512876e6d",
   "parentName" : "colias-eurytheme",
   "parentRank" : "SPECIES",

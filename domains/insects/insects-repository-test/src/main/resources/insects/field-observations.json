@@ -105,5 +105,49 @@
         }
       ]
     }
+  },
+  {
+    "id": "019f644f-8123-7ddd-a86b-f1ee50b0ed4d",
+    "observedBy": "patrick-way",
+    "subject": "anax-junius",
+    "subjectRank": "SPECIES",
+    "observedOn": "2026-07-15T05:45:59.843423Z",
+    "notes": "found on a zinnia",
+    "location": "Chico, CA Oak Vista",
+    "identification": {
+      "confidence": 0.82,
+      "evidence": "Metallic green thorax clearly visible; long segmented abdomen with green coloration; four large membranous wings held horizontally in classic dragonfly posture; large compound eyes; body size appears large relative to zinnia flower head — all consistent with Anax junius. The bull's-eye frons mark is not clearly resolvable at this angle, reducing confidence slightly.",
+      "alternatives": [
+        {
+          "scientificName": "Anax walsinghami",
+          "commonName": "Giant Green Darner",
+          "confidence": 0.1
+        },
+        {
+          "scientificName": "Epiaeschna heros",
+          "commonName": "Swamp Darner",
+          "confidence": 0.05
+        },
+        {
+          "scientificName": "Rhionaeschna multicolor",
+          "commonName": "Blue-eyed Darner",
+          "confidence": 0.03
+        }
+      ]
+    }
+  },
+  {
+    "id": "019f6452-1dea-7617-abf6-4b9c7b9d3182",
+    "observedBy": "patrick-way",
+    "subject": "agraulis-vanillae",
+    "subjectRank": "SPECIES",
+    "observedOn": "2026-07-15T05:48:51.050365Z",
+    "notes": "Found on zinnia",
+    "location": "Chico CA, Oak Vista",
+    "identification": {
+      "confidence": 0.96,
+      "evidence": "Vivid orange dorsal wing coloration with bold black venation lines and small black-rimmed white spots are unmistakable field marks of Agraulis vanillae. Wing shape shows the slightly elongated forewing typical of Heliconiinae. The butterfly is nectaring on a zinnia, consistent with known adult behavior. Location in Chico, CA is well within the established California range. The silvery ventral spots are partially visible and consistent with this species.",
+      "alternatives": []
+  }
   }
 ]

@@ -1,4 +1,56 @@
 [ {
+  "name": "agraulis-vanillae",
+  "genusName": "agraulis",
+  "epithet": "vanillae",
+  "description": {
+    "preschool": "Look at that beautiful orange butterfly! It has bright orange wings with pretty black lines on them, like little roads going across. It's drinking yummy flower juice from the pink flower with its tiny straw tongue. Isn't it like a little flying jewel?",
+    "elementary": "The Gulf Fritillary is a striking medium-sized butterfly with vivid orange wings marked by bold black lines and small white spots ringed in black. When its wings are closed, you can see shiny silver spots on the underside — like little mirrors! It goes through four life stages: egg, caterpillar (larva), chrysalis, and adult butterfly. The caterpillars are orange with black spines and feed almost exclusively on passionvine (Passiflora). Adults, like this one, love to nectar on bright flowers like zinnias.",
+    "secondary": "Agraulis vanillae is a member of the subfamily Heliconiinae (longwings), adapted for a close relationship with Passiflora host plants. Its caterpillars sequester plant toxins from passionvine, making them distasteful to predators — a form of chemical defense that the aposematic orange coloration of both larva and adult advertises. Adults are strong, directed fliers and can be locally migratory. They are important pollinators in garden and disturbed habitats. In California's Central Valley, they are year-round residents in warmer areas, breeding wherever ornamental or wild passionvine grows. The silvery spots on the ventral hindwing are a key field mark distinguishing it from other fritillaries.",
+    "university": "Agraulis vanillae (Linnaeus, 1758) is placed within tribe Heliconiini, family Nymphalidae. Molecular phylogenetics confirms its close relationship with Heliconius, with which it shares larval host plant specialization on Passifloraceae and adult chemical sequestration of cyanogenic glycosides. The species comprises several described subspecies; California populations are referable to A. v. incarnata. Unlike many fritillaries (Speyeria spp.), it does not undergo reproductive diapause. In the Central Valley of California, including Chico, populations have expanded with the proliferation of ornamental Passiflora. The species is a generalist nectivore as an adult and a significant pollinator in anthropogenic landscapes. No conservation concern (IUCN: not evaluated); populations are stable and expanding northward, potentially linked to climate warming trends."
+  },
+  "commonNames": [
+    {
+      "label": "Gulf Fritillary",
+      "locale": "en"
+    }
+  ],
+  "sightingNotes": "A beautiful individual nectaring on a pink zinnia (Zinnia elegans) in a garden setting. The presence of raspberry or blackberry canes in the background suggests a productive garden habitat. Look nearby for passionvine (Passiflora), which will be the larval host plant supporting this population.",
+  "placedIn": null,
+  "chemicalDefense": null,
+  "voltinism": null,
+  "habitatProfile": null,
+  "habitatRequirements": null,
+  "gardenConnections": null,
+  "beneficialProfile": null,
+  "ecologicalSignificance": null
+},
+  {
+    "name": "anax-junius",
+    "genusName": "anax",
+    "epithet": "junius",
+    "description": {
+      "preschool": "Look at this amazing dragonfly resting on a pretty pink flower! It has a bright green body that sparkles in the sunshine, and four big see-through wings that look like tiny windows. Its giant round eyes take up almost its whole head so it can see in every direction. Isn't it beautiful?",
+      "elementary": "The Common Green Darner is one of the largest dragonflies in North America. You can see its brilliant metallic green thorax (the middle section) and a long, segmented abdomen that can be green or blue. It has four large, clear wings with a tiny dark spot near each tip called a pterostigma, which helps control flight. Dragonflies start life as aquatic nymphs underwater, breathing through gills and hunting other small creatures. After molting many times, they climb out of the water and emerge as the flying adults we see here. Adults are fierce aerial predators, catching mosquitoes and other flying insects mid-air.",
+      "secondary": "Anax junius is a large, powerful aeshnid dragonfly widely distributed across North America. The vivid metallic green thorax is a diagnostic feature, while the abdomen shows sexual dimorphism — males display blue with a dark dorsal stripe, females and immatures tend toward green or brownish tones. The individual in this photo appears to show a green abdomen, suggesting a female or immature male. Notably, A. junius is one of the few migratory dragonflies in North America, undertaking multigenerational southward migrations in autumn comparable to monarch butterflies. In the Sacramento Valley near Chico, CA, they are common near riparian corridors, ponds, and gardens — perching on tall plants like this zinnia to thermoregulate and scan for prey. They are apex invertebrate predators with near-100% hunting success rates.",
+      "university": "Anax junius (Drury, 1773) is the type species of genus Anax within family Aeshnidae, subfamily Anactinae. Morphologically distinguished by its large size (total length 68–80 mm), compound eyes meeting broadly at the dorsal midline, and the characteristic apple-green synthorax with a pale frons bearing a dark bull's-eye mark. Wing venation shows the classic aeshnid pattern: anal loop elongate, arculus well-defined, and costa leading to a distinct pterostigma (~3 mm). This specimen's fully green abdomen and wing coloration are consistent with a teneral or female individual. A. junius is documented as a long-distance migrant; stable isotope and population genetic studies confirm multi-generational migration corridors along the Pacific Flyway, passing through the Central Valley of California in late summer and fall. Ecologically, larvae are keystone predators in lentic and lotic freshwater systems; adults are significant regulators of dipteran pest populations. No conservation concern at present (NatureServe: G5), though wetland degradation poses localized threats to breeding populations."
+    },
+    "commonNames": [
+      {
+        "label": "Common Green Darner",
+        "locale": "en"
+      }
+    ],
+    "sightingNotes": "Perched dorsally on a zinnia bloom in a garden setting at Chico, CA Oak Vista — typical thermoregulating or hunting-perch behavior for this species. Green abdomen suggests female or immature/teneral male. Late summer garden sighting aligns with pre-migratory activity period for A. junius along the Pacific Flyway.",
+    "placedIn": null,
+    "chemicalDefense": null,
+    "voltinism": null,
+    "habitatProfile": null,
+    "habitatRequirements": null,
+    "gardenConnections": null,
+    "beneficialProfile": null,
+    "ecologicalSignificance": null
+  },
+  {
   "name" : "apis-mellifera",
   "genusName" : "apis",
   "epithet" : "mellifera",
@@ -17,11 +69,11 @@
   "chemicalDefense" : null,
   "voltinism" : null,
   "habitatProfile" : null,
-  "habitatRequirements": null,
-  "gardenConnections": null,
-  "beneficialProfile": null,
-  "ecologicalSignificance": null
-},
+    "habitatRequirements": null,
+    "gardenConnections": null,
+    "beneficialProfile": null,
+    "ecologicalSignificance": null
+  },
   {
     "name": "bagrada-hilaris",
     "genusName": "bagrada",
@@ -68,9 +120,9 @@
     "sourceCompounds" : "Aristolochic acids, principally aristolochic acid I and II, derived from Aristolochia californica (Aristolochiaceae).",
     "aposematicSignal" : "Iridescent blue hindwing coloration in adults; conspicuous brick-red egg clusters; warningly coloured dark larvae with reddish filaments. The pupa is the exception — cryptic rather than aposematic.",
     "protectedStages": [
-      "ADULT",
       "EGG",
       "LARVA",
+      "ADULT",
       "PUPA"
     ]
   },
