@@ -35,18 +35,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
  * Orchestrates the full insect identification flow: vision identification
- * authority validation  parent rank enrichment  feature resolution
- * citation creation  transactional persistence. All external calls
- * (vision, authority lookup, content fetch, text generation) complete
+ * → authority enrichment (best-effort) → parent rank enrichment → feature
+ * resolution → citation creation → transactional persistence. All external
+ * calls (vision, authority lookup, content fetch, text generation) complete
  * before the transaction boundary. The transaction does pure DB writes.
  *
- * <p>Returns {@code Optional<InsectRankName>} -- empty when authority
- * validation rejects the identification at all ranks.
+ * <p>Authority lookups enrich the identification with citations and
+ * grounded descriptions but never gate it — the vision result is
+ * authoritative for rank determination.
  */
 public class InsectIdentificationCommand {
 
@@ -75,51 +75,48 @@ public class InsectIdentificationCommand {
     }
 
     /**
-     * Identifies an insect from a photograph, validates against an external
-     * authority, enriches parent ranks with grounded descriptions and features,
-     * creates citations, and persists everything atomically.
+     * Identifies an insect from a photograph, enriches with authority
+     * content and parent rank descriptions, resolves features, creates
+     * citations, and persists everything atomically.
      *
-     * <p>All external calls (vision, authority lookup, content fetch, text
-     * generation) complete before the transaction boundary. The transaction
-     * does pure DB writes.
+     * <p>Authority lookups are best-effort enrichment — the vision result
+     * determines the identified rank. All external calls complete before
+     * the transaction boundary.
      *
-     * @return the confirmed rank name for redirect, or empty if authority
-     *         validation rejected the identification at all ranks
+     * @return the identified rank name for redirect
      */
-    public Optional<InsectRankName> identify(Image image, FileName storedFileName,
-                                              NaturalistName naturalist,
-                                              @Nullable String notes) {
+    public InsectRankName identify(Image image, FileName storedFileName,
+                                    NaturalistName naturalist,
+                                    @Nullable String notes) {
         // 1. VISION -- external call
         var visionResult = identifyViaVision(image);
+        var identifiedEntity = visionResult.identifiedEntity();
+        var taxonomy = visionResult.taxonomy();
+        var rankName = identifiedEntity.rankName();
 
-        // 2. AUTHORITY VALIDATION -- external calls, top-down fallback
-        var confirmed = validateWithAuthority(visionResult);
-        if (confirmed == null) {
-            return Optional.empty();
-        }
+        // 2. AUTHORITY ENRICHMENT -- best-effort, never gates
+        var authorityRefs = collectAuthorityRefs(rankName, taxonomy);
 
         // 3. PARENT RANK ENRICHMENT -- external calls, only for new ranks
-        var parentDescriptions = enrichParentRanks(confirmed.taxonomy());
+        var parentDescriptions = enrichParentRanks(taxonomy);
         var parentFeatures = new ArrayList<RankFeatures>();
-        parentDescriptions.forEach((rankName, enrichment) ->
-                parentFeatures.add(new RankFeatures(rankName, enrichment.features())));
+        parentDescriptions.forEach((rn, enrichment) ->
+                parentFeatures.add(new RankFeatures(rn, enrichment.features())));
 
         // 4. FEATURE RESOLUTION -- queries only
-        var identifiedRankFeatures = new RankFeatures(
-                confirmed.identifiedEntity().rankName(), visionResult.features());
+        var identifiedRankFeatures = new RankFeatures(rankName, visionResult.features());
         var combined = new ArrayList<RankFeatures>();
         combined.add(identifiedRankFeatures);
         combined.addAll(parentFeatures);
         var featureResolution = resolveFeatures(combined);
 
-        // 5. CITATION PREPARATION + LIBRARY WRITES -- cross-domain
-        writeCitations(confirmed.authorityReferences());
+        // 5. CITATION PREPARATION + LIBRARY WRITES -- cross-domain, best-effort
+        writeCitations(authorityRefs);
 
         // 6. INSECT TRANSACTION -- pure DB writes
         var observationId = FieldObservationId.create();
         var capturedAt = image.metadata().capturedAt() != null
                 ? image.metadata().capturedAt() : Instant.now();
-        var rankName = confirmed.identifiedEntity().rankName();
 
         var insectImage = new InsectImage(
                 InsectImageId.create(), rankName, Instant.now(),
@@ -129,21 +126,21 @@ public class InsectIdentificationCommand {
                 observationId, naturalist, rankName, capturedAt,
                 (notes == null || notes.isBlank()) ? null : notes,
                 image.metadata().location(),
-                confirmed.identification());
+                visionResult.identification());
 
         var descriptionMap = new HashMap<InsectRankName, Description>();
         parentDescriptions.forEach((name, enrichment) ->
                 descriptionMap.put(name, enrichment.description()));
 
         var catalogId = new CatalogIdentification(
-                confirmed.identifiedEntity(), confirmed.taxonomy(),
+                identifiedEntity, taxonomy,
                 insectImage, observation,
                 featureResolution.newFeatures(), featureResolution.assignments(),
                 descriptionMap);
 
         transaction.execute(catalogId);
 
-        return Optional.of(rankName);
+        return rankName;
     }
 
     // ----- vision identification -----
@@ -155,79 +152,42 @@ public class InsectIdentificationCommand {
         return parseResult(result);
     }
 
-    // ----- authority validation -----
+    // ----- authority enrichment (best-effort) -----
 
-    private record ConfirmedIdentification(
-            IdentifiedRankEntity identifiedEntity,
-            TaxonomicClassification taxonomy,
-            Identification identification,
-            Map<InsectRankName, Set<AuthorityReference>> authorityReferences
-    ) {}
+    private Map<InsectRankName, Set<AuthorityReference>> collectAuthorityRefs(
+            InsectRankName identifiedRank, TaxonomicClassification taxonomy) {
+        var refs = new LinkedHashMap<InsectRankName, Set<AuthorityReference>>();
 
-    private @Nullable ConfirmedIdentification validateWithAuthority(
-            InsectIdentificationResult visionResult) {
-        var taxonomy = visionResult.taxonomy();
-        var authorityRefs = new LinkedHashMap<InsectRankName, Set<AuthorityReference>>();
+        tryCollectRef(identifiedRank, refs);
 
-        // Build the rank chain from most specific to least
-        var rankChain = buildRankChain(visionResult, taxonomy);
-
-        // Validate top-down (most specific first)
-        IdentifiedRankEntity confirmedEntity = null;
-        for (var candidate : rankChain) {
-            var refs = externalAuthority.lookup((EntityName) candidate.rankName());
-            if (!refs.isEmpty()) {
-                confirmedEntity = candidate;
-                authorityRefs.put(candidate.rankName(), refs);
-                break;
-            }
+        if (identifiedRank instanceof InsectSpeciesName && taxonomy.genus() != null) {
+            tryCollectRef(InsectGenusName.of(
+                    taxonomy.genus().value().toLowerCase(Locale.ROOT)), refs);
+        }
+        if ((identifiedRank instanceof InsectSpeciesName
+                || identifiedRank instanceof InsectGenusName)
+                && taxonomy.family() != null) {
+            var familyName = InsectFamilyName.of(
+                    taxonomy.family().value().toLowerCase(Locale.ROOT));
+            if (!refs.containsKey(familyName)) tryCollectRef(familyName, refs);
+        }
+        if (!(identifiedRank instanceof InsectOrderName)) {
+            var orderName = InsectOrderName.of(
+                    taxonomy.order().value().toLowerCase(Locale.ROOT));
+            if (!refs.containsKey(orderName)) tryCollectRef(orderName, refs);
         }
 
-        if (confirmedEntity == null) {
-            return null; // all ranks failed -- reject identification
-        }
-
-        // Collect authority refs for parent ranks above the confirmed one
-        collectParentAuthorityRefs(confirmedEntity, taxonomy, authorityRefs);
-
-        // Rebuild taxonomy to match confirmed rank
-        var confirmedTaxonomy = trimTaxonomy(confirmedEntity, taxonomy);
-
-        return new ConfirmedIdentification(
-                confirmedEntity, confirmedTaxonomy,
-                visionResult.identification(), authorityRefs);
+        return refs;
     }
 
-    private List<IdentifiedRankEntity> buildRankChain(
-            InsectIdentificationResult result, TaxonomicClassification taxonomy) {
-        var chain = new ArrayList<IdentifiedRankEntity>();
-        chain.add(result.identifiedEntity());
-
-        // Add parent ranks as fallback candidates (genus -> family -> order)
-        var entity = result.identifiedEntity();
-        if (entity instanceof IdentifiedRankEntity.Species && taxonomy.genus() != null) {
-            var genusSlug = taxonomy.genus().value().toLowerCase(Locale.ROOT);
-            var familySlug = taxonomy.family().value().toLowerCase(Locale.ROOT);
-            chain.add(new IdentifiedRankEntity.Genus(new InsectGenus(
-                    InsectGenusName.of(genusSlug), InsectFamilyName.of(familySlug),
-                    taxonomy.genus(), FALLBACK_DESCRIPTION, Set.of(), null)));
+    private void tryCollectRef(InsectRankName rankName,
+                               Map<InsectRankName, Set<AuthorityReference>> refs) {
+        try {
+            var found = externalAuthority.lookup((EntityName) rankName);
+            if (!found.isEmpty()) refs.put(rankName, found);
+        } catch (Exception e) {
+            // best-effort — identification proceeds without this reference
         }
-        if ((entity instanceof IdentifiedRankEntity.Species
-                || entity instanceof IdentifiedRankEntity.Genus)
-                && taxonomy.family() != null) {
-            var familySlug = taxonomy.family().value().toLowerCase(Locale.ROOT);
-            var orderSlug = taxonomy.order().value().toLowerCase(Locale.ROOT);
-            chain.add(new IdentifiedRankEntity.Family(new InsectFamily(
-                    InsectFamilyName.of(familySlug), InsectOrderName.of(orderSlug),
-                    taxonomy.family(), FALLBACK_DESCRIPTION, Set.of(), null)));
-        }
-        var orderSlug = taxonomy.order().value().toLowerCase(Locale.ROOT);
-        if (!(entity instanceof IdentifiedRankEntity.Order)) {
-            chain.add(new IdentifiedRankEntity.Order(new InsectOrder(
-                    InsectOrderName.of(orderSlug), taxonomy.order(),
-                    FALLBACK_DESCRIPTION, Set.of(), null)));
-        }
-        return chain;
     }
 
     private static final Description FALLBACK_DESCRIPTION = new Description(
@@ -235,47 +195,6 @@ public class InsectIdentificationCommand {
             "Identified via vision -- description pending.",
             "Identified via vision -- description pending.",
             "Identified via vision -- description pending.");
-
-    private void collectParentAuthorityRefs(IdentifiedRankEntity confirmed,
-                                             TaxonomicClassification taxonomy,
-                                             Map<InsectRankName, Set<AuthorityReference>> refs) {
-        // Look up parent ranks above the confirmed one
-        if (confirmed instanceof IdentifiedRankEntity.Species && taxonomy.genus() != null) {
-            var genusName = InsectGenusName.of(
-                    taxonomy.genus().value().toLowerCase(Locale.ROOT));
-            var genusRefs = externalAuthority.lookup(genusName);
-            if (!genusRefs.isEmpty()) refs.put(genusName, genusRefs);
-        }
-        if (!(confirmed instanceof IdentifiedRankEntity.Order)) {
-            if (taxonomy.family() != null) {
-                var familyName = InsectFamilyName.of(
-                        taxonomy.family().value().toLowerCase(Locale.ROOT));
-                if (!refs.containsKey(familyName)) {
-                    var familyRefs = externalAuthority.lookup(familyName);
-                    if (!familyRefs.isEmpty()) refs.put(familyName, familyRefs);
-                }
-            }
-            var orderName = InsectOrderName.of(
-                    taxonomy.order().value().toLowerCase(Locale.ROOT));
-            if (!refs.containsKey(orderName)) {
-                var orderRefs = externalAuthority.lookup(orderName);
-                if (!orderRefs.isEmpty()) refs.put(orderName, orderRefs);
-            }
-        }
-    }
-
-    private TaxonomicClassification trimTaxonomy(IdentifiedRankEntity confirmed,
-                                                  TaxonomicClassification original) {
-        return switch (confirmed) {
-            case IdentifiedRankEntity.Species _ -> original;
-            case IdentifiedRankEntity.Genus _ -> new TaxonomicClassification(
-                    original.order(), original.family(), original.genus(), null);
-            case IdentifiedRankEntity.Family _ -> new TaxonomicClassification(
-                    original.order(), original.family(), null, null);
-            case IdentifiedRankEntity.Order _ -> new TaxonomicClassification(
-                    original.order(), null, null, null);
-        };
-    }
 
     // ----- parent rank enrichment -----
 

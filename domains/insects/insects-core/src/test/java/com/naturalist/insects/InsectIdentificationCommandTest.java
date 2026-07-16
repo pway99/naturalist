@@ -104,8 +104,7 @@ class InsectIdentificationCommandTest {
                 image, FileName.of("IMG_0001.jpg"),
                 NaturalistName.of("pat"), null);
 
-        assertThat(rankName).isPresent();
-        assertThat(rankName.get().value()).isEqualTo("testus-fabricatus");
+        assertThat(rankName.value()).isEqualTo("testus-fabricatus");
 
         // Species persisted with parsed description
         var speciesName = InsectSpeciesName.of("testus-fabricatus");
@@ -140,11 +139,9 @@ class InsectIdentificationCommandTest {
                 image, FileName.of("IMG_0002.jpg"),
                 NaturalistName.of("pat"), null);
 
-        assertThat(rankName).isPresent();
-
         var obs = query.fieldObservations().findPage(PageRequest.console(0));
         var withId = obs.content().stream()
-                .filter(o -> o.subject().equals(rankName.get())
+                .filter(o -> o.subject().equals(rankName)
                         && o.identification() != null)
                 .findFirst();
         assertThat(withId).isPresent();

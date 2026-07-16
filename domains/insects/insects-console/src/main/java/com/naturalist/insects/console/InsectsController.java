@@ -335,11 +335,7 @@ public class InsectsController {
         var rankName = identificationCommand.identify(
                 image, storedFileName, me.get(), notes);
 
-        if (rankName.isEmpty()) {
-            // Authority validation rejected identification at all ranks
-            return "redirect:/insects?error=identification-unverified";
-        }
-        return "redirect:/insects/" + rankName.get().value();
+        return "redirect:/insects/" + rankName.value();
     }
 
     @GetMapping("/species")
