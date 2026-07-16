@@ -406,7 +406,7 @@ public class InsectIdentificationCommand {
                     "confidence":              { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence in identification (0.0-1.0)" },
                     "evidence":                { "type": "string", "description": "Which visible features support this identification" },
                     "alternatives":            { "type": ["string", "null"], "description": "JSON array of alternative candidates with name and confidence, or null if highly confident" },
-                    "referenceUrl":            { "type": ["string", "null"], "description": "URL to the most relevant authoritative reference page for this taxon (e.g. https://eol.org/pages/7467 for Carabidae). Suggest the single best page from EOL, iNaturalist, or a major taxonomy database if confident." }
+                    "referenceUrl":            { "type": ["string", "null"], "description": "URL to the most relevant authoritative reference page for this taxon (e.g. https://eol.org/pages/7467 for Carabidae). Suggest the single best page from EOL, iNaturalist, or Wikipedia. Only include URLs with predictable structure — avoid sites with opaque numeric IDs." }
                   }
                 }
                 """;
@@ -445,8 +445,9 @@ public class InsectIdentificationCommand {
                 7. List alternative candidates if confidence is below 0.9.
                 8. Assign functional ecological guilds from the allowed list.
                 9. If you know the URL to an authoritative reference page for this taxon
-                   (e.g. an Encyclopedia of Life page, iNaturalist taxon page), include it
-                   as referenceUrl. Only include URLs you are confident are correct.
+                   (e.g. Encyclopedia of Life, iNaturalist, Wikipedia), include it as
+                   referenceUrl. Only include URLs you are confident are correct — do
+                   not guess numeric page IDs.
 
                 Generate the kebab-case slug name from the identified rank's name
                 (e.g. battus-philenor for a species, syrphidae for a family).
