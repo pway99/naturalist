@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.authority.AuthorityContent;
 import com.naturalist.authority.AuthorityReference;
+import com.naturalist.authority.AuthoritySource;
 import com.naturalist.authority.CitationName;
 import com.naturalist.authority.ExternalAuthority;
 import com.naturalist.authority.OnlineSource;
@@ -28,6 +29,7 @@ import com.naturalist.vision.ToolSchema;
 import com.naturalist.vision.VisionService;
 import org.jspecify.annotations.Nullable;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +54,8 @@ public class InsectIdentificationCommand {
 
     private static final String TOOL_NAME = "propose_insect_species";
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final AuthoritySource VISION_SUGGESTED =
+            new AuthoritySource("ref", "Suggested Reference");
 
     private final VisionService visionService;
     private final TextGenerationService textGenerationService;
@@ -96,6 +100,10 @@ public class InsectIdentificationCommand {
 
         // 2. AUTHORITY ENRICHMENT -- best-effort, never gates
         var authorityRefs = collectAuthorityRefs(rankName, taxonomy);
+        if (visionResult.referenceUrl() != null) {
+            authorityRefs.putIfAbsent(rankName, Set.of(
+                    new AuthorityReference(VISION_SUGGESTED, visionResult.referenceUrl())));
+        }
 
         // 3. PARENT RANK ENRICHMENT -- external calls, only for new ranks
         var parentDescriptions = enrichParentRanks(taxonomy);
@@ -355,7 +363,7 @@ public class InsectIdentificationCommand {
                             CitationAssociationId.create(),
                             citationName,
                             new EntityRef(INSECTS_DOMAIN, (EntityName) rankName),
-                            "Identified via vision -- authority-validated");
+                            "Identified via vision");
                     libraryCommand.citationAssociations().insert(association);
                 } catch (Exception e) {
                     // Degraded -- identification proceeds without this citation
@@ -397,7 +405,8 @@ public class InsectIdentificationCommand {
                     "sightingNotes":           { "type": ["string", "null"], "description": "Notable observations about this sighting" },
                     "confidence":              { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence in identification (0.0-1.0)" },
                     "evidence":                { "type": "string", "description": "Which visible features support this identification" },
-                    "alternatives":            { "type": ["string", "null"], "description": "JSON array of alternative candidates with name and confidence, or null if highly confident" }
+                    "alternatives":            { "type": ["string", "null"], "description": "JSON array of alternative candidates with name and confidence, or null if highly confident" },
+                    "referenceUrl":            { "type": ["string", "null"], "description": "URL to the most relevant authoritative reference page for this taxon (e.g. https://eol.org/pages/7467 for Carabidae). Suggest the single best page from EOL, iNaturalist, or a major taxonomy database if confident." }
                   }
                 }
                 """;
@@ -435,6 +444,9 @@ public class InsectIdentificationCommand {
                    cannot confirm from the photo.
                 7. List alternative candidates if confidence is below 0.9.
                 8. Assign functional ecological guilds from the allowed list.
+                9. If you know the URL to an authoritative reference page for this taxon
+                   (e.g. an Encyclopedia of Life page, iNaturalist taxon page), include it
+                   as referenceUrl. Only include URLs you are confident are correct.
 
                 Generate the kebab-case slug name from the identified rank's name
                 (e.g. battus-philenor for a species, syrphidae for a family).
@@ -486,8 +498,17 @@ public class InsectIdentificationCommand {
             var evidence = node.get("evidence").asText();
             var identification = new Identification(confidence, evidence, parseAlternatives(node));
 
+            URI referenceUrl = null;
+            if (node.hasNonNull("referenceUrl") && !node.get("referenceUrl").asText().isBlank()) {
+                try {
+                    referenceUrl = URI.create(node.get("referenceUrl").asText());
+                } catch (IllegalArgumentException ignored) {
+                    // invalid URL — skip
+                }
+            }
+
             return new InsectIdentificationResult(identifiedEntity, taxonomy, identification,
-                    List.copyOf(features));
+                    List.copyOf(features), referenceUrl);
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse vision identification result", e);
         }

@@ -44,7 +44,8 @@ class InsectIdentificationCommandTest {
               "sightingNotes": "Hovering near test fixture",
               "confidence": 0.85,
               "evidence": "Distinctive test coloration with unmistakable fabricated wing venation",
-              "alternatives": null
+              "alternatives": null,
+              "referenceUrl": "https://eol.org/pages/test-fabricatus"
             }
             """;
 
