@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-07-15 (Identification enrichment shipped — authority validation, rank-polymorphic ID, grounded descriptions, feature persistence, citations.)
+Last updated: 2026-08-08 (Present-the-evidence shipped — citation associations persist, field marks and rank-level photo/evidence galleries on every rank page.)
 
 ---
 
@@ -18,6 +18,14 @@ Last updated: 2026-07-15 (Identification enrichment shipped — authority valida
 **Vision-assisted identification** shipped end-to-end (2026-07-12 → 2026-07-14): `kernels/vision` port + Anthropic adapter, `InsectIdentificationService` (now `InsectIdentificationCommand`), console `/insects/identify` route with photo upload, filesystem image storage, field notes, re-identify. The identification logic was refactored from the console controller into `insects-core` via `Transaction<CatalogIdentification>` + `InsectIdentificationCommand`, establishing the `TestContextInternal` pattern for core tests that need the full wired graph.
 
 **Identification enrichment** shipped 2026-07-15: authority-validated rank-polymorphic identification (ORDER/FAMILY/GENUS/SPECIES with Linnaean fallback), grounded Durrell descriptions for parent ranks via `TextGenerationService` + authority content, structured `InsectFeature` persistence with dedup, cross-domain citation writes to library. New kernels: `text-generation` port + `anthropic-text-generation` adapter, `ExternalAuthority.fetchContent()`. `InsectIdentificationCommand` now returns `Optional<InsectRankName>` — empty when authority rejects all ranks.
+
+**Present the evidence** shipped 2026-08-08. The enrichment effort persisted features and
+citations but never displayed them; three identifications of the same beetle produced
+`carabidae`, `chrysomelidae`, and `cleridae` with no surfaced grounds for a human to
+adjudicate between them. Citation associations now survive the flush (they were being
+dropped for a null origin file), field marks render on every rank page, and family /
+genus / order pages carry the photo gallery with per-observation confidence, evidence,
+and alternatives that previously existed only on the species page.
 
 **Naturalist login** shipped 2026-07-06; **collection feature** (FieldObservation, collection lens, header filter chip) shipped 2026-07-12.
 
@@ -37,6 +45,7 @@ Last updated: 2026-07-15 (Identification enrichment shipped — authority valida
 
 | Effort                                                                                  | Completed  | Source                                                                       | Final commit |
 |-----------------------------------------------------------------------------------------|------------|------------------------------------------------------------------------------|--------------|
+| Present the evidence — `CitationAssociation` flush fix (`TestEntitySource.writable`/`writableClass` seam + parser-supplying `loadFile`), `FeatureGroup` + `features.jte` field marks on all four rank pages, `observationGallery.jte` extracted from `detail.jte` and added to family/genus/order, notes-form ownership check (`InsectsController.owns`) closing a cross-naturalist field-notes overwrite | 2026-08-08 | [`plans/2026-08-08-present-the-evidence-plan.md`](plans/2026-08-08-present-the-evidence-plan.md) | `d2bf585` |
 | Identification enrichment — authority-validated rank-polymorphic ID (ORDER→SPECIES with fallback), grounded parent descriptions via `TextGenerationService`, `InsectFeature` persistence, cross-domain citations, `anthropic-text-generation` adapter | 2026-07-15 | [`plans/2026-07-15-identify-enrichment-plan.md`](plans/2026-07-15-identify-enrichment-plan.md) | `40f3f8e` |
 | Hierarchical image query + add-photo command — `ImageQuery.forRankHierarchy()` replaces three controller helpers; `InsectAddPhotoCommand` + `PhotoAddition` aggregate + `InsectAddPhotoTransaction` for atomic observation+image insert at any rank | 2026-07-14 | [`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md), [`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md) | `4a5a71b` |
 | Identification transaction refactor — `Transaction<CatalogIdentification>`, `InsectIdentificationCommand` (replaces `InsectIdentificationService`), `InsectsTestContextInternal` pattern for core tests that need the full wired graph | 2026-07-14 | conversation (plan was inline) | `e5fb481` |
@@ -76,6 +85,7 @@ Last updated: 2026-07-15 (Identification enrichment shipped — authority valida
 | 11 | Hierarchical image query              | Plan           | [`plans/2026-07-14-insect-hierarchical-image-query.md`](plans/2026-07-14-insect-hierarchical-image-query.md) — **shipped** 2026-07-14 |
 | 12 | Add-photo command                     | Plan           | [`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md) — **shipped** 2026-07-14 (`PhotoAddition` aggregate + `InsectAddPhotoTransaction`; accepts `InsectRankName`) |
 | 13 | Identification enrichment             | Plan           | [`plans/2026-07-15-identify-enrichment-plan.md`](plans/2026-07-15-identify-enrichment-plan.md) — **shipped** 2026-07-15 (authority validation, rank-polymorphic ID, grounded descriptions, features, citations, text-generation adapter) |
+| 14 | Present the evidence                  | Plan           | [`plans/2026-08-08-present-the-evidence-plan.md`](plans/2026-08-08-present-the-evidence-plan.md) — **shipped** 2026-08-08 (citation-association flush fix, field marks, rank observation gallery) |
 
 ---
 

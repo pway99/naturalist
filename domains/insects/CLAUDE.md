@@ -68,3 +68,70 @@ naturalist by reading the `"naturalist.currentNaturalistName"` request attribute
 types directly — only on this request-attribute convention — which is why the
 attribute key is duplicated as a same-literal constant on both sides rather than
 shared through a type.
+
+## Identification Evidence in the Console
+
+Rank-polymorphic identification means most vision identifications land at ORDER or
+FAMILY, not SPECIES. The four rank pages therefore carry the same evidence surfaces:
+
+**`features.jte`** — renders `List<FeatureGroup>`, the console-side reshaping of
+`InsectFeatureView` (lineage-composite, ancestor-first, ordinal-ordered within a rank).
+Built by `FeatureGroup.of(view)`; handlers populate it via the controller's private
+`featureGroups(InsectRankName)` helper.
+
+**`observationGallery.jte`** — photo, `%` confidence, "Why this ID?" evidence
+disclosure, "Also considered" alternatives, and the field-notes form. Sourced from
+`FieldObservation.identification()`. The rank pages pass
+`insectQuery.images().forParentName(rankName)` — **not** `forRankHierarchy` — because
+the child-rank cards on the same page already show descendant photos via the `gallery`
+attribute; using the hierarchy query would render every descendant image twice.
+
+**`citations.jte`** — renders `Insect.citations()`, which resolves through
+`CitationAssociation` records in the library domain. An identification that writes a
+`Citation` without a matching association produces a silently citation-less page; see
+`CitationAssociationJson` in `library-repository-test` for why that catalog needs a
+hand-written DTO and how the flush seam keeps it round-trippable.
+
+The notes form posts to `/insects/{name}/notes` from every rank and carries a
+`returnPath` hidden field; `InsectsController.safeReturnPath` constrains it to
+`/insects/` prefixes so the field cannot become an open redirect.
+`InsectsController.updateNotes` also checks ownership before writing: a
+package-private static `owns(FieldObservation, Optional<NaturalistName>)` compares
+`obs.observedBy()` against the signed-in naturalist and refuses on mismatch,
+redirecting to the same `destination` as the not-found branch so the two outcomes are
+indistinguishable to the caller. Before this check, any naturalist could overwrite
+another naturalist's field notes by POSTing their observation id —
+`FieldObservationId` is a UUIDv7 and therefore time-ordered and partially guessable,
+so the id alone was never proof of ownership.
+
+**CSRF on the rank pages.** `family.jte`, `genus.jte`, and `order.jte` do **not** take
+a `@param CsrfToken _csrf`. They read the CSRF param name and token as plain request
+attributes — `naturalistCsrfParam` and `naturalistCsrfToken`, published on every
+request by `NaturalistHeaderInterceptor` — the same way
+`apps/management-console/src/main/jte/layout/page.jte:34-39` does. `observationGallery.jte`
+therefore takes two `String` params, `csrfParam` and `csrfToken`, not a `CsrfToken`.
+`detail.jte` still has its own `@param CsrfToken _csrf` (pre-existing, out of scope
+for this slice) and adapts to `observationGallery.jte`'s `String` params at the call
+site.
+
+This is deliberate, not an oversight: `page.jte` is compiled by every domain-console
+module's template tests against classpaths that deliberately lack Spring Security, and
+that invariant is enforced *only* by `spring-security-web` being absent from the
+console module poms. An earlier attempt at this slice added that jar to
+`insects-console/pom.xml` so the rank pages could type their CSRF param as `CsrfToken`
+directly, and it was reverted in review. Reach for the request-attribute pattern
+instead of the dependency — the next domain-console template with a form should do
+the same.
+
+**Known gaps** (surfaced by this slice, not fixed by it):
+
+- `detail.jte` and `identify.jte` still import `CsrfToken` directly; neither is
+  rendered by any test, so the missing-dependency risk above is latent rather than
+  broken.
+- The `detail` handler calls `insectQuery.fieldObservations().forNaturalistAndSubjects`
+  twice with identical arguments.
+- `safeReturn` and `safeReturnPath` are two near-identical untrusted-redirect
+  validators on `InsectsController`; `safeReturnPath` has no CRLF guard.
+- Feature dedup by value is unimplemented — `InsectIdentificationCommand` creates a
+  fresh `InsectFeature` per value per identification, so the catalog holds
+  near-duplicates.
