@@ -81,9 +81,9 @@
                             <dt>species</dt>
                             <dd><em>${s.epithet().value()}</em></dd>
                         </dl>
-                        !{var images = gallery.forEntity(s.name()).stream().toList();}
-                        @if(!images.isEmpty())
-                            @template.insects.cardImages(images = images, linkUrl = "/insects/" + s.name().value(), alt = speciesCommonName)
+                        !{var childImages = gallery.forEntity(s.name()).stream().toList();}
+                        @if(!childImages.isEmpty())
+                            @template.insects.cardImages(images = childImages, linkUrl = "/insects/" + s.name().value(), alt = speciesCommonName)
                         @endif
                     </article>
                 @endfor

@@ -266,15 +266,43 @@
   "lastModified" : null
 }, {
   "kind" : "ONLINE_SOURCE",
-  "name" : "ref-orsodacne",
+  "name" : "wikipedia-periplaneta",
   "authorityReference" : {
     "source" : {
-      "id" : "ref",
-      "displayName" : "Suggested Reference"
+      "id" : "wikipedia",
+      "displayName" : "Wikipedia"
     },
-    "url" : "https://www.inaturalist.org/taxa/Orsodacne"
+    "url" : "https://en.wikipedia.org/wiki/Periplaneta"
   },
-  "title" : "Orsodacne -- Suggested Reference",
+  "title" : "Periplaneta -- Wikipedia",
+  "author" : null,
+  "year" : null,
+  "lastModified" : null
+}, {
+  "kind" : "ONLINE_SOURCE",
+  "name" : "wikipedia-periplaneta-americana",
+  "authorityReference" : {
+    "source" : {
+      "id" : "wikipedia",
+      "displayName" : "Wikipedia"
+    },
+    "url" : "https://en.wikipedia.org/wiki/Periplaneta_americana"
+  },
+  "title" : "Periplaneta americana -- Wikipedia",
+  "author" : null,
+  "year" : null,
+  "lastModified" : null
+}, {
+  "kind" : "ONLINE_SOURCE",
+  "name" : "wikipedia-reticulitermes-hesperus",
+  "authorityReference" : {
+    "source" : {
+      "id" : "wikipedia",
+      "displayName" : "Wikipedia"
+    },
+    "url" : "https://en.wikipedia.org/wiki/Reticulitermes_hesperus"
+  },
+  "title" : "Reticulitermes hesperus -- Wikipedia",
   "author" : null,
   "year" : null,
   "lastModified" : null

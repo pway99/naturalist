@@ -21,7 +21,9 @@ import java.util.Map;
  * {@link InsectFeatureView.RankedFeature#ordinal()}.
  *
  * @param rankLabel display label for the contributing rank ("Order", "Family")
- * @param rankSlug  the contributing rank's slug, for a link back to its page
+ * @param rankSlug  the contributing rank's slug, rendered as plain text
+ *                  alongside {@code rankLabel} to identify which rank a
+ *                  group of marks came from
  * @param marks     the feature values, conspicuous to diagnostic
  */
 public record FeatureGroup(String rankLabel, String rankSlug, List<String> marks) {

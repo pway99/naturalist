@@ -3,7 +3,9 @@ package com.naturalist.insects;
 import com.naturalist.authority.AuthorityContent;
 import com.naturalist.authority.AuthorityReference;
 import com.naturalist.authority.AuthoritySource;
+import com.naturalist.authority.CitationName;
 import com.naturalist.authority.ExternalAuthority;
+import com.naturalist.authority.OnlineSource;
 import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.data.PageRequest;
@@ -123,6 +125,90 @@ class InsectIdentificationCommandTest {
         assertThat(images.stream().toList()).hasSize(1);
         assertThat(images.stream().toList().getFirst().resourceName())
                 .isEqualTo(FileName.of("IMG_0001.jpg"));
+    }
+
+    /**
+     * Before {@code InsectCatalogIdentificationTransaction} switched feature
+     * persistence to {@code save()}, a re-identification of the same rank threw
+     * {@code UniqueConstraintException} the instant vision reported a feature
+     * string already in the catalog -- {@code InsectFeature.value} is
+     * uniquely constrained and the command minted a fresh id and called
+     * {@code insert()} unconditionally, every time, for every value. That threw
+     * inside the (single) insect transaction, failing the whole identification,
+     * not just the repeated feature. This test re-identifies the same species
+     * from the same stub -- so vision reports the exact same three feature
+     * strings both times -- and asserts: it does not throw, the feature catalog
+     * does not grow (exact-string match reuses the existing rows; this is not
+     * semantic dedup -- different phrasings of "the same" feature remain
+     * separate rows), the assignment catalog does not grow either (the
+     * (featureId, rankName) pair from the second call collides with the
+     * first), and -- the sharp edge -- every persisted assignment's
+     * {@code featureId} resolves to a real, persisted {@code InsectFeature}
+     * row rather than the fresh id {@code resolveFeatures()} originally minted
+     * and {@code save()} then discarded in favour of the existing one.
+     */
+    @Test
+    void identify_reIdentifyingSameRankWithSameFeatures_doesNotGrowCatalogOrDangleFeatureIds() {
+        var image = new Image(
+                new byte[]{1, 2, 3}, "image/jpeg",
+                new ImageMetadata("Chico, CA", null));
+
+        command.identify(image, FileName.of("IMG_0006.jpg"), NaturalistName.of("pat"), null);
+
+        var featureSource = db.getNamed(InsectFeatureTestEntitySource.class);
+        var assignmentSource = db.getNamed(InsectFeatureAssignmentTestEntitySource.class);
+        long featureCountAfterFirst = featureSource.entityStream().count();
+        long assignmentCountAfterFirst = assignmentSource.entityStream().count();
+        assertThat(featureCountAfterFirst).isGreaterThanOrEqualTo(3);
+
+        // Same stub -> vision reports the exact same three feature strings again.
+        command.identify(image, FileName.of("IMG_0007.jpg"), NaturalistName.of("pat"), null);
+
+        assertThat(featureSource.entityStream().count()).isEqualTo(featureCountAfterFirst);
+        assertThat(assignmentSource.entityStream().count()).isEqualTo(assignmentCountAfterFirst);
+
+        var persistedFeatureIds = featureSource.entityStream()
+                .map(InsectFeature::id)
+                .collect(java.util.stream.Collectors.toSet());
+        assertThat(assignmentSource.entityStream().map(InsectFeatureAssignment::featureId))
+                .as("every assignment's featureId must resolve to a persisted InsectFeature -- "
+                        + "no dangling FK left over from save()'s id reconciliation")
+                .allMatch(persistedFeatureIds::contains);
+    }
+
+    @Test
+    void identify_persistsCitationAssociationWhenCitationAlreadyExists() {
+        var libraryContext = LibraryTestContext.create(db);
+        var cmd = new InsectIdentificationCommand(
+                stubService,
+                new NoOpTextGenerationService(),
+                STUB_AUTHORITY,
+                libraryContext.libraryCommand(),
+                query,
+                context.catalogIdentificationTransaction());
+
+        // Pre-seed the deterministic citation slug the command derives for the
+        // identified species rank ("test-testus-fabricatus" = source id "test" +
+        // rank slug) with no matching association yet -- this is the state a
+        // second identification of an already-cited rank produces: the citation
+        // already exists, but this call must still attribute (create the
+        // association for) the rank it identifies.
+        var citationName = CitationName.of("test-testus-fabricatus");
+        var preExisting = new OnlineSource(
+                citationName,
+                new AuthorityReference(new AuthoritySource("test", "Test Authority"),
+                        URI.create("https://test.example.com/testus-fabricatus")),
+                "Pre-existing citation", null, null, null);
+        libraryContext.libraryCommand().citations().insert(preExisting);
+
+        var image = new Image(
+                new byte[]{1, 2, 3}, "image/jpeg",
+                new ImageMetadata("Chico, CA", null));
+
+        cmd.identify(image, FileName.of("IMG_0005.jpg"), NaturalistName.of("pat"), null);
+
+        var associations = libraryContext.citationAssociationQuery().findByCitationName(citationName);
+        assertThat(associations.size()).isEqualTo(1);
     }
 
     @Test

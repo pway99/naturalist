@@ -10,13 +10,20 @@ import java.util.Set;
 /**
  * Adapter base class for {@link EntityRepository}. Owns the validation layer
  * and the {@link Observer} scoped to the concrete adapter class. Concrete adapters
- * implement four protected template hooks; the public methods are {@code final}, so
+ * implement protected template hooks; the public methods are {@code final}, so
  * validation cannot be accidentally skipped.
  *
  * <p>The {@code NAME} bound is open so this adapter serves both slug-keyed and
  * UUID-keyed entity flavors with one implementation. Name-key validity (slug format
  * or UUID presence) is enforced by the name type's own constructor; the boundary
  * check here is null-only.
+ *
+ * <p>{@code doSave} has no default implementation here — unlike {@code doInsert}/
+ * {@code doUpdate}, resolving it correctly requires knowledge of the adapter's own
+ * unique constraints (see {@link EntityRepository#save} for the full contract), which
+ * this class does not have. {@link AbstractTestEntityRepository} supplies the
+ * in-memory implementation by delegating to {@code TestEntitySource#save}, which does
+ * have that knowledge via {@code uniqueConstraints()}.
  *
  * @param <NAME>   the entity's name type
  * @param <ENTITY> the named entity type
@@ -44,6 +51,8 @@ public abstract class AbstractEntityRepository<
     protected abstract void doInsert(ENTITY entity);
 
     protected abstract void doUpdate(ENTITY entity);
+
+    protected abstract ENTITY doSave(ENTITY entity);
 
     // -----------------------------------------------------------------------------
     // Validated public API — final so subclasses cannot bypass the observer
@@ -77,5 +86,11 @@ public abstract class AbstractEntityRepository<
     public final void update(ENTITY entity) {
         observer.arguments("update", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
         doUpdate(entity);
+    }
+
+    @Override
+    public final ENTITY save(ENTITY entity) {
+        observer.arguments("save", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
+        return doSave(entity);
     }
 }

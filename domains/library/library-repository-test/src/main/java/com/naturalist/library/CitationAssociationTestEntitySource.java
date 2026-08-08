@@ -33,6 +33,16 @@ public class CitationAssociationTestEntitySource
                 });
     }
 
+    /**
+     * Enables {@code save()} to reconcile a unique-constraint match on
+     * {@code citationName+subject}: the existing row's id is retained, the
+     * caller-supplied (typically freshly-minted) id is discarded.
+     */
+    @Override
+    protected CitationAssociation withKey(CitationAssociation a, CitationAssociationId key) {
+        return new CitationAssociation(key, a.citationName(), a.subject(), a.note());
+    }
+
     @Override
     protected Object writable(CitationAssociation entity) {
         return CitationAssociationJson.fromEntity(entity);

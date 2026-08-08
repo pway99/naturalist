@@ -19,9 +19,9 @@
     "id": "019f0001-a003-7003-8003-a00000000003",
     "citationName": "eol-danaus-plexippus-151935",
     "subjectDomain": "insects",
-    "subjectRank": "ORDER",
-    "subjectName": "diptera",
-    "note": null
+    "subjectRank": "FAMILY",
+    "subjectName": "nymphalidae",
+    "note": "Repointed 2026-08-08: was attached to ORDER diptera. Danaus plexippus is the monarch butterfly, family Nymphalidae, order Lepidoptera -- not a fly."
   },
   {
     "id": "019f0001-a004-7004-8004-a00000000004",
@@ -30,5 +30,53 @@
     "subjectRank": "ORDER",
     "subjectName": "hymenoptera",
     "note": "EOL page covers Apis mellifera as the primary pollinator model"
+  },
+  {
+    "id": "019f0001-a005-7005-8005-a00000000005",
+    "citationName": "wikipedia-periplaneta",
+    "subjectDomain": "insects",
+    "subjectRank": "GENUS",
+    "subjectName": "periplaneta",
+    "note": "Article verified 2026-08-08 as genus Periplaneta, family Blattidae"
+  },
+  {
+    "id": "019f0001-a006-7006-8006-a00000000006",
+    "citationName": "wikipedia-periplaneta-americana",
+    "subjectDomain": "insects",
+    "subjectRank": "SPECIES",
+    "subjectName": "periplaneta-americana",
+    "note": "Article verified 2026-08-08 as Periplaneta americana, family Blattidae"
+  },
+  {
+    "id": "019f0001-a007-7007-8007-a00000000007",
+    "citationName": "wikipedia-reticulitermes-hesperus",
+    "subjectDomain": "insects",
+    "subjectRank": "SPECIES",
+    "subjectName": "reticulitermes-hesperus",
+    "note": "Article verified 2026-08-08 as Reticulitermes hesperus. NOTE: the article places it in family Heterotermitidae; this catalog has it under rhinotermitidae (the pre-2021 placement). Unresolved."
+  },
+  {
+    "id": "019f0001-a008-7008-8008-a00000000008",
+    "citationName": "ref-carabidae",
+    "subjectDomain": "insects",
+    "subjectRank": "FAMILY",
+    "subjectName": "carabidae",
+    "note": "Article verified 2026-08-08 as family Carabidae, ground beetles"
+  },
+  {
+    "id": "019f0001-a009-7009-8009-a00000000009",
+    "citationName": "ref-chrysomelidae",
+    "subjectDomain": "insects",
+    "subjectRank": "FAMILY",
+    "subjectName": "chrysomelidae",
+    "note": "Article verified 2026-08-08 as family Chrysomelidae, leaf beetles"
+  },
+  {
+    "id": "019f0001-a00a-700a-800a-a00000000010",
+    "citationName": "ref-cleridae",
+    "subjectDomain": "insects",
+    "subjectRank": "FAMILY",
+    "subjectName": "cleridae",
+    "note": "Article verified 2026-08-08 as family Cleridae, checkered beetles"
   }
 ]

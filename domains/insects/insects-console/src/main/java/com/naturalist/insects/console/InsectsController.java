@@ -686,10 +686,6 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToSpecies(s, genus, family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToSpecies(s, genus, family, order)));
         model.addAttribute("ancestorIntros", introsForSpecies(order, family, genus));
-        Object csrf = request.getAttribute(CSRF_REQUEST_ATTRIBUTE);
-        if (csrf != null) {
-            model.addAttribute("_csrf", csrf);
-        }
         return "insects/detail";
     }
 
@@ -743,7 +739,13 @@ public class InsectsController {
                        @RequestParam(value = "returnPath", required = false) String returnPath,
                        HttpServletRequest request) {
         var destination = safeReturnPath(returnPath, "/insects/" + name);
-        var obsId = FieldObservationId.of(java.util.UUID.fromString(observationId));
+        FieldObservationId obsId;
+        try {
+            obsId = FieldObservationId.of(java.util.UUID.fromString(observationId));
+        } catch (IllegalArgumentException e) {
+            // Malformed observationId -- same outcome as not-found, not a 500.
+            return "redirect:" + destination;
+        }
         var existing = insectQuery.fieldObservations().getByName(obsId);
         if (existing.isEmpty()) {
             return "redirect:" + destination;
@@ -784,6 +786,14 @@ public class InsectsController {
         }
         if (!candidate.startsWith("/insects/") || candidate.contains("//")) {
             return fallback;
+        }
+        // Defence in depth: Tomcat rejects raw control characters (e.g. CR/LF) in
+        // header values at the container layer, but this validator shouldn't rely
+        // on behaviour it doesn't own.
+        for (int i = 0; i < candidate.length(); i++) {
+            if (candidate.charAt(i) < 0x20) {
+                return fallback;
+            }
         }
         return candidate;
     }

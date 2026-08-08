@@ -51,6 +51,11 @@ public abstract class AbstractTestEntityRepository<
     }
 
     @Override
+    protected ENTITY doSave(ENTITY entity) {
+        return testEntitySource().save(entity);
+    }
+
+    @Override
     protected List<ENTITY> doGetByNameSet(Set<NAME> nameSet) {
         return testEntitySource().entityStream()
                 .filter(e -> nameSet.contains(e.key()))

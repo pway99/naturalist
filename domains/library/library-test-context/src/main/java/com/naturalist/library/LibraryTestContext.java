@@ -37,7 +37,11 @@ public class LibraryTestContext {
                 new CitationCommandImpl(citationRepository);
         LibraryCommand.CitationAssociationCommand citationAssociationCommand =
                 new CitationAssociationCommandImpl(citationAssociationRepository);
-        this.libraryCommand = new LibraryCommandImpl(citationCommand, citationAssociationCommand);
+        CitationAttributionTransaction citationAttributionTransaction =
+                new CitationAttributionTransaction(
+                        citationRepository, citationCommand, citationAssociationCommand);
+        this.libraryCommand = new LibraryCommandImpl(
+                citationCommand, citationAssociationCommand, citationAttributionTransaction);
     }
 
     public static LibraryTestContext create(NaturalistDatabase db) {

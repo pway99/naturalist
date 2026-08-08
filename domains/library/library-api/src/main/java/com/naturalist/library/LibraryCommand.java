@@ -14,12 +14,26 @@ import com.naturalist.data.EntityCommand;
  *   <li>{@link CitationCommand} — {@link Citation} mutations.</li>
  *   <li>{@link CitationAssociationCommand} — {@link CitationAssociation} mutations.</li>
  * </ul>
+ *
+ * <p>{@link #attributeCitation} is the coordinated entry point above those two:
+ * it persists a {@link CitationAttribution} — citation plus subject plus note —
+ * as a single library-owned transaction, so a caller never has to reason about
+ * insert-vs-update or citation-then-association ordering itself. Idempotency for
+ * both writes is the library domain's responsibility, not the caller's.
  */
 public interface LibraryCommand {
 
     CitationCommand citations();
 
     CitationAssociationCommand citationAssociations();
+
+    /**
+     * Attaches {@code attribution.citation()} to {@code attribution.subject()},
+     * atomically. Idempotent: re-attributing the same citation to the same
+     * subject is a no-op past the first call — it never throws a constraint
+     * exception for that reason.
+     */
+    void attributeCitation(CitationAttribution attribution);
 
     /**
      * Entity-level command surface for {@link Citation}.

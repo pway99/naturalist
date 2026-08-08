@@ -192,6 +192,108 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         flushIfWritable();
     }
 
+    /**
+     * Insert-or-update, resolved by identity rather than by attempting
+     * {@link #insert} or {@link #update} and catching the other's constraint
+     * exception to recover. Three cases, evaluated in order:
+     * <ol>
+     *   <li>An entity keyed by {@code entity.key()} already exists — updated in
+     *       place, exactly like {@link #update}.</li>
+     *   <li>No match on {@code entity.key()}, but {@code entity} collides with an
+     *       existing row on one of {@link #uniqueConstraints()} — that existing
+     *       row is updated with {@code entity}'s other field values via
+     *       {@link #withKey}. <b>The existing row's key is retained;
+     *       {@code entity}'s own key is discarded.</b> A caller that mints a
+     *       fresh surrogate key on every call (e.g. a fresh {@code EntityId} per
+     *       attempt, as {@code CitationAssociation} attribution does) still
+     *       converges on exactly one persisted row: the unique-constrained value
+     *       is the entity's real identity for dedup purposes, the caller-supplied
+     *       key is not. This branch requires the concrete source to override
+     *       {@link #withKey} — the default throws {@link UnsupportedOperationException},
+     *       so a source that hasn't opted in fails loudly here rather than being
+     *       silently unreachable or (worse) reflectively guessed at.</li>
+     *   <li>Neither matches — inserted as new via {@link #insert}, which also
+     *       handles origin-file tracking and the flush for that case.</li>
+     * </ol>
+     * Origin-file tracking is unaffected by case 2: the reconciled entity's
+     * {@code key()} equals the retained (existing) key, so {@link #flushIfWritable}
+     * resolves the same {@code originFile} entry the row already had — no new
+     * tracking needed, and the row keeps flushing to the file it was loaded from.
+     *
+     * <p><b>Returns the entity actually persisted</b> — {@code entity} itself in
+     * cases 1 and 3, but the {@link #withKey}-reconciled value in case 2. A
+     * caller that already built a dependent record referencing {@code entity}'s
+     * own key (e.g. an assignment record referencing this entity's id) before
+     * calling {@code save} must rebuild that reference from the returned value
+     * once case 2 fires, or it ends up pointing at a key that was never actually
+     * written — this method does not and cannot know about such dependents, so
+     * it is the caller's responsibility.
+     */
+    public ENTITY save(ENTITY entity) {
+        final ENTITY argument = entity;
+        observer.arguments("save", i -> i.namedEntity(argument, "entity")).throwWhenInvalid();
+
+        NAME name = entity.key();
+        if (name != null && entityMap.containsKey(name)) {
+            preSaveChecks(entity, name);
+            entityMap.replace(name, entity);
+            flushIfWritable();
+            return entity;
+        }
+
+        NAME matchedKey = findUniqueConstraintMatch(entity);
+        if (matchedKey != null) {
+            ENTITY reconciled = matchedKey.equals(entity.key()) ? entity : withKey(entity, matchedKey);
+            preSaveChecks(reconciled, matchedKey);
+            entityMap.replace(matchedKey, reconciled);
+            flushIfWritable();
+            return reconciled;
+        }
+
+        insert(entity);
+        return entity;
+    }
+
+    /**
+     * The key of a stored entity whose value for some declared
+     * {@link UniqueConstraint} equals {@code entity}'s value for that same
+     * constraint, or {@code null} if none matches (or {@code entity} declares no
+     * unique constraints). Mirrors the null-value-skips-the-check convention
+     * {@link #preSaveChecks} uses.
+     */
+    private @Nullable NAME findUniqueConstraintMatch(ENTITY entity) {
+        for (UniqueConstraint<ENTITY> uniqueConstraint : uniqueConstraints()) {
+            Object entityValue = uniqueConstraint.value(entity);
+            if (entityValue == null) {
+                continue;
+            }
+            for (Map.Entry<NAME, ENTITY> stored : entityMap.entrySet()) {
+                if (entityValue.equals(uniqueConstraint.valueFunction().apply(stored.getValue()))) {
+                    return stored.getKey();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Rebuilds {@code entity} carrying {@code key} instead of its own, for the
+     * unique-constraint branch of {@link #save}. Default throws: a source only
+     * participates in constraint-matched save when it declares how to do so —
+     * there is no generic way to substitute one component of an arbitrary
+     * record without either a per-type hook (this) or reflection over the
+     * canonical constructor. Reflection was tried and rejected: it would guess
+     * the identity component by the {@code NamedEntity}/{@code Entity} naming
+     * convention (nothing enforces that guess) and silently re-run the record's
+     * compact constructor on reconstruction, which is not guaranteed idempotent
+     * in general even where it happens to be today.
+     */
+    protected ENTITY withKey(ENTITY entity, NAME key) {
+        throw new UnsupportedOperationException(
+                getClass().getSimpleName() + " does not support save() by unique constraint; "
+                        + "override withKey(...) to enable it.");
+    }
+
     boolean isEmpty() {
         return MapUtils.isEmpty(entityMap);
     }

@@ -29,4 +29,17 @@ public class InsectFeatureTestEntitySource extends TestEntitySource<InsectFeatur
                     }
                 });
     }
+
+    /**
+     * Enables {@code save()} to reconcile a unique-constraint match on
+     * {@code value}: the existing row's id is retained, the caller-supplied
+     * (typically freshly-minted, per-identification) id is discarded. This is
+     * what lets a re-identification that reproduces an already-catalogued
+     * feature value reuse the existing row instead of tripping the constraint —
+     * see {@code InsectCatalogIdentificationTransaction}.
+     */
+    @Override
+    protected InsectFeature withKey(InsectFeature feature, InsectFeatureId key) {
+        return new InsectFeature(key, feature.value());
+    }
 }

@@ -4,6 +4,7 @@ import com.naturalist.data.Transaction;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicClassification;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -14,14 +15,22 @@ import java.util.Set;
  * the image and field observation.
  *
  * <p>Idempotent for the identified entity: if it already exists in the catalog,
- * it is left untouched and only the image, observation, and new features are
- * inserted. Parent ranks follow the same pattern — existing ranks are never
- * overwritten.
+ * it is left untouched and only the image, observation, and features are
+ * persisted (the image and observation are always inserted; features are
+ * saved — see below). Parent ranks follow the same pattern — existing ranks
+ * are never overwritten.
  *
  * <p>Parent-rank resolution is conditional on the identified rank: a family-level
  * identification resolves only the parent order, not the family or genus itself
  * (those are the identified entity's concern). A species-level identification
  * resolves order → family → genus before inserting the species.
+ *
+ * <p>Features and their rank assignments are persisted via {@code save()}, not
+ * {@code insert()}: a repeated exact feature value (e.g. the same taxon
+ * re-identified) reuses the existing {@link InsectFeature} row rather than
+ * failing the whole transaction on its unique {@code value} constraint. This
+ * is exact-string matching only, not semantic deduplication — see the
+ * step-4 comment in {@link #doExecute} for what it does and does not cover.
  */
 class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentification> {
 
@@ -66,12 +75,42 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         insectCommand.images().insert(identification.image());
         insectCommand.fieldObservations().insert(identification.observation());
 
-        // 4. Insert features and assignments
+        // 4. Save features and assignments -- save(), not insert(). A feature
+        //    string that already exists in the catalog (very likely on a
+        //    re-identification of the same rank -- the same taxon tends to
+        //    yield the same field marks) is matched by InsectFeature's "value"
+        //    unique constraint and its existing row is reused; insert() would
+        //    throw UniqueConstraintException there and fail the whole
+        //    transaction. This is a same-string match only -- "dark (black)
+        //    pronotum..." and "dark/black pronotum..." are two different
+        //    strings and remain two separate rows. That is not dedup, it is
+        //    "don't fail on an exact repeat"; semantic near-duplicate merging
+        //    is a separate, unsolved problem.
+        //
+        //    save()'s unique-constraint branch discards the id resolveFeatures()
+        //    minted for a matched feature and reuses the existing row's id
+        //    instead (see TestEntitySource#save). The assignments built
+        //    alongside that feature in resolveFeatures() were built with the
+        //    now-discarded id, so they are remapped to the id save() actually
+        //    persisted before being saved themselves -- otherwise an assignment
+        //    would carry a featureId that was never written (a dangling FK).
+        //    Assignments are saved, not inserted, for the same reason as
+        //    features: the (featureId, rankName) pair from a re-identification
+        //    is likely to already exist once the featureId above is remapped
+        //    to the existing feature.
+        var resolvedFeatureIds = new HashMap<InsectFeatureId, InsectFeatureId>();
         for (var feature : identification.newFeatures()) {
-            insectCommand.features().insert(feature);
+            var persisted = insectCommand.features().save(feature);
+            resolvedFeatureIds.put(feature.id(), persisted.id());
         }
         for (var assignment : identification.featureAssignments()) {
-            insectCommand.featureAssignments().insert(assignment);
+            var resolvedFeatureId = resolvedFeatureIds.getOrDefault(
+                    assignment.featureId(), assignment.featureId());
+            var toSave = resolvedFeatureId.equals(assignment.featureId())
+                    ? assignment
+                    : new InsectFeatureAssignment(
+                            assignment.id(), resolvedFeatureId, assignment.rankName(), assignment.ordinal());
+            insectCommand.featureAssignments().save(toSave);
         }
     }
 

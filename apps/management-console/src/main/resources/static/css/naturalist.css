@@ -1714,6 +1714,10 @@ figure.compound-depiction img {
 
 /* --- Field marks -------------------------------------------------------- */
 
+.field-marks {
+    margin: 1.5rem 0;
+}
+
 .field-marks-lead {
     font-style: italic;
     opacity: 0.75;

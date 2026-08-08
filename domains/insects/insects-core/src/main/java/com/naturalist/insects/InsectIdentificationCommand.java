@@ -13,8 +13,7 @@ import com.naturalist.ddd.EntityName;
 import com.naturalist.data.FileName;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.library.CitationAssociation;
-import com.naturalist.library.CitationAssociationId;
+import com.naturalist.library.CitationAttribution;
 import com.naturalist.library.LibraryCommand;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.taxonomy.TaxonomicClassification;
@@ -357,16 +356,24 @@ public class InsectIdentificationCommand {
                     var title = capitalize(rankName.value()) + " -- " + ref.source().displayName();
                     var citation = new OnlineSource(
                             citationName, ref, title, null, null, null);
-                    libraryCommand.citations().insert(citation);
-
-                    var association = new CitationAssociation(
-                            CitationAssociationId.create(),
-                            citationName,
+                    var attribution = new CitationAttribution(
+                            citation,
                             new EntityRef(INSECTS_DOMAIN, (EntityName) rankName),
                             "Identified via vision");
-                    libraryCommand.citationAssociations().insert(association);
+                    // Idempotency for both the citation and its association to the
+                    // rank is the library domain's own responsibility (see
+                    // CitationAttributionTransaction) -- no constraint exception is
+                    // expected here, so none is caught.
+                    libraryCommand.attributeCitation(attribution);
                 } catch (Exception e) {
-                    // Degraded -- identification proceeds without this citation
+                    // Degraded -- deliberately still swallowed here, but for a
+                    // different reason than before: attributeCitation runs as its
+                    // own library-owned transaction that commits or rolls back
+                    // independently, and the insect transaction below has not
+                    // started yet. A genuine failure in the library write leaves
+                    // the identification to proceed without this citation rather
+                    // than aborting or corrupting anything -- this is the one place
+                    // in this method where swallowing is defensible.
                 }
             }
         }

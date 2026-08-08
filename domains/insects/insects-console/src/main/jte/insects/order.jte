@@ -77,9 +77,9 @@
                             <dt>family</dt>
                             <dd>${f.family().value()}</dd>
                         </dl>
-                        !{var images = gallery.forEntity(f.name()).stream().toList();}
-                        @if(!images.isEmpty())
-                            @template.insects.cardImages(images = images, linkUrl = "/insects/families/" + f.name().value(), alt = familyCommonName)
+                        !{var childImages = gallery.forEntity(f.name()).stream().toList();}
+                        @if(!childImages.isEmpty())
+                            @template.insects.cardImages(images = childImages, linkUrl = "/insects/families/" + f.name().value(), alt = familyCommonName)
                         @endif
                     </article>
                 @endfor

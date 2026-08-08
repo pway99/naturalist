@@ -57,4 +57,19 @@ public class InsectFeatureAssignmentTestEntitySource
                         a -> a.rankName() instanceof InsectSpeciesName s ? s : null,
                         InsectSpeciesTestEntitySource.class));
     }
+
+    /**
+     * Enables {@code save()} to reconcile a unique-constraint match on
+     * {@code featureId+rankName}: the existing row's id is retained (its
+     * {@code ordinal} is overwritten with the incoming value), the
+     * caller-supplied id is discarded. A re-identification that reassigns the
+     * same feature (its id resolved to the existing {@code InsectFeature} row
+     * by {@code save()}'s own unique-constraint reconciliation, not by any
+     * deduplication performed here) to the same rank hits this branch instead
+     * of tripping the constraint — see {@code InsectCatalogIdentificationTransaction}.
+     */
+    @Override
+    protected InsectFeatureAssignment withKey(InsectFeatureAssignment a, InsectFeatureAssignmentId key) {
+        return new InsectFeatureAssignment(key, a.featureId(), a.rankName(), a.ordinal());
+    }
 }

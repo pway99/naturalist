@@ -13,7 +13,6 @@
 @import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
 @import java.util.Map
-@import org.springframework.security.web.csrf.CsrfToken
 
 @param InsectSpecies species
 @param InsectGenus genus
@@ -27,7 +26,6 @@
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
-@param CsrfToken _csrf = null
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
 @param java.util.List<com.naturalist.insects.console.AncestorIntro> ancestorIntros = List.of()
@@ -38,6 +36,14 @@
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
 !{var binomial = genus.genus().value() + " " + species.epithet().value();}
+<%-- The CSRF token is read the same way layout/page.jte and the other rank
+     templates read it -- plain request attributes published by
+     NaturalistHeaderInterceptor (management-console only) -- rather than a
+     CsrfToken-typed @param, so this template stays compilable against
+     classpaths lacking Spring Security (see page.jte:27-33). --%>
+!{var _attrs = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();}
+!{var _csrfParam = _attrs != null ? (String) _attrs.getAttribute("naturalistCsrfParam", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST) : null;}
+!{var _csrfToken = _attrs != null ? (String) _attrs.getAttribute("naturalistCsrfToken", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST) : null;}
 
 @template.layout.page(title = binomial, content = @`
     @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
@@ -95,16 +101,16 @@
         alt = species.name().value(),
         notesAction = "/insects/" + species.name().value() + "/notes",
         returnPath = "/insects/" + species.name().value(),
-        csrfParam = _csrf != null ? _csrf.getParameterName() : null,
-        csrfToken = _csrf != null ? _csrf.getToken() : null)
+        csrfParam = _csrfParam,
+        csrfToken = _csrfToken)
 
     @if(lens && images.isEmpty())
         <p class="collection-empty">No photos of yours here yet — add one below to start your collection.</p>
     @endif
 
-    @if(_csrf != null)
+    @if(_csrfParam != null)
         <form method="post" action="/insects/${species.name().value()}/observe" class="observe-form">
-            <input type="hidden" name="${_csrf.getParameterName()}" value="${_csrf.getToken()}">
+            <input type="hidden" name="${_csrfParam}" value="${_csrfToken}">
             <input type="text" name="notes" placeholder="Notes (optional)">
             <button type="submit">Add to my collection</button>
         </form>
@@ -114,8 +120,8 @@
         <h2>Add Photo</h2>
         <form id="identify-form" action="/insects/${species.name().value()}/images" method="post"
               enctype="multipart/form-data">
-            @if(_csrf != null)
-                <input type="hidden" name="${_csrf.getParameterName()}" value="${_csrf.getToken()}">
+            @if(_csrfParam != null)
+                <input type="hidden" name="${_csrfParam}" value="${_csrfToken}">
             @endif
             <div class="form-group">
                 <input type="file" name="image" accept="image/*" capture="environment" required>

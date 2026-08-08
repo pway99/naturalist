@@ -79,9 +79,9 @@
                             <dt>genus</dt>
                             <dd><em>${g.genus().value()}</em></dd>
                         </dl>
-                        !{var images = gallery.forEntity(g.name()).stream().toList();}
-                        @if(!images.isEmpty())
-                            @template.insects.cardImages(images = images, linkUrl = "/insects/genera/" + g.name().value(), alt = genusCommonName)
+                        !{var childImages = gallery.forEntity(g.name()).stream().toList();}
+                        @if(!childImages.isEmpty())
+                            @template.insects.cardImages(images = childImages, linkUrl = "/insects/genera/" + g.name().value(), alt = genusCommonName)
                         @endif
                     </article>
                 @endfor
