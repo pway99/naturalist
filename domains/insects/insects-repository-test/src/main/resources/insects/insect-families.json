@@ -1,17 +1,16 @@
 [ {
-  "name": "aeshnidae",
-  "orderName": "odonata",
-  "family": "Aeshnidae",
-  "description": {
-    "preschool": "Identified via vision — description pending.",
-    "elementary": "Identified via vision — description pending.",
-    "secondary": "Identified via vision — description pending.",
-    "university": "Identified via vision — description pending."
+  "name" : "aeshnidae",
+  "orderName" : "odonata",
+  "family" : "Aeshnidae",
+  "description" : {
+    "preschool" : "Identified via vision — description pending.",
+    "elementary" : "Identified via vision — description pending.",
+    "secondary" : "Identified via vision — description pending.",
+    "university" : "Identified via vision — description pending."
   },
-  "commonNames": [],
-  "placedIn": null
-},
-  {
+  "commonNames" : [ ],
+  "placedIn" : null
+}, {
   "name" : "andrenidae",
   "orderName" : "hymenoptera",
   "family" : "Andrenidae",
@@ -90,6 +89,21 @@
   } ],
   "placedIn" : "holometabola"
 }, {
+  "name" : "chrysomelidae",
+  "orderName" : "coleoptera",
+  "family" : "Chrysomelidae",
+  "description" : {
+    "preschool" : "Look at this tiny red beetle! It's bright red like a strawberry and has little black legs. It was walking along a wall and its shiny back looks like a little red shield. Isn't it beautiful?",
+    "elementary" : "This is a leaf beetle, belonging to the family Chrysomelidae — one of the largest beetle families in the world! It has a rounded, dome-shaped body with shiny red wing covers called elytra that protect its wings underneath. It has six legs, and its small head hides under a dark shield at the front. Leaf beetles lay their eggs on plants, and when the larvae hatch, they munch on leaves, stems, or roots depending on the species.",
+    "secondary" : "Chrysomelidae is a highly diverse family of phytophagous (plant-eating) beetles with over 35,000 described species worldwide. Adults and larvae are typically specialist feeders on particular plant families, making them important herbivores in many ecosystems. The bright red colouration observed here may serve as aposematic (warning) coloration, signalling unpalatability to predators — a common strategy in this family. The strongly convex, ovoid elytra and dark pronotum are characteristic morphological traits. Without clearer views of the antenna structure, tarsal segmentation, or host plant association, identification beyond family level is not possible from this image.",
+    "university" : "Chrysomelidae (Coleoptera) is the fourth-largest beetle family, comprising ~37,000 species across ~19 subfamilies. The specimen here exhibits the characteristic habitus of the family: strongly convex, ovoid elytra, cryptic head under a transverse pronotum, and 5-5-5 tarsal formula (not visible in image). The uniformly red elytra with a dark pronotum and lack of obvious maculation is consistent with several genera across subfamilies such as Chrysomelinae, Eumolpinae, or Galerucinae. Precise identification to genus and species would require examination of antennal morphology, tarsal claw type, aedeagus structure, and confirmed host plant association. Many Chrysomelidae are economically significant agricultural pests (e.g., Diabrotica, Leptinotarsa), while others are used as biological control agents for invasive plants."
+  },
+  "commonNames" : [ {
+    "label" : "Leaf Beetle",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
   "name" : "chrysopidae",
   "orderName" : "neuroptera",
   "family" : "Chrysopidae",
@@ -116,6 +130,21 @@
   },
   "commonNames" : [ {
     "label" : "Leafhopper Family",
+    "locale" : "en"
+  } ],
+  "placedIn" : null
+}, {
+  "name" : "cleridae",
+  "orderName" : "coleoptera",
+  "family" : "Cleridae",
+  "description" : {
+    "preschool" : "Look at this shiny little red beetle! It's as bright as a candy-red jewel sitting on the wall. It has six tiny black legs and a pretty rounded back. This little bug is actually a helper — it eats other bugs that can be pests!",
+    "elementary" : "This is a checkered beetle, belonging to the family Cleridae. You can recognize it by its bright reddish elytra (the hard wing covers) and the clear narrowing between its middle section (pronotum) and its wing covers — almost like it has a tiny waist. Checkered beetles are predators, often hunting bark beetle larvae under tree bark. Adults and larvae both hunt prey, making them useful in controlling pest insect populations. They go through complete metamorphosis: egg → larva → pupa → adult.",
+    "secondary" : "Members of the family Cleridae are characterized by their brightly colored, often patterned elytra and the pronounced constriction between the pronotum and the elytra, which gives them a distinctive silhouette. Most clerids are predatory as both larvae and adults, specializing in hunting wood-boring beetles (especially Scolytinae bark beetles), making them ecologically significant as biological control agents in forest ecosystems. Their vivid coloration may serve as aposematic warning coloration or could be mimicry of other defended insects. Their hairy, elongated legs and mobile heads allow them to navigate narrow bark crevices in pursuit of prey.",
+    "university" : "Cleridae is a cosmopolitan family within the order Coleoptera, comprising approximately 3,500 described species across 300+ genera. The family is morphologically defined by the strongly constricted pronotum relative to both the head and elytra, dense setation of the body, and 11-segmented antennae often clubbed or serrate. Many genera are important biocontrol agents of Scolytinae and Buprestidae in sylvatic systems. Taxonomically, Cleridae is divided into several subfamilies including Clerinae, Hydnocerinae, and Tillinae, among others. Generic and species-level identification typically requires examination of antennal club morphology, tarsal segmentation, and elytral banding patterns. The coloration seen in this specimen (uniform red elytra, dark pronotum) is consistent with several genera including Thanasimus, Clerus, or Opilo, though definitive identification to genus requires closer examination of the antennae and tarsi."
+  },
+  "commonNames" : [ {
+    "label" : "Checkered Beetle",
     "locale" : "en"
   } ],
   "placedIn" : null
@@ -213,19 +242,18 @@
   } ],
   "placedIn" : "lepidoptera"
 }, {
-  "name": "libellulidae",
-  "orderName": "odonata",
-  "family": "Libellulidae",
-  "description": {
-    "preschool": "Identified via vision — description pending.",
-    "elementary": "Identified via vision — description pending.",
-    "secondary": "Identified via vision — description pending.",
-    "university": "Identified via vision — description pending."
+  "name" : "libellulidae",
+  "orderName" : "odonata",
+  "family" : "Libellulidae",
+  "description" : {
+    "preschool" : "Identified via vision — description pending.",
+    "elementary" : "Identified via vision — description pending.",
+    "secondary" : "Identified via vision — description pending.",
+    "university" : "Identified via vision — description pending."
   },
-  "commonNames": [],
-  "placedIn": null
-},
-  {
+  "commonNames" : [ ],
+  "placedIn" : null
+}, {
   "name" : "lygaeidae",
   "orderName" : "hemiptera",
   "family" : "Lygaeidae",
@@ -268,19 +296,18 @@
   } ],
   "placedIn" : "papilionidae"
 }, {
-  "name": "pentatomidae",
-  "orderName": "hemiptera",
-  "family": "Pentatomidae",
-  "description": {
-    "preschool": "Identified via vision — description pending.",
-    "elementary": "Identified via vision — description pending.",
-    "secondary": "Identified via vision — description pending.",
-    "university": "Identified via vision — description pending."
+  "name" : "pentatomidae",
+  "orderName" : "hemiptera",
+  "family" : "Pentatomidae",
+  "description" : {
+    "preschool" : "Identified via vision — description pending.",
+    "elementary" : "Identified via vision — description pending.",
+    "secondary" : "Identified via vision — description pending.",
+    "university" : "Identified via vision — description pending."
   },
-  "commonNames": [],
-  "placedIn": null
-},
-  {
+  "commonNames" : [ ],
+  "placedIn" : null
+}, {
   "name" : "pieridae",
   "orderName" : "lepidoptera",
   "family" : "Pieridae",
@@ -341,19 +368,18 @@
   } ],
   "placedIn" : "holometabola"
 }, {
-  "name": "thomisidae",
-  "orderName": "araneae",
-  "family": "Thomisidae",
-  "description": {
-    "preschool": "Identified via vision — description pending.",
-    "elementary": "Identified via vision — description pending.",
-    "secondary": "Identified via vision — description pending.",
-    "university": "Identified via vision — description pending."
+  "name" : "thomisidae",
+  "orderName" : "araneae",
+  "family" : "Thomisidae",
+  "description" : {
+    "preschool" : "Identified via vision — description pending.",
+    "elementary" : "Identified via vision — description pending.",
+    "secondary" : "Identified via vision — description pending.",
+    "university" : "Identified via vision — description pending."
   },
-  "commonNames": [],
-  "placedIn": null
-},
-  {
+  "commonNames" : [ ],
+  "placedIn" : null
+}, {
   "name" : "tipulidae",
   "orderName" : "diptera",
   "family" : "Tipulidae",

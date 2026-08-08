@@ -1,26 +1,88 @@
-[
-  {
-    "id": "019f0161-22f6-710d-bae4-d24cb7bdbbb6",
-    "value": "complete metamorphosis"
-  },
-  {
-    "id": "019f0161-22f7-7226-9663-8c3611b8774b",
-    "value": "incomplete metamorphosis"
-  },
-  {
-    "id": "019f0161-22f8-7e62-9046-d4e4883b80e5",
-    "value": "scaled wings"
-  },
-  {
-    "id": "019f0161-22fa-7880-a20d-96f10c255f1f",
-    "value": "halteres"
-  },
-  {
-    "id": "019f0161-22fb-7e22-9e43-6b5c2c3cd4ce",
-    "value": "piercing-sucking mouthparts"
-  },
-  {
-    "id": "019f0161-22fc-7a04-884c-f505ec00bdd1",
-    "value": "hardened elytra"
-  }
-]
+[ {
+  "id" : "019f0161-22f6-710d-bae4-d24cb7bdbbb6",
+  "value" : "complete metamorphosis"
+}, {
+  "id" : "019f0161-22f7-7226-9663-8c3611b8774b",
+  "value" : "incomplete metamorphosis"
+}, {
+  "id" : "019f0161-22f8-7e62-9046-d4e4883b80e5",
+  "value" : "scaled wings"
+}, {
+  "id" : "019f0161-22fa-7880-a20d-96f10c255f1f",
+  "value" : "halteres"
+}, {
+  "id" : "019f0161-22fb-7e22-9e43-6b5c2c3cd4ce",
+  "value" : "piercing-sucking mouthparts"
+}, {
+  "id" : "019f0161-22fc-7a04-884c-f505ec00bdd1",
+  "value" : "hardened elytra"
+}, {
+  "id" : "019f689f-49ad-75b7-ba13-305ddf1b6a1f",
+  "value" : "shiny dark blue-black metallic coloration"
+}, {
+  "id" : "019f689f-49ad-75b7-ba15-e0d248afb391",
+  "value" : "strongly striated (longitudinally grooved) elytra"
+}, {
+  "id" : "019f689f-49ad-75b7-ba17-d662fe626635",
+  "value" : "flattened, oval body form"
+}, {
+  "id" : "019f689f-49ad-75b7-ba19-680ff2831e1b",
+  "value" : "narrowed pronotum relative to elytra width"
+}, {
+  "id" : "019f689f-49ad-75b7-ba1b-93fe04a43724",
+  "value" : "long, slender cursorial legs"
+}, {
+  "id" : "019f689f-49ad-75b7-ba1d-e80b67cb1fa4",
+  "value" : "prognathous (forward-pointing) head"
+}, {
+  "id" : "019f689f-49ad-75b7-ba1f-f9d1d22aabf9",
+  "value" : "no visible hind wings — elytra fused or closed"
+}, {
+  "id" : "019f689f-49ad-75b7-ba21-cda42729a67f",
+  "value" : "medium body size (~12–18 mm estimated)"
+}, {
+  "id" : "019f68a1-d50f-7989-a497-16102827ff69",
+  "value" : "strongly domed, broadly oval body outline"
+}, {
+  "id" : "019f68a1-d50f-7989-a499-f5c352dc24e3",
+  "value" : "bright red-orange elytra with slight gloss"
+}, {
+  "id" : "019f68a1-d50f-7989-a49b-8e11195a3b49",
+  "value" : "dark (black) pronotum contrasting with red elytra"
+}, {
+  "id" : "019f68a1-d50f-7989-a49d-101ed0cc6e96",
+  "value" : "faint dark sutural line along midline of elytra"
+}, {
+  "id" : "019f68a1-d50f-7989-a49f-f2d1645212c9",
+  "value" : "six short, slender black legs"
+}, {
+  "id" : "019f68a1-d50f-7989-a4a1-5a7793dc62ba",
+  "value" : "small head largely concealed beneath pronotum"
+}, {
+  "id" : "019f68a1-d50f-7989-a4a3-03461b8c1e54",
+  "value" : "no clearly visible black spots on elytra (ruling out typical ladybird pattern)"
+}, {
+  "id" : "019f68a1-d50f-7989-a4a5-a347c92f4ba3",
+  "value" : "compact, smooth elytral surface"
+}, {
+  "id" : "019f6919-842f-7a99-a059-f0386b09414d",
+  "value" : "bright reddish-orange, highly domed and oval elytra"
+}, {
+  "id" : "019f6919-842f-7a99-a05b-1962b9faab6d",
+  "value" : "distinct constriction between pronotum and elytra (narrow 'waist')"
+}, {
+  "id" : "019f6919-842f-7a99-a05d-538bceb9fe6b",
+  "value" : "dark/black pronotum contrasting with red elytra"
+}, {
+  "id" : "019f6919-842f-7a99-a05f-5bc99c744430",
+  "value" : "darker midline stripe or suture visible on elytra"
+}, {
+  "id" : "019f6919-842f-7a99-a061-3c680c912e25",
+  "value" : "black, relatively slender and spiny legs"
+}, {
+  "id" : "019f6919-842f-7a99-a063-a1457f7fbafb",
+  "value" : "small, rounded head partially concealed under pronotum"
+}, {
+  "id" : "019f6919-842f-7a99-a065-a0a78c77a077",
+  "value" : "compact overall body form ~4–8 mm estimated"
+} ]

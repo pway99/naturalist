@@ -55,168 +55,214 @@
       "confidence" : 0.06
     } ]
   }
-},
-  {
-    "id": "019f5f83-fcba-7bba-be1b-1bc18cf04d0c",
-    "observedBy": "patrick-way",
-    "subject": "bagrada-hilaris",
-    "subjectRank": "SPECIES",
-    "observedOn": "2026-07-14T07:25:13.276524Z",
-    "notes": "Found on a Tomatoe",
-    "location": "Oak Vista, Chico CA",
-    "identification": {
-      "confidence": 0.91,
-      "evidence": "Key visible features supporting this identification: (1) small, shield-shaped stink bug body (~5–7 mm) typical of Pentatomidae; (2) striking black-and-white/orange patterning with bold white spots and streaks on the dorsum — the diagnostic \"painted\" pattern of Bagrada hilaris; (3) orange-red transverse band visible across the abdomen/connexivum; (4) dark scutellum with white markings; (5) short, segmented antennae with alternating dark/pale banding; (6) found on what appears to be a ripe tomato in the Central Valley of California, consistent with the bug's known host range and invasive range in CA.",
-      "alternatives": [
-        {
-          "scientificName": "Eurydemus sp.",
-          "commonName": null,
-          "confidence": 0.03
-        },
-        {
-          "scientificName": "Murgantia histrionica (Harlequin Bug)",
-          "commonName": null,
-          "confidence": 0.06
-        }
-      ]
-    }
-  },
-  {
-    "id": "019f5f92-64d7-797a-832f-bf56b8556939",
-    "observedBy": "patrick-way",
-    "subject": "misumessus-oblongus",
-    "subjectRank": "SPECIES",
-    "observedOn": "2026-07-14T07:40:57.434149Z",
-    "notes": "Found on a Zinnia near passion fru",
-    "location": "Chico Ca, Oak Vista",
-    "identification": {
-      "confidence": 0.78,
-      "evidence": "Bright yellow-green globose abdomen; crab-like lateral leg posture with elongated anterior leg pairs (I & II); small cephalothorax; positioning on the underside of a flower calyx consistent with thomisid ambush behavior; overall body size and shape matches Misumessus oblongus known from California.",
-      "alternatives": [
-        {
-          "scientificName": "Misumena vatia",
-          "commonName": "Goldenrod Crab Spider",
-          "confidence": 0.15
-        },
-        {
-          "scientificName": "Mecaphesa species",
-          "commonName": "Running Crab Spider",
-          "confidence": 0.07
-        }
-      ]
-    }
-  },
-  {
-    "id": "019f644f-8123-7ddd-a86b-f1ee50b0ed4d",
-    "observedBy": "patrick-way",
-    "subject": "anax-junius",
-    "subjectRank": "SPECIES",
-    "observedOn": "2026-07-15T05:45:59.843423Z",
-    "notes": "found on a zinnia",
-    "location": "Chico, CA Oak Vista",
-    "identification": {
-      "confidence": 0.82,
-      "evidence": "Metallic green thorax clearly visible; long segmented abdomen with green coloration; four large membranous wings held horizontally in classic dragonfly posture; large compound eyes; body size appears large relative to zinnia flower head — all consistent with Anax junius. The bull's-eye frons mark is not clearly resolvable at this angle, reducing confidence slightly.",
-      "alternatives": [
-        {
-          "scientificName": "Anax walsinghami",
-          "commonName": "Giant Green Darner",
-          "confidence": 0.1
-        },
-        {
-          "scientificName": "Epiaeschna heros",
-          "commonName": "Swamp Darner",
-          "confidence": 0.05
-        },
-        {
-          "scientificName": "Rhionaeschna multicolor",
-          "commonName": "Blue-eyed Darner",
-          "confidence": 0.03
-        }
-      ]
-    }
-  },
-  {
-    "id": "019f6452-1dea-7617-abf6-4b9c7b9d3182",
-    "observedBy": "patrick-way",
-    "subject": "agraulis-vanillae",
-    "subjectRank": "SPECIES",
-    "observedOn": "2026-07-15T05:48:51.050365Z",
-    "notes": "Found on zinnia",
-    "location": "Chico CA, Oak Vista",
-    "identification": {
-      "confidence": 0.96,
-      "evidence": "Vivid orange dorsal wing coloration with bold black venation lines and small black-rimmed white spots are unmistakable field marks of Agraulis vanillae. Wing shape shows the slightly elongated forewing typical of Heliconiinae. The butterfly is nectaring on a zinnia, consistent with known adult behavior. Location in Chico, CA is well within the established California range. The silvery ventral spots are partially visible and consistent with this species.",
-      "alternatives": []
+}, {
+  "id" : "019f5f83-fcba-7bba-be1b-1bc18cf04d0c",
+  "observedBy" : "patrick-way",
+  "subject" : "bagrada-hilaris",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-07-14T07:25:13.276524Z",
+  "notes" : "Found on a Tomatoe",
+  "location" : "Oak Vista, Chico CA",
+  "identification" : {
+    "confidence" : 0.91,
+    "evidence" : "Key visible features supporting this identification: (1) small, shield-shaped stink bug body (~5–7 mm) typical of Pentatomidae; (2) striking black-and-white/orange patterning with bold white spots and streaks on the dorsum — the diagnostic \"painted\" pattern of Bagrada hilaris; (3) orange-red transverse band visible across the abdomen/connexivum; (4) dark scutellum with white markings; (5) short, segmented antennae with alternating dark/pale banding; (6) found on what appears to be a ripe tomato in the Central Valley of California, consistent with the bug's known host range and invasive range in CA.",
+    "alternatives" : [ {
+      "scientificName" : "Eurydemus sp.",
+      "commonName" : null,
+      "confidence" : 0.03
+    }, {
+      "scientificName" : "Murgantia histrionica (Harlequin Bug)",
+      "commonName" : null,
+      "confidence" : 0.06
+    } ]
   }
-  },
-  {
-    "id": "019f6649-f6a1-7c46-ac72-f375564ebc5f",
-    "observedBy": "patrick-way",
-    "subject": "libellula-saturata",
-    "subjectRank": "SPECIES",
-    "observedOn": "2026-07-15T14:59:11.137234Z",
-    "notes": null,
-    "location": "Oak Vista",
-    "identification": {
-      "confidence": 0.88,
-      "evidence": "Deep reddish-orange to amber coloration saturating the entire body and wing venation; large compound eyes with a reddish-purple hue; broad hindwing bases with amber/orange wash extending well into the wing membrane; robust thorax; perching posture on a vertical metal support — all hallmarks of Libellula saturata. The overall warm rust-orange tone and size are consistent with a mature male Flame Skimmer.",
-      "alternatives": [
-        {
-          "scientificName": "libellula-luctuosa",
-          "commonName": null,
-          "confidence": 0.04
-        },
-        {
-          "scientificName": "sympetrum-illotum",
-          "commonName": null,
-          "confidence": 0.05
-        },
-        {
-          "scientificName": "tramea-onusta",
-          "commonName": null,
-          "confidence": 0.03
-        }
-      ]
-    }
-  },
-  {
-    "id": "019f664c-3334-7117-ad90-68ba5018f454",
-    "observedBy": "patrick-way",
-    "subject": "papilio-glaucus",
-    "subjectRank": "SPECIES",
-    "observedOn": "2026-07-15T15:01:37.716707Z",
-    "notes": null,
-    "location": "Oak Vista",
-    "identification": {
-      "confidence": 0.96,
-      "evidence": "Yellow and black tiger-striped forewing pattern; elongated hindwing tails characteristic of Papilionidae; blue and orange marginal spots on hindwing; large wingspan consistent with P. glaucus; nectaring behavior on zinnia; yellow coloration indicates male or yellow-morph female; geographic context (Oak Vista, eastern North America) aligns with species range.",
-      "alternatives": [
-        {
-          "scientificName": "Papilio rutulus",
-          "commonName": "Western Tiger Swallowtail",
-          "confidence": 0.03
-        },
-        {
-          "scientificName": "Papilio canadensis",
-          "commonName": "Canadian Tiger Swallowtail",
-          "confidence": 0.01
-        }
-      ]
-    }
-  },
-  {
-    "id": "019f6650-4e6b-7222-9289-b983fd9bb7fb",
-    "observedBy": "patrick-way",
-    "subject": "vanessa-cardui",
-    "subjectRank": "SPECIES",
-    "observedOn": "2026-07-15T15:06:06.827558Z",
-    "notes": "Found on the Rose Gerranium",
-    "location": "Oak Vista",
-    "identification": {
-      "confidence": 0.97,
-      "evidence": "Dorsal wing surface shows the classic Painted Lady pattern: tawny orange base with bold black markings, prominent white subapical spots on the forewing, and a mottled brown hindwing border with small white spots. Body is stout with a brushfoot posture consistent with Nymphalidae. Wing shape and size proportion match V. cardui closely. The ventral hindwing glimpsed at the wing edges shows the characteristic brown-cream mosaic pattern. No bold red band (ruling out Vanessa atalanta) and no blue eyespots on dorsal surface (ruling out Junonia coenia).",
-      "alternatives": []
-    }
+}, {
+  "id" : "019f5f92-64d7-797a-832f-bf56b8556939",
+  "observedBy" : "patrick-way",
+  "subject" : "misumessus-oblongus",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-07-14T07:40:57.434149Z",
+  "notes" : "Found on a Zinnia near passion fru",
+  "location" : "Chico Ca, Oak Vista",
+  "identification" : {
+    "confidence" : 0.78,
+    "evidence" : "Bright yellow-green globose abdomen; crab-like lateral leg posture with elongated anterior leg pairs (I & II); small cephalothorax; positioning on the underside of a flower calyx consistent with thomisid ambush behavior; overall body size and shape matches Misumessus oblongus known from California.",
+    "alternatives" : [ {
+      "scientificName" : "Misumena vatia",
+      "commonName" : "Goldenrod Crab Spider",
+      "confidence" : 0.15
+    }, {
+      "scientificName" : "Mecaphesa species",
+      "commonName" : "Running Crab Spider",
+      "confidence" : 0.07
+    } ]
   }
-]
+}, {
+  "id" : "019f644f-8123-7ddd-a86b-f1ee50b0ed4d",
+  "observedBy" : "patrick-way",
+  "subject" : "anax-junius",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-07-15T05:45:59.843423Z",
+  "notes" : "found on a zinnia",
+  "location" : "Chico, CA Oak Vista",
+  "identification" : {
+    "confidence" : 0.82,
+    "evidence" : "Metallic green thorax clearly visible; long segmented abdomen with green coloration; four large membranous wings held horizontally in classic dragonfly posture; large compound eyes; body size appears large relative to zinnia flower head — all consistent with Anax junius. The bull's-eye frons mark is not clearly resolvable at this angle, reducing confidence slightly.",
+    "alternatives" : [ {
+      "scientificName" : "Anax walsinghami",
+      "commonName" : "Giant Green Darner",
+      "confidence" : 0.1
+    }, {
+      "scientificName" : "Epiaeschna heros",
+      "commonName" : "Swamp Darner",
+      "confidence" : 0.05
+    }, {
+      "scientificName" : "Rhionaeschna multicolor",
+      "commonName" : "Blue-eyed Darner",
+      "confidence" : 0.03
+    } ]
+  }
+}, {
+  "id" : "019f6452-1dea-7617-abf6-4b9c7b9d3182",
+  "observedBy" : "patrick-way",
+  "subject" : "agraulis-vanillae",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-07-15T05:48:51.050365Z",
+  "notes" : "Found on zinnia",
+  "location" : "Chico CA, Oak Vista",
+  "identification" : {
+    "confidence" : 0.96,
+    "evidence" : "Vivid orange dorsal wing coloration with bold black venation lines and small black-rimmed white spots are unmistakable field marks of Agraulis vanillae. Wing shape shows the slightly elongated forewing typical of Heliconiinae. The butterfly is nectaring on a zinnia, consistent with known adult behavior. Location in Chico, CA is well within the established California range. The silvery ventral spots are partially visible and consistent with this species.",
+    "alternatives" : [ ]
+  }
+}, {
+  "id" : "019f6649-f6a1-7c46-ac72-f375564ebc5f",
+  "observedBy" : "patrick-way",
+  "subject" : "libellula-saturata",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-07-15T14:59:11.137234Z",
+  "notes" : null,
+  "location" : "Oak Vista",
+  "identification" : {
+    "confidence" : 0.88,
+    "evidence" : "Deep reddish-orange to amber coloration saturating the entire body and wing venation; large compound eyes with a reddish-purple hue; broad hindwing bases with amber/orange wash extending well into the wing membrane; robust thorax; perching posture on a vertical metal support — all hallmarks of Libellula saturata. The overall warm rust-orange tone and size are consistent with a mature male Flame Skimmer.",
+    "alternatives" : [ {
+      "scientificName" : "libellula-luctuosa",
+      "commonName" : null,
+      "confidence" : 0.04
+    }, {
+      "scientificName" : "sympetrum-illotum",
+      "commonName" : null,
+      "confidence" : 0.05
+    }, {
+      "scientificName" : "tramea-onusta",
+      "commonName" : null,
+      "confidence" : 0.03
+    } ]
+  }
+}, {
+  "id" : "019f664c-3334-7117-ad90-68ba5018f454",
+  "observedBy" : "patrick-way",
+  "subject" : "papilio-glaucus",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-07-15T15:01:37.716707Z",
+  "notes" : null,
+  "location" : "Oak Vista",
+  "identification" : {
+    "confidence" : 0.96,
+    "evidence" : "Yellow and black tiger-striped forewing pattern; elongated hindwing tails characteristic of Papilionidae; blue and orange marginal spots on hindwing; large wingspan consistent with P. glaucus; nectaring behavior on zinnia; yellow coloration indicates male or yellow-morph female; geographic context (Oak Vista, eastern North America) aligns with species range.",
+    "alternatives" : [ {
+      "scientificName" : "Papilio rutulus",
+      "commonName" : "Western Tiger Swallowtail",
+      "confidence" : 0.03
+    }, {
+      "scientificName" : "Papilio canadensis",
+      "commonName" : "Canadian Tiger Swallowtail",
+      "confidence" : 0.01
+    } ]
+  }
+}, {
+  "id" : "019f6650-4e6b-7222-9289-b983fd9bb7fb",
+  "observedBy" : "patrick-way",
+  "subject" : "vanessa-cardui",
+  "subjectRank" : "SPECIES",
+  "observedOn" : "2026-07-15T15:06:06.827558Z",
+  "notes" : "Found on the Rose Gerranium",
+  "location" : "Oak Vista",
+  "identification" : {
+    "confidence" : 0.97,
+    "evidence" : "Dorsal wing surface shows the classic Painted Lady pattern: tawny orange base with bold black markings, prominent white subapical spots on the forewing, and a mottled brown hindwing border with small white spots. Body is stout with a brushfoot posture consistent with Nymphalidae. Wing shape and size proportion match V. cardui closely. The ventral hindwing glimpsed at the wing edges shows the characteristic brown-cream mosaic pattern. No bold red band (ruling out Vanessa atalanta) and no blue eyespots on dorsal surface (ruling out Junonia coenia).",
+    "alternatives" : [ ]
+  }
+}, {
+  "id" : "019f689f-49b4-7ca6-a3e5-3060f47838e9",
+  "observedBy" : "patrick-way",
+  "subject" : "carabidae",
+  "subjectRank" : "FAMILY",
+  "observedOn" : "2026-07-16T01:51:37.396910Z",
+  "notes" : null,
+  "location" : "",
+  "identification" : {
+    "confidence" : 0.88,
+    "evidence" : "The beetle displays the hallmark features of Carabidae: a shiny, dark blue-black dorsoventrally flattened body with clearly striated (grooved) elytra, long cursorial legs built for running, a distinctly narrowed prothorax relative to the elytra, and a prognathous head orientation. It is found on bare soil among crop residue, a classic ground beetle microhabitat.",
+    "alternatives" : [ {
+      "scientificName" : "Pterostichus spp.",
+      "commonName" : null,
+      "confidence" : 0.45
+    }, {
+      "scientificName" : "Poecilus spp.",
+      "commonName" : null,
+      "confidence" : 0.3
+    }, {
+      "scientificName" : "Anchomenus dorsalis",
+      "commonName" : null,
+      "confidence" : 0.1
+    } ]
+  }
+}, {
+  "id" : "019f68a1-d515-7fb3-91b9-d5a40ecc7629",
+  "observedBy" : "patrick-way",
+  "subject" : "chrysomelidae",
+  "subjectRank" : "FAMILY",
+  "observedOn" : "2026-07-16T01:54:24.149777Z",
+  "notes" : null,
+  "location" : "",
+  "identification" : {
+    "confidence" : 0.72,
+    "evidence" : "The insect displays a rounded, strongly domed oval body outline typical of Chrysomelidae, with bright red/orange elytra that show a faint dark sutural line and slight patterning near the pronotum. The dark pronotum contrasting with the red elytra, short black legs, and compact body shape are all hallmarks of this large beetle family. The overall gestalt — size, gloss, and coloration — most closely matches leaf beetles rather than coccinellids (ladybirds), which typically show more pronounced black spots on the elytra.",
+    "alternatives" : [ {
+      "scientificName" : "Coccinellidae",
+      "commonName" : "Ladybird / Ladybug",
+      "confidence" : 0.2
+    }, {
+      "scientificName" : "Lygaeidae",
+      "commonName" : "Seed Bug",
+      "confidence" : 0.05
+    } ]
+  }
+}, {
+  "id" : "019f6919-8430-7b2b-a999-78a352a66fb7",
+  "observedBy" : "patrick-way",
+  "subject" : "cleridae",
+  "subjectRank" : "FAMILY",
+  "observedOn" : "2026-07-16T04:05:07.760775Z",
+  "notes" : null,
+  "location" : "",
+  "identification" : {
+    "confidence" : 0.72,
+    "evidence" : "The beetle displays a distinctly domed, oval, reddish-brown elytra with a slightly darker midline impression, a constricted waist-like region between the pronotum and elytra (a hallmark of Cleridae), dark/black banded pronotum contrasting with red elytra, and relatively long, hairy legs typical of clerids. The overall body shape and coloration pattern are consistent with the Cleridae family.",
+    "alternatives" : [ {
+      "scientificName" : "Thanasimus sp.",
+      "commonName" : null,
+      "confidence" : 0.45
+    }, {
+      "scientificName" : "Opilo sp.",
+      "commonName" : null,
+      "confidence" : 0.3
+    }, {
+      "scientificName" : "Pyrochroa sp. (Pyrochroidae)",
+      "commonName" : null,
+      "confidence" : 0.15
+    } ]
+  }
+} ]
