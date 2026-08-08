@@ -445,7 +445,7 @@ public class InsectIdentificationCommand {
                 7. List alternative candidates if confidence is below 0.9.
                 8. Assign functional ecological guilds from the allowed list.
                 9. If you know the URL to an authoritative reference page for this taxon
-                   (e.g. Encyclopedia of Life, iNaturalist, Wikipedia), include it as
+                   (e.g. Encyclopedia of Life, iNaturalist, Wikipedia, bugguide.net), include it as
                    referenceUrl. Only include URLs you are confident are correct — do
                    not guess numeric page IDs.
 
