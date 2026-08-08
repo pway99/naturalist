@@ -22,6 +22,7 @@ import com.naturalist.textgeneration.NoOpTextGenerationService;
 import com.naturalist.resilience.Resilient;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -178,6 +179,33 @@ public class InsectsController {
 
     private List<FeatureGroup> featureGroups(InsectRankName rankName) {
         return FeatureGroup.of(insectQuery.features().findByRankName(rankName).orElse(null));
+    }
+
+    /**
+     * Maps each image to the signed-in naturalist's own {@link FieldObservation}
+     * for it, when one exists. Only the viewer's observations are exposed — the
+     * gallery's notes form edits the viewer's own field notes, never someone
+     * else's.
+     */
+    private Map<InsectImageId, FieldObservation> observationLookup(
+            List<InsectImage> images,
+            java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer,
+            InsectRankName subject) {
+        var lookup = new java.util.HashMap<InsectImageId, FieldObservation>();
+        if (viewer.isEmpty()) {
+            return lookup;
+        }
+        var mine = insectQuery.fieldObservations()
+                .forNaturalistAndSubjects(viewer.get(), java.util.Set.of(subject));
+        for (var img : images) {
+            if (img.observationId() != null) {
+                mine.stream()
+                        .filter(o -> o.id().equals(img.observationId()))
+                        .findFirst()
+                        .ifPresent(o -> lookup.put(img.id(), o));
+            }
+        }
+        return lookup;
     }
 
     /**
@@ -414,7 +442,7 @@ public class InsectsController {
     }
 
     @GetMapping("/families/{name}")
-    String familyDetail(@PathVariable String name, Model model) {
+    String familyDetail(@PathVariable String name, HttpServletRequest request, Model model) {
         var familyName = InsectFamilyName.of(name);
         var insect = insectQuery.getByName(familyName);
         if (insect.isEmpty()) {
@@ -445,6 +473,13 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToFamily(family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToFamily(family, order)));
         model.addAttribute("ancestorIntros", introsForFamily(order));
+        List<InsectImage> rankImages = insectQuery.images()
+                .forParentName(familyName).stream().toList();
+        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
+                currentNaturalist(request);
+        model.addAttribute("images", rankImages);
+        model.addAttribute("observations",
+                observationLookup(rankImages, viewer, familyName));
         return "insects/family";
     }
 
@@ -467,7 +502,7 @@ public class InsectsController {
     }
 
     @GetMapping("/orders/{name}")
-    String orderDetail(@PathVariable String name, Model model) {
+    String orderDetail(@PathVariable String name, HttpServletRequest request, Model model) {
         var orderName = InsectOrderName.of(name);
         var insect = insectQuery.getByName(orderName);
         if (insect.isEmpty()) {
@@ -496,6 +531,13 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToOrder(order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToOrder(order)));
         model.addAttribute("ancestorIntros", classOnlyIntros());
+        List<InsectImage> rankImages = insectQuery.images()
+                .forParentName(orderName).stream().toList();
+        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
+                currentNaturalist(request);
+        model.addAttribute("images", rankImages);
+        model.addAttribute("observations",
+                observationLookup(rankImages, viewer, orderName));
         return "insects/order";
     }
 
@@ -524,7 +566,7 @@ public class InsectsController {
     }
 
     @GetMapping("/genera/{name}")
-    String genusDetail(@PathVariable String name, Model model) {
+    String genusDetail(@PathVariable String name, HttpServletRequest request, Model model) {
         var genusName = InsectGenusName.of(name);
         var insect = insectQuery.getByName(genusName);
         if (insect.isEmpty()) {
@@ -559,6 +601,13 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus, family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToGenus(genus, family, order)));
         model.addAttribute("ancestorIntros", introsForGenus(order, family));
+        List<InsectImage> rankImages = insectQuery.images()
+                .forParentName(genusName).stream().toList();
+        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
+                currentNaturalist(request);
+        model.addAttribute("images", rankImages);
+        model.addAttribute("observations",
+                observationLookup(rankImages, viewer, genusName));
         return "insects/genus";
     }
 
@@ -617,23 +666,12 @@ public class InsectsController {
         model.addAttribute("images", galleryImages);
         model.addAttribute("lens", lens && viewer.isPresent());
 
-        // Build observation lookup for images with field notes (reused for collected check)
-        var observations = new java.util.HashMap<InsectImageId, FieldObservation>();
         var myObservations = viewer.isPresent()
                 ? insectQuery.fieldObservations()
                         .forNaturalistAndSubjects(viewer.get(), java.util.Set.<InsectRankName>of(speciesName))
                 : null;
-        if (myObservations != null) {
-            for (var img : galleryImages) {
-                if (img.observationId() != null) {
-                    myObservations.stream()
-                            .filter(o -> o.id().equals(img.observationId()))
-                            .findFirst()
-                            .ifPresent(o -> observations.put(img.id(), o));
-                }
-            }
-        }
-        model.addAttribute("observations", observations);
+        model.addAttribute("observations",
+                observationLookup(galleryImages, viewer, speciesName));
 
         model.addAttribute("citations", i.citations());
         model.addAttribute("featureGroups", featureGroups(speciesName));
@@ -702,16 +740,52 @@ public class InsectsController {
     String updateNotes(@PathVariable String name,
                        @RequestParam("observationId") String observationId,
                        @RequestParam("notes") String notes,
+                       @RequestParam(value = "returnPath", required = false) String returnPath,
                        HttpServletRequest request) {
+        var destination = safeReturnPath(returnPath, "/insects/" + name);
         var obsId = FieldObservationId.of(java.util.UUID.fromString(observationId));
         var existing = insectQuery.fieldObservations().getByName(obsId);
         if (existing.isEmpty()) {
-            return "redirect:/insects/" + name;
+            return "redirect:" + destination;
         }
         var obs = existing.get();
+        if (!owns(obs, currentNaturalist(request))) {
+            // Refuse silently rather than 403 — the caller learns nothing about
+            // whether the observation exists or who owns it, only that nothing changed.
+            return "redirect:" + destination;
+        }
         var updated = obs.withNotes((notes == null || notes.isBlank()) ? null : notes);
         insectCommand.fieldObservations().update(updated);
-        return "redirect:/insects/" + name;
+        return "redirect:" + destination;
+    }
+
+    /**
+     * True when {@code viewer} is signed in as the naturalist who recorded
+     * {@code obs}. Guards {@link #updateNotes} against naturalist A overwriting
+     * naturalist B's field notes by POSTing B's observation id —
+     * {@link FieldObservationId} is a UUIDv7 and therefore time-ordered and
+     * partially guessable, so the id alone is not proof of ownership.
+     * Package-private (not {@code private}) so it is directly unit-testable
+     * without standing up the controller's full servlet/database wiring.
+     */
+    static boolean owns(FieldObservation obs,
+                        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer) {
+        return viewer.isPresent() && obs.observedBy().equals(viewer.get());
+    }
+
+    /**
+     * Constrains a caller-supplied redirect target to this console's own insect
+     * pages. A form field is untrusted input; without the prefix check it is an
+     * open redirect.
+     */
+    private static String safeReturnPath(@Nullable String candidate, String fallback) {
+        if (candidate == null || candidate.isBlank()) {
+            return fallback;
+        }
+        if (!candidate.startsWith("/insects/") || candidate.contains("//")) {
+            return fallback;
+        }
+        return candidate;
     }
 
     @PostMapping("/{name}/re-identify")

@@ -89,64 +89,14 @@
         </section>
     @endif
 
-    @if(!images.isEmpty())
-        <section>
-            <h2>Photo Gallery</h2>
-            <div class="image-gallery">
-                @for(var img : images)
-                    <figure class="observation-card">
-                        <img src="/insects/uploads/${img.resourceName().value()}"
-                             alt="${species.name().value()}"
-                             loading="lazy"
-                             onerror="this.onerror=null; this.src='/insects/images/${img.resourceName().value()}'">
-                        <%-- Fall back to classpath images for pre-upload catalog images --%>
-                        @if(observations.containsKey(img.id()))
-                            !{var obs = observations.get(img.id());}
-                            <figcaption>
-                                @if(obs.location() != null)
-                                    <p class="obs-location">${obs.location()}</p>
-                                @endif
-                                @if(obs.identification() != null)
-                                    !{var id = obs.identification();}
-                                    <div class="obs-identification">
-                                        <p class="obs-confidence">
-                                            <span class="obs-confidence-value">${String.format("%.0f%%", id.confidence() * 100)}</span> confidence
-                                        </p>
-                                        <details class="id-evidence">
-                                            <summary>Why this ID?</summary>
-                                            <p>${id.evidence()}</p>
-                                        </details>
-                                        @if(!id.alternatives().isEmpty())
-                                            <p class="id-alternatives-label">Also considered</p>
-                                            <ul class="id-alternatives">
-                                                @for(var alt : id.alternatives())
-                                                    <li>
-                                                        <em>${alt.scientificName()}</em>@if(alt.commonName() != null) (${alt.commonName()})@endif
-                                                        <span class="id-alternative-confidence">${String.format("%.0f%%", alt.confidence() * 100)}</span>
-                                                    </li>
-                                                @endfor
-                                            </ul>
-                                        @endif
-                                    </div>
-                                @endif
-                                <form method="post" action="/insects/${species.name().value()}/notes" class="obs-notes-form">
-                                    @if(_csrf != null)
-                                        <input type="hidden" name="${_csrf.getParameterName()}"
-                                               value="${_csrf.getToken()}">
-                                    @endif
-                                    <input type="hidden" name="observationId" value="${obs.id().value().toString()}">
-                                    <label class="obs-notes-label">Your notes</label>
-                                    <textarea name="notes" rows="2"
-                                              placeholder="Your field notes...">${obs.notes() != null ? obs.notes() : ""}</textarea>
-                                    <button type="submit">Save notes</button>
-                                </form>
-                            </figcaption>
-                        @endif
-                    </figure>
-                @endfor
-            </div>
-        </section>
-    @endif
+    @template.insects.observationGallery(
+        images = images,
+        observations = observations,
+        alt = species.name().value(),
+        notesAction = "/insects/" + species.name().value() + "/notes",
+        returnPath = "/insects/" + species.name().value(),
+        csrfParam = _csrf != null ? _csrf.getParameterName() : null,
+        csrfToken = _csrf != null ? _csrf.getToken() : null)
 
     @if(lens && images.isEmpty())
         <p class="collection-empty">No photos of yours here yet — add one below to start your collection.</p>

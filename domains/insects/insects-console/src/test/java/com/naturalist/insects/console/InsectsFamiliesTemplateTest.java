@@ -64,4 +64,54 @@ class InsectsFamiliesTemplateTest {
 
         assertThat(output.toString()).isNotBlank();
     }
+
+    @Test
+    void family_rendersRankImagesWithEvidence() {
+        NaturalistDatabase database = NaturalistDatabase.create();
+        InsectOrderTestEntitySource orderSource = new InsectOrderTestEntitySource(database);
+        InsectFamily anyFamily = new InsectFamilyTestEntitySource(database).entityStream()
+                .findFirst().orElseThrow();
+        InsectOrder order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
+        var observationId = com.naturalist.insects.FieldObservationId.create();
+        var image = new com.naturalist.insects.InsectImage(
+                com.naturalist.insects.InsectImageId.create(),
+                anyFamily.name(),
+                java.time.Instant.parse("2026-07-16T01:54:24Z"),
+                com.naturalist.data.FileName.of("beetle.jpg"),
+                observationId);
+        var identification = new com.naturalist.insects.Identification(
+                0.72,
+                "Elytra pattern and antenna shape match this family's diagnostic features.",
+                List.of(new com.naturalist.insects.Identification.Candidate(
+                        "Coccinellidae", "Ladybird beetle", 0.20)));
+        var observation = new com.naturalist.insects.FieldObservation(
+                observationId,
+                com.naturalist.naturalist.NaturalistName.of("pat-way"),
+                anyFamily.name(),
+                java.time.Instant.parse("2026-07-16T01:54:24Z"),
+                null,
+                "Oak Vista, Chico, CA",
+                identification);
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render(
+                "insects/family.jte",
+                Map.of(
+                        "family", anyFamily,
+                        "order", order,
+                        "genera", List.of(),
+                        "images", List.of(image),
+                        "observations", Map.of(image.id(), observation),
+                        "descriptionPreschool", "p",
+                        "descriptionElementary", "e",
+                        "descriptionSecondary", "s",
+                        "descriptionUniversity", "u"),
+                output);
+
+        assertThat(output.toString()).contains("Photo Gallery");
+        assertThat(output.toString()).contains("beetle.jpg");
+        assertThat(output.toString()).contains("obs-confidence-value\">72%");
+        assertThat(output.toString()).contains("Why this ID?");
+        assertThat(output.toString()).contains("name=\"returnPath\"");
+    }
 }
