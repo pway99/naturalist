@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -202,15 +203,47 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     }
 
     public void loadFile(String relativePath) {
+        loadFile(relativePath,
+                json -> TestDataHelper.readObjectsFromString(() -> json, entityClass()));
+    }
+
+    /**
+     * Loads a catalog file whose on-disk shape is not the entity's own Jackson
+     * shape — the parser turns the file's text into entities. Origin tracking and
+     * {@code defaultInsertFile} registration behave exactly as for
+     * {@link #loadFile(String)}, so entities inserted later (e.g. by a console
+     * write) flush back to this file rather than being silently dropped.
+     *
+     * <p>A source using this overload MUST also override {@link #writable} and
+     * {@link #writableClass()} so the flush writes the same shape the parser
+     * reads. Overriding one without the other produces a file the loader cannot
+     * read back on the next boot.
+     */
+    protected void loadFile(String relativePath, Function<String, List<ENTITY>> parser) {
         if (defaultInsertFile == null) {
             defaultInsertFile = relativePath;
         }
         String json = TestDataHelper.readFileToString(relativePath);
-        List<ENTITY> entities = TestDataHelper.readObjectsFromString(() -> json, entityClass());
-        for (ENTITY entity : entities) {
+        for (ENTITY entity : parser.apply(json)) {
             insertCommon(entity);
             originFile.put(entity.key(), relativePath);
         }
+    }
+
+    /**
+     * The on-disk form of a single entity. Defaults to the entity itself.
+     * Override together with {@link #writableClass()} when the catalog file's
+     * shape differs from the entity's Jackson shape — for instance when a
+     * component is an open interface or abstract type Jackson cannot
+     * round-trip.
+     */
+    protected Object writable(ENTITY entity) {
+        return entity;
+    }
+
+    /** The declared type {@link #writable} returns. */
+    protected Class<?> writableClass() {
+        return entityClass();
     }
 
     /**
@@ -250,8 +283,14 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     private void writeJsonAtomic(Path target, List<ENTITY> entities) {
         try {
-            byte[] bytes = TestDataHelper.mapper.writerWithDefaultPrettyPrinter()
-                    .writeValueAsBytes(entities);
+            var listType = TestDataHelper.mapper.getTypeFactory()
+                    .constructCollectionType(List.class, writableClass());
+            List<Object> writables = entities.stream()
+                    .map(this::writable)
+                    .collect(Collectors.toList());
+            byte[] bytes = TestDataHelper.mapper.writerFor(listType)
+                    .withDefaultPrettyPrinter()
+                    .writeValueAsBytes(writables);
             Path tmp = target.resolveSibling(target.getFileName() + ".tmp");
             Files.write(tmp, bytes);
             Files.move(tmp, target,
