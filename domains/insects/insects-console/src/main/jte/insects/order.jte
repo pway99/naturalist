@@ -5,6 +5,7 @@
 @import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.insects.console.CladeTrail
+@import com.naturalist.insects.console.FeatureGroup
 @import java.util.List
 
 @param InsectOrder order
@@ -18,6 +19,7 @@
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
+@param List<FeatureGroup> featureGroups = List.of()
 
 !{var commonName = order.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(order.order().value());}
 
@@ -34,6 +36,7 @@
         university = descriptionUniversity)
 
     @template.insects.citations(citations = citations)
+    @template.insects.features(featureGroups = featureGroups)
 
     <section>
         <h2>Families in this order</h2>

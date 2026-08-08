@@ -1711,3 +1711,32 @@ figure.compound-depiction img {
     border-radius: 0.5rem;
     color: var(--sepia-ink);
 }
+
+/* --- Field marks -------------------------------------------------------- */
+
+.field-marks-lead {
+    font-style: italic;
+    opacity: 0.75;
+    margin-bottom: 1rem;
+}
+
+.field-mark-group {
+    margin-bottom: 1rem;
+}
+
+.field-mark-group h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+    margin-bottom: 0.35rem;
+}
+
+.field-mark-group ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.field-mark-group li {
+    margin-bottom: 0.2rem;
+}

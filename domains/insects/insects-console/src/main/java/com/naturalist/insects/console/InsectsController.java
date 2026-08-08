@@ -176,6 +176,10 @@ public class InsectsController {
                 intro("Species " + binomial, "intro-species-open", species.description()));
     }
 
+    private List<FeatureGroup> featureGroups(InsectRankName rankName) {
+        return FeatureGroup.of(insectQuery.features().findByRankName(rankName).orElse(null));
+    }
+
     /**
      * Linnaean rank label for each Insecta-ancestry clade that has one.
      * The kernel deliberately keeps clades and ranks as separate concepts
@@ -433,6 +437,7 @@ public class InsectsController {
         model.addAttribute("genera", genera);
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
+        model.addAttribute("featureGroups", featureGroups(familyName));
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -483,6 +488,7 @@ public class InsectsController {
         model.addAttribute("families", families);
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
+        model.addAttribute("featureGroups", featureGroups(orderName));
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -545,6 +551,7 @@ public class InsectsController {
         model.addAttribute("species", members);
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
+        model.addAttribute("featureGroups", featureGroups(genusName));
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -629,6 +636,7 @@ public class InsectsController {
         model.addAttribute("observations", observations);
 
         model.addAttribute("citations", i.citations());
+        model.addAttribute("featureGroups", featureGroups(speciesName));
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
         boolean collected = myObservations != null && !myObservations.isEmpty();
