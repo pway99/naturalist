@@ -1,0 +1,478 @@
+[
+  {
+    "id": "02671001-0000-7000-8000-000001000000",
+    "nutrientName": "nitrate-n",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 1.36,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0001-7000-8000-000001000001",
+    "nutrientName": "phosphorus-p2o5",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 39.6,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0002-7000-8000-000001000002",
+    "nutrientName": "potassium-exchangeable",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 40.5,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0003-7000-8000-000001000003",
+    "nutrientName": "potassium-soluble",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 1.31,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0004-7000-8000-000001000004",
+    "nutrientName": "calcium-exchangeable",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 616,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0005-7000-8000-000001000005",
+    "nutrientName": "calcium-soluble",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 6.99,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0006-7000-8000-000001000006",
+    "nutrientName": "magnesium-exchangeable",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 115,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0007-7000-8000-000001000007",
+    "nutrientName": "magnesium-soluble",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 2.29,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0008-7000-8000-000001000008",
+    "nutrientName": "sodium-exchangeable",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 3.9,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0009-7000-8000-000001000009",
+    "nutrientName": "sodium-soluble",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 0.95,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0010-7000-8000-000001000010",
+    "nutrientName": "sulfate",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 2.73,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0011-7000-8000-000001000011",
+    "nutrientName": "zinc",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 6.35,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0012-7000-8000-000001000012",
+    "nutrientName": "manganese",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 2.17,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0013-7000-8000-000001000013",
+    "nutrientName": "iron",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 19.7,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0014-7000-8000-000001000014",
+    "nutrientName": "copper",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 0.698,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0015-7000-8000-000001000015",
+    "nutrientName": "boron",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 0.0202,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671001-0016-7000-8000-000001000016",
+    "nutrientName": "chloride",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "value": 0.345,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0000-7000-8000-000002000000",
+    "nutrientName": "nitrate-n",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 1.74,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0001-7000-8000-000002000001",
+    "nutrientName": "phosphorus-p2o5",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 43.3,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0002-7000-8000-000002000002",
+    "nutrientName": "potassium-exchangeable",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 40.6,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0003-7000-8000-000002000003",
+    "nutrientName": "potassium-soluble",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 1.59,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0004-7000-8000-000002000004",
+    "nutrientName": "calcium-exchangeable",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 486,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0005-7000-8000-000002000005",
+    "nutrientName": "calcium-soluble",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 8.35,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0006-7000-8000-000002000006",
+    "nutrientName": "magnesium-exchangeable",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 73.9,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0007-7000-8000-000002000007",
+    "nutrientName": "magnesium-soluble",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 2.44,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0008-7000-8000-000002000008",
+    "nutrientName": "sodium-exchangeable",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 4.9,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0009-7000-8000-000002000009",
+    "nutrientName": "sodium-soluble",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 1.7,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0010-7000-8000-000002000010",
+    "nutrientName": "sulfate",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 3.85,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0011-7000-8000-000002000011",
+    "nutrientName": "zinc",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 4.86,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0012-7000-8000-000002000012",
+    "nutrientName": "manganese",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 1.25,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0013-7000-8000-000002000013",
+    "nutrientName": "iron",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 14.6,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0014-7000-8000-000002000014",
+    "nutrientName": "copper",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 0.854,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0015-7000-8000-000002000015",
+    "nutrientName": "boron",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 0.0222,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671002-0016-7000-8000-000002000016",
+    "nutrientName": "chloride",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "value": 0.889,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0000-7000-8000-000003000000",
+    "nutrientName": "nitrate-n",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 1.74,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0001-7000-8000-000003000001",
+    "nutrientName": "phosphorus-p2o5",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 43.3,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0002-7000-8000-000003000002",
+    "nutrientName": "potassium-exchangeable",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 40.6,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0003-7000-8000-000003000003",
+    "nutrientName": "potassium-soluble",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 1.59,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0004-7000-8000-000003000004",
+    "nutrientName": "calcium-exchangeable",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 486,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0005-7000-8000-000003000005",
+    "nutrientName": "calcium-soluble",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 8.35,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0006-7000-8000-000003000006",
+    "nutrientName": "magnesium-exchangeable",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 73.9,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0007-7000-8000-000003000007",
+    "nutrientName": "magnesium-soluble",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 2.44,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0008-7000-8000-000003000008",
+    "nutrientName": "sodium-exchangeable",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 4.9,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0009-7000-8000-000003000009",
+    "nutrientName": "sodium-soluble",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 1.7,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0010-7000-8000-000003000010",
+    "nutrientName": "sulfate",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 3.85,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0011-7000-8000-000003000011",
+    "nutrientName": "zinc",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 4.86,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0012-7000-8000-000003000012",
+    "nutrientName": "manganese",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 1.25,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0013-7000-8000-000003000013",
+    "nutrientName": "iron",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 14.6,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0014-7000-8000-000003000014",
+    "nutrientName": "copper",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 0.854,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0015-7000-8000-000003000015",
+    "nutrientName": "boron",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 0.0222,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671003-0016-7000-8000-000003000016",
+    "nutrientName": "chloride",
+    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
+    "value": 0.889,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0000-7000-8000-000004000000",
+    "nutrientName": "nitrate-n",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 1.74,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0001-7000-8000-000004000001",
+    "nutrientName": "phosphorus-p2o5",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 43.3,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0002-7000-8000-000004000002",
+    "nutrientName": "potassium-exchangeable",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 40.6,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0003-7000-8000-000004000003",
+    "nutrientName": "potassium-soluble",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 1.59,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0004-7000-8000-000004000004",
+    "nutrientName": "calcium-exchangeable",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 486,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0005-7000-8000-000004000005",
+    "nutrientName": "calcium-soluble",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 8.35,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0006-7000-8000-000004000006",
+    "nutrientName": "magnesium-exchangeable",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 73.9,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0007-7000-8000-000004000007",
+    "nutrientName": "magnesium-soluble",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 2.44,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0008-7000-8000-000004000008",
+    "nutrientName": "sodium-exchangeable",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 4.9,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0009-7000-8000-000004000009",
+    "nutrientName": "sodium-soluble",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 1.7,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0010-7000-8000-000004000010",
+    "nutrientName": "sulfate",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 3.85,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0011-7000-8000-000004000011",
+    "nutrientName": "zinc",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 4.86,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0012-7000-8000-000004000012",
+    "nutrientName": "manganese",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 1.25,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0013-7000-8000-000004000013",
+    "nutrientName": "iron",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 14.6,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0014-7000-8000-000004000014",
+    "nutrientName": "copper",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 0.854,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0015-7000-8000-000004000015",
+    "nutrientName": "boron",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 0.0222,
+    "unit": "LBS_PER_1000_SQFT"
+  },
+  {
+    "id": "02671004-0016-7000-8000-000004000016",
+    "nutrientName": "chloride",
+    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
+    "value": 0.889,
+    "unit": "LBS_PER_1000_SQFT"
+  }
+]

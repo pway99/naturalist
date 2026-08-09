@@ -50,3 +50,6 @@ jte-classes/
 
 ### Scratch / transient exports ###
 temp/
+
+### Personal soil lab reports (contain physical address) ###
+domains/soil/*.pdf

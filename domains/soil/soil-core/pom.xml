@@ -17,5 +17,22 @@
             <artifactId>soil-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+
+        <!-- TEST DEPENDENCIES -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>soil-repository-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>identifiers-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

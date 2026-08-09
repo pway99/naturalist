@@ -1,0 +1,40 @@
+package com.naturalist.soil.observation;
+
+import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.infrastructure.DomainService;
+
+import java.util.List;
+
+/**
+ * In-memory {@link NutrientReadingRepository} backed by {@link NutrientReadingTestEntitySource}.
+ */
+@DomainService
+class NutrientReadingEntityRepositoryMock
+        extends AbstractTestEntityRepository<NutrientReadingId, NutrientReading, NutrientReadingTestEntitySource>
+        implements NutrientReadingRepository {
+
+    protected NutrientReadingEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+        super(naturalistDatabase);
+    }
+
+    @Override
+    public List<NutrientReading> getByLabAnalysisId(LabAnalysisId labAnalysisId) {
+        observer().arguments("getByLabAnalysisId",
+                        i -> i.identifier(labAnalysisId, "labAnalysisId"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(reading -> labAnalysisId.equals(reading.labAnalysisId()))
+                .toList();
+    }
+
+    @Override
+    public List<NutrientReading> getByNutrientName(NutrientName nutrientName) {
+        observer().arguments("getByNutrientName",
+                        i -> i.entityName(nutrientName, "nutrientName"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(reading -> nutrientName.equals(reading.nutrientName()))
+                .toList();
+    }
+}

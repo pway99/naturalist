@@ -1,0 +1,22 @@
+[
+  {
+    "name": "box1",
+    "zoneName": "box-1",
+    "subZoneName": null
+  },
+  {
+    "name": "backyard-north",
+    "zoneName": "backyard",
+    "subZoneName": "backyard-north"
+  },
+  {
+    "name": "backyard-center",
+    "zoneName": "backyard",
+    "subZoneName": "backyard-center"
+  },
+  {
+    "name": "backyard-south",
+    "zoneName": "backyard",
+    "subZoneName": "backyard-south"
+  }
+]
