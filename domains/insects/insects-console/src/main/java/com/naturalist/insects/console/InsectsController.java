@@ -91,6 +91,7 @@ public class InsectsController {
     private final ImageStorageService imageStorageService;
     private final InsectIdentificationCommand identificationCommand;
     private final InsectAddPhotoCommand addPhotoCommand;
+    private final GlossaryLinker glossaryLinker;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
     InsectsController(Resilience resilience, com.naturalist.vision.VisionService visionService) {
@@ -106,6 +107,9 @@ public class InsectsController {
         this.imageStorageService = new ImageStorageService(Path.of("data/images/insects"));
         // TODO:: This will eventually be a spring managed bean
         this.cladeQuery = libraryContext.cladeQuery();
+        this.glossaryLinker = GlossaryLinker.of(libraryContext.glossaryTermQuery()
+                .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE))
+                .content());
         this.identificationCommand = new InsectIdentificationCommand(
                 visionService,
                 new NoOpTextGenerationService(),
@@ -466,6 +470,7 @@ public class InsectsController {
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
         model.addAttribute("featureGroups", featureGroups(familyName));
+        model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -524,6 +529,7 @@ public class InsectsController {
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
         model.addAttribute("featureGroups", featureGroups(orderName));
+        model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -594,6 +600,7 @@ public class InsectsController {
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
         model.addAttribute("featureGroups", featureGroups(genusName));
+        model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -675,6 +682,7 @@ public class InsectsController {
 
         model.addAttribute("citations", i.citations());
         model.addAttribute("featureGroups", featureGroups(speciesName));
+        model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
         boolean collected = myObservations != null && !myObservations.isEmpty();

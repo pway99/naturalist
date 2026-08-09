@@ -11,6 +11,7 @@
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.insects.console.CladeTrail
 @import com.naturalist.insects.console.FeatureGroup
+@import com.naturalist.insects.console.GlossaryLinker
 @import java.util.List
 @import java.util.Map
 
@@ -28,6 +29,7 @@
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 @param List<FeatureGroup> featureGroups = List.of()
+@param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 @param List<InsectImage> images = List.of()
 @param Map<InsectImageId, FieldObservation> observations = Map.of()
 
@@ -53,7 +55,7 @@
         university = descriptionUniversity)
 
     @template.insects.citations(citations = citations)
-    @template.insects.features(featureGroups = featureGroups)
+    @template.insects.features(featureGroups = featureGroups, glossaryLinker = glossaryLinker)
     @template.insects.observationGallery(
         images = images,
         observations = observations,

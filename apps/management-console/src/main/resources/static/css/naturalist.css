@@ -1600,6 +1600,32 @@ figure.compound-depiction img {
     color: var(--sepia-ink-soft);
 }
 
+/* Inline glossary reference within body text (e.g. field marks). The trigger is
+   a <button> (required for the no-JS native popover) reset to read as inline
+   text with a dotted underline — a definition cue, not a navigation link. Its
+   popover reuses .info-popover-box (card + top-layer anchor positioning). */
+.glossary-link {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px dotted var(--pico-primary);
+    border-radius: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: help;
+}
+
+.glossary-link:hover,
+.glossary-link:focus-visible {
+    color: var(--pico-primary);
+}
+
+.glossary-popover {
+    font-style: normal;
+}
+
 /* Tree of life — nested clade list with faint vertical indent guides. */
 .clade-tree,
 .clade-tree ul {

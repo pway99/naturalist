@@ -102,6 +102,12 @@
     "example": null
   },
   {
+    "name": "metamorphosis",
+    "term": "Metamorphosis",
+    "definition": "The transformation an insect undergoes from egg to adult. In complete metamorphosis (butterflies, beetles) a larva pupates and re-forms into a very different adult; in incomplete metamorphosis (true bugs, dragonflies) nymphs grow gradually into adults without a pupal stage.",
+    "example": null
+  },
+  {
     "name": "nectaring",
     "term": "Nectaring",
     "definition": "Feeding on flower nectar, as an adult butterfly, bee, or other pollinator does.",
