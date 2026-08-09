@@ -9,7 +9,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>zones-repository-test</artifactId>
+  <artifactId>zone-repository-test</artifactId>
 
     <dependencies>
         <dependency>
