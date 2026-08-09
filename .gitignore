@@ -47,3 +47,6 @@ jte-classes/
 
 ### Claude Code runtime ###
 .claude/scheduled_tasks.lock
+
+### Scratch / transient exports ###
+temp/
