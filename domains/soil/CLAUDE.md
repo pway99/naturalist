@@ -9,7 +9,7 @@ biological activity, physical structure.
 Current lab: FGL Environmental, Chico CA. Lab ID CH 2671853. Nutrient values in lbs/1000 sqft.
 
 **NutrientPanel** — ValueObject owned by LabAnalysis. Measured nutrient values.
-`NutrientStatus`: VERY_LOW, LOW, OPTIMAL, HIGH, VERY_HIGH.
+`NutrientStatus`: VERY_LOW, LOW, SATISFACTORY, HIGH, VERY_HIGH.
 
 **OptimumRanges** — Domain knowledge as code. Ca: 16–26, K: 6.5–19, Mg: 2.8–9.0, P: 8–12 lbs/1000 sqft.
 EC: below 2.0 dS/m. pH: 6.5–7.5. Limestone: below 0.50%.
@@ -38,7 +38,7 @@ biological activity, physical structure. Contains child entities and value objec
 Current lab: FGL Environmental, Chico CA. Lab ID CH 2671853. Nutrient values in lbs/1000 sqft.
 
 **NutrientPanel** — ValueObject owned by LabAnalysis. Measured nutrient values.
-`NutrientStatus`: VERY_LOW, LOW, OPTIMAL, HIGH, VERY_HIGH.
+`NutrientStatus`: VERY_LOW, LOW, SATISFACTORY, HIGH, VERY_HIGH.
 
 **AmendmentEvent** — Immutable domain event. Record of a soil amendment application.
 Never updated — only inserted. Historical fact.

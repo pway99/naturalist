@@ -1,0 +1,74 @@
+package com.naturalist.soil.observation;
+
+import java.util.Map;
+
+/**
+ * The canonical catalog of soil nutrients FGL reports, each paired with its agronomic
+ * {@link NutrientCategory}. Single source of truth for which nutrients exist and how the panel
+ * factory buckets readings into the primary/secondary/micro groups.
+ * <p>
+ * The {@link NutrientName} constants here are the well-known names; because {@code NutrientName}
+ * is a slug, a lab that reports a nutrient not listed here still round-trips as a reading — it
+ * simply has no known category until added ({@link #isKnown(NutrientName)} is false).
+ */
+public final class Nutrients {
+
+    private Nutrients() {
+    }
+
+    // ── Primary ────────────────────────────────────────────────────────────────
+    public static final NutrientName NITRATE_N = NutrientName.of("nitrate-n");
+    public static final NutrientName PHOSPHORUS_P2O5 = NutrientName.of("phosphorus-p2o5");
+    public static final NutrientName POTASSIUM_EXCHANGEABLE = NutrientName.of("potassium-exchangeable");
+    public static final NutrientName POTASSIUM_SOLUBLE = NutrientName.of("potassium-soluble");
+
+    // ── Secondary ──────────────────────────────────────────────────────────────
+    public static final NutrientName CALCIUM_EXCHANGEABLE = NutrientName.of("calcium-exchangeable");
+    public static final NutrientName CALCIUM_SOLUBLE = NutrientName.of("calcium-soluble");
+    public static final NutrientName MAGNESIUM_EXCHANGEABLE = NutrientName.of("magnesium-exchangeable");
+    public static final NutrientName MAGNESIUM_SOLUBLE = NutrientName.of("magnesium-soluble");
+    public static final NutrientName SODIUM_EXCHANGEABLE = NutrientName.of("sodium-exchangeable");
+    public static final NutrientName SODIUM_SOLUBLE = NutrientName.of("sodium-soluble");
+    public static final NutrientName SULFATE = NutrientName.of("sulfate");
+
+    // ── Micro ──────────────────────────────────────────────────────────────────
+    public static final NutrientName ZINC = NutrientName.of("zinc");
+    public static final NutrientName MANGANESE = NutrientName.of("manganese");
+    public static final NutrientName IRON = NutrientName.of("iron");
+    public static final NutrientName COPPER = NutrientName.of("copper");
+    public static final NutrientName BORON = NutrientName.of("boron");
+    public static final NutrientName CHLORIDE = NutrientName.of("chloride");
+
+    private static final Map<NutrientName, NutrientCategory> CATEGORIES = Map.ofEntries(
+            Map.entry(NITRATE_N, NutrientCategory.PRIMARY),
+            Map.entry(PHOSPHORUS_P2O5, NutrientCategory.PRIMARY),
+            Map.entry(POTASSIUM_EXCHANGEABLE, NutrientCategory.PRIMARY),
+            Map.entry(POTASSIUM_SOLUBLE, NutrientCategory.PRIMARY),
+            Map.entry(CALCIUM_EXCHANGEABLE, NutrientCategory.SECONDARY),
+            Map.entry(CALCIUM_SOLUBLE, NutrientCategory.SECONDARY),
+            Map.entry(MAGNESIUM_EXCHANGEABLE, NutrientCategory.SECONDARY),
+            Map.entry(MAGNESIUM_SOLUBLE, NutrientCategory.SECONDARY),
+            Map.entry(SODIUM_EXCHANGEABLE, NutrientCategory.SECONDARY),
+            Map.entry(SODIUM_SOLUBLE, NutrientCategory.SECONDARY),
+            Map.entry(SULFATE, NutrientCategory.SECONDARY),
+            Map.entry(ZINC, NutrientCategory.MICRO),
+            Map.entry(MANGANESE, NutrientCategory.MICRO),
+            Map.entry(IRON, NutrientCategory.MICRO),
+            Map.entry(COPPER, NutrientCategory.MICRO),
+            Map.entry(BORON, NutrientCategory.MICRO),
+            Map.entry(CHLORIDE, NutrientCategory.MICRO));
+
+    /** The agronomic category of a known nutrient. */
+    public static NutrientCategory categoryOf(NutrientName name) {
+        NutrientCategory category = CATEGORIES.get(name);
+        if (category == null) {
+            throw new IllegalArgumentException("Unknown nutrient: " + name);
+        }
+        return category;
+    }
+
+    /** Whether this nutrient is in the known catalog (and therefore has a category). */
+    public static boolean isKnown(NutrientName name) {
+        return CATEGORIES.containsKey(name);
+    }
+}

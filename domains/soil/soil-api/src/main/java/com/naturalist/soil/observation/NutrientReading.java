@@ -1,37 +1,36 @@
 package com.naturalist.soil.observation;
 
-import com.naturalist.ddd.ValueObject;
+import com.naturalist.ddd.Entity;
 import com.naturalist.observability.Constraints;
 
 import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 /**
- * A single measured nutrient value paired with its agronomic status classification.
+ * A single nutrient measurement from a soil laboratory analysis — the fact grain of soil chemistry,
+ * one reading per nutrient per analysis. Purely a measured fact: the {@code value} in its
+ * {@code unit}, keyed by which nutrient and which analysis. It carries no optimum range or status —
+ * those are interpretation, derived by applying a {@code CropProfile} in the interpretation effort,
+ * not properties of the measurement.
  * <p>
- * {@code NutrientReading} is a component of {@link NutrientPanel} — it captures both
- * the raw measured value (in lbs/1000 sqft unless otherwise documented) and the
- * lab's status classification relative to the optimum range for the crop context.
- * <p>
- * The status is assigned at lab analysis time (or on import from the FGL report)
- * and is stored as a first-class field rather than computed on the fly, because
- * the optimum ranges are crop- and context-specific and the lab's assignment is the
- * authoritative interpretation.
- * <p>
- * Units: the FGL report expresses most macro- and micronutrients in lbs per 1000 sqft.
- * Dimensionless or differently-unitised parameters (pH, EC, limestone%, saturation%)
- * are carried directly on {@link NutrientPanel} rather than as {@code NutrientReading}
- * instances, since they have no meaningful "lbs/1000sqft" interpretation.
+ * Identity is the surrogate {@link NutrientReadingId}; the logical key
+ * {@code (nutrientName, labAnalysisId)} is enforced as a unique constraint by the data source.
  */
 public record NutrientReading(
+        NutrientReadingId id,
+        NutrientName nutrientName,
+        LabAnalysisId labAnalysisId,
         BigDecimal value,
-        NutrientStatus status
-) implements ValueObject {
+        MeasurementUnit unit
+) implements Entity<NutrientReadingId> {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
+                .entityId(id, "id")
+                .entityName(nutrientName, "nutrientName")
+                .entityId(labAnalysisId, "labAnalysisId")
                 .notNull(value, "value")
-                .notNull(status, "status");
+                .notNull(unit, "unit");
     }
 }

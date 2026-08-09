@@ -6,7 +6,7 @@ import com.naturalist.soil.event.AmendmentEvent;
 import com.naturalist.soil.event.IrrigationEvent;
 import com.naturalist.soil.event.PrecipitationEvent;
 import com.naturalist.soil.event.TillageEvent;
-import com.naturalist.soil.observation.LabAnalysis;
+import com.naturalist.soil.observation.LabAnalysisInfo;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * nutrient availability.
  * <p>
  * <b>Aggregate boundary:</b> SoilProfile owns its {@link SoilProfileInfo} root entity,
- * the lab analysis history ({@link LabAnalysis} list), the current surface layer
+ * the lab analysis history ({@link LabAnalysisInfo} list), the current surface layer
  * ({@link MulchLayer}), and the four event histories: amendments, irrigation, tillage,
  * and precipitation. Sensor readings are managed by the sensors domain, which depends
  * on soil-api — soil-api does not depend on sensors-api.
@@ -57,7 +57,7 @@ import java.util.function.Consumer;
  */
 public record SoilProfile(
         SoilProfileInfo soilProfileInfo,
-        List<LabAnalysis> labAnalyses,
+        List<LabAnalysisInfo> labAnalyses,
         @Nullable MulchLayer currentMulchLayer,
         List<AmendmentEvent> amendmentEvents,
         List<IrrigationEvent> irrigationEvents,
@@ -72,7 +72,7 @@ public record SoilProfile(
                 amendmentEvents, irrigationEvents, tillageEvents, precipitationEvents);
     }
 
-    public SoilProfile withLabAnalyses(List<LabAnalysis> labAnalyses) {
+    public SoilProfile withLabAnalyses(List<LabAnalysisInfo> labAnalyses) {
         return new SoilProfile(soilProfileInfo, labAnalyses, currentMulchLayer,
                 amendmentEvents, irrigationEvents, tillageEvents, precipitationEvents);
     }
@@ -118,37 +118,15 @@ public record SoilProfile(
     /**
      * The most recent lab analysis for this soil profile, if any has been recorded.
      *
-     * @return the most recent {@link LabAnalysis}, or empty if no analyses exist
+     * @return the most recent {@link LabAnalysisInfo}, or empty if no analyses exist
      */
-    public Optional<LabAnalysis> latestLabAnalysis() {
+    public Optional<LabAnalysisInfo> latestLabAnalysis() {
         if (labAnalyses.isEmpty()) return Optional.empty();
         return Optional.of(labAnalyses.get(labAnalyses.size() - 1));
     }
 
-    /**
-     * Whether any lab analysis on record indicates a BER (blossom end rot) risk.
-     * <p>
-     * Uses the most recent analysis as the current indicator. BER risk is driven by
-     * Ca-Sol and boron deficiency, both present at Oak Vista as of March 2026.
-     *
-     * @return {@code true} if the most recent analysis indicates BER risk
-     */
-    public boolean hasBerRisk() {
-        return latestLabAnalysis().map(LabAnalysis::indicatesBerRisk).orElse(false);
-    }
-
-    /**
-     * Whether any lab analysis on record shows limestone content above the 0.5%
-     * threshold that makes Thiobacillus-mediated sulfur oxidation agronomically
-     * meaningful.
-     *
-     * @return {@code true} if the most recent analysis has amenable limestone content
-     */
-    public boolean hasThiobacillusAmenableLimestone() {
-        return latestLabAnalysis()
-                .map(LabAnalysis::hasThiobacillusAmenableLimestone)
-                .orElse(false);
-    }
+    // BER-risk and limestone queries now live on the assembled NutrientPanel /
+    // SoilPhysicalCharacteristics (the chemistry moved off the LabAnalysis header).
 
     /**
      * The most recent tillage event, if any has been recorded.
@@ -180,7 +158,7 @@ public record SoilProfile(
     /**
      * Returns a new SoilProfile with the given lab analysis appended to the history.
      */
-    public SoilProfile withAddedLabAnalysis(LabAnalysis analysis) {
+    public SoilProfile withAddedLabAnalysis(LabAnalysisInfo analysis) {
         var updated = new ArrayList<>(labAnalyses);
         updated.add(analysis);
         return withLabAnalyses(List.copyOf(updated));
