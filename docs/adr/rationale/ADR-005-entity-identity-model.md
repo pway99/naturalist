@@ -117,10 +117,10 @@ model:
 
 - **Events** — things done by the naturalist: `AmendmentEvent`, `IrrigationEvent`,
   `TillageEvent`. Human-initiated, discrete, causally significant.
-- **Observations** — things measured or noticed: `LabAnalysis`, sensor readings,
+- **Observations** — things measured or noticed: `LabAnalysisInfo`, sensor readings,
   species sightings, phenological records. Passive records of state in nature.
 
-Examples: `AmendmentEvent`, `IrrigationEvent`, `TillageEvent`, `LabAnalysis`
+Examples: `AmendmentEvent`, `IrrigationEvent`, `TillageEvent`, `LabAnalysisInfo`
 
 ### FactName — abstract GUID wrapper
 

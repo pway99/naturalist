@@ -90,7 +90,7 @@ writing the design, the `Entity` implementers are:
 
 `SensorReading`, `CompoundDepiction`, `ZonePrecipitationEvent`, soil
 `PrecipitationEvent` / `IrrigationEvent` / `TillageEvent` / `AmendmentEvent` /
-`LabAnalysis`, `InsectImage`, `InsectFunctionalRole`, weather `PrecipitationEvent`.
+`LabAnalysisInfo`, `InsectImage`, `InsectFunctionalRole`, weather `PrecipitationEvent`.
 
 Do not trust this list at implementation time — re-grep `implements Entity<` and let
 the compiler confirm completeness.

@@ -15,7 +15,7 @@
   (`Element`, `Compound`, `InsectSpecies`, `Plant`, `ZoneInfo`).
 - `FactEntity<ID, NAME extends FactName>` — GUID identity, singular occurrence.
   Informal sub-kinds: **Events** (human-initiated: `AmendmentEvent`, `IrrigationEvent`,
-  `TillageEvent`) and **Observations** (passive: `LabAnalysis`, sensor readings).
+  `TillageEvent`) and **Observations** (passive: `LabAnalysisInfo`, sensor readings).
 - `FactName` — abstract `EntityName` wrapping a UUID. Concrete subclass per fact entity
   (`AmendmentEventName`, `LabAnalysisName`). Assigned at creation, not at persistence —
   enables offline deduplication via existing name unique constraint.
