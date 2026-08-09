@@ -112,5 +112,41 @@
     "term": "Nectaring",
     "definition": "Feeding on flower nectar, as an adult butterfly, bee, or other pollinator does.",
     "example": "The painted lady was nectaring on a zinnia in the afternoon sun."
+  },
+  {
+    "name": "cec",
+    "term": "CEC",
+    "definition": "Cation exchange capacity: the soil's capacity to hold exchangeable cations — calcium, magnesium, potassium, sodium — on clay and organic-matter surfaces, in meq/100g. A bigger CEC means a bigger nutrient reservoir and more buffering, so ideal ranges are scaled to it.",
+    "example": "Box 1's CEC (44.9) sits higher than the backyard's (34.2), so their tomato targets differ."
+  },
+  {
+    "name": "electrical-conductivity",
+    "term": "EC",
+    "definition": "Electrical conductivity: the salt concentration of the soil solution, in dS/m — the soil-salinity reading. Too high and osmotic stress pulls water out of roots instead of in, so it caps how much gypsum or fertiliser salt to add at once.",
+    "example": "Keeping EC under about 2.0 dS/m limits each gypsum application."
+  },
+  {
+    "name": "exchangeable",
+    "term": "Exchangeable",
+    "definition": "The share of a nutrient held on the soil's exchange sites — a medium-term reservoir that feeds the soil solution over time. Contrast with soluble, the fraction available right now.",
+    "example": "Calcium can look fine as exchangeable yet run low as soluble when coco coir binds it."
+  },
+  {
+    "name": "soluble",
+    "term": "Soluble",
+    "definition": "The share of a nutrient dissolved in the soil solution — the portion roots can take up immediately. It's the soluble fraction, not the total, that a growing crop actually draws on.",
+    "example": "Soluble calcium below its optimum drives blossom-end rot even when exchangeable calcium is ample."
+  },
+  {
+    "name": "limestone",
+    "term": "Limestone",
+    "definition": "Calcium carbonate (CaCO₃) in the soil. It dissolves slowly, releasing calcium and nudging pH upward; above ~0.5% it can start locking up iron, manganese, zinc, and boron as pH climbs.",
+    "example": "The backyard's elevated limestone came partly from subsoil dug up for trellis posts."
+  },
+  {
+    "name": "saturation",
+    "term": "Saturation",
+    "definition": "The percent of pore space filled with water in a saturated-paste sample — a drainage and texture indicator (~40–50% ideal). Very high values flag a water-holding, slow-draining mix.",
+    "example": "Box 1's high saturation reflects the worm-casting and coco-coir blend's water retention."
   }
 ]
