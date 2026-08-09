@@ -76,6 +76,7 @@
                 <li><a href="/chemistry">Chemistry</a></li>
                 <li><a href="/insects">Insects</a></li>
                 <li><a href="/plants">Plants</a></li>
+                <li><a href="/soil">Soil</a></li>
                 <li><a href="/clades">Tree of Life</a></li>
                 <li><a href="/concepts">Concepts</a></li>
                 <li><a href="/glossary">Glossary</a></li>

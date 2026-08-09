@@ -428,6 +428,11 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>soil-console</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>soil-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -439,6 +444,11 @@
             <dependency>
                 <groupId>com.naturalist</groupId>
                 <artifactId>soil-repository-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>soil-test-context</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- VERTEBRATES -->

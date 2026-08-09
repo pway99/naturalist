@@ -18,6 +18,8 @@
         <module>soil-core</module>
         <module>soil-repository-test</module>
         <module>soil-repository-rdms</module>
+        <module>soil-test-context</module>
+        <module>soil-console</module>
     </modules>
 
 </project>
