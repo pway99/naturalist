@@ -14,6 +14,7 @@ import com.naturalist.data.NaturalistDatabase;
 public class LibraryTestContext {
 
     private final ConceptQuery conceptQuery;
+    private final GlossaryTermQuery glossaryTermQuery;
     private final CitationQuery citationQuery;
     private final CitationAssociationQuery citationAssociationQuery;
     private final CladeQuery cladeQuery;
@@ -22,6 +23,9 @@ public class LibraryTestContext {
     private LibraryTestContext(NaturalistDatabase db) {
         ConceptRepository conceptRepository = new ConceptRepositoryMock(db);
         this.conceptQuery = new ConceptQueryImpl(conceptRepository);
+
+        GlossaryTermRepository glossaryTermRepository = new GlossaryTermRepositoryMock(db);
+        this.glossaryTermQuery = new GlossaryTermQueryImpl(glossaryTermRepository);
 
         CitationRepository citationRepository = new CitationRepositoryMock(db);
         this.citationQuery = new CitationQueryImpl(citationRepository);
@@ -50,6 +54,10 @@ public class LibraryTestContext {
 
     public ConceptQuery conceptQuery() {
         return conceptQuery;
+    }
+
+    public GlossaryTermQuery glossaryTermQuery() {
+        return glossaryTermQuery;
     }
 
     public CitationQuery citationQuery() {

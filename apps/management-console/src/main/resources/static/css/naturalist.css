@@ -1546,6 +1546,60 @@ figure.compound-depiction img {
     padding-left: 0.6rem;
 }
 
+/* Glossary — a searchable list of naturalist vernacular. */
+.glossary-filter {
+    max-width: 42rem;
+    margin: 0.5rem 0 1.25rem;
+}
+
+.glossary-list {
+    margin: 0 0 1.5rem;
+    max-width: 46rem;
+}
+
+.glossary-entry {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid rgba(139, 107, 61, 0.25);
+}
+
+.glossary-entry:first-child {
+    border-top: 1px solid rgba(139, 107, 61, 0.25);
+}
+
+.glossary-entry dt {
+    margin: 0 0 0.15rem;
+}
+
+.glossary-entry dt a {
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--sepia-ink);
+    text-decoration: none;
+}
+
+.glossary-entry dt a:hover {
+    color: var(--pico-primary);
+}
+
+.glossary-entry dd {
+    margin: 0;
+    color: var(--sepia-ink-soft);
+    line-height: 1.5;
+}
+
+.glossary-definition {
+    max-width: 42rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.glossary-example {
+    max-width: 42rem;
+    color: var(--sepia-ink-soft);
+}
+
 /* Tree of life — nested clade list with faint vertical indent guides. */
 .clade-tree,
 .clade-tree ul {

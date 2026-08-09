@@ -1,0 +1,110 @@
+[
+  {
+    "name": "conspicuous",
+    "term": "Conspicuous",
+    "definition": "Easily seen; standing out at a glance. A conspicuous feature draws the eye first, but is often shared with look-alikes, so it rarely settles an identification on its own.",
+    "example": "Field marks are listed conspicuous to diagnostic — the obvious first, the decisive last."
+  },
+  {
+    "name": "diagnostic",
+    "term": "Diagnostic",
+    "definition": "Decisive for identification — the feature that separates a species from its closest relatives, even when it is subtle and easy to miss.",
+    "example": "The orange band on the connexivum is diagnostic for the small milkweed bug."
+  },
+  {
+    "name": "field-mark",
+    "term": "Field mark",
+    "definition": "A visible feature used to identify an organism in the field — a wing band, a spot, a body shape, a leg posture.",
+    "example": null
+  },
+  {
+    "name": "connexivum",
+    "term": "Connexivum",
+    "definition": "The exposed lateral rim of a true bug's abdomen, visible from above beyond the folded wings and often marked with alternating bands.",
+    "example": null
+  },
+  {
+    "name": "scutellum",
+    "term": "Scutellum",
+    "definition": "The triangular, shield-shaped plate on the back of a true bug or beetle, set between the bases of the wings.",
+    "example": "A dark scutellum with white markings."
+  },
+  {
+    "name": "pronotum",
+    "term": "Pronotum",
+    "definition": "The plate covering the top of the first thoracic segment, just behind an insect's head.",
+    "example": null
+  },
+  {
+    "name": "dorsum",
+    "term": "Dorsum",
+    "definition": "The upper surface, or back, of an animal.",
+    "example": "Bold white spots and streaks on the dorsum."
+  },
+  {
+    "name": "frons",
+    "term": "Frons",
+    "definition": "The front of an insect's head, between and below the compound eyes.",
+    "example": "The bull's-eye frons mark of the common green darner."
+  },
+  {
+    "name": "venation",
+    "term": "Venation",
+    "definition": "The pattern of veins in an insect's wing — a key character for telling orders and families apart.",
+    "example": null
+  },
+  {
+    "name": "aposematic",
+    "term": "Aposematic",
+    "definition": "Describing warning coloration or signals that advertise an animal is toxic, distasteful, or dangerous to would-be predators.",
+    "example": "The monarch's aposematic orange warns birds to leave it alone."
+  },
+  {
+    "name": "voltinism",
+    "term": "Voltinism",
+    "definition": "The number of generations, or broods, a species completes in a single year.",
+    "example": null
+  },
+  {
+    "name": "univoltine",
+    "term": "Univoltine",
+    "definition": "Completing one generation per year.",
+    "example": null
+  },
+  {
+    "name": "bivoltine",
+    "term": "Bivoltine",
+    "definition": "Completing two generations per year.",
+    "example": null
+  },
+  {
+    "name": "multivoltine",
+    "term": "Multivoltine",
+    "definition": "Completing three or more generations per year.",
+    "example": null
+  },
+  {
+    "name": "elytra",
+    "term": "Elytra",
+    "definition": "The hardened forewings of a beetle, which fold back as protective covers over the membranous hindwings.",
+    "example": null
+  },
+  {
+    "name": "cephalothorax",
+    "term": "Cephalothorax",
+    "definition": "The fused head-and-thorax body region of a spider or other arachnid, bearing the eyes, mouthparts, and legs.",
+    "example": "The crab spider's small cephalothorax and globose abdomen."
+  },
+  {
+    "name": "instar",
+    "term": "Instar",
+    "definition": "A developmental stage of an insect between two successive moults.",
+    "example": null
+  },
+  {
+    "name": "nectaring",
+    "term": "Nectaring",
+    "definition": "Feeding on flower nectar, as an adult butterfly, bee, or other pollinator does.",
+    "example": "The painted lady was nectaring on a zinnia in the afternoon sun."
+  }
+]

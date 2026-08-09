@@ -83,4 +83,15 @@ public class TestLibraryIdentifiers {
             public static final ConceptName name = ConceptName.of("unobtainium-concept");
         }
     }
+
+    public static class GlossaryTerms {
+
+        public static final GlossaryTermName Conspicuous = GlossaryTermName.of("conspicuous");
+
+        public static final GlossaryTermName Diagnostic = GlossaryTermName.of("diagnostic");
+
+        public static class NotFound {
+            public static final GlossaryTermName name = GlossaryTermName.of("unobtainium-term");
+        }
+    }
 }
