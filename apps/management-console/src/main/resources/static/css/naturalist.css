@@ -1622,8 +1622,24 @@ figure.compound-depiction img {
     color: var(--pico-primary);
 }
 
-.glossary-popover {
+/* The glossary popover carries the whole entry (definition + example), so give
+   it more room than the compact "?" info popover and lay the parts out as
+   stacked blocks. Wider than .info-popover-box[popover]; matched specificity,
+   later in source, so this max-width wins. Clamped to the viewport on phones. */
+.glossary-popover[popover] {
+    max-width: min(32rem, 92vw);
     font-style: normal;
+}
+
+.glossary-popover .glossary-definition {
+    display: block;
+}
+
+.glossary-popover .glossary-example {
+    display: block;
+    margin-top: 0.5rem;
+    font-style: italic;
+    opacity: 0.85;
 }
 
 /* Tree of life — nested clade list with faint vertical indent guides. */

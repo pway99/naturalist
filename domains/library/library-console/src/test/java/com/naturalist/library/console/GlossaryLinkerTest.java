@@ -28,9 +28,26 @@ class GlossaryLinkerTest {
         assertThat(html).contains(
                 "<span id=\"glossary-seed-dorsum\" popover class=\"info-popover-box glossary-popover\">");
         assertThat(html).contains("Dorsum means something.");
-        assertThat(html).contains("<a href=\"/glossary/dorsum\">Full entry →</a>");
+        assertThat(html).contains("<a href=\"/glossary/dorsum\">Open in glossary →</a>");
         assertThat(html).startsWith("spots on the ");
         assertThat(html).endsWith(" here");
+    }
+
+    @Test
+    void foldsTheUsageExampleIntoThePopoverWhenPresent() {
+        var withExample = new GlossaryTerm(
+                GlossaryTermName.of("dorsum"), "Dorsum", "The upper surface of an animal.",
+                "Bold white spots on the dorsum.");
+        var html = GlossaryLinker.of(List.of(withExample)).linkHtml("marks on the dorsum", "seed");
+
+        assertThat(html).contains("<em class=\"glossary-example\">Bold white spots on the dorsum.</em>");
+    }
+
+    @Test
+    void omitsTheExampleBlockWhenThereIsNone() {
+        var html = linker(term("dorsum", "Dorsum")).linkHtml("the dorsum", "seed");
+
+        assertThat(html).doesNotContain("glossary-example");
     }
 
     @Test

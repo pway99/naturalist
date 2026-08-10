@@ -15,8 +15,9 @@ import java.util.regex.Pattern;
  * naturalist vernacular (insect Field Marks, soil chemistry labels, …).
  *
  * <p>Each matched term renders as a {@code <button>} styled as a dotted-underline
- * link that toggles a native HTML {@code popover} holding the definition and a
- * "Full entry" link. This is the same no-JavaScript mechanism as
+ * link that toggles a native HTML {@code popover} holding the whole entry —
+ * definition, the usage example when there is one, and an optional link through
+ * to the glossary page. This is the same no-JavaScript mechanism as
  * {@code components/infoPopover.jte} (the breadcrumb "?" popovers) — the button
  * is required because {@code popovertarget} only works on buttons, and it keeps
  * the reader on the page instead of navigating away.
@@ -35,7 +36,7 @@ import java.util.regex.Pattern;
  */
 public final class GlossaryLinker {
 
-    private record Entry(String term, String slug, String definition) {
+    private record Entry(String term, String slug, String definition, String example) {
     }
 
     private static final GlossaryLinker NONE = new GlossaryLinker(List.of());
@@ -58,7 +59,8 @@ public final class GlossaryLinker {
         for (var term : terms) {
             if (term.term() != null && !term.term().isBlank()) {
                 var definition = term.definition() == null ? "" : term.definition();
-                list.add(new Entry(term.term().strip(), term.name().value(), definition));
+                var example = term.example() == null ? "" : term.example();
+                list.add(new Entry(term.term().strip(), term.name().value(), definition, example));
             }
         }
         // Longest term first so a multi-word term wins over the words inside it.
@@ -116,9 +118,14 @@ public final class GlossaryLinker {
                 .append("\" aria-label=\"Definition of ").append(label).append("\">")
                 .append(label).append("</button>")
                 .append("<span id=\"").append(id).append("\" popover class=\"info-popover-box glossary-popover\">")
-                .append(HtmlUtils.htmlEscape(entry.definition())).append(' ')
-                .append("<a href=\"/glossary/").append(HtmlUtils.htmlEscape(entry.slug()))
-                .append("\">Full entry →</a>")
+                .append("<span class=\"glossary-definition\">").append(HtmlUtils.htmlEscape(entry.definition()))
+                .append("</span>");
+        if (!entry.example().isBlank()) {
+            out.append("<em class=\"glossary-example\">").append(HtmlUtils.htmlEscape(entry.example()))
+                    .append("</em>");
+        }
+        out.append("<a href=\"/glossary/").append(HtmlUtils.htmlEscape(entry.slug()))
+                .append("\">Open in glossary →</a>")
                 .append("</span></span>");
     }
 
