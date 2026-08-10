@@ -2,6 +2,8 @@ package com.naturalist.soil.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
+import com.naturalist.library.LibraryTestContext;
+import com.naturalist.library.console.GlossaryLinker;
 import com.naturalist.soil.SoilProfile;
 import com.naturalist.soil.SoilProfileName;
 import com.naturalist.soil.SoilTestContext;
@@ -38,11 +40,15 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_rendersPanelAndCharacteristics() {
-        SoilProfile box1 = context().soilProfileQuery()
+        NaturalistDatabase db = NaturalistDatabase.create();
+        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
+        GlossaryLinker glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(db).glossaryTermQuery()
+                .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("soil/profile.jte", Map.of("profile", box1), output);
+        TestTemplateEngine.create().render("soil/profile.jte",
+                Map.of("profile", box1, "glossaryLinker", glossaryLinker), output);
 
         String html = output.toString();
         assertThat(html).contains("Nitrate-N");
@@ -50,5 +56,28 @@ class SoilConsoleTemplateTest {
         assertThat(html).contains("lbs/1000 ft²");    // MeasurementUnit.symbol()
         assertThat(html).contains("7.2");             // pH
         assertThat(html).contains("44.9");            // CEC
+    }
+
+    @Test
+    void profile_linksGlossaryTermsWithDefinitionPopovers() {
+        NaturalistDatabase db = NaturalistDatabase.create();
+        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+                .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
+        GlossaryLinker glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(db).glossaryTermQuery()
+                .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render("soil/profile.jte",
+                Map.of("profile", box1, "glossaryLinker", glossaryLinker), output);
+
+        String html = output.toString();
+        // Physical labels become definition popovers linking back to /glossary.
+        assertThat(html).contains("class=\"glossary-link\"");
+        assertThat(html).contains(">CEC</button>");
+        assertThat(html).contains("/glossary/cec");
+        assertThat(html).contains("/glossary/electrical-conductivity");
+        // The one-time fraction legend links exchangeable and soluble once each.
+        assertThat(html).contains(">exchangeable</button>");
+        assertThat(html).contains(">soluble</button>");
     }
 }

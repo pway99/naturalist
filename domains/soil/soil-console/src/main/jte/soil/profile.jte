@@ -1,6 +1,8 @@
 @import com.naturalist.soil.SoilProfile
+@import com.naturalist.library.console.GlossaryLinker
 
 @param SoilProfile profile
+@param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 
 !{var info = profile.info();}
 
@@ -22,6 +24,8 @@
             <section class="analysis">
                 <h2>${a.sampleDate().toString()} — ${a.crop().value()}</h2>
                 <p class="analysis-provenance">${a.labId()} · sample ${a.labSampleId()}</p>
+
+                <p class="fraction-note">$unsafe{glossaryLinker.linkHtml("Each cation is reported as two fractions — exchangeable, held on soil surfaces, and soluble, dissolved and available to roots now.", a.sampleDate().toString() + "-fractions")}</p>
 
                 <h3>Primary nutrients</h3>
                 <table>
@@ -65,10 +69,10 @@
                 <table>
                     <tbody>
                         <tr><td>pH</td><td>${chars.pH().value().toString()}</td></tr>
-                        <tr><td>Soil salinity (EC)</td><td>${chars.ecDsPerMeter().value().toString()} dS/m</td></tr>
-                        <tr><td>CEC</td><td>${chars.cecMeqPer100g().value().toString()} meq/100g</td></tr>
-                        <tr><td>Limestone</td><td>${chars.limestonePct().value().toString()} %</td></tr>
-                        <tr><td>Saturation</td><td>${chars.saturationPct().value().toString()} %</td></tr>
+                        <tr><td>$unsafe{glossaryLinker.linkHtml("Soil salinity (EC)", a.sampleDate().toString())}</td><td>${chars.ecDsPerMeter().value().toString()} dS/m</td></tr>
+                        <tr><td>$unsafe{glossaryLinker.linkHtml("CEC", a.sampleDate().toString())}</td><td>${chars.cecMeqPer100g().value().toString()} meq/100g</td></tr>
+                        <tr><td>$unsafe{glossaryLinker.linkHtml("Limestone", a.sampleDate().toString())}</td><td>${chars.limestonePct().value().toString()} %</td></tr>
+                        <tr><td>$unsafe{glossaryLinker.linkHtml("Saturation", a.sampleDate().toString())}</td><td>${chars.saturationPct().value().toString()} %</td></tr>
                     </tbody>
                 </table>
 

@@ -1,5 +1,5 @@
 @import com.naturalist.insects.console.FeatureGroup
-@import com.naturalist.insects.console.GlossaryLinker
+@import com.naturalist.library.console.GlossaryLinker
 @import java.util.List
 
 @param List<FeatureGroup> featureGroups = List.of()

@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.library.console;
 
 import com.naturalist.library.GlossaryTerm;
 import org.springframework.web.util.HtmlUtils;
@@ -11,7 +11,8 @@ import java.util.regex.Pattern;
 
 /**
  * Wraps occurrences of glossary terms in free text with an inline definition
- * popover — a presentation helper for the insects console's Field Marks.
+ * popover — a presentation helper shared by every domain console that surfaces
+ * naturalist vernacular (insect Field Marks, soil chemistry labels, …).
  *
  * <p>Each matched term renders as a {@code <button>} styled as a dotted-underline
  * link that toggles a native HTML {@code popover} holding the definition and a
@@ -27,9 +28,10 @@ import java.util.regex.Pattern;
  * inside them ("field mark" over "mark"); and each term is linked at most once
  * per text.
  *
- * <p>Vocabulary comes from the library glossary via the console's existing
- * {@code LibraryTestContext}. Lives here because Field Marks are the only
- * consumer today; promote to a shared module when a second surface needs it.
+ * <p>Vocabulary comes from the library glossary via a console's existing
+ * {@code LibraryTestContext}. Lives in {@code library-console} because the
+ * library domain owns the glossary; consumers depend on this module for the
+ * helper rather than duplicating it.
  */
 public final class GlossaryLinker {
 

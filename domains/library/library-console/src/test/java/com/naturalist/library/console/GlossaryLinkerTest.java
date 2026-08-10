@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.library.console;
 
 import com.naturalist.library.GlossaryTerm;
 import com.naturalist.library.GlossaryTermName;
