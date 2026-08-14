@@ -37,6 +37,7 @@ unrelated guidance.
 | [chemistry-domain.md](chemistry-domain.md) | Domain vocabulary and current shape of the `chemistry-api` module. Pair with `framework-kernel.md`.                             |
 | [insects-domain.md](insects-domain.md) | Domain vocabulary and current shape of `insects-api` (species, image, life-stage sub-context). Pair with `domains/insects/CLAUDE.md`. |
 | [library-domain.md](library-domain.md) | Domain vocabulary and current shape of `library-api` (concept, citation, citation-association sub-contexts). Pair with `framework-kernel.md`. |
+| [soil-domain.md](soil-domain.md)       | Domain vocabulary and current shape of `soil-api` (profile, observation, and the unwired event sub-context) plus the Oak Vista FGL fixture data. Pair with `domains/soil/CLAUDE.md`; add `shared-kernels.md` for `measurements`. |
 
 ## Acquisition tasks (chat assistant produces JSON)
 
