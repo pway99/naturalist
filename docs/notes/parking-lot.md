@@ -100,6 +100,24 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
+## PL-11 — `ResilienceNameValidator` belongs in `spring-runtime`
+
+**Raised:** 2026-08-14.
+**Where:** Shipped in commit `39e50d38` inside `apps/management-console` under `com.naturalist.console.resilience`. It is the `DomainServiceScan` shape — a runtime bridge reading a kernel marker (`@Resilient`, from `framework`) and turning it into Spring behaviour — so `adapters/spring-runtime/` is its home, with the `@Bean` registration staying in the app. `resilience-resilience4j` is ruled out: it would put Spring on the vendor bridge's classpath, which `adapters/CLAUDE.md` forbids. `ResilienceComplianceTest` stays in the app regardless — `@AnalyzeClasses` sees only the scanning module's classpath, so from an adapter it would pass vacuously.
+**Blocking:** No. Correct behaviour today; the cost is a copy-paste when app #2 (sync daemon, importer, field-guide API) needs the same gate, which `apps/CLAUDE.md` forbids resolving by app-to-app dependency.
+**Resolution path:** Move the class, make it public, genericise the error message (it hardcodes `ResilienceConfiguration.class.getName()`), and swap `Resilience4jResilience` for a stub in the test — adapter-to-adapter test deps are disallowed. Decide the lifecycle interface in the same change: `ApplicationRunner` needs `spring-boot` added to `spring-runtime`, narrowing that adapter from "any Spring context" to "Spring Boot"; `SmartInitializingSingleton` is spring-context only and fires during refresh, so the app dies before the web server binds rather than a moment after.
+
+---
+
+## PL-12 — Shared console module and the `page.jte` ownership inversion
+
+**Raised:** 2026-08-14.
+**Where:** Surfaced asking whether the resilience gates belonged in an adapter. Two distinct problems get conflated under "each console module defines its own dependencies". (a) *Pom duplication* — the genuinely universal set across all five `*-console` modules is only the `spring-boot-dependencies` BOM import, `spring-web`, `spring-context`, and test-scope `jte`; everything else is per-domain. A new artifact to carry four lines is the wrong shape; this is `dependencyManagement` in `domains/pom.xml` or a shared console parent, and each console currently parents to its *domain* pom, so it is a re-parenting decision. (b) *Shared code* — every domain console template calls `@template.layout.page(...)`, but `page.jte` lives in `apps/management-console/src/main/jte/layout/`. Five library modules render against a template owned by the app that composes them, which is why `page.jte` may reference only spring-web types and never app/security/servlet-api. That constraint is enforced by nothing but memory.
+**Blocking:** No. Console modules build and render correctly today.
+**Resolution path:** Treat (a) and (b) separately — (a) is a parent-pom change with no DAG edge. For (b), inventory the actual shared surface (`layout/page.jte`, `admin/nav.jte`, whatever the per-domain `EntityRefLinker` implementations share) before proposing a module shape; note that `insects-console` and `soil-console` already depend on `library-console`, so console-to-console coupling has started ad hoc and a shared module would need to say whether it replaces that.
+
+---
+
 ## Conventions
 
 - New entries get the next `PL-N` ID; numbers are never reused.
