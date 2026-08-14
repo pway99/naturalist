@@ -39,6 +39,11 @@ class ResilienceConfigurationTest {
     }
 
     @Test
+    void resolvesVisionIdentificationTimeout() {
+        assertThat(resilience.timeout("vision.identification")).isNotNull();
+    }
+
+    @Test
     void rejectsUnconfiguredName() {
         assertThatThrownBy(() -> resilience.retry("does.not.exist"))
                 .isInstanceOf(UnconfiguredResilienceException.class);

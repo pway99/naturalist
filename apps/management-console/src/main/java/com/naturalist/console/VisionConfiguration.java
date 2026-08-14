@@ -1,5 +1,6 @@
 package com.naturalist.console;
 
+import com.naturalist.resilience.Resilience;
 import com.naturalist.vision.NoOpVisionService;
 import com.naturalist.vision.VisionService;
 import com.naturalist.vision.anthropic.AnthropicVisionConfig;
@@ -11,11 +12,11 @@ import org.springframework.context.annotation.Configuration;
 class VisionConfiguration {
 
     @Bean
-    VisionService visionService() {
+    VisionService visionService(Resilience resilience) {
         var apiKey = System.getenv("ANTHROPIC_API_KEY");
         if (apiKey == null || apiKey.isBlank()) {
             return new NoOpVisionService();
         }
-        return new AnthropicVisionService(AnthropicVisionConfig.defaults());
+        return new AnthropicVisionService(AnthropicVisionConfig.defaults(), resilience);
     }
 }

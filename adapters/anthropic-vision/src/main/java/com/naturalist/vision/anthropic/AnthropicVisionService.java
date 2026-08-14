@@ -15,6 +15,7 @@ import com.anthropic.models.messages.ToolChoiceTool;
 import com.anthropic.models.messages.ToolUseBlock;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
 import com.naturalist.vision.Image;
 import com.naturalist.vision.ToolResult;
@@ -34,17 +35,28 @@ import java.util.Map;
  *
  * <p>API key read from {@code ANTHROPIC_API_KEY} environment variable at construction.
  * Refuses to construct if the key is absent.
+ *
+ * <h2>Resilience</h2>
+ * The HTTP call is bounded by the {@value #STRATEGY} timeout, applied through
+ * the {@link Resilience} facade. Only {@code client.messages().create(...)} is
+ * wrapped — base64 encoding, tool-schema construction, and response parsing
+ * stay on the calling thread, so the adapter's worker-thread hop covers the
+ * network call and nothing else.
  */
-@Resilient(name = "vision.identification")
+@Resilient(name = AnthropicVisionService.STRATEGY)
 public class AnthropicVisionService implements VisionService {
+
+    static final String STRATEGY = "vision.identification";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final AnthropicVisionConfig config;
     private final AnthropicClient client;
+    private final Resilience resilience;
 
-    public AnthropicVisionService(AnthropicVisionConfig config) {
+    public AnthropicVisionService(AnthropicVisionConfig config, Resilience resilience) {
         this.config = config;
+        this.resilience = resilience;
         var apiKey = System.getenv("ANTHROPIC_API_KEY");
         if (apiKey == null || apiKey.isBlank()) {
             throw new IllegalStateException(
@@ -102,7 +114,7 @@ public class AnthropicVisionService implements VisionService {
                                 .build()))
                 .build();
 
-        var message = client.messages().create(params);
+        var message = resilience.timeout(STRATEGY).execute(() -> client.messages().create(params));
 
         // 8. Extract the tool_use block from the response
         var toolUseBlock = message.content().stream()

@@ -5,6 +5,8 @@ import com.naturalist.resilience.ResilienceConfig;
 import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
 import com.naturalist.resilience.ResilienceConfig.TimeoutConfig;
 import com.naturalist.resilience.resilience4j.Resilience4jResilience;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,16 +28,28 @@ import java.util.List;
  *       subprocess in {@code InsectsController.image}: a 2&nbsp;s timeout (the
  *       full request-path ceiling — image conversion is the lone serving call
  *       at this size, so it is allowed the headroom).</li>
+ *   <li><b>{@code vision.identification}</b> — bounds the Anthropic vision API
+ *       call in {@code AnthropicVisionService}. Declared {@code upload = true}
+ *       and given the full {@link ResilienceConfig#MAX_UPLOAD_TIMEOUT}: the
+ *       request ships base64 image bytes, which is precisely the narrow class
+ *       that ceiling exists for.</li>
  * </ul>
  *
- * <h2>Status — annotation-only today</h2>
- * The configs are registered and the {@link Resilience} bean is built, so any
- * call site that takes a {@link Resilience} constructor parameter and uses the
- * facade programmatically gets the configured behaviour. The
- * {@code @Resilient} marker itself does not yet trigger interception — there
- * is no AOP weaver wired. The annotations are the durable declaration of
- * intent that the M9 ArchUnit gate (and any future weaver) reads; runtime
- * application of the marker is the follow-up tracked in the plan's M8 status.
+ * <h2>Status — the marker is not load-bearing</h2>
+ * There is no AOP weaver. {@code @Resilient} triggers no interception; a call
+ * is protected only where a class takes a {@link Resilience} constructor
+ * parameter and wraps the call through the facade itself. The annotation
+ * declares <em>where the boundary is</em>, which the call site then honours —
+ * a split that lets {@code InMemoryCatalog} apply its strategy per-provider
+ * inside the fan-out loop rather than around the whole method, and keeps
+ * request-path calls off the timeout adapter's worker pool except where that
+ * hop is intended.
+ *
+ * <p>Two gates keep the declaration and the code honest, replacing the weaver
+ * that would otherwise be needed to make the marker mean something:
+ * {@link ResilienceNameValidator} fails boot when a declared name resolves to
+ * no config, and {@code ResilienceComplianceTest} fails the build when a
+ * declaring class never reaches the facade at all.
  *
  * <h2>Diagnostics surface</h2>
  * The set of registered strategy names is published through the secure
@@ -68,7 +82,17 @@ public class ResilienceConfiguration {
     }
 
     @Bean
+    TimeoutConfig visionIdentificationTimeout() {
+        return new TimeoutConfig("vision.identification", ResilienceConfig.MAX_UPLOAD_TIMEOUT, true);
+    }
+
+    @Bean
     Resilience resilience(List<ResilienceConfig> configs) {
         return new Resilience4jResilience(configs);
+    }
+
+    @Bean
+    ApplicationRunner resilienceNameValidator(ApplicationContext context, Resilience resilience) {
+        return new ResilienceNameValidator(context, resilience);
     }
 }
