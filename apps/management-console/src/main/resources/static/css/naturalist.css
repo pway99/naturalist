@@ -162,13 +162,31 @@ main {
    browser narrower than expected, CSS not yet loaded, query string
    ignored, etc. — the user still gets a usable inline nav rather than a
    broken-looking hamburger. */
+/* Pico styles every <details> as an accordion — bottom margin, a floated
+   chevron on the summary, and its own summary colours. Both nav disclosures
+   have to opt out of all of it; see the .nav-menu block below for the same
+   reset. This one matters on mobile, where .primary-nav stops being
+   `display: contents` and starts honouring its own box. */
 .primary-nav {
     display: contents;
+    margin: 0;
     color: var(--sepia-ink);
 }
 
 .primary-nav-toggle {
     display: none;
+}
+
+/* Pico floats a chevron into every summary and adds a bottom margin once the
+   details opens. Kill both — but never touch the toggle's own `display`, or
+   the mobile media query below loses the hamburger the moment it opens. */
+.primary-nav-toggle::after {
+    display: none;
+    content: none;
+}
+
+.primary-nav[open] > .primary-nav-toggle {
+    margin-bottom: 0;
 }
 
 /* desktop default */
@@ -192,10 +210,21 @@ main {
     );
 }
 
-/* The UA stylesheet hides non-summary children of a closed <details>
-   with `display: none`. We need the inline link list to render even
-   though the outer .primary-nav <details> is closed, so use !important
-   to win against the UA rule. */
+/* Browsers hide a closed <details>'s contents two different ways, and the
+   desktop layout needs the link list visible while the outer .primary-nav
+   <details> is closed — so both need defeating.
+
+   Modern engines (Chrome 131+, Safari 18.4+, Firefox 139+) put the contents in
+   a ::details-content pseudo carrying `content-visibility: hidden`. No amount
+   of `display` on the <ul> beats that; the pseudo itself has to be reopened.
+   Older engines slot the children with `display: none`, which the !important
+   below handles. The mobile media query re-hides the list for both paths by
+   targeting .primary-nav-links, so this only ever applies at desktop width. */
+.primary-nav::details-content {
+    content-visibility: visible;
+    display: contents;
+}
+
 .primary-nav-links {
     list-style: none !important;
     margin: 0;
@@ -232,6 +261,113 @@ main {
 .primary-nav-links a:hover {
     background: var(--parchment-deep);
     color: var(--sepia-ink) !important;
+}
+
+/* A nav group — the "Library ▾" disclosure holding the library domain's four
+   reference surfaces. The summary is styled to match a plain nav link so the
+   row reads as one bar; only the caret marks it as a group. */
+/* `margin: 0` is load-bearing: Pico's `details{margin-bottom:var(--pico-spacing)}`
+   makes this box taller than the plain <a> siblings, and the row's
+   `align-items: center` then centres the taller box — which reads as the
+   Library label floating above the rest of the bar. */
+.nav-menu {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* `!important` on the colour beats Pico's `details summary:not([role])`
+   accordion colours, which outrank this selector on specificity — the same
+   reason `.primary-nav-links a` needs it. */
+.nav-menu > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--sepia-ink) !important;
+    font-family: 'Georgia', 'Cambria', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: inherit;
+    padding: 0.4rem 0.85rem;
+    margin: 0;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    /* Safari renders a disclosure triangle from the list marker, not just
+       ::marker — both suppressions are needed. */
+    list-style: none;
+    user-select: none;
+    transition: background-color 0.12s ease;
+}
+
+.nav-menu > summary::-webkit-details-marker,
+.nav-menu > summary::marker {
+    display: none;
+    content: '';
+}
+
+/* Pico's own accordion chevron — floated right, hence the stray "›" sitting
+   outside the label. Our caret in the markup replaces it. */
+.nav-menu > summary::after {
+    display: none;
+    content: none;
+}
+
+/* Pico opens a full spacing-unit gap under any summary once its details is
+   open; here that would shove the panel away from the label. */
+.nav-menu[open] > summary {
+    margin-bottom: 0;
+}
+
+.nav-menu > summary:hover,
+.nav-menu[open] > summary {
+    background: var(--parchment-deep);
+}
+
+.nav-menu-caret {
+    font-style: normal;
+    font-size: 0.75em;
+}
+
+/* Desktop: the panel floats below the summary. The mobile block re-flows it
+   into the stack. */
+/* `display: block` is load-bearing. Pico's `nav,nav ul{display:flex}` reaches
+   every list inside the <nav> wrapper, not just the top-level bar, so without
+   this the four items lay out in a row. Same reason `.primary-nav-links` above
+   declares its flex explicitly rather than inheriting. */
+.nav-menu-panel {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 20;
+    min-width: 12rem;
+    margin: 0.2rem 0 0;
+    padding: 0.25rem;
+    background: var(--parchment);
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.25rem;
+    box-shadow: var(--plate-shadow);
+    list-style: none;
+}
+
+/* Pico's `nav li{display:inline-block;padding:...}` would keep these on one
+   line even inside a block list, and pad them apart. `.primary-nav-links > li`
+   is direct-child only, so it never reaches in here. */
+.nav-menu-panel > li {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+/* Pico pulls nav links in with negative margins so they tuck against the bar.
+   Harmless in a row, but here it would overlap the stacked rows. */
+.nav-menu-panel a {
+    display: block;
+    width: 100%;
+    margin: 0;
+    white-space: nowrap;
 }
 
 /* Narrow viewports — flip on the hamburger and collapse links vertically.
@@ -288,6 +424,25 @@ main {
     .primary-nav-links a {
         width: 100%;
         justify-content: flex-start;
+    }
+
+    /* Inside the hamburger there is nothing to float over — the group stacks
+       with the rest, indented so it still reads as a group. */
+    .nav-menu > summary {
+        width: 100%;
+    }
+
+    .nav-menu-panel {
+        position: static;
+        min-width: 0;
+        margin: 0 0 0 0.85rem;
+        padding: 0;
+        background: none;
+        border: 0;
+        border-left: 1px solid var(--sepia-rule);
+        border-radius: 0;
+        box-shadow: none;
+        padding-left: 0.5rem;
     }
 }
 

@@ -11,11 +11,14 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=27">
+    <link rel="stylesheet" href="/css/naturalist.css?v=29">
     <script src="/js/htmx.min.js" defer></script>
     <%-- Rotates stacked images on .card-image[data-rotate] tiles across all
          catalog cards. No-op on pages without rotating cards. --%>
     <script src="/js/card-image-rotate.js" defer></script>
+    <%-- Closes an open nav group on outside click / Escape. Pure enhancement —
+         without it the <details> still opens and closes on its own summary. --%>
+    <script src="/js/nav-menu.js" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -70,19 +73,41 @@
         @endif
     </div>
     <div class="container site-nav-row">
-        <nav class="primary-nav" aria-label="Primary navigation">
-            <ul class="primary-nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/chemistry">Chemistry</a></li>
-                <li><a href="/garden">Garden</a></li>
-                <li><a href="/insects">Insects</a></li>
-                <li><a href="/plants">Plants</a></li>
-                <li><a href="/soil">Soil</a></li>
-                <li><a href="/clades">Tree of Life</a></li>
-                <li><a href="/concepts">Concepts</a></li>
-                <li><a href="/glossary">Glossary</a></li>
-                <li><a href="/citations">Citations</a></li>
-            </ul>
+        <%-- The <details> is what naturalist.css drives: its summary is the
+             mobile hamburger, hidden at desktop width where the link list sits
+             inline. The <nav> stays on the outside so the landmark survives.
+
+             Domain tabs run in scale order rather than alphabetically — the
+             garden, the soil under it, what grows, what lives on it, the
+             chemistry underneath — then the library reference shelf. --%>
+        <nav aria-label="Primary navigation">
+            <details class="primary-nav">
+                <summary class="primary-nav-toggle">
+                    <span class="primary-nav-toggle-icon"></span>
+                    Menu
+                </summary>
+                <ul class="primary-nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/garden">Garden</a></li>
+                    <li><a href="/soil">Soil</a></li>
+                    <li><a href="/plants">Plants</a></li>
+                    <li><a href="/insects">Insects</a></li>
+                    <li><a href="/chemistry">Chemistry</a></li>
+                    <li>
+                        <%-- Everything the library domain serves, grouped so the
+                             bar carries seven items instead of ten. --%>
+                        <details class="nav-menu">
+                            <summary>Library <span class="nav-menu-caret">▾</span></summary>
+                            <ul class="nav-menu-panel">
+                                <li><a href="/clades">Tree of Life</a></li>
+                                <li><a href="/concepts">Concepts</a></li>
+                                <li><a href="/glossary">Glossary</a></li>
+                                <li><a href="/citations">Citations</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                </ul>
+            </details>
         </nav>
     </div>
 </header>
