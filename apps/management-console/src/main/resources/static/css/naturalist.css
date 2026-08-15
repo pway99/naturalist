@@ -1851,6 +1851,10 @@ figure.compound-depiction img {
     font-style: italic;
 }
 
+/* `cursor: help` here means "hover for detail", which is a different promise
+   from .glossary-link's click-for-popover — the two share a cursor and are told
+   apart by the dotted underline, which only the glossary link carries. Kept
+   because the cursor is what makes the tooltip findable at all. */
 .not-reported td {
     cursor: help;
 }
@@ -1864,9 +1868,9 @@ figure.compound-depiction img {
 .verdict {
     font-variant: small-caps;
     letter-spacing: 0.03em;
-    cursor: help;
     font-weight: 600;
     white-space: nowrap;
+    cursor: help;
 }
 
 .verdict-within {
