@@ -1,11 +1,13 @@
 @import com.naturalist.library.console.GlossaryLinker
 @import com.naturalist.soil.SoilProfile
+@import com.naturalist.soil.console.catalog.NutrientChemistryLinks
 @import com.naturalist.soil.observation.AssessmentSource
 @import com.naturalist.soil.observation.NutrientCategory
 @import com.naturalist.soil.observation.RecommendedAmount
 
 @param SoilProfile profile
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
+@param NutrientChemistryLinks chemistryLinks = NutrientChemistryLinks.none()
 
 !{var info = profile.info();}
 
@@ -38,13 +40,13 @@
                 <p class="fraction-note">$unsafe{glossaryLinker.linkHtml("Each cation is reported as two fractions — exchangeable, held on soil surfaces, and soluble, dissolved and available to roots now.", a.sampleDate().toString() + "-fractions")}</p>
 
                 <h3>Primary nutrients</h3>
-                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.PRIMARY))
+                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.PRIMARY), chemistryLinks = chemistryLinks)
 
                 <h3>Secondary nutrients</h3>
-                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.SECONDARY))
+                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.SECONDARY), chemistryLinks = chemistryLinks)
 
                 <h3>Micronutrients</h3>
-                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.MICRO))
+                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.MICRO), chemistryLinks = chemistryLinks)
 
                 @if(analysis.physicalCharacteristics().isPresent())
                     !{var chars = analysis.physicalCharacteristics().get();}

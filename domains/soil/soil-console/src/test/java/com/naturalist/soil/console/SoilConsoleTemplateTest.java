@@ -1,7 +1,13 @@
 package com.naturalist.soil.console;
 
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.SearchResults;
+import com.naturalist.chemistry.element.ElementName;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
+import com.naturalist.ddd.EntityName;
 import com.naturalist.garden.CropTypeName;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.library.console.GlossaryLinker;
@@ -9,6 +15,7 @@ import com.naturalist.soil.SoilProfile;
 import com.naturalist.soil.SoilProfileInfo;
 import com.naturalist.soil.SoilProfileName;
 import com.naturalist.soil.SoilTestContext;
+import com.naturalist.soil.console.catalog.NutrientChemistryLinks;
 import com.naturalist.soil.observation.LabAnalysis;
 import com.naturalist.soil.observation.LabAnalysisId;
 import com.naturalist.soil.observation.LabAnalysisInfo;
@@ -31,6 +38,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -140,6 +148,47 @@ class SoilConsoleTemplateTest {
         assertThat(html).contains(">soluble</button>");
     }
 
+    @Test
+    void profile_linksNutrientLabelsToTheirSubstance() {
+        NaturalistDatabase db = NaturalistDatabase.create();
+        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+                .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
+        // A catalog that owns the element slugs, and a linker that routes them —
+        // the same answers the assembled app gives.
+        NutrientChemistryLinks links = NutrientChemistryLinks.of(
+                new StubElementCatalog(Set.of("calcium", "phosphorus", "boron")),
+                ref -> ref.name() instanceof ElementName n
+                        ? "/chemistry/elements/" + n.value() : null);
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render("soil/profile.jte",
+                Map.of("profile", box1, "glossaryLinker", GlossaryLinker.none(),
+                        "chemistryLinks", links), output);
+
+        String html = output.toString();
+        assertThat(html).contains("href=\"/chemistry/elements/calcium\"");
+        assertThat(html).contains("href=\"/chemistry/elements/phosphorus\"");
+        assertThat(html).contains("reported as an oxide equivalent");
+        // Not catalogued in this stub: zinc stays plain text.
+        assertThat(html).doesNotContain("/chemistry/elements/zinc");
+        assertThat(html).contains("Zinc");
+    }
+
+    @Test
+    void profile_rendersWithoutLinksWhenNoResolverIsSupplied() {
+        NaturalistDatabase db = NaturalistDatabase.create();
+        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+                .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render("soil/profile.jte",
+                Map.of("profile", box1, "glossaryLinker", GlossaryLinker.none()), output);
+
+        String html = output.toString();
+        assertThat(html).doesNotContain("/chemistry/elements/");
+        assertThat(html).contains("Calcium (Sol)");
+    }
+
     /**
      * A nutrient the lab never reported must not read as a measurement. The panel below carries a
      * genuine zero for nitrate-N and nothing at all for every other row; the page has to say those
@@ -179,5 +228,36 @@ class SoilConsoleTemplateTest {
                 new SoilProfileInfo(SoilProfileName.of("box1"), ZoneName.of("box-1"), null),
                 List.of(new LabAnalysis(info, panel, Optional.empty(),
                         ReportedOptimumCollection.empty(), ReportedRecommendationCollection.empty())));
+    }
+
+    private record StubElementCatalog(Set<String> knownSlugs) implements Catalog {
+        @Override
+        public SearchResults search(String text) {
+            return SearchResults.empty();
+        }
+
+        @Override
+        public Set<DomainId> domainsReferencing(Class<? extends EntityName> referenceType) {
+            return Set.of();
+        }
+
+        @Override
+        public Map<DomainId, List<EntityRef>> findReferencesTo(EntityName target) {
+            return Map.of();
+        }
+
+        @Override
+        public Optional<EntityRef> findBySlug(String slug) {
+            return knownSlugs.contains(slug)
+                    ? Optional.of(new EntityRef(new ChemistryStubDomain(), ElementName.of(slug)))
+                    : Optional.empty();
+        }
+    }
+
+    private record ChemistryStubDomain() implements DomainId {
+        @Override
+        public String value() {
+            return "chemistry";
+        }
     }
 }

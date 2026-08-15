@@ -1,5 +1,7 @@
 package com.naturalist.soil.console;
 
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
 import com.naturalist.library.LibraryTestContext;
@@ -9,6 +11,7 @@ import com.naturalist.soil.SoilProfileInfoQuery;
 import com.naturalist.soil.SoilProfileName;
 import com.naturalist.soil.SoilProfileQuery;
 import com.naturalist.soil.SoilTestContext;
+import com.naturalist.soil.console.catalog.NutrientChemistryLinks;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +31,9 @@ public class SoilsController {
     private final SoilProfileInfoQuery soilProfileInfoQuery;
     private final SoilProfileQuery soilProfileQuery;
     private final GlossaryLinker glossaryLinker;
+    private final NutrientChemistryLinks chemistryLinks;
 
-    SoilsController() {
+    SoilsController(Catalog catalog, EntityRefLinker linker) {
         // TODO: becomes a Spring-managed bean when the rdbms adapter replaces the in-memory context.
         NaturalistDatabase db = NaturalistDatabase.create();
         SoilTestContext context = SoilTestContext.create(db);
@@ -40,6 +44,9 @@ public class SoilsController {
         this.glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(db).glossaryTermQuery()
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE))
                 .content());
+        // Nutrient rows link to the substance each measures, resolved through the
+        // cross-domain catalog seam — soil-console never depends on chemistry.
+        this.chemistryLinks = NutrientChemistryLinks.of(catalog, linker);
     }
 
     @GetMapping
@@ -65,6 +72,7 @@ public class SoilsController {
         }
         model.addAttribute("profile", profile.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
+        model.addAttribute("chemistryLinks", chemistryLinks);
         return "soil/profile";
     }
 }

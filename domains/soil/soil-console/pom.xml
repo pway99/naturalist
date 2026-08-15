@@ -27,6 +27,10 @@
     <dependencies>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>catalog</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>library-console</artifactId>
         </dependency>
         <dependency>
