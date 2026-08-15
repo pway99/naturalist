@@ -2,6 +2,7 @@ package com.naturalist.soil;
 
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.garden.CropName;
 import com.naturalist.soil.observation.LabAnalysis;
 import com.naturalist.soil.observation.LabAnalysisId;
 import com.naturalist.soil.observation.LabAnalysisInfo;

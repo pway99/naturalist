@@ -2,9 +2,9 @@ package com.naturalist.soil.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
+import com.naturalist.garden.CropName;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.library.console.GlossaryLinker;
-import com.naturalist.soil.CropName;
 import com.naturalist.soil.SoilProfile;
 import com.naturalist.soil.SoilProfileInfo;
 import com.naturalist.soil.SoilProfileName;

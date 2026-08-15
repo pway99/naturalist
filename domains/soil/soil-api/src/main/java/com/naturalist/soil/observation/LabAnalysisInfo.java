@@ -1,9 +1,9 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.ddd.Entity;
+import com.naturalist.garden.CropName;
 import com.naturalist.measurements.DepthInches;
 import com.naturalist.observability.Constraints;
-import com.naturalist.soil.CropName;
 import com.naturalist.soil.SoilProfileName;
 import org.jspecify.annotations.Nullable;
 
