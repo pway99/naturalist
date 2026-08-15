@@ -5,6 +5,7 @@
     "cecMeqPer100g": 44.9,
     "pH": 7.2,
     "ecDsPerMeter": 0.504,
+    "sar": 0.3,
     "limestonePct": 1.7,
     "saturationPct": 126,
     "cationBaseSaturation": {
@@ -12,7 +13,8 @@
       "magnesiumPct": 22.9,
       "potassiumPct": 2.09,
       "sodiumPct": 0.408,
-      "hydrogenPct": 1.00
+      "hydrogenPct": 1.00,
+      "hydrogenBelowDetectionLimit": true
     }
   },
   {
@@ -21,6 +23,7 @@
     "cecMeqPer100g": 34.2,
     "pH": 7.2,
     "ecDsPerMeter": 0.662,
+    "sar": 0.4,
     "limestonePct": 2.9,
     "saturationPct": 75.3,
     "cationBaseSaturation": {
@@ -28,7 +31,8 @@
       "magnesiumPct": 19.4,
       "potassiumPct": 2.75,
       "sodiumPct": 0.681,
-      "hydrogenPct": 1.00
+      "hydrogenPct": 1.00,
+      "hydrogenBelowDetectionLimit": true
     }
   }
 ]

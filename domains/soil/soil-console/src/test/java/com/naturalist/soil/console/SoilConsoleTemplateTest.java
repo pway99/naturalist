@@ -73,6 +73,10 @@ class SoilConsoleTemplateTest {
         assertThat(html).contains("lbs/1000 ft²");    // MeasurementUnit.symbol()
         assertThat(html).contains("7.2");             // pH
         assertThat(html).contains("44.9");            // CEC
+        assertThat(html).contains("SAR (sodium adsorption ratio)");
+        // Hydrogen was below the lab's detection limit — shown as a bound, and the sum as a range.
+        assertThat(html).contains("&lt; 1.00");
+        assertThat(html).contains("hydrogen was below the detection limit");
     }
 
     @Test

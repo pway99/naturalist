@@ -66,11 +66,13 @@ interface SoilPhysicalCharacteristicsEntityRepositoryTest
                 CecMeqPer100g.of(new BigDecimal("30.0")),
                 SoilPH.of(new BigDecimal("6.8")),
                 ElectricalConductivity.of(new BigDecimal("0.7")),
+                SodiumAdsorptionRatio.of(new BigDecimal("0.6")),
                 LimestonePct.of(new BigDecimal("0.4")),
                 SaturationPct.of(new BigDecimal("48")),
                 new CationBaseSaturation(
                         BigDecimal.valueOf(72), BigDecimal.valueOf(21),
-                        BigDecimal.valueOf(4), BigDecimal.valueOf(2), BigDecimal.ONE));
+                        BigDecimal.valueOf(4), BigDecimal.valueOf(2), BigDecimal.ONE,
+                        true));
     }
 
     @Test
@@ -103,10 +105,12 @@ interface SoilPhysicalCharacteristicsEntityRepositoryTest
                 CecMeqPer100g.of(new BigDecimal("40.0")),
                 SoilPH.of(new BigDecimal("7.0")),
                 ElectricalConductivity.of(new BigDecimal("0.5")),
+                SodiumAdsorptionRatio.of(new BigDecimal("0.3")),
                 LimestonePct.of(new BigDecimal("1.0")),
                 SaturationPct.of(new BigDecimal("50")),
                 new CationBaseSaturation(
                         BigDecimal.valueOf(74), BigDecimal.valueOf(20),
-                        BigDecimal.valueOf(3), BigDecimal.valueOf(2), BigDecimal.ONE));
+                        BigDecimal.valueOf(3), BigDecimal.valueOf(2), BigDecimal.ONE,
+                        false));
     }
 }

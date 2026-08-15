@@ -81,6 +81,7 @@
                         <tbody>
                             <tr><td>pH</td><td>${chars.pH().value().toString()}</td></tr>
                             <tr><td>$unsafe{glossaryLinker.linkHtml("Soil salinity (EC)", a.sampleDate().toString())}</td><td>${chars.ecDsPerMeter().value().toString()} dS/m</td></tr>
+                            <tr><td>SAR (sodium adsorption ratio)</td><td>${chars.sar().value().toString()}</td></tr>
                             <tr><td>$unsafe{glossaryLinker.linkHtml("CEC", a.sampleDate().toString())}</td><td>${chars.cecMeqPer100g().value().toString()} meq/100g</td></tr>
                             <tr><td>$unsafe{glossaryLinker.linkHtml("Limestone", a.sampleDate().toString())}</td><td>${chars.limestonePct().value().toString()} %</td></tr>
                             <tr><td>$unsafe{glossaryLinker.linkHtml("Saturation", a.sampleDate().toString())}</td><td>${chars.saturationPct().value().toString()} %</td></tr>
@@ -94,9 +95,16 @@
                             <tr><td>Magnesium</td><td>${bs.magnesiumPct().toString()} %</td></tr>
                             <tr><td>Potassium</td><td>${bs.potassiumPct().toString()} %</td></tr>
                             <tr><td>Sodium</td><td>${bs.sodiumPct().toString()} %</td></tr>
-                            <tr><td>Hydrogen</td><td>${bs.hydrogenPct().toString()} %</td></tr>
+                            @if(bs.hydrogenBelowDetectionLimit())
+                                <tr><td>Hydrogen</td><td title="The lab reported this as below its detection limit. The true value is somewhere between zero and the figure shown.">&lt; ${bs.hydrogenPct().toString()} %</td></tr>
+                            @else
+                                <tr><td>Hydrogen</td><td>${bs.hydrogenPct().toString()} %</td></tr>
+                            @endif
                         </tbody>
                     </table>
+                    @if(bs.hydrogenBelowDetectionLimit())
+                        <p class="not-reported">Base saturation sums to between ${bs.saturationSumLowerBound().toString()}% and ${bs.saturationSumUpperBound().toString()}% — hydrogen was below the detection limit, so the total is a range.</p>
+                    @endif
                 @else
                     <p class="not-reported"><em>No physical or derived measurements on record for this analysis.</em></p>
                 @endif

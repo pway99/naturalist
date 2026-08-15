@@ -24,6 +24,7 @@ public record SoilPhysicalCharacteristics(
         CecMeqPer100g cecMeqPer100g,
         SoilPH pH,
         ElectricalConductivity ecDsPerMeter,
+        SodiumAdsorptionRatio sar,
         LimestonePct limestonePct,
         SaturationPct saturationPct,
         CationBaseSaturation cationBaseSaturation
@@ -37,6 +38,7 @@ public record SoilPhysicalCharacteristics(
                 .namedValue(cecMeqPer100g, "cecMeqPer100g")
                 .namedValue(pH, "pH")
                 .namedValue(ecDsPerMeter, "ecDsPerMeter")
+                .namedValue(sar, "sar")
                 .namedValue(limestonePct, "limestonePct")
                 .namedValue(saturationPct, "saturationPct")
                 .valueObject(cationBaseSaturation, "cationBaseSaturation");

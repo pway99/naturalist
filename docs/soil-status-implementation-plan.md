@@ -324,7 +324,12 @@ March's records neither.
 
 ## Phase 3 — Fidelity gaps
 
-**Brief §5.3, §5.4. Independent; can run alongside Phase 2.**
+**Brief §5.3, §5.4. Independent; can run alongside Phase 2. Implemented 2026-08-14.**
+
+> **Assumption to check against the PDFs:** both March rows are stored as
+> hydrogen censored (`< 1.00`), on the strength of both printing exactly 1.00.
+> If one of them was a genuine measurement, flip that row's
+> `hydrogenBelowDetectionLimit` to false.
 
 - Add SAR to `SoilPhysicalCharacteristics` as a typed
   `NumericNamedValue` beside EC. Update both fixtures from the March PDF
