@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * <p>
  * <b>Identity.</b> The {@link PhytochemicalConstituentName} slug names the
  * link, not the plant or the compound — e.g.
- * {@code "california-pipevine-aristolochic-acid"}. Following the
+ * {@code "aristolochia-californica-aristolochic-acid-i"}. Following the
  * {@code PlantProgram} convention: a single plant carries many constituents
  * and a single compound appears across many plants, so the slug must encode
  * both sides.

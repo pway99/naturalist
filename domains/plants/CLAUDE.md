@@ -9,7 +9,10 @@ conversation is about the *what* and *why* rather than the *how*.
 
 ```
 plants-api/com/naturalist/plants/
-  Plant, PlantLifeForm, PlantRole, PlantRepository      — top-level botanical record
+  Plant, PlantFamily, PlantGenus                        — botanical rank records
+  PlantLifeForm, PlantRole                              — vocabularies
+  PlantRepository, PlantQuery, PlantEntityCollections   — namespaces
+  PlantsDomain                                          — DomainId subtype
   cultivar/        Cultivar, VarietyType, FruitType, SeedSavingPolicy
   heritage/        SeedLineage, Provenance
   management/      PlantProgram, PlantProgramRepository
@@ -25,6 +28,8 @@ sub-context; `public` crosses the boundary.
 
 | Type                       | Location          | Identity                                    | Identifier class                                                     |
 |----------------------------|-------------------|---------------------------------------------|----------------------------------------------------------------------|
+| `PlantFamily`              | `plants/`         | `NamedEntity<PlantFamilyName>`              | `identifiers/.../plants/PlantFamilyName`                             |
+| `PlantGenus`               | `plants/`         | `NamedEntity<PlantGenusName>`               | `identifiers/.../plants/PlantGenusName`                              |
 | `Plant`                    | `plants/`         | `NamedEntity<PlantName>`                    | `identifiers/.../plants/PlantName`                                   |
 | `Cultivar`                 | `cultivar/`       | `NamedEntity<CultivarName>`                 | `identifiers/.../plants/cultivar/CultivarName`                       |
 | `SeedLineage`              | `heritage/`       | `NamedEntity<SeedLineageName>`              | `identifiers/.../plants/heritage/SeedLineageName`                    |
@@ -40,6 +45,7 @@ All cross-entity references are by `EntityName` slug — no compile-time couplin
 between sub-contexts beyond shared identifier classes.
 
 ```
+PlantGenus.familyName               → PlantFamily.name  (PlantFamilyName)
 PlantProgram.plantName              → Plant.name        (PlantName)
 Cultivar.plantName                  → Plant.name        (PlantName)
 SeedLineage.cultivarName            → Cultivar.name     (CultivarName)
@@ -48,6 +54,15 @@ PhytochemicalConstituent.compoundName → chemistry Compound.name (CompoundName)
 Plant.nativeBioregions              → kernels/biogeography Bioregion
 ```
 
+`PlantGenus.familyName` is the only typed upward rank FK that exists today, and
+`PlantGenusTestEntitySource` enforces it with a `ForeignKeyConstraint`. **`Plant`
+carries no `genusName`** — its position in the hierarchy is held only as the
+string-valued `taxonomy` component, so the rank chain terminates at genus and
+`PlantTestEntitySource` declares no foreign keys. Closing that gap, and resolving
+the five organisms currently recorded as both a species-less `Plant` and a
+`PlantGenus`, is tracked in
+[`docs/plans/2026-08-15-plants-domain-consistency-plan.md`](../../docs/plans/2026-08-15-plants-domain-consistency-plan.md).
+
 The `PhytochemicalConstituent.compoundName` reference is the only soft FK
 in this domain that crosses *domain* boundaries (rather than just sub-context
 boundaries within plants). The reference is via `CompoundName` from the
@@ -55,34 +70,58 @@ boundaries within plants). The reference is via `CompoundName` from the
 Cross-domain referential integrity (the referenced compound exists in the
 chemistry catalog) is a service-layer rule, not a record invariant.
 
-## Repository namespace pattern
+## Repository and query namespaces
 
-All five sub-contexts now expose a repository, all following the namespace
-class convention from `domains/CLAUDE.md`:
+Every sub-context exposes a repository namespace class and a query namespace
+interface, following the convention in `domains/CLAUDE.md`. Seven repositories
+across five sub-contexts:
 
-- `PlantRepository` (top-level package-private class) →
-  `protected interface PlantEntityRepository extends EntityRepository<PlantName, Plant>`
-- `CultivarRepository` (cultivar package-private class) →
-  `protected interface CultivarEntityRepository extends EntityRepository<CultivarName, Cultivar>`
-- `SeedLineageRepository` (heritage package-private class) →
-  `protected interface SeedLineageEntityRepository extends EntityRepository<SeedLineageName, SeedLineage>`
-- `PlantProgramRepository` (management package-private class) →
-  `protected interface PlantProgramEntityRepository extends EntityRepository<PlantProgramName, PlantProgram>`
-- `PhytochemicalConstituentRepository` (phytochemistry package-private class) →
-  `protected interface PhytochemicalConstituentEntityRepository extends EntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent>`
+- `PlantRepository` (top-level package-private class) → `PlantEntityRepository`,
+  `PlantFamilyEntityRepository`, `PlantGenusEntityRepository`
+- `CultivarRepository` (cultivar) → `CultivarEntityRepository`
+- `SeedLineageRepository` (heritage) → `SeedLineageEntityRepository`
+- `PlantProgramRepository` (management) → `PlantProgramEntityRepository`
+- `PhytochemicalConstituentRepository` (phytochemistry) →
+  `PhytochemicalConstituentEntityRepository`
 
-N=1 per sub-context, so the repository namespace collapses to a single nested
-interface in each.
+Read side, all public in api, adapters in `plants-core`:
 
-No `PlantQuery`, `PlantEntityCollections`, or aggregate factories exist yet.
-Add them when read-side surface materializes — query interfaces public in api,
-factories package-private concrete classes in `plants-core`.
+- `PlantQuery` → `plants()`, `families()`, `genera()`
+- `CultivarQuery` → `cultivars()` (+ `forPlantName`)
+- `SeedLineageQuery` → `lineages()` (+ `forCultivarName`)
+- `PlantProgramQuery` → `programs()` (+ `forPlantName`)
+- `PhytochemicalConstituentQuery` → `constituents()`
+  (+ `forPlantName`, `forCompoundName` — the cross-domain reverse lookup)
+
+Collections: `PlantEntityCollections` (`PlantCollection`,
+`PlantFamilyCollection`, `PlantGenusCollection`) plus one `*EntityCollections`
+namespace per sub-context. No aggregate factories exist yet — add them
+package-private and concrete in `plants-core` when a read model materializes.
+
+**Two known deviations from `domains/CLAUDE.md`**, both tracked in the
+consistency plan rather than fixed piecemeal: the nested types carry the domain
+prefix and an `Entity` infix (`PlantFamilyEntityQuery`) where the convention
+drops both (`FamilyQuery`), and the four single-entity sub-contexts wrap their
+lone type in a namespace where the N=1 collapse rule says to skip it.
 
 ## Domain-specific invariants
 
+Every record below has an invariant test in `plants-api/src/test/java` covering
+the valid shape, the all-null shape, and any domain-meaningful edge (empty role
+set, blank provenance, nullable-by-design fields).
+
+- `PlantFamily` — `name`, `order`, `family`, `description`, `commonNames`
+  required. An empty `commonNames` set means *no asserted vernacular name yet*.
+- `PlantGenus` — `name`, `familyName`, `order`, `family`, `genus`,
+  `description`, `commonNames` required. The redundant `order`/`family`
+  epithets are carried locally so a catalog-assembly chain check does not have
+  to resolve the parent record.
 - `Plant` — `name`, `taxonomy`, `description`, `roles`, `lifeForm`,
-  `nativeBioregions` are all required (non-null). An empty `nativeBioregions`
-  set means *no asserted native range*, not *unknown*.
+  `nativeBioregions`, `commonNames` are all required (non-null). An empty
+  `nativeBioregions` set means *no asserted native range*, not *unknown*.
+  `taxonomy.genus` and `taxonomy.species` are individually nullable — the
+  taxonomy kernel permits family-level identification — so a `Plant` can
+  currently be catalogued with no resolved species.
 - `Cultivar` — `name`, `plantName`, `description`, `varietyType`, `fruitType`,
   `seedSavingPolicy` required. `commonName` non-blank. `seedSource` and
   `gardenNotes` nullable.
@@ -164,9 +203,19 @@ each other.
 
 ## Test fixtures
 
-Repository contract tests live in `plants-repository-test/`:
+Record invariant tests live in `plants-api/src/test/java/`, one per record,
+following the `Observer` → `MethodObserver` → `InvariantObservation` pattern
+described in `kernels/CLAUDE.md`: `PlantTest`, `PlantFamilyTest`,
+`PlantGenusTest`, `CultivarTest`, `SeedLineageTest`, `ProvenanceTest`,
+`PlantProgramTest`, `PhytochemicalConstituentTest`.
+
+Repository contract tests live in `plants-repository-test/`. Mocks are
+package-private — the test contexts, mock tests, and `plants-core` tests that
+construct them all live in the same package by design:
 
 - `PlantEntityRepositoryTest`, `PlantEntityRepositoryMock`, `PlantEntityRepositoryMockTest`
+- `PlantFamilyEntityRepositoryTest`, `PlantFamilyEntityRepositoryMock`, `PlantFamilyEntityRepositoryMockTest`
+- `PlantGenusEntityRepositoryTest`, `PlantGenusEntityRepositoryMock`, `PlantGenusEntityRepositoryMockTest`
 - `CultivarEntityRepositoryTest`, `CultivarEntityRepositoryMock`, `CultivarEntityRepositoryMockTest`
 - `SeedLineageEntityRepositoryTest`, `SeedLineageEntityRepositoryMock`, `SeedLineageEntityRepositoryMockTest`
 - `PlantProgramEntityRepositoryTest`, `PlantProgramEntityRepositoryMock`, `PlantProgramEntityRepositoryMockTest`
@@ -186,17 +235,46 @@ mirrors the Java sub-package.
 
 | Catalog                    | Path                                                    | Loaded by                                  |
 |----------------------------|---------------------------------------------------------|--------------------------------------------|
+| Plant families             | `plants/plant-families.json`                            | `PlantFamilyTestEntitySource`              |
+| Plant genera               | `plants/plant-genera.json`                              | `PlantGenusTestEntitySource`               |
 | Plants                     | `plants/plants.json`                                    | `PlantTestEntitySource`                    |
 | Cultivars                  | `plants/cultivar/cultivars.json`                        | `CultivarTestEntitySource`                 |
 | Seed lineages              | `plants/heritage/seed-lineages.json`                    | `SeedLineageTestEntitySource`              |
 | Plant programs             | `plants/management/plant-programs.json`                 | `PlantProgramTestEntitySource`             |
 | Phytochemical constituents | `plants/phytochemistry/phytochemical-constituents.json` | `PhytochemicalConstituentTestEntitySource` |
 
+### `plant-families.json`
+
+Each entry must include:
+
+- `"name": "<family-slug>"` — the `PlantFamilyName` natural key, the lowercased
+  family epithet (`"lamiaceae"`, `"aristolochiaceae"`)
+- `"order": "<Order>"`, `"family": "<Family>"` — `TaxonomicOrder` /
+  `TaxonomicFamily` epithets, capitalised as in the Linnaean literature
+- `"description": { ... }` — Durrell four-level `Description`
+- `"commonNames": [ ... ]` — `Set<CommonName>`; `[]` means no asserted
+  vernacular name yet
+
+### `plant-genera.json`
+
+Each entry must include:
+
+- `"name": "<genus-slug>"` — the `PlantGenusName` natural key, the lowercased
+  genus epithet (`"thymus"`, `"salvia"`)
+- `"familyName": "<family-slug>"` — typed upward FK to a `PlantFamily`,
+  enforced by `PlantGenusTestEntitySource`
+- `"order"`, `"family"`, `"genus"` — locally carried epithets; `family` must
+  match the resolved parent family's epithet
+- `"description": { ... }`, `"commonNames": [ ... ]` — as above
+
 ### `plants.json`
 
 Each entry must include:
 
-- `"name": "<plant-slug>"` — the `PlantName` natural key (no `id` field; ADR-022)
+- `"name": "<plant-slug>"` — the `PlantName` natural key (no `id` field; ADR-022).
+  Normally the lowercased binomial (`"aristolochia-californica"`). Five entries
+  currently use a common or bare-genus name instead and duplicate a
+  `PlantGenus` record; see the consistency plan.
 - `"taxonomy": { "order", "family", "genus", "species" }` — `TaxonomicClassification`
 - `"description": { "preschool", "elementary", "secondary", "university" }` — full
   Durrell four-level `Description`
@@ -239,7 +317,7 @@ Each entry must include:
 
 - `"name": "<constituent-slug>"` — `PhytochemicalConstituentName` natural key.
   Encodes both sides of the link: `<plant-slug>-<compound-slug>` (e.g.
-  `"california-pipevine-aristolochic-acid-i"`,
+  `"aristolochia-californica-aristolochic-acid-i"`,
   `"creeping-thyme-thymol"`) — built programmatically via
   `PhytochemicalConstituentName.of(plantName, compoundName)` in code.
 - `"plantName": "<plant-slug>"` — soft FK to a `Plant` in `plants.json`

@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * tokens under which a young naturalist might search:
  *
  * <ul>
- *   <li>the plant slug (e.g. {@code "california-pipevine"}) — the kernel
+ *   <li>the plant slug (e.g. {@code "aristolochia-californica"}) — the kernel
  *       indexes this separately so an exact slug hit reports as
  *       {@link com.naturalist.catalog.MatchKind#EXACT_SLUG};</li>
  *   <li>the scientific binomial when both genus and species are known
