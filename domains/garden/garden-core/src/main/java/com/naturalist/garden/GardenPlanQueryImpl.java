@@ -2,6 +2,8 @@ package com.naturalist.garden;
 
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
+import com.naturalist.zone.ZoneName;
+import com.naturalist.zone.subzone.SubZoneName;
 
 import java.util.Optional;
 
@@ -21,9 +23,18 @@ class GardenPlanQueryImpl implements GardenPlanQuery {
     }
 
     @Override
-    public Optional<GardenPlan> getByCropTypeName(CropTypeName cropTypeName) {
-        observer.arguments("getByCropTypeName", i -> i.entityName(cropTypeName, "cropTypeName"))
+    public Optional<GardenPlan> getByZoneName(ZoneName zoneName) {
+        observer.arguments("getByZoneName", i -> i.entityName(zoneName, "zoneName"))
                 .throwWhenInvalid();
-        return factory.buildByName(cropTypeName);
+        return factory.buildByZoneName(zoneName);
+    }
+
+    @Override
+    public Optional<GardenPlan> getBySubZoneName(ZoneName zoneName, SubZoneName subZoneName) {
+        observer.arguments("getBySubZoneName", i -> i
+                        .entityName(zoneName, "zoneName")
+                        .entityName(subZoneName, "subZoneName"))
+                .throwWhenInvalid();
+        return factory.buildBySubZoneName(zoneName, subZoneName);
     }
 }

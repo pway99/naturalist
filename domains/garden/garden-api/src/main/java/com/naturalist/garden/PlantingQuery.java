@@ -1,16 +1,21 @@
 package com.naturalist.garden;
 
 import com.naturalist.data.EntityQuery;
+import com.naturalist.plants.PlantName;
 import com.naturalist.zone.ZoneName;
+import com.naturalist.zone.subzone.SubZoneName;
 
 /**
  * Read port for {@link Planting}. Two reverse lookups, matching the two questions asked of a
- * planting: what did we grow of this crop type ({@code forCropTypeName}), and what is in this bed
- * ({@code forZoneName}).
+ * planting: what is in this bed ({@code forZoneName}, or {@code forSubZoneName} for one
+ * subdivision of it — the garden plan at either grain), and where have we grown this
+ * ({@code forPlantName} — one species across beds and seasons).
  */
 public interface PlantingQuery extends EntityQuery<PlantingId, Planting, PlantingCollection> {
 
-    PlantingCollection forCropTypeName(CropTypeName cropTypeName);
-
     PlantingCollection forZoneName(ZoneName zoneName);
+
+    PlantingCollection forSubZoneName(SubZoneName subZoneName);
+
+    PlantingCollection forPlantName(PlantName plantName);
 }

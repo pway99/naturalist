@@ -24,14 +24,14 @@ interface CropTypeEntityRepositoryTest extends EntityRepositoryTest<CropTypeName
 
     @Override
     default CropTypeName notFoundName() {
-        return TestGardenIdentifiers.CropTypes.NotFound.cropType;
+        return TestGardenIdentifiers.CropTypes.notFound;
     }
 
     @Override
     default List<CropTypeName> knownEntityNames() {
         return List.of(
-                TestGardenIdentifiers.CropTypes.Tomato.name,
-                TestGardenIdentifiers.CropTypes.Lettuce.name);
+                TestGardenIdentifiers.CropTypes.tomato,
+                TestGardenIdentifiers.CropTypes.lettuce);
     }
 
     @Override

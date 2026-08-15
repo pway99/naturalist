@@ -4,7 +4,7 @@ import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
-import com.naturalist.plants.cultivar.CultivarName;
+import com.naturalist.plants.PlantName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
 import org.junit.jupiter.api.Test;
@@ -16,8 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link PlantingRepository}, plus the {@code getByCropTypeName} (what did
- * we grow of this) and {@code getByZoneName} (what is in this bed) reverse lookups.
+ * Behavioral contract for {@link PlantingRepository}, plus the three reverse lookups: what is in
+ * this bed, what is in this row, and where have we grown this species.
  */
 interface PlantingEntityRepositoryTest extends EntityRepositoryTest<PlantingId, Planting> {
 
@@ -31,14 +31,14 @@ interface PlantingEntityRepositoryTest extends EntityRepositoryTest<PlantingId, 
 
     @Override
     default PlantingId notFoundName() {
-        return TestGardenIdentifiers.CropTypes.NotFound.planting;
+        return TestGardenIdentifiers.Plantings.notFound;
     }
 
     @Override
     default List<PlantingId> knownEntityNames() {
         return List.of(
-                TestGardenIdentifiers.CropTypes.Tomato.Plantings.amishPasteBackyard,
-                TestGardenIdentifiers.CropTypes.Basil.Plantings.genoveseBox1);
+                TestGardenIdentifiers.Plantings.amishPasteBackyard,
+                TestGardenIdentifiers.Plantings.genoveseBasilBox1);
     }
 
     @Override
@@ -59,41 +59,14 @@ interface PlantingEntityRepositoryTest extends EntityRepositoryTest<PlantingId, 
     default Planting modifiedEntity(Planting original) {
         return new Planting(
                 original.id(),
-                TestGardenIdentifiers.CropTypes.Basil.name,
-                CultivarName.of("thai-basil"),
+                TestGardenIdentifiers.Plants.basil,
+                TestGardenIdentifiers.Cultivars.sungoldCherry,
                 ZoneName.of(RandomValue.string()),
                 SubZoneName.of(RandomValue.string()),
                 7,
                 LocalDate.of(2025, 3, 1),
                 LocalDate.of(2025, 9, 1),
                 RandomValue.string());
-    }
-
-    @Test
-    default void getByCropTypeName_nullArgument() {
-        assertThatThrownBy(() -> repository().getByCropTypeName(null))
-                .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("cropTypeName");
-    }
-
-    @Test
-    default void getByCropTypeName_unknown_returnsEmpty() {
-        assertThat(repository().getByCropTypeName(TestGardenIdentifiers.CropTypes.NotFound.cropType))
-                .isEmpty();
-    }
-
-    @Test
-    default void getByCropTypeName_known_returnsEveryVarietyGrownAsThatType() {
-        List<Planting> result =
-                repository().getByCropTypeName(TestGardenIdentifiers.CropTypes.Tomato.name);
-
-        assertThat(result).hasSize(4);
-        assertThat(result).extracting(Planting::cultivarName)
-                .containsExactlyInAnyOrder(
-                        TestGardenIdentifiers.CropTypes.Tomato.Cultivars.amishPaste,
-                        TestGardenIdentifiers.CropTypes.Tomato.Cultivars.italianPearNicks,
-                        TestGardenIdentifiers.CropTypes.Tomato.Cultivars.sanMarzanoF2,
-                        TestGardenIdentifiers.CropTypes.Tomato.Cultivars.sungoldCherry);
     }
 
     @Test
@@ -105,41 +78,89 @@ interface PlantingEntityRepositoryTest extends EntityRepositoryTest<PlantingId, 
 
     @Test
     default void getByZoneName_unknown_returnsEmpty() {
-        assertThat(repository().getByZoneName(ZoneName.of("unobtainium-bed"))).isEmpty();
+        assertThat(repository().getByZoneName(TestGardenIdentifiers.Zones.notFound)).isEmpty();
     }
 
     /**
-     * The back yard holds four plantings of two different crop types — the mixed-bed case. A query
-     * by zone must never collapse a bed to one crop.
+     * A bed query returns everything in the bed regardless of species — the back yard holds
+     * tomatoes and an eggplant, and collapsing it to one plant would be a lie about the bed.
      */
     @Test
-    default void getByZoneName_known_returnsEveryCropTypeInThatBed() {
-        List<Planting> result = repository().getByZoneName(ZoneName.of("backyard"));
+    default void getByZoneName_known_returnsEverySpeciesInThatBed() {
+        List<Planting> result = repository().getByZoneName(TestGardenIdentifiers.Zones.backyard);
 
         assertThat(result).hasSize(4);
-        assertThat(result).extracting(Planting::cropTypeName)
-                .contains(TestGardenIdentifiers.CropTypes.Tomato.name,
-                        TestGardenIdentifiers.CropTypes.Eggplant.name);
+        assertThat(result).extracting(Planting::plantName)
+                .contains(TestGardenIdentifiers.Plants.tomato, TestGardenIdentifiers.Plants.eggplant);
     }
 
-    /** One row, two crop types — tomatoes and an eggplant share the back yard south row. */
     @Test
-    default void aSubZoneCanHoldMoreThanOneCropType() {
-        List<Planting> southRow = repository().getByZoneName(ZoneName.of("backyard")).stream()
-                .filter(p -> SubZoneName.of("backyard-south").equals(p.subZoneName()))
-                .toList();
+    default void getBySubZoneName_nullArgument() {
+        assertThatThrownBy(() -> repository().getBySubZoneName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("subZoneName");
+    }
 
-        assertThat(southRow).hasSize(2);
-        assertThat(southRow).extracting(Planting::cropTypeName)
-                .containsExactlyInAnyOrder(TestGardenIdentifiers.CropTypes.Tomato.name,
-                        TestGardenIdentifiers.CropTypes.Eggplant.name);
+    @Test
+    default void getBySubZoneName_unknown_returnsEmpty() {
+        assertThat(repository().getBySubZoneName(SubZoneName.of("unobtainium-row"))).isEmpty();
+    }
+
+    /**
+     * One row, two species. The south row carries Amish Paste tomatoes and the Black Beauty
+     * eggplant, which is why a sub-zone claims nothing about what is planted in it.
+     */
+    @Test
+    default void getBySubZoneName_known_returnsAMixedRowIntact() {
+        List<Planting> result = repository().getBySubZoneName(SubZoneName.of("backyard-south"));
+
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(Planting::plantName)
+                .containsExactlyInAnyOrder(TestGardenIdentifiers.Plants.tomato,
+                        TestGardenIdentifiers.Plants.eggplant);
+    }
+
+    @Test
+    default void getByPlantName_nullArgument() {
+        assertThatThrownBy(() -> repository().getByPlantName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("plantName");
+    }
+
+    @Test
+    default void getByPlantName_unknown_returnsEmpty() {
+        assertThat(repository().getByPlantName(TestGardenIdentifiers.Plants.notFound)).isEmpty();
+    }
+
+    /** Four varieties of one species, across two beds. */
+    @Test
+    default void getByPlantName_known_returnsEveryVarietyOfThatSpecies() {
+        List<Planting> result = repository().getByPlantName(TestGardenIdentifiers.Plants.tomato);
+
+        assertThat(result).hasSize(4);
+        assertThat(result).extracting(Planting::cultivarName)
+                .containsExactlyInAnyOrder(
+                        TestGardenIdentifiers.Cultivars.amishPaste,
+                        TestGardenIdentifiers.Cultivars.italianPearNicks,
+                        TestGardenIdentifiers.Cultivars.sanMarzanoF2,
+                        TestGardenIdentifiers.Cultivars.sungoldCherry);
+    }
+
+    /** Sown from a mixed packet: the species is known and the variety never was. */
+    @Test
+    default void getByName_aPlantingWithNoRecordedVariety() {
+        Planting radish = repository().getByName(TestGardenIdentifiers.Plantings.radishBox1)
+                .orElseThrow();
+
+        assertThat(radish.plantName()).isEqualTo(TestGardenIdentifiers.Plants.radish);
+        assertThat(radish.isVarietyKnown()).isFalse();
     }
 
     private static Planting sample(PlantingId id) {
         return new Planting(
                 id,
-                TestGardenIdentifiers.CropTypes.Tomato.name,
-                TestGardenIdentifiers.CropTypes.Tomato.Cultivars.amishPaste,
+                PlantName.of(RandomValue.string()),
+                null,
                 ZoneName.of(RandomValue.string()),
                 null,
                 12,

@@ -2,12 +2,14 @@ package com.naturalist.garden;
 
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
+import com.naturalist.zone.ZoneName;
+import com.naturalist.zone.subzone.SubZoneName;
 
 import java.util.Optional;
 
 /**
- * Name-keyed assembly of the {@link GardenPlan} read model from its persisted parts: the
- * {@link CropType} root and the {@link Planting}s of that type.
+ * Place-keyed assembly of the {@link GardenPlan} read model from the {@link Planting}s of a bed,
+ * at either grain: a whole zone, or one of its subdivisions.
  * <p>
  * Package-private concrete factory (no interface, no {@code Impl} suffix) per ADR-020, mirroring
  * {@code SoilProfileFactory}. Per the producer/consumer rule (ADR-017) it validates its own
@@ -16,24 +18,35 @@ import java.util.Optional;
 class GardenPlanFactory {
 
     private final Observer observer = Observer.forClass(getClass());
-    private final CropTypeQuery cropTypeQuery;
     private final PlantingQuery plantingQuery;
 
-    GardenPlanFactory(CropTypeQuery cropTypeQuery, PlantingQuery plantingQuery) {
-        observer.arguments("constructor", i -> i
-                        .notNull(cropTypeQuery, "cropTypeQuery")
-                        .notNull(plantingQuery, "plantingQuery"))
+    GardenPlanFactory(PlantingQuery plantingQuery) {
+        observer.arguments("constructor", i -> i.notNull(plantingQuery, "plantingQuery"))
                 .throwWhenInvalid();
-        this.cropTypeQuery = cropTypeQuery;
         this.plantingQuery = plantingQuery;
     }
 
-    Optional<GardenPlan> buildByName(CropTypeName cropTypeName) {
-        observer.arguments("buildByName", i -> i.entityName(cropTypeName, "cropTypeName"))
+    Optional<GardenPlan> buildByZoneName(ZoneName zoneName) {
+        observer.arguments("buildByZoneName", i -> i.entityName(zoneName, "zoneName"))
                 .throwWhenInvalid();
-        return cropTypeQuery.getByName(cropTypeName)
-                .map(cropType -> observe(
-                        new GardenPlan(cropType, plantingQuery.forCropTypeName(cropTypeName))));
+        return plan(zoneName, null, plantingQuery.forZoneName(zoneName));
+    }
+
+    Optional<GardenPlan> buildBySubZoneName(ZoneName zoneName, SubZoneName subZoneName) {
+        observer.arguments("buildBySubZoneName", i -> i
+                        .entityName(zoneName, "zoneName")
+                        .entityName(subZoneName, "subZoneName"))
+                .throwWhenInvalid();
+        return plan(zoneName, subZoneName, plantingQuery.forSubZoneName(subZoneName));
+    }
+
+    /** No plantings means garden has nothing to say about that place — not an empty plan. */
+    private Optional<GardenPlan> plan(ZoneName zoneName, SubZoneName subZoneName,
+                                      PlantingCollection plantings) {
+        if (plantings.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(observe(new GardenPlan(zoneName, subZoneName, plantings)));
     }
 
     private GardenPlan observe(GardenPlan gardenPlan) {

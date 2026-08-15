@@ -1,14 +1,16 @@
 package com.naturalist.garden;
 
 import com.naturalist.ddd.BehavioralCollection;
+import com.naturalist.plants.PlantName;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Multi-result return type for {@link Planting} queries (ADR-011) — a crop type's plantings, or a
- * zone's.
+ * Multi-result return type for {@link Planting} queries (ADR-011) — a bed's plantings, or one
+ * species' plantings across beds and seasons.
  */
 public final class PlantingCollection extends BehavioralCollection<Planting> {
 
@@ -30,10 +32,10 @@ public final class PlantingCollection extends BehavioralCollection<Planting> {
     }
 
     /**
-     * The distinct crop types represented, in encounter order. A mixed row of lettuce and kale
-     * reports both — the collection never collapses a bed to a single crop.
+     * The distinct species represented, in encounter order. A mixed row reports every one of them —
+     * the collection never collapses a bed to a single plant.
      */
-    public List<CropTypeName> cropTypes() {
-        return stream().map(Planting::cropTypeName).distinct().toList();
+    public List<PlantName> plants() {
+        return stream().map(Planting::plantName).filter(Objects::nonNull).distinct().toList();
     }
 }

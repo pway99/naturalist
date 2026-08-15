@@ -12,22 +12,34 @@ Design source: [`docs/garden-domain-bootstrap.md`](../../docs/garden-domain-boot
 
 ## Domain Vocabulary
 
-**CropType** — Aggregate root, keyed by `CropTypeName`. The agronomic category (`tomato`,
-`lettuce`, `basil`). Identity only: an optional soft `PlantName`, and nothing else.
-Requirements belong to `CropProfile`, not here.
+**CropType** — `NamedEntity<CropTypeName>`. The agronomic category (`tomato`, `lettuce`,
+`basil`). Identity only: an optional soft `PlantName`, and nothing else. Requirements
+belong to `CropProfile`, not here.
+
+*Nothing inside garden references it.* A crop type is the vocabulary you hand a
+laboratory; its one consumer is soil's `LabAnalysisInfo.cropType`. The same bed of
+*Brassica oleracea* is submitted as kale or as broccoli, and the plants in it are identical
+either way — which is why the type is recorded on the analysis and not on the planting.
 
 *The inclusion test:* would a lab or extension service publish a requirement table for it?
 Tomato yes; Amish Paste no; *Solanum lycopersicum* not usually. FGL's reports are headed
 "TOMATO SOIL ANALYSIS" with one panel covering every variety in the bed, which is exactly
 the granularity `LabAnalysisInfo.cropType` points at.
 
-**Planting** — `Entity<PlantingId>`. One variety, one place, one period — the finest grain
-garden records, and the only place the agronomic and horticultural axes meet. `removedDate`
-null means still growing. The spatial nullability mirrors `SoilProfileInfo`.
+**Planting** — `Entity<PlantingId>`. What went into the ground, where, and for how long —
+the finest grain garden records. Carries two optional soft references into plants:
+`plantName` reaches the species and everything known about it (taxonomy, roles, life form,
+description); `cultivarName` reaches the variety and its peculiarities (breeding status,
+fruit type, seed-saving policy). At least one must be present — a planting naming neither
+records only that something was put somewhere. `removedDate` null means still growing. The
+spatial nullability mirrors `SoilProfileInfo`.
 
-**GardenPlan** — `ReadModel`. A crop type assembled with its plantings. Composed on read by
-`GardenPlanFactory`; never stored. Its varieties are *derived* from the plantings, not
-catalogued.
+**GardenPlan** — `ReadModel`. A bed and what is growing in it, at either grain: a whole
+zone, or one sub-zone. Composed on read by `GardenPlanFactory`; never stored. Keyed by
+place because that is how a gardener holds it — the back yard is one bed with tomatoes and
+an eggplant in it, not a tomato plan plus an eggplant plan — and because beds are what get
+amended, irrigated and sampled. The sub-zone grain exists because the front garden is five
+boxes in a single zone, where a zone-level plan would lump all five.
 
 **Crop** — *not modelled.* "The 2026 backyard tomato crop" is a season's growing, derivable
 from plantings by type, zone and date. It would be a grouping with nothing to carry until
@@ -94,6 +106,18 @@ Identity types are named for the concept, not the record — `CropType` is keyed
 
 Read-only, like soil: no command surface.
 
+## Why a planting names a plant and not a crop type
+
+A crop type is a submission decision; a plant is what is in the soil. Recording the type on
+a planting would have meant one of two wrong things: either kale and broccoli in adjacent
+beds are indistinguishable records, or the planting asserts an intent that only exists at
+the moment you fill in a lab form.
+
+Naming the plant instead makes every detail the plants catalog holds reachable from a
+planting — taxonomy, roles, life form, native bioregions, description — and naming the
+cultivar alongside it reaches the variety's own peculiarities. Between them a planting can
+say exactly what is growing. Decided 2026-08-15.
+
 ## Crop type vs plant type
 
 Plants already classifies plants on two axes — `PlantRole` (`FOOD_CROP`, `COVER_CROP`,
@@ -108,16 +132,19 @@ species. One `PlantName` ↔ many `CropTypeName`s, in both directions.
 
 ## Fixture data — the real 2026 beds
 
-Eight plantings, cross-checked against the cultivars the plants catalog carries and the
-zones soil samples: four tomato varieties (Amish Paste, Nick's Italian Pear, San Marzano F2,
-Sungold), two basils, parsley, and an eggplant. The tomatoes came out on 2026-08-10; the
-herbs and eggplant are still in.
+Nine plantings, cross-checked against the cultivars the plants catalog carries and the zones
+soil samples: four tomato varieties (Amish Paste, Nick's Italian Pear, San Marzano F2,
+Sungold), two basils, parsley, an eggplant and a radish sowing. The tomatoes came out on
+2026-08-10; the herbs and eggplant are still in.
 
-Two properties worth keeping as fixtures exercise real cases:
+Three properties the fixtures exist to exercise:
 
-- **A sub-zone holds more than one crop type.** The back yard south row carries Amish Paste
+- **A sub-zone holds more than one species.** The back yard south row carries Amish Paste
   tomatoes *and* the Black Beauty eggplant. A row is where plantings are; it claims nothing
   about what is in it.
+- **A planting can name a plant with no variety.** The radish was sown broadcast from a
+  mixed packet — the species is known and the cultivar never was, which is the common case
+  the nullability exists for.
 - **`lettuce` is a crop type with no planting.** Oak Vista soil-tests for it before it goes
   in — the August 2026 FGL panel is a lettuce panel for a crop still to be planted. Which is
   why an analysis *records* the crop type it was interpreted for rather than deriving it

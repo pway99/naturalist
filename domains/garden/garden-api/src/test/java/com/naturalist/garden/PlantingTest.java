@@ -2,6 +2,7 @@ package com.naturalist.garden;
 
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
+import com.naturalist.plants.PlantName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
@@ -19,7 +20,7 @@ class PlantingTest {
     private static final LocalDate PULLED = LocalDate.of(2026, 8, 10);
 
     private static Planting tomato(LocalDate removed, SubZoneName subZone, Integer count) {
-        return new Planting(PlantingId.create(), CropTypeName.of("tomato"),
+        return new Planting(PlantingId.create(), PlantName.of("solanum-lycopersicum"),
                 CultivarName.of("amish-paste"), ZoneName.of("backyard"), subZone, count,
                 PLANTED, removed, null);
     }
@@ -72,8 +73,8 @@ class PlantingTest {
     @Test
     void aPlantingRemovedBeforeItWasPlantedIsRejected() {
         var mo = observer.forMethod("aPlantingRemovedBeforeItWasPlantedIsRejected");
-        var backwards = new Planting(PlantingId.create(), CropTypeName.of("tomato"), null,
-                ZoneName.of("backyard"), null, null, PULLED, PLANTED, null);
+        var backwards = new Planting(PlantingId.create(), PlantName.of("solanum-lycopersicum"),
+                null, ZoneName.of("backyard"), null, null, PULLED, PLANTED, null);
 
         InvariantObservation result = mo.observable(backwards, "planting");
 
@@ -91,13 +92,40 @@ class PlantingTest {
                 .containsExactly(".planting.plantCount");
     }
 
-    /** The variety is optional; the crop type never is. */
+    /** Sown from a mixed packet: the species is known and the variety never was. */
     @Test
     void anUnrecordedVarietyIsValidButKnowable() {
-        Planting anonymous = new Planting(PlantingId.create(), CropTypeName.of("lettuce"), null,
-                ZoneName.of("box-1"), null, null, PLANTED, null, null);
+        Planting anonymous = new Planting(PlantingId.create(), PlantName.of("raphanus-sativus"),
+                null, ZoneName.of("box-1"), null, null, PLANTED, null, null);
 
         assertThat(anonymous.isVarietyKnown()).isFalse();
         assertThat(tomato(null, null, 1).isVarietyKnown()).isTrue();
+    }
+
+    /**
+     * A planting naming neither a plant nor a variety records only that something was put
+     * somewhere, which no consumer can use.
+     */
+    @Test
+    void aPlantingNamingNeitherPlantNorVarietyIsRejected() {
+        var mo = observer.forMethod("aPlantingNamingNeitherPlantNorVarietyIsRejected");
+        var nothing = new Planting(PlantingId.create(), null, null, ZoneName.of("box-1"),
+                null, null, PLANTED, null, null);
+
+        InvariantObservation result = mo.observable(nothing, "planting");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactly(".planting.plantOrCultivarKnown");
+    }
+
+    /** Knowing only the variety is enough — plants can resolve its species. */
+    @Test
+    void aPlantingNamingOnlyTheVarietyIsValid() {
+        var mo = observer.forMethod("aPlantingNamingOnlyTheVarietyIsValid");
+        var varietyOnly = new Planting(PlantingId.create(), null,
+                CultivarName.of("amish-paste"), ZoneName.of("backyard"), null, null,
+                PLANTED, null, null);
+
+        assertThat(mo.observable(varietyOnly, "planting").violations()).isEmpty();
     }
 }

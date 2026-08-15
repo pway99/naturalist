@@ -16,7 +16,7 @@ class GardenTestContextInternal {
         CropTypeQuery cropTypeQuery = new CropTypeQueryImpl(new CropTypeEntityRepositoryMock(db));
         PlantingQuery plantingQuery = new PlantingQueryImpl(new PlantingEntityRepositoryMock(db));
         this.gardenPlanQuery =
-                new GardenPlanQueryImpl(new GardenPlanFactory(cropTypeQuery, plantingQuery));
+                new GardenPlanQueryImpl(new GardenPlanFactory(plantingQuery));
     }
 
     static GardenTestContextInternal create(NaturalistDatabase db) {

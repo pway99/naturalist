@@ -1,7 +1,9 @@
 package com.naturalist.garden;
 
 import com.naturalist.data.EntityRepository;
+import com.naturalist.plants.PlantName;
 import com.naturalist.zone.ZoneName;
+import com.naturalist.zone.subzone.SubZoneName;
 
 import java.util.List;
 
@@ -11,7 +13,9 @@ import java.util.List;
  */
 interface PlantingRepository extends EntityRepository<PlantingId, Planting> {
 
-    List<Planting> getByCropTypeName(CropTypeName cropTypeName);
-
     List<Planting> getByZoneName(ZoneName zoneName);
+
+    List<Planting> getBySubZoneName(SubZoneName subZoneName);
+
+    List<Planting> getByPlantName(PlantName plantName);
 }
