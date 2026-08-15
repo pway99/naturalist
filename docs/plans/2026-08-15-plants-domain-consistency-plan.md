@@ -40,9 +40,31 @@ decision or touches data.
 
 ---
 
-## M1 — Decide what `Plant` means  🚧 BLOCKED ON A DECISION
+## M1 — Decide what `Plant` means  ✅ DECIDED 2026-08-15: Option A
 
-Everything else depends on this. Do not start M2 or M3 before it is settled.
+**`Plant` becomes strictly species-rank.** A `Plant` record requires a resolved species
+epithet; an organism identified only to genus lives in `PlantGenus`, and one identified
+only to family lives in `PlantFamily`. This is the insects model — `InsectSpecies.epithet`
+is required and validated, and under-identified organisms have a permanent home at their
+actual rank rather than a species record with a null epithet. It is also what
+`PlantGenus`'s own javadoc already promises and what the code currently fails to enforce.
+The alternatives were rejected because Option B abandons the rank layer weeks after adding
+it and makes M2's typed FK impossible, and Option C codifies the duplication behind
+cosmetically distinct slugs.
+
+Consequences, all of which M2 must carry:
+
+- The five duplicated organisms (`creeping-thyme`, `ornamental-passiflora`, `dianthus`,
+  `sage`, `citrus`) are deleted from `plants.json`; their `PlantGenus` records become the
+  sole home for those taxa.
+- `Plant` gains a required species epithet — either by tightening the `taxonomy`
+  component's validation or by promoting the epithet to its own component.
+- A `PlantRankName` sealed type is needed so records that attach to *any* rank can be
+  typed. See the sub-fork in M2.
+- `creeping-thyme-thymol` is re-keyed to the `thymus` genus, which means
+  `PhytochemicalConstituent.plantName` must accept a rank name rather than a `PlantName`.
+
+Everything below depends on this. Do not start M2 or M3 before reading it.
 
 **The problem.** Five organisms are recorded twice:
 
@@ -113,31 +135,101 @@ model, in which case M2 and M3 both need rewriting.
 
 ---
 
-## M2 — Typed upward FK on `Plant`
+## M2 — Species-rank `Plant`, typed rank chain, cross-rank roles
 
-**Depends on:** M1 (Option A or C; impossible under B).
+**Depends on:** M1. This is the long pole — do it in the lettered order below, each step
+its own PR.
 
-Today `PlantGenus.familyName` is typed and FK-constrained, and the chain stops there.
-`Plant`'s position is held only as strings inside `TaxonomicClassification`, so nothing
-enforces that a plant's genus exists, and no query can walk the hierarchy.
-`Plant.genus()`'s javadoc already flags this as pending "PR-2f of FU-1".
+**Target shape** (decided 2026-08-15 alongside M1):
 
-- [ ] Add `PlantGenusName genusName` to `Plant`; validate with `.entityName(...)`.
-- [ ] Add the `ForeignKeyConstraint` to `PlantTestEntitySource`.
-- [ ] Backfill `genusName` in `plants.json` — requires a `PlantGenus` record per genus
-      currently referenced. Today 5 of 21 genera exist; the other 16 must be authored
-      (real Linnaean data, four-level `Description` each). **This is the bulk of M2.**
-- [ ] Decide whether `Plant` implements `LinnaeanSpecies<PlantGenusName>`, mirroring
+```
+Plant(name, genusName, epithet, description, lifeForm, nativeBioregions, commonNames)
+PlantGenus(name, familyName, order, family, genus, description, lifeForm, commonNames)
+PlantEcologicalRole(id, PlantRankName parentName, Set<PlantRole> roles)
+```
+
+`Plant` mirrors `InsectSpecies`: a typed upward FK plus its own epithet, no local
+`TaxonomicClassification`. `roles` becomes a cross-rank entity for the same reason
+insects made that move in PL-11 — an organism identified only to genus has ecological
+roles too, and duplicating the component onto every rank record is the shape insects
+backed out of. `lifeForm` stays on the taxon records: it is a morphological trait
+intrinsic to the taxon, not a site-specific assignment, and a reader should not need a
+second query to learn that a plant is a vine.
+
+### M2a — `PlantRankName` sealed type
+
+- [ ] `domains/identifiers/.../plants/PlantRankName.java`, modelled on `InsectRankName`:
+      `sealed interface PlantRankName permits PlantFamilyName, PlantGenusName, PlantName`,
+      exposing `value()` and `rank()` (`LinealRank`), plus `of(String, LinealRank)`.
+- [ ] No `PlantOrderName` permit — there is no `PlantOrder` entity, and `InsectRankName`
+      only permits ranks that have one. Add it if and when an order entity lands.
+- [ ] **Naming wart to resolve here:** `PlantName` is the species-rank permit but is not
+      called `PlantSpeciesName`. Either rename it (wide but mechanical — it is referenced
+      across `plants-api`, `plants-core`, `garden`, and the JSON catalogs) or keep it and
+      document the exception on the sealed interface. Decide before M2b so consumers are
+      written once.
+- [ ] Jackson dispatch is declared **at the consuming field**, not on the interface —
+      copy the `@JsonTypeInfo(EXTERNAL_PROPERTY)` + `@JsonSubTypes` block from
+      `InsectFunctionalRole.parentName`. Getting this wrong silently emits
+      `{"valid":…,"notValid":…}` envelopes on write.
+
+### M2b — Reshape `Plant` to species rank
+
+- [ ] Replace `TaxonomicClassification taxonomy` with `PlantGenusName genusName` +
+      `TaxonomicSpecies epithet`; both validated (`.entityName`, `.namedValue`).
+- [ ] Delete the five genus-level rows from `plants.json`; their `PlantGenus` records are
+      now the sole home for those taxa.
+- [ ] `ForeignKeyConstraint` on `PlantTestEntitySource` → `PlantGenusTestEntitySource`.
+- [ ] Decide whether `Plant implements LinnaeanSpecies<PlantGenusName>`, mirroring
       `PlantGenus implements LinnaeanGenus<PlantFamilyName>`.
-- [ ] Add `forGenusName` / `forFamilyName` to `PlantQuery.plants()` and
-      `forFamilyName` to `genera()`, matching `InsectQuery.SpeciesQuery`. The
-      family-level variant composes through the genus query, as `SpeciesQueryImpl` does.
-- [ ] Repository methods + mock validation + three contract cases each.
-- [ ] Re-anchor `Plant.genus()` / `Plant.species()` and delete the stale PR-2f javadoc.
+- [ ] Re-anchor or delete `Plant.genus()` / `Plant.species()` and the stale PR-2f javadoc.
 
-**Ripple warning:** adding a component to `Plant` breaks `PlantEntityRepositoryTest`
-(three constructor sites), `PlantTest`, all 22 `plants.json` rows, `PlantCatalogContribution`,
-and `plants/detail.jte` / `list.jte`. Grep for `new Plant(`.
+**Ripple:** this changes `Plant`'s arity *and* drops a component other code reads.
+`PlantCatalogContribution.tokensFor(Plant)` builds the binomial and abbreviated-binomial
+tokens from `taxonomy.genus()` / `taxonomy.species()` — it must now resolve the genus
+through the FK or take the genus epithet as a parameter. Also breaks
+`PlantEntityRepositoryTest` (three constructor sites), `PlantTest`, all `plants.json`
+rows, and `plants/detail.jte` / `list.jte`. Grep for `new Plant(` and `taxonomy()`.
+
+### M2c — `PlantEcologicalRole` cross-rank entity
+
+- [ ] `PlantEcologicalRoleId` (UUIDv7) in `domains/identifiers`; entity in `plants-api`
+      modelled on `InsectFunctionalRole` — `notEmpty(roles)`, uniqueness on `parentName`.
+- [ ] Remove `roles` from `Plant`. Migrate `isKeystoneHost()`,
+      `supportsBiocontrolInsects()`, and `isNitrogenFixer()` onto the new entity.
+- [ ] **Consumer surface is smaller than the domain doc implies.** `domains/plants/CLAUDE.md`
+      describes these predicates as driving "zero-pesticide constraints in the
+      PestManagement application module" — **no such module exists**; the language is
+      aspirational and should be softened when this milestone lands. Verified consumers
+      are six call sites in two templates (`plants/detail.jte:62,65,68`,
+      `plants/list.jte:17,20,23`) plus `PlantTest`. `PlantRole` has zero references
+      outside `domains/plants`. The migration is therefore contained: the controller
+      loads the role record alongside the plant and passes it to the template.
+- [ ] Repository + mock (with argument validation) + contract test + `getByParentName`.
+- [ ] New `plants/plant-ecological-roles.json` seeded from the `roles` arrays currently
+      in `plants.json`, including the five moved organisms — no ecological data is lost
+      in the move, which was the whole objection to a naive delete.
+
+### M2d — Genus backfill
+
+- [ ] Author a `PlantGenus` record per genus referenced by a surviving `Plant`. **16 of
+      21 are missing** — real Linnaean data plus a four-level `Description` each. This is
+      the bulk of the calendar time in M2 and is data authoring, not code.
+
+### M2e — Re-key the genus-level constituent
+
+- [ ] Change `PhytochemicalConstituent.plantName` to a `PlantRankName` (component rename
+      to `parentName` for honesty), with the field-level Jackson dispatch from M2a.
+- [ ] Re-key `creeping-thyme-thymol` to the `thymus` genus.
+- [ ] `PhytochemicalConstituentQuery.forPlantName` becomes `forParentName`;
+      `PlantCompoundReferences` emits the parent ref at whatever rank it resolves.
+
+### M2f — Hierarchy queries
+
+- [ ] `forGenusName` / `forFamilyName` on the plant query, `forFamilyName` on the genus
+      query, matching `InsectQuery.SpeciesQuery`. The family-level variant composes
+      through the genus query, as `SpeciesQueryImpl` does.
+- [ ] Repository methods + mock validation + three contract cases each.
 
 ---
 
@@ -157,7 +249,12 @@ URLs whose controller routes do not exist."
 - [ ] `GET /plants/families/{name}` + `families/detail.jte` — family record, its genera,
       Durrell description. Model on `insects/family.jte`.
 - [ ] `GET /plants/genera/{name}` + `genera/detail.jte` — genus record, parent family,
-      its plants (needs M2's `forGenusName`, or filter on `taxonomy.genus` until then).
+      its plants. Listing member plants needs M2f's `forGenusName`; ship the page without
+      that section first if M3 runs ahead of M2, rather than reaching for
+      `taxonomy.genus` — M2b deletes that component.
+- [ ] Genus and family pages must render `lifeForm` and (after M2c) their
+      `PlantEcologicalRole`, since under Option A these are real catalog citizens and not
+      just navigation stops.
 - [ ] Index pages if the insects `families.jte` / `genera.jte` pattern is wanted.
 - [ ] Add both cases to `PlantsLinker`.
 - [ ] `PlantsLinkerTest`, modelled on `InsectsLinkerTest` — this is the test that would
@@ -237,8 +334,9 @@ Forward-looking gaps, listed so they are not mistaken for oversights:
   the console is read-only — but `domains/CLAUDE.md` requires a `with*` per mutable field,
   so this becomes a gap the moment writes land.
 - **No `PlantOrder` entity and no rank-polymorphic read model.** The insects equivalents
-  (`InsectOrder`, `InsectTaxonView`, `Insect`) have no plants counterpart. M1 Option A
-  makes `PlantRankName` a prerequisite; the read model can follow later.
+  (`InsectTaxonView`, `Insect`) have no plants counterpart, and there is no order-rank
+  entity — so `PlantRankName` (M2a) permits three names, not five. Both can follow once
+  M2 lands; neither blocks anything here.
 - **`TestPlantsIdentifiers` uses plural scope names** (`PlantFamilies`, `PlantGenera`)
   where insects uses the singular entity name (`InsectFamily`, `InsectGenus`). Cosmetic;
   fold into M4 if that milestone is already touching the file.
@@ -248,12 +346,27 @@ Forward-looking gaps, listed so they are not mistaken for oversights:
 ## Suggested ordering
 
 ```
-M1 (decision)
- ├─→ M2 (typed FK + genus backfill)   ← largest, data-heavy
- └─→ M3 (routes + linker)             ← highest user-visible payoff
+M1 ✅ decided (Option A)
+ │
+ ├─→ M2a  PlantRankName                    ← unblocks M2b/M2c/M2e
+ │    ├─→ M2b  Plant → species rank
+ │    ├─→ M2c  PlantEcologicalRole         ← audit PestManagement first
+ │    └─→ M2e  re-key the constituent
+ │   M2d  genus backfill (16 records)      ← data authoring, parallelisable
+ │   M2f  hierarchy queries                ← after M2b + M2d
+ │
+ └─→ M3   routes + linker                  ← highest visible payoff, only needs M1
 
-M4 + M5 (namespace cleanup)           ← independent, do whenever
+M4 + M5  namespace cleanup                 ← independent, do whenever
 ```
 
-M3 delivers the most visible fix for the least work once M1 is settled, and M4/M5 can
-slot into any gap. M2 is the long pole because of the 16 missing genus records.
+**Start with M3.** It only needs M1, delivers the most visible fix for the least work,
+and is the one thing currently broken for a user rather than merely inconsistent.
+
+M2a is the gate for the rest of M2 and should land as its own PR, including the
+`PlantName` vs `PlantSpeciesName` naming call. M2d is pure data authoring and can run in
+parallel with anyone's code work.
+
+M2b is the largest *code* change (it drops a component other code reads); M2d is the
+largest *time* cost (16 genus records of real Linnaean data). M2c is smaller than it
+looks — the role predicates have six template call sites and no cross-domain consumers.
