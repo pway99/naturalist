@@ -42,6 +42,12 @@ interface SoilPhysicalCharacteristicsEntityRepositoryTest
                 TestSoilIdentifiers.SoilProfiles.Backyard.PhysicalCharacteristics.characteristics);
     }
 
+    /** One row per analysis and two analyses, so page at one to keep the boundary covered. */
+    @Override
+    default int pageSize() {
+        return 1;
+    }
+
     @Override
     default SoilPhysicalCharacteristics newEntity() {
         return sample(SoilPhysicalCharacteristicsId.create(), LabAnalysisId.create());

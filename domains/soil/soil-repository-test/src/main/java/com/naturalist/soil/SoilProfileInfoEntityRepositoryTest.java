@@ -35,6 +35,15 @@ interface SoilProfileInfoEntityRepositoryTest extends EntityRepositoryTest<SoilP
                 TestSoilIdentifiers.SoilProfiles.Backyard.name);
     }
 
+    /**
+     * Two real profiles, so page at one to keep the multi-page boundary covered — the default of
+     * two would fit the whole catalog on a single page and test nothing.
+     */
+    @Override
+    default int pageSize() {
+        return 1;
+    }
+
     @Override
     default SoilProfileInfo newEntity() {
         return new SoilProfileInfo(

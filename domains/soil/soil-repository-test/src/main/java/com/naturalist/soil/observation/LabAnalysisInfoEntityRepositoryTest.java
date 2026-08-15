@@ -41,6 +41,12 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
                 TestSoilIdentifiers.SoilProfiles.Backyard.LabAnalyses.labAnalysis);
     }
 
+    /** Two real analyses, so page at one to keep the multi-page boundary covered. */
+    @Override
+    default int pageSize() {
+        return 1;
+    }
+
     @Override
     default LabAnalysisInfo newEntity() {
         return new LabAnalysisInfo(
