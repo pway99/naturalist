@@ -18,23 +18,29 @@ import java.util.function.Consumer;
  * a given analysis may not have. The assembling factory reads it through an {@code Optional}
  * query and cannot promise it exists.
  * <p>
- * <b>{@code reportedOptima} is a sibling of the panel, not part of it.</b> The optima the lab
- * printed sit beside the measurements, never inside them: a {@link NutrientReading} is what the
- * instrument found, a {@link ReportedOptimum} is what the lab believes good looks like for the
- * submitted crop, and fusing the two is the change this domain most explicitly rejects. Empty for
- * an analysis whose optima have not been transcribed — the readings stand on their own.
+ * <b>{@code reportedOptima} and {@code reportedRecommendations} are siblings of the panel, not
+ * part of it.</b> What the lab printed sits beside the measurements, never inside them: a
+ * {@link NutrientReading} is what the instrument found, a {@link ReportedOptimum} is what the lab
+ * believes good looks like for the submitted crop, and a {@link ReportedRecommendation} is what it
+ * advised doing about the gap. Fusing any of them into the reading is the change this domain most
+ * explicitly rejects. Both collections are empty for an analysis whose report has not been
+ * transcribed — the readings stand on their own.
  */
 public record LabAnalysis(
         LabAnalysisInfo info,
         NutrientPanel nutrients,
         Optional<SoilPhysicalCharacteristics> physicalCharacteristics,
-        ReportedOptimumCollection reportedOptima
+        ReportedOptimumCollection reportedOptima,
+        ReportedRecommendationCollection reportedRecommendations
 ) implements ReadModel {
 
     public LabAnalysis {
         physicalCharacteristics =
                 physicalCharacteristics == null ? Optional.empty() : physicalCharacteristics;
         reportedOptima = reportedOptima == null ? ReportedOptimumCollection.empty() : reportedOptima;
+        reportedRecommendations = reportedRecommendations == null
+                ? ReportedRecommendationCollection.empty()
+                : reportedRecommendations;
     }
 
     @Override
@@ -43,6 +49,7 @@ public record LabAnalysis(
                 .namedEntity(info, "info")
                 .readModel(nutrients, "nutrients")
                 .namedEntityOrNull(physicalCharacteristics.orElse(null), "physicalCharacteristics")
-                .behavioralCollection(reportedOptima, "reportedOptima");
+                .behavioralCollection(reportedOptima, "reportedOptima")
+                .behavioralCollection(reportedRecommendations, "reportedRecommendations");
     }
 }

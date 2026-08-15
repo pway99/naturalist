@@ -11,6 +11,8 @@ import com.naturalist.soil.observation.NutrientReading;
 import com.naturalist.soil.observation.NutrientReadingId;
 import com.naturalist.soil.observation.NutrientReadingTestEntitySource;
 import com.naturalist.soil.observation.Nutrients;
+import com.naturalist.soil.observation.RecommendedAmount;
+import com.naturalist.soil.observation.RecommendedInputs;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -69,6 +71,31 @@ class SoilProfileFactoryTest {
                 .isEqualByComparingTo("7.2");
         assertThat(analysis.physicalCharacteristics().orElseThrow().cecMeqPer100g().value())
                 .isEqualByComparingTo("44.9");
+    }
+
+    /**
+     * The report's own words assemble beside the measurements: seventeen optima and fourteen
+     * recommendation rows, none of them folded into a reading.
+     */
+    @Test
+    void getBySoilProfileName_box1_carriesWhatTheReportSaidBesideWhatItMeasured() {
+        LabAnalysis analysis = query.getBySoilProfileName(TestSoilIdentifiers.SoilProfiles.Box1.name)
+                .orElseThrow().latestLabAnalysis().orElseThrow();
+
+        assertThat(analysis.reportedOptima().stream()).hasSize(17);
+        assertThat(analysis.reportedRecommendations().stream()).hasSize(14);
+
+        // Three of the twelve fertilisation rows recommend an actual application; the rest are an
+        // explicit "apply none", which is advice, not silence.
+        assertThat(analysis.reportedRecommendations().applicationsOnly().stream()
+                .filter(r -> r.unit() == MeasurementUnit.LBS_PER_1000_SQFT))
+                .hasSize(3);
+        assertThat(analysis.reportedRecommendations()
+                .forInput(RecommendedInputs.POTASSIUM_K2O).orElseThrow().amount())
+                .isEqualTo(new RecommendedAmount.Quantity(new BigDecimal("11.2")));
+        assertThat(analysis.reportedRecommendations()
+                .forInput(RecommendedInputs.NITROGEN).orElseThrow().amount())
+                .isInstanceOf(RecommendedAmount.None.class);
     }
 
     /**

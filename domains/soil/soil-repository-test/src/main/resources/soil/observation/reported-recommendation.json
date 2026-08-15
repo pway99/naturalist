@@ -1,0 +1,293 @@
+[
+  {
+    "id": "02671201-0000-7000-8000-000001200000",
+    "inputName": "nitrogen",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0001-7000-8000-000001200001",
+    "inputName": "phosphorus-p2o5",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0002-7000-8000-000001200002",
+    "inputName": "potassium-k2o",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 11.2
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0003-7000-8000-000001200003",
+    "inputName": "calcium",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0004-7000-8000-000001200004",
+    "inputName": "magnesium",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0005-7000-8000-000001200005",
+    "inputName": "sulfur",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 6.8
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0006-7000-8000-000001200006",
+    "inputName": "zinc",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0007-7000-8000-000001200007",
+    "inputName": "manganese",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0008-7000-8000-000001200008",
+    "inputName": "iron",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0009-7000-8000-000001200009",
+    "inputName": "copper",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0010-7000-8000-000001200010",
+    "inputName": "boron",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 0.07
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0011-7000-8000-000001200011",
+    "inputName": "lime",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671201-0012-7000-8000-000001200012",
+    "inputName": "lime-requirement",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 0
+    },
+    "unit": "TONS_PER_ACRE_FOOT",
+    "route": null
+  },
+  {
+    "id": "02671201-0013-7000-8000-000001200013",
+    "inputName": "gypsum-requirement",
+    "labAnalysisId": "02671853-0001-7000-8000-000000000001",
+    "amount": {
+      "kind": "BELOW_DETECTION_LIMIT",
+      "limit": 0.50
+    },
+    "unit": "TONS_PER_ACRE_FOOT",
+    "route": null
+  },
+  {
+    "id": "02671202-0000-7000-8000-000002200000",
+    "inputName": "nitrogen",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 0.7
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0001-7000-8000-000002200001",
+    "inputName": "phosphorus-p2o5",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0002-7000-8000-000002200002",
+    "inputName": "potassium-k2o",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 6.4
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0003-7000-8000-000002200003",
+    "inputName": "calcium",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0004-7000-8000-000002200004",
+    "inputName": "magnesium",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0005-7000-8000-000002200005",
+    "inputName": "sulfur",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 3.3
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0006-7000-8000-000002200006",
+    "inputName": "zinc",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0007-7000-8000-000002200007",
+    "inputName": "manganese",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0008-7000-8000-000002200008",
+    "inputName": "iron",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0009-7000-8000-000002200009",
+    "inputName": "copper",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0010-7000-8000-000002200010",
+    "inputName": "boron",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 0.04
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0011-7000-8000-000002200011",
+    "inputName": "lime",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "NONE"
+    },
+    "unit": "LBS_PER_1000_SQFT",
+    "route": "SOIL"
+  },
+  {
+    "id": "02671202-0012-7000-8000-000002200012",
+    "inputName": "lime-requirement",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "QUANTITY",
+      "value": 0
+    },
+    "unit": "TONS_PER_ACRE_FOOT",
+    "route": null
+  },
+  {
+    "id": "02671202-0013-7000-8000-000002200013",
+    "inputName": "gypsum-requirement",
+    "labAnalysisId": "02671853-0002-7000-8000-000000000002",
+    "amount": {
+      "kind": "BELOW_DETECTION_LIMIT",
+      "limit": 0.50
+    },
+    "unit": "TONS_PER_ACRE_FOOT",
+    "route": null
+  }
+]

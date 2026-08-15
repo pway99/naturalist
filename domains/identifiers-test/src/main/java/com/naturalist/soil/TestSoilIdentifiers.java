@@ -4,6 +4,7 @@ import com.naturalist.soil.observation.LabAnalysisId;
 import com.naturalist.soil.observation.NutrientName;
 import com.naturalist.soil.observation.NutrientReadingId;
 import com.naturalist.soil.observation.ReportedOptimumId;
+import com.naturalist.soil.observation.ReportedRecommendationId;
 import com.naturalist.soil.observation.SoilPhysicalCharacteristicsId;
 
 import java.util.UUID;
@@ -83,6 +84,37 @@ public final class TestSoilIdentifiers {
                 public static final ReportedOptimumId sodiumSoluble =
                         ReportedOptimumId.of(UUID.fromString("02671101-0009-7000-8000-000001100009"));
             }
+
+            /**
+             * Rows of the Fertilization Recommendations table and the requirements block. The four
+             * here are deliberately one of each amount shape: a quantity, a {@code None}, a
+             * measured zero, and a censored bound.
+             */
+            public static final class ReportedRecommendations {
+
+                private ReportedRecommendations() {
+                }
+
+                /** {@code 11.2 Lbs/1000 SqFt via Soil} — a real application. */
+                public static final ReportedRecommendationId potassiumK2O =
+                        ReportedRecommendationId.of(UUID.fromString("02671201-0002-7000-8000-000001200002"));
+
+                /** {@code None} — the lab recommending nothing, which is not nothing. */
+                public static final ReportedRecommendationId phosphorus =
+                        ReportedRecommendationId.of(UUID.fromString("02671201-0001-7000-8000-000001200001"));
+
+                /** {@code None} in the fertilisation table. Contrast {@link #limeRequirement}. */
+                public static final ReportedRecommendationId lime =
+                        ReportedRecommendationId.of(UUID.fromString("02671201-0011-7000-8000-000001200011"));
+
+                /** {@code 0 Tons/AF} — a measured zero, not a None. */
+                public static final ReportedRecommendationId limeRequirement =
+                        ReportedRecommendationId.of(UUID.fromString("02671201-0012-7000-8000-000001200012"));
+
+                /** {@code < 0.50 Tons/AF} — the domain's second censored value. */
+                public static final ReportedRecommendationId gypsumRequirement =
+                        ReportedRecommendationId.of(UUID.fromString("02671201-0013-7000-8000-000001200013"));
+            }
         }
 
         /**
@@ -135,6 +167,9 @@ public final class TestSoilIdentifiers {
 
             public static final ReportedOptimumId reportedOptimum =
                     ReportedOptimumId.of(UUID.fromString("02671997-0000-7000-8000-000000009997"));
+
+            public static final ReportedRecommendationId reportedRecommendation =
+                    ReportedRecommendationId.of(UUID.fromString("02671996-0000-7000-8000-000000009996"));
 
             public static final NutrientName nutrientName = NutrientName.of("unobtainium");
         }

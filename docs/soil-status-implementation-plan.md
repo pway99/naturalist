@@ -44,6 +44,7 @@ classDiagram
         NutrientPanel nutrients
         Optional~SoilPhysicalCharacteristics~ physicalCharacteristics
         ReportedOptimumCollection reportedOptima
+        ReportedRecommendationCollection reportedRecommendations
     }
 
     class LabAnalysisInfo {
@@ -74,6 +75,23 @@ classDiagram
         UpperBounded max
         LowerBounded min
         NotApplicable
+    }
+
+    class ReportedRecommendation {
+        <<Entity — ReportedRecommendationId>>
+        ReportedRecommendationId id
+        RecommendedInputName inputName
+        LabAnalysisId labAnalysisId
+        RecommendedAmount amount
+        MeasurementUnit unit
+        nullable ApplicationRoute route
+    }
+
+    class RecommendedAmount {
+        <<sealed ValueObject>>
+        Quantity value
+        None
+        BelowDetectionLimit limit
     }
 
     class NutrientPanel {
@@ -154,6 +172,9 @@ classDiagram
     LabAnalysis *-- "0..*" ReportedOptimum : sibling of the panel
     ReportedOptimum *-- "1" OptimumRange
     ReportedOptimum ..> LabAnalysisInfo : labAnalysisId + nutrientName unique
+    LabAnalysis *-- "0..*" ReportedRecommendation : sibling of the panel
+    ReportedRecommendation *-- "1" RecommendedAmount
+    ReportedRecommendation ..> LabAnalysisInfo : labAnalysisId + inputName unique
     LabAnalysisInfo *-- "0..1" SamplingProtocol
     NutrientPanel *-- "1" PrimaryNutrients
     NutrientPanel *-- "1" SecondaryNutrients
@@ -184,7 +205,7 @@ row" — never zero.
 
 ## What each phase changed
 
-Same graph, only the touched types. Phases 1–4 are implemented; the diagram
+Same graph, only the touched types. Phases 1–5 are implemented; the diagram
 below is the record of what each one did.
 
 ```mermaid
@@ -243,19 +264,35 @@ classDiagram
         NotApplicable
     }
 
+    class ReportedRecommendation {
+        <<Entity — new, Phase 5>>
+        RecommendedInputName inputName
+        RecommendedAmount amount
+        MeasurementUnit unit
+        nullable ApplicationRoute route
+    }
+
+    class RecommendedAmount {
+        <<sealed ValueObject — new, Phase 5>>
+        Quantity
+        None
+        BelowDetectionLimit
+    }
+
     LabAnalysisInfo *-- "0..1" SamplingProtocol
     SoilPhysicalCharacteristics *-- "1" CationBaseSaturation
     LabAnalysis *-- "0..*" ReportedOptimum : sibling of the panel
     ReportedOptimum *-- "1" OptimumRange
     ReportedOptimum ..> LabAnalysisInfo : labAnalysisId + nutrientName unique
+    LabAnalysis *-- "0..*" ReportedRecommendation : sibling of the panel
+    ReportedRecommendation *-- "1" RecommendedAmount
 ```
 
 Read the Phase 4 edge literally: `ReportedOptimum` hangs off `LabAnalysis`
 beside the panel, **not** as a component of `NutrientReading`. Putting a range
 on the reading fuses measurement with interpretation and violates §18.
 
-Phases 5–8 do not appear because they add nothing to this graph. Phase 5 is the
-same sibling shape as Phase 4 for recommendations; Phase 7 moves constraints
+Phases 7 and 8 do not appear because they add nothing to this graph. Phase 7 moves constraints
 into the read model without changing its components; Phase 8's `CropProfile`
 lives in a peer module and applies over this graph rather than joining it.
 
@@ -422,12 +459,49 @@ That test is the deliverable. It is the reason to store the ranges at all.
 
 ## Phase 5 — Reported recommendations *(optional)*
 
-**Brief §5.4.** Same shape as Phase 4: Lime Requirement, Gypsum Requirement,
-and the thirteen-row Fertilization Recommendations table as append-only
+**Brief §5.4. Implemented 2026-08-14** — built on request despite the deferral
+advice below, which stands unchanged as advice.
+
+Same shape as Phase 4: Lime Requirement, Gypsum Requirement, and the
+~~thirteen~~ **twelve**-row Fertilization Recommendations table as append-only
 report facts, sibling to the analysis. `None` is a value, not an absent row.
 
 Defer unless an intervention model is actually coming. The data is on paper
 and does not expire.
+
+**What the reports actually carry.** Fourteen rows per analysis: twelve
+fertilisation rows in lbs/1000 ft² with a `via` route, and two requirement rows
+in tons/acre-foot with no route and a `---` optimum. Three amount shapes appear,
+and the report distinguishes all three on one page:
+
+| Printed | Modelled as | Means |
+|---|---|---|
+| `11.2` | `RecommendedAmount.Quantity` | apply this much |
+| `None` | `RecommendedAmount.None` | the lab advises applying none |
+| `0 Tons/AF` | `Quantity(0)` | the computed requirement came out at zero |
+| `< 0.50 Tons/AF` | `RecommendedAmount.BelowDetectionLimit` | below what the method resolves |
+
+Box 1 prints `Lime Requirement 0` and `Lime — None` on the same page, which is
+why `Quantity(0)` and `None` must stay distinguishable.
+
+`RecommendedInputName` is a separate vocabulary from `NutrientName`, not a reuse
+of it: you apply *nitrogen* and measure the *nitrate* fraction, `sulfur` is not
+`sulfate`, `lime` is not a nutrient, and no recommendation splits calcium into
+exchangeable and soluble.
+
+### FU-3 gate: the second censored value has arrived
+
+Phase 3 deliberately used a boolean marker for `CEC-Hydrogen < 1.00` rather than
+a general censored-quantity type, gating the general shape on *a second censored
+value actually needing it*. Gypsum Requirement `< 0.50 Tons/AF` is that second
+value, and the gate is now open.
+
+It is **not** closed in this phase, on purpose. The two censored values do not
+want the same type yet: hydrogen's censoring needs saturation-sum bounds, the
+gypsum requirement's needs a `None` sibling, and a shared `Quantity` that serves
+both is a design question rather than a rename. Unifying them is worth doing
+when a third case appears or when interpretation starts consuming both — and it
+should be its own change, not a rider on a phase.
 
 ---
 
@@ -491,9 +565,9 @@ D-1 Optional, D-2 collapse  (decided 2026-08-14)
           ├── Phase 2  depth + protocol     ✓ shipped
           └── Phase 3  SAR + censoring      ✓ shipped
                  │
-                 └── Phase 4  ReportedOptimum + golden-master test  ✓
+                 └── Phase 4  ReportedOptimum + golden-master test  ✓ shipped
                         │
-                        ├── Phase 5  reported recommendations (optional)
+                        ├── Phase 5  reported recommendations  ✓ shipped
                         └── Phase 7  presentation rules
                                │
                                └── Phase 8  agronomy (blocked on garden domain)

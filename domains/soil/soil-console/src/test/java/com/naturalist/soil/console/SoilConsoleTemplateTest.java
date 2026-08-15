@@ -20,6 +20,7 @@ import com.naturalist.soil.observation.NutrientReadingId;
 import com.naturalist.soil.observation.Nutrients;
 import com.naturalist.soil.observation.PrimaryNutrients;
 import com.naturalist.soil.observation.ReportedOptimumCollection;
+import com.naturalist.soil.observation.ReportedRecommendationCollection;
 import com.naturalist.soil.observation.SecondaryNutrients;
 import com.naturalist.zone.ZoneName;
 import gg.jte.output.StringOutput;
@@ -140,6 +141,7 @@ class SoilConsoleTemplateTest {
                 LocalDate.of(2026, 8, 17), "SYNTHETIC LAB", "XX 0000000-000", null, null, null);
         return new SoilProfile(
                 new SoilProfileInfo(SoilProfileName.of("box1"), ZoneName.of("box-1"), null),
-                List.of(new LabAnalysis(info, panel, Optional.empty(), ReportedOptimumCollection.empty())));
+                List.of(new LabAnalysis(info, panel, Optional.empty(),
+                        ReportedOptimumCollection.empty(), ReportedRecommendationCollection.empty())));
     }
 }
