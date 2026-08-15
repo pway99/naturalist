@@ -1,7 +1,7 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.ddd.Entity;
-import com.naturalist.garden.CropName;
+import com.naturalist.garden.CropTypeName;
 import com.naturalist.measurements.DepthInches;
 import com.naturalist.observability.Constraints;
 import com.naturalist.soil.SoilProfileName;
@@ -17,8 +17,11 @@ import java.util.function.Consumer;
  * {@link SoilPhysicalCharacteristics} row (joined by {@code labAnalysisId}); the assembled whole is
  * a {@link LabAnalysis}.
  * <p>
- * {@code crop} is a {@link CropName} soft-reference — the interpretation context (which crop's
- * optimum ranges apply); the rich crop-planting entity is a separate effort. Immutable,
+ * {@code cropType} is a {@link CropTypeName} soft-reference into the garden domain — the
+ * interpretation context, meaning whose optimum ranges the report's targets are. It is the
+ * <em>type</em> deliberately: FGL prints one "TOMATO SOIL ANALYSIS" panel covering every variety
+ * in the bed, so a bed holding San Marzano, Nick's Italian Pear and Elephant Heart has one
+ * analysis, not three. The individual varieties are plantings, and garden owns those. Immutable,
  * append-only — a lab report is a historical fact. Current lab: Fruit Growers Laboratory (FGL),
  * Chico CA; sample IDs {@code CH XXXXXXX-NNN}.
  * <p>
@@ -33,7 +36,7 @@ import java.util.function.Consumer;
 public record LabAnalysisInfo(
         LabAnalysisId id,
         SoilProfileName soilProfileName,
-        CropName crop,
+        CropTypeName cropType,
         LocalDate sampleDate,
         String labId,
         String labSampleId,
@@ -52,7 +55,7 @@ public record LabAnalysisInfo(
         return i -> i
                 .entityId(id, "id")
                 .entityName(soilProfileName, "soilProfileName")
-                .entityName(crop, "crop")
+                .entityName(cropType, "cropType")
                 .notNull(sampleDate, "sampleDate")
                 .notNull(labId, "labId")
                 .notNull(labSampleId, "labSampleId")

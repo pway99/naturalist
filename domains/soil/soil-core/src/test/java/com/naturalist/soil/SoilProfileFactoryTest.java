@@ -2,7 +2,7 @@ package com.naturalist.soil;
 
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
-import com.naturalist.garden.CropName;
+import com.naturalist.garden.CropTypeName;
 import com.naturalist.soil.observation.LabAnalysis;
 import com.naturalist.soil.observation.LabAnalysisId;
 import com.naturalist.soil.observation.LabAnalysisInfo;
@@ -112,7 +112,7 @@ class SoilProfileFactoryTest {
         db.getNamed(LabAnalysisInfoTestEntitySource.class).insert(new LabAnalysisInfo(
                 shortPanel,
                 TestSoilIdentifiers.SoilProfiles.Box1.name,
-                CropName.of("lettuce"),
+                CropTypeName.of("lettuce"),
                 LocalDate.of(2026, 8, 17),
                 "SYNTHETIC LAB",
                 "XX 0000000-000",

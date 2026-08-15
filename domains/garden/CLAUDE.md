@@ -12,20 +12,30 @@ Design source: [`docs/garden-domain-bootstrap.md`](../../docs/garden-domain-boot
 
 ## Domain Vocabulary
 
-**CropInfo** — Aggregate root, keyed by `CropName`. The cultivated category (`tomato`,
-`lettuce`). Identity only: an optional soft `PlantName` to the botanical species, and
-nothing else. Requirements belong to `CropProfile`, not here.
+**CropType** — Aggregate root, keyed by `CropTypeName`. The agronomic category (`tomato`,
+`lettuce`, `basil`). Identity only: an optional soft `PlantName`, and nothing else.
+Requirements belong to `CropProfile`, not here.
 
-**Cultivar** — `NamedEntity<CultivarName>`. A named variety belonging to exactly one crop.
-`amish-paste` and `san-marzano` are both tomatoes; what separates them is horticultural
-selection, not phylogeny.
+*The inclusion test:* would a lab or extension service publish a requirement table for it?
+Tomato yes; Amish Paste no; *Solanum lycopersicum* not usually. FGL's reports are headed
+"TOMATO SOIL ANALYSIS" with one panel covering every variety in the bed, which is exactly
+the granularity `LabAnalysisInfo.cropType` points at.
 
-**Planting** — `Entity<PlantingId>`. A crop in a place over a period. `removedDate` null
-means currently growing. The spatial nullability mirrors `SoilProfileInfo`: `zoneName`
-always present, `subZoneName` null when the planting covers a whole zone.
+**Planting** — `Entity<PlantingId>`. One variety, one place, one period — the finest grain
+garden records, and the only place the agronomic and horticultural axes meet. `removedDate`
+null means still growing. The spatial nullability mirrors `SoilProfileInfo`.
 
-**GardenPlan** — `ReadModel`. A crop assembled with its cultivars and its plantings.
-Composed on read by `GardenPlanFactory`; never stored.
+**GardenPlan** — `ReadModel`. A crop type assembled with its plantings. Composed on read by
+`GardenPlanFactory`; never stored. Its varieties are *derived* from the plantings, not
+catalogued.
+
+**Crop** — *not modelled.* "The 2026 backyard tomato crop" is a season's growing, derivable
+from plantings by type, zone and date. It would be a grouping with nothing to carry until
+harvest and yield exist. Decided 2026-08-14.
+
+**Cultivar** — *owned by plants, not garden.* `plants.cultivar.Cultivar` already carries the
+Oak Vista varieties with their breeding status, fruit type and seed-saving policy. Garden
+references `CultivarName` on a planting and models no cultivar of its own.
 
 **CropProfile** — *not built.* Requirements keyed by `(source, crop, revision)`, because
 different sources publish different tables and labs revise them silently. Second slice; it
@@ -64,11 +74,13 @@ be exact rather than inferred.
 |---|---|---|
 | `ZoneName`, `SubZoneName` | garden → zone | `EntityName` |
 | `PlantName` | garden → plants | `EntityName` |
-| `CropName` | soil → garden (reverse) | `EntityName` |
+| `CultivarName` | garden → plants | `EntityName` |
+| `CropTypeName` | soil → garden (reverse) | `EntityName` |
 
-`CropName`, `CultivarName` and `PlantingId` live in `com.naturalist.garden` under
-`domains/identifiers`. `CropName` moved there from `com.naturalist.soil` on 2026-08-14 —
-soil was simply built first.
+`CropTypeName` and `PlantingId` live in `com.naturalist.garden` under `domains/identifiers`.
+`CropTypeName` moved there from `com.naturalist.soil.CropName` on 2026-08-14 — soil was
+simply built first, and the rename records that a soil analysis is interpreted for a crop
+*type*, never for a variety or for one season's crop.
 
 ## Conventions
 
@@ -77,17 +89,36 @@ collapse (top-level package-private repository, top-level public query, no names
 wrappers), `for*` on queries and `getBy*` on repositories, and a package-private concrete
 aggregate factory in `garden-core` that is never declared in the api module.
 
-Identity types are named for the concept, not the record — `CropInfo` is keyed by
-`CropName`, not `CropInfoName`.
+Identity types are named for the concept, not the record — `CropType` is keyed by
+`CropTypeName`, not `CropTypeInfoName`.
 
 Read-only, like soil: no command surface.
 
-## Fixture data — real Oak Vista plantings
+## Crop type vs plant type
 
-| Crop | Cultivars | Zone | Planted | Removed |
-|---|---|---|---|---|
-| `tomato` | `amish-paste`, `san-marzano` | `box-1`, `backyard` | spring 2026 | Aug 2026 |
-| `lettuce` | — | `box-1`, `backyard` | winter 2026–27 | active |
+Plants already classifies plants on two axes — `PlantRole` (`FOOD_CROP`, `COVER_CROP`,
+`NITROGEN_FIXER`, `ORNAMENTAL`, …) and `PlantLifeForm` (`ANNUAL`, `PERENNIAL`, `VINE`, …).
+Those are botanical and ecological facts, true wherever the plant grows. A crop type is
+agronomic: the unit requirements are published for.
 
-These correspond to the two `SoilProfileInfo` fixtures and the two FGL analyses, so the
-planting ↔ analysis correlation is exercisable in tests with no cross-module import.
+Neither collapses into the other. *Brassica oleracea* is one species and five crop types —
+kale, cabbage, broccoli, kohlrabi, brussels sprouts — with different spacing, different
+nitrogen demand and different lab panels. "Squash" is one crop type across three *Cucurbita*
+species. One `PlantName` ↔ many `CropTypeName`s, in both directions.
+
+## Fixture data — the real 2026 beds
+
+Eight plantings, cross-checked against the cultivars the plants catalog carries and the
+zones soil samples: four tomato varieties (Amish Paste, Nick's Italian Pear, San Marzano F2,
+Sungold), two basils, parsley, and an eggplant. The tomatoes came out on 2026-08-10; the
+herbs and eggplant are still in.
+
+Two properties worth keeping as fixtures exercise real cases:
+
+- **A sub-zone holds more than one crop type.** The back yard south row carries Amish Paste
+  tomatoes *and* the Black Beauty eggplant. A row is where plantings are; it claims nothing
+  about what is in it.
+- **`lettuce` is a crop type with no planting.** Oak Vista soil-tests for it before it goes
+  in — the August 2026 FGL panel is a lettuce panel for a crop still to be planted. Which is
+  why an analysis *records* the crop type it was interpreted for rather than deriving it
+  from what is growing.

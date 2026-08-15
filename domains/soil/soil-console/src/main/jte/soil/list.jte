@@ -22,7 +22,7 @@
                     @if(profile.latestLabAnalysis().isPresent())
                         !{var latest = profile.latestLabAnalysis().get();}
                         <dt>crop</dt>
-                        <dd>${latest.info().crop().value()}</dd>
+                        <dd>${latest.info().cropType().value()}</dd>
                         <dt>latest test</dt>
                         <dd>${latest.info().sampleDate().toString()}</dd>
                     @endif

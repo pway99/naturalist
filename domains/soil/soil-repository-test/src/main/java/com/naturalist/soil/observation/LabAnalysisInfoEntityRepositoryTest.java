@@ -4,7 +4,7 @@ import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
-import com.naturalist.garden.CropName;
+import com.naturalist.garden.CropTypeName;
 import com.naturalist.measurements.DepthInches;
 import com.naturalist.soil.SoilProfileName;
 import com.naturalist.soil.TestSoilIdentifiers;
@@ -55,7 +55,7 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
         return new LabAnalysisInfo(
                 LabAnalysisId.create(),
                 SoilProfileName.of(RandomValue.string()),
-                CropName.of("tomato"),
+                CropTypeName.of("tomato"),
                 LocalDate.of(2026, 3, 3),
                 RandomValue.string(),
                 RandomValue.string(),
@@ -69,7 +69,7 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
         return new LabAnalysisInfo(
                 LabAnalysisId.create(),
                 SoilProfileName.of(RandomValue.string()),
-                CropName.of("tomato"),
+                CropTypeName.of("tomato"),
                 LocalDate.of(2026, 3, 3),
                 RandomValue.string(),
                 RandomValue.string(),
@@ -87,7 +87,7 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
         return new LabAnalysisInfo(
                 original.id(),
                 SoilProfileName.of(RandomValue.string()),
-                CropName.of("lettuce"),
+                CropTypeName.of("lettuce"),
                 LocalDate.of(2025, 1, 1),
                 RandomValue.string(),
                 RandomValue.string(),

@@ -1,0 +1,90 @@
+[
+  {
+    "id": "02671301-0000-7000-8000-000003100000",
+    "cropTypeName": "tomato",
+    "cultivarName": "amish-paste",
+    "zoneName": "backyard",
+    "subZoneName": "backyard-south",
+    "plantCount": 12,
+    "plantedDate": "2026-04-06",
+    "removedDate": "2026-08-10",
+    "notes": "Starts installed April 6. Evaluating as the primary sauce variety for the 90-quart annual target."
+  },
+  {
+    "id": "02671301-0001-7000-8000-000003100001",
+    "cropTypeName": "tomato",
+    "cultivarName": "italian-pear-nicks",
+    "zoneName": "backyard",
+    "subZoneName": "backyard-center",
+    "plantCount": 4,
+    "plantedDate": "2026-04-06",
+    "removedDate": "2026-08-10",
+    "notes": "Primary planting of the 50-year family heirloom line. Founding generation of the Chico adaptation program."
+  },
+  {
+    "id": "02671301-0002-7000-8000-000003100002",
+    "cropTypeName": "tomato",
+    "cultivarName": "san-marzano-f2",
+    "zoneName": "backyard",
+    "subZoneName": "backyard-north",
+    "plantCount": 3,
+    "plantedDate": "2026-04-06",
+    "removedDate": "2026-08-10",
+    "notes": "Saved F2 seed, struggling. North row carried the April 7 TSWV/thrips outbreak."
+  },
+  {
+    "id": "02671301-0003-7000-8000-000003100003",
+    "cropTypeName": "tomato",
+    "cultivarName": "sungold-cherry",
+    "zoneName": "box-1",
+    "subZoneName": null,
+    "plantCount": 1,
+    "plantedDate": "2026-04-06",
+    "removedDate": "2026-08-10",
+    "notes": "Single plant, fresh eating."
+  },
+  {
+    "id": "02671301-0004-7000-8000-000003100004",
+    "cropTypeName": "basil",
+    "cultivarName": "genovese-basil",
+    "zoneName": "box-1",
+    "subZoneName": null,
+    "plantCount": 6,
+    "plantedDate": "2026-05-01",
+    "removedDate": null,
+    "notes": null
+  },
+  {
+    "id": "02671301-0005-7000-8000-000003100005",
+    "cropTypeName": "basil",
+    "cultivarName": "thai-basil",
+    "zoneName": "box-1",
+    "subZoneName": null,
+    "plantCount": 2,
+    "plantedDate": "2026-05-01",
+    "removedDate": null,
+    "notes": null
+  },
+  {
+    "id": "02671301-0006-7000-8000-000003100006",
+    "cropTypeName": "parsley",
+    "cultivarName": "italian-flat-leaf-parsley",
+    "zoneName": "box-1",
+    "subZoneName": null,
+    "plantCount": 3,
+    "plantedDate": "2026-05-01",
+    "removedDate": null,
+    "notes": null
+  },
+  {
+    "id": "02671301-0007-7000-8000-000003100007",
+    "cropTypeName": "eggplant",
+    "cultivarName": "black-beauty-eggplant",
+    "zoneName": "backyard",
+    "subZoneName": "backyard-south",
+    "plantCount": 2,
+    "plantedDate": "2026-05-01",
+    "removedDate": null,
+    "notes": null
+  }
+]

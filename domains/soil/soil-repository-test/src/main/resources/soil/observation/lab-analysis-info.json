@@ -2,7 +2,7 @@
   {
     "id": "02671853-0001-7000-8000-000000000001",
     "soilProfileName": "box1",
-    "crop": "tomato",
+    "cropType": "tomato",
     "sampleDate": "2026-03-03",
     "sampleDepth": null,
     "samplingProtocol": null,
@@ -13,7 +13,7 @@
   {
     "id": "02671853-0002-7000-8000-000000000002",
     "soilProfileName": "backyard",
-    "crop": "tomato",
+    "cropType": "tomato",
     "sampleDate": "2026-03-03",
     "sampleDepth": null,
     "samplingProtocol": null,

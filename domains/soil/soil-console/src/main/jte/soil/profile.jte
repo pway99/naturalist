@@ -22,7 +22,7 @@
         @for(var analysis : profile.labAnalyses())
             !{var a = analysis.info();}
             <section class="analysis">
-                <h2>${a.sampleDate().toString()} — ${a.crop().value()}</h2>
+                <h2>${a.sampleDate().toString()} — ${a.cropType().value()}</h2>
                 <p class="analysis-provenance">${a.labId()} · sample ${a.labSampleId()}
                     @if(a.sampleDepth() != null)
                         · sampled at ${a.sampleDepth().value().toString()} in

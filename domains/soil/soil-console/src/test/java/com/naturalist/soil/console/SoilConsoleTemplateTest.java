@@ -2,7 +2,7 @@ package com.naturalist.soil.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
-import com.naturalist.garden.CropName;
+import com.naturalist.garden.CropTypeName;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.library.console.GlossaryLinker;
 import com.naturalist.soil.SoilProfile;
@@ -173,7 +173,7 @@ class SoilConsoleTemplateTest {
                         Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()),
                 new MicroNutrients(Optional.empty(), Optional.empty(), Optional.empty(),
                         Optional.empty(), Optional.empty(), Optional.empty()));
-        LabAnalysisInfo info = new LabAnalysisInfo(id, SoilProfileName.of("box1"), CropName.of("lettuce"),
+        LabAnalysisInfo info = new LabAnalysisInfo(id, SoilProfileName.of("box1"), CropTypeName.of("lettuce"),
                 LocalDate.of(2026, 8, 17), "SYNTHETIC LAB", "XX 0000000-000", null, null, null);
         return new SoilProfile(
                 new SoilProfileInfo(SoilProfileName.of("box1"), ZoneName.of("box-1"), null),

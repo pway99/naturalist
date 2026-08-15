@@ -1,0 +1,22 @@
+[
+  {
+    "name": "tomato",
+    "plant": "solanum-lycopersicum"
+  },
+  {
+    "name": "lettuce",
+    "plant": null
+  },
+  {
+    "name": "basil",
+    "plant": "ocimum-basilicum"
+  },
+  {
+    "name": "parsley",
+    "plant": "petroselinum-crispum"
+  },
+  {
+    "name": "eggplant",
+    "plant": "solanum-melongena"
+  }
+]
