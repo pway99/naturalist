@@ -22,6 +22,7 @@ import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
  * plantQuery.plants().findPage(PageRequest.console(0));
  * plantQuery.families().getByName(familyName);
  * plantQuery.genera().getByName(genusName);
+ * plantQuery.genera().forFamilyName(familyName);   // genera under a family
  * }</pre>
  */
 public interface PlantQuery {
@@ -41,5 +42,12 @@ public interface PlantQuery {
 
     interface PlantGenusEntityQuery
             extends EntityQuery<PlantGenusName, PlantGenus, PlantGenusCollection> {
+
+        /**
+         * Genera under a family, joined on the genus's typed
+         * {@link PlantGenus#familyName()} upward FK — the natural
+         * family &rarr; genera rollup the family detail page renders.
+         */
+        PlantGenusCollection forFamilyName(PlantFamilyName familyName);
     }
 }

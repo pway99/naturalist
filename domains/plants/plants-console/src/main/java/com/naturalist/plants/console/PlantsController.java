@@ -3,8 +3,13 @@ package com.naturalist.plants.console;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
+import com.naturalist.fieldnotes.Description;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.plants.Plant;
+import com.naturalist.plants.PlantFamily;
+import com.naturalist.plants.PlantFamilyName;
+import com.naturalist.plants.PlantGenus;
+import com.naturalist.plants.PlantGenusName;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.PlantQuery;
 import com.naturalist.plants.PlantsTestContext;
@@ -77,16 +82,56 @@ public class PlantsController {
         var constituents = phytochemicalConstituentQuery.constituents().forPlantName(plantName).stream()
                 .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
                 .toList();
-        var description = plant.get().description();
         model.addAttribute("plant", plant.get());
         model.addAttribute("cultivars", cultivars);
         model.addAttribute("programs", programs);
         model.addAttribute("constituents", constituents);
-        model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
-        model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
-        model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
-        model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
+        addDescription(model, plant.get().description());
         return "plants/detail";
+    }
+
+    // ── Rank pages ────────────────────────────────────────────────────────
+
+    @GetMapping("/families")
+    String familyList(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<PlantFamily> familiesPage =
+                plantQuery.families().findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("familiesPage", familiesPage);
+        return "plants/families/list";
+    }
+
+    @GetMapping("/families/{name}")
+    String familyDetail(@PathVariable String name, Model model) {
+        var familyName = PlantFamilyName.of(name);
+        var family = plantQuery.families().getByName(familyName);
+        if (family.isEmpty()) {
+            return "redirect:/plants";
+        }
+        var genera = plantQuery.genera().forFamilyName(familyName).stream()
+                .sorted(Comparator.comparing((PlantGenus g) -> g.name().value()))
+                .toList();
+        model.addAttribute("family", family.get());
+        model.addAttribute("genera", genera);
+        addDescription(model, family.get().description());
+        return "plants/families/detail";
+    }
+
+    @GetMapping("/genera/{name}")
+    String genusDetail(@PathVariable String name, Model model) {
+        var genusName = PlantGenusName.of(name);
+        var genus = plantQuery.genera().getByName(genusName);
+        if (genus.isEmpty()) {
+            return "redirect:/plants";
+        }
+        // The genus → plants rollup needs Plant.genusName, which does not exist
+        // yet (M2b/M2f of the plants consistency plan). Until then the page
+        // renders the genus itself and its parent family; the member-plants
+        // section appears once the typed FK lands.
+        model.addAttribute("genus", genus.get());
+        model.addAttribute("family",
+                plantQuery.families().getByName(genus.get().familyName()).orElse(null));
+        addDescription(model, genus.get().description());
+        return "plants/genera/detail";
     }
 
     // ── Cultivars ─────────────────────────────────────────────────────────
@@ -151,5 +196,18 @@ public class PlantsController {
         }
         model.addAttribute("constituent", constituent.get());
         return "plants/phytochemistry/detail";
+    }
+
+    // ── Shared ───────────────────────────────────────────────────────────
+
+    /**
+     * Renders the four Durrell levels onto the model under the attribute names
+     * {@code components/description.jte} expects.
+     */
+    private void addDescription(Model model, Description description) {
+        model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
+        model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
+        model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
+        model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
     }
 }

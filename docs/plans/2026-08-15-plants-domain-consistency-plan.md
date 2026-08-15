@@ -233,7 +233,7 @@ rows, and `plants/detail.jte` / `list.jte`. Grep for `new Plant(` and `taxonomy(
 
 ---
 
-## M3 — Make family and genus reachable
+## M3 — Make family and genus reachable  ✅ SHIPPED 2026-08-15
 
 **Depends on:** M1. Independent of M2.
 
@@ -246,23 +246,33 @@ console routes to link *to*.
 Do the routes first: per `EntityRefLinker`'s contract, a linker "should not synthesize
 URLs whose controller routes do not exist."
 
-- [ ] `GET /plants/families/{name}` + `families/detail.jte` — family record, its genera,
-      Durrell description. Model on `insects/family.jte`.
-- [ ] `GET /plants/genera/{name}` + `genera/detail.jte` — genus record, parent family,
-      its plants. Listing member plants needs M2f's `forGenusName`; ship the page without
-      that section first if M3 runs ahead of M2, rather than reaching for
-      `taxonomy.genus` — M2b deletes that component.
-- [ ] Genus and family pages must render `lifeForm` and (after M2c) their
-      `PlantEcologicalRole`, since under Option A these are real catalog citizens and not
-      just navigation stops.
-- [ ] Index pages if the insects `families.jte` / `genera.jte` pattern is wanted.
-- [ ] Add both cases to `PlantsLinker`.
-- [ ] `PlantsLinkerTest`, modelled on `InsectsLinkerTest` — this is the test that would
-      have caught the gap.
-- [ ] Template tests, matching the existing `PlantsDetailTemplateTest` pattern.
-- [ ] Check `plants/nav.jte` (or the console nav tab) surfaces the new pages. Watch the
-      Pico `nav ul{display:flex}` / `details` leakage — declare display and margin
-      explicitly on every new nav list, li, link, and summary.
+- [x] `GET /plants/families/{name}` + `families/detail.jte` — family record, its genera,
+      Durrell description.
+- [x] `GET /plants/genera/{name}` + `genera/detail.jte` — genus record, upward link to
+      its family. The member-plants section renders a placeholder: listing them needs
+      `Plant.genusName`, and reaching for `taxonomy.genus` would only have to be undone
+      by M2b.
+- [x] `GET /plants/families` + `families/list.jte` — browse entry point, linked from the
+      plant catalog header. No genera index: genera are reached from their family's
+      cards, as insects does.
+- [x] Both cases added to `PlantsLinker`.
+- [x] `PlantsLinkerTest` — covers all seven owned name types plus the
+      not-mine-returns-null contract.
+- [x] Template tests: `PlantsFamilyListTemplateTest`, `PlantsFamilyDetailTemplateTest`
+      (populated *and* empty genera branches), `PlantsGenusDetailTemplateTest`.
+- [x] Nav: no change needed. The console nav has a single `/plants` entry and the rank
+      pages hang off the catalog, so the Pico `nav ul{display:flex}` / `details` leakage
+      never comes into play.
+
+**Pulled forward from M2f:** `PlantGenusEntityQuery.forFamilyName` plus its repository
+method, mock validation, and three contract cases. `PlantGenus.familyName` already
+exists, so the family → genera rollup needed no data migration — and without it the
+family page would have been an empty shell. The plant-side hierarchy queries stay in M2f
+because they depend on `Plant.genusName`, which does not exist yet.
+
+**Deferred to M2c:** the rank pages do not render `lifeForm` or ecological roles.
+`PlantGenus` has no `lifeForm` component until M2c adds one, and `PlantEcologicalRole`
+does not exist yet. Both pages get a section then.
 
 ---
 
@@ -353,15 +363,16 @@ M1 ✅ decided (Option A)
  │    ├─→ M2c  PlantEcologicalRole         ← audit PestManagement first
  │    └─→ M2e  re-key the constituent
  │   M2d  genus backfill (16 records)      ← data authoring, parallelisable
- │   M2f  hierarchy queries                ← after M2b + M2d
+ │   M2f  hierarchy queries                ← after M2b + M2d (genus side done in M3)
  │
- └─→ M3   routes + linker                  ← highest visible payoff, only needs M1
+ └─→ M3 ✅ routes + linker                 ← shipped 2026-08-15
 
 M4 + M5  namespace cleanup                 ← independent, do whenever
 ```
 
-**Start with M3.** It only needs M1, delivers the most visible fix for the least work,
-and is the one thing currently broken for a user rather than merely inconsistent.
+**M3 is done.** Next best is **M2d** — authoring the 16 missing `PlantGenus` records is
+pure data work, blocks M2b's backfill, and needs no code decisions. **M2a** can run
+alongside it and is the gate for the rest of M2.
 
 M2a is the gate for the rest of M2 and should land as its own PR, including the
 `PlantName` vs `PlantSpeciesName` naming call. M2d is pure data authoring and can run in

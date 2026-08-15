@@ -1,0 +1,62 @@
+package com.naturalist.plants.console;
+
+import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.plants.PlantFamily;
+import com.naturalist.plants.PlantFamilyTestEntitySource;
+import com.naturalist.plants.PlantGenus;
+import com.naturalist.plants.PlantGenusTestEntitySource;
+import gg.jte.output.StringOutput;
+import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Smoke test for {@code plants/genera/detail.jte}. Renders every catalogued
+ * genus, with and without a resolvable parent family, so the nullable
+ * {@code family} branch executes.
+ */
+class PlantsGenusDetailTemplateTest {
+
+    private final NaturalistDatabase db = NaturalistDatabase.create();
+
+    @Test
+    void genusDetail_rendersEveryGenusWithItsFamily() {
+        var template = TestTemplateEngine.create();
+        Map<String, PlantFamily> families = new HashMap<>();
+        db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
+                .forEach(f -> families.put(f.name().value(), f));
+
+        for (PlantGenus genus : db.getNamed(PlantGenusTestEntitySource.class).entityStream().toList()) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("genus", genus);
+            params.put("family", families.get(genus.familyName().value()));
+            StringOutput output = new StringOutput();
+            template.render("plants/genera/detail.jte", params, output);
+            assertThat(output.toString())
+                    .as("rendered output for %s", genus.name().value())
+                    .isNotBlank();
+        }
+    }
+
+    @Test
+    void genusDetail_linksUpToItsParentFamily() {
+        var template = TestTemplateEngine.create();
+        PlantGenus thymus = db.getNamed(PlantGenusTestEntitySource.class).entityStream()
+                .filter(g -> g.name().value().equals("thymus"))
+                .findFirst()
+                .orElseThrow();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("genus", thymus);
+        params.put("family", null);
+        StringOutput output = new StringOutput();
+        template.render("plants/genera/detail.jte", params, output);
+
+        // The upward link works off the genus's own typed FK, so it renders
+        // even when the parent record was not loaded.
+        assertThat(output.toString()).contains("/plants/families/lamiaceae");
+    }
+}

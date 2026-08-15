@@ -3,14 +3,20 @@ package com.naturalist.plants;
 import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link PlantRepository.PlantGenusEntityRepository}.
@@ -83,5 +89,33 @@ interface PlantGenusEntityRepositoryTest
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    default void getByFamilyName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByFamilyName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("familyName");
+    }
+
+    @Test
+    default void getByFamilyName_returnsGeneraWithMatchingFamilyName() {
+        // Lamiaceae carries two catalogued genera — enough to distinguish a
+        // real family join from a single-entity lookup.
+        var results = repository().getByFamilyName(
+                TestPlantsIdentifiers.PlantFamilies.Lamiaceae.name);
+
+        assertThat(results)
+                .extracting(PlantGenus::name)
+                .extracting(PlantGenusName::value)
+                .contains("thymus", "salvia");
+    }
+
+    @Test
+    default void getByFamilyName_returnsEmptyForUnknownFamily() {
+        var results = repository().getByFamilyName(
+                TestPlantsIdentifiers.PlantFamilies.NotFound.name);
+
+        assertThat(results).isEmpty();
     }
 }

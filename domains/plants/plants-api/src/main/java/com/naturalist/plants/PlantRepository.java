@@ -2,6 +2,8 @@ package com.naturalist.plants;
 
 import com.naturalist.data.EntityRepository;
 
+import java.util.List;
+
 class PlantRepository {
     protected interface PlantEntityRepository extends EntityRepository<PlantName, Plant> {
     }
@@ -12,5 +14,7 @@ class PlantRepository {
 
     protected interface PlantGenusEntityRepository
             extends EntityRepository<PlantGenusName, PlantGenus> {
+
+        List<PlantGenus> getByFamilyName(PlantFamilyName familyName);
     }
 }
