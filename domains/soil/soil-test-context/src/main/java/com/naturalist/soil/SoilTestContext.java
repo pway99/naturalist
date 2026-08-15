@@ -5,6 +5,8 @@ import com.naturalist.soil.observation.LabAnalysisInfoQueries;
 import com.naturalist.soil.observation.LabAnalysisInfoQuery;
 import com.naturalist.soil.observation.NutrientReadingQueries;
 import com.naturalist.soil.observation.NutrientReadingQuery;
+import com.naturalist.soil.observation.ReportedOptimumQueries;
+import com.naturalist.soil.observation.ReportedOptimumQuery;
 import com.naturalist.soil.observation.SoilPhysicalCharacteristicsQueries;
 import com.naturalist.soil.observation.SoilPhysicalCharacteristicsQuery;
 
@@ -27,8 +29,10 @@ public class SoilTestContext {
         NutrientReadingQuery nutrientReadingQuery = NutrientReadingQueries.create(db);
         SoilPhysicalCharacteristicsQuery physicalCharacteristicsQuery =
                 SoilPhysicalCharacteristicsQueries.create(db);
+        ReportedOptimumQuery reportedOptimumQuery = ReportedOptimumQueries.create(db);
         SoilProfileFactory factory = new SoilProfileFactory(
-                soilProfileInfoQuery, labAnalysisInfoQuery, nutrientReadingQuery, physicalCharacteristicsQuery);
+                soilProfileInfoQuery, labAnalysisInfoQuery, nutrientReadingQuery,
+                physicalCharacteristicsQuery, reportedOptimumQuery);
         this.soilProfileQuery = new SoilProfileQueryImpl(factory);
     }
 

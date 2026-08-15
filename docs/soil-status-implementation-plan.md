@@ -42,7 +42,8 @@ classDiagram
         <<ReadModel>>
         LabAnalysisInfo info
         NutrientPanel nutrients
-        SoilPhysicalCharacteristics physicalCharacteristics
+        Optional~SoilPhysicalCharacteristics~ physicalCharacteristics
+        ReportedOptimumCollection reportedOptima
     }
 
     class LabAnalysisInfo {
@@ -53,7 +54,26 @@ classDiagram
         LocalDate sampleDate
         String labId
         String labSampleId
+        nullable DepthInches sampleDepth
+        nullable SamplingProtocol samplingProtocol
         nullable String notes
+    }
+
+    class ReportedOptimum {
+        <<Entity — ReportedOptimumId>>
+        ReportedOptimumId id
+        NutrientName nutrientName
+        LabAnalysisId labAnalysisId
+        OptimumRange range
+        MeasurementUnit unit
+    }
+
+    class OptimumRange {
+        <<sealed ValueObject>>
+        Closed min max
+        UpperBounded max
+        LowerBounded min
+        NotApplicable
     }
 
     class NutrientPanel {
@@ -65,14 +85,22 @@ classDiagram
 
     class PrimaryNutrients {
         <<ReadModel>>
-        nitrateN
-        phosphorusP2O5
-        potassiumExch
-        potassiumSoluble
+        Optional~NutrientReading~ nitrateN
+        Optional~NutrientReading~ phosphorusP2O5
+        Optional~NutrientReading~ potassiumExch
+        Optional~NutrientReading~ potassiumSoluble
+    }
+
+    class SamplingProtocol {
+        <<ValueObject>>
+        int subsampleCount
+        SamplingTool tool
+        CompositingMethod compositingMethod
     }
 
     class SecondaryNutrients {
         <<ReadModel>>
+        all slots Optional
         calciumExch / calciumSoluble
         magnesiumExch / magnesiumSoluble
         sodiumExch / sodiumSoluble
@@ -81,6 +109,7 @@ classDiagram
 
     class MicroNutrients {
         <<ReadModel>>
+        all slots Optional
         zinc / manganese / iron
         copper / boron / chloride
     }
@@ -101,6 +130,7 @@ classDiagram
         CecMeqPer100g cecMeqPer100g
         SoilPH pH
         ElectricalConductivity ecDsPerMeter
+        SodiumAdsorptionRatio sar
         LimestonePct limestonePct
         SaturationPct saturationPct
         CationBaseSaturation cationBaseSaturation
@@ -113,13 +143,18 @@ classDiagram
         BigDecimal potassiumPct
         BigDecimal sodiumPct
         BigDecimal hydrogenPct
+        boolean hydrogenBelowDetectionLimit
     }
 
     SoilProfile *-- "1" SoilProfileInfo
     SoilProfile *-- "0..*" LabAnalysis : oldest first
     LabAnalysis *-- "1" LabAnalysisInfo
     LabAnalysis *-- "1" NutrientPanel
-    LabAnalysis *-- "1" SoilPhysicalCharacteristics
+    LabAnalysis *-- "0..1" SoilPhysicalCharacteristics
+    LabAnalysis *-- "0..*" ReportedOptimum : sibling of the panel
+    ReportedOptimum *-- "1" OptimumRange
+    ReportedOptimum ..> LabAnalysisInfo : labAnalysisId + nutrientName unique
+    LabAnalysisInfo *-- "0..1" SamplingProtocol
     NutrientPanel *-- "1" PrimaryNutrients
     NutrientPanel *-- "1" SecondaryNutrients
     NutrientPanel *-- "1" MicroNutrients
@@ -139,14 +174,18 @@ domain. `SubZone.soilProfileName` is the reverse edge, maintained by the
 application layer.
 
 The seventeen `NutrientReading` rows an FGL tomato panel produces are the four +
-seven + six slots above. **That count is exactly what Phase 1 is about:** the
-three grouping read models name a closed list, and `assemblePanel` fills each
-slot with `byName.get(...)` — a lettuce panel with a different row set lands as
-nulls in a graph whose invariants forbid them.
+seven + six slots above, and the seventeen `ReportedOptimum` rows beside them are
+the optimum range the report printed for each. **That count was exactly what
+Phase 1 was about:** the three grouping read models named a closed list and
+`assemblePanel` filled each slot with `byName.get(...)`, so a lettuce panel with
+a different row set landed as nulls in a graph whose invariants forbid them.
+Every slot is now `Optional`, and an empty one means "the lab did not run that
+row" — never zero.
 
-## What the phases change
+## What each phase changed
 
-Same graph, only the touched types. Nothing before Phase 4 adds an entity.
+Same graph, only the touched types. Phases 1–4 are implemented; the diagram
+below is the record of what each one did.
 
 ```mermaid
 classDiagram
@@ -166,10 +205,10 @@ classDiagram
 
     class SamplingProtocol {
         <<ValueObject — new, Phase 2>>
-        depth
         subsample count
         tool
         compositing method
+        depth stays on the header
     }
 
     class SoilPhysicalCharacteristics {
@@ -184,7 +223,7 @@ classDiagram
 
     class LabAnalysis {
         <<Phase 4>>
-        List~ReportedOptimum~ reportedOptima
+        ReportedOptimumCollection reportedOptima
     }
 
     class ReportedOptimum {
@@ -193,6 +232,7 @@ classDiagram
         NutrientName nutrientName
         LabAnalysisId labAnalysisId
         OptimumRange range
+        MeasurementUnit unit
     }
 
     class OptimumRange {
@@ -326,10 +366,10 @@ March's records neither.
 
 **Brief §5.3, §5.4. Independent; can run alongside Phase 2. Implemented 2026-08-14.**
 
-> **Assumption to check against the PDFs:** both March rows are stored as
-> hydrogen censored (`< 1.00`), on the strength of both printing exactly 1.00.
-> If one of them was a genuine measurement, flip that row's
-> `hydrogenBelowDetectionLimit` to false.
+> **Confirmed against the PDFs** (`domains/soil/FGLDocCH_2671853.pdf`, read
+> during Phase 4): both reports print `CEC - Hydrogen   < 1.00 %` against an
+> optimum of `0.0 - 3.0`. Both rows are correctly stored as censored. The SAR
+> values 0.3 and 0.4 are confirmed on the same pages.
 
 - Add SAR to `SoilPhysicalCharacteristics` as a typed
   `NumericNamedValue` beside EC. Update both fixtures from the March PDF
@@ -347,7 +387,19 @@ March's records neither.
 
 ## Phase 4 — `ReportedOptimum` (the golden-master data)
 
-**Brief §2. Depends on Phase 1 — both touch `observation` assembly.**
+**Brief §2. Depends on Phase 1 — both touch `observation` assembly.
+Implemented 2026-08-14.**
+
+> **Finding.** The golden-master test passes, and it says something stronger than
+> expected: FGL's exchangeable-cation optima are *not crop-specific at all*. All
+> sixteen printed bounds across both analyses are reproduced by four
+> crop-invariant base-saturation windows (Ca 60–80%, Mg 10–20%, K 1.0–6.0%,
+> Na 0.0–5.0%) projected through each sample's own CEC, to the two significant
+> figures the report carries. `FglReplicaStrategy` inherits an exact target for
+> those four rows.
+>
+> `LowerBounded` is implemented but unused — no March row prints a floor-only
+> range, contrary to the "all four shapes appear" note below.
 
 - `OptimumRange` sealed value: `Closed`, `UpperBounded`, `LowerBounded`,
   `NotApplicable`. All four shapes appear on the March reports.
@@ -433,13 +485,13 @@ lives entirely inside soil.
 ```
 D-1 Optional, D-2 collapse  (decided 2026-08-14)
    │
-   └── Phase 0  backyard collapse    ← was Phase 6; halves the fixture surface
+   └── Phase 0  backyard collapse    ✓ shipped (was Phase 6)
           │
-          ├── Phase 1  panel tolerance      ← deadline: August ingest
-          ├── Phase 2  depth + protocol     ← deadline: August ingest
-          └── Phase 3  SAR + censoring
+          ├── Phase 1  panel tolerance      ✓ shipped
+          ├── Phase 2  depth + protocol     ✓ shipped
+          └── Phase 3  SAR + censoring      ✓ shipped
                  │
-                 └── Phase 4  ReportedOptimum + golden-master test
+                 └── Phase 4  ReportedOptimum + golden-master test  ✓
                         │
                         ├── Phase 5  reported recommendations (optional)
                         └── Phase 7  presentation rules

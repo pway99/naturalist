@@ -3,6 +3,7 @@ package com.naturalist.soil;
 import com.naturalist.soil.observation.LabAnalysisId;
 import com.naturalist.soil.observation.NutrientName;
 import com.naturalist.soil.observation.NutrientReadingId;
+import com.naturalist.soil.observation.ReportedOptimumId;
 import com.naturalist.soil.observation.SoilPhysicalCharacteristicsId;
 
 import java.util.UUID;
@@ -68,6 +69,20 @@ public final class TestSoilIdentifiers {
                 public static final SoilPhysicalCharacteristicsId characteristics =
                         SoilPhysicalCharacteristicsId.of(UUID.fromString("02671901-0000-7000-8000-000000000001"));
             }
+
+            public static final class ReportedOptima {
+
+                private ReportedOptima() {
+                }
+
+                /** A closed range — {@code 5.3 - 7.2} on CH 2671853-001. */
+                public static final ReportedOptimumId nitrateN =
+                        ReportedOptimumId.of(UUID.fromString("02671101-0000-7000-8000-000001100000"));
+
+                /** The report's one upper-bounded row — {@code < 19}. */
+                public static final ReportedOptimumId sodiumSoluble =
+                        ReportedOptimumId.of(UUID.fromString("02671101-0009-7000-8000-000001100009"));
+            }
         }
 
         /**
@@ -117,6 +132,9 @@ public final class TestSoilIdentifiers {
 
             public static final SoilPhysicalCharacteristicsId physicalCharacteristics =
                     SoilPhysicalCharacteristicsId.of(UUID.fromString("02671998-0000-7000-8000-000000009998"));
+
+            public static final ReportedOptimumId reportedOptimum =
+                    ReportedOptimumId.of(UUID.fromString("02671997-0000-7000-8000-000000009997"));
 
             public static final NutrientName nutrientName = NutrientName.of("unobtainium");
         }

@@ -12,6 +12,7 @@ import com.naturalist.soil.observation.NutrientReading;
 import com.naturalist.soil.observation.NutrientReadingQuery;
 import com.naturalist.soil.observation.Nutrients;
 import com.naturalist.soil.observation.PrimaryNutrients;
+import com.naturalist.soil.observation.ReportedOptimumQuery;
 import com.naturalist.soil.observation.SecondaryNutrients;
 import com.naturalist.soil.observation.SoilPhysicalCharacteristics;
 import com.naturalist.soil.observation.SoilPhysicalCharacteristicsQuery;
@@ -39,21 +40,25 @@ class SoilProfileFactory {
     private final LabAnalysisInfoQuery labAnalysisInfoQuery;
     private final NutrientReadingQuery nutrientReadingQuery;
     private final SoilPhysicalCharacteristicsQuery physicalCharacteristicsQuery;
+    private final ReportedOptimumQuery reportedOptimumQuery;
 
     SoilProfileFactory(SoilProfileInfoQuery soilProfileInfoQuery,
                        LabAnalysisInfoQuery labAnalysisInfoQuery,
                        NutrientReadingQuery nutrientReadingQuery,
-                       SoilPhysicalCharacteristicsQuery physicalCharacteristicsQuery) {
+                       SoilPhysicalCharacteristicsQuery physicalCharacteristicsQuery,
+                       ReportedOptimumQuery reportedOptimumQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(soilProfileInfoQuery, "soilProfileInfoQuery")
                         .notNull(labAnalysisInfoQuery, "labAnalysisInfoQuery")
                         .notNull(nutrientReadingQuery, "nutrientReadingQuery")
-                        .notNull(physicalCharacteristicsQuery, "physicalCharacteristicsQuery"))
+                        .notNull(physicalCharacteristicsQuery, "physicalCharacteristicsQuery")
+                        .notNull(reportedOptimumQuery, "reportedOptimumQuery"))
                 .throwWhenInvalid();
         this.soilProfileInfoQuery = soilProfileInfoQuery;
         this.labAnalysisInfoQuery = labAnalysisInfoQuery;
         this.nutrientReadingQuery = nutrientReadingQuery;
         this.physicalCharacteristicsQuery = physicalCharacteristicsQuery;
+        this.reportedOptimumQuery = reportedOptimumQuery;
     }
 
     Optional<SoilProfile> buildByName(SoilProfileName name) {
@@ -70,7 +75,13 @@ class SoilProfileFactory {
 
     private LabAnalysis assembleAnalysis(LabAnalysisInfo info) {
         NutrientPanel panel = assemblePanel(nutrientReadingQuery.forLabAnalysisId(info.id()).stream().toList());
-        return new LabAnalysis(info, panel, physicalCharacteristicsQuery.forLabAnalysisId(info.id()));
+        return new LabAnalysis(
+                info,
+                panel,
+                physicalCharacteristicsQuery.forLabAnalysisId(info.id()),
+                // Beside the panel, never inside it — the readings are measurement, these are the
+                // lab's targets for the submitted crop.
+                reportedOptimumQuery.forLabAnalysisId(info.id()));
     }
 
     /**
