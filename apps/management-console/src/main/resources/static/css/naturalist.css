@@ -1856,13 +1856,50 @@ figure.compound-depiction img {
 }
 
 /* Our comparison of a reading against the lab's printed range — never the
-   lab's own five-band verdict, which we do not store. Deliberately quiet: it
-   is a position, not an alarm, and the two can disagree. */
+   lab's own five-band verdict, which we do not store. Colour carries the
+   position at a glance, but stays muted on purpose: this is a position, not an
+   alarm, and it can disagree with the lab's own bar. Both directions are
+   coloured, because too much of a nutrient is a finding as much as too little.
+   Weight and small-caps do the work if colour is unavailable. */
 .verdict {
     font-variant: small-caps;
     letter-spacing: 0.03em;
-    opacity: 0.85;
     cursor: help;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.verdict-within {
+    color: var(--pico-primary);
+}
+
+/* Deficiency — the ochre end of the sepia palette. */
+.verdict-below {
+    color: #A8641E;
+}
+
+/* Excess — brick, distinct from ochre without shouting. */
+.verdict-above {
+    color: #96442C;
+}
+
+/* A dot before the label, so the three positions differ by shape as well as
+   hue for a reader who cannot distinguish them. */
+.verdict::before {
+    margin-right: 0.35em;
+    font-weight: 700;
+}
+
+.verdict-below::before {
+    content: "\2193";  /* down arrow */
+}
+
+.verdict-within::before {
+    content: "\2022";  /* bullet */
+}
+
+.verdict-above::before {
+    content: "\2191";  /* up arrow */
 }
 
 /* "The lab recommended applying none." Distinct from an unreported row: this

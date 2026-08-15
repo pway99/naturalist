@@ -81,6 +81,10 @@ class SoilConsoleTemplateTest {
         assertThat(html).contains("&lt; 19");           // soluble sodium's ceiling, no invented floor
         // Any verdict on the page says whose it is.
         assertThat(html).contains("our comparison against the lab's printed range");
+        // Position carries a colour class per verdict, so the three read apart at a glance.
+        assertThat(html).contains("verdict verdict-below");    // nitrate-N 1.36 against 5.3 - 7.2
+        assertThat(html).contains("verdict verdict-within");
+        assertThat(html).contains("verdict verdict-above");    // zinc 6.35 against 0.39 - 4.0
         assertThat(html).contains("as printed by the lab");
         // ...and never claims a band or a position within one.
         assertThat(html).doesNotContain("Moderately");

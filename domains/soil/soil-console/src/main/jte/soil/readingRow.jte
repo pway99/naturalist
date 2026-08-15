@@ -13,7 +13,7 @@
             <td class="not-reported">no printed optimum</td>
         @endif
         @if(line.comparison().isConclusive())
-            <td class="verdict" title="${line.comparison().source().label()}">${line.comparison().verdict().name().toLowerCase()} range</td>
+            <td class="verdict verdict-${line.comparison().verdict().name().toLowerCase()}" title="${line.comparison().source().label()}">${line.comparison().verdict().name().toLowerCase()} range</td>
         @else
             <td></td>
         @endif
