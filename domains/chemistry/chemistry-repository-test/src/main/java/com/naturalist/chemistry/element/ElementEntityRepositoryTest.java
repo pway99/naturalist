@@ -34,7 +34,8 @@ interface ElementEntityRepositoryTest
     default List<ElementName> knownEntityNames() {
         return List.of(
                 TestChemistryIdentifiers.Elements.Ca,
-                TestChemistryIdentifiers.Elements.K
+                TestChemistryIdentifiers.Elements.K,
+                TestChemistryIdentifiers.Elements.Zn
         );
     }
 

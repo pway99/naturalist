@@ -7,6 +7,7 @@ import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,5 +28,43 @@ class ChemistryDetailTemplateTest {
                     .as("rendered output for %s", compound.name().value())
                     .isNotBlank();
         }
+    }
+
+    @Test
+    void detail_linksConstituentElementsThatAreCatalogued() {
+        var db = NaturalistDatabase.create();
+        Compound gypsum = new CompoundTestEntitySource(db).entityStream()
+                .filter(c -> c.name().value().equals("calcium-sulfate-dihydrate"))
+                .findFirst().orElseThrow();
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render("chemistry/detail.jte",
+                Map.of("compound", gypsum,
+                        "linkableElements", Set.of("calcium", "sulfur", "oxygen", "hydrogen")),
+                output);
+
+        String html = output.toString();
+        assertThat(html).contains("/chemistry/elements/calcium");
+        assertThat(html).contains("/chemistry/elements/sulfur");
+        assertThat(html).contains("Calcium");
+    }
+
+    @Test
+    void detail_leavesUncataloguedElementsAsPlainText() {
+        var db = NaturalistDatabase.create();
+        Compound gypsum = new CompoundTestEntitySource(db).entityStream()
+                .filter(c -> c.name().value().equals("calcium-sulfate-dihydrate"))
+                .findFirst().orElseThrow();
+        StringOutput output = new StringOutput();
+
+        // Only calcium is catalogued: sulfur, oxygen and hydrogen must not become links.
+        TestTemplateEngine.create().render("chemistry/detail.jte",
+                Map.of("compound", gypsum, "linkableElements", Set.of("calcium")),
+                output);
+
+        String html = output.toString();
+        assertThat(html).contains("/chemistry/elements/calcium");
+        assertThat(html).doesNotContain("/chemistry/elements/sulfur");
+        assertThat(html).contains("Sulfur");
     }
 }

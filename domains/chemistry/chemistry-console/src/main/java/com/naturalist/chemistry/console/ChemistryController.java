@@ -8,6 +8,9 @@ import com.naturalist.chemistry.compound.CompoundDepiction;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.compound.CompoundQuery;
 import com.naturalist.chemistry.console.catalog.BackReferencesViewModel;
+import com.naturalist.chemistry.element.Element;
+import com.naturalist.chemistry.element.ElementName;
+import com.naturalist.chemistry.element.ElementQuery;
 import com.naturalist.chemistry.product.Product;
 import com.naturalist.chemistry.product.ProductName;
 import com.naturalist.chemistry.product.ProductQuery;
@@ -32,6 +35,7 @@ public class ChemistryController {
 
     private final CompoundQuery compoundQuery;
     private final ProductQuery productQuery;
+    private final ElementQuery elementQuery;
     private final DepictionRenderer depictionRenderer;
     private final Catalog catalog;
     private final EntityRefLinker linker;
@@ -41,6 +45,7 @@ public class ChemistryController {
         ChemistryTestContext context = ChemistryTestContext.create(NaturalistDatabase.create());
         this.compoundQuery = context.compoundQuery();
         this.productQuery = context.productQuery();
+        this.elementQuery = context.elementQuery();
         this.depictionRenderer = depictionRenderer;
         this.catalog = catalog;
         this.linker = linker;
@@ -67,10 +72,15 @@ public class ChemistryController {
         }
         var depiction = compoundQuery.depictions().getByCompoundName(compoundName);
         var backReferences = BackReferencesViewModel.from(catalog.findReferencesTo(compoundName), linker);
+        var linkableElements = elementQuery
+                .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content().stream()
+                .map(e -> e.name().value())
+                .collect(Collectors.toSet());
         model.addAttribute("compound", compound.get());
         model.addAttribute("hasDepiction", depiction.isPresent());
         model.addAttribute("depictionNote", depiction.map(CompoundDepiction::note).orElse(null));
         model.addAttribute("backReferences", backReferences);
+        model.addAttribute("linkableElements", linkableElements);
         return "chemistry/detail";
     }
 
@@ -82,6 +92,23 @@ public class ChemistryController {
                         .contentType(MediaType.valueOf("image/svg+xml"))
                         .body(svg))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/elements")
+    String elementList(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<Element> elementsPage = elementQuery.findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("elementsPage", elementsPage);
+        return "chemistry/elements/list";
+    }
+
+    @GetMapping("/elements/{name}")
+    String elementDetail(@PathVariable String name, Model model) {
+        var element = elementQuery.getByName(ElementName.of(name));
+        if (element.isEmpty()) {
+            return "redirect:/chemistry/elements";
+        }
+        model.addAttribute("element", element.get());
+        return "chemistry/elements/detail";
     }
 
     @GetMapping("/products")

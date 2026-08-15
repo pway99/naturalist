@@ -12,9 +12,9 @@ import com.naturalist.data.NaturalistDatabase;
  * {@code chemistry-test-context}); duplicated here because {@code chemistry-core}
  * cannot depend on {@code chemistry-test-context} without forming a reactor cycle.
  */
-public final class ProductQueryTestSupport {
+public final class ProductQueryTestContextInternal {
 
-    private ProductQueryTestSupport() {
+    private ProductQueryTestContextInternal() {
     }
 
     public static ProductQuery createQuery(NaturalistDatabase db) {

@@ -5,11 +5,11 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
 
 @DomainService
-class ElemenEntitytRepositoryMock
+class ElementEntityRepositoryMock
         extends AbstractTestEntityRepository<ElementName, Element, ElementTestEntitySource>
         implements ElementRepository {
 
-    protected ElemenEntitytRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    protected ElementEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 }

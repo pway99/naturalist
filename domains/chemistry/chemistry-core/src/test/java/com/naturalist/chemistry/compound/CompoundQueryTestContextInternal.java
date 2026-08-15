@@ -13,9 +13,9 @@ import com.naturalist.data.NaturalistDatabase;
  * {@code chemistry-test-context}); duplicated here because {@code chemistry-core}
  * cannot depend on {@code chemistry-test-context} without forming a reactor cycle.
  */
-public final class CompoundQueryTestSupport {
+public final class CompoundQueryTestContextInternal {
 
-    private CompoundQueryTestSupport() {
+    private CompoundQueryTestContextInternal() {
     }
 
     public static CompoundQuery.CompoundEntityQuery createEntityQuery(NaturalistDatabase db) {

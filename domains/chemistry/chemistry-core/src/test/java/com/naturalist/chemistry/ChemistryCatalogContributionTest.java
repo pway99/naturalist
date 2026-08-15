@@ -3,12 +3,15 @@ package com.naturalist.chemistry;
 import com.naturalist.catalog.*;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
+import com.naturalist.chemistry.TestChemistryIdentifiers.Elements;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Products;
 import com.naturalist.chemistry.catalog.ChemistryCatalogContribution;
 import com.naturalist.chemistry.compound.CompoundQuery;
-import com.naturalist.chemistry.compound.CompoundQueryTestSupport;
+import com.naturalist.chemistry.compound.CompoundQueryTestContextInternal;
+import com.naturalist.chemistry.element.ElementQuery;
+import com.naturalist.chemistry.element.ElementQueryTestContextInternal;
 import com.naturalist.chemistry.product.ProductQuery;
-import com.naturalist.chemistry.product.ProductQueryTestSupport;
+import com.naturalist.chemistry.product.ProductQueryTestContextInternal;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.data.Pages;
 import com.naturalist.exception.InvariantViolationException;
@@ -22,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Lives in {@code com.naturalist.chemistry} (not {@code .catalog}) and uses the
- * package-friendly {@code *QueryTestSupport} classes in each sub-package so a
+ * package-friendly {@code *QueryTestContextInternal} classes in each sub-package so a
  * single test can wire both compounds and products without exposing either
  * sub-context's package-private mocks and adapters.
  */
@@ -32,10 +35,11 @@ class ChemistryCatalogContributionTest {
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     private final CompoundQuery.CompoundEntityQuery compounds =
-            CompoundQueryTestSupport.createEntityQuery(db);
-    private final ProductQuery products = ProductQueryTestSupport.createQuery(db);
+            CompoundQueryTestContextInternal.createEntityQuery(db);
+    private final ProductQuery products = ProductQueryTestContextInternal.createQuery(db);
+    private final ElementQuery elements = ElementQueryTestContextInternal.createQuery(db);
     private final ChemistryCatalogContribution contribution =
-            new ChemistryCatalogContribution(compounds, products);
+            new ChemistryCatalogContribution(compounds, products, elements);
 
     @Test
     void domainIsChemistry() {
@@ -44,24 +48,32 @@ class ChemistryCatalogContributionTest {
 
     @Test
     void constructorRejectsNullCompoundQuery() {
-        assertThatThrownBy(() -> new ChemistryCatalogContribution(null, products))
+        assertThatThrownBy(() -> new ChemistryCatalogContribution(null, products, elements))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("compounds");
     }
 
     @Test
     void constructorRejectsNullProductQuery() {
-        assertThatThrownBy(() -> new ChemistryCatalogContribution(compounds, null))
+        assertThatThrownBy(() -> new ChemistryCatalogContribution(compounds, null, elements))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("products");
     }
 
     @Test
-    void contributionEmitsOneSearchableEntityPerCompoundAndProduct() {
+    void constructorRejectsNullElementQuery() {
+        assertThatThrownBy(() -> new ChemistryCatalogContribution(compounds, products, null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("elements");
+    }
+
+    @Test
+    void contributionEmitsOneSearchableEntityPerCompoundAndProductAndElement() {
         long compoundCount = Pages.stream(1000, compounds::findPage).count();
         long productCount = Pages.stream(1000, products::findPage).count();
+        long elementCount = Pages.stream(1000, elements::findPage).count();
         assertThat(contribution.searchableEntities().count())
-                .isEqualTo(compoundCount + productCount);
+                .isEqualTo(compoundCount + productCount + elementCount);
     }
 
     @Test
@@ -118,6 +130,35 @@ class ChemistryCatalogContributionTest {
         assertThat(targetsOf(catalog.search("Apiguard")))
                 .as("display name 'Apiguard' should resolve to %s", expected)
                 .contains(expected);
+    }
+
+    @Test
+    void elementIsReachableThroughItsSlug() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+        EntityRef expected = new EntityRef(new ChemistryDomain(), Elements.Ca);
+
+        assertThat(catalog.search("calcium").stream())
+                .as("slug 'calcium' should resolve to %s as EXACT_SLUG", expected)
+                .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
+    }
+
+    @Test
+    void elementIsReachableThroughItsSymbol() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+        EntityRef expected = new EntityRef(new ChemistryDomain(), Elements.Zn);
+
+        assertThat(catalog.search("Zn").stream())
+                .as("symbol 'Zn' should resolve to %s", expected)
+                .anyMatch(h -> h.target().equals(expected));
+    }
+
+    @Test
+    void findBySlugResolvesAnElementToTheChemistryDomain() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+
+        assertThat(catalog.findBySlug("boron"))
+                .get()
+                .isEqualTo(new EntityRef(new ChemistryDomain(), Elements.B));
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.naturalist.chemistry.element;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Locale;
 
 /**
  * The 118 confirmed elements of the periodic table.
@@ -144,12 +145,14 @@ public enum PeriodicElement {
     Og(118, "Oganesson", 294.0);
 
     private final int atomicNumber;
+    private final String displayName;
     private final ElementName name;
     private final BigDecimal atomicWeight;
 
-    PeriodicElement(int atomicNumber, String name, double atomicWeight) {
+    PeriodicElement(int atomicNumber, String displayName, double atomicWeight) {
         this.atomicNumber = atomicNumber;
-        this.name = ElementName.of(name);
+        this.displayName = displayName;
+        this.name = ElementName.of(displayName.toLowerCase(Locale.ROOT));
         this.atomicWeight = BigDecimal.valueOf(atomicWeight).setScale(4, RoundingMode.HALF_UP);
     }
 
@@ -161,10 +164,15 @@ public enum PeriodicElement {
         return name();
     }
 
-    public ElementName periodicName() {
-        return ElementName.of(name());
+    /** The element's printed name, e.g. {@code "Calcium"}. Display only. */
+    public String displayName() {
+        return displayName;
     }
 
+    /**
+     * The element's catalog slug, e.g. {@code "calcium"} — a valid lower-kebab
+     * {@link ElementName}, and the key an {@code Element} entity is stored under.
+     */
     public ElementName elementName() {
         return name;
     }

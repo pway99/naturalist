@@ -43,14 +43,20 @@ public class TestChemistryIdentifiers {
         private Elements() {
         }
 
+        public static final ElementName B = ElementName.of("boron");
         public static final ElementName C = ElementName.of("carbon");
         public static final ElementName Ca = ElementName.of("calcium");
         public static final ElementName Cl = ElementName.of("chlorine");
+        public static final ElementName Cu = ElementName.of("copper");
+        public static final ElementName Fe = ElementName.of("iron");
         public static final ElementName H = ElementName.of("hydrogen");
         public static final ElementName K = ElementName.of("potassium");
         public static final ElementName Mg = ElementName.of("magnesium");
+        public static final ElementName Mn = ElementName.of("manganese");
+        public static final ElementName Na = ElementName.of("sodium");
         public static final ElementName O = ElementName.of("oxygen");
         public static final ElementName S = ElementName.of("sulfur");
+        public static final ElementName Zn = ElementName.of("zinc");
 
         /**
          * Fictitious element name — guaranteed absent from the catalog.

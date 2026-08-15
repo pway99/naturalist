@@ -68,5 +68,47 @@
     "atomicWeight": 16.00,
     "ionicForm": "O2-",
     "ionicCharge": -2
+  },
+  {
+    "name": "sodium",
+    "symbol": "Na",
+    "atomicWeight": 22.99,
+    "ionicForm": "Na+",
+    "ionicCharge": 1
+  },
+  {
+    "name": "zinc",
+    "symbol": "Zn",
+    "atomicWeight": 65.38,
+    "ionicForm": "Zn2+",
+    "ionicCharge": 2
+  },
+  {
+    "name": "manganese",
+    "symbol": "Mn",
+    "atomicWeight": 54.94,
+    "ionicForm": "Mn2+",
+    "ionicCharge": 2
+  },
+  {
+    "name": "iron",
+    "symbol": "Fe",
+    "atomicWeight": 55.85,
+    "ionicForm": "Fe2+",
+    "ionicCharge": 2
+  },
+  {
+    "name": "copper",
+    "symbol": "Cu",
+    "atomicWeight": 63.55,
+    "ionicForm": "Cu2+",
+    "ionicCharge": 2
+  },
+  {
+    "name": "boron",
+    "symbol": "B",
+    "atomicWeight": 10.81,
+    "ionicForm": "H3BO3",
+    "ionicCharge": 0
   }
 ]

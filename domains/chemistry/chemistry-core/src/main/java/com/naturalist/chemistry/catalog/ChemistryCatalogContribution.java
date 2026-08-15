@@ -6,6 +6,8 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.chemistry.ChemistryDomain;
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundQuery;
+import com.naturalist.chemistry.element.Element;
+import com.naturalist.chemistry.element.ElementQuery;
 import com.naturalist.chemistry.product.Product;
 import com.naturalist.chemistry.product.ProductQuery;
 import com.naturalist.data.Pages;
@@ -25,6 +27,8 @@ import java.util.stream.Stream;
  *       Dihydrate"}, {@code "CaSO4·2H2O"}).</li>
  *   <li><b>Product</b> — slug and {@code displayName} (e.g. {@code "apiguard"},
  *       {@code "Apiguard (Véto-pharma)"}).</li>
+ *   <li><b>Element</b> — slug and IUPAC symbol (e.g. {@code "calcium"},
+ *       {@code "Ca"}).</li>
  * </ul>
  *
  * <h2>Token collisions are normal</h2>
@@ -47,15 +51,20 @@ public class ChemistryCatalogContribution implements CatalogContribution {
 
     private final CompoundQuery.CompoundEntityQuery compounds;
     private final ProductQuery products;
+    private final ElementQuery elements;
 
-    public ChemistryCatalogContribution(CompoundQuery.CompoundEntityQuery compounds, ProductQuery products) {
+    public ChemistryCatalogContribution(CompoundQuery.CompoundEntityQuery compounds,
+                                        ProductQuery products,
+                                        ElementQuery elements) {
         Observer.forClass(ChemistryCatalogContribution.class)
                 .arguments("constructor", i -> i
                         .notNull(compounds, "compounds")
-                        .notNull(products, "products"))
+                        .notNull(products, "products")
+                        .notNull(elements, "elements"))
                 .throwWhenInvalid();
         this.compounds = compounds;
         this.products = products;
+        this.elements = elements;
     }
 
     @Override
@@ -65,7 +74,7 @@ public class ChemistryCatalogContribution implements CatalogContribution {
 
     @Override
     public Stream<SearchableEntity> searchableEntities() {
-        return Stream.concat(compoundEntities(), productEntities());
+        return Stream.concat(Stream.concat(compoundEntities(), productEntities()), elementEntities());
     }
 
     private Stream<SearchableEntity> compoundEntities() {
@@ -78,6 +87,11 @@ public class ChemistryCatalogContribution implements CatalogContribution {
                 .map(ChemistryCatalogContribution::toSearchableProduct);
     }
 
+    private Stream<SearchableEntity> elementEntities() {
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, elements::findPage)
+                .map(ChemistryCatalogContribution::toSearchableElement);
+    }
+
     private static SearchableEntity toSearchableCompound(Compound compound) {
         EntityRef target = new EntityRef(DOMAIN, compound.name());
         return new SearchableEntity(target, compoundTokens(compound));
@@ -86,6 +100,11 @@ public class ChemistryCatalogContribution implements CatalogContribution {
     private static SearchableEntity toSearchableProduct(Product product) {
         EntityRef target = new EntityRef(DOMAIN, product.name());
         return new SearchableEntity(target, productTokens(product));
+    }
+
+    private static SearchableEntity toSearchableElement(Element element) {
+        EntityRef target = new EntityRef(DOMAIN, element.name());
+        return new SearchableEntity(target, elementTokens(element));
     }
 
     private static Stream<String> compoundTokens(Compound compound) {
@@ -99,5 +118,11 @@ public class ChemistryCatalogContribution implements CatalogContribution {
         return Stream.of(
                 product.name().value(),
                 product.displayName());
+    }
+
+    private static Stream<String> elementTokens(Element element) {
+        return Stream.of(
+                element.name().value(),
+                element.symbol());
     }
 }

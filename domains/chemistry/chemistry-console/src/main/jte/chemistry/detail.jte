@@ -5,6 +5,7 @@
 @param boolean hasDepiction = false
 @param String depictionNote = null
 @param BackReferencesViewModel backReferences = new BackReferencesViewModel(java.util.List.of())
+@param java.util.Set<String> linkableElements = java.util.Set.of()
 
 @template.layout.page(title = compound.name().value(), content = @`
     <a href="/chemistry" class="naturalist-backlink">&larr; Back to catalog</a>
@@ -63,7 +64,12 @@
             </summary>
             <ul>
                 @for(var element : compound.compoundInfo().constituentElements())
-                    <li>${element.name()} &mdash; ${element.elementName().value()}</li>
+                    @if(linkableElements.contains(element.elementName().value()))
+                        <li>${element.symbol()} &mdash;
+                            <a href="/chemistry/elements/${element.elementName().value()}">${element.displayName()}</a></li>
+                    @else
+                        <li>${element.symbol()} &mdash; ${element.displayName()}</li>
+                    @endif
                 @endfor
             </ul>
         </details>

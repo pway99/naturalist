@@ -14,7 +14,7 @@ class ElementQueryImplTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    ElementRepository repository = new ElemenEntitytRepositoryMock(db);
+    ElementRepository repository = new ElementEntityRepositoryMock(db);
     ElementQuery elementQuery = new ElementQueryImpl(repository);
 
     @Test
