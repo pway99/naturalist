@@ -1,7 +1,10 @@
 package com.naturalist.soil.observation;
 
+import com.naturalist.chemistry.element.ElementName;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The canonical catalog of soil nutrients FGL reports, each paired with its agronomic
@@ -83,6 +86,48 @@ public final class Nutrients {
             Map.entry(COPPER, "Copper"),
             Map.entry(BORON, "Boron"),
             Map.entry(CHLORIDE, "Chloride"));
+
+    /**
+     * The substance each nutrient row measures, and the form the lab prints it in — soil's
+     * outbound reference into the chemistry catalog. Kept here beside the categories and
+     * printed names because all three answer "what is this row?" for the same 17 slugs.
+     * <p>
+     * The exchangeable / soluble fractions collapse to one substance on purpose: both
+     * calcium rows are calcium, and the split describes the extraction, not the element.
+     */
+    private static final Map<NutrientName, NutrientChemistry> CHEMISTRY = Map.ofEntries(
+            chemistry(NITRATE_N, "nitrogen", ReportedForm.ION),
+            chemistry(PHOSPHORUS_P2O5, "phosphorus", ReportedForm.OXIDE_EQUIVALENT),
+            chemistry(POTASSIUM_EXCHANGEABLE, "potassium", ReportedForm.OXIDE_EQUIVALENT),
+            chemistry(POTASSIUM_SOLUBLE, "potassium", ReportedForm.OXIDE_EQUIVALENT),
+            chemistry(CALCIUM_EXCHANGEABLE, "calcium", ReportedForm.ELEMENTAL),
+            chemistry(CALCIUM_SOLUBLE, "calcium", ReportedForm.ELEMENTAL),
+            chemistry(MAGNESIUM_EXCHANGEABLE, "magnesium", ReportedForm.ELEMENTAL),
+            chemistry(MAGNESIUM_SOLUBLE, "magnesium", ReportedForm.ELEMENTAL),
+            chemistry(SODIUM_EXCHANGEABLE, "sodium", ReportedForm.ELEMENTAL),
+            chemistry(SODIUM_SOLUBLE, "sodium", ReportedForm.ELEMENTAL),
+            chemistry(SULFATE, "sulfur", ReportedForm.ION),
+            chemistry(ZINC, "zinc", ReportedForm.ELEMENTAL),
+            chemistry(MANGANESE, "manganese", ReportedForm.ELEMENTAL),
+            chemistry(IRON, "iron", ReportedForm.ELEMENTAL),
+            chemistry(COPPER, "copper", ReportedForm.ELEMENTAL),
+            chemistry(BORON, "boron", ReportedForm.ELEMENTAL),
+            chemistry(CHLORIDE, "chlorine", ReportedForm.ION));
+
+    private static Map.Entry<NutrientName, NutrientChemistry> chemistry(
+            NutrientName nutrient, String elementSlug, ReportedForm form) {
+        return Map.entry(nutrient,
+                NutrientChemistry.of(nutrient, ElementName.of(elementSlug), form));
+    }
+
+    /**
+     * The substance this nutrient measures, or empty for a nutrient outside the catalog —
+     * the same liberty {@link #printedNameOf} takes. A reader's row renders either way;
+     * only the link is lost.
+     */
+    public static Optional<NutrientChemistry> chemistryOf(NutrientName name) {
+        return Optional.ofNullable(CHEMISTRY.get(name));
+    }
 
     /**
      * The label FGL prints for this nutrient, or the slug itself for a nutrient not in the
