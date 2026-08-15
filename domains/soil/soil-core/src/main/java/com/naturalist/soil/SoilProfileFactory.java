@@ -70,34 +70,44 @@ class SoilProfileFactory {
 
     private LabAnalysis assembleAnalysis(LabAnalysisInfo info) {
         NutrientPanel panel = assemblePanel(nutrientReadingQuery.forLabAnalysisId(info.id()).stream().toList());
-        SoilPhysicalCharacteristics physical = physicalCharacteristicsQuery.forLabAnalysisId(info.id()).orElse(null);
-        return new LabAnalysis(info, panel, physical);
+        return new LabAnalysis(info, panel, physicalCharacteristicsQuery.forLabAnalysisId(info.id()));
     }
 
+    /**
+     * Buckets an analysis's readings into the panel's named slots. A slot with no matching reading
+     * stays empty — the lab did not report that nutrient. This is the intended path, not a
+     * degraded one: the slots name the FGL tomato panel, and another crop's panel legitimately
+     * omits rows.
+     */
     private NutrientPanel assemblePanel(List<NutrientReading> readings) {
         Map<NutrientName, NutrientReading> byName = readings.stream()
                 .collect(Collectors.toMap(NutrientReading::nutrientName, Function.identity(), (a, b) -> a));
         return new NutrientPanel(
                 new PrimaryNutrients(
-                        byName.get(Nutrients.NITRATE_N),
-                        byName.get(Nutrients.PHOSPHORUS_P2O5),
-                        byName.get(Nutrients.POTASSIUM_EXCHANGEABLE),
-                        byName.get(Nutrients.POTASSIUM_SOLUBLE)),
+                        slot(byName, Nutrients.NITRATE_N),
+                        slot(byName, Nutrients.PHOSPHORUS_P2O5),
+                        slot(byName, Nutrients.POTASSIUM_EXCHANGEABLE),
+                        slot(byName, Nutrients.POTASSIUM_SOLUBLE)),
                 new SecondaryNutrients(
-                        byName.get(Nutrients.CALCIUM_EXCHANGEABLE),
-                        byName.get(Nutrients.CALCIUM_SOLUBLE),
-                        byName.get(Nutrients.MAGNESIUM_EXCHANGEABLE),
-                        byName.get(Nutrients.MAGNESIUM_SOLUBLE),
-                        byName.get(Nutrients.SODIUM_EXCHANGEABLE),
-                        byName.get(Nutrients.SODIUM_SOLUBLE),
-                        byName.get(Nutrients.SULFATE)),
+                        slot(byName, Nutrients.CALCIUM_EXCHANGEABLE),
+                        slot(byName, Nutrients.CALCIUM_SOLUBLE),
+                        slot(byName, Nutrients.MAGNESIUM_EXCHANGEABLE),
+                        slot(byName, Nutrients.MAGNESIUM_SOLUBLE),
+                        slot(byName, Nutrients.SODIUM_EXCHANGEABLE),
+                        slot(byName, Nutrients.SODIUM_SOLUBLE),
+                        slot(byName, Nutrients.SULFATE)),
                 new MicroNutrients(
-                        byName.get(Nutrients.ZINC),
-                        byName.get(Nutrients.MANGANESE),
-                        byName.get(Nutrients.IRON),
-                        byName.get(Nutrients.COPPER),
-                        byName.get(Nutrients.BORON),
-                        byName.get(Nutrients.CHLORIDE)));
+                        slot(byName, Nutrients.ZINC),
+                        slot(byName, Nutrients.MANGANESE),
+                        slot(byName, Nutrients.IRON),
+                        slot(byName, Nutrients.COPPER),
+                        slot(byName, Nutrients.BORON),
+                        slot(byName, Nutrients.CHLORIDE)));
+    }
+
+    private static Optional<NutrientReading> slot(Map<NutrientName, NutrientReading> byName,
+                                                  NutrientName nutrientName) {
+        return Optional.ofNullable(byName.get(nutrientName));
     }
 
     private SoilProfile observe(SoilProfile soilProfile) {

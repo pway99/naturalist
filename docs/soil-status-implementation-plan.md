@@ -273,7 +273,7 @@ migrate.
 
 ## Phase 1 — Panel tolerance (blocks August ingest)
 
-**Brief §5.1. Depends on D-1.**
+**Brief §5.1. Depends on D-1. Implemented 2026-08-14.**
 
 The August report cannot be loaded at all if FGL's lettuce panel differs from
 the seventeen tomato-panel rows. This is the only phase with a hard external

@@ -19,8 +19,6 @@
         @for(var analysis : profile.labAnalyses())
             !{var a = analysis.info();}
             !{var panel = analysis.nutrients();}
-            !{var chars = analysis.physicalCharacteristics();}
-            !{var bs = chars.cationBaseSaturation();}
             <section class="analysis">
                 <h2>${a.sampleDate().toString()} — ${a.crop().value()}</h2>
                 <p class="analysis-provenance">${a.labId()} · sample ${a.labSampleId()}</p>
@@ -65,27 +63,33 @@
                     </tbody>
                 </table>
 
-                <h3>Physical &amp; derived</h3>
-                <table>
-                    <tbody>
-                        <tr><td>pH</td><td>${chars.pH().value().toString()}</td></tr>
-                        <tr><td>$unsafe{glossaryLinker.linkHtml("Soil salinity (EC)", a.sampleDate().toString())}</td><td>${chars.ecDsPerMeter().value().toString()} dS/m</td></tr>
-                        <tr><td>$unsafe{glossaryLinker.linkHtml("CEC", a.sampleDate().toString())}</td><td>${chars.cecMeqPer100g().value().toString()} meq/100g</td></tr>
-                        <tr><td>$unsafe{glossaryLinker.linkHtml("Limestone", a.sampleDate().toString())}</td><td>${chars.limestonePct().value().toString()} %</td></tr>
-                        <tr><td>$unsafe{glossaryLinker.linkHtml("Saturation", a.sampleDate().toString())}</td><td>${chars.saturationPct().value().toString()} %</td></tr>
-                    </tbody>
-                </table>
+                @if(analysis.physicalCharacteristics().isPresent())
+                    !{var chars = analysis.physicalCharacteristics().get();}
+                    !{var bs = chars.cationBaseSaturation();}
+                    <h3>Physical &amp; derived</h3>
+                    <table>
+                        <tbody>
+                            <tr><td>pH</td><td>${chars.pH().value().toString()}</td></tr>
+                            <tr><td>$unsafe{glossaryLinker.linkHtml("Soil salinity (EC)", a.sampleDate().toString())}</td><td>${chars.ecDsPerMeter().value().toString()} dS/m</td></tr>
+                            <tr><td>$unsafe{glossaryLinker.linkHtml("CEC", a.sampleDate().toString())}</td><td>${chars.cecMeqPer100g().value().toString()} meq/100g</td></tr>
+                            <tr><td>$unsafe{glossaryLinker.linkHtml("Limestone", a.sampleDate().toString())}</td><td>${chars.limestonePct().value().toString()} %</td></tr>
+                            <tr><td>$unsafe{glossaryLinker.linkHtml("Saturation", a.sampleDate().toString())}</td><td>${chars.saturationPct().value().toString()} %</td></tr>
+                        </tbody>
+                    </table>
 
-                <h3>Cation base saturation</h3>
-                <table>
-                    <tbody>
-                        <tr><td>Calcium</td><td>${bs.calciumPct().toString()} %</td></tr>
-                        <tr><td>Magnesium</td><td>${bs.magnesiumPct().toString()} %</td></tr>
-                        <tr><td>Potassium</td><td>${bs.potassiumPct().toString()} %</td></tr>
-                        <tr><td>Sodium</td><td>${bs.sodiumPct().toString()} %</td></tr>
-                        <tr><td>Hydrogen</td><td>${bs.hydrogenPct().toString()} %</td></tr>
-                    </tbody>
-                </table>
+                    <h3>Cation base saturation</h3>
+                    <table>
+                        <tbody>
+                            <tr><td>Calcium</td><td>${bs.calciumPct().toString()} %</td></tr>
+                            <tr><td>Magnesium</td><td>${bs.magnesiumPct().toString()} %</td></tr>
+                            <tr><td>Potassium</td><td>${bs.potassiumPct().toString()} %</td></tr>
+                            <tr><td>Sodium</td><td>${bs.sodiumPct().toString()} %</td></tr>
+                            <tr><td>Hydrogen</td><td>${bs.hydrogenPct().toString()} %</td></tr>
+                        </tbody>
+                    </table>
+                @else
+                    <p class="not-reported"><em>No physical or derived measurements on record for this analysis.</em></p>
+                @endif
             </section>
         @endfor
     @endif

@@ -1840,3 +1840,17 @@ figure.compound-depiction img {
 .field-mark-group li {
     margin-bottom: 0.2rem;
 }
+
+/* A nutrient row the lab did not report. Distinct from a measured zero on
+   purpose: a zero is a result, an unreported row is a test that was never run,
+   and an interpretation that confuses the two reads an unrun panel as depleted
+   soil. Muted and italic so the row still holds its place in the panel — the
+   absence is the information. */
+.not-reported {
+    color: var(--sepia-ink-soft);
+    font-style: italic;
+}
+
+.not-reported td {
+    cursor: help;
+}
