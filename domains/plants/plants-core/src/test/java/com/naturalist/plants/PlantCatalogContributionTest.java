@@ -20,9 +20,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Lives in {@code com.naturalist.plants} (not {@code .catalog}) so the test can
- * see the package-private {@link PlantEntityQueryImpl} and the
- * protected-constructor {@link PlantEntityRepositoryMock} without exposing
- * either to the wider test classpath.
+ * see the package-private {@link PlantEntityQueryImpl} and the package-private
+ * {@link PlantEntityRepositoryMock} without exposing either to the wider test
+ * classpath.
  */
 class PlantCatalogContributionTest {
 

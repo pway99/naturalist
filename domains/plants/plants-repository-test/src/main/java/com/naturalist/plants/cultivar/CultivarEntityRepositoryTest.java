@@ -3,11 +3,17 @@ package com.naturalist.plants.cultivar;
 import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.TestPlantsIdentifiers;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link CultivarRepository.CultivarEntityRepository}.
@@ -98,5 +104,29 @@ interface CultivarEntityRepositoryTest
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    default void getByPlantName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByPlantName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("plantName");
+    }
+
+    @Test
+    default void getByPlantName_returnsCultivarsWithMatchingPlantName() {
+        var results = repository().getByPlantName(TestPlantsIdentifiers.Plants.Tomato.name);
+
+        assertThat(results)
+                .extracting(Cultivar::name)
+                .extracting(CultivarName::value)
+                .contains("amish-paste", "italian-pear-nicks");
+    }
+
+    @Test
+    default void getByPlantName_returnsEmptyForUnknownPlant() {
+        var results = repository().getByPlantName(TestPlantsIdentifiers.Plants.NotFound.name);
+
+        assertThat(results).isEmpty();
     }
 }

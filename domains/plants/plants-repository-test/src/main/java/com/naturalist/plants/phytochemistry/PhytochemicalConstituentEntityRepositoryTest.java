@@ -5,13 +5,19 @@ import com.naturalist.chemistry.TestChemistryIdentifiers;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.plants.PlantName;
 import com.naturalist.plants.TestPlantsIdentifiers;
 import com.naturalist.plants.phytochemistry.role.PhytochemicalRole;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link PhytochemicalConstituentRepository.PhytochemicalConstituentEntityRepository}.
@@ -114,5 +120,59 @@ interface PhytochemicalConstituentEntityRepositoryTest
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    default void getByPlantName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByPlantName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("plantName");
+    }
+
+    @Test
+    default void getByPlantName_returnsConstituentsWithMatchingPlantName() {
+        var results = repository().getByPlantName(
+                TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
+
+        assertThat(results)
+                .extracting(PhytochemicalConstituent::name)
+                .extracting(PhytochemicalConstituentName::value)
+                .contains(
+                        "aristolochia-californica-aristolochic-acid-i",
+                        "aristolochia-californica-aristolochic-acid-ii");
+    }
+
+    @Test
+    default void getByPlantName_returnsEmptyForUnknownPlant() {
+        var results = repository().getByPlantName(TestPlantsIdentifiers.Plants.NotFound.name);
+
+        assertThat(results).isEmpty();
+    }
+
+    @Test
+    default void getByCompoundName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByCompoundName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("compoundName");
+    }
+
+    @Test
+    default void getByCompoundName_returnsConstituentsAcrossPlants() {
+        // The cross-domain reverse lookup that PlantCompoundReferences depends on:
+        // "which plants are known to produce this compound?"
+        var results = repository().getByCompoundName(
+                TestChemistryIdentifiers.Compounds.Thymol.name);
+
+        assertThat(results)
+                .extracting(PhytochemicalConstituent::name)
+                .extracting(PhytochemicalConstituentName::value)
+                .contains("creeping-thyme-thymol");
+    }
+
+    @Test
+    default void getByCompoundName_returnsEmptyForUnknownCompound() {
+        var results = repository().getByCompoundName(CompoundName.of("unobtainium-oxide"));
+
+        assertThat(results).isEmpty();
     }
 }

@@ -3,11 +3,17 @@ package com.naturalist.plants.heritage;
 import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.plants.TestPlantsIdentifiers;
 import com.naturalist.plants.cultivar.CultivarName;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link SeedLineageRepository.SeedLineageEntityRepository}.
@@ -97,5 +103,31 @@ interface SeedLineageEntityRepositoryTest
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    default void getByCultivarName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByCultivarName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("cultivarName");
+    }
+
+    @Test
+    default void getByCultivarName_returnsLineagesWithMatchingCultivarName() {
+        var results = repository().getByCultivarName(
+                TestPlantsIdentifiers.Plants.Tomato.Cultivars.AmishPaste.name);
+
+        assertThat(results)
+                .extracting(SeedLineage::name)
+                .extracting(SeedLineageName::value)
+                .contains("amish-paste-baker-creek");
+    }
+
+    @Test
+    default void getByCultivarName_returnsEmptyForUnknownCultivar() {
+        var results = repository().getByCultivarName(
+                TestPlantsIdentifiers.Plants.NotFound.cultivarName);
+
+        assertThat(results).isEmpty();
     }
 }

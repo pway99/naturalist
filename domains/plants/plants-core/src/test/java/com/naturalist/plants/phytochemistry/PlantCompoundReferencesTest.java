@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Lives in {@code com.naturalist.plants.phytochemistry} (not {@code .catalog})
  * so the test can see the package-private {@link PhytochemicalConstituentEntityQueryImpl}
- * and the protected-constructor {@link PhytochemicalConstituentEntityRepositoryMock}
+ * and the package-private {@link PhytochemicalConstituentEntityRepositoryMock}
  * without exposing either to the wider test classpath.
  */
 class PlantCompoundReferencesTest {

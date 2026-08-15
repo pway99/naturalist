@@ -8,18 +8,21 @@ import com.naturalist.plants.PlantName;
 import java.util.List;
 
 @DomainService
-public class CultivarEntityRepositoryMock
+class CultivarEntityRepositoryMock
         extends AbstractTestEntityRepository<CultivarName, Cultivar, CultivarTestEntitySource>
         implements CultivarRepository.CultivarEntityRepository {
 
-    protected CultivarEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    CultivarEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 
     @Override
     public List<Cultivar> getByPlantName(PlantName plantName) {
+        observer().arguments("getByPlantName",
+                        i -> i.entityName(plantName, "plantName"))
+                .throwWhenInvalid();
         return testEntitySource().entityStream()
-                .filter(c -> c.plantName().equals(plantName))
+                .filter(c -> plantName.equals(c.plantName()))
                 .toList();
     }
 }

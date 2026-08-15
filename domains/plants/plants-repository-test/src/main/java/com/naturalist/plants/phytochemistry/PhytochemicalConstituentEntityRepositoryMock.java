@@ -9,25 +9,31 @@ import com.naturalist.plants.PlantName;
 import java.util.List;
 
 @DomainService
-public class PhytochemicalConstituentEntityRepositoryMock
+class PhytochemicalConstituentEntityRepositoryMock
         extends AbstractTestEntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent, PhytochemicalConstituentTestEntitySource>
         implements PhytochemicalConstituentRepository.PhytochemicalConstituentEntityRepository {
 
-    protected PhytochemicalConstituentEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    PhytochemicalConstituentEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 
     @Override
     public List<PhytochemicalConstituent> getByPlantName(PlantName plantName) {
+        observer().arguments("getByPlantName",
+                        i -> i.entityName(plantName, "plantName"))
+                .throwWhenInvalid();
         return testEntitySource().entityStream()
-                .filter(c -> c.plantName().equals(plantName))
+                .filter(c -> plantName.equals(c.plantName()))
                 .toList();
     }
 
     @Override
     public List<PhytochemicalConstituent> getByCompoundName(CompoundName compoundName) {
+        observer().arguments("getByCompoundName",
+                        i -> i.entityName(compoundName, "compoundName"))
+                .throwWhenInvalid();
         return testEntitySource().entityStream()
-                .filter(c -> c.compoundName().equals(compoundName))
+                .filter(c -> compoundName.equals(c.compoundName()))
                 .toList();
     }
 }
