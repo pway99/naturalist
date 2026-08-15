@@ -76,9 +76,41 @@ class SoilConsoleTemplateTest {
         assertThat(html).contains("7.2");             // pH
         assertThat(html).contains("44.9");            // CEC
         assertThat(html).contains("SAR (sodium adsorption ratio)");
+        // The optimum the lab printed, in the lab's own notation, beside each value.
+        assertThat(html).contains("5.3 - 7.2");
+        assertThat(html).contains("&lt; 19");           // soluble sodium's ceiling, no invented floor
+        // Any verdict on the page says whose it is.
+        assertThat(html).contains("our comparison against the lab's printed range");
+        assertThat(html).contains("as printed by the lab");
+        // ...and never claims a band or a position within one.
+        assertThat(html).doesNotContain("Moderately");
+        assertThat(html).doesNotContain("Very Low");
         // Hydrogen was below the lab's detection limit — shown as a bound, and the sum as a range.
         assertThat(html).contains("&lt; 1.00");
         assertThat(html).contains("hydrogen was below the detection limit");
+    }
+
+    /**
+     * The lab's advice renders with "apply none" distinguishable from a row that is simply
+     * missing, and the censored gypsum requirement as a bound rather than a measurement.
+     */
+    @Test
+    void profile_rendersRecommendationsWithNoneDistinctFromAbsent() {
+        NaturalistDatabase db = NaturalistDatabase.create();
+        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+                .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render("soil/profile.jte",
+                Map.of("profile", box1, "glossaryLinker", GlossaryLinker.none()), output);
+
+        String html = output.toString();
+        assertThat(html).contains("What the lab recommended");
+        assertThat(html).contains("11.2");                       // potassium, an actual application
+        assertThat(html).contains("advised-none");               // "apply none" is advice, styled as such
+        assertThat(html).contains("recommended applying none");
+        assertThat(html).contains("&lt; 0.50");                  // the censored gypsum requirement
+        assertThat(html).contains("tons/AF");
     }
 
     @Test

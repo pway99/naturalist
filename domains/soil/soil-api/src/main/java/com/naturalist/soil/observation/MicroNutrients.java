@@ -5,6 +5,7 @@ import com.naturalist.observability.Constraints;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * The micronutrient readings assembled for one analysis — the FGL "Micro Nutrients" section: zinc,
@@ -31,6 +32,11 @@ public record MicroNutrients(
         copper = NutrientPanel.slot(copper);
         boron = NutrientPanel.slot(boron);
         chloride = NutrientPanel.slot(chloride);
+    }
+
+    /** The readings this section actually carries, in printed order. Absent slots are skipped. */
+    public Stream<NutrientReading> present() {
+        return Stream.of(zinc, manganese, iron, copper, boron, chloride).flatMap(Optional::stream);
     }
 
     @Override

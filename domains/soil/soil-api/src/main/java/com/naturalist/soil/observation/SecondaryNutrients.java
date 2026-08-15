@@ -5,6 +5,7 @@ import com.naturalist.observability.Constraints;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * The secondary nutrient readings assembled for one analysis — the FGL "Secondary Nutrients"
@@ -32,6 +33,12 @@ public record SecondaryNutrients(
         sodiumExch = NutrientPanel.slot(sodiumExch);
         sodiumSoluble = NutrientPanel.slot(sodiumSoluble);
         sulfate = NutrientPanel.slot(sulfate);
+    }
+
+    /** The readings this section actually carries, in printed order. Absent slots are skipped. */
+    public Stream<NutrientReading> present() {
+        return Stream.of(calciumExch, calciumSoluble, magnesiumExch, magnesiumSoluble,
+                        sodiumExch, sodiumSoluble, sulfate).flatMap(Optional::stream);
     }
 
     @Override

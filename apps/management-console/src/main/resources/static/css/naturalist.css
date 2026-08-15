@@ -1854,3 +1854,26 @@ figure.compound-depiction img {
 .not-reported td {
     cursor: help;
 }
+
+/* Our comparison of a reading against the lab's printed range — never the
+   lab's own five-band verdict, which we do not store. Deliberately quiet: it
+   is a position, not an alarm, and the two can disagree. */
+.verdict {
+    font-variant: small-caps;
+    letter-spacing: 0.03em;
+    opacity: 0.85;
+    cursor: help;
+}
+
+/* "The lab recommended applying none." Distinct from an unreported row: this
+   is advice, and styling it as absence would lose that. */
+.advised-none {
+    font-variant: small-caps;
+    cursor: help;
+}
+
+.assessment-source {
+    font-size: 0.85em;
+    color: var(--sepia-ink-soft);
+    margin-top: 0.75rem;
+}

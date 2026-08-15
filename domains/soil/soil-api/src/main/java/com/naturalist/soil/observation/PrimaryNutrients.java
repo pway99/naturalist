@@ -5,6 +5,7 @@ import com.naturalist.observability.Constraints;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * The primary (macro) nutrient readings assembled for one analysis — the FGL "Primary Nutrients"
@@ -28,6 +29,11 @@ public record PrimaryNutrients(
         phosphorusP2O5 = NutrientPanel.slot(phosphorusP2O5);
         potassiumExch = NutrientPanel.slot(potassiumExch);
         potassiumSoluble = NutrientPanel.slot(potassiumSoluble);
+    }
+
+    /** The readings this section actually carries, in printed order. Absent slots are skipped. */
+    public Stream<NutrientReading> present() {
+        return Stream.of(nitrateN, phosphorusP2O5, potassiumExch, potassiumSoluble).flatMap(Optional::stream);
     }
 
     @Override

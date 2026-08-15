@@ -205,8 +205,8 @@ row" — never zero.
 
 ## What each phase changed
 
-Same graph, only the touched types. Phases 1–5 are implemented; the diagram
-below is the record of what each one did.
+Same graph, only the touched types. Phases 1–5 and 7 are implemented; the
+diagram below is the record of what each one did.
 
 ```mermaid
 classDiagram
@@ -284,17 +284,34 @@ classDiagram
     LabAnalysis *-- "0..*" ReportedOptimum : sibling of the panel
     ReportedOptimum *-- "1" OptimumRange
     ReportedOptimum ..> LabAnalysisInfo : labAnalysisId + nutrientName unique
+    class NutrientLine {
+        <<ReadModel — new, Phase 7>>
+        NutrientName nutrientName
+        Optional~NutrientReading~ reading
+        Optional~ReportedOptimum~ optimum
+        OptimumComparison comparison
+    }
+
+    class OptimumComparison {
+        <<ValueObject — new, Phase 7>>
+        Verdict verdict
+        AssessmentSource source
+    }
+
     LabAnalysis *-- "0..*" ReportedRecommendation : sibling of the panel
     ReportedRecommendation *-- "1" RecommendedAmount
+    LabAnalysis ..> NutrientLine : nutrientLines(category)
+    NutrientLine *-- "1" OptimumComparison
 ```
 
 Read the Phase 4 edge literally: `ReportedOptimum` hangs off `LabAnalysis`
 beside the panel, **not** as a component of `NutrientReading`. Putting a range
 on the reading fuses measurement with interpretation and violates §18.
 
-Phases 7 and 8 do not appear because they add nothing to this graph. Phase 7 moves constraints
-into the read model without changing its components; Phase 8's `CropProfile`
-lives in a peer module and applies over this graph rather than joining it.
+Phase 8 does not appear because it adds nothing to this graph: its
+`CropProfile` lives in a peer module and applies over this graph rather than
+joining it. Phase 7 adds only the projection `LabAnalysis.nutrientLines(...)`
+builds on demand — no stored fact changes.
 
 Phase 0 (the D-2 collapse) changes no type at all — it deletes rows. Two
 `SoilProfileInfo`s instead of four, `subZoneName` null on both, one
@@ -523,13 +540,31 @@ mistaken for an independent measurement, because no such profile exists.
 
 ## Phase 7 — Presentation rules
 
-**Brief §8. Depends on Phases 4 and 6.**
+**Brief §8. Depends on Phases 4 and 6. Implemented 2026-08-14.**
 
 Push the constraints into the read model rather than the templates: band
 position within a band is unknown, `None` is distinct from missing, source
 labels travel with any assessment. The console is read-only today, so this is
 a low-risk phase — but it should follow Phase 4 so there is something to
 label.
+
+**Each rule became a type, so a template cannot break it by omission.**
+
+| Rule | Enforced by |
+|---|---|
+| Band position is unknown | `OptimumComparison.Verdict` has three positions and `NOT_COMPARABLE`. There is no band component anywhere on `NutrientLine` to render. |
+| `None` is distinct from missing | `Optional` slots (Phase 1) and `RecommendedAmount.None` (Phase 5), rendered as "not reported" and "none" respectively, in different styles. |
+| Source labels travel | `OptimumComparison` carries an `AssessmentSource`; the console prints its label on every verdict and in a footnote. |
+
+**The rule that earned its keep.** Box 1's zinc reads 6.35 against a printed
+optimum of 0.39–4.0, so our arithmetic says *above range* — while FGL's own
+graphical bar for that row reads as satisfactory. The lab's five-band verdict
+uses information the report does not print as numbers, so we cannot reproduce
+it and must not appear to. `SoilProfileViewTest` pins this case.
+
+Also here: `OptimumRange.printedForm()` and `Nutrients.printedNameOf(...)`, so
+every view says what the page says rather than inventing its own notation, and
+the seventeen hand-maintained row labels leave the template.
 
 Explicitly out of scope until then: trend rendering. With two points per
 profile there is nothing to trend, and building the chart now guarantees a
@@ -568,7 +603,7 @@ D-1 Optional, D-2 collapse  (decided 2026-08-14)
                  └── Phase 4  ReportedOptimum + golden-master test  ✓ shipped
                         │
                         ├── Phase 5  reported recommendations  ✓ shipped
-                        └── Phase 7  presentation rules
+                        └── Phase 7  presentation rules  ✓ shipped
                                │
                                └── Phase 8  agronomy (blocked on garden domain)
 ```

@@ -1,5 +1,8 @@
 @import com.naturalist.soil.SoilProfile
 @import com.naturalist.library.console.GlossaryLinker
+@import com.naturalist.soil.observation.AssessmentSource
+@import com.naturalist.soil.observation.NutrientCategory
+@import com.naturalist.soil.observation.RecommendedAmount
 
 @param SoilProfile profile
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
@@ -18,7 +21,6 @@
     @else
         @for(var analysis : profile.labAnalyses())
             !{var a = analysis.info();}
-            !{var panel = analysis.nutrients();}
             <section class="analysis">
                 <h2>${a.sampleDate().toString()} — ${a.crop().value()}</h2>
                 <p class="analysis-provenance">${a.labId()} · sample ${a.labSampleId()}
@@ -36,42 +38,13 @@
                 <p class="fraction-note">$unsafe{glossaryLinker.linkHtml("Each cation is reported as two fractions — exchangeable, held on soil surfaces, and soluble, dissolved and available to roots now.", a.sampleDate().toString() + "-fractions")}</p>
 
                 <h3>Primary nutrients</h3>
-                <table>
-                    <thead><tr><th>Nutrient</th><th>Value</th><th>Unit</th></tr></thead>
-                    <tbody>
-                        @template.soil.readingRow(label = "Nitrate-N", reading = panel.primary().nitrateN())
-                        @template.soil.readingRow(label = "Phosphorus (P₂O₅)", reading = panel.primary().phosphorusP2O5())
-                        @template.soil.readingRow(label = "Potassium — exchangeable", reading = panel.primary().potassiumExch())
-                        @template.soil.readingRow(label = "Potassium — soluble", reading = panel.primary().potassiumSoluble())
-                    </tbody>
-                </table>
+                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.PRIMARY))
 
                 <h3>Secondary nutrients</h3>
-                <table>
-                    <thead><tr><th>Nutrient</th><th>Value</th><th>Unit</th></tr></thead>
-                    <tbody>
-                        @template.soil.readingRow(label = "Calcium — exchangeable", reading = panel.secondary().calciumExch())
-                        @template.soil.readingRow(label = "Calcium — soluble", reading = panel.secondary().calciumSoluble())
-                        @template.soil.readingRow(label = "Magnesium — exchangeable", reading = panel.secondary().magnesiumExch())
-                        @template.soil.readingRow(label = "Magnesium — soluble", reading = panel.secondary().magnesiumSoluble())
-                        @template.soil.readingRow(label = "Sodium — exchangeable", reading = panel.secondary().sodiumExch())
-                        @template.soil.readingRow(label = "Sodium — soluble", reading = panel.secondary().sodiumSoluble())
-                        @template.soil.readingRow(label = "Sulfate", reading = panel.secondary().sulfate())
-                    </tbody>
-                </table>
+                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.SECONDARY))
 
                 <h3>Micronutrients</h3>
-                <table>
-                    <thead><tr><th>Nutrient</th><th>Value</th><th>Unit</th></tr></thead>
-                    <tbody>
-                        @template.soil.readingRow(label = "Zinc", reading = panel.micro().zinc())
-                        @template.soil.readingRow(label = "Manganese", reading = panel.micro().manganese())
-                        @template.soil.readingRow(label = "Iron", reading = panel.micro().iron())
-                        @template.soil.readingRow(label = "Copper", reading = panel.micro().copper())
-                        @template.soil.readingRow(label = "Boron", reading = panel.micro().boron())
-                        @template.soil.readingRow(label = "Chloride", reading = panel.micro().chloride())
-                    </tbody>
-                </table>
+                @template.soil.nutrientTable(lines = analysis.nutrientLines(NutrientCategory.MICRO))
 
                 @if(analysis.physicalCharacteristics().isPresent())
                     !{var chars = analysis.physicalCharacteristics().get();}
@@ -108,6 +81,34 @@
                 @else
                     <p class="not-reported"><em>No physical or derived measurements on record for this analysis.</em></p>
                 @endif
+
+                @if(!analysis.reportedRecommendations().isEmpty())
+                    <h3>What the lab recommended</h3>
+                    <table>
+                        <thead><tr><th>Input</th><th>Amount</th><th>Unit</th><th>Via</th></tr></thead>
+                        <tbody>
+                            @for(var r : analysis.reportedRecommendations().stream().toList())
+                                <tr>
+                                    <td>${r.inputName().value().replace('-', ' ')}</td>
+                                    @if(r.amount() instanceof RecommendedAmount.Quantity q)
+                                        <td>${q.value().toString()}</td>
+                                    @elseif(r.amount() instanceof RecommendedAmount.BelowDetectionLimit b)
+                                        <td title="Below what the lab's method resolves. The true amount is between zero and the figure shown.">&lt; ${b.limit().toString()}</td>
+                                    @else
+                                        <td class="advised-none" title="The lab recommended applying none. This is advice, not a missing value.">none</td>
+                                    @endif
+                                    <td>${r.unit().symbol()}</td>
+                                    <td>@if(r.route() != null)${r.route().name().toLowerCase()}@endif</td>
+                                </tr>
+                            @endfor
+                        </tbody>
+                    </table>
+                @endif
+
+                <p class="assessment-source">Values and optimum ranges are ${AssessmentSource.LAB_PRINTED.label()}.
+                    The <em>Position</em> column is ${AssessmentSource.DERIVED_FROM_PRINTED_RANGE.label()} —
+                    it is not the lab's own five-band verdict, which uses information the report does not print as numbers,
+                    and the two can disagree.</p>
             </section>
         @endfor
     @endif

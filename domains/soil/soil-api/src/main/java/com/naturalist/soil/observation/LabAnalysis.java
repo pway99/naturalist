@@ -3,6 +3,7 @@ package com.naturalist.soil.observation;
 import com.naturalist.ddd.ReadModel;
 import com.naturalist.observability.Constraints;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -41,6 +42,23 @@ public record LabAnalysis(
         reportedRecommendations = reportedRecommendations == null
                 ? ReportedRecommendationCollection.empty()
                 : reportedRecommendations;
+    }
+
+    /**
+     * The analysis as a reader should see one section of it: every catalogued nutrient of that
+     * category, each paired with its measurement and its printed optimum, in the order the report
+     * prints them. Absent rows are included as absent — a nutrient the lab did not run keeps its
+     * place in the table rather than vanishing from it, because a shorter table silently reads as
+     * a complete one.
+     * <p>
+     * Pure projection over data already assembled here. It exists so the console holds no rules:
+     * see {@link NutrientLine}.
+     */
+    public List<NutrientLine> nutrientLines(NutrientCategory category) {
+        return Nutrients.of(category).stream()
+                .map(name -> NutrientLine.of(
+                        name, nutrients.forNutrient(name), reportedOptima.forNutrient(name)))
+                .toList();
     }
 
     @Override

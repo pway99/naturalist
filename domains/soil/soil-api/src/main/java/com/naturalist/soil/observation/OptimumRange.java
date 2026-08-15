@@ -39,8 +39,21 @@ import java.util.function.Consumer;
 })
 public sealed interface OptimumRange extends ValueObject {
 
+    /**
+     * The range in the report's own notation — {@code "5.3 - 7.2"}, {@code "< 19"}, {@code "---"}.
+     * Reproducing what the page says is a fidelity concern rather than a styling one, which is why
+     * it lives on the type: every consumer that shows a range should show the same string, and a
+     * consumer that invents its own risks printing a floor the lab never stated.
+     */
+    String printedForm();
+
     /** Both bounds printed: {@code 5.3 - 7.2}. Inclusive at both ends, as the report reads. */
     record Closed(BigDecimal min, BigDecimal max) implements OptimumRange {
+
+        @Override
+        public String printedForm() {
+            return min.toPlainString() + " - " + max.toPlainString();
+        }
 
         @Override
         public Consumer<? extends Constraints> invariants() {
@@ -55,6 +68,11 @@ public sealed interface OptimumRange extends ValueObject {
     record UpperBounded(BigDecimal max) implements OptimumRange {
 
         @Override
+        public String printedForm() {
+            return "< " + max.toPlainString();
+        }
+
+        @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i.notNull(max, "max");
         }
@@ -62,6 +80,11 @@ public sealed interface OptimumRange extends ValueObject {
 
     /** A floor only: {@code > 5}. Not present on the March reports; see the type javadoc. */
     record LowerBounded(BigDecimal min) implements OptimumRange {
+
+        @Override
+        public String printedForm() {
+            return "> " + min.toPlainString();
+        }
 
         @Override
         public Consumer<? extends Constraints> invariants() {
@@ -74,6 +97,11 @@ public sealed interface OptimumRange extends ValueObject {
      * did not transcribe it", which is why it is a value rather than a null.
      */
     record NotApplicable() implements OptimumRange {
+
+        @Override
+        public String printedForm() {
+            return "---";
+        }
 
         /** Nothing to constrain — the absence of an optimum is the whole content of this value. */
         @Override

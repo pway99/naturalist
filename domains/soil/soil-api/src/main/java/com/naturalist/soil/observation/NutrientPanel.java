@@ -6,6 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * The nutrient chemistry of a single soil analysis, assembled from its {@link NutrientReading}
@@ -37,6 +38,20 @@ public record NutrientPanel(
      */
     static Optional<NutrientReading> slot(@Nullable Optional<NutrientReading> reading) {
         return reading == null ? Optional.empty() : reading;
+    }
+
+    /** Every reading this panel carries, across all three sections, in printed order. */
+    public Stream<NutrientReading> readings() {
+        return Stream.of(primary.present(), secondary.present(), micro.present())
+                .flatMap(java.util.function.Function.identity());
+    }
+
+    /**
+     * The reading for one nutrient, if this panel carries it. Empty means the lab did not report
+     * that nutrient — not that it measured zero.
+     */
+    public Optional<NutrientReading> forNutrient(NutrientName nutrientName) {
+        return readings().filter(r -> r.nutrientName().equals(nutrientName)).findFirst();
     }
 
     @Override
