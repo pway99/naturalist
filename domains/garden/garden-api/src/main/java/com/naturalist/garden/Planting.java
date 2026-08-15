@@ -34,7 +34,9 @@ import java.util.function.Consumer;
  * <p>
  * <b>No crop type here.</b> A crop type is what you tell a laboratory when you submit a sample; it
  * is not what you put in the ground. The same bed of {@code brassica-oleracea} is kale or broccoli
- * depending on intent, and the plant is the same either way — see {@link CropType}.
+ * depending on intent, and the plant is the same either way. {@code CropTypeName} exists as an
+ * identifier for soil's {@code LabAnalysisInfo.cropType}; garden models no entity behind it until
+ * {@code CropProfile} needs a catalog to key against.
  * <p>
  * <b>No soil-profile reference either.</b> The link to a crop-scoped {@code LabAnalysisInfo} is
  * inferred from {@code zoneName} plus the date window, not stored. A bed holds many plantings over

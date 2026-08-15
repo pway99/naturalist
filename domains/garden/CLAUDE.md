@@ -12,19 +12,19 @@ Design source: [`docs/garden-domain-bootstrap.md`](../../docs/garden-domain-boot
 
 ## Domain Vocabulary
 
-**CropType** — `NamedEntity<CropTypeName>`. The agronomic category (`tomato`, `lettuce`,
-`basil`). Identity only: an optional soft `PlantName`, and nothing else. Requirements
-belong to `CropProfile`, not here.
+**CropTypeName** — an identifier with no entity behind it. The agronomic category (`tomato`,
+`lettuce`) that soil's `LabAnalysisInfo.cropType` records an analysis as interpreted for.
 
-*Nothing inside garden references it.* A crop type is the vocabulary you hand a
-laboratory; its one consumer is soil's `LabAnalysisInfo.cropType`. The same bed of
-*Brassica oleracea* is submitted as kale or as broccoli, and the plants in it are identical
-either way — which is why the type is recorded on the analysis and not on the planting.
+*There is deliberately no `CropType` entity.* Soil references the name and could never
+reference the entity — peers cannot import each other — and nothing inside garden refers to
+a crop type at all, since a planting names a plant. A catalog returns when `CropProfile`
+needs something to key `(source, cropType, revision)` against, shaped by what it actually
+requires. Dropped 2026-08-15 after it sat with a full port stack and no reader.
 
-*The inclusion test:* would a lab or extension service publish a requirement table for it?
-Tomato yes; Amish Paste no; *Solanum lycopersicum* not usually. FGL's reports are headed
-"TOMATO SOIL ANALYSIS" with one panel covering every variety in the bed, which is exactly
-the granularity `LabAnalysisInfo.cropType` points at.
+*The inclusion test, for when it returns:* would a laboratory or extension service publish a
+requirement table for it? Tomato yes; Amish Paste no; *Solanum lycopersicum* not usually.
+FGL's reports are headed "TOMATO SOIL ANALYSIS" with one panel covering every variety in the
+bed, which is exactly the granularity the name points at.
 
 **Planting** — `Entity<PlantingId>`. What went into the ground, where, and for how long —
 the finest grain garden records. Carries two optional soft references into plants:
@@ -42,8 +42,8 @@ amended, irrigated and sampled. The sub-zone grain exists because the front gard
 boxes in a single zone, where a zone-level plan would lump all five.
 
 **Crop** — *not modelled.* "The 2026 backyard tomato crop" is a season's growing, derivable
-from plantings by type, zone and date. It would be a grouping with nothing to carry until
-harvest and yield exist. Decided 2026-08-14.
+from the plantings in that bed over that period. It would be a grouping with nothing to
+carry until harvest and yield exist. Decided 2026-08-14.
 
 **Cultivar** — *owned by plants, not garden.* `plants.cultivar.Cultivar` already carries the
 Oak Vista varieties with their breeding status, fruit type and seed-saving policy. Garden
@@ -133,7 +133,7 @@ species. One `PlantName` ↔ many `CropTypeName`s, in both directions.
 ## Fixture data — the real 2026 beds
 
 Nine plantings, cross-checked against the cultivars the plants catalog carries and the zones
-soil samples: four tomato varieties (Amish Paste, Nick's Italian Pear, San Marzano F2,
+soil samples (garden's only catalog — there is no crop-type catalog): four tomato varieties (Amish Paste, Nick's Italian Pear, San Marzano F2,
 Sungold), two basils, parsley, an eggplant and a radish sowing. The tomatoes came out on
 2026-08-10; the herbs and eggplant are still in.
 

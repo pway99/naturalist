@@ -20,20 +20,6 @@ public final class TestGardenIdentifiers {
     private TestGardenIdentifiers() {
     }
 
-    /** Crop types are the vocabulary a soil analysis is interpreted against, not a planting's. */
-    public static final class CropTypes {
-
-        private CropTypes() {
-        }
-
-        public static final CropTypeName tomato = CropTypeName.of("tomato");
-
-        /** Soil-tested for before it goes in — the August 2026 FGL panel is a lettuce panel. */
-        public static final CropTypeName lettuce = CropTypeName.of("lettuce");
-
-        public static final CropTypeName notFound = CropTypeName.of("unobtainium-melon");
-    }
-
     public static final class Plants {
 
         private Plants() {
