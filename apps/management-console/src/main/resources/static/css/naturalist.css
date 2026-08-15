@@ -1918,3 +1918,12 @@ figure.compound-depiction img {
     color: var(--sepia-ink-soft);
     margin-top: 0.75rem;
 }
+
+/* A planting with no removed date — still in the ground. Stated rather than
+   left blank, because an empty cell reads as missing data instead of as the
+   plant being alive. */
+.growing {
+    color: var(--pico-primary);
+    font-variant: small-caps;
+    letter-spacing: 0.03em;
+}
