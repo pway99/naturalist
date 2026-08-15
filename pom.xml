@@ -420,6 +420,37 @@
                 <artifactId>sensors-repository-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- GARDEN -->
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>garden-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>garden-console</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>garden-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>garden-repository-rdms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>garden-repository-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>garden-test-context</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- SOIL -->
             <dependency>
                 <groupId>com.naturalist</groupId>
