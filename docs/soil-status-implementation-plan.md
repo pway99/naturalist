@@ -298,15 +298,19 @@ deadline.
 
 ## Phase 2 — Analysis provenance: depth and sampling protocol
 
-**Brief §5.2. Independent of Phase 1.**
+**Brief §5.2. Independent of Phase 1. Implemented 2026-08-14.**
 
 - Add `@Nullable DepthInches sampleDepth` to `LabAnalysisInfo`
   (`kernels/measurements`, already a declared dependency, currently unused by
   soil-api).
 - Add `SamplingProtocol` value object in `com.naturalist.soil.observation`:
-  depth, subsample count, tool, compositing method. Nullable on the record —
-  the four March analyses have no protocol and must not be back-filled with
+  ~~depth,~~ subsample count, tool, compositing method. Nullable on the record —
+  the March analyses have no protocol and must not be back-filled with
   invented values.
+  - **Deviation:** depth is *not* duplicated inside `SamplingProtocol`. It is
+    what the lab prints on the report, so it stays on the header as
+    `sampleDepth`; carrying it in both places lets the printed depth and the
+    intended depth disagree with no way to tell which is true.
 - Migrate both existing fixtures with `sampleDepth: null`, matching the
   reports' printed `Depth: N/A`.
 

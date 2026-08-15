@@ -4,11 +4,13 @@ import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.measurements.DepthInches;
 import com.naturalist.soil.CropName;
 import com.naturalist.soil.SoilProfileName;
 import com.naturalist.soil.TestSoilIdentifiers;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -47,6 +49,7 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
         return 1;
     }
 
+    /** No sampling provenance — the shape of every analysis on record before August 2026. */
     @Override
     default LabAnalysisInfo newEntity() {
         return new LabAnalysisInfo(
@@ -56,6 +59,8 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
                 LocalDate.of(2026, 3, 3),
                 RandomValue.string(),
                 RandomValue.string(),
+                null,
+                null,
                 null);
     }
 
@@ -68,9 +73,15 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
                 LocalDate.of(2026, 3, 3),
                 RandomValue.string(),
                 RandomValue.string(),
+                null,
+                null,
                 null);
     }
 
+    /**
+     * Every mutable field changed, per the update convention — including the two provenance
+     * fields, which go from absent to recorded. That transition is the one Phase 2 exists for.
+     */
     @Override
     default LabAnalysisInfo modifiedEntity(LabAnalysisInfo original) {
         return new LabAnalysisInfo(
@@ -80,6 +91,9 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
                 LocalDate.of(2025, 1, 1),
                 RandomValue.string(),
                 RandomValue.string(),
+                DepthInches.of(new BigDecimal("12.00")),
+                new SamplingProtocol(8, SamplingProtocol.SamplingTool.SOIL_PROBE,
+                        SamplingProtocol.CompositingMethod.EVEN_COMPOSITE),
                 RandomValue.string());
     }
 

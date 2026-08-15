@@ -21,7 +21,17 @@
             !{var panel = analysis.nutrients();}
             <section class="analysis">
                 <h2>${a.sampleDate().toString()} — ${a.crop().value()}</h2>
-                <p class="analysis-provenance">${a.labId()} · sample ${a.labSampleId()}</p>
+                <p class="analysis-provenance">${a.labId()} · sample ${a.labSampleId()}
+                    @if(a.sampleDepth() != null)
+                        · sampled at ${a.sampleDepth().value().toString()} in
+                    @else
+                        · <span class="not-reported">depth not recorded</span>
+                    @endif
+                    @if(a.samplingProtocol() != null)
+                        !{var p = a.samplingProtocol();}
+                        · ${p.subsampleCount()} subsample(s), ${p.tool().name().toLowerCase().replace('_', ' ')}, ${p.compositingMethod().name().toLowerCase().replace('_', ' ')}
+                    @endif
+                </p>
 
                 <p class="fraction-note">$unsafe{glossaryLinker.linkHtml("Each cation is reported as two fractions — exchangeable, held on soil surfaces, and soluble, dissolved and available to roots now.", a.sampleDate().toString() + "-fractions")}</p>
 

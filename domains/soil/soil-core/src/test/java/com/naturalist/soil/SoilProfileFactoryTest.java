@@ -88,6 +88,8 @@ class SoilProfileFactoryTest {
                 LocalDate.of(2026, 8, 17),
                 "SYNTHETIC LAB",
                 "XX 0000000-000",
+                null,
+                null,
                 "Synthetic short panel — structural fixture, not a real report."));
         db.getNamed(NutrientReadingTestEntitySource.class).insert(new NutrientReading(
                 NutrientReadingId.create(),

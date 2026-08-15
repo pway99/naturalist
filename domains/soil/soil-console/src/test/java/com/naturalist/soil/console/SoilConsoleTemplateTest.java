@@ -132,7 +132,7 @@ class SoilConsoleTemplateTest {
                 new MicroNutrients(Optional.empty(), Optional.empty(), Optional.empty(),
                         Optional.empty(), Optional.empty(), Optional.empty()));
         LabAnalysisInfo info = new LabAnalysisInfo(id, SoilProfileName.of("box1"), CropName.of("lettuce"),
-                LocalDate.of(2026, 8, 17), "SYNTHETIC LAB", "XX 0000000-000", null);
+                LocalDate.of(2026, 8, 17), "SYNTHETIC LAB", "XX 0000000-000", null, null, null);
         return new SoilProfile(
                 new SoilProfileInfo(SoilProfileName.of("box1"), ZoneName.of("box-1"), null),
                 List.of(new LabAnalysis(info, panel, Optional.empty())));

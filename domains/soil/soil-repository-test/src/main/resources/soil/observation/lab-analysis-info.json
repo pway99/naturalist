@@ -4,6 +4,8 @@
     "soilProfileName": "box1",
     "crop": "tomato",
     "sampleDate": "2026-03-03",
+    "sampleDepth": null,
+    "samplingProtocol": null,
     "labId": "FGL Environmental",
     "labSampleId": "CH 2671853-001",
     "notes": "Box 1 (front yard beds). Worm casting blend raised bed."
@@ -13,6 +15,8 @@
     "soilProfileName": "backyard",
     "crop": "tomato",
     "sampleDate": "2026-03-03",
+    "sampleDepth": null,
+    "samplingProtocol": null,
     "labId": "FGL Environmental",
     "labSampleId": "CH 2671853-002",
     "notes": "Back Yard. Native clay amended. One composite sample for the whole bed; the north/center/south sub-zones are crop rows, not separately sampled soil."
