@@ -8,7 +8,7 @@ import com.naturalist.zone.subzone.SubZoneName;
 /**
  * Read port for {@link Planting}. Two reverse lookups, matching the two questions asked of a
  * planting: what is in this bed ({@code forZoneName}, or {@code forSubZoneName} for one
- * subdivision of it — the garden plan at either grain), and where have we grown this
+ * subdivision of it — a planted zone at either grain), and where have we grown this
  * ({@code forPlantName} — one species across beds and seasons).
  */
 public interface PlantingQuery extends EntityQuery<PlantingId, Planting, PlantingCollection> {

@@ -15,32 +15,36 @@ import java.util.function.Consumer;
 
 /**
  * A bed and what is growing in it — the plants of one place, assembled on read by
- * {@code GardenPlanFactory} and never stored.
+ * {@code PlantedZoneFactory} and never stored.
  * <p>
- * <b>Keyed by place, not by crop.</b> A garden plan answers "what is in this bed", which is how a
- * gardener holds it: the back yard is not a tomato plan and an eggplant plan, it is one bed with
- * both in it. Grouping by crop would fragment a bed that is physically one thing, and it is beds
- * that get amended, irrigated and sampled.
+ * <b>A record of what is and was, not of what is intended.</b> The name is deliberate: every
+ * planting here has a date on which it actually went into the ground. Nothing in this type
+ * expresses a plan, and a future-tense name would have invited one to be added.
  * <p>
- * <b>The place may be a zone or one subdivision of it.</b> {@code subZoneName} null means the plan
- * covers the whole zone, including everything planted in its sub-zones; set, it covers that
- * subdivision alone. The front garden is five boxes in a single zone, and a plan for the zone
- * would lump all five — so the box is the useful unit there, while the back yard is usefully read
- * either whole or row by row. The nullability mirrors {@code SoilProfileInfo} exactly, which is
- * the same distinction applied to sampling rather than planting.
+ * <b>Keyed by place, not by crop.</b> It answers "what is in this bed", which is how a gardener
+ * holds it: the back yard is not a tomato record and an eggplant record, it is one bed with both
+ * in it. Grouping by crop would fragment a bed that is physically one thing, and it is beds that
+ * get amended, irrigated and sampled.
+ * <p>
+ * <b>The place may be a zone or one subdivision of it.</b> {@code subZoneName} null covers the
+ * whole zone, including everything planted in its sub-zones; set, it covers that subdivision
+ * alone. The front garden is five boxes in a single zone, and reading the zone whole would lump
+ * all five — so the box is the useful unit there, while the back yard reads usefully either whole
+ * or row by row. The nullability mirrors {@code SoilProfileInfo} exactly, which is the same
+ * distinction applied to sampling rather than planting.
  * <p>
  * The place is a soft {@link ZoneName} / {@link SubZoneName} into the zone domain, and garden holds
  * no root entity of its own for it — a read model needs no identity. Garden therefore cannot
  * distinguish "a bed with nothing planted" from "not a bed at all", which is why the query returns
- * empty rather than an empty plan.
+ * empty rather than an empty record.
  */
-public record GardenPlan(
+public record PlantedZone(
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
         PlantingCollection plantings
 ) implements ReadModel {
 
-    public GardenPlan {
+    public PlantedZone {
         plantings = plantings == null ? PlantingCollection.empty() : plantings;
     }
 

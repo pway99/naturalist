@@ -34,12 +34,17 @@ fruit type, seed-saving policy). At least one must be present — a planting nam
 records only that something was put somewhere. `removedDate` null means still growing. The
 spatial nullability mirrors `SoilProfileInfo`.
 
-**GardenPlan** — `ReadModel`. A bed and what is growing in it, at either grain: a whole
-zone, or one sub-zone. Composed on read by `GardenPlanFactory`; never stored. Keyed by
+**PlantedZone** — `ReadModel`. A bed and what is growing in it, at either grain: a whole
+zone, or one sub-zone. Composed on read by `PlantedZoneFactory`; never stored. Keyed by
 place because that is how a gardener holds it — the back yard is one bed with tomatoes and
-an eggplant in it, not a tomato plan plus an eggplant plan — and because beds are what get
-amended, irrigated and sampled. The sub-zone grain exists because the front garden is five
-boxes in a single zone, where a zone-level plan would lump all five.
+an eggplant in it, not a tomato record plus an eggplant record — and because beds are what
+get amended, irrigated and sampled. The sub-zone grain exists because the front garden is
+five boxes in a single zone, where reading the zone whole would lump all five.
+
+*Named for what it records, not what it intends.* It was `GardenPlan` until 2026-08-15;
+"plan" reads as future tense, and every planting in it has a date on which it actually went
+into the ground. A future-tense name would have invited intent to be modelled here. The
+console is free to label it whatever reads best.
 
 **Crop** — *not modelled.* "The 2026 backyard tomato crop" is a season's growing, derivable
 from the plantings in that bed over that period. It would be a grouping with nothing to

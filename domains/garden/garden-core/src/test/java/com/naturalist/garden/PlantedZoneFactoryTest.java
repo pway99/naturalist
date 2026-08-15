@@ -12,15 +12,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Exercises the assembled read path: {@link GardenPlanQuery} → {@code GardenPlanFactory} →
+ * Exercises the assembled read path: {@link PlantedZoneQuery} → {@code PlantedZoneFactory} →
  * {@code PlantingQuery} → its repository mock, over the real 2026 Oak Vista beds.
  */
-class GardenPlanFactoryTest {
+class PlantedZoneFactoryTest {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    private final GardenPlanQuery query = GardenTestContextInternal.create(db).gardenPlanQuery();
+    private final PlantedZoneQuery query = GardenTestContextInternal.create(db).plantedZoneQuery();
 
     private static final SubZoneName SOUTH_ROW = SubZoneName.of("backyard-south");
 
@@ -39,7 +39,7 @@ class GardenPlanFactoryTest {
 
     @Test
     void getByZoneName_backyard_assemblesTheWholeBed() {
-        GardenPlan plan = query.getByZoneName(TestGardenIdentifiers.Zones.backyard).orElseThrow();
+        PlantedZone plan = query.getByZoneName(TestGardenIdentifiers.Zones.backyard).orElseThrow();
 
         assertThat(plan.coversWholeZone()).isTrue();
         assertThat(plan.plantings().size()).isEqualTo(4);
@@ -55,8 +55,8 @@ class GardenPlanFactoryTest {
      */
     @Test
     void getBySubZoneName_narrowsThePlanToOneRow() {
-        GardenPlan wholeBed = query.getByZoneName(TestGardenIdentifiers.Zones.backyard).orElseThrow();
-        GardenPlan southRow = query
+        PlantedZone wholeBed = query.getByZoneName(TestGardenIdentifiers.Zones.backyard).orElseThrow();
+        PlantedZone southRow = query
                 .getBySubZoneName(TestGardenIdentifiers.Zones.backyard, SOUTH_ROW).orElseThrow();
 
         assertThat(southRow.coversWholeZone()).isFalse();
@@ -76,7 +76,7 @@ class GardenPlanFactoryTest {
     /** The 2026 tomatoes came out in August; the herbs and the eggplant are still in. */
     @Test
     void activeOn_distinguishesWhatIsGrowingFromWhatWasGrown() {
-        GardenPlan box1 = query.getByZoneName(TestGardenIdentifiers.Zones.box1).orElseThrow();
+        PlantedZone box1 = query.getByZoneName(TestGardenIdentifiers.Zones.box1).orElseThrow();
 
         assertThat(box1.activeOn(LocalDate.of(2026, 6, 1)).size()).isEqualTo(5);
         assertThat(box1.activeOn(LocalDate.of(2026, 8, 14)).size()).isEqualTo(3);
@@ -85,7 +85,7 @@ class GardenPlanFactoryTest {
     /** A planting whose variety was never recorded still contributes its species to the plan. */
     @Test
     void aPlantingWithNoVarietyStillNamesItsPlant() {
-        GardenPlan box1 = query.getByZoneName(TestGardenIdentifiers.Zones.box1).orElseThrow();
+        PlantedZone box1 = query.getByZoneName(TestGardenIdentifiers.Zones.box1).orElseThrow();
 
         assertThat(box1.plants()).contains(TestGardenIdentifiers.Plants.radish);
         assertThat(box1.cultivars()).hasSize(4);

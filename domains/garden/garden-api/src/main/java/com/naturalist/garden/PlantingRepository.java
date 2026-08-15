@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Repository port for {@link Planting}. Package-private (ADR-020); cross-domain access goes
- * through the public {@code PlantingQuery} and {@code GardenPlanQuery}.
+ * through the public {@code PlantingQuery} and {@code PlantedZoneQuery}.
  */
 interface PlantingRepository extends EntityRepository<PlantingId, Planting> {
 

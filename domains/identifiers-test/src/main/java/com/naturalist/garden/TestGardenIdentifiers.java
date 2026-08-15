@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Single source of truth for garden {@code EntityName} / {@code EntityId} constants used in
  * repository and query contract tests. Mirrors the domain object graph: {@code Planting}s are
- * grouped by the bed they are in, which is how a {@code GardenPlan} is assembled. Ids match the
+ * grouped by the bed they are in, which is how a {@code PlantedZone} is assembled. Ids match the
  * fixture JSON exactly.
  * <p>
  * Plant and cultivar constants name plants-domain entities. Garden records that they were planted;

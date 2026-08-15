@@ -8,29 +8,29 @@ import com.naturalist.zone.subzone.SubZoneName;
 import java.util.Optional;
 
 /**
- * Thin adapter for {@link GardenPlanQuery}: observe, dispatch, delegate to the aggregate factory
+ * Thin adapter for {@link PlantedZoneQuery}: observe, dispatch, delegate to the aggregate factory
  * (ADR-010).
  */
 @DomainService
-class GardenPlanQueryImpl implements GardenPlanQuery {
+class PlantedZoneQueryImpl implements PlantedZoneQuery {
 
     private final Observer observer = Observer.forClass(getClass());
-    private final GardenPlanFactory factory;
+    private final PlantedZoneFactory factory;
 
-    GardenPlanQueryImpl(GardenPlanFactory factory) {
+    PlantedZoneQueryImpl(PlantedZoneFactory factory) {
         observer.arguments("constructor", i -> i.notNull(factory, "factory")).throwWhenInvalid();
         this.factory = factory;
     }
 
     @Override
-    public Optional<GardenPlan> getByZoneName(ZoneName zoneName) {
+    public Optional<PlantedZone> getByZoneName(ZoneName zoneName) {
         observer.arguments("getByZoneName", i -> i.entityName(zoneName, "zoneName"))
                 .throwWhenInvalid();
         return factory.buildByZoneName(zoneName);
     }
 
     @Override
-    public Optional<GardenPlan> getBySubZoneName(ZoneName zoneName, SubZoneName subZoneName) {
+    public Optional<PlantedZone> getBySubZoneName(ZoneName zoneName, SubZoneName subZoneName) {
         observer.arguments("getBySubZoneName", i -> i
                         .entityName(zoneName, "zoneName")
                         .entityName(subZoneName, "subZoneName"))

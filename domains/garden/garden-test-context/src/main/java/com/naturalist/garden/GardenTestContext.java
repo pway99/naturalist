@@ -4,7 +4,7 @@ import com.naturalist.data.NaturalistDatabase;
 
 /**
  * Pre-wired, in-memory read surface for the garden bounded context: assembles the planting query
- * and the {@code GardenPlanFactory}, exposing the {@link GardenPlanQuery} (a bed and what is in it)
+ * and the {@code PlantedZoneFactory}, exposing the {@link PlantedZoneQuery} (a bed and what is in it)
  * and the {@link PlantingQuery}. Lives in package {@code com.naturalist.garden} for split-package
  * access to garden-core's package-private impls. Goes away when Spring DI replaces the manual
  * composition.
@@ -12,11 +12,11 @@ import com.naturalist.data.NaturalistDatabase;
 public class GardenTestContext {
 
     private final PlantingQuery plantingQuery;
-    private final GardenPlanQuery gardenPlanQuery;
+    private final PlantedZoneQuery plantedZoneQuery;
 
     private GardenTestContext(NaturalistDatabase db) {
         this.plantingQuery = new PlantingQueryImpl(new PlantingEntityRepositoryMock(db));
-        this.gardenPlanQuery = new GardenPlanQueryImpl(new GardenPlanFactory(plantingQuery));
+        this.plantedZoneQuery = new PlantedZoneQueryImpl(new PlantedZoneFactory(plantingQuery));
     }
 
     public static GardenTestContext create(NaturalistDatabase db) {
@@ -27,7 +27,7 @@ public class GardenTestContext {
         return plantingQuery;
     }
 
-    public GardenPlanQuery gardenPlanQuery() {
-        return gardenPlanQuery;
+    public PlantedZoneQuery plantedZoneQuery() {
+        return plantedZoneQuery;
     }
 }
