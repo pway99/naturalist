@@ -35,7 +35,7 @@ class LabAnalysisInfoQueryImplTest
     public List<LabAnalysisId> knownEntityNames() {
         return List.of(
                 TestSoilIdentifiers.SoilProfiles.Box1.LabAnalyses.labAnalysis,
-                TestSoilIdentifiers.SoilProfiles.BackyardNorth.LabAnalyses.labAnalysis);
+                TestSoilIdentifiers.SoilProfiles.Backyard.LabAnalyses.labAnalysis);
     }
 
     @Test

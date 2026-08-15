@@ -70,12 +70,18 @@ public final class TestSoilIdentifiers {
             }
         }
 
-        public static final class BackyardNorth {
+        /**
+         * The whole back yard bed — one composite FGL sample ({@code CH 2671853-002}). The
+         * north / center / south sub-zones are crop rows and carry no soil profile of their own;
+         * they were modelled as three profiles until the August 2026 collapse, which is why the
+         * fixture ids skip {@code -0003} and {@code -0004}.
+         */
+        public static final class Backyard {
 
-            private BackyardNorth() {
+            private Backyard() {
             }
 
-            public static final SoilProfileName name = SoilProfileName.of("backyard-north");
+            public static final SoilProfileName name = SoilProfileName.of("backyard");
 
             public static final class LabAnalyses {
 
@@ -93,40 +99,6 @@ public final class TestSoilIdentifiers {
 
                 public static final SoilPhysicalCharacteristicsId characteristics =
                         SoilPhysicalCharacteristicsId.of(UUID.fromString("02671902-0000-7000-8000-000000000002"));
-            }
-        }
-
-        public static final class BackyardCenter {
-
-            private BackyardCenter() {
-            }
-
-            public static final SoilProfileName name = SoilProfileName.of("backyard-center");
-
-            public static final class LabAnalyses {
-
-                private LabAnalyses() {
-                }
-
-                public static final LabAnalysisId labAnalysis =
-                        LabAnalysisId.of(UUID.fromString("02671853-0003-7000-8000-000000000003"));
-            }
-        }
-
-        public static final class BackyardSouth {
-
-            private BackyardSouth() {
-            }
-
-            public static final SoilProfileName name = SoilProfileName.of("backyard-south");
-
-            public static final class LabAnalyses {
-
-                private LabAnalyses() {
-                }
-
-                public static final LabAnalysisId labAnalysis =
-                        LabAnalysisId.of(UUID.fromString("02671853-0004-7000-8000-000000000004"));
             }
         }
 

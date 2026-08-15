@@ -9,8 +9,8 @@ import java.util.function.Function;
 
 /**
  * Test data source for {@link NutrientReading} — the real March 2026 FGL nutrient values, one row
- * per nutrient per analysis (Box 1's -001 panel and the three backyard sub-zones' shared -002
- * panel). Backing catalog: {@code soil/observation/nutrient-reading.json}.
+ * per nutrient per analysis: seventeen for Box 1's -001 panel and seventeen for the back yard's
+ * -002 panel. Backing catalog: {@code soil/observation/nutrient-reading.json}.
  */
 public class NutrientReadingTestEntitySource extends TestEntitySource<NutrientReadingId, NutrientReading> {
 

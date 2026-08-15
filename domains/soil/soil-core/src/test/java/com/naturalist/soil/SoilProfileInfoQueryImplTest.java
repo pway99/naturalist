@@ -30,6 +30,6 @@ class SoilProfileInfoQueryImplTest
     public List<SoilProfileName> knownEntityNames() {
         return List.of(
                 TestSoilIdentifiers.SoilProfiles.Box1.name,
-                TestSoilIdentifiers.SoilProfiles.BackyardNorth.name);
+                TestSoilIdentifiers.SoilProfiles.Backyard.name);
     }
 }

@@ -30,37 +30,5 @@
       "sodiumPct": 0.681,
       "hydrogenPct": 1.00
     }
-  },
-  {
-    "id": "02671903-0000-7000-8000-000000000003",
-    "labAnalysisId": "02671853-0003-7000-8000-000000000003",
-    "cecMeqPer100g": 34.2,
-    "pH": 7.2,
-    "ecDsPerMeter": 0.662,
-    "limestonePct": 2.9,
-    "saturationPct": 75.3,
-    "cationBaseSaturation": {
-      "calciumPct": 77.2,
-      "magnesiumPct": 19.4,
-      "potassiumPct": 2.75,
-      "sodiumPct": 0.681,
-      "hydrogenPct": 1.00
-    }
-  },
-  {
-    "id": "02671904-0000-7000-8000-000000000004",
-    "labAnalysisId": "02671853-0004-7000-8000-000000000004",
-    "cecMeqPer100g": 34.2,
-    "pH": 7.2,
-    "ecDsPerMeter": 0.662,
-    "limestonePct": 2.9,
-    "saturationPct": 75.3,
-    "cationBaseSaturation": {
-      "calciumPct": 77.2,
-      "magnesiumPct": 19.4,
-      "potassiumPct": 2.75,
-      "sodiumPct": 0.681,
-      "hydrogenPct": 1.00
-    }
   }
 ]

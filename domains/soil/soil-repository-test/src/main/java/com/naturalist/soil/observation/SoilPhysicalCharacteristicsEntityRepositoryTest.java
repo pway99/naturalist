@@ -39,7 +39,7 @@ interface SoilPhysicalCharacteristicsEntityRepositoryTest
     default List<SoilPhysicalCharacteristicsId> knownEntityNames() {
         return List.of(
                 TestSoilIdentifiers.SoilProfiles.Box1.PhysicalCharacteristics.characteristics,
-                TestSoilIdentifiers.SoilProfiles.BackyardNorth.PhysicalCharacteristics.characteristics);
+                TestSoilIdentifiers.SoilProfiles.Backyard.PhysicalCharacteristics.characteristics);
     }
 
     @Override

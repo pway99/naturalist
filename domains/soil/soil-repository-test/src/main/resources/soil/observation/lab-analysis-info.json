@@ -10,29 +10,11 @@
   },
   {
     "id": "02671853-0002-7000-8000-000000000002",
-    "soilProfileName": "backyard-north",
+    "soilProfileName": "backyard",
     "crop": "tomato",
     "sampleDate": "2026-03-03",
     "labId": "FGL Environmental",
     "labSampleId": "CH 2671853-002",
-    "notes": "Back Yard (north section). Native clay amended; shares the CH 2671853-002 sample."
-  },
-  {
-    "id": "02671853-0003-7000-8000-000000000003",
-    "soilProfileName": "backyard-center",
-    "crop": "tomato",
-    "sampleDate": "2026-03-03",
-    "labId": "FGL Environmental",
-    "labSampleId": "CH 2671853-002",
-    "notes": "Back Yard (center section). Shares the CH 2671853-002 sample."
-  },
-  {
-    "id": "02671853-0004-7000-8000-000000000004",
-    "soilProfileName": "backyard-south",
-    "crop": "tomato",
-    "sampleDate": "2026-03-03",
-    "labId": "FGL Environmental",
-    "labSampleId": "CH 2671853-002",
-    "notes": "Back Yard (south section). Shares the CH 2671853-002 sample."
+    "notes": "Back Yard. Native clay amended. One composite sample for the whole bed; the north/center/south sub-zones are crop rows, not separately sampled soil."
   }
 ]

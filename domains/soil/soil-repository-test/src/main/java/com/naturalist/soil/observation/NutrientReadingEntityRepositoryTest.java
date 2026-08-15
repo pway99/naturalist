@@ -88,7 +88,7 @@ interface NutrientReadingEntityRepositoryTest extends EntityRepositoryTest<Nutri
         List<NutrientReading> result =
                 repository().getByNutrientName(TestSoilIdentifiers.Nutrients.CALCIUM_SOLUBLE);
 
-        assertThat(result).hasSize(4);
+        assertThat(result).hasSize(2);
         assertThat(result).allSatisfy(reading ->
                 assertThat(reading.nutrientName()).isEqualTo(TestSoilIdentifiers.Nutrients.CALCIUM_SOLUBLE));
     }

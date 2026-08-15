@@ -5,18 +5,8 @@
     "subZoneName": null
   },
   {
-    "name": "backyard-north",
+    "name": "backyard",
     "zoneName": "backyard",
-    "subZoneName": "backyard-north"
-  },
-  {
-    "name": "backyard-center",
-    "zoneName": "backyard",
-    "subZoneName": "backyard-center"
-  },
-  {
-    "name": "backyard-south",
-    "zoneName": "backyard",
-    "subZoneName": "backyard-south"
+    "subZoneName": null
   }
 ]

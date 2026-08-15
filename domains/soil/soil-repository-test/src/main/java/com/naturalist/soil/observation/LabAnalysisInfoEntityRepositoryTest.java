@@ -38,7 +38,7 @@ interface LabAnalysisInfoEntityRepositoryTest extends EntityRepositoryTest<LabAn
     default List<LabAnalysisId> knownEntityNames() {
         return List.of(
                 TestSoilIdentifiers.SoilProfiles.Box1.LabAnalyses.labAnalysis,
-                TestSoilIdentifiers.SoilProfiles.BackyardNorth.LabAnalyses.labAnalysis);
+                TestSoilIdentifiers.SoilProfiles.Backyard.LabAnalyses.labAnalysis);
     }
 
     @Override
