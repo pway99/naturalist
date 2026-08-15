@@ -9,14 +9,14 @@
 @template.layout.page(title = title, content = @`
     <h1>${title}</h1>
     <dl class="taxonomy">
-        <dt>bed</dt>
-        <dd><a href="/garden/beds/${planted.zoneName().value()}">${planted.zoneName().value()}</a>@if(!planted.coversWholeZone()) · row ${planted.subZoneName().value()}@endif</dd>
+        <dt>zone</dt>
+        <dd><a href="/garden/planted-zones/${planted.zoneName().value()}">${planted.zoneName().value()}</a>@if(!planted.coversWholeZone()) · row ${planted.subZoneName().value()}@endif</dd>
         <dt>growing now</dt>
         <dd>${planted.activeOn(today).size()} of ${planted.plantings().size()} planting(s)</dd>
     </dl>
 
     @if(planted.coversWholeZone())
-        <p class="fraction-note">A bed holds whatever was planted in it. Rows are where plantings
+        <p class="fraction-note">A zone holds whatever was planted in it. Rows are where plantings
             are, not what they contain — one row can carry two different plants.</p>
     @endif
 
@@ -35,9 +35,9 @@
                         <td class="not-reported" title="The plant is known; the variety was never recorded. Not the same as having no variety.">not recorded</td>
                     @endif
                     @if(p.isZoneScoped())
-                        <td class="not-reported">whole bed</td>
+                        <td class="not-reported">whole zone</td>
                     @else
-                        <td><a href="/garden/beds/${planted.zoneName().value()}/${p.subZoneName().value()}">${p.subZoneName().value()}</a></td>
+                        <td><a href="/garden/planted-zones/${planted.zoneName().value()}/${p.subZoneName().value()}">${p.subZoneName().value()}</a></td>
                     @endif
                     <td>@if(p.plantCount() != null)${p.plantCount()}@else<span class="not-reported">uncounted</span>@endif</td>
                     <td>${p.plantedDate().toString()}</td>

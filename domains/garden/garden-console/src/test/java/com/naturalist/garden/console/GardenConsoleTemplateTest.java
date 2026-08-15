@@ -29,28 +29,28 @@ class GardenConsoleTemplateTest {
     }
 
     @Test
-    void list_rendersEveryBedSomethingWasPlantedIn() {
+    void list_rendersEveryZoneSomethingWasPlantedIn() {
         GardenTestContext ctx = context();
-        List<PlantedZone> beds = ctx.plantingQuery().findPage(PageRequest.console(0)).content()
+        List<PlantedZone> plantedZones = ctx.plantingQuery().findPage(PageRequest.console(0)).content()
                 .stream()
                 .map(Planting::zoneName)
                 .distinct()
                 .map(zoneName -> ctx.plantedZoneQuery().getByZoneName(zoneName).orElseThrow())
                 .toList();
 
-        String html = render("garden/list.jte", Map.of("beds", beds, "today", TODAY));
+        String html = render("garden/list.jte", Map.of("plantedZones", plantedZones, "today", TODAY));
 
         assertThat(html).contains("backyard");
         assertThat(html).contains("box-1");
-        assertThat(html).contains("/garden/beds/backyard");
+        assertThat(html).contains("/garden/planted-zones/backyard");
     }
 
     @Test
-    void bed_rendersEveryPlantingWithItsVarietyAndDates() {
+    void plantedZone_rendersEveryPlantingWithItsVarietyAndDates() {
         PlantedZone backyard = context().plantedZoneQuery()
                 .getByZoneName(com.naturalist.zone.ZoneName.of("backyard")).orElseThrow();
 
-        String html = render("garden/bed.jte", Map.of("planted", backyard, "today", TODAY));
+        String html = render("garden/plantedZone.jte", Map.of("planted", backyard, "today", TODAY));
 
         assertThat(html).contains("solanum-lycopersicum");
         assertThat(html).contains("amish-paste");
@@ -58,7 +58,7 @@ class GardenConsoleTemplateTest {
         assertThat(html).contains("2026-08-10");
         // The eggplant shares the south row with the tomatoes — a mixed row, rendered as such.
         assertThat(html).contains("solanum-melongena");
-        assertThat(html).contains("/garden/beds/backyard/backyard-south");
+        assertThat(html).contains("/garden/planted-zones/backyard/backyard-south");
     }
 
     /**
@@ -66,11 +66,11 @@ class GardenConsoleTemplateTest {
      * variety that exists — the same absent-is-not-a-value rule the soil console follows.
      */
     @Test
-    void bed_rendersAnUnrecordedVarietyAsAbsentRatherThanBlank() {
+    void plantedZone_rendersAnUnrecordedVarietyAsAbsentRatherThanBlank() {
         PlantedZone box1 = context().plantedZoneQuery()
                 .getByZoneName(com.naturalist.zone.ZoneName.of("box-1")).orElseThrow();
 
-        String html = render("garden/bed.jte", Map.of("planted", box1, "today", TODAY));
+        String html = render("garden/plantedZone.jte", Map.of("planted", box1, "today", TODAY));
 
         assertThat(html).contains("raphanus-sativus");
         assertThat(html).contains("not recorded");
@@ -78,7 +78,7 @@ class GardenConsoleTemplateTest {
         assertThat(html).contains("still growing");    // the basil and parsley are in
     }
 
-    /** A row view narrows to one subdivision and says which bed it belongs to. */
+    /** A row view narrows to one subdivision and says which zone it belongs to. */
     @Test
     void row_rendersOnlyThatRow() {
         PlantedZone southRow = context().plantedZoneQuery()
@@ -86,7 +86,7 @@ class GardenConsoleTemplateTest {
                         com.naturalist.zone.subzone.SubZoneName.of("backyard-south"))
                 .orElseThrow();
 
-        String html = render("garden/bed.jte", Map.of("planted", southRow, "today", TODAY));
+        String html = render("garden/plantedZone.jte", Map.of("planted", southRow, "today", TODAY));
 
         assertThat(html).contains("backyard-south");
         assertThat(html).contains("solanum-melongena");
