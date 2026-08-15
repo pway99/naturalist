@@ -1,5 +1,5 @@
-@import com.naturalist.soil.SoilProfile
 @import com.naturalist.library.console.GlossaryLinker
+@import com.naturalist.soil.SoilProfile
 @import com.naturalist.soil.observation.AssessmentSource
 @import com.naturalist.soil.observation.NutrientCategory
 @import com.naturalist.soil.observation.RecommendedAmount
@@ -87,7 +87,7 @@
                     <table>
                         <thead><tr><th>Input</th><th>Amount</th><th>Unit</th><th>Via</th></tr></thead>
                         <tbody>
-                            @for(var r : analysis.reportedRecommendations().stream().toList())
+                        @for(var r : analysis.reportedRecommendations().applicationsOnly().stream().toList())
                                 <tr>
                                     <td>${r.inputName().value().replace('-', ' ')}</td>
                                     @if(r.amount() instanceof RecommendedAmount.Quantity q)

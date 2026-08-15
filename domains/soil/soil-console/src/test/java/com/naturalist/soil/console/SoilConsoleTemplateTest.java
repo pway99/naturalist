@@ -111,8 +111,8 @@ class SoilConsoleTemplateTest {
         String html = output.toString();
         assertThat(html).contains("What the lab recommended");
         assertThat(html).contains("11.2");                       // potassium, an actual application
-        assertThat(html).contains("advised-none");               // "apply none" is advice, styled as such
-        assertThat(html).contains("recommended applying none");
+        assertThat(html).doesNotContain("advised-none"); // "apply none" is advice, styled as such
+        assertThat(html).doesNotContain("recommended applying none");
         assertThat(html).contains("&lt; 0.50");                  // the censored gypsum requirement
         assertThat(html).contains("tons/AF");
     }
