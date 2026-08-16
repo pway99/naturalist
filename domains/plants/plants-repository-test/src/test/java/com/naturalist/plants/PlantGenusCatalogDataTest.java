@@ -38,21 +38,34 @@ class PlantGenusCatalogDataTest {
 
     @Test
     void everyPlantGenusIsCatalogued() {
+        // The FK constraint on PlantSpeciesTestEntitySource enforces this at load time.
+        // The assertion stays because it names the rule and fails with a readable message
+        // listing what is missing, where the constraint failure names only the first.
         Set<String> catalogued = genera().stream()
-                .map(g -> g.genus().value())
+                .map(g -> g.name().value())
                 .collect(Collectors.toSet());
 
         List<String> referenced = plants().stream()
-                .map(p -> p.taxonomy().genus())
-                .filter(java.util.Objects::nonNull)
-                .map(g -> g.value())
+                .map(p -> p.genusName().value())
                 .distinct()
                 .toList();
 
         assertThat(catalogued)
-                .as("every genus a PlantSpecies claims must have a PlantGenus record — "
-                        + "M2b's typed genusName FK cannot land otherwise")
+                .as("every genus a PlantSpecies points at must have a PlantGenus record")
                 .containsAll(referenced);
+    }
+
+    @Test
+    void everySpeciesSlugIsItsGenusSlugPlusItsEpithet() {
+        // The binomial convention, enforced. A species whose slug does not decompose this
+        // way is either misfiled under the wrong genus or carrying a vernacular slug — the
+        // 2026-08-16 rank audit removed five of the latter.
+        assertThat(plants())
+                .allSatisfy(p -> assertThat(p.name().value())
+                        .as("species '%s' under genus '%s' with epithet '%s'",
+                                p.name().value(), p.genusName().value(), p.epithet().value())
+                        .isEqualTo(p.genusName().value() + "-"
+                                + p.epithet().value().toLowerCase(java.util.Locale.ROOT)));
     }
 
     @Test

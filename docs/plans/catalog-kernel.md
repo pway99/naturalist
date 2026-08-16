@@ -247,14 +247,14 @@ with `domainsReferencing(Class<? extends EntityName>)` and
 `InMemoryCatalog` indexes providers by `referenceType()`; fan-out runs live,
 no caching at the catalog layer.
 
-**M4′** — `PlantCatalogContribution` rewritten against the M2′ SPI. Tokens
+**M4′** — `PlantsCatalogContribution` rewritten against the M2′ SPI. Tokens
 per plant: slug, `genus + " " + species`, `genus`, `genus.charAt(0) + ". "
 
 + species`, plus one token per `CommonName` (label only). `Plant` carries
 `Set<CommonName>`; `plants.json` populated for the worked-example entries
 (`california-pipevine`, `crimson-clover`, `white-clover`).
 
-**M5** — `PlantCompoundReferences` at
+**M5** — `PlantsCompoundReferences` at
 `plants-core/.../plants/catalog/`, takes
 `PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery` as its
 collaborator. Each match emits two `EntityRef`s — one `PlantName`-typed
@@ -417,7 +417,7 @@ index), M9a/M9b, the contributing domains' `*TestEntitySource` classes.
   everything.
 
 **Acceptance.** Boot the console app with a deliberately broken
-`PlantCatalogContribution` that emits an entity without including its
+`PlantsCatalogContribution` that emits an entity without including its
 slug in the token stream; the WARN observation fires during startup; the
 app does not fail to boot. Restore the contribution and verify zero
 observations on a clean boot.

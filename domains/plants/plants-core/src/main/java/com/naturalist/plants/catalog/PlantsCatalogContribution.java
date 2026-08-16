@@ -8,10 +8,9 @@ import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.*;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicSpecies;
 
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -47,7 +46,7 @@ import java.util.stream.Stream;
  * the stream.
  */
 @DomainService
-public class PlantCatalogContribution implements CatalogContribution {
+public class PlantsCatalogContribution implements CatalogContribution {
 
     private static final DomainId DOMAIN = new PlantsDomain();
 
@@ -62,10 +61,10 @@ public class PlantCatalogContribution implements CatalogContribution {
     private final PlantQuery.PlantFamilyEntityQuery families;
     private final PlantQuery.PlantGenusEntityQuery genera;
 
-    public PlantCatalogContribution(PlantQuery.PlantEntityQuery plants,
+    public PlantsCatalogContribution(PlantQuery.PlantEntityQuery plants,
                                     PlantQuery.PlantFamilyEntityQuery families,
                                     PlantQuery.PlantGenusEntityQuery genera) {
-        Observer.forClass(PlantCatalogContribution.class)
+        Observer.forClass(PlantsCatalogContribution.class)
                 .arguments("constructor", i -> i
                         .notNull(plants, "plants")
                         .notNull(families, "families")
@@ -87,24 +86,35 @@ public class PlantCatalogContribution implements CatalogContribution {
                 .flatMap(s -> s);
     }
 
+    /**
+     * The binomial tokens need the genus <em>epithet</em> ({@code "Aristolochia"}), while a
+     * species carries only its parent's <em>slug</em> ({@code "aristolochia"}). Resolving
+     * the epithet from the slug by capitalising would be a guess; the genus record holds
+     * the authored form, so the epithets are indexed once per stream and looked up per
+     * plant. A species whose genus is missing still contributes its slug and common names —
+     * degraded, not absent.
+     */
     private Stream<SearchableEntity> plantEntities() {
+        Map<String, String> genusEpithets = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
+                .collect(Collectors.toMap(g -> g.name().value(), g -> g.genus().value()));
         return Pages.stream(ASSEMBLY_PAGE_SIZE, plants::findPage)
-                .map(PlantCatalogContribution::toSearchablePlant);
+                .map(plant -> toSearchablePlant(
+                        plant, genusEpithets.get(plant.genusName().value())));
     }
 
     private Stream<SearchableEntity> familyEntities() {
         return Pages.stream(ASSEMBLY_PAGE_SIZE, families::findPage)
-                .map(PlantCatalogContribution::toSearchableFamily);
+                .map(PlantsCatalogContribution::toSearchableFamily);
     }
 
     private Stream<SearchableEntity> genusEntities() {
         return Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
-                .map(PlantCatalogContribution::toSearchableGenus);
+                .map(PlantsCatalogContribution::toSearchableGenus);
     }
 
-    private static SearchableEntity toSearchablePlant(PlantSpecies plant) {
+    private static SearchableEntity toSearchablePlant(PlantSpecies plant, String genusEpithet) {
         EntityRef target = new EntityRef(DOMAIN, plant.name());
-        return new SearchableEntity(target, tokensFor(plant));
+        return new SearchableEntity(target, tokensFor(plant, genusEpithet));
     }
 
     private static SearchableEntity toSearchableFamily(PlantFamily family) {
@@ -117,18 +127,14 @@ public class PlantCatalogContribution implements CatalogContribution {
         return new SearchableEntity(target, tokensFor(genusEntity));
     }
 
-    private static Stream<String> tokensFor(PlantSpecies plant) {
+    private static Stream<String> tokensFor(PlantSpecies plant, String genusEpithet) {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(plant.name().value());
-        TaxonomicClassification taxonomy = plant.taxonomy();
-        TaxonomicGenus genus = taxonomy.genus();
-        TaxonomicSpecies species = taxonomy.species();
-        if (genus != null) {
-            tokens.add(genus.value());
-            if (species != null) {
-                tokens.add(genus.value() + " " + species.value());
-                tokens.add(genus.value().charAt(0) + ". " + species.value());
-            }
+        if (genusEpithet != null && !genusEpithet.isBlank()) {
+            String species = plant.epithet().value();
+            tokens.add(genusEpithet);
+            tokens.add(genusEpithet + " " + species);
+            tokens.add(genusEpithet.charAt(0) + ". " + species);
         }
         plant.commonNames().forEach(commonName -> tokens.add(commonName.label()));
         return tokens.build();

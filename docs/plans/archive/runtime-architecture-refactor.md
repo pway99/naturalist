@@ -326,7 +326,7 @@ of `Aristolochia californica`) still works end to end.
 `AtlasContribution` → `CatalogContribution`, `AtlasAssembly` →
 `CatalogAssembly`, `InMemoryAtlas` → `InMemoryCatalog`,
 `AtlasConfiguration` → `CatalogConfiguration`,
-`PlantAtlasContribution` → `PlantCatalogContribution`); per-domain
+`PlantAtlasContribution` → `PlantsCatalogContribution`); per-domain
 sub-packages renamed (`plants/catalog/`, `console/catalog/`);
 artifactIds updated (`catalog`, `catalog-inmem`); jte templates,
 javadoc, and consumer wiring follow. Remaining `atlas` references
@@ -387,8 +387,8 @@ their api modules: `domains/plants/plants-api/.../PlantsDomain`,
 `domain()` and throws `IllegalArgumentException` when two distinct
 `DomainId` instances share a `value()`; same-instance reuse across
 multiple contributions/providers is the normal case and is allowed.
-Consumer call sites (`PlantCatalogContribution`,
-`PlantCompoundReferences`, `BackReferencesViewModel`, `SearchController`,
+Consumer call sites (`PlantsCatalogContribution`,
+`PlantsCompoundReferences`, `BackReferencesViewModel`, `SearchController`,
 all four affected tests) use the per-domain records. Kernel-level
 `DomainIdTest`'s exhaustive-switch suite is removed; the new behaviour is
 covered by three slug-uniqueness tests in `InMemoryCatalogTest` plus
@@ -533,8 +533,8 @@ across all domains.
       `AnnotationTypeFilter(DomainService.class)`, base package
       `com.naturalist`. Registers each candidate with the
       `BeanDefinitionRegistry`.
-- Pilot wiring: annotate `PlantCatalogContribution` and
-  `PlantCompoundReferences` with `@DomainService`. The
+- Pilot wiring: annotate `PlantsCatalogContribution` and
+  `PlantsCompoundReferences` with `@DomainService`. The
   `PlantsDomain` record (from M3) gets `@DomainService` too.
 - `apps/management-console/`'s `CatalogConfiguration` becomes:
   ```java
@@ -564,7 +564,7 @@ runs `ClassPathScanningCandidateComponentProvider` filtered by the
 marker. The pilot scope is `com.naturalist.catalog` and
 `com.naturalist.plants` (M7 broadens to `com.naturalist`). Plants
 pilot classes carry the marker (`PlantsDomain`,
-`PlantCatalogContribution`, `PlantCompoundReferences`, the five
+`PlantsCatalogContribution`, `PlantsCompoundReferences`, the five
 `*EntityQueryImpl`s, the five repository mocks).
 `PlantsDataConfiguration` exposes `NaturalistDatabase` as a `@Bean`.
 `CatalogAssembly` gained a `from(domains, contributions, providers)`
@@ -698,7 +698,7 @@ console's metrics.
 **Status: Shipped (declarations + config wiring); runtime weaving deferred.**
 Three real cross-boundary call sites today carry `@Resilient`:
 `InMemoryCatalog.findReferencesTo` (method-level,
-`name = "catalog.fanout"`); `PlantCompoundReferences` (class-level,
+`name = "catalog.fanout"`); `PlantsCompoundReferences` (class-level,
 `name = "catalog.fanout"` — the one provider invoked in fan-out today);
 and `InsectsController.image` (method-level,
 `name = "image.conversion"` — `Files.copy` + `sips` subprocess).
@@ -864,7 +864,7 @@ and runs four rules against the assembled classpath, scoped via
    covers `InMemoryCatalog` (method-level `@Resilient` on
    `findReferencesTo` satisfies it);
 2. concrete `EntityReferences<?>` implementations must declare
-   resilience — covers `PlantCompoundReferences` (class-level
+   resilience — covers `PlantsCompoundReferences` (class-level
    `@Resilient`);
 3. concrete classes depending on `java.lang.ProcessBuilder` must
    declare resilience — covers `InsectsController` (method-level

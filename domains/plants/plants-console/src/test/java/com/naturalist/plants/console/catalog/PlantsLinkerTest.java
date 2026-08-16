@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Every plants-owned {@code EntityName} type must resolve to a URL.
  * <p>
- * {@code PlantCatalogContribution} indexes families and genera for search, but
+ * {@code PlantsCatalogContribution} indexes families and genera for search, but
  * the linker had no case for either, and
  * {@code SearchController.buildGroups} drops any hit whose linker returns
  * {@code null} — so family and genus hits were silently absent from results.

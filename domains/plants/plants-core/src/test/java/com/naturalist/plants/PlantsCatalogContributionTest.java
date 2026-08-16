@@ -8,7 +8,7 @@ import com.naturalist.data.Pages;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
-import com.naturalist.plants.catalog.PlantCatalogContribution;
+import com.naturalist.plants.catalog.PlantsCatalogContribution;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * {@link PlantSpeciesEntityRepositoryMock} without exposing either to the wider test
  * classpath.
  */
-class PlantCatalogContributionTest {
+class PlantsCatalogContributionTest {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
@@ -36,8 +36,8 @@ class PlantCatalogContributionTest {
             new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
     private final PlantQuery.PlantGenusEntityQuery genusQuery =
             new PlantGenusEntityQueryImpl(new PlantGenusEntityRepositoryMock(db));
-    private final PlantCatalogContribution contribution =
-            new PlantCatalogContribution(entityQuery, familyQuery, genusQuery);
+    private final PlantsCatalogContribution contribution =
+            new PlantsCatalogContribution(entityQuery, familyQuery, genusQuery);
 
     @Test
     void domainIsPlants() {
@@ -46,21 +46,21 @@ class PlantCatalogContributionTest {
 
     @Test
     void constructorRejectsNullPlantQuery() {
-        assertThatThrownBy(() -> new PlantCatalogContribution(null, familyQuery, genusQuery))
+        assertThatThrownBy(() -> new PlantsCatalogContribution(null, familyQuery, genusQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("plants");
     }
 
     @Test
     void constructorRejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new PlantCatalogContribution(entityQuery, null, genusQuery))
+        assertThatThrownBy(() -> new PlantsCatalogContribution(entityQuery, null, genusQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("families");
     }
 
     @Test
     void constructorRejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new PlantCatalogContribution(entityQuery, familyQuery, null))
+        assertThatThrownBy(() -> new PlantsCatalogContribution(entityQuery, familyQuery, null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("genera");
     }

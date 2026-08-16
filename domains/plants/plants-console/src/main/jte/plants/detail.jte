@@ -1,3 +1,4 @@
+@import com.naturalist.plants.PlantEcologicalRole
 @import com.naturalist.plants.PlantSpecies
 @import com.naturalist.plants.cultivar.Cultivar
 @import com.naturalist.plants.heritage.SeedLineage
@@ -6,6 +7,7 @@
 @import java.util.List
 
 @param PlantSpecies plant
+@param PlantEcologicalRole ecologicalRole = null
 @param List<Cultivar> cultivars = java.util.List.of()
 @param List<PlantProgram> programs = java.util.List.of()
 @param List<PhytochemicalConstituent> constituents = java.util.List.of()
@@ -19,13 +21,8 @@
 
     <h1>${plant.name().value()}</h1>
     <p>
-        ${plant.taxonomy().order().value()} &middot; ${plant.taxonomy().family().value()}
-        @if(plant.taxonomy().genus() != null)
-            &middot; <em>${plant.taxonomy().genus().value()}</em>
-        @endif
-        @if(plant.taxonomy().species() != null)
-            ${plant.taxonomy().species().value()}
-        @endif
+        <a href="/plants/genera/${plant.genusName().value()}">${plant.genusName().value()}</a>
+        &middot; <em>${plant.epithet().value()}</em>
     </p>
 
     @template.components.description(
@@ -57,18 +54,27 @@
     </section>
 
     <section>
-        <h2>Behavioral predicates</h2>
-        <p class="description-preview">
-            @if(plant.isKeystoneHost())
-                <span class="badge">Keystone host</span>
-            @endif
-            @if(plant.supportsBiocontrolInsects())
-                <span class="badge">Beneficial insect habitat</span>
-            @endif
-            @if(plant.isNitrogenFixer())
-                <span class="badge">Nitrogen fixer</span>
-            @endif
-        </p>
+        <h2>Ecological roles</h2>
+        @if(ecologicalRole == null)
+            <p class="not-reported">This plant's ecology has not been characterised yet.</p>
+        @else
+            <p class="description-preview">
+                @for(var role : ecologicalRole.roles())
+                    <span class="badge">${role.name()}</span>
+                @endfor
+            </p>
+            <p class="description-preview">
+                @if(ecologicalRole.isKeystoneHost())
+                    <span class="badge">Keystone host</span>
+                @endif
+                @if(ecologicalRole.supportsBiocontrolInsects())
+                    <span class="badge">Beneficial insect habitat</span>
+                @endif
+                @if(ecologicalRole.isNitrogenFixer())
+                    <span class="badge">Nitrogen fixer</span>
+                @endif
+            </p>
+        @endif
     </section>
 
     @if(!cultivars.isEmpty())

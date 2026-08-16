@@ -1,7 +1,10 @@
+@import com.naturalist.plants.PlantEcologicalRole
 @import com.naturalist.plants.PlantSpecies
+@import java.util.Map
 @import com.naturalist.data.Page
 
 @param Page<PlantSpecies> plantsPage
+@param Map<String, PlantEcologicalRole> ecologicalRoles = java.util.Map.of()
 
 @template.layout.page(title = "Plant Catalog", content = @`
     <h1>Plant Catalog</h1>
@@ -19,31 +22,30 @@
                     <a href="/plants/${p.name().value()}">
                         <strong>${p.name().value()}</strong>
                     </a>
-                    @if(p.isKeystoneHost())
+                    !{var role = ecologicalRoles.get(p.name().value());}
+                    @if(role != null && role.isKeystoneHost())
                         <span class="badge guild-apex_predator">keystone host</span>
                     @endif
-                    @if(p.isNitrogenFixer())
+                    @if(role != null && role.isNitrogenFixer())
                         <span class="badge guild-pollinator">nitrogen fixer</span>
                     @endif
-                    @if(p.supportsBiocontrolInsects())
+                    @if(role != null && role.supportsBiocontrolInsects())
                         <span class="badge beneficial">beneficial insect habitat</span>
                     @endif
                 </header>
                 <p class="taxonomy">
-                    ${p.taxonomy().order().value()} &middot; ${p.taxonomy().family().value()}
-                    @if(p.taxonomy().genus() != null)
-                        &middot; <em>${p.taxonomy().genus().value()}</em>
-                    @endif
-                    @if(p.taxonomy().species() != null)
-                        ${p.taxonomy().species().value()}
-                    @endif
+                    ${p.genusName().value()} &middot; <em>${p.epithet().value()}</em>
                 </p>
                 <p class="description-preview">
                     <strong>Life form:</strong> ${p.lifeForm().name()}<br>
                     <strong>Roles:</strong>
-                    @for(var role : p.roles())
-                        <span class="badge">${role.name()}</span>
-                    @endfor
+                    @if(role == null)
+                        <span class="not-reported">not characterised</span>
+                    @else
+                        @for(var r : role.roles())
+                            <span class="badge">${r.name()}</span>
+                        @endfor
+                    @endif
                 </p>
                 <p class="description-preview">${p.description().preschool()}</p>
                 <footer>

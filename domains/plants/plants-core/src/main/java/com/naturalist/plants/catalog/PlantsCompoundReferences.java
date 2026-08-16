@@ -4,9 +4,10 @@ import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.EntityReferences;
 import com.naturalist.chemistry.compound.CompoundName;
+import com.naturalist.ddd.EntityName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantSpeciesName;
+import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.PlantsDomain;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollections.PhytochemicalConstituentCollection;
@@ -28,7 +29,7 @@ import java.util.stream.Stream;
  * Per the plan's M5 recommendation, each matching constituent contributes
  * <em>two</em> {@link EntityRef}s to the result:
  * <ul>
- *   <li>a {@link PlantSpeciesName}-typed ref to the plant that produces the compound
+ *   <li>a {@link PlantRankName}-typed ref to the plant that produces the compound
  *       — the navigation target, what the chemistry detail page links to first;</li>
  *   <li>a {@link PhytochemicalConstituentName}-typed ref to the constituent
  *       record itself — the detail target, where the role / tissue / induction
@@ -36,7 +37,7 @@ import java.util.stream.Stream;
  * </ul>
  * The two refs share {@link PlantsDomain} but are distinguishable by the
  * runtime class of their underlying name. Consumers that only want
- * navigational anchors filter by {@code instanceof PlantSpeciesName} on
+ * navigational anchors filter by {@code instanceof PlantRankName} on
  * {@link EntityRef#name()}; consumers rendering the full constituent
  * description filter by {@code instanceof PhytochemicalConstituentName}.
  *
@@ -47,7 +48,7 @@ import java.util.stream.Stream;
  * appears <em>once</em> in the result regardless. Constituents are not
  * deduplicated — each is its own record and the consumer is entitled to render
  * each one. Iteration order is the order returned by the constituent query;
- * the deduplication key is the {@link PlantSpeciesName} value, applied via a
+ * the deduplication key is the {@link PlantRankName} value, applied via a
  * {@link LinkedHashSet} so the first-seen plant ref is the one emitted.
  *
  * <h2>Live, not cached</h2>
@@ -63,14 +64,14 @@ import java.util.stream.Stream;
  */
 @DomainService
 @Resilient(name = "catalog.fanout")
-public class PlantCompoundReferences implements EntityReferences<CompoundName> {
+public class PlantsCompoundReferences implements EntityReferences<CompoundName> {
 
     private static final DomainId DOMAIN = new PlantsDomain();
 
     private final PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery constituents;
 
-    public PlantCompoundReferences(PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery constituents) {
-        Observer.forClass(PlantCompoundReferences.class)
+    public PlantsCompoundReferences(PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery constituents) {
+        Observer.forClass(PlantsCompoundReferences.class)
                 .arguments("constructor", i -> i.notNull(constituents, "constituents"))
                 .throwWhenInvalid();
         this.constituents = constituents;
@@ -93,11 +94,14 @@ public class PlantCompoundReferences implements EntityReferences<CompoundName> {
         }
         PhytochemicalConstituentCollection matches = constituents.forCompoundName(target);
 
-        Set<PlantSpeciesName> seenPlants = new LinkedHashSet<>();
+        Set<PlantRankName> seenPlants = new LinkedHashSet<>();
         Stream.Builder<EntityRef> refs = Stream.builder();
         matches.stream().forEach(constituent -> {
             if (seenPlants.add(constituent.plantName())) {
-                refs.add(new EntityRef(DOMAIN, constituent.plantName()));
+                // EntityRef takes an EntityName; PlantRankName is a sibling interface, so
+                // the cast is unavoidable. Every permit extends EntityName, making it safe.
+                // insects casts the same way — see InsectIdentificationCommand.writeCitations.
+                refs.add(new EntityRef(DOMAIN, (EntityName) constituent.plantName()));
             }
             refs.add(new EntityRef(DOMAIN, constituent.name()));
         });

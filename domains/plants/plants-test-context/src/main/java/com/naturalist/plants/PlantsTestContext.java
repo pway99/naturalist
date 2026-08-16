@@ -91,6 +91,8 @@ public class PlantsTestContext {
                 new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
         PlantQuery.PlantGenusEntityQuery genusQuery =
                 new PlantGenusEntityQueryImpl(new PlantGenusEntityRepositoryMock(db));
-        return new PlantQueryImpl(entityQuery, familyQuery, genusQuery);
+        PlantQuery.PlantEcologicalRoleEntityQuery roleQuery =
+                new PlantEcologicalRoleEntityQueryImpl(new PlantEcologicalRoleEntityRepositoryMock(db));
+        return new PlantQueryImpl(entityQuery, familyQuery, genusQuery, roleQuery);
     }
 }

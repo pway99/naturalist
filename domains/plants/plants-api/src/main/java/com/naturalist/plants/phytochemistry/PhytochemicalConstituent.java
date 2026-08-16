@@ -4,7 +4,15 @@ import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
-import com.naturalist.plants.PlantSpeciesName;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.naturalist.plants.PlantFamilyName;
+import com.naturalist.plants.PlantGenusName;
+import com.naturalist.plants.PlantRankName;
+import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.phytochemistry.role.PhytochemicalRole;
 import org.jspecify.annotations.Nullable;
 
@@ -79,7 +87,13 @@ import java.util.function.Consumer;
  */
 public record PhytochemicalConstituent(
         PhytochemicalConstituentName name,
-        PlantSpeciesName plantName,
+        @JsonTypeInfo(use = Id.NAME, property = "plantRank", include = As.EXTERNAL_PROPERTY)
+        @JsonSubTypes({
+                @Type(value = PlantFamilyName.class, name = "FAMILY"),
+                @Type(value = PlantGenusName.class, name = "GENUS"),
+                @Type(value = PlantSpeciesName.class, name = "SPECIES")
+        })
+        PlantRankName plantName,
         CompoundName compoundName,
         Description description,
         PhytochemicalCategory category,
@@ -199,7 +213,7 @@ public record PhytochemicalConstituent(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .entityName(plantName, "plantName")
+                .identifier(plantName, "plantName")
                 .entityName(compoundName, "compoundName")
                 .valueObject(description, "description")
                 .notNull(category, "category")

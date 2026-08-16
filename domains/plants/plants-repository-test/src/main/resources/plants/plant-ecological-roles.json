@@ -1,0 +1,203 @@
+[
+  {
+    "id": "02671302-0000-7000-8000-000000000000",
+    "plantRank": "SPECIES",
+    "plantName": "aristolochia-californica",
+    "roles": [
+      "KEYSTONE_HOST",
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-0001-7000-8000-000000000001",
+    "plantRank": "SPECIES",
+    "plantName": "pelargonium-graveolens",
+    "roles": [
+      "POLLINATOR_SUPPORT",
+      "GROUND_COVER"
+    ]
+  },
+  {
+    "id": "02671302-0002-7000-8000-000000000002",
+    "plantRank": "SPECIES",
+    "plantName": "trifolium-incarnatum",
+    "roles": [
+      "COVER_CROP",
+      "NITROGEN_FIXER",
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-0003-7000-8000-000000000003",
+    "plantRank": "SPECIES",
+    "plantName": "trifolium-repens",
+    "roles": [
+      "COVER_CROP",
+      "NITROGEN_FIXER",
+      "POLLINATOR_SUPPORT",
+      "INSECT_LARVAL_HOST",
+      "GROUND_COVER"
+    ]
+  },
+  {
+    "id": "02671302-0004-7000-8000-000000000004",
+    "plantRank": "SPECIES",
+    "plantName": "lobularia-maritima",
+    "roles": [
+      "BENEFICIAL_INSECT_HABITAT",
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-0005-7000-8000-000000000005",
+    "plantRank": "SPECIES",
+    "plantName": "anethum-graveolens",
+    "roles": [
+      "BENEFICIAL_INSECT_HABITAT",
+      "INSECT_LARVAL_HOST"
+    ]
+  },
+  {
+    "id": "02671302-0006-7000-8000-000000000006",
+    "plantRank": "SPECIES",
+    "plantName": "borago-officinalis",
+    "roles": [
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-0007-7000-8000-000000000007",
+    "plantRank": "SPECIES",
+    "plantName": "viola-odorata",
+    "roles": [
+      "INSECT_LARVAL_HOST",
+      "POLLINATOR_SUPPORT",
+      "GROUND_COVER"
+    ]
+  },
+  {
+    "id": "02671302-0008-7000-8000-000000000008",
+    "plantRank": "SPECIES",
+    "plantName": "lathyrus-odoratus",
+    "roles": [
+      "POLLINATOR_SUPPORT",
+      "ORNAMENTAL",
+      "NITROGEN_FIXER"
+    ]
+  },
+  {
+    "id": "02671302-0009-7000-8000-000000000009",
+    "plantRank": "SPECIES",
+    "plantName": "festuca-arundinacea",
+    "roles": [
+      "INSECT_LARVAL_HOST",
+      "GROUND_COVER"
+    ]
+  },
+  {
+    "id": "02671302-000a-7000-8000-00000000000a",
+    "plantRank": "SPECIES",
+    "plantName": "solanum-lycopersicum",
+    "roles": [
+      "FOOD_CROP"
+    ]
+  },
+  {
+    "id": "02671302-000b-7000-8000-00000000000b",
+    "plantRank": "SPECIES",
+    "plantName": "passiflora-edulis",
+    "roles": [
+      "FOOD_CROP",
+      "POLLINATOR_SUPPORT",
+      "KEYSTONE_HOST"
+    ]
+  },
+  {
+    "id": "02671302-000c-7000-8000-00000000000c",
+    "plantRank": "SPECIES",
+    "plantName": "prunus-persica",
+    "roles": [
+      "FOOD_CROP",
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-000d-7000-8000-00000000000d",
+    "plantRank": "SPECIES",
+    "plantName": "raphanus-sativus",
+    "roles": [
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-000e-7000-8000-00000000000e",
+    "plantRank": "SPECIES",
+    "plantName": "ocimum-basilicum",
+    "roles": [
+      "FOOD_CROP",
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-000f-7000-8000-00000000000f",
+    "plantRank": "SPECIES",
+    "plantName": "petroselinum-crispum",
+    "roles": [
+      "FOOD_CROP",
+      "BENEFICIAL_INSECT_HABITAT"
+    ]
+  },
+  {
+    "id": "02671302-0010-7000-8000-000000000010",
+    "plantRank": "SPECIES",
+    "plantName": "solanum-melongena",
+    "roles": [
+      "FOOD_CROP"
+    ]
+  },
+  {
+    "id": "02671302-0064-7000-8000-000000000064",
+    "plantRank": "GENUS",
+    "plantName": "thymus",
+    "roles": [
+      "GROUND_COVER",
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-0065-7000-8000-000000000065",
+    "plantRank": "GENUS",
+    "plantName": "passiflora",
+    "roles": [
+      "KEYSTONE_HOST",
+      "ORNAMENTAL",
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-0066-7000-8000-000000000066",
+    "plantRank": "GENUS",
+    "plantName": "dianthus",
+    "roles": [
+      "POLLINATOR_SUPPORT",
+      "ORNAMENTAL"
+    ]
+  },
+  {
+    "id": "02671302-0067-7000-8000-000000000067",
+    "plantRank": "GENUS",
+    "plantName": "salvia",
+    "roles": [
+      "POLLINATOR_SUPPORT"
+    ]
+  },
+  {
+    "id": "02671302-0068-7000-8000-000000000068",
+    "plantRank": "GENUS",
+    "plantName": "citrus",
+    "roles": [
+      "FOOD_CROP",
+      "POLLINATOR_SUPPORT"
+    ]
+  }
+]

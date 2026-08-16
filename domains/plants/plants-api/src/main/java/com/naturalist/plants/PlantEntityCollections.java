@@ -41,6 +41,21 @@ public interface PlantEntityCollections {
         }
     }
 
+    final class PlantEcologicalRoleCollection extends BehavioralCollection<PlantEcologicalRole> {
+
+        PlantEcologicalRoleCollection(Collection<PlantEcologicalRole> roles) {
+            super(roles);
+        }
+
+        public static PlantEcologicalRoleCollection of(Collection<PlantEcologicalRole> roles) {
+            return new PlantEcologicalRoleCollection(roles);
+        }
+
+        public static PlantEcologicalRoleCollection empty() {
+            return new PlantEcologicalRoleCollection(List.of());
+        }
+    }
+
     final class PlantGenusCollection extends BehavioralCollection<PlantGenus> {
 
         PlantGenusCollection(Collection<PlantGenus> genera) {

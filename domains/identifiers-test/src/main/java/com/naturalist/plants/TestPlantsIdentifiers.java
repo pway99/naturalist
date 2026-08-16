@@ -110,8 +110,20 @@ public class TestPlantsIdentifiers {
             public static final PlantGenusName name = PlantGenusName.of("unobtainium-genus");
         }
 
+        /**
+         * Demoted from a species-rank {@code creeping-thyme} row in the 2026-08-16 rank
+         * audit — the record never named a species. Its thymol constituent came with it.
+         */
         public static class Thymus {
             public static final PlantGenusName name = PlantGenusName.of("thymus");
+
+            public static class Constituents {
+                private Constituents() {
+                }
+
+                public static final PhytochemicalConstituentName Thymol =
+                        PhytochemicalConstituentName.of(name, CompoundName.of("thymol"));
+            }
         }
 
         public static class Passiflora {
@@ -187,17 +199,6 @@ public class TestPlantsIdentifiers {
             }
         }
 
-        public static class CreepingThyme {
-            public static final PlantSpeciesName name = PlantSpeciesName.of("creeping-thyme");
-
-            public static class Constituents {
-                private Constituents() {
-                }
-
-                public static final PhytochemicalConstituentName Thymol =
-                        PhytochemicalConstituentName.of(name, CompoundName.of("thymol"));
-            }
-        }
 
         public static class Tomato {
             public static final PlantSpeciesName name = PlantSpeciesName.of("solanum-lycopersicum");

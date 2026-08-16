@@ -135,7 +135,6 @@ classDiagram
         PlantGenusName name
         PlantFamilyName familyName
         TaxonomicGenus genus
-        PlantLifeForm lifeForm
     }
     class PlantSpecies {
         PlantSpeciesName name
@@ -202,6 +201,12 @@ can target a genus and a compound can be recorded for one. `PlantEcologicalRole`
 cross-rank entity rather than a component on each rank record — an organism identified
 only to genus has ecological roles too.
 
+**`lifeForm` stays on the species, not the genus.** A genus routinely spans life forms —
+*Salvia* holds annuals and perennials, *Solanum* holds annual crops and perennial vines —
+so asserting one on the genus record would be false more often than useful. Where a
+demoted genus-rank taxon carried a life form, that assertion was dropped rather than
+promoted; its ecological roles survive on `PlantEcologicalRole`.
+
 **`Cultivar.plantName` is the one deliberate narrowing.** A cultivar is a selection within
 a species; a cultivar of a whole genus is incoherent. Its upward reference is species-typed
 precisely because the horticultural axis hangs off the species rung.
@@ -248,7 +253,7 @@ Every edge is a typed name from `domains/identifiers`. No plants module imports 
 domain's api, and no other domain imports `plants-api`.
 
 **Reverse resolution** goes through the catalog kernel rather than imports:
-`PlantCatalogContribution` (search) and `PlantCompoundReferences` (which plants produce a
+`PlantsCatalogContribution` (search) and `PlantsCompoundReferences` (which plants produce a
 given compound), both in `plants-core/catalog/`.
 
 ---

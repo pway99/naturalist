@@ -1,6 +1,7 @@
 [
   {
     "name": "aristolochia-californica-aristolochic-acid-i",
+    "plantRank": "SPECIES",
     "plantName": "aristolochia-californica",
     "compoundName": "aristolochic-acid-i",
     "description": {
@@ -34,6 +35,7 @@
   },
   {
     "name": "aristolochia-californica-aristolochic-acid-ii",
+    "plantRank": "SPECIES",
     "plantName": "aristolochia-californica",
     "compoundName": "aristolochic-acid-ii",
     "description": {
@@ -67,6 +69,7 @@
   },
   {
     "name": "viola-odorata-oxalic-acid",
+    "plantRank": "SPECIES",
     "plantName": "viola-odorata",
     "compoundName": "oxalic-acid",
     "description": {
@@ -95,8 +98,9 @@
     "notes": "Stored as bundled calcium oxalate raphides in idioblast cells. Visible under polarised light as bright needle-cluster inclusions. Fresh foliage is more potent than dried; cooking reduces but does not eliminate the deterrent effect."
   },
   {
-    "name": "creeping-thyme-thymol",
-    "plantName": "creeping-thyme",
+    "name": "thymus-thymol",
+    "plantRank": "GENUS",
+    "plantName": "thymus",
     "compoundName": "thymol",
     "description": {
       "preschool": "Thyme leaves smell strong because they are full of thymol. The smell keeps bugs away and helps keep the plant healthy.",

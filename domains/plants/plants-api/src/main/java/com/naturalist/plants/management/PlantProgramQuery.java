@@ -1,7 +1,7 @@
 package com.naturalist.plants.management;
 
 import com.naturalist.data.EntityQuery;
-import com.naturalist.plants.PlantSpeciesName;
+import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.management.PlantProgramEntityCollections.PlantProgramCollection;
 
 /**
@@ -17,6 +17,6 @@ public interface PlantProgramQuery {
         /**
          * All programs recorded for a given plant — the natural plant → programs rollup.
          */
-        PlantProgramCollection forPlantName(PlantSpeciesName plantName);
+        PlantProgramCollection forPlantName(PlantRankName plantName);
     }
 }

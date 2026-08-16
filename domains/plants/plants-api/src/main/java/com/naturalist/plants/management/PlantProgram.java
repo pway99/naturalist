@@ -3,7 +3,15 @@ package com.naturalist.plants.management;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
-import com.naturalist.plants.PlantSpeciesName;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.naturalist.plants.PlantFamilyName;
+import com.naturalist.plants.PlantGenusName;
+import com.naturalist.plants.PlantRankName;
+import com.naturalist.plants.PlantRankName;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -46,7 +54,13 @@ import java.util.function.Consumer;
  */
 public record PlantProgram(
         PlantProgramName name,
-        PlantSpeciesName plantName,
+        @JsonTypeInfo(use = Id.NAME, property = "plantRank", include = As.EXTERNAL_PROPERTY)
+        @JsonSubTypes({
+                @Type(value = PlantFamilyName.class, name = "FAMILY"),
+                @Type(value = PlantGenusName.class, name = "GENUS"),
+                @Type(value = PlantSpeciesName.class, name = "SPECIES")
+        })
+        PlantRankName plantName,
         Description description,
         @Nullable String constraint,
         @Nullable String notes
@@ -65,7 +79,7 @@ public record PlantProgram(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .entityName(plantName, "plantName")
+                .identifier(plantName, "plantName")
                 .valueObject(description, "description");
     }
 }

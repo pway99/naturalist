@@ -262,8 +262,8 @@ What did **not** ship in this session, and why:
   longer slug-match anything). The fast-follow:
   `InsectsCatalogContribution.tokensFor` now lifts every
   `CommonName.label()` into the per-entity token stream — the same
-  pattern `PlantCatalogContribution` already followed.
-  `InsectsCatalogContributionTest` and `PlantCatalogContributionTest`
+  pattern `PlantsCatalogContribution` already followed.
+  `InsectsCatalogContributionTest` and `PlantsCatalogContributionTest`
   re-aligned to the new binomial slugs and gained explicit assertions
   that vernacular search resolves through `commonNames`. Auto-seeded
   insect labels (mechanical capitalisation of the prior vernacular

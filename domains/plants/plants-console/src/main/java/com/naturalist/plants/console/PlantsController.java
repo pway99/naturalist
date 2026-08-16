@@ -2,9 +2,11 @@ package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
+import com.naturalist.data.Pages;
 import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
+import com.naturalist.plants.PlantEcologicalRole;
 import com.naturalist.plants.PlantSpecies;
 import com.naturalist.plants.PlantFamily;
 import com.naturalist.plants.PlantFamilyName;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/plants")
@@ -63,6 +66,10 @@ public class PlantsController {
     String list(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<PlantSpecies> plantsPage = plantQuery.plants().findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("plantsPage", plantsPage);
+        // Roles are a separate cross-rank record, so the badges need a lookup rather than
+        // an accessor. Keyed by slug because the template holds a PlantSpecies, not a rank name.
+        model.addAttribute("ecologicalRoles", Pages.stream(1000, plantQuery.ecologicalRoles()::findPage)
+                .collect(Collectors.toMap(r -> r.plantName().value(), r -> r, (a, b) -> a)));
         return "plants/list";
     }
 
@@ -83,6 +90,8 @@ public class PlantsController {
                 .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
                 .toList();
         model.addAttribute("plant", plant.get());
+        model.addAttribute("ecologicalRole",
+                plantQuery.ecologicalRoles().forPlantName(plantName).orElse(null));
         model.addAttribute("cultivars", cultivars);
         model.addAttribute("programs", programs);
         model.addAttribute("constituents", constituents);

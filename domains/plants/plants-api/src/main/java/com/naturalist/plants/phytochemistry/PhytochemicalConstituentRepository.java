@@ -2,7 +2,7 @@ package com.naturalist.plants.phytochemistry;
 
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityRepository;
-import com.naturalist.plants.PlantSpeciesName;
+import com.naturalist.plants.PlantRankName;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ class PhytochemicalConstituentRepository {
         /**
          * All constituents recorded for a given plant.
          */
-        List<PhytochemicalConstituent> getByPlantName(PlantSpeciesName plantName);
+        List<PhytochemicalConstituent> getByPlantName(PlantRankName plantName);
 
         /**
          * All constituents that reference a given compound — the cross-domain

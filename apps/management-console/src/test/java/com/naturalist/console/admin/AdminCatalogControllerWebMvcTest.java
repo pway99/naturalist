@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * {@code EntityReferences} provider under its {@code DomainId} heading;
  * an anonymous GET is bounced to the login page by the existing security
  * chain. Plants is the only domain with a wired contribution and provider
- * today ({@code PlantCatalogContribution}, {@code PlantCompoundReferences}
+ * today ({@code PlantsCatalogContribution}, {@code PlantsCompoundReferences}
  * for {@code CompoundName}); chemistry and insects are registered domains
  * with no current contribution or provider, so they exercise the
  * "registered domain renders an empty section" branch the milestone plan
@@ -83,11 +83,11 @@ class AdminCatalogControllerWebMvcTest {
         var plantsSection = html.substring(plantsAt);
 
         assertThat(plantsSection)
-                .contains("PlantCatalogContribution")
-                .contains("com.naturalist.plants.catalog.PlantCatalogContribution");
+                .contains("PlantsCatalogContribution")
+                .contains("com.naturalist.plants.catalog.PlantsCatalogContribution");
         assertThat(plantsSection)
-                .contains("PlantCompoundReferences")
-                .contains("com.naturalist.plants.catalog.PlantCompoundReferences")
+                .contains("PlantsCompoundReferences")
+                .contains("com.naturalist.plants.catalog.PlantsCompoundReferences")
                 .contains("CompoundName");
     }
 

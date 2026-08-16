@@ -230,7 +230,7 @@ Post-M1, M8, M8.5, and M9 of the runtime architecture refactor:
 - `kernels/catalog-inmem/.../InMemoryCatalog.java` — declarative
   `@Resilient(name = "catalog.fanout")` on `findReferencesTo`,
   programmatic wrapping via the constructor-injected facade.
-- `domains/plants/plants-core/.../PlantCompoundReferences.java` —
+- `domains/plants/plants-core/.../PlantsCompoundReferences.java` —
   class-level `@Resilient(name = "catalog.fanout")`.
 - `apps/management-console/.../insects/InsectsController.java` —
   method-level `@Resilient(name = "image.conversion")` plus

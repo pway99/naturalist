@@ -7,10 +7,6 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +21,7 @@ class PlantSpeciesTest {
     @Test
     void fullyPopulatedPlantIsValid() {
         MethodObserver mo = observer.forMethod("fullyPopulatedPlantIsValid");
-        PlantSpecies plant = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
+        PlantSpecies plant = plant(PlantLifeForm.VINE);
 
         InvariantObservation result = mo.namedEntity(plant, "plant");
 
@@ -40,9 +36,9 @@ class PlantSpeciesTest {
         MethodObserver mo = observer.forMethod("emptyBioregionsAndCommonNamesAreValid");
         PlantSpecies plant = new PlantSpecies(
                 PlantSpeciesName.of("borago-officinalis"),
-                taxonomy(),
+                PlantGenusName.of("borago"),
+                TaxonomicSpecies.of("officinalis"),
                 description(),
-                Set.of(PlantRole.BENEFICIAL_INSECT_HABITAT),
                 PlantLifeForm.ANNUAL,
                 Set.of(),
                 Set.of());
@@ -62,48 +58,33 @@ class PlantSpeciesTest {
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(
                         ".plant.name",
-                        ".plant.taxonomy",
+                        ".plant.genusName",
+                        ".plant.epithet",
                         ".plant.description",
-                        ".plant.roles",
                         ".plant.lifeForm",
                         ".plant.nativeBioregions",
                         ".plant.commonNames");
     }
 
-    @Test
-    void keystoneHostPredicateReadsTheRoleSet() {
-        PlantSpecies keystone = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
-        PlantSpecies notKeystone = plant(Set.of(PlantRole.FOOD_CROP), PlantLifeForm.ANNUAL);
-
-        assertThat(keystone.isKeystoneHost()).isTrue();
-        assertThat(notKeystone.isKeystoneHost()).isFalse();
-    }
 
     @Test
     void isNativeToReadsTheBioregionSet() {
-        PlantSpecies plant = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
+        PlantSpecies plant = plant(PlantLifeForm.VINE);
 
         assertThat(plant.isNativeTo(new SacramentoValley())).isTrue();
     }
 
-    private static PlantSpecies plant(Set<PlantRole> roles, PlantLifeForm lifeForm) {
+    private static PlantSpecies plant(PlantLifeForm lifeForm) {
         return new PlantSpecies(
                 PlantSpeciesName.of("aristolochia-californica"),
-                taxonomy(),
+                PlantGenusName.of("aristolochia"),
+                TaxonomicSpecies.of("californica"),
                 description(),
-                roles,
                 lifeForm,
                 Set.of(new SacramentoValley()),
                 Set.of(CommonName.of("California Pipevine")));
     }
 
-    private static TaxonomicClassification taxonomy() {
-        return new TaxonomicClassification(
-                TaxonomicOrder.of("Piperales"),
-                TaxonomicFamily.of("Aristolochiaceae"),
-                TaxonomicGenus.of("Aristolochia"),
-                TaxonomicSpecies.of("californica"));
-    }
 
     private static Description description() {
         return new Description(

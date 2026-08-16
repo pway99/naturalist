@@ -49,7 +49,7 @@ interface PhytochemicalConstituentEntityRepositoryTest
     default List<PhytochemicalConstituentName> knownEntityNames() {
         return List.of(
                 TestPlantsIdentifiers.Plants.CaliforniaPipevine.Constituents.AristolochicAcidI,
-                TestPlantsIdentifiers.Plants.CreepingThyme.Constituents.Thymol
+                TestPlantsIdentifiers.PlantGenera.Thymus.Constituents.Thymol
         );
     }
 
@@ -158,7 +158,7 @@ interface PhytochemicalConstituentEntityRepositoryTest
 
     @Test
     default void getByCompoundName_returnsConstituentsAcrossPlants() {
-        // The cross-domain reverse lookup that PlantCompoundReferences depends on:
+        // The cross-domain reverse lookup that PlantsCompoundReferences depends on:
         // "which plants are known to produce this compound?"
         var results = repository().getByCompoundName(
                 TestChemistryIdentifiers.Compounds.Thymol.name);

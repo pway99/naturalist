@@ -8,8 +8,9 @@ import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.PlantsDomain;
+import com.naturalist.plants.TestPlantsIdentifiers.PlantGenera;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
-import com.naturalist.plants.catalog.PlantCompoundReferences;
+import com.naturalist.plants.catalog.PlantsCompoundReferences;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -25,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * and the package-private {@link PhytochemicalConstituentEntityRepositoryMock}
  * without exposing either to the wider test classpath.
  */
-class PlantCompoundReferencesTest {
+class PlantsCompoundReferencesTest {
 
     private static final CompoundName ARISTOLOCHIC_ACID_I = CompoundName.of("aristolochic-acid-i");
     private static final CompoundName ARISTOLOCHIC_ACID_II = CompoundName.of("aristolochic-acid-ii");
@@ -37,7 +38,7 @@ class PlantCompoundReferencesTest {
             new PhytochemicalConstituentEntityRepositoryMock(db);
     private final PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery entityQuery =
             new PhytochemicalConstituentEntityQueryImpl(repository);
-    private final PlantCompoundReferences provider = new PlantCompoundReferences(entityQuery);
+    private final PlantsCompoundReferences provider = new PlantsCompoundReferences(entityQuery);
 
     @Test
     void domainIsPlants() {
@@ -51,7 +52,7 @@ class PlantCompoundReferencesTest {
 
     @Test
     void constructorRejectsNullEntityQuery() {
-        assertThatThrownBy(() -> new PlantCompoundReferences(null))
+        assertThatThrownBy(() -> new PlantsCompoundReferences(null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("constituents");
     }
@@ -84,13 +85,13 @@ class PlantCompoundReferencesTest {
     }
 
     @Test
-    void thymolResolvesToCreepingThymeAndItsConstituent() {
+    void thymolResolvesToTheThymusGenusAndItsConstituent() {
         List<EntityRef> refs = provider.referencesTo(Compounds.Thymol.name).toList();
 
-        EntityRef plantRef = new EntityRef(new PlantsDomain(), Plants.CreepingThyme.name);
+        EntityRef plantRef = new EntityRef(new PlantsDomain(), PlantGenera.Thymus.name);
         EntityRef constituentRef = new EntityRef(
                 new PlantsDomain(),
-                Plants.CreepingThyme.Constituents.Thymol);
+                PlantGenera.Thymus.Constituents.Thymol);
 
         assertThat(refs).containsExactlyInAnyOrder(plantRef, constituentRef);
     }

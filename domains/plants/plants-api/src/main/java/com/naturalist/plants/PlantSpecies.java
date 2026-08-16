@@ -5,8 +5,6 @@ import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
-import com.naturalist.taxonomy.TaxonomicClassification;
-import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 
 import java.util.Set;
@@ -22,9 +20,11 @@ import java.util.function.Consumer;
  * Durrell four-level {@link Description}, making the catalog a living educational
  * resource as well as a management reference.
  * <p>
- * {@link PlantRole} captures all ecological and horticultural functions a plant
- * fills at Oak Vista simultaneously. {@link PlantLifeForm} governs management
- * cadence — annual replanting vs. perennial maintenance vs. tree pruning schedules.
+ * Ecological and horticultural function — what the plant <em>does</em> at Oak Vista —
+ * lives on {@link PlantEcologicalRole}, keyed by {@link PlantRankName} so a genus-rank
+ * taxon can carry it too. {@link PlantLifeForm} stays here: it is a morphological trait
+ * of the taxon, not a site-specific assignment, and it governs management cadence —
+ * annual replanting vs. perennial maintenance vs. tree pruning.
  * <p>
  * {@code nativeBioregions} records the {@link Bioregion}s where this species
  * is native. The set is informational at the species level and informs management
@@ -48,57 +48,16 @@ import java.util.function.Consumer;
  */
 public record PlantSpecies(
         PlantSpeciesName name,
-        TaxonomicClassification taxonomy,
+        PlantGenusName genusName,
+        TaxonomicSpecies epithet,
         Description description,
-        Set<PlantRole> roles,
         PlantLifeForm lifeForm,
         Set<Bioregion> nativeBioregions,
         Set<CommonName> commonNames
 ) implements NamedEntity<PlantSpeciesName> {
 
-    /**
-     * Convenience accessor for the genus epithet from {@link #taxonomy()}. Will
-     * be re-anchored to {@code LinnaeanSpecies} once the typed {@code PlantGenusName}
-     * upward reference and per-record migration land in PR-2f of FU-1.
-     */
-    public TaxonomicGenus genus() {
-        return taxonomy.genus();
-    }
 
-    /**
-     * Convenience accessor for the species epithet from {@link #taxonomy()}. Will
-     * be re-anchored to {@code LinnaeanSpecies} once the typed {@code PlantGenusName}
-     * upward reference and per-record migration land in PR-2f of FU-1.
-     */
-    public TaxonomicSpecies species() {
-        return taxonomy.species();
-    }
 
-    /**
-     * Whether this plant is a confirmed keystone host — an obligate larval
-     * food plant for a keystone insect species at Oak Vista. Keystone hosts
-     * trigger zero-pesticide constraints in the PestManagement module.
-     */
-    public boolean isKeystoneHost() {
-        return roles.contains(PlantRole.KEYSTONE_HOST);
-    }
-
-    /**
-     * Whether this plant specifically supports parasitoid insects (tachinid flies,
-     * braconid wasps) through its flower structure or nectar chemistry.
-     * These plants are critical infrastructure for biological pest control.
-     */
-    public boolean supportsBiocontrolInsects() {
-        return roles.contains(PlantRole.BENEFICIAL_INSECT_HABITAT);
-    }
-
-    /**
-     * Whether this plant contributes to soil nitrogen cycling through
-     * biological fixation — reducing fertiliser requirements in adjacent zones.
-     */
-    public boolean isNitrogenFixer() {
-        return roles.contains(PlantRole.NITROGEN_FIXER);
-    }
 
     /**
      * Whether this species is recorded as native to the given bioregion.
@@ -111,9 +70,9 @@ public record PlantSpecies(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .valueObject(taxonomy, "taxonomy")
+                .entityName(genusName, "genusName")
+                .namedValue(epithet, "epithet")
                 .valueObject(description, "description")
-                .notNull(roles, "roles")
                 .notNull(lifeForm, "lifeForm")
                 .notNull(nativeBioregions, "nativeBioregions")
                 .notNull(commonNames, "commonNames");

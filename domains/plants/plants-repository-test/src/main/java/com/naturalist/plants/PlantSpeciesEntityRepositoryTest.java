@@ -8,7 +8,7 @@ import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.taxonomy.*;
+import com.naturalist.taxonomy.TaxonomicSpecies;
 
 import java.util.List;
 import java.util.Set;
@@ -47,12 +47,8 @@ interface PlantSpeciesEntityRepositoryTest
     default PlantSpecies newEntity() {
         return new PlantSpecies(
                 PlantSpeciesName.of(RandomValue.string()),
-                new TaxonomicClassification(
-                        TaxonomicOrder.of("Order" + RandomValue.string()),
-                        TaxonomicFamily.of("Family" + RandomValue.string()),
-                        TaxonomicGenus.of("Genus" + RandomValue.string()),
-                        TaxonomicSpecies.of("species" + RandomValue.string())
-                ),
+                TestPlantsIdentifiers.PlantGenera.Thymus.name,
+                TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.FOOD_CROP),
@@ -66,12 +62,8 @@ interface PlantSpeciesEntityRepositoryTest
     default PlantSpecies ghostEntity() {
         return new PlantSpecies(
                 PlantSpeciesName.of(RandomValue.string()),
-                new TaxonomicClassification(
-                        TaxonomicOrder.of("Order" + RandomValue.string()),
-                        TaxonomicFamily.of("Family" + RandomValue.string()),
-                        TaxonomicGenus.of("Genus" + RandomValue.string()),
-                        TaxonomicSpecies.of("species" + RandomValue.string())
-                ),
+                PlantGenusName.of("test-ghost-genus-xx"),
+                TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.FOOD_CROP),
@@ -88,12 +80,8 @@ interface PlantSpeciesEntityRepositoryTest
                 : Set.of(new SouthernCascades());
         return new PlantSpecies(
                 original.name(),
-                new TaxonomicClassification(
-                        TaxonomicOrder.of("Order" + RandomValue.string()),
-                        TaxonomicFamily.of("Family" + RandomValue.string()),
-                        TaxonomicGenus.of("Genus" + RandomValue.string()),
-                        TaxonomicSpecies.of("species" + RandomValue.string())
-                ),
+                TestPlantsIdentifiers.PlantGenera.Salvia.name,
+                TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
                 Set.of(PlantRole.NITROGEN_FIXER),

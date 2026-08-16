@@ -3,7 +3,7 @@ package com.naturalist.plants.management;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.plants.PlantSpeciesName;
+import com.naturalist.plants.PlantRankName;
 
 import java.util.List;
 
@@ -17,9 +17,9 @@ class PlantProgramEntityRepositoryMock
     }
 
     @Override
-    public List<PlantProgram> getByPlantName(PlantSpeciesName plantName) {
+    public List<PlantProgram> getByPlantName(PlantRankName plantName) {
         observer().arguments("getByPlantName",
-                        i -> i.entityName(plantName, "plantName"))
+                        i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(p -> plantName.equals(p.plantName()))

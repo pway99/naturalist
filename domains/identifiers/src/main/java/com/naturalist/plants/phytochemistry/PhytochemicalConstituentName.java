@@ -3,7 +3,7 @@ package com.naturalist.plants.phytochemistry;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.EntityName;
-import com.naturalist.plants.PlantSpeciesName;
+import com.naturalist.plants.PlantRankName;
 
 /**
  * Strongly typed natural key for
@@ -63,7 +63,7 @@ public final class PhytochemicalConstituentName extends EntityName {
      *
      * @throws NullPointerException if either argument is null
      */
-    public static PhytochemicalConstituentName of(PlantSpeciesName plantName, CompoundName compoundName) {
+    public static PhytochemicalConstituentName of(PlantRankName plantName, CompoundName compoundName) {
         return new PhytochemicalConstituentName(plantName.value() + "-" + compoundName.value());
     }
 

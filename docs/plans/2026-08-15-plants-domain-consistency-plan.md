@@ -77,7 +77,7 @@ Everything below depends on this. Do not start M2 or M3 before reading it.
 | `citrus`                 | `species: null`, FOOD_CROP, TREE            | `citrus`  ← collides   |
 
 `PlantName.of("dianthus")` and `PlantGenusName.of("dianthus")` are the same string in two
-identifier spaces. `PlantCatalogContribution` emits the token `"Dianthus"` for both refs.
+identifier spaces. `PlantsCatalogContribution` emits the token `"Dianthus"` for both refs.
 
 Insects resolved this shape by making `InsectSpecies.epithet` required and giving
 under-identified organisms a home at their actual rank. `PlantGenus`'s own javadoc claims
@@ -196,7 +196,47 @@ Out of scope for the rename: component names (`Cultivar.plantName` stays, still
 species-bound and still accurate), JSON field names, and the ADR-020 nested-type renames
 (M4's job).
 
-### M2a′ — Rank audit of the existing catalog  🚧 NEXT, blocks M2b
+### M2a′ — Rank audit of the existing catalog  ✅ DONE 2026-08-16
+
+**Result: 17 rows keep species rank, 5 demote to genus.** Every genus needed already
+exists in `plant-genera.json`, so no authoring was required. The audit read each row's
+description and common names and asked whether the record names a taxon distinguishable in
+the field from its congeners.
+
+| Row | Evidence | Verdict |
+|---|---|---|
+| `creeping-thyme` | `species: null`; "a low, spreading herb" — never commits to *serpyllum* or *praecox* | → genus `thymus` |
+| `ornamental-passiflora` | `species: null`; "striking blue-and-white flowers" hints at *caerulea* but is unstated | → genus `passiflora` |
+| `dianthus` | `species: null`; no species evidence anywhere in the record | → genus `dianthus` |
+| `sage` | `species: null`; "an aromatic perennial shrub in the mint family" — generic | → genus `salvia` |
+| `citrus` | `species: null`; "the citrus trees … include **several varieties**" — plural by its own admission | → genus `citrus` |
+
+The remaining 17 carry a species epithet and a description that evidences it. Three warrant
+a note without changing rank:
+
+- **`viola-odorata`** — common name recorded as "Wild violet", not "Sweet violet". California
+  fritillary hosts include several native *Viola*; a naturalised *V. odorata* in a shaded
+  garden bed is the likeliest reading and the description fits it. **Kept as species,
+  flagged** — if the plant was never keyed out, this is a sixth demotion.
+- **`pelargonium-graveolens`** — scented pelargoniums in cultivation are frequently hybrids.
+  The rose-mint description matches *P. graveolens* specifically. **Kept as species.**
+- **`prunus-persica`** — the description is about "the Oh Henry peach", which is a
+  *cultivar*, not the species. Rank is correct; the record is carrying cultivar detail that
+  belongs in a `Cultivar`. Not a rank change — a data-modelling note for later.
+
+**Downstream references to demoted rows — only two, and both are the reason the widening
+in M2e exists:**
+
+| Reference | Points at | Needs |
+|---|---|---|
+| `citrus-bloom-pesticide-window` (program) | `citrus` | `PlantProgram.plantName` → `PlantRankName` |
+| `creeping-thyme-thymol` (constituent) | `creeping-thyme` | `PhytochemicalConstituent.plantName` → `PlantRankName` |
+
+No cultivar, no planting and no seed lineage references a demoted row. `TestPlantsIdentifiers`
+holds `CreepingThyme.name` as a `PlantSpeciesName`; it moves under `PlantGenera` as a
+`PlantGenusName`.
+
+<details><summary>Original milestone description</summary>
 
 **Do this before any record is reshaped.** M2b adds a `genusName` foreign key and requires
 every plant to resolve to a genus; a row whose slug claims a rank its evidence does not
@@ -224,6 +264,8 @@ five known duplicates are the obvious cases, not necessarily the only ones.
 a species that could be distinguished in the field from its congeners. "Some salvia in the
 front bed" is a genus record whatever its slug says.
 
+</details>
+
 ### M2b — Reshape `Plant` to species rank
 
 **Depends on M2a′.** Reshape only what the audit has confirmed is species rank.
@@ -239,13 +281,13 @@ front bed" is a genus record whatever its slug says.
 - [ ] Re-anchor or delete `Plant.genus()` / `Plant.species()` and the stale PR-2f javadoc.
 
 **Ripple:** this changes `Plant`'s arity *and* drops a component other code reads.
-`PlantCatalogContribution.tokensFor(Plant)` builds the binomial and abbreviated-binomial
+`PlantsCatalogContribution.tokensFor(Plant)` builds the binomial and abbreviated-binomial
 tokens from `taxonomy.genus()` / `taxonomy.species()` — it must now resolve the genus
 through the FK or take the genus epithet as a parameter. Also breaks
 `PlantEntityRepositoryTest` (three constructor sites), `PlantTest`, all `plants.json`
 rows, and `plants/detail.jte` / `list.jte`. Grep for `new Plant(` and `taxonomy()`.
 
-### M2c — `PlantEcologicalRole` cross-rank entity
+### M2c — `PlantEcologicalRole` cross-rank entity  ✅ DONE 2026-08-16
 
 - [ ] `PlantEcologicalRoleId` (UUIDv7) in `domains/identifiers`; entity in `plants-api`
       modelled on `InsectFunctionalRole` — `notEmpty(roles)`, uniqueness on `parentName`.
@@ -285,9 +327,9 @@ clovers and `Solanum` covers tomato and eggplant. The five pre-existing genus re
 descriptions, a legacy of having been created as stand-ins for the duplicated plant rows.
 Worth rewriting when M2c touches them to add `lifeForm`.
 
-### M2e — Re-key the genus-level constituent
+### M2e — Re-key the genus-level constituent  ✅ DONE 2026-08-16
 
-**Widens `PlantCompoundReferences` too.** That provider is species-specific throughout
+**Widens `PlantsCompoundReferences` too.** That provider is species-specific throughout
 today — `Set<PlantSpeciesName> seenPlants` is its dedup key, and its javadoc tells consumers
 to filter by `instanceof PlantSpeciesName`. Once the constituent's plant reference is a
 `PlantRankName`, "which plants produce thymol" answers *Thymus* at genus rank, and the
@@ -307,7 +349,7 @@ abstraction pass (rule 3 in `domains/plants/CLAUDE.md`) should decide how to fix
       to `parentName` for honesty), with the field-level Jackson dispatch from M2a.
 - [ ] Re-key `creeping-thyme-thymol` to the `thymus` genus.
 - [ ] `PhytochemicalConstituentQuery.forPlantName` becomes `forParentName`;
-      `PlantCompoundReferences` emits the parent ref at whatever rank it resolves.
+      `PlantsCompoundReferences` emits the parent ref at whatever rank it resolves.
 
 ### M2f — Hierarchy queries
 
@@ -322,7 +364,7 @@ abstraction pass (rule 3 in `domains/plants/CLAUDE.md`) should decide how to fix
 
 **Depends on:** M1. Independent of M2.
 
-`PlantCatalogContribution` pages the whole family and genus catalog and emits search
+`PlantsCatalogContribution` pages the whole family and genus catalog and emits search
 tokens for both. `PlantsLinker` has no case for `PlantFamilyName` or `PlantGenusName`, and
 `SearchController.buildGroups` skips any hit whose linker returns null. Every family and
 genus hit is silently dropped — searching "Lamiaceae" returns nothing. There are also no
@@ -385,8 +427,8 @@ domain with a same-named root entity will hit it too. Suggested: keep the plural
 exception rather than an accident.
 
 - [ ] Rename nested query/repository types and their `*Impl` adapters.
-- [ ] Update `plants-test-context`, `plants-core` tests, `PlantCatalogContribution`,
-      `PlantCompoundReferences`, `PlantsController`.
+- [ ] Update `plants-test-context`, `plants-core` tests, `PlantsCatalogContribution`,
+      `PlantsCompoundReferences`, `PlantsController`.
 - [ ] Record the root-entity exception in `domains/CLAUDE.md` §API Surface.
 
 ---

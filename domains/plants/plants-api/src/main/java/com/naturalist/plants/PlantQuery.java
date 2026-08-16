@@ -1,6 +1,8 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.EntityQuery;
+
+import java.util.Optional;
 import com.naturalist.plants.PlantEntityCollections.PlantSpeciesCollection;
 import com.naturalist.plants.PlantEntityCollections.PlantFamilyCollection;
 import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
@@ -40,6 +42,8 @@ public interface PlantQuery {
             extends EntityQuery<PlantFamilyName, PlantFamily, PlantFamilyCollection> {
     }
 
+    PlantEcologicalRoleEntityQuery ecologicalRoles();
+
     interface PlantGenusEntityQuery
             extends EntityQuery<PlantGenusName, PlantGenus, PlantGenusCollection> {
 
@@ -49,5 +53,17 @@ public interface PlantQuery {
          * family &rarr; genera rollup the family detail page renders.
          */
         PlantGenusCollection forFamilyName(PlantFamilyName familyName);
+    }
+
+    interface PlantEcologicalRoleEntityQuery
+            extends EntityQuery<PlantEcologicalRoleId, PlantEcologicalRole,
+                    PlantEntityCollections.PlantEcologicalRoleCollection> {
+
+        /**
+         * The ecological role recorded for a taxon, at whatever rank it was recorded.
+         * Empty when the taxon's ecology has not been characterised — which is a real
+         * state, not a missing record.
+         */
+        Optional<PlantEcologicalRole> forPlantName(PlantRankName plantName);
     }
 }

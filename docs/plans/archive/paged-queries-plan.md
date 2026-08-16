@@ -59,8 +59,8 @@ entity at assembly time and again on each fresh `searchableEntities()` call.
 | `CultivarRepository::getByPlantName(plantName)`                       | plants-api    | future console — already declared         |
 | `PlantProgramRepository::getByPlantName(plantName)`                   | plants-api    | future console                            |
 | `SeedLineageRepository::getByCultivarName(cultivarName)`              | plants-api    | future console                            |
-| `PhytochemicalConstituentRepository::getByPlantName(plantName)`       | plants-api    | `PlantCompoundReferences`, future console |
-| `PhytochemicalConstituentRepository::getByCompoundName(compoundName)` | plants-api    | `PlantCompoundReferences`                 |
+| `PhytochemicalConstituentRepository::getByPlantName(plantName)`       | plants-api    | `PlantsCompoundReferences`, future console |
+| `PhytochemicalConstituentRepository::getByCompoundName(compoundName)` | plants-api    | `PlantsCompoundReferences`                 |
 | `ProductRepository::getByCompoundName(compoundName)`                  | chemistry-api | future product detail                     |
 
 These are "page size 10 by default" candidates — the worst offender is
