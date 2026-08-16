@@ -37,6 +37,7 @@ public record PlantEcologicalRole(
         PlantEcologicalRoleId id,
         @JsonTypeInfo(use = Id.NAME, property = "plantRank", include = As.EXTERNAL_PROPERTY)
         @JsonSubTypes({
+                @Type(value = PlantOrderName.class, name = "ORDER"),
                 @Type(value = PlantFamilyName.class, name = "FAMILY"),
                 @Type(value = PlantGenusName.class, name = "GENUS"),
                 @Type(value = PlantSpeciesName.class, name = "SPECIES")

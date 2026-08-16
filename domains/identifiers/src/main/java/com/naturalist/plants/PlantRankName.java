@@ -51,6 +51,7 @@ import com.naturalist.taxonomy.LinealRank;
  * <pre>{@code
  * @JsonTypeInfo(use = Id.NAME, property = "subjectRank", include = As.EXTERNAL_PROPERTY)
  * @JsonSubTypes({
+ *     @Type(value = PlantOrderName.class,   name = "ORDER"),
  *     @Type(value = PlantFamilyName.class,  name = "FAMILY"),
  *     @Type(value = PlantGenusName.class,   name = "GENUS"),
  *     @Type(value = PlantSpeciesName.class, name = "SPECIES")
@@ -85,7 +86,8 @@ public sealed interface PlantRankName
 
     /**
      * Creates the appropriate permit for the given slug and Linnaean rank. Only the
-     * three ranks plants catalogues are supported; anything else throws.
+     * four ranks plants catalogues — order, family, genus, species — are supported;
+     * anything else throws.
      */
     static PlantRankName of(String slug, LinealRank rank) {
         return switch (rank) {

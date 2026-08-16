@@ -1,11 +1,13 @@
 @import com.naturalist.data.Page
 @import com.naturalist.plants.PlantFamily
+@import com.naturalist.plants.console.BreadcrumbSegment
+@import java.util.List
 
 @param Page<PlantFamily> familiesPage
+@param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 
 @template.layout.page(title = "Plant Families", content = @`
-    <a href="/plants" class="naturalist-backlink">&larr; Back to catalog</a>
-
+    @template.plants.nav(breadcrumb = breadcrumb)
     <h1>Plant Families</h1>
     <p>
         Family-rank records are first-class catalog citizens, not placeholders — a

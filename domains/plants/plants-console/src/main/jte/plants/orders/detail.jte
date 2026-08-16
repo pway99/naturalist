@@ -1,6 +1,7 @@
 @import com.naturalist.plants.PlantFamily
 @import com.naturalist.plants.PlantOrder
 @import java.util.List
+@import com.naturalist.plants.console.BreadcrumbSegment
 
 @param PlantOrder order
 @param List<PlantFamily> families = java.util.List.of()
@@ -8,12 +9,12 @@
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
+@param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 
 !{var commonName = order.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(order.order().value());}
 
 @template.layout.page(title = order.order().value(), content = @`
-    <a href="/plants" class="naturalist-backlink">&larr; Back to catalog</a>
-
+    @template.plants.nav(breadcrumb = breadcrumb)
     <h1>${commonName}</h1>
     <p><em>${order.order().value()}</em></p>
 

@@ -51,7 +51,6 @@ interface PlantSpeciesEntityRepositoryTest
                 TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
-                Set.of(PlantRole.FOOD_CROP),
                 PlantLifeForm.ANNUAL,
                 Set.of(),
                 Set.of()
@@ -66,7 +65,6 @@ interface PlantSpeciesEntityRepositoryTest
                 TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
-                Set.of(PlantRole.FOOD_CROP),
                 PlantLifeForm.ANNUAL,
                 Set.of(),
                 Set.of()
@@ -84,7 +82,6 @@ interface PlantSpeciesEntityRepositoryTest
                 TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
-                Set.of(PlantRole.NITROGEN_FIXER),
                 PlantLifeForm.PERENNIAL,
                 flippedBioregions,
                 Set.of(CommonName.of("alt-" + RandomValue.string()))

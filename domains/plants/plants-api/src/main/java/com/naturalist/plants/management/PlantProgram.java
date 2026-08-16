@@ -1,17 +1,18 @@
 package com.naturalist.plants.management;
 
-import com.naturalist.ddd.NamedEntity;
-import com.naturalist.fieldnotes.Description;
-import com.naturalist.observability.Constraints;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.naturalist.ddd.NamedEntity;
+import com.naturalist.fieldnotes.Description;
+import com.naturalist.observability.Constraints;
 import com.naturalist.plants.PlantFamilyName;
 import com.naturalist.plants.PlantGenusName;
+import com.naturalist.plants.PlantOrderName;
 import com.naturalist.plants.PlantRankName;
-import com.naturalist.plants.PlantRankName;
+import com.naturalist.plants.PlantSpeciesName;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -56,6 +57,7 @@ public record PlantProgram(
         PlantProgramName name,
         @JsonTypeInfo(use = Id.NAME, property = "plantRank", include = As.EXTERNAL_PROPERTY)
         @JsonSubTypes({
+                @Type(value = PlantOrderName.class, name = "ORDER"),
                 @Type(value = PlantFamilyName.class, name = "FAMILY"),
                 @Type(value = PlantGenusName.class, name = "GENUS"),
                 @Type(value = PlantSpeciesName.class, name = "SPECIES")

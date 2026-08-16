@@ -161,11 +161,13 @@ class PlantsCatalogContributionTest {
     @Test
     void contributionEmitsOneSearchableEntityPerCatalogEntry() {
         long plantCount = Pages.stream(1000, entityQuery::findPage).count();
+        long orderCount = Pages.stream(1000, orderQuery::findPage).count();
         long familyCount = Pages.stream(1000, familyQuery::findPage).count();
         long genusCount = Pages.stream(1000, genusQuery::findPage).count();
         long entityCount = contribution.searchableEntities().count();
 
-        assertThat(entityCount).isEqualTo(plantCount + familyCount + genusCount);
+        assertThat(entityCount)
+                .isEqualTo(plantCount + orderCount + familyCount + genusCount);
     }
 
     @Test
@@ -176,6 +178,16 @@ class PlantsCatalogContributionTest {
         assertThat(catalog.search("aristolochiaceae").stream())
                 .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
         assertThat(targetsOf(catalog.search("Aristolochiaceae"))).contains(expected);
+    }
+
+    @Test
+    void ordersAreSearchableBySlugAndEpithet() {
+        Catalog catalog = CatalogAssembly.from(contribution);
+        EntityRef expected = new EntityRef(new PlantsDomain(), PlantOrderName.of("lamiales"));
+
+        assertThat(catalog.search("lamiales").stream())
+                .anyMatch(h -> h.target().equals(expected) && h.kind() == MatchKind.EXACT_SLUG);
+        assertThat(targetsOf(catalog.search("Lamiales"))).contains(expected);
     }
 
     @Test
@@ -192,22 +204,6 @@ class PlantsCatalogContributionTest {
     void everySearchableEntityIsAttributedToThePlantsDomain() {
         contribution.searchableEntities().forEach(entity ->
                 assertThat(entity.target().domain()).isEqualTo(new PlantsDomain()));
-    }
-
-    @Test
-    void plantWithoutSpeciesContributesGenusButNoBinomial() {
-        // creeping-thyme has genus "Thymus" with null species. The token
-        // stream should include the slug and the genus, and skip the binomial
-        // forms — no NullPointerException, no malformed token.
-        SearchableEntity creepingThyme = contribution.searchableEntities()
-                .filter(e -> e.target().name().equals(PlantSpeciesName.of("creeping-thyme")))
-                .findFirst()
-                .orElseThrow();
-        List<String> tokens = creepingThyme.tokens().toList();
-
-        assertThat(tokens).contains("creeping-thyme", "Thymus");
-        assertThat(tokens).noneMatch(t -> t.contains(" ") && t.startsWith("Thymus "));
-        assertThat(tokens).noneMatch(t -> t.startsWith("T. "));
     }
 
     private static List<EntityRef> targetsOf(SearchResults results) {

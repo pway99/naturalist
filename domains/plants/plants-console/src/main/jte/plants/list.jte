@@ -2,16 +2,18 @@
 @import com.naturalist.plants.PlantSpecies
 @import java.util.Map
 @import com.naturalist.data.Page
+@import com.naturalist.plants.console.BreadcrumbSegment
+@import java.util.List
 
 @param Page<PlantSpecies> plantsPage
 @param Map<String, PlantEcologicalRole> ecologicalRoles = java.util.Map.of()
+@param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 
-@template.layout.page(title = "Plant Catalog", content = @`
-    <h1>Plant Catalog</h1>
+@template.layout.page(title = "Plant Species", content = @`
+    @template.plants.nav(breadcrumb = breadcrumb)
+    <h1>Plant Species</h1>
     <p>
-        Plants documented at Oak Vista.
-        <a href="/plants/orders">Browse orders &rarr;</a>
-        &middot;
+        Every species documented at Oak Vista.
         <a href="/plants/families">Browse families &rarr;</a>
         &middot;
         <a href="/plants/phytochemistry">View phytochemistry &rarr;</a>

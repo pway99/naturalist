@@ -37,7 +37,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -64,14 +67,24 @@ public class PlantsController {
 
     // ── Plant catalog ────────────────────────────────────────────────────
 
+    // The catalog opens at the top of the rank chain, matching insects
+    // (GET /insects -> /insects/orders). Most identifications land above species,
+    // so a rank browse is the honest front door; the flat species list moves to
+    // /plants/species.
     @GetMapping
-    String list(@RequestParam(defaultValue = "0") int page, Model model) {
+    String index() {
+        return "redirect:/plants/orders";
+    }
+
+    @GetMapping("/species")
+    String species(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<PlantSpecies> plantsPage = plantQuery.plants().findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("plantsPage", plantsPage);
         // Roles are a separate cross-rank record, so the badges need a lookup rather than
         // an accessor. Keyed by slug because the template holds a PlantSpecies, not a rank name.
         model.addAttribute("ecologicalRoles", Pages.stream(1000, plantQuery.ecologicalRoles()::findPage)
                 .collect(Collectors.toMap(r -> r.plantName().value(), r -> r, (a, b) -> a)));
+        model.addAttribute("breadcrumb", plantaeRoot());
         return "plants/list";
     }
 
@@ -97,8 +110,86 @@ public class PlantsController {
         model.addAttribute("cultivars", cultivars);
         model.addAttribute("programs", programs);
         model.addAttribute("constituents", constituents);
+        model.addAttribute("breadcrumb", breadcrumbToSpecies(plant.get()));
         addDescription(model, plant.get().description());
         return "plants/detail";
+    }
+
+    // ── Taxonomic breadcrumb ───────────────────────────────────────────────
+    // Mirrors the insects console's rank-ladder header. Plants carry no clade in
+    // the kernel yet, so the ladder is anchored at the kingdom by hand — Plantae
+    // is the plant analogue of the insects breadcrumb's Insecta segment, and its
+    // link back to /plants/orders is the click-to-catalog affordance. Ancestry
+    // resolution tolerates a missing parent: a gap shortens the trail rather than
+    // failing the page, though the fixture FK constraints make gaps unlikely.
+
+    private static final String CATALOG_ROOT = "/plants/orders";
+
+    private static List<BreadcrumbSegment> plantaeRoot() {
+        var segments = new ArrayList<BreadcrumbSegment>();
+        segments.add(BreadcrumbSegment.link("Plantae", CATALOG_ROOT, "Kingdom"));
+        return segments;
+    }
+
+    private static BreadcrumbSegment orderLink(PlantOrder order) {
+        return BreadcrumbSegment.link(order.order().value(),
+                "/plants/orders/" + order.name().value(), "Order");
+    }
+
+    private static BreadcrumbSegment familyLink(PlantFamily family) {
+        return BreadcrumbSegment.link(family.family().value(),
+                "/plants/families/" + family.name().value(), "Family");
+    }
+
+    private static BreadcrumbSegment genusLink(PlantGenus genus) {
+        return BreadcrumbSegment.link(genus.genus().value(),
+                "/plants/genera/" + genus.name().value(), "Genus");
+    }
+
+    private List<BreadcrumbSegment> breadcrumbToOrder(PlantOrder order) {
+        var segments = plantaeRoot();
+        segments.add(BreadcrumbSegment.current(order.order().value(), "Order"));
+        return segments;
+    }
+
+    private List<BreadcrumbSegment> breadcrumbToFamily(PlantFamily family) {
+        var segments = plantaeRoot();
+        orderOf(family).ifPresent(o -> segments.add(orderLink(o)));
+        segments.add(BreadcrumbSegment.current(family.family().value(), "Family"));
+        return segments;
+    }
+
+    private List<BreadcrumbSegment> breadcrumbToGenus(PlantGenus genus) {
+        var segments = plantaeRoot();
+        var family = familyOf(genus);
+        family.flatMap(this::orderOf).ifPresent(o -> segments.add(orderLink(o)));
+        family.ifPresent(f -> segments.add(familyLink(f)));
+        segments.add(BreadcrumbSegment.current(genus.genus().value(), "Genus"));
+        return segments;
+    }
+
+    private List<BreadcrumbSegment> breadcrumbToSpecies(PlantSpecies species) {
+        var segments = plantaeRoot();
+        var genus = genusOf(species);
+        var family = genus.flatMap(this::familyOf);
+        family.flatMap(this::orderOf).ifPresent(o -> segments.add(orderLink(o)));
+        family.ifPresent(f -> segments.add(familyLink(f)));
+        genus.ifPresent(g -> segments.add(genusLink(g)));
+        String label = genus.map(g -> g.genus().value() + " ").orElse("") + species.epithet().value();
+        segments.add(BreadcrumbSegment.current(label, "Species"));
+        return segments;
+    }
+
+    private Optional<PlantOrder> orderOf(PlantFamily family) {
+        return plantQuery.orders().getByName(family.orderName());
+    }
+
+    private Optional<PlantFamily> familyOf(PlantGenus genus) {
+        return plantQuery.families().getByName(genus.familyName());
+    }
+
+    private Optional<PlantGenus> genusOf(PlantSpecies species) {
+        return plantQuery.genera().getByName(species.genusName());
     }
 
     // ── Rank pages ────────────────────────────────────────────────────────
@@ -108,6 +199,7 @@ public class PlantsController {
         Page<PlantOrder> ordersPage =
                 plantQuery.orders().findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("ordersPage", ordersPage);
+        model.addAttribute("breadcrumb", plantaeRoot());
         return "plants/orders/list";
     }
 
@@ -123,6 +215,7 @@ public class PlantsController {
                 .toList();
         model.addAttribute("order", order.get());
         model.addAttribute("families", families);
+        model.addAttribute("breadcrumb", breadcrumbToOrder(order.get()));
         addDescription(model, order.get().description());
         return "plants/orders/detail";
     }
@@ -132,6 +225,7 @@ public class PlantsController {
         Page<PlantFamily> familiesPage =
                 plantQuery.families().findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("familiesPage", familiesPage);
+        model.addAttribute("breadcrumb", plantaeRoot());
         return "plants/families/list";
     }
 
@@ -147,6 +241,7 @@ public class PlantsController {
                 .toList();
         model.addAttribute("family", family.get());
         model.addAttribute("genera", genera);
+        model.addAttribute("breadcrumb", breadcrumbToFamily(family.get()));
         addDescription(model, family.get().description());
         return "plants/families/detail";
     }
@@ -165,6 +260,7 @@ public class PlantsController {
         model.addAttribute("genus", genus.get());
         model.addAttribute("family",
                 plantQuery.families().getByName(genus.get().familyName()).orElse(null));
+        model.addAttribute("breadcrumb", breadcrumbToGenus(genus.get()));
         addDescription(model, genus.get().description());
         return "plants/genera/detail";
     }

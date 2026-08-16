@@ -163,10 +163,12 @@ interface PhytochemicalConstituentEntityRepositoryTest
         var results = repository().getByCompoundName(
                 TestChemistryIdentifiers.Compounds.Thymol.name);
 
+        // The thymol constituent was re-keyed to the genus thymus in the 2026-08-16
+        // rank audit (M2e), when creeping-thyme demoted from species to genus rank.
         assertThat(results)
                 .extracting(PhytochemicalConstituent::name)
                 .extracting(PhytochemicalConstituentName::value)
-                .contains("creeping-thyme-thymol");
+                .contains("thymus-thymol");
     }
 
     @Test

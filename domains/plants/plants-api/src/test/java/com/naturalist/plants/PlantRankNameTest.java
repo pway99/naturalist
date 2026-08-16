@@ -8,13 +8,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Per-permit verification that {@link PlantRankName#rank()} returns the matching
- * {@link LinealRank}, and that the factory covers exactly the ranks plants catalogues.
+ * {@link LinealRank}, and that the factory covers exactly the four ranks plants
+ * catalogues — order, family, genus, species.
  * <p>
  * {@code rank()} is total here — every permit is a Linnaean rung by construction, so
  * there is no null case to test. That is the property the type buys by keeping
  * {@code CultivarName} off the permits list.
  */
 class PlantRankNameTest {
+
+    @Test
+    void orderPermitReportsOrderRank() {
+        PlantRankName name = PlantOrderName.of("lamiales");
+        assertThat(name.rank()).isEqualTo(LinealRank.ORDER);
+    }
 
     @Test
     void familyPermitReportsFamilyRank() {
@@ -36,6 +43,8 @@ class PlantRankNameTest {
 
     @Test
     void factoryBuildsThePermitMatchingTheRank() {
+        assertThat(PlantRankName.of("lamiales", LinealRank.ORDER))
+                .isInstanceOf(PlantOrderName.class);
         assertThat(PlantRankName.of("lamiaceae", LinealRank.FAMILY))
                 .isInstanceOf(PlantFamilyName.class);
         assertThat(PlantRankName.of("salvia", LinealRank.GENUS))
@@ -46,13 +55,16 @@ class PlantRankNameTest {
 
     @Test
     void factoryRejectsRanksPlantsDoesNotCatalogue() {
-        // Plants has no subspecies name, and no order entity until M2g — a slug at those
-        // ranks has nowhere to live, so the factory refuses rather than inventing one.
-        assertThatThrownBy(() -> PlantRankName.of("lamiales", LinealRank.ORDER))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("ORDER");
+        // The ladder runs ORDER → SPECIES. Plants has no subspecies name — further
+        // specificity below species is a Cultivar, which is a different axis — and
+        // nothing above order, so a slug at those ranks has nowhere to live and the
+        // factory refuses rather than inventing a home for it.
         assertThatThrownBy(() -> PlantRankName.of("anything", LinealRank.SUBSPECIES))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("SUBSPECIES");
+        assertThatThrownBy(() -> PlantRankName.of("plantae", LinealRank.KINGDOM))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("KINGDOM");
     }
 
     @Test

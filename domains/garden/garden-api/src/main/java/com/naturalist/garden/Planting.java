@@ -9,6 +9,7 @@ import com.naturalist.ddd.Entity;
 import com.naturalist.observability.Constraints;
 import com.naturalist.plants.PlantFamilyName;
 import com.naturalist.plants.PlantGenusName;
+import com.naturalist.plants.PlantOrderName;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.cultivar.CultivarName;
@@ -64,6 +65,7 @@ public record Planting(
         PlantingId id,
         @JsonTypeInfo(use = Id.NAME, property = "plantRank", include = As.EXTERNAL_PROPERTY)
         @JsonSubTypes({
+                @Type(value = PlantOrderName.class, name = "ORDER"),
                 @Type(value = PlantFamilyName.class, name = "FAMILY"),
                 @Type(value = PlantGenusName.class, name = "GENUS"),
                 @Type(value = PlantSpeciesName.class, name = "SPECIES")

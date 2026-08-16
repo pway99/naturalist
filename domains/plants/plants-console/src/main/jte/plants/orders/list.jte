@@ -1,15 +1,18 @@
 @import com.naturalist.data.Page
 @import com.naturalist.plants.PlantOrder
+@import com.naturalist.plants.console.BreadcrumbSegment
+@import java.util.List
 
 @param Page<PlantOrder> ordersPage
+@param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 
 @template.layout.page(title = "Plant Orders", content = @`
-    <a href="/plants" class="naturalist-backlink">&larr; Back to catalog</a>
-
+    @template.plants.nav(breadcrumb = breadcrumb)
     <h1>Plant Orders</h1>
     <p>
-        The top rung of the plant chain. A flower recognised as Lamiales — square stem,
-        bilabiate corolla — without a resolved family has a permanent home here.
+        Order-rank records in the Oak Vista catalog — the top of the plant chain. A flower
+        recognised as Lamiales, without a resolved family, has a permanent home here.
+        <a href="/plants/species">Browse all species &rarr;</a>
     </p>
 
     <div class="entity-grid">
@@ -21,13 +24,11 @@
                         <strong>${commonName}</strong>
                     </a>
                 </header>
-                <p class="taxonomy"><em>${o.order().value()}</em></p>
+                <dl class="taxonomy">
+                    <dt>order</dt>
+                    <dd>${o.order().value()}</dd>
+                </dl>
                 <p class="description-preview">${o.description().preschool()}</p>
-                <footer>
-                    <a href="/plants/orders/${o.name().value()}">
-                        Order details &rarr;
-                    </a>
-                </footer>
             </article>
         @endfor
     </div>
