@@ -324,12 +324,17 @@ The three load-bearing ideas, so you know whether the blueprint applies:
   record is permanent** — not a placeholder for a later species identification. The
   confidence bound is expressed in the identifier's elicitation contract, not applied
   afterwards.
-- **Clade placement is a second, independent axis** over the same records
-  (`@Nullable Clade placedIn`), not a derivation of the Linnaean chain.
+- **Dimensions that are not ranks are separate axes**, carried as their own component
+  over the same records — never as extra permits on `<Domain>RankName`. Clade is one
+  (`@Nullable Clade placedIn`); plants' `Cultivar` is another.
 
-**The ladder is per-domain.** `LinealRank` is shared, but which rungs get entities is a
-domain decision, and not every rung is Linnaean — plants catalogues `Cultivar` below
-species. Copy the mechanism, never insects' rank list.
+**The ladder is per-domain, and the ladder is Linnaean.** `LinealRank` is shared, but
+which rungs get entities is a domain decision — three for plants, five for insects. Copy
+the mechanism, never insects' rank list.
+
+**Before adding a permit to a rank name, check it is a rank.** If it has no `LinealRank`
+value, or admitting it forces `rank()` to become nullable, it is an axis and belongs in
+its own component. The blueprint's section D carries the test and two worked examples.
 
 Reference implementation: `domains/insects/`.
 

@@ -74,8 +74,10 @@ declares no foreign keys at all.
 
 ### A3 — A sealed `<Domain>RankName` over the rank names
 
-A sealed interface permitting every rank name the domain catalogues, exposing the slug
-and the `LinealRank` position.
+A sealed interface permitting every **Linnaean rank name** the domain catalogues,
+exposing the slug and the `LinealRank` position. Rank names only — anything that
+classifies organisms without being a rung is an orthogonal axis (D1), and admitting one
+here is the mistake that section exists to prevent.
 
 *Why:* anything that attaches to an organism — a photo, an observation, a role, a
 citation — attaches at *whichever rank was resolved*. One polymorphic field beats four
@@ -84,17 +86,28 @@ migration between columns.
 
 *Source:* `domains/identifiers/.../insects/InsectRankName.java`
 
+*Constraint:* every permit must be **in the same package** as the sealed interface. This
+project has no `module-info.java`, so it is all the unnamed module, where the JLS
+requires it. See A4.
+
 *Watch:* Jackson dispatch is declared **at the consuming field**, never on the sealed
 interface — `@JsonTypeInfo(EXTERNAL_PROPERTY)` + `@JsonSubTypes` on the component. See
 `InsectFunctionalRole.parentName`. Declaring it on the interface would wrap every
 leaf-class serialization in an envelope. Getting this wrong is silent until a flush.
 
-### A4 — Rank names live in `domains/identifiers`, entities in `<domain>-api`
+### A4 — Rank names live flat in `domains/identifiers`, entities in `<domain>-api`
 
 *Why:* other domains reference an organism by name without depending on its api, which
 is what keeps the DAG acyclic.
 
-*Source:* `domains/identifiers/src/main/java/com/naturalist/insects/`
+*Why flat:* A3's sealed type requires its permits to share a package. Insects keeps all
+thirteen identifiers directly in `com.naturalist.insects` — including `LifeStageName`,
+whose entity lives in the `lifestage` sub-package — so the rank names are automatically
+co-located. A domain that mirrors its api sub-contexts inside `identifiers` must still
+keep every rank name at the domain root, or the sealed type will not compile.
+
+*Source:* `domains/identifiers/src/main/java/com/naturalist/insects/` — flat, thirteen
+files, no sub-packages
 
 ---
 
@@ -239,9 +252,38 @@ result types stay distinct.
 
 ---
 
-## D. Clade placement — orthogonal to rank
+## D. Orthogonal axes — dimensions that are not rank
 
-### D1 — Clade is a curated sealed vocabulary, not an entity
+### D1 — Tell a rung from an axis before you model it
+
+A domain will meet dimensions that classify the same organisms without being Linnaean
+ranks: which clade it sits in, which cultivated variety it is, which morphotype or
+strain. The mistake is filing them as extra rungs on the ladder. They are **second
+axes** — independent classifications over the same records.
+
+The distinction is not stylistic. A rung extends the chain and participates in ancestry
+walks, `LinealRank` ordering, and rank-transition rules. An axis does none of that; it
+crosses the chain. Two organisms can share a rank and differ on the axis, and share an
+axis value while differing in rank.
+
+**Three signals that you are holding an axis, not a rung:**
+
+1. **It has no `LinealRank` value.** The shared ladder is closed by biology. If your
+   concept has no position on it, that is the ladder telling you it is not on it.
+2. **Adding it to `<Domain>RankName` forces you to delete a method.** If `rank()` has to
+   become nullable or disappear so the new permit fits, the permit does not belong. An
+   abstraction that has to shed behaviour to admit a member is being widened past its
+   meaning.
+3. **Its relationship to the chain is membership, not extension.** A cultivar belongs to
+   a species; a clade contains ranks. Neither continues the chain downward or upward.
+
+*Failure mode, observed:* plants nearly put `CultivarName` into `PlantRankName`. Both
+signals fired — `rank()` had to go, and because the permits of a sealed type in the
+unnamed module must share a package (JLS), it would additionally have forced a four-package
+identifier move. That is an expensive amount of work to make a concept fit a type it does
+not belong in. Model it as an axis and every cost disappears.
+
+### D2 — Clade is a curated sealed vocabulary, not an entity
 
 `kernels/clades` ships one stateless record permit per recognised clade. No repository,
 no JSON seed. Adding a clade is a deliberate kernel PR.
@@ -251,16 +293,16 @@ logical node across every domain so trait inheritance by traversal works.
 
 *Source:* `kernels/clades/`, and the rationale in `kernels/CLAUDE.md`
 
-### D2 — Rank entities carry `@Nullable Clade placedIn`
+### D3 — Rank entities carry `@Nullable Clade placedIn` — worked example 1
 
 Clade placement is a *second, independent* axis over the same records. A rank entity is
 placed in a clade; the two hierarchies do not have to agree, and neither derives from
-the other.
+the other. The record carries both: `name` for rank identity, `placedIn` for clade.
 
 *Source:* `insects-api/.../InsectSpecies.java` and its siblings — component
 `@Nullable Clade placedIn`, plus a `withPlacedIn` method per rank entity
 
-### D3 — Traits are domain-owned, declared as a pure function
+### D4 — Traits are domain-owned, declared as a pure function
 
 The kernel holds no trait declarations. Each domain writes a pure
 `Function<Clade, Set<Trait>>` — a pattern-matching switch with `default -> Set.of()` —
@@ -271,6 +313,37 @@ a shared registry or startup wiring, because the clade values are value-equal.
 
 *Source:* `insects-api/.../InsectClades.java` — three cases and a default; that is the
 whole file.
+
+### D5 — Cultivar is an axis, not a rung — worked example 2
+
+A cultivated variety is a horticultural selection *within* a species, not a rank below
+it. Plants models it as `Cultivar`, its own `NamedEntity` with its own `CultivarName`,
+carrying a `plantName` FK to the species it belongs to — exactly the membership
+relationship D1 describes.
+
+Consumers that need to reference "what was planted, at whatever specificity is known"
+carry **both axes as separate components**, the same shape as `name` + `placedIn`:
+
+```java
+Planting(PlantRankName subject, @Nullable CultivarName cultivarName, ...)
+```
+
+`subject` is rank-flexible, so a planting can be recorded at family, genus or species —
+this is what makes "I planted a salvia" expressible. `cultivarName` is the orthogonal
+selection within it.
+
+*Why not one field:* collapsing them into a single sealed union produces a type meaning
+"Linnaean rank **or** horticultural selection", which is two concepts wearing one name,
+and it drags in every cost D1 lists. Keeping them separate also lets a consumer state
+both at once — species *and* cultivar — which a union cannot express at all.
+
+*Status:* the axis is modelled; the consumer is not. `garden.Planting` currently carries
+two nullable FKs (`plantName`, `cultivarName`) with an
+`isTrue(plantName != null || cultivarName != null)` disjunction, which is the A1
+anti-pattern on the Linnaean side — it cannot express a genus-level planting. Migrating
+`plantName` to `PlantRankName subject` is tracked in the plants consistency plan.
+
+*Source:* `plants-api/.../cultivar/Cultivar.java`, `garden-api/.../Planting.java`
 
 ---
 
@@ -322,31 +395,36 @@ descendant image twice.
 
 ---
 
-## The ladder is per-domain
+## The ladder is per-domain — and the ladder is Linnaean
 
 **Document the mechanism; do not copy insects' ranks.**
 
-`LinealRank` declares `KINGDOM → SUBSPECIES` and is shared. Which rungs a domain
-*catalogues as entities* is a domain decision:
+`LinealRank` declares `KINGDOM → SUBSPECIES` and is shared. Which of those rungs a domain
+*catalogues as entities* is its own decision. Anything that is not a rung on that ladder
+is an orthogonal axis (section D), never an extra permit:
 
-| Domain    | Ladder                                             |
-|-----------|----------------------------------------------------|
-| insects   | ORDER → FAMILY → GENUS → SPECIES → SUBSPECIES      |
-| plants    | ORDER → FAMILY → GENUS → SPECIES → **CULTIVAR**    |
-| fungi     | undecided                                          |
+| Domain  | Ladder (rungs with entities)                  | Orthogonal axes  |
+|---------|-----------------------------------------------|------------------|
+| insects | ORDER → FAMILY → GENUS → SPECIES → SUBSPECIES | clade            |
+| plants  | FAMILY → GENUS → SPECIES                      | clade, cultivar  |
+| fungi   | undecided                                     | undecided        |
 
-`Cultivar` is **not a Linnaean rank**. It sits below species, is already modelled in
-plants as its own `NamedEntity` with its own name type, and has no `LinealRank` value.
-Everything in sections A–E applies to it unchanged *except* anything that assumes
-`LinealRank` covers the ladder:
+Two consequences:
 
-- `<Domain>RankName` permits whatever names the domain catalogues — three for plants
-  today, not five. Only permit a rank that has an entity.
-- `RankName.rank()` returning `LinealRank` does not generalise to infraspecific ranks.
-  A domain with non-Linnaean rungs needs either a nullable return or its own rank type.
-  **Unresolved — decide when plants reaches it.**
-- Ancestry walks and ordering must not assume `LinealRank` ordinal comparison covers
-  every rung.
+- **`<Domain>RankName` permits only rungs that have an entity.** Three for plants today,
+  five for insects. Do not permit a rank with no record behind it, and do not permit a
+  non-rank — `CultivarName` belongs to the cultivar axis, not this type.
+- **`rank()` returning `LinealRank` therefore always works.** Every permit is a Linnaean
+  rung by construction, so the method needs no nullable or `Optional` return. If you find
+  yourself wanting one, re-read D1 — you are about to admit an axis as a rung.
+
+A further constraint that decides where rank names live: **a sealed type's permits must
+all sit in the same package.** This project has no `module-info.java`, so everything is
+the unnamed module, where the JLS requires exactly that. Insects satisfies it by keeping
+all thirteen identifiers flat in `com.naturalist.insects`, including `LifeStageName`,
+whose entity lives in the `lifestage` sub-package. Plants mirrors its api sub-contexts
+instead (`cultivar/`, `heritage/`, …), which is fine *because* its three rank names are
+flat — but it is why admitting `CultivarName` would have forced a package move.
 
 If you are adding a domain and find yourself copying `InsectRankName`'s five permits,
 stop. Copy its *shape*.
@@ -357,8 +435,10 @@ stop. Copy its *shape*.
 
 Each step is a PR. Order is dependency-driven; nothing later works without the earlier.
 
-1. **Decide the ladder.** Which rungs get entities, and are any non-Linnaean? Record
-   the answer in the domain's `CLAUDE.md` before writing code.
+1. **Decide the ladder and the axes.** Which Linnaean rungs get entities, and what other
+   dimensions classify these organisms without being rungs (clade, cultivar, strain,
+   morphotype)? Run each candidate past D1 before assuming it belongs on the ladder.
+   Record both lists in the domain's `CLAUDE.md` before writing code.
 2. **Rank names** in `domains/identifiers/.../<domain>/`, plus the sealed
    `<Domain>RankName`. Includes the Jackson-dispatch decision (A3).
 3. **Rank entities** in `<domain>-api`, each with its typed upward FK, implementing the
@@ -392,8 +472,11 @@ Do not treat these as settled just because insects shipped:
   `InsectFeature` records, so the catalog holds near-duplicates.
 - **No subspecies entity exists**, despite `InsectSubspeciesName` being a permitted
   rank name — `taxonView().getByName()` returns empty for it.
-- **The `LinealRank`-covers-every-rung assumption** breaks at plants' cultivar. Called
-  out above; still open.
+- **No consumer carries two axes at once yet.** D5's
+  `Planting(subject, cultivarName)` shape is the design, not the code —
+  `garden.Planting` still holds two nullable FKs and cannot express a genus-level
+  planting. Insects has never needed a second axis alongside clade, so the shape is
+  reasoned rather than proven.
 
 ---
 
