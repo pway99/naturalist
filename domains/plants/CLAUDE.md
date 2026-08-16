@@ -121,10 +121,10 @@ PlantFamily.orderName                 → PlantOrder.name   (PlantOrderName)
 PlantGenus.familyName                 → PlantFamily.name  (PlantFamilyName)
 PlantSpecies.genusName                → PlantGenus.name   (PlantGenusName)
 PlantEcologicalRole.plantName         → any rank record   (PlantRankName)
-PlantProgram.plantName                → PlantSpecies.name (PlantSpeciesName)
+PlantProgram.plantName                → any rank record   (PlantRankName)
+PhytochemicalConstituent.plantName    → any rank record   (PlantRankName)
 Cultivar.plantName                    → PlantSpecies.name (PlantSpeciesName)
 SeedLineage.cultivarName              → Cultivar.name     (CultivarName)
-PhytochemicalConstituent.plantName    → PlantSpecies.name (PlantSpeciesName)
 PhytochemicalConstituent.compoundName → chemistry Compound.name (CompoundName)
 PlantSpecies.nativeBioregions         → kernels/biogeography Bioregion
 ```
@@ -135,11 +135,18 @@ typed upward FK at every rung, and each rank's `TestEntitySource` declares a
 fails at load rather than at some later query. `PlantOrder` is the top and declares
 none.
 
-`PlantEcologicalRole.plantName` is the exception that proves the rule: it points at
-*a* rank record rather than a specific one, which is why it is typed `PlantRankName`
-and why no foreign key can be declared for it — the fixture loader cannot know which
-of four sources to check. That is a real gap, not a design choice; it is the cost of
-cross-rank attachment until the loader learns about sealed FK targets.
+**Three references attach at a rank rather than a specific one** —
+`PlantEcologicalRole.plantName`, `PlantProgram.plantName`, and
+`PhytochemicalConstituent.plantName` are all typed `PlantRankName` (a role, a
+management program, or a compound can be asserted of a genus as readily as a species;
+`thymus-thymol` is a genus-level constituent). None can declare a
+`ForeignKeyConstraint`: the fixture loader resolves a single source class, and these
+span four. Each carries a `@JsonSubTypes` dispatch on a sibling `plantRank`
+discriminator, and its integrity is covered by a catalog-data test
+(`PlantEcologicalRoleCatalogDataTest`, `PlantProgramCatalogDataTest`,
+`PhytochemicalConstituentCatalogDataTest`, all via the shared `PlantRankResolution`
+helper) instead of a declarative FK. That is the cost of cross-rank attachment until
+the loader learns about sealed FK targets.
 
 The `PhytochemicalConstituent.compoundName` reference is the only soft FK
 in this domain that crosses *domain* boundaries (rather than just sub-context
@@ -216,11 +223,13 @@ set, blank provenance, nullable-by-design fields).
 - `SeedLineage` — `name`, `cultivarName`, `provenance`, `description`
   required. **Service-layer rule:** the referenced cultivar must be
   `VarietyType.OPEN_POLLINATED`. Not enforced in record invariants (cross-entity).
-- `PlantProgram` — `name`, `plantName`, `description` required. `constraint`
+- `PlantProgram` — `name`, `plantName`, `description` required. `plantName` is a
+  `PlantRankName`, so a program can target a genus. `constraint`
   and `notes` nullable; `hasConstraint()` predicate distinguishes the two
   program shapes (constraint-bearing vs pure schedule).
 - `PhytochemicalConstituent` — `name`, `plantName`, `compoundName`,
-  `description`, `category`, `induction` required (non-null). `roles` and
+  `description`, `category`, `induction` required (non-null). `plantName` is a
+  `PlantRankName` — a compound can be recorded for a genus (`thymus-thymol`). `roles` and
   `tissues` are non-empty sets — a constituent with no role is data without
   a story; an unknown tissue should be recorded as `WHOLE_PLANT` rather than
   an empty set. `notes` nullable. **Service-layer rule:** the referenced
@@ -432,9 +441,13 @@ Each entry must include:
 - `"name": "<constituent-slug>"` — `PhytochemicalConstituentName` natural key.
   Encodes both sides of the link: `<plant-slug>-<compound-slug>` (e.g.
   `"aristolochia-californica-aristolochic-acid-i"`,
-  `"creeping-thyme-thymol"`) — built programmatically via
+  `"thymus-thymol"`) — built programmatically via
   `PhytochemicalConstituentName.of(plantName, compoundName)` in code.
-- `"plantName": "<plant-slug>"` — soft FK to a `PlantSpecies` in `plants.json`
+- `"plantRank": "<ORDER|FAMILY|GENUS|SPECIES>"` — Jackson discriminator selecting
+  which `PlantRankName` permit `plantName` deserializes as
+- `"plantName": "<slug>"` — the taxon that produces this compound, at whichever rank
+  (`thymus` is a genus-level example). Integrity covered by
+  `PhytochemicalConstituentCatalogDataTest`, not a `ForeignKeyConstraint`
 - `"compoundName": "<compound-slug>"` — cross-domain soft FK to a
   `chemistry.Compound` in the chemistry catalog. Service-layer rule: the
   referenced compound must exist in `compounds-base.json` /
@@ -467,10 +480,13 @@ Each entry must include:
 - `"name": "<program-slug>"` — `PlantProgramName` natural key. Name the program
   after the *activity*, not the plant (e.g. `"pipevine-pesticide-exclusion"`,
   `"pipevine-larval-monitoring"`) — one plant may carry multiple programs
-- `"plantName": "<plant-slug>"` — soft FK to a `PlantSpecies`
+- `"plantRank": "<ORDER|FAMILY|GENUS|SPECIES>"` — Jackson discriminator selecting
+  which `PlantRankName` permit `plantName` deserializes as
+- `"plantName": "<slug>"` — the taxon the program targets, at whichever rank.
+  Integrity covered by `PlantProgramCatalogDataTest`, not a `ForeignKeyConstraint`
 - `"description": { ... }` — Durrell four-level `Description` of the program itself
-- `"constraint": <string | null>` — non-negotiable rule surfaced by
-  PestManagement; nullable for pure-schedule programs
+- `"constraint": <string | null>` — non-negotiable rule the program enforces
+  (e.g. a pesticide-exclusion window); nullable for pure-schedule programs
 - `"notes": <string | null>` — operational guidance: schedules, observation
   cadence, application windows; nullable
 

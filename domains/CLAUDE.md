@@ -329,7 +329,7 @@ The three load-bearing ideas, so you know whether the blueprint applies:
   (`@Nullable Clade placedIn`); plants' `Cultivar` is another.
 
 **The ladder is per-domain, and the ladder is Linnaean.** `LinealRank` is shared, but
-which rungs get entities is a domain decision — three for plants, five for insects. Copy
+which rungs get entities is a domain decision — four for plants, five for insects. Copy
 the mechanism, never insects' rank list.
 
 **Before adding a permit to a rank name, check it is a rank.** If it has no `LinealRank`

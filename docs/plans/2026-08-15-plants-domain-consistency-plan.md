@@ -267,19 +267,25 @@ front bed" is a genus record whatever its slug says.
 
 </details>
 
-### M2b — Reshape `Plant` to species rank
+### M2b — Reshape `Plant` to species rank  ✅ DONE 2026-08-16
+
+**Shipped.** `PlantSpecies` now carries `genusName` (`PlantGenusName`) + `epithet`
+(`TaxonomicSpecies`) instead of `taxonomy`; the five demoted rows left `plant-species.json`;
+`PlantSpeciesTestEntitySource` declares the genus FK; the catalog contribution resolves the
+genus epithet per stream. `PlantSpecies` implements `NamedEntity` only — `LinnaeanSpecies`
+was not adopted (the typed `genusName` FK already carries placement).
 
 **Depends on M2a′.** Reshape only what the audit has confirmed is species rank.
 
-- [ ] Replace `TaxonomicClassification taxonomy` with `PlantGenusName genusName` +
+- [x] Replace `TaxonomicClassification taxonomy` with `PlantGenusName genusName` +
       `TaxonomicSpecies epithet`; both validated (`.entityName`, `.namedValue`).
-- [ ] Apply the audit's reclassification: demoted rows leave `plants.json`, their
+- [x] Apply the audit's reclassification: demoted rows leave `plants.json`, their
       references re-point at the surviving rank record, and their `PlantGenus`/`PlantFamily`
       record becomes the sole home for that taxon.
-- [ ] `ForeignKeyConstraint` on `PlantTestEntitySource` → `PlantGenusTestEntitySource`.
-- [ ] Decide whether `Plant implements LinnaeanSpecies<PlantGenusName>`, mirroring
+- [x] `ForeignKeyConstraint` on `PlantTestEntitySource` → `PlantGenusTestEntitySource`.
+- [x] Decide whether `Plant implements LinnaeanSpecies<PlantGenusName>`, mirroring
       `PlantGenus implements LinnaeanGenus<PlantFamilyName>`.
-- [ ] Re-anchor or delete `Plant.genus()` / `Plant.species()` and the stale PR-2f javadoc.
+- [x] Re-anchor or delete `Plant.genus()` / `Plant.species()` and the stale PR-2f javadoc.
 
 **Ripple:** this changes `Plant`'s arity *and* drops a component other code reads.
 `PlantsCatalogContribution.tokensFor(Plant)` builds the binomial and abbreviated-binomial
@@ -290,11 +296,11 @@ rows, and `plants/detail.jte` / `list.jte`. Grep for `new Plant(` and `taxonomy(
 
 ### M2c — `PlantEcologicalRole` cross-rank entity  ✅ DONE 2026-08-16
 
-- [ ] `PlantEcologicalRoleId` (UUIDv7) in `domains/identifiers`; entity in `plants-api`
+- [x] `PlantEcologicalRoleId` (UUIDv7) in `domains/identifiers`; entity in `plants-api`
       modelled on `InsectFunctionalRole` — `notEmpty(roles)`, uniqueness on `parentName`.
-- [ ] Remove `roles` from `Plant`. Migrate `isKeystoneHost()`,
+- [x] Remove `roles` from `Plant`. Migrate `isKeystoneHost()`,
       `supportsBiocontrolInsects()`, and `isNitrogenFixer()` onto the new entity.
-- [ ] **Consumer surface is smaller than the domain doc implies.** `domains/plants/CLAUDE.md`
+- [x] **Consumer surface is smaller than the domain doc implies.** `domains/plants/CLAUDE.md`
       describes these predicates as driving "zero-pesticide constraints in the
       PestManagement application module" — **no such module exists**; the language is
       aspirational and should be softened when this milestone lands. Verified consumers
@@ -302,8 +308,8 @@ rows, and `plants/detail.jte` / `list.jte`. Grep for `new Plant(` and `taxonomy(
       `plants/list.jte:17,20,23`) plus `PlantTest`. `PlantRole` has zero references
       outside `domains/plants`. The migration is therefore contained: the controller
       loads the role record alongside the plant and passes it to the template.
-- [ ] Repository + mock (with argument validation) + contract test + `getByParentName`.
-- [ ] New `plants/plant-ecological-roles.json` seeded from the `roles` arrays currently
+- [x] Repository + mock (with argument validation) + contract test + `getByParentName`.
+- [x] New `plants/plant-ecological-roles.json` seeded from the `roles` arrays currently
       in `plants.json`, including the five moved organisms — no ecological data is lost
       in the move, which was the whole objection to a naive delete.
 
@@ -346,11 +352,16 @@ kernel API needs the cast — and it is exactly the kind of thing the side-by-si
 abstraction pass (rule 3 in `domains/plants/CLAUDE.md`) should decide how to fix.
 
 
-- [ ] Change `PhytochemicalConstituent.plantName` to a `PlantRankName` (component rename
-      to `parentName` for honesty), with the field-level Jackson dispatch from M2a.
-- [ ] Re-key `creeping-thyme-thymol` to the `thymus` genus.
-- [ ] `PhytochemicalConstituentQuery.forPlantName` becomes `forParentName`;
-      `PlantsCompoundReferences` emits the parent ref at whatever rank it resolves.
+- [x] Change `PhytochemicalConstituent.plantName` to a `PlantRankName`, with the
+      field-level Jackson dispatch from M2a. **Component kept as `plantName`, not renamed
+      to `parentName`** — superseded by the naming decision that a `PlantRankName` reference
+      is named `plantName` throughout the model (the "what plant is this?" convention;
+      see the UBL). Same reason garden's `Planting.plantName` and `PlantEcologicalRole.plantName`
+      keep the name.
+- [x] Re-key `creeping-thyme-thymol` to the `thymus` genus (now `thymus-thymol`).
+- [x] `PlantsCompoundReferences` emits the parent ref at whatever rank it resolves.
+      `PhytochemicalConstituentQuery.forPlantName` **kept its name** (not `forParentName`),
+      per the same naming decision.
 
 ### M2g — `PlantOrder`, closing the top of the chain  ✅ DONE 2026-08-16
 
@@ -459,11 +470,14 @@ URLs whose controller routes do not exist."
 method, mock validation, and three contract cases. `PlantGenus.familyName` already
 exists, so the family → genera rollup needed no data migration — and without it the
 family page would have been an empty shell. The plant-side hierarchy queries stay in M2f
-because they depend on `Plant.genusName`, which does not exist yet.
+because they depend on `Plant.genusName`, which did not exist yet. *(As of 2026-08-16
+`PlantSpecies.genusName` exists — M2b shipped — so M2f's genus→species rollup is now
+unblocked; only the query wiring remains.)*
 
 **Deferred to M2c:** the rank pages do not render `lifeForm` or ecological roles.
 `PlantGenus` has no `lifeForm` component until M2c adds one, and `PlantEcologicalRole`
-does not exist yet. Both pages get a section then.
+did not exist yet. *(M2c shipped 2026-08-16; ecological roles now render on the species
+page. `lifeForm` stayed on `PlantSpecies`, not `PlantGenus` — a genus spans life forms.)*
 
 ---
 
@@ -554,23 +568,31 @@ M3  ✅ routes + linker                      ← shipped 2026-08-15
  │
  ├─→ RENAME ✅ Plant → PlantSpecies          ← shipped 2026-08-15
  │
- └─→ M2a′  rank audit of the catalog        ← DATA JUDGMENT, blocks M2b
-       └─→ M2b  reshape to species rank     ← largest remaining change
-             ├─→ M2c  PlantEcologicalRole
-             ├─→ M2e  re-key the constituent
-             └─→ M2f  hierarchy queries
+ └─→ M2a′ ✅ rank audit of the catalog      ← shipped 2026-08-16
+       └─→ M2b ✅ reshape to species rank    ← shipped 2026-08-16
+             ├─→ M2c ✅ PlantEcologicalRole  ← shipped 2026-08-16
+             ├─→ M2e ✅ re-key the constituent ← shipped 2026-08-16
+             ├─→ M2g ✅ PlantOrder (top of chain) ← shipped 2026-08-16
+             └─→ M2f  hierarchy queries      ← REMAINING (genus→species rollup)
 
-M4 + M5  namespace cleanup                  ← independent; M4 got simpler after the rename
+M4 + M5  namespace cleanup                  ← REMAINING; independent
 ```
 
-**Next is M2a′.** The rename landed first, so every milestone after it writes
-`PlantSpecies` from the start rather than being corrected later.
+**Status (2026-08-16): the M2 model work is done.** M2a/M2a′/M2b/M2c/M2d/M2e/M2g and M3
+have all shipped — the full Order→Family→Genus→Species chain exists as typed rank entities
+with FK constraints at every rung, roles live on `PlantEcologicalRole`, and cross-rank
+references (`PlantProgram`, `PhytochemicalConstituent`, garden's `Planting`) carry
+`PlantRankName`.
 
-**M2a′** is the one piece of this plan that is not a coding task. It is a judgment about
-plants, made by reading the catalog, and its output is a reviewed table rather than a diff.
-It blocks M2b absolutely: reshaping before re-assessing would cement a wrong rank behind a
-foreign key.
+**Remaining:**
+- **M2f — hierarchy queries.** Only the genus→species rollup is left: add
+  `plants().forGenusName(genusName)` (and optionally `forFamilyName` composing through the
+  genus query). Now unblocked — `PlantSpecies.genusName` exists. The genus detail page still
+  renders a member-plants placeholder (and `PlantsController` carries a stale comment saying
+  `genusName` "does not exist yet"); this milestone wires the rollup and removes both.
+- **M4 — ADR-020 namespace naming** and **M5 — N=1 collapse.** Independent, mechanical.
 
-After those, M2b is the largest remaining change — it drops a component other code reads.
-M2c is smaller than it looks: the role predicates have six template call sites and no
-cross-domain consumers.
+Not in this plan but surfaced since: the console-parity follow-on (lands on `/plants/orders`,
+taxonomic breadcrumb) shipped 2026-08-16; the larger insects-parity gaps (rank-polymorphic
+read model, write side, collection/observation, images, clade, identification) are catalogued
+in [`2026-08-16-plants-insects-gap-review.md`](2026-08-16-plants-insects-gap-review.md).

@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-08-15 (Nutrient → chemistry links shipped as effort #16 — soil nutrient rows resolve to the chemistry catalog via `Catalog.findBySlug` + composite `EntityRefLinker`.)
+Last updated: 2026-08-16 (Plants ↔ insects consistency — effort #17; rank chain Order→Species with FK at every rung, cross-rank roles/refs, console lands on orders with a taxonomic breadcrumb. M2f/M4/M5 remain.)
 
 ---
 
@@ -101,6 +101,7 @@ slice — non-empty for all 13 nutrient-mapped elements — and stays unbuilt.
 | 14 | Present the evidence                  | Plan           | [`plans/2026-08-08-present-the-evidence-plan.md`](plans/2026-08-08-present-the-evidence-plan.md) — **shipped** 2026-08-08 (citation-association flush fix, field marks, rank observation gallery) |
 | 15 | Soil↔naturalist ownership (Property)  | Design memo    | [`notes/2026-08-09-soil-profile-naturalist-association.md`](notes/2026-08-09-soil-profile-naturalist-association.md) — design agreed 2026-08-09, **not scheduled**. New `Property` aggregate = tenancy root above Zone (PUBLIC/PRIVATE + `owner`) in the zone-domain `com.naturalist.zone.property` sub-context; Zone gains `PropertyName` FK (`identifiers`); soil unchanged (owner derived `zone→property`). Zone-domain multi-PR slice; watch the `ZoneInfo` arity ripple. Next step: writing-plans → PR breakdown. |
 | 16 | Nutrient → chemistry links            | Plan           | [`plans/2026-08-15-nutrient-chemistry-links-plan.md`](plans/2026-08-15-nutrient-chemistry-links-plan.md) — **shipped** 2026-08-15 (six missing elements + element pages + catalog contribution in chemistry; `Nutrients.chemistryOf` in soil; soil-console links nutrient rows via `Catalog.findBySlug` + `EntityRefLinker`). Compounds-by-element and soil back-references on the element page considered and deferred — see [design §2](plans/2026-08-15-nutrient-chemistry-links-design.md#2-what-the-element-page-deliberately-omits). |
+| 17 | Plants ↔ insects consistency          | Plan           | [`plans/2026-08-15-plants-domain-consistency-plan.md`](plans/2026-08-15-plants-domain-consistency-plan.md) — M1/M2a–e/M2g/M3 **shipped** 2026-08-15–16 (typed `PlantOrder→Family→Genus→Species` chain with FK at every rung; `PlantRankName` sealed; `PlantEcologicalRole` cross-rank; `PlantProgram`/`PhytochemicalConstituent`/garden `Planting` carry `PlantRankName`). Console-parity follow-on **shipped** 2026-08-16 (lands on `/plants/orders`, species at `/plants/species`, taxonomic breadcrumb). **Remaining:** M2f genus→species rollup, M4 ADR-020 namespaces, M5 N=1 collapse. Gap review + next steps: [`plans/2026-08-16-plants-insects-gap-review.md`](plans/2026-08-16-plants-insects-gap-review.md). Plants briefing needs a rewrite (stale). |
 
 ---
 
