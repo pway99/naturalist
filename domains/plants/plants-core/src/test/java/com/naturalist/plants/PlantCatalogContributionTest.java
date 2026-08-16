@@ -5,6 +5,7 @@ import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.data.Pages;
+import com.naturalist.ddd.EntityName;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
 import com.naturalist.plants.catalog.PlantCatalogContribution;
@@ -107,21 +108,28 @@ class PlantCatalogContributionTest {
     }
 
     @Test
-    void genusTokenReturnsBothTrifoliumSpecies() {
-        // The catalog includes two Trifolium species (trifolium-incarnatum
-        // and trifolium-repens). Under search-and-discovery this is a feature,
-        // not a collision — both species surface, and the reader picks.
+    void genusTokenReturnsBothTrifoliumSpeciesAndTheGenusRecord() {
+        // Two Trifolium species (trifolium-incarnatum, trifolium-repens) emit
+        // "Trifolium" as a genus token, and since the genus catalog was
+        // backfilled the trifolium PlantGenus record emits it too. Under
+        // search-and-discovery all three are wanted — the reader picks the rank
+        // they meant, and every one of them now resolves to a page.
+        //
+        // Asserted on the raw EntityName, never cast: the hits are deliberately
+        // of mixed name type. EntityName equality is class-qualified, so a
+        // PlantGenusName holding "trifolium" never equals a PlantName holding
+        // the same string — contains() is exact without a cast.
         Catalog catalog = CatalogAssembly.from(contribution);
 
-        Set<PlantName> trifoliumHits = catalog.search("Trifolium").stream()
+        Set<EntityName> trifoliumHits = catalog.search("Trifolium").stream()
                 .map(SearchHit::target)
                 .map(EntityRef::name)
-                .map(name -> (PlantName) name)
                 .collect(Collectors.toSet());
 
         assertThat(trifoliumHits).contains(
                 PlantName.of("trifolium-incarnatum"),
-                PlantName.of("trifolium-repens"));
+                PlantName.of("trifolium-repens"),
+                PlantGenusName.of("trifolium"));
     }
 
     @Test
