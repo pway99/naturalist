@@ -53,3 +53,4 @@ temp/
 
 ### Personal soil lab reports (contain physical address) ###
 domains/soil/*.pdf
+.claude/launch.json
