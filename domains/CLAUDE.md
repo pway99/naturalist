@@ -307,6 +307,32 @@ Test fixtures use actual measurements. `TestEntitySource` seeds repositories wit
 FGL data, real sensor readings, real amendment history. A failing test indicates a domain
 model error or a real-world change.
 
+## Organism Domains: Rank, Identification, Clade
+
+Domains that catalogue organisms — insects, plants, arachnids, fungi, molluscs,
+vertebrates, worms, microbes — share a design the insects domain worked out and the
+others should inherit rather than re-derive. Load
+[`docs/plans/organism-domain-blueprint.md`](../docs/plans/organism-domain-blueprint.md)
+before starting rank, identification, or clade work in any of them.
+
+The three load-bearing ideas, so you know whether the blueprint applies:
+
+- **Every rank a domain catalogues is its own `NamedEntity`** with a typed upward FK to
+  its parent, and a sealed `<Domain>RankName` over those names so photos, observations
+  and roles can attach at whichever rank was resolved.
+- **An organism is catalogued at the most specific rank the evidence supports, and that
+  record is permanent** — not a placeholder for a later species identification. The
+  confidence bound is expressed in the identifier's elicitation contract, not applied
+  afterwards.
+- **Clade placement is a second, independent axis** over the same records
+  (`@Nullable Clade placedIn`), not a derivation of the Linnaean chain.
+
+**The ladder is per-domain.** `LinealRank` is shared, but which rungs get entities is a
+domain decision, and not every rung is Linnaean — plants catalogues `Cultivar` below
+species. Copy the mechanism, never insects' rank list.
+
+Reference implementation: `domains/insects/`.
+
 ## Creating a New Module
 
 When creating a new domain or kernel module:

@@ -14,6 +14,15 @@ When a plan is complete, move it to [`archive/`](archive/) and update its
 row below. When a new effort starts, drop a file in this directory and add
 a row.
 
+## Reference
+
+Not efforts — durable design references that outlive any single plan. Indexed
+here because there is nowhere better and they are useless undiscovered.
+
+| Reference                                                          | Scope                                                                                                                                                                                    |
+|--------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [organism-domain-blueprint.md](organism-domain-blueprint.md)       | Decision index for any domain cataloguing organisms: rank-as-entity, confidence-bounded placement, cross-rank attachment, clade as an orthogonal axis, and the per-domain ladder rule. Points at `domains/insects/` as the reference implementation rather than restating it. |
+
 ## Active
 
 | Plan                                                                   | Status                                 | Scope                                                                                                                                                              |
