@@ -4,7 +4,7 @@ import com.naturalist.taxonomy.LinealRank;
 
 /**
  * Sealed marker type for the three plant-side Linnaean rank names —
- * {@link PlantFamilyName}, {@link PlantGenusName}, {@link PlantName}.
+ * {@link PlantFamilyName}, {@link PlantGenusName}, {@link PlantSpeciesName}.
  *
  * <p>Used as the subject reference on records that may attach to any rank: a planting
  * whose variety is known only to genus, a phytochemical constituent recorded for a whole
@@ -15,8 +15,7 @@ import com.naturalist.taxonomy.LinealRank;
  *
  * <p>Three permits, not five. Plants catalogues no order-rank entity, and
  * {@code PlantSubspeciesName} does not exist; only a rank with a record behind it earns
- * a permit. {@link PlantName} is the species-rank permit despite its unqualified name,
- * which predates the rank layer.
+ * a permit.
  *
  * <h2>Cultivar is not a permit</h2>
  *
@@ -38,7 +37,7 @@ import com.naturalist.taxonomy.LinealRank;
  * <h2>Equality across permits</h2>
  *
  * Class-qualified, inherited from {@link com.naturalist.ddd.EntityName#equals(Object)}:
- * a {@code PlantGenusName} holding {@code "citrus"} never equals a {@code PlantName}
+ * a {@code PlantGenusName} holding {@code "citrus"} never equals a {@code PlantSpeciesName}
  * holding the same string. That matters here more than on the insect side, because
  * plants' catalog has genuinely carried the same slug at two ranks.
  *
@@ -51,9 +50,9 @@ import com.naturalist.taxonomy.LinealRank;
  * <pre>{@code
  * @JsonTypeInfo(use = Id.NAME, property = "subjectRank", include = As.EXTERNAL_PROPERTY)
  * @JsonSubTypes({
- *     @Type(value = PlantFamilyName.class, name = "FAMILY"),
- *     @Type(value = PlantGenusName.class,  name = "GENUS"),
- *     @Type(value = PlantName.class,       name = "SPECIES")
+ *     @Type(value = PlantFamilyName.class,  name = "FAMILY"),
+ *     @Type(value = PlantGenusName.class,   name = "GENUS"),
+ *     @Type(value = PlantSpeciesName.class, name = "SPECIES")
  * })
  * PlantRankName subject
  * }</pre>
@@ -65,7 +64,7 @@ import com.naturalist.taxonomy.LinealRank;
  * }</pre>
  */
 public sealed interface PlantRankName
-        permits PlantFamilyName, PlantGenusName, PlantName {
+        permits PlantFamilyName, PlantGenusName, PlantSpeciesName {
 
     /**
      * The slug string carried by this rank name. Exposed on the sealed interface so
@@ -91,7 +90,7 @@ public sealed interface PlantRankName
         return switch (rank) {
             case FAMILY -> PlantFamilyName.of(slug);
             case GENUS -> PlantGenusName.of(slug);
-            case SPECIES -> PlantName.of(slug);
+            case SPECIES -> PlantSpeciesName.of(slug);
             default -> throw new IllegalArgumentException("Unsupported plant rank: " + rank);
         };
     }

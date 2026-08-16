@@ -52,7 +52,7 @@
         </ul>
     </section>
 
-    <%-- The genus → plants rollup needs Plant.genusName, which does not exist
+    <%-- The genus → plants rollup needs PlantSpecies.genusName, which does not exist
          yet. See M2b/M2f in docs/plans/2026-08-15-plants-domain-consistency-plan.md;
          this section becomes a card grid once the typed FK lands. --%>
     <section>

@@ -18,9 +18,9 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituentTestContext;
  * {@code plants-repository-test} can be assembled without promoting any of
  * them to public.
  *
- * <p><b>Single test context per namespace.</b> Because the {@link Plant}
+ * <p><b>Single test context per namespace.</b> Because the {@link PlantSpecies}
  * entity lives at the {@code com.naturalist.plants} root package — the same
- * package this class lives in — the Plant query assembly is inlined here
+ * package this class lives in — the PlantSpecies query assembly is inlined here
  * rather than living in a separate {@code PlantTestContext}. The four
  * sub-context packages each get their own
  * {@code <Subject>TestContext} ({@link CultivarTestContext},
@@ -79,14 +79,14 @@ public class PlantsTestContext {
     }
 
     /**
-     * Plant query assembly. Inlined here rather than in a separate
-     * {@code PlantTestContext} because the Plant entity lives at the plants
+     * PlantSpecies query assembly. Inlined here rather than in a separate
+     * {@code PlantTestContext} because the PlantSpecies entity lives at the plants
      * root package and a sibling test context would collide with this class
      * in the same namespace.
      */
     private static PlantQuery createPlantQuery(NaturalistDatabase db) {
         PlantQuery.PlantEntityQuery entityQuery =
-                new PlantEntityQueryImpl(new PlantEntityRepositoryMock(db));
+                new PlantEntityQueryImpl(new PlantSpeciesEntityRepositoryMock(db));
         PlantQuery.PlantFamilyEntityQuery familyQuery =
                 new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
         PlantQuery.PlantGenusEntityQuery genusQuery =

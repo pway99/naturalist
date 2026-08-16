@@ -9,7 +9,7 @@ import com.naturalist.taxonomy.LinealRank;
  * <p>
  * The slug is the lowercase kebab form of the Linnaean genus epithet —
  * {@code "thymus"}, {@code "aristolochia"}, {@code "solanum"}. Cross-domain
- * references (e.g. a {@code Plant}'s upward parent reference) carry
+ * references (e.g. a {@code PlantSpecies}'s upward parent reference) carry
  * {@code PlantGenusName} rather than importing {@code plants-api},
  * preserving DAG integrity.
  */

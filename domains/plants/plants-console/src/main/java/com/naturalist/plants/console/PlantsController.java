@@ -5,12 +5,12 @@ import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
-import com.naturalist.plants.Plant;
+import com.naturalist.plants.PlantSpecies;
 import com.naturalist.plants.PlantFamily;
 import com.naturalist.plants.PlantFamilyName;
 import com.naturalist.plants.PlantGenus;
 import com.naturalist.plants.PlantGenusName;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.PlantQuery;
 import com.naturalist.plants.PlantsTestContext;
 import com.naturalist.plants.console.render.PlantsParagraphCues;
@@ -61,14 +61,14 @@ public class PlantsController {
 
     @GetMapping
     String list(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<Plant> plantsPage = plantQuery.plants().findPage(PageRequest.console(Math.max(0, page)));
+        Page<PlantSpecies> plantsPage = plantQuery.plants().findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("plantsPage", plantsPage);
         return "plants/list";
     }
 
     @GetMapping("/{name}")
     String detail(@PathVariable String name, Model model) {
-        var plantName = PlantName.of(name);
+        var plantName = PlantSpeciesName.of(name);
         var plant = plantQuery.plants().getByName(plantName);
         if (plant.isEmpty()) {
             return "redirect:/plants";
@@ -123,7 +123,7 @@ public class PlantsController {
         if (genus.isEmpty()) {
             return "redirect:/plants";
         }
-        // The genus → plants rollup needs Plant.genusName, which does not exist
+        // The genus → plants rollup needs PlantSpecies.genusName, which does not exist
         // yet (M2b/M2f of the plants consistency plan). Until then the page
         // renders the genus itself and its parent family; the member-plants
         // section appears once the typed FK lands.

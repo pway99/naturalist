@@ -36,7 +36,7 @@ public enum VarietyType {
     /**
      * Breeding status not yet confirmed. Treat conservatively — do not save
      * seed until open-pollinated status is verified from a reliable source.
-     * Amish Paste from The Plant Barn is flagged UNKNOWN pending provenance
+     * Amish Paste from The PlantSpecies Barn is flagged UNKNOWN pending provenance
      * confirmation.
      */
     UNKNOWN

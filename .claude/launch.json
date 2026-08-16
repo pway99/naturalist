@@ -1,0 +1,16 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "management-console",
+      "runtimeExecutable": "mvn",
+      "runtimeArgs": [
+        "-q",
+        "-f",
+        "apps/management-console/pom.xml",
+        "spring-boot:run"
+      ],
+      "port": 8080
+    }
+  ]
+}

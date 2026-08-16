@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Data assertions over the genus catalog, not framework assertions.
  * <p>
  * The load-bearing one is {@link #everyPlantGenusIsCatalogued()}: M2b of the plants
- * consistency plan replaces {@code Plant.taxonomy} with a typed
+ * consistency plan replaces {@code PlantSpecies.taxonomy} with a typed
  * {@code PlantGenusName genusName} and an FK constraint, and that migration is only
  * possible while every genus a plant references has a record. Nothing else fails when
  * a plant is added whose genus is absent — the gap simply reappears, and the
@@ -28,8 +28,8 @@ class PlantGenusCatalogDataTest {
         return db.getNamed(PlantGenusTestEntitySource.class).entityStream().toList();
     }
 
-    private List<Plant> plants() {
-        return db.getNamed(PlantTestEntitySource.class).entityStream().toList();
+    private List<PlantSpecies> plants() {
+        return db.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList();
     }
 
     private List<PlantFamily> families() {
@@ -50,7 +50,7 @@ class PlantGenusCatalogDataTest {
                 .toList();
 
         assertThat(catalogued)
-                .as("every genus a Plant claims must have a PlantGenus record — "
+                .as("every genus a PlantSpecies claims must have a PlantGenus record — "
                         + "M2b's typed genusName FK cannot land otherwise")
                 .containsAll(referenced);
     }

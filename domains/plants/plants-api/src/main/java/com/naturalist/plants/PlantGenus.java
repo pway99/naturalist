@@ -14,12 +14,12 @@ import java.util.function.Consumer;
 
 /**
  * A catalogued plant genus — the rank between {@link PlantFamily} and
- * {@link Plant} in the Linnaean hierarchy.
+ * {@link PlantSpecies} in the Linnaean hierarchy.
  * <p>
  * Genus-rank records are first-class catalog citizens — a naturalist who
  * recognises a {@code Thymus} mat-forming herb without resolving the species
  * has a permanent home for that observation here. As identification firms, a
- * {@link Plant} record is added alongside this genus record; the genus record
+ * {@link PlantSpecies} record is added alongside this genus record; the genus record
  * is never replaced or migrated.
  * <p>
  * The {@link #familyName} component is the upward typed reference to the

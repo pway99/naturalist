@@ -3,7 +3,7 @@ package com.naturalist.plants.cultivar;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ class CultivarEntityRepositoryMock
     }
 
     @Override
-    public List<Cultivar> getByPlantName(PlantName plantName) {
+    public List<Cultivar> getByPlantName(PlantSpeciesName plantName) {
         observer().arguments("getByPlantName",
                         i -> i.entityName(plantName, "plantName"))
                 .throwWhenInvalid();

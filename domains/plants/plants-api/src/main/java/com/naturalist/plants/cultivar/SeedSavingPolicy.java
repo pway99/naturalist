@@ -27,7 +27,7 @@ public enum SeedSavingPolicy {
 
     /**
      * Seeds may be saved if open-pollinated status is confirmed from a
-     * reliable source. Amish Paste from The Plant Barn carries this policy
+     * reliable source. Amish Paste from The PlantSpecies Barn carries this policy
      * pending seed provenance verification from Baker Creek.
      */
     CONDITIONAL,

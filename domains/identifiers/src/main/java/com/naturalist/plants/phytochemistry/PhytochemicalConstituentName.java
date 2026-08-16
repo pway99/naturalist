@@ -3,7 +3,7 @@ package com.naturalist.plants.phytochemistry;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.EntityName;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 
 /**
  * Strongly typed natural key for
@@ -29,7 +29,7 @@ import com.naturalist.plants.PlantName;
  *   <li>{@link #of(String)} — Jackson deserialization and catalog parsing.
  *       The slug arrives as a string and is wrapped as-is. Validation
  *       happens in the {@link #isValid()} pipeline.</li>
- *   <li>{@link #of(PlantName, CompoundName)} — programmatic construction
+ *   <li>{@link #of(PlantSpeciesName, CompoundName)} — programmatic construction
  *       from the two component slugs. Codifies the {@code "<plant>-<compound>"}
  *       convention so callers do not hand-format the link slug. Both
  *       inputs are already kebab-case slugs validated by their own
@@ -51,7 +51,7 @@ public final class PhytochemicalConstituentName extends EntityName {
     /**
      * Construct a constituent slug from its two component slugs by
      * concatenating {@code plantName} and {@code compoundName} with a
-     * single hyphen separator — e.g. {@code PlantName.of("california-pipevine")}
+     * single hyphen separator — e.g. {@code PlantSpeciesName.of("california-pipevine")}
      * + {@code CompoundName.of("aristolochic-acid")} →
      * {@code "california-pipevine-aristolochic-acid"}.
      * <p>
@@ -63,7 +63,7 @@ public final class PhytochemicalConstituentName extends EntityName {
      *
      * @throws NullPointerException if either argument is null
      */
-    public static PhytochemicalConstituentName of(PlantName plantName, CompoundName compoundName) {
+    public static PhytochemicalConstituentName of(PlantSpeciesName plantName, CompoundName compoundName) {
         return new PhytochemicalConstituentName(plantName.value() + "-" + compoundName.value());
     }
 

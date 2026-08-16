@@ -1,12 +1,12 @@
 package com.naturalist.plants;
 
 /**
- * The ecological and horticultural role a {@link Plant} plays at Oak Vista.
+ * The ecological and horticultural role a {@link PlantSpecies} plays at Oak Vista.
  * <p>
  * A plant commonly fills multiple roles simultaneously — dill is both a
  * {@link #BENEFICIAL_INSECT_HABITAT} (nectar for tachinid flies and braconid wasps)
  * and an {@link #INSECT_LARVAL_HOST} (swallowtail caterpillars). The role set on
- * {@link Plant} captures all confirmed functions at Oak Vista.
+ * {@link PlantSpecies} captures all confirmed functions at Oak Vista.
  * <p>
  * Roles govern which application module contexts a plant participates in:
  * a {@link #KEYSTONE_HOST} plant triggers zero-pesticide constraints in the

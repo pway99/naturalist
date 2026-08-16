@@ -4,7 +4,7 @@ import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.phytochemistry.role.PhytochemicalRole;
 import org.jspecify.annotations.Nullable;
 
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * one plant species, with the role(s) it plays in <em>that</em> plant.
  * <p>
  * {@code PhytochemicalConstituent} is the link between the
- * {@link com.naturalist.plants.Plant} catalog and the chemistry domain's
+ * {@link com.naturalist.plants.PlantSpecies} catalog and the chemistry domain's
  * {@code Compound} catalog. The same compound can play very different roles
  * across plants — caffeine deters insects in {@code coffea-arabica} seeds
  * and (in trace amounts) attracts pollinators to {@code citrus-sinensis}
@@ -79,7 +79,7 @@ import java.util.function.Consumer;
  */
 public record PhytochemicalConstituent(
         PhytochemicalConstituentName name,
-        PlantName plantName,
+        PlantSpeciesName plantName,
         CompoundName compoundName,
         Description description,
         PhytochemicalCategory category,

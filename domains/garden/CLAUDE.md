@@ -28,7 +28,7 @@ bed, which is exactly the granularity the name points at.
 
 **Planting** — `Entity<PlantingId>`. What went into the ground, where, and for how long —
 the finest grain garden records. Carries two optional soft references into plants, on two
-independent axes: `subject` is a `PlantRankName`, the Linnaean identification at whatever
+independent axes: `plantName` is a `PlantRankName`, the Linnaean identification at whatever
 rank the gardener can support — family, genus or species — so a tray of unlabelled salvia
 starts is a genus-rank planting rather than a missing one; `cultivarName` is the orthogonal
 horticultural selection (breeding status, fruit type, seed-saving policy). At least one must
@@ -38,12 +38,12 @@ be present — a planting naming neither records only that something was put som
 *Why two components and not one union.* A cultivar is not a rank; it is a selection within
 a species, the same way a clade placement classifies alongside rank rather than extending
 it. Keeping the axes apart also lets a planting state both at once, which a union could not.
-`subject` was a `PlantName` until 2026-08-15, which restricted every planting to
+`plantName` was typed `PlantName` (now `PlantSpeciesName`) until 2026-08-15, which restricted every planting to
 species-level identification. See section D of
 [`docs/plans/organism-domain-blueprint.md`](../../docs/plans/organism-domain-blueprint.md).
 
 *JSON.* Because `PlantRankName` is a sealed interface, `planting.json` carries a
-`subjectRank` discriminator (`FAMILY` / `GENUS` / `SPECIES`) beside `subject`. The
+`plantRank` discriminator (`FAMILY` / `GENUS` / `SPECIES`) beside `plantName`. The
 `@JsonTypeInfo` declaring it sits on the component, never on the interface, so leaf names
 still serialize as plain slugs everywhere else.
 
@@ -103,7 +103,7 @@ be exact rather than inferred.
 | Reference | Direction | Type |
 |---|---|---|
 | `ZoneName`, `SubZoneName` | garden → zone | `EntityName` |
-| `PlantRankName` | garden → plants | sealed over `PlantFamilyName` / `PlantGenusName` / `PlantName` |
+| `PlantRankName` | garden → plants | sealed over `PlantFamilyName` / `PlantGenusName` / `PlantSpeciesName` |
 | `CultivarName` | garden → plants | `EntityName` |
 | `CropTypeName` | soil → garden (reverse) | `EntityName` |
 
@@ -146,7 +146,7 @@ agronomic: the unit requirements are published for.
 Neither collapses into the other. *Brassica oleracea* is one species and five crop types —
 kale, cabbage, broccoli, kohlrabi, brussels sprouts — with different spacing, different
 nitrogen demand and different lab panels. "Squash" is one crop type across three *Cucurbita*
-species. One `PlantName` ↔ many `CropTypeName`s, in both directions.
+species. One `PlantSpeciesName` ↔ many `CropTypeName`s, in both directions.
 
 ## Fixture data — the real 2026 beds
 

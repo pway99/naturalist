@@ -30,8 +30,7 @@ class PlantRankNameTest {
 
     @Test
     void speciesPermitReportsSpeciesRank() {
-        // PlantName is the species-rank permit despite its unqualified name.
-        PlantRankName name = PlantName.of("solanum-lycopersicum");
+        PlantRankName name = PlantSpeciesName.of("solanum-lycopersicum");
         assertThat(name.rank()).isEqualTo(LinealRank.SPECIES);
     }
 
@@ -42,7 +41,7 @@ class PlantRankNameTest {
         assertThat(PlantRankName.of("salvia", LinealRank.GENUS))
                 .isInstanceOf(PlantGenusName.class);
         assertThat(PlantRankName.of("solanum-lycopersicum", LinealRank.SPECIES))
-                .isInstanceOf(PlantName.class);
+                .isInstanceOf(PlantSpeciesName.class);
     }
 
     @Test
@@ -59,10 +58,10 @@ class PlantRankNameTest {
     @Test
     void equalityIsClassQualifiedAcrossPermits() {
         // The plants catalog has genuinely carried the same slug at two ranks —
-        // "citrus" was both a Plant row and a PlantGenus record — so this is load
+        // "citrus" was both a PlantSpecies row and a PlantGenus record — so this is load
         // bearing, not theoretical.
         PlantRankName asGenus = PlantGenusName.of("citrus");
-        PlantRankName asSpecies = PlantName.of("citrus");
+        PlantRankName asSpecies = PlantSpeciesName.of("citrus");
 
         assertThat(asGenus).isNotEqualTo(asSpecies);
         assertThat(asGenus.value()).isEqualTo(asSpecies.value());

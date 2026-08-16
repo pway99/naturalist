@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>The "Aristolochia californica" resolution exercises the full plants
  * pilot chain: {@code PlantsDomain} (DomainId) →
  * {@code PlantCatalogContribution} (CatalogContribution) →
- * {@code PlantEntityQueryImpl} → {@code PlantEntityRepositoryMock} →
+ * {@code PlantEntityQueryImpl} → {@code PlantSpeciesEntityRepositoryMock} →
  * {@code NaturalistDatabase}. A regression in any link breaks
  * {@link #resolvesPlantBySlug()} or {@link #resolvesPlantByGenusToken()}.
  *

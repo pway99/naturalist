@@ -17,11 +17,17 @@ Plants predates all of it.
 govern whatever milestone is in flight. Current work is tracked in
 [the consistency plan](../../docs/plans/2026-08-15-plants-domain-consistency-plan.md).
 
-**1. Insects is the reference; plants moves.** Where the two disagree on shape — rank
-entities, name types, cross-rank attachment, read models — insects is right by default and
-plants changes. Deviating needs a stated plants-specific reason recorded here, not an
-inherited accident. The design itself is written up in
+**1. Insects is the reference; plants moves — and insects holds still.** Where the two
+disagree on shape — rank entities, name types, cross-rank attachment, read models — insects
+is right by default and plants changes. Deviating needs a stated plants-specific reason
+recorded here, not an inherited accident. The design itself is written up in
 [`docs/plans/organism-domain-blueprint.md`](../../docs/plans/organism-domain-blueprint.md).
+
+This is a **plants-only exercise**. Ideas that would improve insects surface constantly
+while doing it — `InsectImage.parentName` and `FieldObservation.subject` would both read
+better as `insectName`, for instance — and they are noted, not acted on. Changing the
+reference mid-alignment means measuring against a moving target, and the discoveries worth
+applying to insects are not all in yet. Circle back when plants is done.
 
 **2. The catalog is test data, not fact.** `plants.json` and its siblings were authored
 before the rank layer existed. A binomial in a slug is a *claim about identification
@@ -36,11 +42,26 @@ expensive to undo than to get right first.
 `kernels/clades` waits until plants matches insects and the two can be read side by side.
 An abstraction drawn from one finished domain and one mid-migration is drawn from noise.
 
+**4. Model accuracy outranks a green build — during this migration only.** Getting the
+types right is what makes the change reviewable; a compile error in a consumer is a
+mechanical consequence, not a design signal, and blocking on it forces the model to arrive
+in fragments shaped by what happened to still compile. So a milestone may land red, and
+consumer fallout is repaired in a following step.
+
+Three conditions on that, or it stops being a strategy and becomes a mess:
+
+- **The red is named.** A commit that knowingly breaks the build says so in its message,
+  and says which consumers are left broken. An unexplained red build is still a bug.
+- **The debt is bounded.** Red is a state between two steps of one milestone, not a
+  standing condition. Stabilise before starting an unrelated milestone.
+- **The suspension is local.** This applies to the plants alignment. It is not a
+  repo-wide licence, and it lapses when the migration lands.
+
 ## Sub-context layout
 
 ```
 plants-api/com/naturalist/plants/
-  Plant, PlantFamily, PlantGenus                        — botanical rank records
+  PlantSpecies, PlantFamily, PlantGenus                        — botanical rank records
   PlantLifeForm, PlantRole                              — vocabularies
   PlantRepository, PlantQuery, PlantEntityCollections   — namespaces
   PlantsDomain                                          — DomainId subtype
@@ -61,7 +82,7 @@ sub-context; `public` crosses the boundary.
 |----------------------------|-------------------|---------------------------------------------|----------------------------------------------------------------------|
 | `PlantFamily`              | `plants/`         | `NamedEntity<PlantFamilyName>`              | `identifiers/.../plants/PlantFamilyName`                             |
 | `PlantGenus`               | `plants/`         | `NamedEntity<PlantGenusName>`               | `identifiers/.../plants/PlantGenusName`                              |
-| `Plant`                    | `plants/`         | `NamedEntity<PlantName>`                    | `identifiers/.../plants/PlantName`                                   |
+| `PlantSpecies`                    | `plants/`         | `NamedEntity<PlantSpeciesName>`                    | `identifiers/.../plants/PlantSpeciesName`                                   |
 | `Cultivar`                 | `cultivar/`       | `NamedEntity<CultivarName>`                 | `identifiers/.../plants/cultivar/CultivarName`                       |
 | `SeedLineage`              | `heritage/`       | `NamedEntity<SeedLineageName>`              | `identifiers/.../plants/heritage/SeedLineageName`                    |
 | `Provenance`               | `heritage/`       | `ValueObject`                               | —                                                                    |
@@ -77,20 +98,20 @@ between sub-contexts beyond shared identifier classes.
 
 ```
 PlantGenus.familyName               → PlantFamily.name  (PlantFamilyName)
-PlantProgram.plantName              → Plant.name        (PlantName)
-Cultivar.plantName                  → Plant.name        (PlantName)
+PlantProgram.plantName              → PlantSpecies.name        (PlantSpeciesName)
+Cultivar.plantName                  → PlantSpecies.name        (PlantSpeciesName)
 SeedLineage.cultivarName            → Cultivar.name     (CultivarName)
-PhytochemicalConstituent.plantName  → Plant.name        (PlantName)
+PhytochemicalConstituent.plantName  → PlantSpecies.name        (PlantSpeciesName)
 PhytochemicalConstituent.compoundName → chemistry Compound.name (CompoundName)
-Plant.nativeBioregions              → kernels/biogeography Bioregion
+PlantSpecies.nativeBioregions              → kernels/biogeography Bioregion
 ```
 
 `PlantGenus.familyName` is the only typed upward rank FK that exists today, and
-`PlantGenusTestEntitySource` enforces it with a `ForeignKeyConstraint`. **`Plant`
+`PlantGenusTestEntitySource` enforces it with a `ForeignKeyConstraint`. **`PlantSpecies`
 carries no `genusName`** — its position in the hierarchy is held only as the
 string-valued `taxonomy` component, so the rank chain terminates at genus and
-`PlantTestEntitySource` declares no foreign keys. Closing that gap, and resolving
-the five organisms currently recorded as both a species-less `Plant` and a
+`PlantSpeciesTestEntitySource` declares no foreign keys. Closing that gap, and resolving
+the five organisms currently recorded as both a species-less `PlantSpecies` and a
 `PlantGenus`, is tracked in
 [`docs/plans/2026-08-15-plants-domain-consistency-plan.md`](../../docs/plans/2026-08-15-plants-domain-consistency-plan.md).
 
@@ -124,7 +145,7 @@ Read side, all public in api, adapters in `plants-core`:
 - `PhytochemicalConstituentQuery` → `constituents()`
   (+ `forPlantName`, `forCompoundName` — the cross-domain reverse lookup)
 
-Collections: `PlantEntityCollections` (`PlantCollection`,
+Collections: `PlantEntityCollections` (`PlantSpeciesCollection`,
 `PlantFamilyCollection`, `PlantGenusCollection`) plus one `*EntityCollections`
 namespace per sub-context. No aggregate factories exist yet — add them
 package-private and concrete in `plants-core` when a read model materializes.
@@ -147,11 +168,11 @@ set, blank provenance, nullable-by-design fields).
   `description`, `commonNames` required. The redundant `order`/`family`
   epithets are carried locally so a catalog-assembly chain check does not have
   to resolve the parent record.
-- `Plant` — `name`, `taxonomy`, `description`, `roles`, `lifeForm`,
+- `PlantSpecies` — `name`, `taxonomy`, `description`, `roles`, `lifeForm`,
   `nativeBioregions`, `commonNames` are all required (non-null). An empty
   `nativeBioregions` set means *no asserted native range*, not *unknown*.
   `taxonomy.genus` and `taxonomy.species` are individually nullable — the
-  taxonomy kernel permits family-level identification — so a `Plant` can
+  taxonomy kernel permits family-level identification — so a `PlantSpecies` can
   currently be catalogued with no resolved species.
 - `Cultivar` — `name`, `plantName`, `description`, `varietyType`, `fruitType`,
   `seedSavingPolicy` required. `commonName` non-blank. `seedSource` and
@@ -171,16 +192,16 @@ set, blank provenance, nullable-by-design fields).
   enforced in record invariants).
 - `Provenance` (ValueObject) — `originator`, `originLocation` non-blank.
 
-## Behavioral predicates on the Plant record
+## Behavioral predicates on the PlantSpecies record
 
 These are first-class API methods, not inline `roles.contains(...)` checks at
 call sites:
 
-- `Plant.isKeystoneHost()` — `roles.contains(PlantRole.KEYSTONE_HOST)`. Drives
+- `PlantSpecies.isKeystoneHost()` — `roles.contains(PlantRole.KEYSTONE_HOST)`. Drives
   zero-pesticide constraints in the PestManagement application module.
-- `Plant.supportsBiocontrolInsects()` — `roles.contains(BENEFICIAL_INSECT_HABITAT)`.
-- `Plant.isNitrogenFixer()` — `roles.contains(NITROGEN_FIXER)`.
-- `Plant.isNativeTo(Bioregion)` — membership check on `nativeBioregions`.
+- `PlantSpecies.supportsBiocontrolInsects()` — `roles.contains(BENEFICIAL_INSECT_HABITAT)`.
+- `PlantSpecies.isNitrogenFixer()` — `roles.contains(NITROGEN_FIXER)`.
+- `PlantSpecies.isNativeTo(Bioregion)` — membership check on `nativeBioregions`.
 
 Cultivar has parallel predicates: `breedsTrueFromSeed()`, `requiresSeedSaving()`,
 `isSauceVariety()`. SeedLineage has `hasActiveAdaptationProgram()`.
@@ -244,7 +265,7 @@ Repository contract tests live in `plants-repository-test/`. Mocks are
 package-private — the test contexts, mock tests, and `plants-core` tests that
 construct them all live in the same package by design:
 
-- `PlantEntityRepositoryTest`, `PlantEntityRepositoryMock`, `PlantEntityRepositoryMockTest`
+- `PlantSpeciesEntityRepositoryTest`, `PlantSpeciesEntityRepositoryMock`, `PlantSpeciesEntityRepositoryMockTest`
 - `PlantFamilyEntityRepositoryTest`, `PlantFamilyEntityRepositoryMock`, `PlantFamilyEntityRepositoryMockTest`
 - `PlantGenusEntityRepositoryTest`, `PlantGenusEntityRepositoryMock`, `PlantGenusEntityRepositoryMockTest`
 - `CultivarEntityRepositoryTest`, `CultivarEntityRepositoryMock`, `CultivarEntityRepositoryMockTest`
@@ -266,12 +287,12 @@ mirrors the Java sub-package.
 
 | Catalog                    | Path                                                    | Loaded by                                  |
 |----------------------------|---------------------------------------------------------|--------------------------------------------|
-| Plant families             | `plants/plant-families.json`                            | `PlantFamilyTestEntitySource`              |
-| Plant genera               | `plants/plant-genera.json`                              | `PlantGenusTestEntitySource`               |
-| Plants                     | `plants/plants.json`                                    | `PlantTestEntitySource`                    |
+| Plant families                   | `plants/plant-families.json`                            | `PlantFamilyTestEntitySource`              |
+| Plant genera                     | `plants/plant-genera.json`                              | `PlantGenusTestEntitySource`               |
+| Plants                     | `plants/plant-species.json`                                    | `PlantSpeciesTestEntitySource`                    |
 | Cultivars                  | `plants/cultivar/cultivars.json`                        | `CultivarTestEntitySource`                 |
 | Seed lineages              | `plants/heritage/seed-lineages.json`                    | `SeedLineageTestEntitySource`              |
-| Plant programs             | `plants/management/plant-programs.json`                 | `PlantProgramTestEntitySource`             |
+| Plant programs                   | `plants/management/plant-programs.json`                 | `PlantProgramTestEntitySource`             |
 | Phytochemical constituents | `plants/phytochemistry/phytochemical-constituents.json` | `PhytochemicalConstituentTestEntitySource` |
 
 ### `plant-families.json`
@@ -302,7 +323,7 @@ Each entry must include:
 
 Each entry must include:
 
-- `"name": "<plant-slug>"` — the `PlantName` natural key (no `id` field; ADR-022).
+- `"name": "<plant-slug>"` — the `PlantSpeciesName` natural key (no `id` field; ADR-022).
   Normally the lowercased binomial (`"aristolochia-californica"`). Five entries
   currently use a common or bare-genus name instead and duplicate a
   `PlantGenus` record; see the consistency plan.
@@ -319,7 +340,7 @@ Each entry must include:
 Each entry must include:
 
 - `"name": "<cultivar-slug>"` — `CultivarName` natural key
-- `"plantName": "<plant-slug>"` — soft FK to a `Plant` in `plants.json`
+- `"plantName": "<plant-slug>"` — soft FK to a `PlantSpecies` in `plants.json`
 - `"commonName": "<display name>"` — non-blank human-readable name
 - `"description": { ... }` — Durrell four-level `Description`
 - `"varietyType": "<enum>"` — `OPEN_POLLINATED | HYBRID_F1 | HYBRID_F2 | UNKNOWN`
@@ -351,7 +372,7 @@ Each entry must include:
   `"aristolochia-californica-aristolochic-acid-i"`,
   `"creeping-thyme-thymol"`) — built programmatically via
   `PhytochemicalConstituentName.of(plantName, compoundName)` in code.
-- `"plantName": "<plant-slug>"` — soft FK to a `Plant` in `plants.json`
+- `"plantName": "<plant-slug>"` — soft FK to a `PlantSpecies` in `plants.json`
 - `"compoundName": "<compound-slug>"` — cross-domain soft FK to a
   `chemistry.Compound` in the chemistry catalog. Service-layer rule: the
   referenced compound must exist in `compounds-base.json` /
@@ -384,7 +405,7 @@ Each entry must include:
 - `"name": "<program-slug>"` — `PlantProgramName` natural key. Name the program
   after the *activity*, not the plant (e.g. `"pipevine-pesticide-exclusion"`,
   `"pipevine-larval-monitoring"`) — one plant may carry multiple programs
-- `"plantName": "<plant-slug>"` — soft FK to a `Plant`
+- `"plantName": "<plant-slug>"` — soft FK to a `PlantSpecies`
 - `"description": { ... }` — Durrell four-level `Description` of the program itself
 - `"constraint": <string | null>` — non-negotiable rule surfaced by
   PestManagement; nullable for pure-schedule programs

@@ -3,7 +3,7 @@ package com.naturalist.plants.phytochemistry;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollections.PhytochemicalConstituentCollection;
 
 import java.util.Set;
@@ -26,7 +26,7 @@ class PhytochemicalConstituentEntityQueryImpl
     }
 
     @Override
-    public PhytochemicalConstituentCollection forPlantName(PlantName plantName) {
+    public PhytochemicalConstituentCollection forPlantName(PlantSpeciesName plantName) {
         observer().arguments("forPlantName", i -> i
                         .entityName(plantName, "plantName"))
                 .throwWhenInvalid();

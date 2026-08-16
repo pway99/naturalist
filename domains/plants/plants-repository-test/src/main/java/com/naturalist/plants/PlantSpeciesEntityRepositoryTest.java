@@ -17,26 +17,26 @@ import java.util.Set;
  * Behavioral contract for {@link PlantRepository.PlantEntityRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
- * Supplies Plant-specific identity constants and entity construction.
+ * Supplies PlantSpecies-specific identity constants and entity construction.
  */
-interface PlantEntityRepositoryTest
-        extends EntityRepositoryTest<PlantName, Plant> {
+interface PlantSpeciesEntityRepositoryTest
+        extends EntityRepositoryTest<PlantSpeciesName, PlantSpecies> {
 
     @Override
     PlantRepository.PlantEntityRepository repository();
 
     @Override
-    default TestEntitySource<PlantName, Plant> source() {
-        return db.getNamed(PlantTestEntitySource.class);
+    default TestEntitySource<PlantSpeciesName, PlantSpecies> source() {
+        return db.getNamed(PlantSpeciesTestEntitySource.class);
     }
 
     @Override
-    default PlantName notFoundName() {
+    default PlantSpeciesName notFoundName() {
         return TestPlantsIdentifiers.Plants.NotFound.name;
     }
 
     @Override
-    default List<PlantName> knownEntityNames() {
+    default List<PlantSpeciesName> knownEntityNames() {
         return List.of(
                 TestPlantsIdentifiers.Plants.CaliforniaPipevine.name,
                 TestPlantsIdentifiers.Plants.Borage.name
@@ -44,9 +44,9 @@ interface PlantEntityRepositoryTest
     }
 
     @Override
-    default Plant newEntity() {
-        return new Plant(
-                PlantName.of(RandomValue.string()),
+    default PlantSpecies newEntity() {
+        return new PlantSpecies(
+                PlantSpeciesName.of(RandomValue.string()),
                 new TaxonomicClassification(
                         TaxonomicOrder.of("Order" + RandomValue.string()),
                         TaxonomicFamily.of("Family" + RandomValue.string()),
@@ -63,9 +63,9 @@ interface PlantEntityRepositoryTest
     }
 
     @Override
-    default Plant ghostEntity() {
-        return new Plant(
-                PlantName.of(RandomValue.string()),
+    default PlantSpecies ghostEntity() {
+        return new PlantSpecies(
+                PlantSpeciesName.of(RandomValue.string()),
                 new TaxonomicClassification(
                         TaxonomicOrder.of("Order" + RandomValue.string()),
                         TaxonomicFamily.of("Family" + RandomValue.string()),
@@ -82,11 +82,11 @@ interface PlantEntityRepositoryTest
     }
 
     @Override
-    default Plant modifiedEntity(Plant original) {
+    default PlantSpecies modifiedEntity(PlantSpecies original) {
         Set<Bioregion> flippedBioregions = original.nativeBioregions().isEmpty()
                 ? Set.of(new SacramentoValley())
                 : Set.of(new SouthernCascades());
-        return new Plant(
+        return new PlantSpecies(
                 original.name(),
                 new TaxonomicClassification(
                         TaxonomicOrder.of("Order" + RandomValue.string()),

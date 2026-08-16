@@ -9,7 +9,7 @@ import com.naturalist.ddd.Entity;
 import com.naturalist.observability.Constraints;
 import com.naturalist.plants.PlantFamilyName;
 import com.naturalist.plants.PlantGenusName;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.zone.ZoneName;
@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  * it claims nothing about what is in it.
  * <p>
  * <b>Two independent botanical axes, both soft names into the plants domain, both optional.</b>
- * {@code subject} is the Linnaean identification at whatever rank the gardener can support — a
+ * {@code plantName} is the Linnaean identification at whatever rank the gardener can support — a
  * {@link PlantRankName}, so family, genus or species are all expressible. A tray of unlabelled
  * salvia starts is a genus-rank planting, not a missing one. {@code cultivarName} is the
  * orthogonal horticultural selection within a species — breeding status, fruit type, seed-saving
@@ -62,13 +62,13 @@ import java.util.function.Consumer;
  */
 public record Planting(
         PlantingId id,
-        @JsonTypeInfo(use = Id.NAME, property = "subjectRank", include = As.EXTERNAL_PROPERTY)
+        @JsonTypeInfo(use = Id.NAME, property = "plantRank", include = As.EXTERNAL_PROPERTY)
         @JsonSubTypes({
                 @Type(value = PlantFamilyName.class, name = "FAMILY"),
                 @Type(value = PlantGenusName.class, name = "GENUS"),
-                @Type(value = PlantName.class, name = "SPECIES")
+                @Type(value = PlantSpeciesName.class, name = "SPECIES")
         })
-        @Nullable PlantRankName subject,
+        @Nullable PlantRankName plantName,
         @Nullable CultivarName cultivarName,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -100,9 +100,9 @@ public record Planting(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityId(id, "id")
-                .whenNotNull(subject, c -> c.identifier(subject, "subject"))
+                .whenNotNull(plantName, c -> c.identifier(plantName, "plantName"))
                 .entityNameOrNull(cultivarName, "cultivarName")
-                .isTrue(subject != null || cultivarName != null, "plantOrCultivarKnown")
+                .isTrue(plantName != null || cultivarName != null, "plantOrCultivarKnown")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(plantedDate, "plantedDate")

@@ -83,7 +83,7 @@ Structure rules:
   `InsectSpecies`. A flat sibling class implies peer status in the domain graph, which is wrong.
 - **Promote flat constants to parent classes the moment a child collection is added.**
   If a parent is currently held as a top-level `EntityName` constant
-  (e.g. `Plants.CaliforniaPipevine = PlantName.of("california-pipevine")`) and a child
+  (e.g. `Plants.CaliforniaPipevine = PlantSpeciesName.of("aristolochia-californica")`) and a child
   entity collection (programs, images, life stages, …) is introduced, replace the
   constant with a static class carrying `name` plus the child inner classes —
   `Plants.CaliforniaPipevine { name; Programs { … } }`. Declaring the child collection

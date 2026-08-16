@@ -140,7 +140,7 @@ public class TestPlantsIdentifiers {
          * Fictitious identifiers for all entity types within this scope — guaranteed absent from any catalog.
          */
         public static class NotFound {
-            public static final PlantName name = PlantName.of("unobtainium-vine");
+            public static final PlantSpeciesName name = PlantSpeciesName.of("unobtainium-vine");
             public static final PlantProgramName programName =
                     PlantProgramName.of("unobtainium-program");
             public static final PhytochemicalConstituentName constituentName =
@@ -152,7 +152,7 @@ public class TestPlantsIdentifiers {
         }
 
         public static class CaliforniaPipevine {
-            public static final PlantName name = PlantName.of("aristolochia-californica");
+            public static final PlantSpeciesName name = PlantSpeciesName.of("aristolochia-californica");
 
             public static class Programs {
                 private Programs() {
@@ -176,7 +176,7 @@ public class TestPlantsIdentifiers {
         }
 
         public static class Borage {
-            public static final PlantName name = PlantName.of("borago-officinalis");
+            public static final PlantSpeciesName name = PlantSpeciesName.of("borago-officinalis");
 
             public static class Programs {
                 private Programs() {
@@ -188,7 +188,7 @@ public class TestPlantsIdentifiers {
         }
 
         public static class CreepingThyme {
-            public static final PlantName name = PlantName.of("creeping-thyme");
+            public static final PlantSpeciesName name = PlantSpeciesName.of("creeping-thyme");
 
             public static class Constituents {
                 private Constituents() {
@@ -200,7 +200,7 @@ public class TestPlantsIdentifiers {
         }
 
         public static class Tomato {
-            public static final PlantName name = PlantName.of("solanum-lycopersicum");
+            public static final PlantSpeciesName name = PlantSpeciesName.of("solanum-lycopersicum");
 
             public static class Cultivars {
                 private Cultivars() {

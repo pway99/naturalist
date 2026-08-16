@@ -5,7 +5,7 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,7 +59,7 @@ class PlantProgramTest {
     private static PlantProgram program(String constraint, String notes) {
         return new PlantProgram(
                 PlantProgramName.of("pipevine-pesticide-exclusion"),
-                PlantName.of("aristolochia-californica"),
+                PlantSpeciesName.of("aristolochia-californica"),
                 description(),
                 constraint,
                 notes);

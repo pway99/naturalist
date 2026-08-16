@@ -5,7 +5,7 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +19,7 @@ class CultivarTest {
         MethodObserver mo = observer.forMethod("fullyPopulatedCultivarIsValid");
         Cultivar cultivar = new Cultivar(
                 CultivarName.of("italian-pear-nicks"),
-                PlantName.of("solanum-lycopersicum"),
+                PlantSpeciesName.of("solanum-lycopersicum"),
                 "Italian Pear (Nick's)",
                 description(),
                 VarietyType.OPEN_POLLINATED,
@@ -40,7 +40,7 @@ class CultivarTest {
         MethodObserver mo = observer.forMethod("nullFruitTypeIsValidForNonFruitingCultivars");
         Cultivar cultivar = new Cultivar(
                 CultivarName.of("genovese-basil"),
-                PlantName.of("ocimum-basilicum"),
+                PlantSpeciesName.of("ocimum-basilicum"),
                 "Genovese Basil",
                 description(),
                 VarietyType.OPEN_POLLINATED,
@@ -59,7 +59,7 @@ class CultivarTest {
         MethodObserver mo = observer.forMethod("blankCommonNameIsInvalid");
         Cultivar cultivar = new Cultivar(
                 CultivarName.of("amish-paste"),
-                PlantName.of("solanum-lycopersicum"),
+                PlantSpeciesName.of("solanum-lycopersicum"),
                 "   ",
                 description(),
                 VarietyType.UNKNOWN,
@@ -95,7 +95,7 @@ class CultivarTest {
     void seedSavingPredicatesReadTheirEnums() {
         Cultivar openPollinated = new Cultivar(
                 CultivarName.of("italian-pear-nicks"),
-                PlantName.of("solanum-lycopersicum"),
+                PlantSpeciesName.of("solanum-lycopersicum"),
                 "Italian Pear (Nick's)",
                 description(),
                 VarietyType.OPEN_POLLINATED,
@@ -105,7 +105,7 @@ class CultivarTest {
                 null);
         Cultivar hybrid = new Cultivar(
                 CultivarName.of("sungold-cherry"),
-                PlantName.of("solanum-lycopersicum"),
+                PlantSpeciesName.of("solanum-lycopersicum"),
                 "Sungold Cherry",
                 description(),
                 VarietyType.HYBRID_F1,

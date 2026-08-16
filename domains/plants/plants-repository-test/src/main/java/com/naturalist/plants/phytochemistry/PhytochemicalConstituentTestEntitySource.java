@@ -3,7 +3,7 @@ package com.naturalist.plants.phytochemistry;
 import com.naturalist.data.ForeignKeyConstraint;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
-import com.naturalist.plants.PlantTestEntitySource;
+import com.naturalist.plants.PlantSpeciesTestEntitySource;
 
 import java.util.List;
 
@@ -40,6 +40,6 @@ public class PhytochemicalConstituentTestEntitySource
         return List.of(ForeignKeyConstraint.of(
                 "plantName",
                 PhytochemicalConstituent::plantName,
-                PlantTestEntitySource.class));
+                PlantSpeciesTestEntitySource.class));
     }
 }

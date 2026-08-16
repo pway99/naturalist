@@ -1,11 +1,11 @@
-@import com.naturalist.plants.Plant
+@import com.naturalist.plants.PlantSpecies
 @import com.naturalist.plants.cultivar.Cultivar
 @import com.naturalist.plants.heritage.SeedLineage
 @import com.naturalist.plants.management.PlantProgram
 @import com.naturalist.plants.phytochemistry.PhytochemicalConstituent
 @import java.util.List
 
-@param Plant plant
+@param PlantSpecies plant
 @param List<Cultivar> cultivars = java.util.List.of()
 @param List<PlantProgram> programs = java.util.List.of()
 @param List<PhytochemicalConstituent> constituents = java.util.List.of()

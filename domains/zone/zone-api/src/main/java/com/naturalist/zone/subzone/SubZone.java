@@ -49,9 +49,17 @@ import java.util.function.Consumer;
  * layer when the soil domain records a mulch change. This preserves the DAG dependency
  * direction: soil → zone (valid); zone → soil (forbidden cycle).
  * <p>
- * <b>Plant occupants:</b> SubZone will carry soft references to current plant occupants
- * via the Plants module identifier. {@code PlantName} will be added once the Plants
- * module identifier is registered in {@code domains/identifiers/}.
+ * <b>Plant occupants live in garden, not here.</b> A sub-zone claims nothing about what is
+ * planted in it. {@code garden.Planting} carries {@code subZoneName} alongside its
+ * {@code plantName} and {@code cultivarName}, and {@code garden.PlantedZone} composes the
+ * read model for "what is growing in this row" — at either the zone or sub-zone grain.
+ * <p>
+ * A reference here would be wrong on three counts: it would be single-valued where a row
+ * genuinely holds several plantings at once, it would have nowhere to record the
+ * planted/removed window that makes occupancy a fact about a period rather than a state,
+ * and it would put cultivation intent in the domain that owns <i>where</i>. An earlier
+ * javadoc promised this field pending the plants identifier being registered; the
+ * identifier arrived and the field was correctly never added.
  */
 public record SubZone(
         SubZoneName name,

@@ -3,8 +3,8 @@ package com.naturalist.plants.console;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.plants.Plant;
-import com.naturalist.plants.PlantTestEntitySource;
+import com.naturalist.plants.PlantSpecies;
+import com.naturalist.plants.PlantSpeciesTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ class PlantsListTemplateTest {
 
     @Test
     void list_rendersWithoutError() {
-        Page<Plant> plantsPage = new PlantTestEntitySource(NaturalistDatabase.create())
+        Page<PlantSpecies> plantsPage = new PlantSpeciesTestEntitySource(NaturalistDatabase.create())
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 

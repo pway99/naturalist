@@ -158,7 +158,7 @@ second query to learn that a plant is a vine.
 
 ### M2a — `PlantRankName` sealed type  ✅ SHIPPED 2026-08-15
 
-- [x] `PlantRankName` permitting `PlantFamilyName`, `PlantGenusName`, `PlantName`, with
+- [x] `PlantRankName` permitting `PlantFamilyName`, `PlantGenusName`, `PlantSpeciesName`, with
       `value()`, `rank()` and `of(String, LinealRank)`. `PlantRankNameTest` covers each
       permit, the factory, rejection of uncatalogued ranks, and class-qualified equality.
 - [x] No `PlantOrderName` permit — no `PlantOrder` entity exists.
@@ -168,14 +168,14 @@ second query to learn that a plant is a vine.
       in the unnamed module — dragged `CultivarName` out of its sub-package. Both costs were
       the type reporting that the concept does not belong. Cultivar is an orthogonal axis;
       see the blueprint §D.
-- [x] **Garden migrated in the same effort.** `Planting.plantName` (a `PlantName`) became
-      `subject` (a `PlantRankName`), so a planting can finally be recorded at genus —
+- [x] **Garden migrated in the same effort.** `Planting.plantName` widened from a species
+      name to a `PlantRankName`, so a planting can finally be recorded at genus —
       "a tray of unlabelled salvia starts" was previously unrepresentable. `cultivarName`
       stays a separate component: two axes, two fields. `planting.json` gained a
-      `subjectRank` discriminator per row.
+      `plantRank` discriminator per row.
 - [x] Jackson dispatch declared at the consuming field, not on the interface.
 
-**Naming decision, taken and pending execution:** `PlantName` is the species-rank permit
+**Naming decision — ✅ SHIPPED 2026-08-15.** `PlantName` was the species-rank permit
 but does not say so — insects has no bare `InsectName`, because every insect name states
 its rank. The bare name asserts a primacy that does not exist: a plant is named on three
 axes (rank, cultivar, crop type), and `PlantName` is one rung of one of them. Renaming
@@ -286,6 +286,22 @@ descriptions, a legacy of having been created as stand-ins for the duplicated pl
 Worth rewriting when M2c touches them to add `lifeForm`.
 
 ### M2e — Re-key the genus-level constituent
+
+**Widens `PlantCompoundReferences` too.** That provider is species-specific throughout
+today — `Set<PlantSpeciesName> seenPlants` is its dedup key, and its javadoc tells consumers
+to filter by `instanceof PlantSpeciesName`. Once the constituent's plant reference is a
+`PlantRankName`, "which plants produce thymol" answers *Thymus* at genus rank, and the
+dedup key and the emitted ref widen with it.
+
+**Expect a cast at the kernel boundary.** `EntityRef(DomainId, EntityName)` takes an
+`EntityName`, and `PlantRankName` is a sibling interface rather than a subclass — an
+interface cannot extend the abstract `EntityName` class. Insects hit this first and casts:
+`new EntityRef(INSECTS_DOMAIN, (EntityName) rankName)` in `InsectIdentificationCommand`,
+plus two more at `ExternalAuthority.lookup`. Follow the same pattern; do not invent a
+different workaround. **This is a genuine kernel wart** — every rank-name consumer at a
+kernel API needs the cast — and it is exactly the kind of thing the side-by-side
+abstraction pass (rule 3 in `domains/plants/CLAUDE.md`) should decide how to fix.
+
 
 - [ ] Change `PhytochemicalConstituent.plantName` to a `PlantRankName` (component rename
       to `parentName` for honesty), with the field-level Jackson dispatch from M2a.
@@ -430,7 +446,7 @@ M2a ✅ PlantRankName + garden migration     ← shipped 2026-08-15
 M2d ✅ genus backfill (14 records)          ← shipped 2026-08-15
 M3  ✅ routes + linker                      ← shipped 2026-08-15
  │
- ├─→ RENAME  Plant → PlantSpecies           ← decided, pure rename, do while tree is quiet
+ ├─→ RENAME ✅ Plant → PlantSpecies          ← shipped 2026-08-15
  │
  └─→ M2a′  rank audit of the catalog        ← DATA JUDGMENT, blocks M2b
        └─→ M2b  reshape to species rank     ← largest remaining change
@@ -441,12 +457,8 @@ M3  ✅ routes + linker                      ← shipped 2026-08-15
 M4 + M5  namespace cleanup                  ← independent; M4 got simpler after the rename
 ```
 
-**Next two, in either order — they do not touch the same things.**
-
-**The rename** is mechanical, has no behaviour to verify beyond a green build, and is
-cheapest while nothing else is in flight. Every milestone after it writes new consumer
-code, and each should be writing `PlantSpecies` from the start rather than being corrected
-later.
+**Next is M2a′.** The rename landed first, so every milestone after it writes
+`PlantSpecies` from the start rather than being corrected later.
 
 **M2a′** is the one piece of this plan that is not a coding task. It is a judgment about
 plants, made by reading the catalog, and its output is a reviewed table rather than a diff.

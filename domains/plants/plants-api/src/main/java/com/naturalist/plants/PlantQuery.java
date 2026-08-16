@@ -1,7 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.EntityQuery;
-import com.naturalist.plants.PlantEntityCollections.PlantCollection;
+import com.naturalist.plants.PlantEntityCollections.PlantSpeciesCollection;
 import com.naturalist.plants.PlantEntityCollections.PlantFamilyCollection;
 import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
 
@@ -11,7 +11,7 @@ import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
  *
  * <p>Nested queries scope to a single entity each:
  * <ul>
- *   <li>{@link PlantEntityQuery} — {@link Plant} entities.</li>
+ *   <li>{@link PlantEntityQuery} — {@link PlantSpecies} entities.</li>
  *   <li>{@link PlantFamilyEntityQuery} — {@link PlantFamily} entities.</li>
  *   <li>{@link PlantGenusEntityQuery} — {@link PlantGenus} entities.</li>
  * </ul>
@@ -33,7 +33,7 @@ public interface PlantQuery {
 
     PlantGenusEntityQuery genera();
 
-    interface PlantEntityQuery extends EntityQuery<PlantName, Plant, PlantCollection> {
+    interface PlantEntityQuery extends EntityQuery<PlantSpeciesName, PlantSpecies, PlantSpeciesCollection> {
     }
 
     interface PlantFamilyEntityQuery

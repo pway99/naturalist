@@ -28,7 +28,7 @@
         <tbody>
             @for(var p : planted.plantings().stream().toList())
                 <tr>
-                    <td>@if(p.subject() != null)${p.subject().value()}<span class="badge">${p.subject().rank().name()}</span>@else<span class="not-reported">not recorded</span>@endif</td>
+                    <td>@if(p.plantName() != null)${p.plantName().value()}<span class="badge">${p.plantName().rank().name()}</span>@else<span class="not-reported">not recorded</span>@endif</td>
                     @if(p.isVarietyKnown())
                         <td>${p.cultivarName().value()}</td>
                     @else

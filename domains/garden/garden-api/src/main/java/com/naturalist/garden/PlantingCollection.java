@@ -39,6 +39,6 @@ public final class PlantingCollection extends BehavioralCollection<Planting> {
      * on the planting itself.
      */
     public List<PlantRankName> plants() {
-        return stream().map(Planting::subject).filter(Objects::nonNull).distinct().toList();
+        return stream().map(Planting::plantName).filter(Objects::nonNull).distinct().toList();
     }
 }

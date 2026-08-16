@@ -42,9 +42,9 @@ class PlantingQueryImpl
     }
 
     @Override
-    public PlantingCollection forSubject(PlantRankName subject) {
-        observer().arguments("forSubject", i -> i.identifier(subject, "subject"))
+    public PlantingCollection forPlantName(PlantRankName plantName) {
+        observer().arguments("forPlantName", i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        return PlantingCollection.of(repository().getBySubject(subject));
+        return PlantingCollection.of(repository().getByPlantName(plantName));
     }
 }

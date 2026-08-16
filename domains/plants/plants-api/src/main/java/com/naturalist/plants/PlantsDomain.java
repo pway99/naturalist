@@ -4,7 +4,7 @@ import com.naturalist.catalog.DomainId;
 import com.naturalist.infrastructure.DomainService;
 
 /**
- * The plants domain — see {@code domains/plants/}. Hosts {@code Plant},
+ * The plants domain — see {@code domains/plants/}. Hosts {@code PlantSpecies},
  * {@code Cultivar}, {@code SeedLineage}, {@code PhytochemicalConstituent}, and
  * the management sub-context.
  * <p>

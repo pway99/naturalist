@@ -1,8 +1,8 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.plants.Plant;
-import com.naturalist.plants.PlantTestEntitySource;
+import com.naturalist.plants.PlantSpecies;
+import com.naturalist.plants.PlantSpeciesTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class PlantsDetailTemplateTest {
     @Test
     void detail_rendersEveryPlantWithoutError() {
         var template = TestTemplateEngine.create();
-        for (Plant plant : new PlantTestEntitySource(NaturalistDatabase.create()).entityStream().toList()) {
+        for (PlantSpecies plant : new PlantSpeciesTestEntitySource(NaturalistDatabase.create()).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("plants/detail.jte", Map.of("plant", plant), output);
             assertThat(output.toString())

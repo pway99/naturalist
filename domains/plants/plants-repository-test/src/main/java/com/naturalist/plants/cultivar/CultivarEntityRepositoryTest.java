@@ -5,7 +5,7 @@ import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.TestPlantsIdentifiers;
 
 import org.junit.jupiter.api.Test;
@@ -75,7 +75,7 @@ interface CultivarEntityRepositoryTest
 
     @Override
     default Cultivar modifiedEntity(Cultivar original) {
-        PlantName flippedPlant = original.plantName()
+        PlantSpeciesName flippedPlant = original.plantName()
                 .equals(TestPlantsIdentifiers.Plants.Tomato.name)
                 ? TestPlantsIdentifiers.Plants.CaliforniaPipevine.name
                 : TestPlantsIdentifiers.Plants.Tomato.name;

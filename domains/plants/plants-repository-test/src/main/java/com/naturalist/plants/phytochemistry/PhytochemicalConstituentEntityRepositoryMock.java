@@ -4,7 +4,7 @@ import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ class PhytochemicalConstituentEntityRepositoryMock
     }
 
     @Override
-    public List<PhytochemicalConstituent> getByPlantName(PlantName plantName) {
+    public List<PhytochemicalConstituent> getByPlantName(PlantSpeciesName plantName) {
         observer().arguments("getByPlantName",
                         i -> i.entityName(plantName, "plantName"))
                 .throwWhenInvalid();

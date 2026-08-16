@@ -18,14 +18,14 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PlantTest {
+class PlantSpeciesTest {
 
-    private static final Observer observer = Observer.forClass(PlantTest.class);
+    private static final Observer observer = Observer.forClass(PlantSpeciesTest.class);
 
     @Test
     void fullyPopulatedPlantIsValid() {
         MethodObserver mo = observer.forMethod("fullyPopulatedPlantIsValid");
-        Plant plant = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
+        PlantSpecies plant = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
 
         InvariantObservation result = mo.namedEntity(plant, "plant");
 
@@ -38,8 +38,8 @@ class PlantTest {
         // "unknown" — it is a legal encoding, not a missing value. Same for
         // commonNames: "no asserted vernacular name yet".
         MethodObserver mo = observer.forMethod("emptyBioregionsAndCommonNamesAreValid");
-        Plant plant = new Plant(
-                PlantName.of("borago-officinalis"),
+        PlantSpecies plant = new PlantSpecies(
+                PlantSpeciesName.of("borago-officinalis"),
                 taxonomy(),
                 description(),
                 Set.of(PlantRole.BENEFICIAL_INSECT_HABITAT),
@@ -55,7 +55,7 @@ class PlantTest {
     @Test
     void allNullComponentsReportEveryViolation() {
         MethodObserver mo = observer.forMethod("allNullComponentsReportEveryViolation");
-        Plant plant = new Plant(null, null, null, null, null, null, null);
+        PlantSpecies plant = new PlantSpecies(null, null, null, null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(plant, "plant");
 
@@ -72,8 +72,8 @@ class PlantTest {
 
     @Test
     void keystoneHostPredicateReadsTheRoleSet() {
-        Plant keystone = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
-        Plant notKeystone = plant(Set.of(PlantRole.FOOD_CROP), PlantLifeForm.ANNUAL);
+        PlantSpecies keystone = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
+        PlantSpecies notKeystone = plant(Set.of(PlantRole.FOOD_CROP), PlantLifeForm.ANNUAL);
 
         assertThat(keystone.isKeystoneHost()).isTrue();
         assertThat(notKeystone.isKeystoneHost()).isFalse();
@@ -81,14 +81,14 @@ class PlantTest {
 
     @Test
     void isNativeToReadsTheBioregionSet() {
-        Plant plant = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
+        PlantSpecies plant = plant(Set.of(PlantRole.KEYSTONE_HOST), PlantLifeForm.VINE);
 
         assertThat(plant.isNativeTo(new SacramentoValley())).isTrue();
     }
 
-    private static Plant plant(Set<PlantRole> roles, PlantLifeForm lifeForm) {
-        return new Plant(
-                PlantName.of("aristolochia-californica"),
+    private static PlantSpecies plant(Set<PlantRole> roles, PlantLifeForm lifeForm) {
+        return new PlantSpecies(
+                PlantSpeciesName.of("aristolochia-californica"),
                 taxonomy(),
                 description(),
                 roles,

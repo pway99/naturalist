@@ -2,7 +2,7 @@ package com.naturalist.garden;
 
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
@@ -20,7 +20,7 @@ class PlantingTest {
     private static final LocalDate PULLED = LocalDate.of(2026, 8, 10);
 
     private static Planting tomato(LocalDate removed, SubZoneName subZone, Integer count) {
-        return new Planting(PlantingId.create(), PlantName.of("solanum-lycopersicum"),
+        return new Planting(PlantingId.create(), PlantSpeciesName.of("solanum-lycopersicum"),
                 CultivarName.of("amish-paste"), ZoneName.of("backyard"), subZone, count,
                 PLANTED, removed, null);
     }
@@ -73,7 +73,7 @@ class PlantingTest {
     @Test
     void aPlantingRemovedBeforeItWasPlantedIsRejected() {
         var mo = observer.forMethod("aPlantingRemovedBeforeItWasPlantedIsRejected");
-        var backwards = new Planting(PlantingId.create(), PlantName.of("solanum-lycopersicum"),
+        var backwards = new Planting(PlantingId.create(), PlantSpeciesName.of("solanum-lycopersicum"),
                 null, ZoneName.of("backyard"), null, null, PULLED, PLANTED, null);
 
         InvariantObservation result = mo.observable(backwards, "planting");
@@ -95,7 +95,7 @@ class PlantingTest {
     /** Sown from a mixed packet: the species is known and the variety never was. */
     @Test
     void anUnrecordedVarietyIsValidButKnowable() {
-        Planting anonymous = new Planting(PlantingId.create(), PlantName.of("raphanus-sativus"),
+        Planting anonymous = new Planting(PlantingId.create(), PlantSpeciesName.of("raphanus-sativus"),
                 null, ZoneName.of("box-1"), null, null, PLANTED, null, null);
 
         assertThat(anonymous.isVarietyKnown()).isFalse();

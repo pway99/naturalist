@@ -1,7 +1,7 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.plants.PlantTestEntitySource;
+import com.naturalist.plants.PlantSpeciesTestEntitySource;
 import com.naturalist.plants.cultivar.CultivarTestEntitySource;
 import com.naturalist.plants.heritage.SeedLineageTestEntitySource;
 import com.naturalist.plants.management.PlantProgramTestEntitySource;
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class PlantsDataConfiguration {
 
     @Bean
-    PlantTestEntitySource plantSource(NaturalistDatabase database) {
-        return new PlantTestEntitySource(database);
+    PlantSpeciesTestEntitySource plantSource(NaturalistDatabase database) {
+        return new PlantSpeciesTestEntitySource(database);
     }
 
     @Bean

@@ -9,7 +9,7 @@ import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.TestInsectsIdentifiers.InsectSpecies;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.TestPlantsIdentifiers;
 import org.junit.jupiter.api.Test;
 
@@ -53,9 +53,9 @@ class InMemoryCatalogTest {
     private static final EntityRef BORAGE = new EntityRef(
             new Plants(), TestPlantsIdentifiers.Plants.Borage.name);
     private static final EntityRef CRIMSON_CLOVER = new EntityRef(
-            new Plants(), PlantName.of("crimson-clover"));
+            new Plants(), PlantSpeciesName.of("crimson-clover"));
     private static final EntityRef WHITE_CLOVER = new EntityRef(
-            new Plants(), PlantName.of("white-clover"));
+            new Plants(), PlantSpeciesName.of("white-clover"));
     private static final EntityRef THYMOL = new EntityRef(
             new Chemistry(), Compounds.Thymol.name);
     private static final EntityRef BATTUS_PHILENOR = new EntityRef(

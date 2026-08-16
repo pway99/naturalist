@@ -2,7 +2,7 @@ package com.naturalist.plants.management;
 
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.management.PlantProgramEntityCollections.PlantProgramCollection;
 
 import java.util.Set;
@@ -25,7 +25,7 @@ class PlantProgramEntityQueryImpl
     }
 
     @Override
-    public PlantProgramCollection forPlantName(PlantName plantName) {
+    public PlantProgramCollection forPlantName(PlantSpeciesName plantName) {
         observer().arguments("forPlantName", i -> i
                         .entityName(plantName, "plantName"))
                 .throwWhenInvalid();

@@ -15,7 +15,7 @@ import com.naturalist.insects.InsectSubspeciesName;
 import com.naturalist.insects.LifeStageKind;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.observability.Constraints;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public record LarvaStage(
         @Nullable StageChemistryRole chemistryRole,
         Description description,
         @Nullable FeedingStrategy feedingStrategy,
-        List<PlantName> hostPlants,
+        List<PlantSpeciesName> hostPlants,
         List<InsectSpeciesName> parasitoidHosts,
         @Nullable String remarkableBehavior,
         @Nullable String instarProgression

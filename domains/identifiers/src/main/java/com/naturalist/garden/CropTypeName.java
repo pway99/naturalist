@@ -17,7 +17,7 @@ import com.naturalist.ddd.EntityName;
  * from the plantings of this type in that zone; it is not this name. Keeping the distinction in
  * the name keeps {@code LabAnalysisInfo.cropType} unambiguous at every call site.
  * <p>
- * <b>Not a taxon.</b> The botanical link is an optional soft {@code PlantName} on the garden
+ * <b>Not a taxon.</b> The botanical link is an optional soft {@code PlantSpeciesName} on the garden
  * domain's {@code CropType}; one type spans several species and one species appears as several
  * types.
  * <p>

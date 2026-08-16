@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 /**
  * Forward-direction catalog contribution for the plants domain — emits one
- * {@link SearchableEntity} per {@link Plant} in the live catalog with the
+ * {@link SearchableEntity} per {@link PlantSpecies} in the live catalog with the
  * tokens under which a young naturalist might search:
  *
  * <ul>
@@ -102,7 +102,7 @@ public class PlantCatalogContribution implements CatalogContribution {
                 .map(PlantCatalogContribution::toSearchableGenus);
     }
 
-    private static SearchableEntity toSearchablePlant(Plant plant) {
+    private static SearchableEntity toSearchablePlant(PlantSpecies plant) {
         EntityRef target = new EntityRef(DOMAIN, plant.name());
         return new SearchableEntity(target, tokensFor(plant));
     }
@@ -117,7 +117,7 @@ public class PlantCatalogContribution implements CatalogContribution {
         return new SearchableEntity(target, tokensFor(genusEntity));
     }
 
-    private static Stream<String> tokensFor(Plant plant) {
+    private static Stream<String> tokensFor(PlantSpecies plant) {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(plant.name().value());
         TaxonomicClassification taxonomy = plant.taxonomy();

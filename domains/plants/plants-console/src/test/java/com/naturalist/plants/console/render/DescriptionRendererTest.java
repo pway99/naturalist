@@ -2,8 +2,8 @@ package com.naturalist.plants.console.render;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
-import com.naturalist.plants.Plant;
-import com.naturalist.plants.PlantTestEntitySource;
+import com.naturalist.plants.PlantSpecies;
+import com.naturalist.plants.PlantSpeciesTestEntitySource;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -33,13 +33,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DescriptionRendererTest {
 
     private final DescriptionRenderer renderer = new DescriptionRenderer(PlantsParagraphCues.CUES);
-    private final List<Plant> plants = new PlantTestEntitySource(NaturalistDatabase.create()).entityStream().toList();
+    private final List<PlantSpecies> plants = new PlantSpeciesTestEntitySource(NaturalistDatabase.create()).entityStream().toList();
 
     // ── Catalog smoke test ───────────────────────────────────────────────
 
     @Test
     void rendersEveryPlantAtEveryLevelWithoutThrowing() {
-        for (Plant plant : plants) {
+        for (PlantSpecies plant : plants) {
             renderer.render(plant.description().preschool());
             renderer.render(plant.description().elementary());
             renderer.render(plant.description().secondary());
@@ -49,7 +49,7 @@ class DescriptionRendererTest {
 
     @Test
     void everyPlantAtEveryLevelEmitsNonBlankOutput() {
-        for (Plant plant : plants) {
+        for (PlantSpecies plant : plants) {
             assertThat(renderer.render(plant.description().preschool()))
                     .as("preschool/%s", plant.name().value()).isNotBlank();
             assertThat(renderer.render(plant.description().elementary()))
@@ -65,7 +65,7 @@ class DescriptionRendererTest {
     void renderedOutputIsAtLeastAsLongAsTheInput() {
         // Content-conservation invariant from the plan's acceptance: the
         // output is the input plus structural markup, never less.
-        for (Plant plant : plants) {
+        for (PlantSpecies plant : plants) {
             assertOutputGrowsOrEquals(plant, "preschool", plant.description().preschool());
             assertOutputGrowsOrEquals(plant, "elementary", plant.description().elementary());
             assertOutputGrowsOrEquals(plant, "secondary", plant.description().secondary());
@@ -73,7 +73,7 @@ class DescriptionRendererTest {
         }
     }
 
-    private void assertOutputGrowsOrEquals(Plant plant, String level, String input) {
+    private void assertOutputGrowsOrEquals(PlantSpecies plant, String level, String input) {
         String rendered = renderer.render(input);
         assertThat(rendered.length())
                 .as("%s/%s length", level, plant.name().value())
@@ -146,7 +146,7 @@ class DescriptionRendererTest {
     void preschoolDescriptionsHaveNoHeaderChip() {
         // The preschool level is plain prose — no taxonomic header, so the
         // renderer should not emit the chip.
-        for (Plant plant : plants) {
+        for (PlantSpecies plant : plants) {
             String rendered = renderer.render(plant.description().preschool());
             assertThat(rendered)
                     .as("preschool/%s", plant.name().value())
@@ -223,7 +223,7 @@ class DescriptionRendererTest {
     @Test
     void everyItalicisedBinomialIsAnAnchor() {
         // No italics-only graceful-degradation case survives M7'.
-        for (Plant plant : plants) {
+        for (PlantSpecies plant : plants) {
             String rendered = renderer.render(plant.description().university());
             int emCount = countOccurrences(rendered, "<em>");
             int anchorCount = countOccurrences(rendered, "<a href=\"/search?q=");
@@ -249,7 +249,7 @@ class DescriptionRendererTest {
         }
     }
 
-    private Plant plantByName(String slug) {
+    private PlantSpecies plantByName(String slug) {
         return plants.stream()
                 .filter(p -> p.name().value().equals(slug))
                 .findFirst()

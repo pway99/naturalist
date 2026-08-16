@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * unfinished species identifications. A naturalist who recognises a Lamiaceae
  * herb without resolving the genus has a permanent home for that observation
  * here. As identification firms, a {@code PlantGenus} record is added alongside
- * this family record, and eventually a {@link Plant} record alongside that —
+ * this family record, and eventually a {@link PlantSpecies} record alongside that —
  * the family record is never replaced or migrated.
  * <p>
  * Each family carries the four-level Durrell {@link Description}, locale-tagged

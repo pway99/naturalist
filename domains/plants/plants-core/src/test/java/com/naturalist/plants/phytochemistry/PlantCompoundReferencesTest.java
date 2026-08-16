@@ -6,7 +6,7 @@ import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.PlantsDomain;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
 import com.naturalist.plants.catalog.PlantCompoundReferences;
@@ -111,7 +111,7 @@ class PlantCompoundReferencesTest {
     void plantAndConstituentRefsAreDistinguishableByNameType() {
         List<EntityRef> refs = provider.referencesTo(ARISTOLOCHIC_ACID_I).toList();
 
-        long plantNames = refs.stream().filter(r -> r.name() instanceof PlantName).count();
+        long plantNames = refs.stream().filter(r -> r.name() instanceof PlantSpeciesName).count();
         long constituentNames = refs.stream()
                 .filter(r -> r.name() instanceof PhytochemicalConstituentName)
                 .count();

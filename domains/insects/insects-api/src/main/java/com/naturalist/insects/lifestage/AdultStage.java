@@ -15,7 +15,7 @@ import com.naturalist.insects.InsectSubspeciesName;
 import com.naturalist.insects.LifeStageKind;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.observability.Constraints;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * The adult stage. Flight timing lives in {@link StagePhenology}, not as a
  * separate field here.
  * <p>
- * {@code nectarSources} is typed as {@code List<PlantName>} — nectar is
+ * {@code nectarSources} is typed as {@code List<PlantSpeciesName>} — nectar is
  * produced only by flowering plants. Non-nectar adult feeding (sap, carrion,
  * blood, honeydew) is not modeled here; when needed, each becomes a separate
  * typed field (e.g. {@code sapSources}), not a generalization of nectar.
@@ -49,7 +49,7 @@ public record AdultStage(
         @Nullable StageChemistryRole chemistryRole,
         Description description,
         @Nullable FeedingHabit feedingHabit,
-        List<PlantName> nectarSources,
+        List<PlantSpeciesName> nectarSources,
         @Nullable String ecologicalRole,
         @Nullable String lifespan
 ) implements LifeStage {

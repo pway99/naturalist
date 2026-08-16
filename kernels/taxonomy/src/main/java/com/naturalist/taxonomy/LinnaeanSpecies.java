@@ -17,7 +17,7 @@ import com.naturalist.ddd.EntityName;
  * must match its resolved parent genus' {@code genus} epithet) is validated at
  * catalog-assembly time.
  *
- * <p>Implemented by {@code com.naturalist.plants.Plant} and
+ * <p>Implemented by {@code com.naturalist.plants.PlantSpecies} and
  * {@code com.naturalist.insects.InsectSpecies}; any future living-organism
  * aggregate at species rank should implement this interface rather than
  * carrying a free-form slug.

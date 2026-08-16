@@ -1,8 +1,8 @@
 [
   {
     "id": "02671301-0000-7000-8000-000003100000",
-    "subjectRank": "SPECIES",
-    "subject": "solanum-lycopersicum",
+    "plantRank": "SPECIES",
+    "plantName": "solanum-lycopersicum",
     "cultivarName": "amish-paste",
     "zoneName": "backyard",
     "subZoneName": "backyard-south",
@@ -13,8 +13,8 @@
   },
   {
     "id": "02671301-0001-7000-8000-000003100001",
-    "subjectRank": "SPECIES",
-    "subject": "solanum-lycopersicum",
+    "plantRank": "SPECIES",
+    "plantName": "solanum-lycopersicum",
     "cultivarName": "italian-pear-nicks",
     "zoneName": "backyard",
     "subZoneName": "backyard-center",
@@ -25,8 +25,8 @@
   },
   {
     "id": "02671301-0002-7000-8000-000003100002",
-    "subjectRank": "SPECIES",
-    "subject": "solanum-lycopersicum",
+    "plantRank": "SPECIES",
+    "plantName": "solanum-lycopersicum",
     "cultivarName": "san-marzano-f2",
     "zoneName": "backyard",
     "subZoneName": "backyard-north",
@@ -37,8 +37,8 @@
   },
   {
     "id": "02671301-0003-7000-8000-000003100003",
-    "subjectRank": "SPECIES",
-    "subject": "solanum-lycopersicum",
+    "plantRank": "SPECIES",
+    "plantName": "solanum-lycopersicum",
     "cultivarName": "sungold-cherry",
     "zoneName": "box-1",
     "subZoneName": null,
@@ -49,8 +49,8 @@
   },
   {
     "id": "02671301-0004-7000-8000-000003100004",
-    "subjectRank": "SPECIES",
-    "subject": "ocimum-basilicum",
+    "plantRank": "SPECIES",
+    "plantName": "ocimum-basilicum",
     "cultivarName": "genovese-basil",
     "zoneName": "box-1",
     "subZoneName": null,
@@ -61,8 +61,8 @@
   },
   {
     "id": "02671301-0005-7000-8000-000003100005",
-    "subjectRank": "SPECIES",
-    "subject": "ocimum-basilicum",
+    "plantRank": "SPECIES",
+    "plantName": "ocimum-basilicum",
     "cultivarName": "thai-basil",
     "zoneName": "box-1",
     "subZoneName": null,
@@ -73,8 +73,8 @@
   },
   {
     "id": "02671301-0006-7000-8000-000003100006",
-    "subjectRank": "SPECIES",
-    "subject": "petroselinum-crispum",
+    "plantRank": "SPECIES",
+    "plantName": "petroselinum-crispum",
     "cultivarName": "italian-flat-leaf-parsley",
     "zoneName": "box-1",
     "subZoneName": null,
@@ -85,8 +85,8 @@
   },
   {
     "id": "02671301-0007-7000-8000-000003100007",
-    "subjectRank": "SPECIES",
-    "subject": "solanum-melongena",
+    "plantRank": "SPECIES",
+    "plantName": "solanum-melongena",
     "cultivarName": "black-beauty-eggplant",
     "zoneName": "backyard",
     "subZoneName": "backyard-south",
@@ -97,8 +97,8 @@
   },
   {
     "id": "02671301-0008-7000-8000-000003100008",
-    "subjectRank": "SPECIES",
-    "subject": "raphanus-sativus",
+    "plantRank": "SPECIES",
+    "plantName": "raphanus-sativus",
     "cultivarName": null,
     "zoneName": "box-1",
     "subZoneName": null,

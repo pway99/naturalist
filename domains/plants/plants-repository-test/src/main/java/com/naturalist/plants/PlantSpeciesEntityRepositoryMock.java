@@ -5,11 +5,11 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
 
 @DomainService
-class PlantEntityRepositoryMock
-        extends AbstractTestEntityRepository<PlantName, Plant, PlantTestEntitySource>
+class PlantSpeciesEntityRepositoryMock
+        extends AbstractTestEntityRepository<PlantSpeciesName, PlantSpecies, PlantSpeciesTestEntitySource>
         implements PlantRepository.PlantEntityRepository {
 
-    PlantEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    PlantSpeciesEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 }

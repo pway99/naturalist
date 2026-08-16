@@ -1,7 +1,7 @@
 package com.naturalist.plants.cultivar;
 
 import com.naturalist.data.EntityQuery;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.cultivar.CultivarEntityCollections.CultivarCollection;
 
 /**
@@ -17,6 +17,6 @@ public interface CultivarQuery {
         /**
          * All cultivars recorded for a given plant — the natural plant → cultivars rollup.
          */
-        CultivarCollection forPlantName(PlantName plantName);
+        CultivarCollection forPlantName(PlantSpeciesName plantName);
     }
 }

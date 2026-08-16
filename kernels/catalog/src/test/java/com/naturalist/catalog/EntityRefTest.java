@@ -2,7 +2,7 @@ package com.naturalist.catalog;
 
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.TestPlantsIdentifiers;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +55,7 @@ class EntityRefTest {
 
     @Test
     void invalidNameSlugViolatesInvariants() {
-        EntityRef ref = new EntityRef(new Plants(), PlantName.of("Not Kebab Case"));
+        EntityRef ref = new EntityRef(new Plants(), PlantSpeciesName.of("Not Kebab Case"));
 
         InvariantObservation result = observer.forMethod("invalidNameSlugViolatesInvariants")
                 .observable(ref, "ref");

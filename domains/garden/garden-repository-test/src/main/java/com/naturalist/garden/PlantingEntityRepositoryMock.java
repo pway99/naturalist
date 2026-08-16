@@ -40,11 +40,11 @@ class PlantingEntityRepositoryMock
     }
 
     @Override
-    public List<Planting> getBySubject(PlantRankName subject) {
-        observer().arguments("getBySubject", i -> i.identifier(subject, "subject"))
+    public List<Planting> getByPlantName(PlantRankName plantName) {
+        observer().arguments("getByPlantName", i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
-                .filter(planting -> subject.equals(planting.subject()))
+                .filter(planting -> plantName.equals(planting.plantName()))
                 .toList();
     }
 }

@@ -5,7 +5,7 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.plants.PlantFamilyName;
 import com.naturalist.plants.PlantGenusName;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.heritage.SeedLineageName;
 import com.naturalist.plants.management.PlantProgramName;
@@ -41,7 +41,7 @@ class PlantsLinkerTest {
 
     @Test
     void linksPlantToPlantDetail() {
-        assertThat(link(PlantName.of("aristolochia-californica")))
+        assertThat(link(PlantSpeciesName.of("aristolochia-californica")))
                 .isEqualTo("/plants/aristolochia-californica");
     }
 

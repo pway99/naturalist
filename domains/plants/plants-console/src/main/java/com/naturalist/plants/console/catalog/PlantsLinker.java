@@ -5,7 +5,7 @@ import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantFamilyName;
 import com.naturalist.plants.PlantGenusName;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.heritage.SeedLineageName;
 import com.naturalist.plants.management.PlantProgramName;
@@ -23,7 +23,7 @@ public class PlantsLinker implements EntityRefLinker {
     @Override
     public String linkFor(EntityRef ref) {
         return switch (ref.name()) {
-            case PlantName n -> "/plants/" + n.value();
+            case PlantSpeciesName n -> "/plants/" + n.value();
             case PlantFamilyName n -> "/plants/families/" + n.value();
             case PlantGenusName n -> "/plants/genera/" + n.value();
             case CultivarName n -> "/plants/cultivars/" + n.value();

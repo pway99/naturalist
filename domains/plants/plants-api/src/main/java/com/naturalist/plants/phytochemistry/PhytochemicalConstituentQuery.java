@@ -2,7 +2,7 @@ package com.naturalist.plants.phytochemistry;
 
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityQuery;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollections.PhytochemicalConstituentCollection;
 
 /**
@@ -11,7 +11,7 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollec
  *
  * <p>The two cross-entity rollups are the heart of the consumer surface:
  * <ul>
- *   <li>{@link PhytochemicalConstituentEntityQuery#forPlantName(PlantName)} —
+ *   <li>{@link PhytochemicalConstituentEntityQuery#forPlantName(PlantSpeciesName)} —
  *       what compounds does a plant produce?</li>
  *   <li>{@link PhytochemicalConstituentEntityQuery#forCompoundName(CompoundName)} —
  *       what plants produce a given compound? (cross-domain reverse lookup)</li>
@@ -24,7 +24,7 @@ public interface PhytochemicalConstituentQuery {
     interface PhytochemicalConstituentEntityQuery
             extends EntityQuery<PhytochemicalConstituentName, PhytochemicalConstituent, PhytochemicalConstituentCollection> {
 
-        PhytochemicalConstituentCollection forPlantName(PlantName plantName);
+        PhytochemicalConstituentCollection forPlantName(PlantSpeciesName plantName);
 
         PhytochemicalConstituentCollection forCompoundName(CompoundName compoundName);
     }

@@ -1,7 +1,7 @@
 package com.naturalist.plants;
 
 /**
- * The growth form and life cycle duration of a {@link Plant} at Oak Vista.
+ * The growth form and life cycle duration of a {@link PlantSpecies} at Oak Vista.
  * <p>
  * Life form governs management cadence — annuals are replanted or allowed to
  * self-seed each season; perennials require different pruning and division

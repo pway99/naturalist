@@ -119,5 +119,5 @@ Concepts that are *not* rungs (cultivar, clade, crop type) never become rungs; s
 | Domain | Uses |
 |---|---|
 | insects | All five `Linnaean*` contracts; `InsectRankName` over the five names |
-| plants | `LinnaeanGenus` on `PlantGenus`; `TaxonomicClassification` on `Plant`; `PlantRankName` over three names |
+| plants | `LinnaeanGenus` on `PlantGenus`; `TaxonomicClassification` on `PlantSpecies`; `PlantRankName` over three names |
 | clades kernel | None — clade placement is a separate axis, not a rank |

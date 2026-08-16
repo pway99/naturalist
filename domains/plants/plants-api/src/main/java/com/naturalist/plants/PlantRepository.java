@@ -5,7 +5,7 @@ import com.naturalist.data.EntityRepository;
 import java.util.List;
 
 class PlantRepository {
-    protected interface PlantEntityRepository extends EntityRepository<PlantName, Plant> {
+    protected interface PlantEntityRepository extends EntityRepository<PlantSpeciesName, PlantSpecies> {
     }
 
     protected interface PlantFamilyEntityRepository

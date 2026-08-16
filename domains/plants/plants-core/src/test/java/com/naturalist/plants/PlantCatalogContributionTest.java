@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Lives in {@code com.naturalist.plants} (not {@code .catalog}) so the test can
  * see the package-private {@link PlantEntityQueryImpl} and the package-private
- * {@link PlantEntityRepositoryMock} without exposing either to the wider test
+ * {@link PlantSpeciesEntityRepositoryMock} without exposing either to the wider test
  * classpath.
  */
 class PlantCatalogContributionTest {
@@ -31,7 +31,7 @@ class PlantCatalogContributionTest {
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     private final PlantQuery.PlantEntityQuery entityQuery =
-            new PlantEntityQueryImpl(new PlantEntityRepositoryMock(db));
+            new PlantEntityQueryImpl(new PlantSpeciesEntityRepositoryMock(db));
     private final PlantQuery.PlantFamilyEntityQuery familyQuery =
             new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
     private final PlantQuery.PlantGenusEntityQuery genusQuery =
@@ -117,7 +117,7 @@ class PlantCatalogContributionTest {
         //
         // Asserted on the raw EntityName, never cast: the hits are deliberately
         // of mixed name type. EntityName equality is class-qualified, so a
-        // PlantGenusName holding "trifolium" never equals a PlantName holding
+        // PlantGenusName holding "trifolium" never equals a PlantSpeciesName holding
         // the same string — contains() is exact without a cast.
         Catalog catalog = CatalogAssembly.from(contribution);
 
@@ -127,8 +127,8 @@ class PlantCatalogContributionTest {
                 .collect(Collectors.toSet());
 
         assertThat(trifoliumHits).contains(
-                PlantName.of("trifolium-incarnatum"),
-                PlantName.of("trifolium-repens"),
+                PlantSpeciesName.of("trifolium-incarnatum"),
+                PlantSpeciesName.of("trifolium-repens"),
                 PlantGenusName.of("trifolium"));
     }
 
@@ -140,13 +140,13 @@ class PlantCatalogContributionTest {
         // "italian" disambiguates from white clover.
         assertThat(targetsOf(catalog.search("Italian clover")))
                 .map(EntityRef::name)
-                .contains(PlantName.of("trifolium-incarnatum"));
+                .contains(PlantSpeciesName.of("trifolium-incarnatum"));
 
         // trifolium-repens carries "Dutch clover" / "Ladino clover" — both
         // unique to the white-clover entry.
         assertThat(targetsOf(catalog.search("Ladino clover")))
                 .map(EntityRef::name)
-                .contains(PlantName.of("trifolium-repens"));
+                .contains(PlantSpeciesName.of("trifolium-repens"));
     }
 
     @Test
@@ -191,7 +191,7 @@ class PlantCatalogContributionTest {
         // stream should include the slug and the genus, and skip the binomial
         // forms — no NullPointerException, no malformed token.
         SearchableEntity creepingThyme = contribution.searchableEntities()
-                .filter(e -> e.target().name().equals(PlantName.of("creeping-thyme")))
+                .filter(e -> e.target().name().equals(PlantSpeciesName.of("creeping-thyme")))
                 .findFirst()
                 .orElseThrow();
         List<String> tokens = creepingThyme.tokens().toList();

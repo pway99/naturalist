@@ -1,6 +1,6 @@
 package com.naturalist.garden;
 
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.zone.ZoneName;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
  * grouped by the bed they are in, which is how a {@code PlantedZone} is assembled. Ids match the
  * fixture JSON exactly.
  * <p>
- * Plant and cultivar constants name plants-domain entities. Garden records that they were planted;
+ * PlantSpecies and cultivar constants name plants-domain entities. Garden records that they were planted;
  * plants owns what they are.
  */
 public final class TestGardenIdentifiers {
@@ -25,12 +25,12 @@ public final class TestGardenIdentifiers {
         private Plants() {
         }
 
-        public static final PlantName tomato = PlantName.of("solanum-lycopersicum");
-        public static final PlantName basil = PlantName.of("ocimum-basilicum");
-        public static final PlantName eggplant = PlantName.of("solanum-melongena");
-        public static final PlantName radish = PlantName.of("raphanus-sativus");
+        public static final PlantSpeciesName tomato = PlantSpeciesName.of("solanum-lycopersicum");
+        public static final PlantSpeciesName basil = PlantSpeciesName.of("ocimum-basilicum");
+        public static final PlantSpeciesName eggplant = PlantSpeciesName.of("solanum-melongena");
+        public static final PlantSpeciesName radish = PlantSpeciesName.of("raphanus-sativus");
 
-        public static final PlantName notFound = PlantName.of("unobtainium-vulgaris");
+        public static final PlantSpeciesName notFound = PlantSpeciesName.of("unobtainium-vulgaris");
     }
 
     public static final class Cultivars {

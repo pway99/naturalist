@@ -50,10 +50,10 @@ indistinguishable from "species not filled in yet."
 
 *Source:* `insects-api/.../InsectFamily.java`, `InsectGenus.java`, `InsectSpecies.java`
 
-*Failure mode:* plants currently has this bug in the opposite direction — `Plant`
+*Failure mode:* plants currently has this bug in the opposite direction — `PlantSpecies`
 carries a `TaxonomicClassification` whose `genus` and `species` are individually
-nullable, so a `Plant` can be catalogued with neither, and five organisms ended up
-recorded twice (once as a species-less `Plant`, once as a `PlantGenus`) under
+nullable, so a `PlantSpecies` can be catalogued with neither, and five organisms ended up
+recorded twice (once as a species-less `PlantSpecies`, once as a `PlantGenus`) under
 colliding slugs.
 
 ### A2 — Typed upward FK, one link per rank
@@ -69,7 +69,7 @@ Each rank entity carries the typed name of its parent: `InsectSpecies.genusName(
 `kernels/taxonomy/.../LinnaeanGenus.java` for the rank-level contract these implement
 
 *Failure mode:* without it there is no `forGenusName` query, no ancestry walk, and no
-referential integrity — exactly plants' current state, where `PlantTestEntitySource`
+referential integrity — exactly plants' current state, where `PlantSpeciesTestEntitySource`
 declares no foreign keys at all.
 
 ### A3 — A sealed `<Domain>RankName` over the rank names
@@ -339,7 +339,7 @@ different thing from the A1 anti-pattern of parallel nullable fields on one axis
 and it drags in every cost D1 lists. Keeping them separate also lets a consumer state
 both at once — species *and* cultivar — which a union cannot express at all.
 
-*Status:* shipped 2026-08-15. `garden.Planting` took a `PlantName` until then, which
+*Status:* shipped 2026-08-15. `garden.Planting` took a `PlantSpeciesName` until then, which
 restricted every planting to species-level identification — the Linnaean axis could not
 express a genus-rank record at all.
 

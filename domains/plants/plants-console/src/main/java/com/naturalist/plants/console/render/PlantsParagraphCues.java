@@ -3,7 +3,7 @@ package com.naturalist.plants.console.render;
 import java.util.List;
 
 /**
- * Plant-domain paragraph cues fed to {@link com.naturalist.fieldnotes.render.DescriptionRenderer}.
+ * PlantSpecies-domain paragraph cues fed to {@link com.naturalist.fieldnotes.render.DescriptionRenderer}.
  * Phrases that mark the start of a new structural paragraph in botanical
  * prose at Oak Vista &mdash; bloom-period notes, management constraints,
  * symbiosis observations.

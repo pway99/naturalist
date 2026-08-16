@@ -284,7 +284,7 @@ public record InsectSpecies(
      * nesting substrate, or prey resources that sustain this insect. These are currently
      * modelled as descriptive strings. Once the plants catalog is established they will
      * become typed cross-domain references — the string values here should be treated as
-     * future {@code PlantName} slugs pending that alignment.
+     * future {@code PlantSpeciesName} slugs pending that alignment.
      * <p>
      * {@code relationshipToOtherBeneficials} describes how this species interacts with
      * other beneficial insects at Oak Vista — competitive overlap, complementary

@@ -17,5 +17,5 @@ interface PlantingRepository extends EntityRepository<PlantingId, Planting> {
 
     List<Planting> getBySubZoneName(SubZoneName subZoneName);
 
-    List<Planting> getBySubject(PlantRankName subject);
+    List<Planting> getByPlantName(PlantRankName plantName);
 }

@@ -1,7 +1,7 @@
-@import com.naturalist.plants.Plant
+@import com.naturalist.plants.PlantSpecies
 @import com.naturalist.data.Page
 
-@param Page<Plant> plantsPage
+@param Page<PlantSpecies> plantsPage
 
 @template.layout.page(title = "Plant Catalog", content = @`
     <h1>Plant Catalog</h1>

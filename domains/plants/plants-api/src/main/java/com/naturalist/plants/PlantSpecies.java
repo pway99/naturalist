@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * <p>
  * Operational management — non-negotiable constraints, schedules, observation
  * cadence — lives on {@link com.naturalist.plants.management.PlantProgram}
- * records keyed off this plant's {@link PlantName}. A plant may carry many
+ * records keyed off this plant's {@link PlantSpeciesName}. A plant may carry many
  * programs (e.g. pesticide-exclusion plus larval-monitoring); the botanical
  * record is intentionally free of operational fields.
  * <p>
@@ -46,15 +46,15 @@ import java.util.function.Consumer;
  * search index harvests these as additional surface forms; an empty set means
  * <em>no asserted common name yet</em>, not <em>none exist</em>.
  */
-public record Plant(
-        PlantName name,
+public record PlantSpecies(
+        PlantSpeciesName name,
         TaxonomicClassification taxonomy,
         Description description,
         Set<PlantRole> roles,
         PlantLifeForm lifeForm,
         Set<Bioregion> nativeBioregions,
         Set<CommonName> commonNames
-) implements NamedEntity<PlantName> {
+) implements NamedEntity<PlantSpeciesName> {
 
     /**
      * Convenience accessor for the genus epithet from {@link #taxonomy()}. Will

@@ -3,7 +3,7 @@ package com.naturalist.plants.cultivar;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * A named variety within a plant species, carrying the breeding status,
  * fruit morphology, and seed saving policy specific to this selection.
  * <p>
- * {@code Cultivar} operates below the species level: the {@code Plant} catalog
+ * {@code Cultivar} operates below the species level: the {@code PlantSpecies} catalog
  * entry for {@code "tomato"} (Solanum lycopersicum) is the species; Amish Paste,
  * Italian Pear (Nick's), Sungold Cherry, and San Marzano are cultivars within
  * that species. Each cultivar has a stable slug name used for cross-domain
@@ -29,12 +29,12 @@ import java.util.function.Consumer;
  * variety type and heritage significance.
  * <p>
  * The species cross-reference ({@code plantName}) is a soft FK into the
- * {@code Plant} catalog via {@link PlantName} — no compile-time dependency
+ * {@code PlantSpecies} catalog via {@link PlantSpeciesName} — no compile-time dependency
  * on any other domain module.
  * <p>
  * <b>Oak Vista 2026 cultivars:</b>
  * <ul>
- *   <li>{@code "amish-paste"} — UNKNOWN variety type (The Plant Barn, Chico).
+ *   <li>{@code "amish-paste"} — UNKNOWN variety type (The PlantSpecies Barn, Chico).
  *       12 plants, paste type. Evaluating as primary sauce variety for 90-quart
  *       annual target. Seed provenance unconfirmed.</li>
  *   <li>{@code "italian-pear-nicks"} — OPEN_POLLINATED heirloom, 50+ year
@@ -48,7 +48,7 @@ import java.util.function.Consumer;
  */
 public record Cultivar(
         CultivarName name,
-        PlantName plantName,
+        PlantSpeciesName plantName,
         String commonName,
         Description description,
         VarietyType varietyType,

@@ -6,7 +6,7 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.phytochemistry.role.PhytochemicalRole;
 import org.junit.jupiter.api.Test;
 
@@ -129,7 +129,7 @@ class PhytochemicalConstituentTest {
     void inductionPredicatesReadTheEnum() {
         PhytochemicalConstituent constitutive = new PhytochemicalConstituent(
                 PhytochemicalConstituentName.of("creeping-thyme-thymol"),
-                PlantName.of("creeping-thyme"),
+                PlantSpeciesName.of("creeping-thyme"),
                 CompoundName.of("thymol"),
                 description(),
                 PhytochemicalCategory.TERPENOID,
@@ -146,9 +146,9 @@ class PhytochemicalConstituentTest {
             Set<PhytochemicalRole> roles, Set<PlantTissue> tissues) {
         return new PhytochemicalConstituent(
                 PhytochemicalConstituentName.of(
-                        PlantName.of("aristolochia-californica"),
+                        PlantSpeciesName.of("aristolochia-californica"),
                         CompoundName.of("aristolochic-acid-i")),
-                PlantName.of("aristolochia-californica"),
+                PlantSpeciesName.of("aristolochia-californica"),
                 CompoundName.of("aristolochic-acid-i"),
                 description(),
                 PhytochemicalCategory.ALKALOID,

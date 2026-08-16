@@ -11,18 +11,18 @@ import java.util.List;
  */
 public interface PlantEntityCollections {
 
-    final class PlantCollection extends BehavioralCollection<Plant> {
+    final class PlantSpeciesCollection extends BehavioralCollection<PlantSpecies> {
 
-        PlantCollection(Collection<Plant> plants) {
+        PlantSpeciesCollection(Collection<PlantSpecies> plants) {
             super(plants);
         }
 
-        public static PlantCollection of(Collection<Plant> plants) {
-            return new PlantCollection(plants);
+        public static PlantSpeciesCollection of(Collection<PlantSpecies> plants) {
+            return new PlantSpeciesCollection(plants);
         }
 
-        public static PlantCollection empty() {
-            return new PlantCollection(List.of());
+        public static PlantSpeciesCollection empty() {
+            return new PlantSpeciesCollection(List.of());
         }
     }
 
