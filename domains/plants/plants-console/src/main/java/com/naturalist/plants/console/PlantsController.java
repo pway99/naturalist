@@ -78,7 +78,7 @@ public class PlantsController {
 
     @GetMapping("/species")
     String species(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<PlantSpecies> plantsPage = plantQuery.plants().findPage(PageRequest.console(Math.max(0, page)));
+        Page<PlantSpecies> plantsPage = plantQuery.species().findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("plantsPage", plantsPage);
         // Roles are a separate cross-rank record, so the badges need a lookup rather than
         // an accessor. Keyed by slug because the template holds a PlantSpecies, not a rank name.
@@ -91,7 +91,7 @@ public class PlantsController {
     @GetMapping("/{name}")
     String detail(@PathVariable String name, Model model) {
         var plantName = PlantSpeciesName.of(name);
-        var plant = plantQuery.plants().getByName(plantName);
+        var plant = plantQuery.species().getByName(plantName);
         if (plant.isEmpty()) {
             return "redirect:/plants";
         }
@@ -253,7 +253,7 @@ public class PlantsController {
         if (genus.isEmpty()) {
             return "redirect:/plants";
         }
-        var species = plantQuery.plants().forGenusName(genusName).stream()
+        var species = plantQuery.species().forGenusName(genusName).stream()
                 .sorted(Comparator.comparing((PlantSpecies s) -> s.name().value()))
                 .toList();
         model.addAttribute("genus", genus.get());

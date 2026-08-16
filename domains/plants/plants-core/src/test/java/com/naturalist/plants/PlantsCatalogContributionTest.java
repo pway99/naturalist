@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Lives in {@code com.naturalist.plants} (not {@code .catalog}) so the test can
- * see the package-private {@link PlantEntityQueryImpl} and the package-private
- * {@link PlantSpeciesEntityRepositoryMock} without exposing either to the wider test
+ * see the package-private {@link SpeciesQueryImpl} and the package-private
+ * {@link SpeciesRepositoryMock} without exposing either to the wider test
  * classpath.
  */
 class PlantsCatalogContributionTest {
@@ -30,14 +30,14 @@ class PlantsCatalogContributionTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    private final PlantQuery.PlantGenusEntityQuery genusQuery =
-            new PlantGenusEntityQueryImpl(new PlantGenusEntityRepositoryMock(db));
-    private final PlantQuery.PlantEntityQuery entityQuery =
-            new PlantEntityQueryImpl(new PlantSpeciesEntityRepositoryMock(db), genusQuery);
-    private final PlantQuery.PlantOrderEntityQuery orderQuery =
-            new PlantOrderEntityQueryImpl(new PlantOrderEntityRepositoryMock(db));
-    private final PlantQuery.PlantFamilyEntityQuery familyQuery =
-            new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
+    private final PlantQuery.GenusQuery genusQuery =
+            new GenusQueryImpl(new GenusRepositoryMock(db));
+    private final PlantQuery.SpeciesQuery entityQuery =
+            new SpeciesQueryImpl(new SpeciesRepositoryMock(db), genusQuery);
+    private final PlantQuery.OrderQuery orderQuery =
+            new OrderQueryImpl(new OrderRepositoryMock(db));
+    private final PlantQuery.FamilyQuery familyQuery =
+            new FamilyQueryImpl(new FamilyRepositoryMock(db));
     private final PlantsCatalogContribution contribution =
             new PlantsCatalogContribution(entityQuery, orderQuery, familyQuery, genusQuery);
 

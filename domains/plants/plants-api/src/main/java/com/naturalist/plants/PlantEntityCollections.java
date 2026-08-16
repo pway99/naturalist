@@ -11,78 +11,78 @@ import java.util.List;
  */
 public interface PlantEntityCollections {
 
-    final class PlantSpeciesCollection extends BehavioralCollection<PlantSpecies> {
+    final class SpeciesCollection extends BehavioralCollection<PlantSpecies> {
 
-        PlantSpeciesCollection(Collection<PlantSpecies> plants) {
+        SpeciesCollection(Collection<PlantSpecies> plants) {
             super(plants);
         }
 
-        public static PlantSpeciesCollection of(Collection<PlantSpecies> plants) {
-            return new PlantSpeciesCollection(plants);
+        public static SpeciesCollection of(Collection<PlantSpecies> plants) {
+            return new SpeciesCollection(plants);
         }
 
-        public static PlantSpeciesCollection empty() {
-            return new PlantSpeciesCollection(List.of());
+        public static SpeciesCollection empty() {
+            return new SpeciesCollection(List.of());
         }
     }
 
-    final class PlantOrderCollection extends BehavioralCollection<PlantOrder> {
+    final class OrderCollection extends BehavioralCollection<PlantOrder> {
 
-        PlantOrderCollection(Collection<PlantOrder> orders) {
+        OrderCollection(Collection<PlantOrder> orders) {
             super(orders);
         }
 
-        public static PlantOrderCollection of(Collection<PlantOrder> orders) {
-            return new PlantOrderCollection(orders);
+        public static OrderCollection of(Collection<PlantOrder> orders) {
+            return new OrderCollection(orders);
         }
 
-        public static PlantOrderCollection empty() {
-            return new PlantOrderCollection(List.of());
+        public static OrderCollection empty() {
+            return new OrderCollection(List.of());
         }
     }
 
-    final class PlantFamilyCollection extends BehavioralCollection<PlantFamily> {
+    final class FamilyCollection extends BehavioralCollection<PlantFamily> {
 
-        PlantFamilyCollection(Collection<PlantFamily> families) {
+        FamilyCollection(Collection<PlantFamily> families) {
             super(families);
         }
 
-        public static PlantFamilyCollection of(Collection<PlantFamily> families) {
-            return new PlantFamilyCollection(families);
+        public static FamilyCollection of(Collection<PlantFamily> families) {
+            return new FamilyCollection(families);
         }
 
-        public static PlantFamilyCollection empty() {
-            return new PlantFamilyCollection(List.of());
+        public static FamilyCollection empty() {
+            return new FamilyCollection(List.of());
         }
     }
 
-    final class PlantEcologicalRoleCollection extends BehavioralCollection<PlantEcologicalRole> {
+    final class EcologicalRoleCollection extends BehavioralCollection<PlantEcologicalRole> {
 
-        PlantEcologicalRoleCollection(Collection<PlantEcologicalRole> roles) {
+        EcologicalRoleCollection(Collection<PlantEcologicalRole> roles) {
             super(roles);
         }
 
-        public static PlantEcologicalRoleCollection of(Collection<PlantEcologicalRole> roles) {
-            return new PlantEcologicalRoleCollection(roles);
+        public static EcologicalRoleCollection of(Collection<PlantEcologicalRole> roles) {
+            return new EcologicalRoleCollection(roles);
         }
 
-        public static PlantEcologicalRoleCollection empty() {
-            return new PlantEcologicalRoleCollection(List.of());
+        public static EcologicalRoleCollection empty() {
+            return new EcologicalRoleCollection(List.of());
         }
     }
 
-    final class PlantGenusCollection extends BehavioralCollection<PlantGenus> {
+    final class GenusCollection extends BehavioralCollection<PlantGenus> {
 
-        PlantGenusCollection(Collection<PlantGenus> genera) {
+        GenusCollection(Collection<PlantGenus> genera) {
             super(genera);
         }
 
-        public static PlantGenusCollection of(Collection<PlantGenus> genera) {
-            return new PlantGenusCollection(genera);
+        public static GenusCollection of(Collection<PlantGenus> genera) {
+            return new GenusCollection(genera);
         }
 
-        public static PlantGenusCollection empty() {
-            return new PlantGenusCollection(List.of());
+        public static GenusCollection empty() {
+            return new GenusCollection(List.of());
         }
     }
 }

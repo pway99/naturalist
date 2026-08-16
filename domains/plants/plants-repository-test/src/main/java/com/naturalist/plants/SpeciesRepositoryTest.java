@@ -19,16 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link PlantRepository.PlantEntityRepository}.
+ * Behavioral contract for {@link PlantRepository.SpeciesRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies PlantSpecies-specific identity constants and entity construction.
  */
-interface PlantSpeciesEntityRepositoryTest
+interface SpeciesRepositoryTest
         extends EntityRepositoryTest<PlantSpeciesName, PlantSpecies> {
 
     @Override
-    PlantRepository.PlantEntityRepository repository();
+    PlantRepository.SpeciesRepository repository();
 
     @Override
     default TestEntitySource<PlantSpeciesName, PlantSpecies> source() {

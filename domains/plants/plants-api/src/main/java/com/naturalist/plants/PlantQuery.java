@@ -3,9 +3,9 @@ package com.naturalist.plants;
 import com.naturalist.data.EntityQuery;
 
 import java.util.Optional;
-import com.naturalist.plants.PlantEntityCollections.PlantSpeciesCollection;
-import com.naturalist.plants.PlantEntityCollections.PlantFamilyCollection;
-import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
+import com.naturalist.plants.PlantEntityCollections.SpeciesCollection;
+import com.naturalist.plants.PlantEntityCollections.FamilyCollection;
+import com.naturalist.plants.PlantEntityCollections.GenusCollection;
 
 /**
  * Namespace query for the plants top-level sub-context — the single
@@ -13,15 +13,15 @@ import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
  *
  * <p>Nested queries scope to a single entity each:
  * <ul>
- *   <li>{@link PlantEntityQuery} — {@link PlantSpecies} entities.</li>
- *   <li>{@link PlantFamilyEntityQuery} — {@link PlantFamily} entities.</li>
- *   <li>{@link PlantGenusEntityQuery} — {@link PlantGenus} entities.</li>
+ *   <li>{@link SpeciesQuery} — {@link PlantSpecies} entities.</li>
+ *   <li>{@link FamilyQuery} — {@link PlantFamily} entities.</li>
+ *   <li>{@link GenusQuery} — {@link PlantGenus} entities.</li>
  * </ul>
  *
  * <p><b>Usage:</b>
  * <pre>{@code
- * plantQuery.plants().getByName(plantName);
- * plantQuery.plants().findPage(PageRequest.console(0));
+ * plantQuery.species().getByName(plantName);
+ * plantQuery.species().findPage(PageRequest.console(0));
  * plantQuery.families().getByName(familyName);
  * plantQuery.genera().getByName(genusName);
  * plantQuery.genera().forFamilyName(familyName);   // genera under a family
@@ -29,58 +29,58 @@ import com.naturalist.plants.PlantEntityCollections.PlantGenusCollection;
  */
 public interface PlantQuery {
 
-    PlantEntityQuery plants();
+    SpeciesQuery species();
 
-    PlantOrderEntityQuery orders();
+    OrderQuery orders();
 
-    PlantFamilyEntityQuery families();
+    FamilyQuery families();
 
-    PlantGenusEntityQuery genera();
+    GenusQuery genera();
 
-    interface PlantEntityQuery extends EntityQuery<PlantSpeciesName, PlantSpecies, PlantSpeciesCollection> {
+    interface SpeciesQuery extends EntityQuery<PlantSpeciesName, PlantSpecies, SpeciesCollection> {
 
         /**
          * Species under a genus, joined on the species' typed
          * {@link PlantSpecies#genusName()} upward FK — the genus &rarr; species rollup
          * the genus detail page renders.
          */
-        PlantSpeciesCollection forGenusName(PlantGenusName genusName);
+        SpeciesCollection forGenusName(PlantGenusName genusName);
 
         /**
          * Species under a family, composed through the genus query: every genus in the
          * family, then every species in each genus. Mirrors {@code InsectQuery.SpeciesQuery}.
          */
-        PlantSpeciesCollection forFamilyName(PlantFamilyName familyName);
+        SpeciesCollection forFamilyName(PlantFamilyName familyName);
     }
 
-    interface PlantOrderEntityQuery
+    interface OrderQuery
             extends EntityQuery<PlantOrderName, PlantOrder,
-                    PlantEntityCollections.PlantOrderCollection> {
+                    PlantEntityCollections.OrderCollection> {
     }
 
-    interface PlantFamilyEntityQuery
-            extends EntityQuery<PlantFamilyName, PlantFamily, PlantFamilyCollection> {
+    interface FamilyQuery
+            extends EntityQuery<PlantFamilyName, PlantFamily, FamilyCollection> {
 
         /** Families under an order, joined on the family's typed upward FK. */
-        PlantFamilyCollection forOrderName(PlantOrderName orderName);
+        FamilyCollection forOrderName(PlantOrderName orderName);
     }
 
-    PlantEcologicalRoleEntityQuery ecologicalRoles();
+    EcologicalRoleQuery ecologicalRoles();
 
-    interface PlantGenusEntityQuery
-            extends EntityQuery<PlantGenusName, PlantGenus, PlantGenusCollection> {
+    interface GenusQuery
+            extends EntityQuery<PlantGenusName, PlantGenus, GenusCollection> {
 
         /**
          * Genera under a family, joined on the genus's typed
          * {@link PlantGenus#familyName()} upward FK — the natural
          * family &rarr; genera rollup the family detail page renders.
          */
-        PlantGenusCollection forFamilyName(PlantFamilyName familyName);
+        GenusCollection forFamilyName(PlantFamilyName familyName);
     }
 
-    interface PlantEcologicalRoleEntityQuery
+    interface EcologicalRoleQuery
             extends EntityQuery<PlantEcologicalRoleId, PlantEcologicalRole,
-                    PlantEntityCollections.PlantEcologicalRoleCollection> {
+                    PlantEntityCollections.EcologicalRoleCollection> {
 
         /**
          * The ecological role recorded for a taxon, at whatever rank it was recorded.

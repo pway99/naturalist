@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Behavioral contract for {@link PlantRepository.PlantOrderEntityRepository}.
+ * Behavioral contract for {@link PlantRepository.OrderRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies PlantOrder-specific identity constants and entity construction.
  */
-interface PlantOrderEntityRepositoryTest
+interface OrderRepositoryTest
         extends EntityRepositoryTest<PlantOrderName, PlantOrder> {
 
     @Override
-    PlantRepository.PlantOrderEntityRepository repository();
+    PlantRepository.OrderRepository repository();
 
     @Override
     default TestEntitySource<PlantOrderName, PlantOrder> source() {

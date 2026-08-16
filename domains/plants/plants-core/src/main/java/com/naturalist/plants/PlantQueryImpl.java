@@ -4,17 +4,17 @@ import com.naturalist.observability.Observer;
 
 class PlantQueryImpl implements PlantQuery {
 
-    private final PlantEntityQuery plantEntityQuery;
-    private final PlantOrderEntityQuery plantOrderEntityQuery;
-    private final PlantFamilyEntityQuery plantFamilyEntityQuery;
-    private final PlantGenusEntityQuery plantGenusEntityQuery;
-    private final PlantEcologicalRoleEntityQuery plantEcologicalRoleEntityQuery;
+    private final SpeciesQuery plantEntityQuery;
+    private final OrderQuery plantOrderEntityQuery;
+    private final FamilyQuery plantFamilyEntityQuery;
+    private final GenusQuery plantGenusEntityQuery;
+    private final EcologicalRoleQuery plantEcologicalRoleEntityQuery;
 
-    PlantQueryImpl(PlantEntityQuery plantEntityQuery,
-                   PlantOrderEntityQuery plantOrderEntityQuery,
-                   PlantFamilyEntityQuery plantFamilyEntityQuery,
-                   PlantGenusEntityQuery plantGenusEntityQuery,
-                   PlantEcologicalRoleEntityQuery plantEcologicalRoleEntityQuery) {
+    PlantQueryImpl(SpeciesQuery plantEntityQuery,
+                   OrderQuery plantOrderEntityQuery,
+                   FamilyQuery plantFamilyEntityQuery,
+                   GenusQuery plantGenusEntityQuery,
+                   EcologicalRoleQuery plantEcologicalRoleEntityQuery) {
         Observer.forClass(PlantQueryImpl.class).arguments("constructor", i -> i
                         .notNull(plantEntityQuery, "plantEntityQuery")
                         .notNull(plantOrderEntityQuery, "plantOrderEntityQuery")
@@ -30,27 +30,27 @@ class PlantQueryImpl implements PlantQuery {
     }
 
     @Override
-    public PlantEntityQuery plants() {
+    public SpeciesQuery species() {
         return plantEntityQuery;
     }
 
     @Override
-    public PlantOrderEntityQuery orders() {
+    public OrderQuery orders() {
         return plantOrderEntityQuery;
     }
 
     @Override
-    public PlantFamilyEntityQuery families() {
+    public FamilyQuery families() {
         return plantFamilyEntityQuery;
     }
 
     @Override
-    public PlantGenusEntityQuery genera() {
+    public GenusQuery genera() {
         return plantGenusEntityQuery;
     }
 
     @Override
-    public PlantEcologicalRoleEntityQuery ecologicalRoles() {
+    public EcologicalRoleQuery ecologicalRoles() {
         return plantEcologicalRoleEntityQuery;
     }
 }

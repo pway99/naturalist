@@ -2,29 +2,29 @@ package com.naturalist.plants;
 
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.plants.PlantEntityCollections.PlantEcologicalRoleCollection;
+import com.naturalist.plants.PlantEntityCollections.EcologicalRoleCollection;
 
 import java.util.Optional;
 import java.util.Set;
 
 @DomainService
-class PlantEcologicalRoleEntityQueryImpl
+class EcologicalRoleQueryImpl
         extends AbstractEntityQuery<
         PlantEcologicalRoleId,
         PlantEcologicalRole,
-        PlantEcologicalRoleCollection,
-        PlantRepository.PlantEcologicalRoleEntityRepository>
-        implements PlantQuery.PlantEcologicalRoleEntityQuery {
+        EcologicalRoleCollection,
+        PlantRepository.EcologicalRoleRepository>
+        implements PlantQuery.EcologicalRoleQuery {
 
-    PlantEcologicalRoleEntityQueryImpl(PlantRepository.PlantEcologicalRoleEntityRepository repository) {
+    EcologicalRoleQueryImpl(PlantRepository.EcologicalRoleRepository repository) {
         super(repository);
     }
 
     @Override
-    public PlantEcologicalRoleCollection findByNameSet(Set<PlantEcologicalRoleId> names) {
+    public EcologicalRoleCollection findByNameSet(Set<PlantEcologicalRoleId> names) {
         observer().arguments("findByNameSet", i -> i.identifierSet(names, "names"))
                 .throwWhenInvalid();
-        return PlantEcologicalRoleCollection.of(repository().getByEntityNameSet(names));
+        return EcologicalRoleCollection.of(repository().getByEntityNameSet(names));
     }
 
     @Override

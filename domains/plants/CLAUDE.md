@@ -161,9 +161,8 @@ Every sub-context exposes a repository namespace class and a query namespace
 interface, following the convention in `domains/CLAUDE.md`. Seven repositories
 across five sub-contexts:
 
-- `PlantRepository` (top-level package-private class) → `PlantEntityRepository`,
-  `PlantOrderEntityRepository`, `PlantFamilyEntityRepository`,
-  `PlantGenusEntityRepository`, `PlantEcologicalRoleEntityRepository`
+- `PlantRepository` (top-level package-private class) → `SpeciesRepository`,
+  `OrderRepository`, `FamilyRepository`, `GenusRepository`, `EcologicalRoleRepository`
 - `CultivarRepository` (cultivar) → `CultivarEntityRepository`
 - `SeedLineageRepository` (heritage) → `SeedLineageEntityRepository`
 - `PlantProgramRepository` (management) → `PlantProgramEntityRepository`
@@ -172,7 +171,7 @@ across five sub-contexts:
 
 Read side, all public in api, adapters in `plants-core`:
 
-- `PlantQuery` → `plants()` (+ `forGenusName`, `forFamilyName`), `orders()`,
+- `PlantQuery` → `species()` (+ `forGenusName`, `forFamilyName`), `orders()`,
   `families()` (+ `forOrderName`), `genera()` (+ `forFamilyName`),
   `ecologicalRoles()` (+ `forPlantName`)
 - `CultivarQuery` → `cultivars()` (+ `forPlantName`)
@@ -181,17 +180,17 @@ Read side, all public in api, adapters in `plants-core`:
 - `PhytochemicalConstituentQuery` → `constituents()`
   (+ `forPlantName`, `forCompoundName` — the cross-domain reverse lookup)
 
-Collections: `PlantEntityCollections` (`PlantSpeciesCollection`, `PlantOrderCollection`,
-`PlantFamilyCollection`, `PlantGenusCollection`, `PlantEcologicalRoleCollection`)
-plus one `*EntityCollections`
-namespace per sub-context. No aggregate factories exist yet — add them
+Collections: `PlantEntityCollections` (`SpeciesCollection`, `OrderCollection`,
+`FamilyCollection`, `GenusCollection`, `EcologicalRoleCollection`) plus one
+`*EntityCollections` namespace per sub-context. No aggregate factories exist yet — add them
 package-private and concrete in `plants-core` when a read model materializes.
 
-**Two known deviations from `domains/CLAUDE.md`**, both tracked in the
-consistency plan rather than fixed piecemeal: the nested types carry the domain
-prefix and an `Entity` infix (`PlantFamilyEntityQuery`) where the convention
-drops both (`FamilyQuery`), and the four single-entity sub-contexts wrap their
-lone type in a namespace where the N=1 collapse rule says to skip it.
+The top-level plants namespace follows ADR-020: nested types drop the domain prefix
+and `Entity` infix (`FamilyQuery`, `GenusRepository`, `SpeciesCollection`), and the
+species accessor is `species()`, matching insects (M4, 2026-08-16). **One known
+deviation remains** (M5): the four single-entity sub-contexts (cultivar, heritage,
+management, phytochemistry) still wrap their lone type in a namespace where the N=1
+collapse rule says to skip it.
 
 ## Domain-specific invariants
 

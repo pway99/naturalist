@@ -7,12 +7,12 @@ import com.naturalist.infrastructure.DomainService;
 import java.util.Optional;
 
 @DomainService
-class PlantEcologicalRoleEntityRepositoryMock
+class EcologicalRoleRepositoryMock
         extends AbstractTestEntityRepository<PlantEcologicalRoleId, PlantEcologicalRole,
         PlantEcologicalRoleTestEntitySource>
-        implements PlantRepository.PlantEcologicalRoleEntityRepository {
+        implements PlantRepository.EcologicalRoleRepository {
 
-    PlantEcologicalRoleEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    EcologicalRoleRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 

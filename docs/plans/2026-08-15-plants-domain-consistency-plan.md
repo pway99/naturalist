@@ -485,7 +485,7 @@ page. `lifeForm` stayed on `PlantSpecies`, not `PlantGenus` — a genus spans li
 
 ---
 
-## M4 — ADR-020 namespace naming
+## M4 — ADR-020 namespace naming  ✅ DONE 2026-08-16
 
 **Depends on:** nothing. Mechanical rename, safe to do first or last.
 
@@ -501,17 +501,21 @@ The convention drops the domain prefix and adds no infix: `InsectSpecies` → `S
 | `PlantEntityQueryImpl`                          | `PlantsQueryImpl`¹               |
 | `PlantFamilyEntityQueryImpl`                    | `FamilyQueryImpl`                |
 
-¹ `Plant` is both the domain noun and an entity subject, so the collapse is degenerate —
+¹ **Resolved by the Plant→PlantSpecies rename:** the species subject is now `Species`, so
+`PlantQuery.SpeciesQuery` / `SpeciesQueryImpl` / `species()` are clean and match insects — no
+degeneracy, no exception needed. (Original note below, kept for context.)
+
+¹ `Plant` was both the domain noun and an entity subject, so the collapse was degenerate —
 `PlantQuery.PlantQuery` does not compile. Insects never hit this because no entity is
 named `Insect`. Pick a convention and record it in `domains/CLAUDE.md`, since the next
 domain with a same-named root entity will hit it too. Suggested: keep the plural accessor
 `plants()` and name the nested type `PlantEntityQuery` as an explicit, documented
 exception rather than an accident.
 
-- [ ] Rename nested query/repository types and their `*Impl` adapters.
-- [ ] Update `plants-test-context`, `plants-core` tests, `PlantsCatalogContribution`,
+- [x] Rename nested query/repository types and their `*Impl` adapters.
+- [x] Update `plants-test-context`, `plants-core` tests, `PlantsCatalogContribution`,
       `PlantsCompoundReferences`, `PlantsController`.
-- [ ] Record the root-entity exception in `domains/CLAUDE.md` §API Surface.
+- [x] Record the root-entity exception in `domains/CLAUDE.md` §API Surface.
 
 ---
 

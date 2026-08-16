@@ -41,7 +41,7 @@ import java.util.stream.Stream;
  *
  * <h2>Live derivation</h2>
  * {@link #searchableEntities()} returns a fresh stream on every call, reading
- * from the underlying {@link PlantQuery.PlantEntityQuery}. Plants added to the
+ * from the underlying {@link PlantQuery.SpeciesQuery}. Plants added to the
  * catalog after assembly are reflected automatically when the kernel iterates
  * the stream.
  */
@@ -57,15 +57,15 @@ public class PlantsCatalogContribution implements CatalogContribution {
      */
     private static final int ASSEMBLY_PAGE_SIZE = 1000;
 
-    private final PlantQuery.PlantEntityQuery plants;
-    private final PlantQuery.PlantOrderEntityQuery orders;
-    private final PlantQuery.PlantFamilyEntityQuery families;
-    private final PlantQuery.PlantGenusEntityQuery genera;
+    private final PlantQuery.SpeciesQuery plants;
+    private final PlantQuery.OrderQuery orders;
+    private final PlantQuery.FamilyQuery families;
+    private final PlantQuery.GenusQuery genera;
 
-    public PlantsCatalogContribution(PlantQuery.PlantEntityQuery plants,
-                                    PlantQuery.PlantOrderEntityQuery orders,
-                                    PlantQuery.PlantFamilyEntityQuery families,
-                                    PlantQuery.PlantGenusEntityQuery genera) {
+    public PlantsCatalogContribution(PlantQuery.SpeciesQuery plants,
+                                    PlantQuery.OrderQuery orders,
+                                    PlantQuery.FamilyQuery families,
+                                    PlantQuery.GenusQuery genera) {
         Observer.forClass(PlantsCatalogContribution.class)
                 .arguments("constructor", i -> i
                         .notNull(plants, "plants")

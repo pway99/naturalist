@@ -7,11 +7,11 @@ import com.naturalist.infrastructure.DomainService;
 import java.util.List;
 
 @DomainService
-class PlantSpeciesEntityRepositoryMock
+class SpeciesRepositoryMock
         extends AbstractTestEntityRepository<PlantSpeciesName, PlantSpecies, PlantSpeciesTestEntitySource>
-        implements PlantRepository.PlantEntityRepository {
+        implements PlantRepository.SpeciesRepository {
 
-    PlantSpeciesEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    SpeciesRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 
