@@ -41,7 +41,8 @@
                     ${p.genusName().value()} &middot; <em>${p.epithet().value()}</em>
                 </p>
                 <p class="description-preview">
-                    <strong>Life form:</strong> ${p.lifeForm().name()}<br>
+                    <strong>Growth habit:</strong> ${p.growthHabit().name()}<br>
+                    <strong>Life cycle:</strong> ${p.lifeCycle().name()}<br>
                     <strong>Roles:</strong>
                     @if(role == null)
                         <span class="not-reported">not characterised</span>

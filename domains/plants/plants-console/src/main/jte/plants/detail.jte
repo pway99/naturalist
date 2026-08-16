@@ -36,7 +36,8 @@
         <h2>Identity</h2>
         <ul>
             <li><strong>Slug:</strong> <code>${plant.name().value()}</code></li>
-            <li><strong>Life form:</strong> ${plant.lifeForm().name()}</li>
+            <li><strong>Growth habit:</strong> ${plant.growthHabit().name()}</li>
+            <li><strong>Life cycle:</strong> ${plant.lifeCycle().name()}</li>
             @if(!plant.nativeBioregions().isEmpty())
                 <li>
                     <strong>Native bioregions:</strong>

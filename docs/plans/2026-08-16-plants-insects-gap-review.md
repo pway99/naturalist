@@ -66,7 +66,7 @@ differently, or deliberately defers).
    Record the root-entity exception (`Plant` is both domain noun and subject) in
    `domains/CLAUDE.md`.
 3. ~~**M5 — N=1 collapse**~~ ✅ DONE 2026-08-16 — the four single-entity sub-contexts collapsed; `*TestContext` factories kept (package-private visibility).
-4. **M6 — split `PlantLifeForm`** into `GrowthHabit` (USDA growth-habit vocab) + `LifeCycle`; use categories stay off both. Decision recorded 2026-08-16; do with M4/M5.
+4. ~~**M6 — split `PlantLifeForm`**~~ ✅ DONE 2026-08-16 — `GrowthHabit` (USDA) + `LifeCycle`; parsley now `BIENNIAL`. The M4/M5/M6 cleanup batch is complete.
 5. **Cosmetic:** `TestPlantsIdentifiers` uses plural scope names (`PlantFamilies`,
    `PlantGenera`) where insects uses singular; fold into M4.
 

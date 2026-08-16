@@ -70,7 +70,7 @@ Three conditions on that, or it stops being a strategy and becomes a mess:
 plants-api/com/naturalist/plants/
   PlantOrder, PlantFamily, PlantGenus, PlantSpecies     — botanical rank records
   PlantEcologicalRole                                   — roles held at any rank
-  PlantLifeForm, PlantRole                              — vocabularies
+  GrowthHabit, LifeCycle, PlantRole                     — vocabularies
   PlantRepository, PlantQuery, PlantEntityCollections   — namespaces
   PlantsDomain                                          — DomainId subtype
   cultivar/        Cultivar, VarietyType, FruitType, SeedSavingPolicy
@@ -208,13 +208,15 @@ set, blank provenance, nullable-by-design fields).
   `commonNames` required. The redundant `family` epithet is carried locally so a
   catalog-assembly chain check does not have to resolve the parent record. The
   order is deliberately *not* carried — two rungs up is a copy, not a chain check.
-- `PlantSpecies` — `name`, `genusName`, `epithet`, `description`, `lifeForm`,
-  `nativeBioregions`, `commonNames` required (non-null). An empty
+- `PlantSpecies` — `name`, `genusName`, `epithet`, `description`, `growthHabit`,
+  `lifeCycle`, `nativeBioregions`, `commonNames` required (non-null). An empty
   `nativeBioregions` set means *no asserted native range*, not *unknown*. A
   species record is the bottom rung and nothing else: it holds no roles (those
-  live on `PlantEcologicalRole`) and no taxonomy string. `lifeForm` stays here
-  rather than moving up because a genus spans life forms — *Salvia* has both
-  annuals and perennials.
+  live on `PlantEcologicalRole`) and no taxonomy string. `growthHabit`
+  (structure: `GrowthHabit`, USDA vocabulary) and `lifeCycle` (duration:
+  `LifeCycle`) are two orthogonal axes — a vine may be annual or perennial — split
+  from the former single `PlantLifeForm` in M6. Both stay on the species rather
+  than moving up because a genus spans them.
 - `PlantEcologicalRole` — `id`, `plantName`, `roles` required; `roles` non-empty.
   `plantName` is a `PlantRankName`, so a role can be asserted of a genus when the
   evidence stops there.
@@ -393,7 +395,9 @@ Each entry must include:
 - `"epithet": "<species>"` — `TaxonomicSpecies`, the species epithet alone
 - `"description": { "preschool", "elementary", "secondary", "university" }` — full
   Durrell four-level `Description`
-- `"lifeForm": "<enum>"` — `PlantLifeForm` constant
+- `"growthHabit": "<enum>"` — `GrowthHabit` constant (TREE, SHRUB, SUBSHRUB,
+  FORB_HERB, GRAMINOID, VINE)
+- `"lifeCycle": "<enum>"` — `LifeCycle` constant (ANNUAL, BIENNIAL, PERENNIAL)
 - `"nativeBioregions": [ "<bioregion-slug>", ... ]` — `Set<Bioregion>` by slug
   (empty array `[]` means no asserted native range, never null)
 

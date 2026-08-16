@@ -22,9 +22,11 @@ import java.util.function.Consumer;
  * <p>
  * Ecological and horticultural function — what the plant <em>does</em> at Oak Vista —
  * lives on {@link PlantEcologicalRole}, keyed by {@link PlantRankName} so a genus-rank
- * taxon can carry it too. {@link PlantLifeForm} stays here: it is a morphological trait
- * of the taxon, not a site-specific assignment, and it governs management cadence —
- * annual replanting vs. perennial maintenance vs. tree pruning.
+ * taxon can carry it too. {@link GrowthHabit} (structure) and {@link LifeCycle}
+ * (duration) stay here: they are morphological traits of the taxon, not site-specific
+ * assignments, and together they govern management cadence — annual replanting vs.
+ * perennial maintenance vs. tree pruning. They are two orthogonal axes (a vine may be
+ * annual or perennial), which is why the old single {@code PlantLifeForm} was split.
  * <p>
  * {@code nativeBioregions} records the {@link Bioregion}s where this species
  * is native. The set is informational at the species level and informs management
@@ -51,7 +53,8 @@ public record PlantSpecies(
         PlantGenusName genusName,
         TaxonomicSpecies epithet,
         Description description,
-        PlantLifeForm lifeForm,
+        GrowthHabit growthHabit,
+        LifeCycle lifeCycle,
         Set<Bioregion> nativeBioregions,
         Set<CommonName> commonNames
 ) implements NamedEntity<PlantSpeciesName> {
@@ -73,7 +76,8 @@ public record PlantSpecies(
                 .entityName(genusName, "genusName")
                 .namedValue(epithet, "epithet")
                 .valueObject(description, "description")
-                .notNull(lifeForm, "lifeForm")
+                .notNull(growthHabit, "growthHabit")
+                .notNull(lifeCycle, "lifeCycle")
                 .notNull(nativeBioregions, "nativeBioregions")
                 .notNull(commonNames, "commonNames");
     }

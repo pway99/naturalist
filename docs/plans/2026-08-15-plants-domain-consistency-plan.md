@@ -549,7 +549,7 @@ read the rule backwards. That line is already corrected on the `plants-consisten
 
 ---
 
-## M6 — Split `PlantLifeForm` into `GrowthHabit` + `LifeCycle`
+## M6 — Split `PlantLifeForm` into `GrowthHabit` + `LifeCycle`  ✅ DONE 2026-08-16
 
 **Decision recorded 2026-08-16** (briefing → *Open design questions*). `PlantLifeForm`
 (`ANNUAL, PERENNIAL, VINE, SHRUB, TREE, GRASS`) conflates two orthogonal botanical axes —
@@ -568,18 +568,18 @@ Raunkiær life-forms considered and set aside as too abstract for this catalog.
 **Do with M4/M5** — same files, same reviewer, and it is another arity change to
 `PlantSpecies` so batching avoids a second ripple across the same consumers.
 
-- [ ] Add `GrowthHabit` and `LifeCycle` enums in `plants-api` (Durrell-style javadoc per
+- [x] Add `GrowthHabit` and `LifeCycle` enums in `plants-api` (Durrell-style javadoc per
       value, as `PlantLifeForm` has today).
-- [ ] Replace `PlantSpecies.lifeForm` (`PlantLifeForm`) with `growthHabit` (`GrowthHabit`)
+- [x] Replace `PlantSpecies.lifeForm` (`PlantLifeForm`) with `growthHabit` (`GrowthHabit`)
       + `lifeCycle` (`LifeCycle`); update `invariants()` (both `notNull`).
-- [ ] Migrate `plant-species.json`: every row gains `growthHabit` + `lifeCycle`. The four
+- [x] Migrate `plant-species.json`: every row gains `growthHabit` + `lifeCycle`. The four
       woody/vine/grass rows carry their habit and gain an explicit duration; the
       annual/perennial rows become `FORB_HERB` + their duration (unless a vine/etc.).
-- [ ] Delete `PlantLifeForm`.
-- [ ] Consumer ripple (grep confirmed): `PlantSpecies.java`, `PlantSpeciesTest`,
+- [x] Delete `PlantLifeForm`.
+- [x] Consumer ripple (grep confirmed): `PlantSpecies.java`, `PlantSpeciesTest`,
       `PlantSpeciesEntityRepositoryTest` (newEntity/ghostEntity/modifiedEntity),
       `plants/detail.jte` and `plants/list.jte` (the "Life form" line becomes two).
-- [ ] Update `domains/plants/CLAUDE.md` (identity/invariants + the `plant-species.json`
+- [x] Update `domains/plants/CLAUDE.md` (identity/invariants + the `plant-species.json`
       field docs) to describe the two axes.
 
 ---
@@ -640,3 +640,5 @@ Not in this plan but surfaced since: the console-parity follow-on (lands on `/pl
 taxonomic breadcrumb) shipped 2026-08-16; the larger insects-parity gaps (rank-polymorphic
 read model, write side, collection/observation, images, clade, identification) are catalogued
 in [`2026-08-16-plants-insects-gap-review.md`](2026-08-16-plants-insects-gap-review.md).
+
+**Landed.** Parsley (`petroselinum-crispum`) moved to `BIENNIAL` — botanically accurate and the value the old flat enum could not express, which is exactly what the split buys.

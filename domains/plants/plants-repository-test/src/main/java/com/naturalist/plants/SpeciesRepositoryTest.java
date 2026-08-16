@@ -56,7 +56,8 @@ interface SpeciesRepositoryTest
                 TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
-                PlantLifeForm.ANNUAL,
+                GrowthHabit.FORB_HERB,
+                LifeCycle.ANNUAL,
                 Set.of(),
                 Set.of()
         );
@@ -70,7 +71,8 @@ interface SpeciesRepositoryTest
                 TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
-                PlantLifeForm.ANNUAL,
+                GrowthHabit.FORB_HERB,
+                LifeCycle.ANNUAL,
                 Set.of(),
                 Set.of()
         );
@@ -87,7 +89,8 @@ interface SpeciesRepositoryTest
                 TaxonomicSpecies.of("species" + RandomValue.string()),
                 new Description(RandomValue.string(), RandomValue.string(),
                         RandomValue.string(), RandomValue.string()),
-                PlantLifeForm.PERENNIAL,
+                GrowthHabit.FORB_HERB,
+                LifeCycle.PERENNIAL,
                 flippedBioregions,
                 Set.of(CommonName.of("alt-" + RandomValue.string()))
         );

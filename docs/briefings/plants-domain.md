@@ -201,8 +201,8 @@ All cross-domain references are by `EntityName` slug via the shared
   INSECT_LARVAL_HOST at once); agronomic use (fruit/vegetable/cover crop) belongs to a
   future `CropType` axis (anticipated, not yet built). The academic Raunkiær life-form
   system (phanerophyte/therophyte/…) was considered and set aside as too abstract for a
-  garden-management and young-naturalist catalog. **Implementation is folded into the
-  M4/M5 cleanup — see the consistency plan (M6).**
+  garden-management and young-naturalist catalog. **Shipped 2026-08-16 (M6):** parsley
+  moved to `BIENNIAL`, the value the flat enum could not express.
 
 - **Aggregate factory placement.** No `PlantAggregate` yet. If one materializes
   (Plant + Cultivars + Programs + Constituents assembled by name), the

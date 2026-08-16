@@ -21,7 +21,7 @@ class PlantSpeciesTest {
     @Test
     void fullyPopulatedPlantIsValid() {
         MethodObserver mo = observer.forMethod("fullyPopulatedPlantIsValid");
-        PlantSpecies plant = plant(PlantLifeForm.VINE);
+        PlantSpecies plant = plant(GrowthHabit.VINE, LifeCycle.PERENNIAL);
 
         InvariantObservation result = mo.namedEntity(plant, "plant");
 
@@ -39,7 +39,8 @@ class PlantSpeciesTest {
                 PlantGenusName.of("borago"),
                 TaxonomicSpecies.of("officinalis"),
                 description(),
-                PlantLifeForm.ANNUAL,
+                GrowthHabit.FORB_HERB,
+                LifeCycle.ANNUAL,
                 Set.of(),
                 Set.of());
 
@@ -51,7 +52,7 @@ class PlantSpeciesTest {
     @Test
     void allNullComponentsReportEveryViolation() {
         MethodObserver mo = observer.forMethod("allNullComponentsReportEveryViolation");
-        PlantSpecies plant = new PlantSpecies(null, null, null, null, null, null, null);
+        PlantSpecies plant = new PlantSpecies(null, null, null, null, null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(plant, "plant");
 
@@ -61,7 +62,8 @@ class PlantSpeciesTest {
                         ".plant.genusName",
                         ".plant.epithet",
                         ".plant.description",
-                        ".plant.lifeForm",
+                        ".plant.growthHabit",
+                        ".plant.lifeCycle",
                         ".plant.nativeBioregions",
                         ".plant.commonNames");
     }
@@ -69,18 +71,19 @@ class PlantSpeciesTest {
 
     @Test
     void isNativeToReadsTheBioregionSet() {
-        PlantSpecies plant = plant(PlantLifeForm.VINE);
+        PlantSpecies plant = plant(GrowthHabit.VINE, LifeCycle.PERENNIAL);
 
         assertThat(plant.isNativeTo(new SacramentoValley())).isTrue();
     }
 
-    private static PlantSpecies plant(PlantLifeForm lifeForm) {
+    private static PlantSpecies plant(GrowthHabit growthHabit, LifeCycle lifeCycle) {
         return new PlantSpecies(
                 PlantSpeciesName.of("aristolochia-californica"),
                 PlantGenusName.of("aristolochia"),
                 TaxonomicSpecies.of("californica"),
                 description(),
-                lifeForm,
+                growthHabit,
+                lifeCycle,
                 Set.of(new SacramentoValley()),
                 Set.of(CommonName.of("California Pipevine")));
     }
