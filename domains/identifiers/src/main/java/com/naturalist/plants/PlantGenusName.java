@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.taxonomy.LinealRank;
 
 /**
  * Strongly typed natural key for {@code PlantGenus} entities.
@@ -12,7 +13,7 @@ import com.naturalist.ddd.EntityName;
  * {@code PlantGenusName} rather than importing {@code plants-api},
  * preserving DAG integrity.
  */
-public final class PlantGenusName extends EntityName {
+public final class PlantGenusName extends EntityName implements PlantRankName {
 
     private PlantGenusName(String value) {
         super(value);
@@ -26,5 +27,10 @@ public final class PlantGenusName extends EntityName {
     @Override
     protected int maxLength() {
         return 64;
+    }
+
+    @Override
+    public LinealRank rank() {
+        return LinealRank.GENUS;
     }
 }
