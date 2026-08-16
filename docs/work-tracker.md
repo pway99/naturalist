@@ -7,7 +7,7 @@ Dashboard for what's currently in flight. Strategy lives in [`plans/identificati
 > This work-tracker is broader (sketches, paused efforts, recently-completed
 > rows). Use whichever surface fits the question.
 
-Last updated: 2026-08-08 (Present-the-evidence shipped — citation associations persist, field marks and rank-level photo/evidence galleries on every rank page.)
+Last updated: 2026-08-15 (Nutrient → chemistry links shipped as effort #16 — soil nutrient rows resolve to the chemistry catalog via `Catalog.findBySlug` + composite `EntityRefLinker`.)
 
 ---
 
@@ -26,6 +26,19 @@ adjudicate between them. Citation associations now survive the flush (they were 
 dropped for a null origin file), field marks render on every rank page, and family /
 genus / order pages carry the photo gallery with per-observation confidence, evidence,
 and alternatives that previously existed only on the species page.
+
+**Nutrient → chemistry links** shipped 2026-08-15. Every nutrient row on `/soil/profiles/{name}`
+labelled a lab reading in dead text — no path from "calcium" to the chemistry catalog that
+already holds its symbol, atomic weight, and ionic form. Soil now declares the reference
+(`Nutrients.chemistryOf` → `NutrientChemistry`) and chemistry owns the destination (six
+previously-uncatalogued elements, new `/chemistry/elements/{slug}` pages, elements now
+searchable); the soil console resolves the link through the existing `Catalog.findBySlug` +
+composite `EntityRefLinker` seam, so it gained no dependency on chemistry. A
+compounds-by-element section was designed and cut on evidence — useful for 6 elements, empty
+for 7 (every micronutrient, exactly what a reader clicks from the micro table), noise for 3
+(carbon/hydrogen/oxygen match nearly the whole catalog). Soil back-references on the element
+page ("appears in your lab reports as Calcium (Exch), Calcium (Sol)") is the strongest next
+slice — non-empty for all 13 nutrient-mapped elements — and stays unbuilt.
 
 **Naturalist login** shipped 2026-07-06; **collection feature** (FieldObservation, collection lens, header filter chip) shipped 2026-07-12.
 
@@ -86,6 +99,8 @@ and alternatives that previously existed only on the species page.
 | 12 | Add-photo command                     | Plan           | [`plans/2026-07-14-insect-add-photo-command.md`](plans/2026-07-14-insect-add-photo-command.md) — **shipped** 2026-07-14 (`PhotoAddition` aggregate + `InsectAddPhotoTransaction`; accepts `InsectRankName`) |
 | 13 | Identification enrichment             | Plan           | [`plans/2026-07-15-identify-enrichment-plan.md`](plans/2026-07-15-identify-enrichment-plan.md) — **shipped** 2026-07-15 (authority validation, rank-polymorphic ID, grounded descriptions, features, citations, text-generation adapter) |
 | 14 | Present the evidence                  | Plan           | [`plans/2026-08-08-present-the-evidence-plan.md`](plans/2026-08-08-present-the-evidence-plan.md) — **shipped** 2026-08-08 (citation-association flush fix, field marks, rank observation gallery) |
+| 15 | Soil↔naturalist ownership (Property)  | Design memo    | [`notes/2026-08-09-soil-profile-naturalist-association.md`](notes/2026-08-09-soil-profile-naturalist-association.md) — design agreed 2026-08-09, **not scheduled**. New `Property` aggregate = tenancy root above Zone (PUBLIC/PRIVATE + `owner`) in the zone-domain `com.naturalist.zone.property` sub-context; Zone gains `PropertyName` FK (`identifiers`); soil unchanged (owner derived `zone→property`). Zone-domain multi-PR slice; watch the `ZoneInfo` arity ripple. Next step: writing-plans → PR breakdown. |
+| 16 | Nutrient → chemistry links            | Plan           | [`plans/2026-08-15-nutrient-chemistry-links-plan.md`](plans/2026-08-15-nutrient-chemistry-links-plan.md) — **shipped** 2026-08-15 (six missing elements + element pages + catalog contribution in chemistry; `Nutrients.chemistryOf` in soil; soil-console links nutrient rows via `Catalog.findBySlug` + `EntityRefLinker`). Compounds-by-element and soil back-references on the element page considered and deferred — see [design §2](plans/2026-08-15-nutrient-chemistry-links-design.md#2-what-the-element-page-deliberately-omits). |
 
 ---
 

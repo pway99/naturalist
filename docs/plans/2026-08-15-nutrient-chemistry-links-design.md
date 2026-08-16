@@ -1,7 +1,7 @@
 # Nutrient → chemistry links (design)
 
 **Date:** 2026-08-15
-**Status:** agreed, not yet scheduled
+**Status:** shipped 2026-08-15 (PRs A–C)
 **Surface:** `/soil/profiles/{name}` nutrient tables → `/chemistry/elements/{name}`
 
 ## The gap
