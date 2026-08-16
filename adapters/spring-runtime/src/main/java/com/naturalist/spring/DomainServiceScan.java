@@ -5,8 +5,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -45,7 +45,18 @@ public class DomainServiceScan implements ImportBeanDefinitionRegistrar {
 
     static final List<String> BASE_PACKAGES = List.of("com.naturalist");
 
-    private final BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
+    /**
+     * Fully-qualified bean names, not the decapitalised short name. Two domains
+     * legitimately ship {@code @DomainService} classes with the same simple name
+     * once they follow the ADR-020 namespace convention — e.g. both
+     * {@code com.naturalist.insects.SpeciesQueryImpl} and
+     * {@code com.naturalist.plants.SpeciesQueryImpl}. Short-name generation would
+     * collide on {@code "speciesQueryImpl"} and the duplicate-skip below would
+     * silently drop the second domain's bean, leaving its query interface
+     * unsatisfiable at wiring time. The FQN keeps them distinct; injection is
+     * by type, so callers are unaffected.
+     */
+    private final BeanNameGenerator beanNameGenerator = new FullyQualifiedAnnotationBeanNameGenerator();
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
