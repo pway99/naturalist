@@ -27,12 +27,25 @@ FGL's reports are headed "TOMATO SOIL ANALYSIS" with one panel covering every va
 bed, which is exactly the granularity the name points at.
 
 **Planting** — `Entity<PlantingId>`. What went into the ground, where, and for how long —
-the finest grain garden records. Carries two optional soft references into plants:
-`plantName` reaches the species and everything known about it (taxonomy, roles, life form,
-description); `cultivarName` reaches the variety and its peculiarities (breeding status,
-fruit type, seed-saving policy). At least one must be present — a planting naming neither
-records only that something was put somewhere. `removedDate` null means still growing. The
-spatial nullability mirrors `SoilProfileInfo`.
+the finest grain garden records. Carries two optional soft references into plants, on two
+independent axes: `subject` is a `PlantRankName`, the Linnaean identification at whatever
+rank the gardener can support — family, genus or species — so a tray of unlabelled salvia
+starts is a genus-rank planting rather than a missing one; `cultivarName` is the orthogonal
+horticultural selection (breeding status, fruit type, seed-saving policy). At least one must
+be present — a planting naming neither records only that something was put somewhere.
+`removedDate` null means still growing. The spatial nullability mirrors `SoilProfileInfo`.
+
+*Why two components and not one union.* A cultivar is not a rank; it is a selection within
+a species, the same way a clade placement classifies alongside rank rather than extending
+it. Keeping the axes apart also lets a planting state both at once, which a union could not.
+`subject` was a `PlantName` until 2026-08-15, which restricted every planting to
+species-level identification. See section D of
+[`docs/plans/organism-domain-blueprint.md`](../../docs/plans/organism-domain-blueprint.md).
+
+*JSON.* Because `PlantRankName` is a sealed interface, `planting.json` carries a
+`subjectRank` discriminator (`FAMILY` / `GENUS` / `SPECIES`) beside `subject`. The
+`@JsonTypeInfo` declaring it sits on the component, never on the interface, so leaf names
+still serialize as plain slugs everywhere else.
 
 **PlantedZone** — `ReadModel`. A bed and what is growing in it, at either grain: a whole
 zone, or one sub-zone. Composed on read by `PlantedZoneFactory`; never stored. Keyed by
@@ -90,7 +103,7 @@ be exact rather than inferred.
 | Reference | Direction | Type |
 |---|---|---|
 | `ZoneName`, `SubZoneName` | garden → zone | `EntityName` |
-| `PlantName` | garden → plants | `EntityName` |
+| `PlantRankName` | garden → plants | sealed over `PlantFamilyName` / `PlantGenusName` / `PlantName` |
 | `CultivarName` | garden → plants | `EntityName` |
 | `CropTypeName` | soil → garden (reverse) | `EntityName` |
 

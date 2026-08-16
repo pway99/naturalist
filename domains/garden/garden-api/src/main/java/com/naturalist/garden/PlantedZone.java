@@ -2,7 +2,7 @@ package com.naturalist.garden;
 
 import com.naturalist.ddd.ReadModel;
 import com.naturalist.observability.Constraints;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
@@ -53,8 +53,8 @@ public record PlantedZone(
         return subZoneName == null;
     }
 
-    /** The distinct species growing here, in encounter order. */
-    public List<PlantName> plants() {
+    /** The distinct taxa growing here, in encounter order, each at its recorded rank. */
+    public List<PlantRankName> plants() {
         return plantings.plants();
     }
 

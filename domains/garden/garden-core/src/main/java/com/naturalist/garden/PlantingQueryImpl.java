@@ -2,7 +2,7 @@ package com.naturalist.garden;
 
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantRankName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
 
@@ -42,9 +42,9 @@ class PlantingQueryImpl
     }
 
     @Override
-    public PlantingCollection forPlantName(PlantName plantName) {
-        observer().arguments("forPlantName", i -> i.entityName(plantName, "plantName"))
+    public PlantingCollection forSubject(PlantRankName subject) {
+        observer().arguments("forSubject", i -> i.identifier(subject, "subject"))
                 .throwWhenInvalid();
-        return PlantingCollection.of(repository().getByPlantName(plantName));
+        return PlantingCollection.of(repository().getBySubject(subject));
     }
 }

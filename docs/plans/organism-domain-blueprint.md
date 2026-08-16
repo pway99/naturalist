@@ -325,23 +325,23 @@ Consumers that need to reference "what was planted, at whatever specificity is k
 carry **both axes as separate components**, the same shape as `name` + `placedIn`:
 
 ```java
-Planting(PlantRankName subject, @Nullable CultivarName cultivarName, ...)
+Planting(@Nullable PlantRankName subject, @Nullable CultivarName cultivarName, ...)
 ```
 
 `subject` is rank-flexible, so a planting can be recorded at family, genus or species —
 this is what makes "I planted a salvia" expressible. `cultivarName` is the orthogonal
-selection within it.
+selection within it. Both are nullable with an at-least-one invariant: the axes are
+independent, so a record may carry either, and a disjunction *across two axes* is a
+different thing from the A1 anti-pattern of parallel nullable fields on one axis.
 
 *Why not one field:* collapsing them into a single sealed union produces a type meaning
 "Linnaean rank **or** horticultural selection", which is two concepts wearing one name,
 and it drags in every cost D1 lists. Keeping them separate also lets a consumer state
 both at once — species *and* cultivar — which a union cannot express at all.
 
-*Status:* the axis is modelled; the consumer is not. `garden.Planting` currently carries
-two nullable FKs (`plantName`, `cultivarName`) with an
-`isTrue(plantName != null || cultivarName != null)` disjunction, which is the A1
-anti-pattern on the Linnaean side — it cannot express a genus-level planting. Migrating
-`plantName` to `PlantRankName subject` is tracked in the plants consistency plan.
+*Status:* shipped 2026-08-15. `garden.Planting` took a `PlantName` until then, which
+restricted every planting to species-level identification — the Linnaean axis could not
+express a genus-rank record at all.
 
 *Source:* `plants-api/.../cultivar/Cultivar.java`, `garden-api/.../Planting.java`
 
@@ -472,11 +472,12 @@ Do not treat these as settled just because insects shipped:
   `InsectFeature` records, so the catalog holds near-duplicates.
 - **No subspecies entity exists**, despite `InsectSubspeciesName` being a permitted
   rank name — `taxonView().getByName()` returns empty for it.
-- **No consumer carries two axes at once yet.** D5's
-  `Planting(subject, cultivarName)` shape is the design, not the code —
-  `garden.Planting` still holds two nullable FKs and cannot express a genus-level
-  planting. Insects has never needed a second axis alongside clade, so the shape is
-  reasoned rather than proven.
+- **The two-axis shape has one consumer, in one domain.** `garden.Planting` carries
+  `subject` + `cultivarName` (D5), but insects has never needed a second axis beside
+  clade, so the pattern is proven once rather than repeatedly.
+- **No hierarchy-walking planting query.** `PlantingQuery.forSubject` matches the rank
+  exactly, so querying a genus does not return plantings of its species. Insects solved
+  the equivalent with a separate `forRankHierarchy`; garden has no such method yet.
 
 ---
 

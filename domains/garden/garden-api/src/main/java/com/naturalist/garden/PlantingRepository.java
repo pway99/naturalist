@@ -1,7 +1,7 @@
 package com.naturalist.garden;
 
 import com.naturalist.data.EntityRepository;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantRankName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
 
@@ -17,5 +17,5 @@ interface PlantingRepository extends EntityRepository<PlantingId, Planting> {
 
     List<Planting> getBySubZoneName(SubZoneName subZoneName);
 
-    List<Planting> getByPlantName(PlantName plantName);
+    List<Planting> getBySubject(PlantRankName subject);
 }

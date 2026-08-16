@@ -1,8 +1,16 @@
 package com.naturalist.garden;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.naturalist.ddd.Entity;
 import com.naturalist.observability.Constraints;
+import com.naturalist.plants.PlantFamilyName;
+import com.naturalist.plants.PlantGenusName;
 import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
@@ -19,13 +27,19 @@ import java.util.function.Consumer;
  * when. A row of mixed lettuce and kale is two plantings as well. The sub-zone is where they are;
  * it claims nothing about what is in it.
  * <p>
- * <b>Both botanical references are soft names into the plants domain, and both are optional.</b>
- * {@code plantName} reaches the species and everything the plants catalog knows about it —
- * taxonomy, roles, life form, native bioregions, description. {@code cultivarName} reaches the
- * variety and its peculiarities — breeding status, fruit type, seed-saving policy — and is null
- * whenever the variety is not known or not catalogued, which is the common case for a tray of
- * lettuce starts. Between them they carry every detail the application can resolve about what is
- * actually growing here.
+ * <b>Two independent botanical axes, both soft names into the plants domain, both optional.</b>
+ * {@code subject} is the Linnaean identification at whatever rank the gardener can support — a
+ * {@link PlantRankName}, so family, genus or species are all expressible. A tray of unlabelled
+ * salvia starts is a genus-rank planting, not a missing one. {@code cultivarName} is the
+ * orthogonal horticultural selection within a species — breeding status, fruit type, seed-saving
+ * policy — and is null whenever the variety is not known or not catalogued, the common case for
+ * a tray of lettuce.
+ * <p>
+ * The two are separate components rather than one union because a cultivar is not a rank: it is a
+ * selection <em>within</em> a species, the same way a clade placement is a classification
+ * alongside rank rather than a rung of it. Keeping them apart also lets a planting state both at
+ * once — species and variety — which a union could not express. See section D of
+ * {@code docs/plans/organism-domain-blueprint.md}.
  * <p>
  * At least one must be present: a planting that names neither records only that something was put
  * somewhere, which no consumer can use. Where both are given they should agree — plants' own
@@ -48,7 +62,13 @@ import java.util.function.Consumer;
  */
 public record Planting(
         PlantingId id,
-        @Nullable PlantName plantName,
+        @JsonTypeInfo(use = Id.NAME, property = "subjectRank", include = As.EXTERNAL_PROPERTY)
+        @JsonSubTypes({
+                @Type(value = PlantFamilyName.class, name = "FAMILY"),
+                @Type(value = PlantGenusName.class, name = "GENUS"),
+                @Type(value = PlantName.class, name = "SPECIES")
+        })
+        @Nullable PlantRankName subject,
         @Nullable CultivarName cultivarName,
         ZoneName zoneName,
         @Nullable SubZoneName subZoneName,
@@ -80,9 +100,9 @@ public record Planting(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityId(id, "id")
-                .entityNameOrNull(plantName, "plantName")
+                .whenNotNull(subject, c -> c.identifier(subject, "subject"))
                 .entityNameOrNull(cultivarName, "cultivarName")
-                .isTrue(plantName != null || cultivarName != null, "plantOrCultivarKnown")
+                .isTrue(subject != null || cultivarName != null, "plantOrCultivarKnown")
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(plantedDate, "plantedDate")

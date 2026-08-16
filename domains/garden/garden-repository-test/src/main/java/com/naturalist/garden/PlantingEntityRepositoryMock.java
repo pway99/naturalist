@@ -3,7 +3,7 @@ package com.naturalist.garden;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantRankName;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
 
@@ -40,11 +40,11 @@ class PlantingEntityRepositoryMock
     }
 
     @Override
-    public List<Planting> getByPlantName(PlantName plantName) {
-        observer().arguments("getByPlantName", i -> i.entityName(plantName, "plantName"))
+    public List<Planting> getBySubject(PlantRankName subject) {
+        observer().arguments("getBySubject", i -> i.identifier(subject, "subject"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
-                .filter(planting -> plantName.equals(planting.plantName()))
+                .filter(planting -> subject.equals(planting.subject()))
                 .toList();
     }
 }

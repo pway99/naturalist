@@ -4,7 +4,10 @@ import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.plants.PlantGenusName;
 import com.naturalist.plants.PlantName;
+import com.naturalist.plants.PlantRankName;
+import com.naturalist.taxonomy.LinealRank;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link PlantingRepository}, plus the three reverse lookups: what is in
- * this bed, what is in this row, and where have we grown this species.
+ * this bed, what is in this row, and where have we grown this taxon.
  */
 interface PlantingEntityRepositoryTest extends EntityRepositoryTest<PlantingId, Planting> {
 
@@ -90,7 +93,7 @@ interface PlantingEntityRepositoryTest extends EntityRepositoryTest<PlantingId, 
         List<Planting> result = repository().getByZoneName(TestGardenIdentifiers.Zones.backyard);
 
         assertThat(result).hasSize(4);
-        assertThat(result).extracting(Planting::plantName)
+        assertThat(result).extracting(Planting::subject)
                 .contains(TestGardenIdentifiers.Plants.tomato, TestGardenIdentifiers.Plants.eggplant);
     }
 
@@ -115,27 +118,27 @@ interface PlantingEntityRepositoryTest extends EntityRepositoryTest<PlantingId, 
         List<Planting> result = repository().getBySubZoneName(SubZoneName.of("backyard-south"));
 
         assertThat(result).hasSize(2);
-        assertThat(result).extracting(Planting::plantName)
+        assertThat(result).extracting(Planting::subject)
                 .containsExactlyInAnyOrder(TestGardenIdentifiers.Plants.tomato,
                         TestGardenIdentifiers.Plants.eggplant);
     }
 
     @Test
-    default void getByPlantName_nullArgument() {
-        assertThatThrownBy(() -> repository().getByPlantName(null))
+    default void getBySubject_nullArgument() {
+        assertThatThrownBy(() -> repository().getBySubject(null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("plantName");
+                .hasMessageContainingAll("subject");
     }
 
     @Test
-    default void getByPlantName_unknown_returnsEmpty() {
-        assertThat(repository().getByPlantName(TestGardenIdentifiers.Plants.notFound)).isEmpty();
+    default void getBySubject_unknown_returnsEmpty() {
+        assertThat(repository().getBySubject(TestGardenIdentifiers.Plants.notFound)).isEmpty();
     }
 
     /** Four varieties of one species, across two beds. */
     @Test
-    default void getByPlantName_known_returnsEveryVarietyOfThatSpecies() {
-        List<Planting> result = repository().getByPlantName(TestGardenIdentifiers.Plants.tomato);
+    default void getBySubject_known_returnsEveryVarietyOfThatSpecies() {
+        List<Planting> result = repository().getBySubject(TestGardenIdentifiers.Plants.tomato);
 
         assertThat(result).hasSize(4);
         assertThat(result).extracting(Planting::cultivarName)
@@ -152,8 +155,37 @@ interface PlantingEntityRepositoryTest extends EntityRepositoryTest<PlantingId, 
         Planting radish = repository().getByName(TestGardenIdentifiers.Plantings.radishBox1)
                 .orElseThrow();
 
-        assertThat(radish.plantName()).isEqualTo(TestGardenIdentifiers.Plants.radish);
+        assertThat(radish.subject()).isEqualTo(TestGardenIdentifiers.Plants.radish);
         assertThat(radish.isVarietyKnown()).isFalse();
+    }
+
+    /**
+     * A tray of unlabelled salvia starts: the gardener knows the genus and no more. Before
+     * {@code subject} was widened to {@link PlantRankName} this was unrepresentable — the
+     * field took a species name, so a genus-level planting had to be either guessed up to a
+     * species or left unrecorded.
+     */
+    @Test
+    default void insert_aPlantingIdentifiedOnlyToGenus() {
+        PlantGenusName salvia = PlantGenusName.of("salvia");
+        Planting genusRank = new Planting(
+                PlantingId.create(), salvia, null,
+                ZoneName.of(RandomValue.string()), null, 6,
+                LocalDate.of(2026, 5, 1), null, null);
+
+        repository().insert(genusRank);
+
+        Planting stored = repository().getByName(genusRank.id()).orElseThrow();
+        assertThat(stored.subject()).isEqualTo(salvia);
+        assertThat(stored.subject().rank()).isEqualTo(LinealRank.GENUS);
+        assertThat(stored.isVarietyKnown()).isFalse();
+    }
+
+    /** Rank names of different rank never collide, even holding the same slug. */
+    @Test
+    default void getBySubject_doesNotMatchAcrossRanks() {
+        assertThat(repository().getBySubject(PlantGenusName.of(
+                TestGardenIdentifiers.Plants.tomato.value()))).isEmpty();
     }
 
     private static Planting sample(PlantingId id) {
