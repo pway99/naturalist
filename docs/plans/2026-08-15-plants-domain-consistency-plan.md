@@ -426,12 +426,16 @@ FK constraint refuses a bad fixture at load.
 order with two catalogued families (Passifloraceae, Violaceae), so the test distinguishes a
 real join from a single-entity lookup.
 
-### M2f — Hierarchy queries
+### M2f — Hierarchy queries  ✅ DONE 2026-08-16
 
-- [ ] `forGenusName` / `forFamilyName` on the plant query, `forFamilyName` on the genus
-      query, matching `InsectQuery.SpeciesQuery`. The family-level variant composes
-      through the genus query, as `SpeciesQueryImpl` does.
-- [ ] Repository methods + mock validation + three contract cases each.
+- [x] `forGenusName` / `forFamilyName` on the plant query (`forFamilyName` on the genus
+      query already landed in M3). `PlantEntityQueryImpl` gains a `PlantGenusEntityQuery`
+      dependency and composes `forFamilyName` through it, mirroring `SpeciesQueryImpl`.
+- [x] `PlantEntityRepository.getByGenusName` + mock validation + three contract cases
+      (null / Trifolium's two species / unknown-genus-empty).
+- [x] Genus detail page renders a "Species in this genus" card grid; the stale
+      "genusName does not exist yet" comment is gone. Verified live (`/plants/genera/trifolium`
+      lists crimson + Ladino clover).
 
 ---
 
@@ -608,7 +612,7 @@ M3  ✅ routes + linker                      ← shipped 2026-08-15
              ├─→ M2c ✅ PlantEcologicalRole  ← shipped 2026-08-16
              ├─→ M2e ✅ re-key the constituent ← shipped 2026-08-16
              ├─→ M2g ✅ PlantOrder (top of chain) ← shipped 2026-08-16
-             └─→ M2f  hierarchy queries      ← REMAINING (genus→species rollup)
+             └─→ M2f ✅ hierarchy queries      ← shipped 2026-08-16
 
 M4 + M5  namespace cleanup                  ← REMAINING; independent
 ```
@@ -620,11 +624,8 @@ references (`PlantProgram`, `PhytochemicalConstituent`, garden's `Planting`) car
 `PlantRankName`.
 
 **Remaining:**
-- **M2f — hierarchy queries.** Only the genus→species rollup is left: add
-  `plants().forGenusName(genusName)` (and optionally `forFamilyName` composing through the
-  genus query). Now unblocked — `PlantSpecies.genusName` exists. The genus detail page still
-  renders a member-plants placeholder (and `PlantsController` carries a stale comment saying
-  `genusName` "does not exist yet"); this milestone wires the rollup and removes both.
+- ~~**M2f — hierarchy queries.**~~ ✅ DONE 2026-08-16 — `forGenusName`/`forFamilyName` on
+  the plant query, the genus detail page's species rollup, and removal of the stale comment.
 - **M4 — ADR-020 namespace naming** and **M5 — N=1 collapse.** Independent, mechanical.
 - **M6 — split `PlantLifeForm`** into `GrowthHabit` + `LifeCycle` (botanical axes). Do with M4/M5 — another `PlantSpecies` arity change over the same consumers.
 

@@ -38,6 +38,19 @@ public interface PlantQuery {
     PlantGenusEntityQuery genera();
 
     interface PlantEntityQuery extends EntityQuery<PlantSpeciesName, PlantSpecies, PlantSpeciesCollection> {
+
+        /**
+         * Species under a genus, joined on the species' typed
+         * {@link PlantSpecies#genusName()} upward FK — the genus &rarr; species rollup
+         * the genus detail page renders.
+         */
+        PlantSpeciesCollection forGenusName(PlantGenusName genusName);
+
+        /**
+         * Species under a family, composed through the genus query: every genus in the
+         * family, then every species in each genus. Mirrors {@code InsectQuery.SpeciesQuery}.
+         */
+        PlantSpeciesCollection forFamilyName(PlantFamilyName familyName);
     }
 
     interface PlantOrderEntityQuery

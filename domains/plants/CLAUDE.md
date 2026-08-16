@@ -172,8 +172,9 @@ across five sub-contexts:
 
 Read side, all public in api, adapters in `plants-core`:
 
-- `PlantQuery` → `plants()`, `orders()`, `families()` (+ `forOrderName`),
-  `genera()` (+ `forFamilyName`), `ecologicalRoles()` (+ `forPlantName`)
+- `PlantQuery` → `plants()` (+ `forGenusName`, `forFamilyName`), `orders()`,
+  `families()` (+ `forOrderName`), `genera()` (+ `forFamilyName`),
+  `ecologicalRoles()` (+ `forPlantName`)
 - `CultivarQuery` → `cultivars()` (+ `forPlantName`)
 - `SeedLineageQuery` → `lineages()` (+ `forCultivarName`)
 - `PlantProgramQuery` → `programs()` (+ `forPlantName`)

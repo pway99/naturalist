@@ -5,10 +5,13 @@ import com.naturalist.plants.PlantFamily;
 import com.naturalist.plants.PlantFamilyTestEntitySource;
 import com.naturalist.plants.PlantGenus;
 import com.naturalist.plants.PlantGenusTestEntitySource;
+import com.naturalist.plants.PlantSpecies;
+import com.naturalist.plants.PlantSpeciesTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,5 +61,29 @@ class PlantsGenusDetailTemplateTest {
         // The upward link works off the genus's own typed FK, so it renders
         // even when the parent record was not loaded.
         assertThat(output.toString()).contains("/plants/families/lamiaceae");
+    }
+
+    @Test
+    void genusDetail_rendersMemberSpeciesWhenPresent() {
+        var template = TestTemplateEngine.create();
+        PlantGenus trifolium = db.getNamed(PlantGenusTestEntitySource.class).entityStream()
+                .filter(g -> g.name().value().equals("trifolium"))
+                .findFirst()
+                .orElseThrow();
+        List<PlantSpecies> species = db.getNamed(PlantSpeciesTestEntitySource.class).entityStream()
+                .filter(s -> trifolium.name().equals(s.genusName()))
+                .toList();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("genus", trifolium);
+        params.put("family", null);
+        params.put("species", species);
+        StringOutput output = new StringOutput();
+        template.render("plants/genera/detail.jte", params, output);
+
+        assertThat(output.toString())
+                .contains("/plants/trifolium-incarnatum")
+                .contains("/plants/trifolium-repens")
+                .doesNotContain("No species catalogued");
     }
 }

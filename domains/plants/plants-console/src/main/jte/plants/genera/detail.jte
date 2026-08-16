@@ -1,10 +1,12 @@
 @import com.naturalist.plants.PlantFamily
 @import com.naturalist.plants.PlantGenus
+@import com.naturalist.plants.PlantSpecies
 @import com.naturalist.plants.console.BreadcrumbSegment
 @import java.util.List
 
 @param PlantGenus genus
 @param PlantFamily family = null
+@param List<PlantSpecies> species = java.util.List.of()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -52,11 +54,25 @@
         </ul>
     </section>
 
-    <%-- The genus → plants rollup needs PlantSpecies.genusName, which does not exist
-         yet. See M2b/M2f in docs/plans/2026-08-15-plants-domain-consistency-plan.md;
-         this section becomes a card grid once the typed FK lands. --%>
     <section>
-        <h2>Plants in this genus</h2>
-        <p><em>Species-level records are not yet linked to their genus.</em></p>
+        <h2>Species in this genus</h2>
+        @if(species.isEmpty())
+            <p><em>No species catalogued under this genus yet.</em></p>
+        @else
+            <div class="entity-grid">
+                @for(var s : species)
+                    !{var speciesLabel = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value() + " " + s.epithet().value());}
+                    <article>
+                        <header>
+                            <a href="/plants/${s.name().value()}">
+                                <strong>${speciesLabel}</strong>
+                            </a>
+                        </header>
+                        <p class="taxonomy"><em>${genus.genus().value()} ${s.epithet().value()}</em></p>
+                        <p class="description-preview">${s.description().preschool()}</p>
+                    </article>
+                @endfor
+            </div>
+        @endif
     </section>
 `)

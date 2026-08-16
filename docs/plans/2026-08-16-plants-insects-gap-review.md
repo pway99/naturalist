@@ -60,10 +60,8 @@ differently, or deliberately defers).
 
 ### A. Finish the consistency plan (small, mechanical, unblocked)
 
-1. **M2f — genus→species rollup.** Add `plants().forGenusName(genusName)` (repository +
-   mock validation + 3 contract cases), render member species on the genus detail page, and
-   **remove the stale comment** in `PlantsController.genusDetail` (it claims
-   `PlantSpecies.genusName` "does not exist yet (M2b/M2f)" — it exists now). Now unblocked.
+1. ~~**M2f — genus→species rollup.**~~ ✅ DONE 2026-08-16 — `forGenusName`/`forFamilyName`
+   on the plant query, genus detail page species rollup, stale comment removed. Verified live.
 2. **M4 — ADR-020 namespace rename** (`PlantFamilyEntityQuery` → `FamilyQuery`, etc.).
    Record the root-entity exception (`Plant` is both domain noun and subject) in
    `domains/CLAUDE.md`.
@@ -131,6 +129,6 @@ Also added: a plants-consistency row to `docs/work-tracker.md` (the effort had n
 
 ## 5. One-line recommendation
 
-Pick up with **M2f** (small, unblocked, removes a live stale comment), then decide the
+M2f is done; pick up with the **M4/M5/M6 cleanup batch** (same files, one reviewer), then decide the
 **collection-unit question** (Planting vs new observation) because it gates the MVP path —
 and schedule the **plants briefing rewrite** as its own focused session.

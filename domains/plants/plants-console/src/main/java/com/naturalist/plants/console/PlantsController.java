@@ -253,13 +253,13 @@ public class PlantsController {
         if (genus.isEmpty()) {
             return "redirect:/plants";
         }
-        // The genus → plants rollup needs PlantSpecies.genusName, which does not exist
-        // yet (M2b/M2f of the plants consistency plan). Until then the page
-        // renders the genus itself and its parent family; the member-plants
-        // section appears once the typed FK lands.
+        var species = plantQuery.plants().forGenusName(genusName).stream()
+                .sorted(Comparator.comparing((PlantSpecies s) -> s.name().value()))
+                .toList();
         model.addAttribute("genus", genus.get());
         model.addAttribute("family",
                 plantQuery.families().getByName(genus.get().familyName()).orElse(null));
+        model.addAttribute("species", species);
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus.get()));
         addDescription(model, genus.get().description());
         return "plants/genera/detail";

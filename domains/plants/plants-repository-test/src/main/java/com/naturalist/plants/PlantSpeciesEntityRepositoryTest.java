@@ -6,12 +6,17 @@ import com.naturalist.biogeography.SacramentoValley;
 import com.naturalist.biogeography.SouthernCascades;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicSpecies;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link PlantRepository.PlantEntityRepository}.
@@ -86,5 +91,31 @@ interface PlantSpeciesEntityRepositoryTest
                 flippedBioregions,
                 Set.of(CommonName.of("alt-" + RandomValue.string()))
         );
+    }
+
+    @Test
+    default void getByGenusName_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByGenusName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("genusName");
+    }
+
+    @Test
+    default void getByGenusName_returnsSpeciesWithMatchingGenusName() {
+        // Trifolium carries two catalogued species — enough to distinguish a real
+        // genus join from a single-entity lookup.
+        var results = repository().getByGenusName(TestPlantsIdentifiers.PlantGenera.Trifolium.name);
+
+        assertThat(results)
+                .extracting(PlantSpecies::name)
+                .extracting(PlantSpeciesName::value)
+                .contains("trifolium-incarnatum", "trifolium-repens");
+    }
+
+    @Test
+    default void getByGenusName_returnsEmptyForUnknownGenus() {
+        var results = repository().getByGenusName(TestPlantsIdentifiers.PlantGenera.NotFound.name);
+
+        assertThat(results).isEmpty();
     }
 }

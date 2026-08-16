@@ -169,6 +169,11 @@ public class TestPlantsIdentifiers {
         public static class Citrus {
             public static final PlantGenusName name = PlantGenusName.of("citrus");
         }
+
+        /** Carries two catalogued species (crimson and white clover) — the genus→species rollup test case. */
+        public static class Trifolium {
+            public static final PlantGenusName name = PlantGenusName.of("trifolium");
+        }
     }
 
     public static class Plants {

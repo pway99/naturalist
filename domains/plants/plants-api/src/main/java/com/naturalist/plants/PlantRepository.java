@@ -7,6 +7,8 @@ import java.util.Optional;
 
 class PlantRepository {
     protected interface PlantEntityRepository extends EntityRepository<PlantSpeciesName, PlantSpecies> {
+
+        List<PlantSpecies> getByGenusName(PlantGenusName genusName);
     }
 
     protected interface PlantOrderEntityRepository

@@ -30,14 +30,14 @@ class PlantsCatalogContributionTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
+    private final PlantQuery.PlantGenusEntityQuery genusQuery =
+            new PlantGenusEntityQueryImpl(new PlantGenusEntityRepositoryMock(db));
     private final PlantQuery.PlantEntityQuery entityQuery =
-            new PlantEntityQueryImpl(new PlantSpeciesEntityRepositoryMock(db));
+            new PlantEntityQueryImpl(new PlantSpeciesEntityRepositoryMock(db), genusQuery);
     private final PlantQuery.PlantOrderEntityQuery orderQuery =
             new PlantOrderEntityQueryImpl(new PlantOrderEntityRepositoryMock(db));
     private final PlantQuery.PlantFamilyEntityQuery familyQuery =
             new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
-    private final PlantQuery.PlantGenusEntityQuery genusQuery =
-            new PlantGenusEntityQueryImpl(new PlantGenusEntityRepositoryMock(db));
     private final PlantsCatalogContribution contribution =
             new PlantsCatalogContribution(entityQuery, orderQuery, familyQuery, genusQuery);
 
