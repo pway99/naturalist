@@ -96,7 +96,10 @@ public final class Nutrients {
      * calcium rows are calcium, and the split describes the extraction, not the element.
      */
     private static final Map<NutrientName, NutrientChemistry> CHEMISTRY = Map.ofEntries(
-            chemistry(NITRATE_N, "nitrogen", ReportedForm.ION),
+            // Printed "Nitrate-Nitrogen" (NO3-N): the number is a nitrogen mass, not a
+            // nitrate mass (NO3 62 g/mol vs N 14 g/mol) — ELEMENTAL, not ION. Contrast
+            // SULFATE and CHLORIDE below, whose printed names name the ion itself.
+            chemistry(NITRATE_N, "nitrogen", ReportedForm.ELEMENTAL),
             chemistry(PHOSPHORUS_P2O5, "phosphorus", ReportedForm.OXIDE_EQUIVALENT),
             chemistry(POTASSIUM_EXCHANGEABLE, "potassium", ReportedForm.OXIDE_EQUIVALENT),
             chemistry(POTASSIUM_SOLUBLE, "potassium", ReportedForm.OXIDE_EQUIVALENT),

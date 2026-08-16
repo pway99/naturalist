@@ -4,7 +4,6 @@ import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.EntityRefLinker;
-import com.naturalist.catalog.MatchKind;
 import com.naturalist.catalog.SearchResults;
 import com.naturalist.chemistry.element.ElementName;
 import com.naturalist.ddd.EntityName;

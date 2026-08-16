@@ -42,10 +42,22 @@ class NutrientsTest {
                     assertThat(c.substance().value()).isEqualTo("sulfur");
                     assertThat(c.reportedForm()).isEqualTo(ReportedForm.ION);
                 });
-        assertThat(Nutrients.chemistryOf(Nutrients.CHLORIDE).orElseThrow().substance().value())
-                .isEqualTo("chlorine");
+        assertThat(Nutrients.chemistryOf(Nutrients.CHLORIDE).orElseThrow())
+                .satisfies(c -> {
+                    assertThat(c.substance().value()).isEqualTo("chlorine");
+                    assertThat(c.reportedForm()).isEqualTo(ReportedForm.ION);
+                });
         assertThat(Nutrients.chemistryOf(Nutrients.NITRATE_N).orElseThrow().substance().value())
                 .isEqualTo("nitrogen");
+    }
+
+    @Test
+    void nitrateNitrogenIsReportedOnTheElementsBasisNotTheIons() {
+        // FGL prints this row "Nitrate-Nitrogen" (NO3-N): the number is a nitrogen mass,
+        // not a nitrate mass (NO3 62 g/mol vs N 14 g/mol). Locks in the fix for the
+        // tooltip misstating the basis by 4.43x -- do not flip this back to ION.
+        assertThat(Nutrients.chemistryOf(Nutrients.NITRATE_N).orElseThrow().reportedForm())
+                .isEqualTo(ReportedForm.ELEMENTAL);
     }
 
     @Test
