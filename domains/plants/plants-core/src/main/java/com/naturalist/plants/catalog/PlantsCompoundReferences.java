@@ -10,7 +10,7 @@ import com.naturalist.observability.Observer;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.PlantsDomain;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
-import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollections.PhytochemicalConstituentCollection;
+import com.naturalist.plants.phytochemistry.PhytochemicalConstituentCollection;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
 import com.naturalist.resilience.Resilient;
@@ -68,9 +68,9 @@ public class PlantsCompoundReferences implements EntityReferences<CompoundName> 
 
     private static final DomainId DOMAIN = new PlantsDomain();
 
-    private final PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery constituents;
+    private final PhytochemicalConstituentQuery constituents;
 
-    public PlantsCompoundReferences(PhytochemicalConstituentQuery.PhytochemicalConstituentEntityQuery constituents) {
+    public PlantsCompoundReferences(PhytochemicalConstituentQuery constituents) {
         Observer.forClass(PlantsCompoundReferences.class)
                 .arguments("constructor", i -> i.notNull(constituents, "constituents"))
                 .throwWhenInvalid();

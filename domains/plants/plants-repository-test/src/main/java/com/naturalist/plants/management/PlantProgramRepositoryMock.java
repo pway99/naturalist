@@ -8,11 +8,11 @@ import com.naturalist.plants.PlantRankName;
 import java.util.List;
 
 @DomainService
-class PlantProgramEntityRepositoryMock
+class PlantProgramRepositoryMock
         extends AbstractTestEntityRepository<PlantProgramName, PlantProgram, PlantProgramTestEntitySource>
-        implements PlantProgramRepository.PlantProgramEntityRepository {
+        implements PlantProgramRepository {
 
-    PlantProgramEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    PlantProgramRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 

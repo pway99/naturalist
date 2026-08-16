@@ -1,20 +1,33 @@
 package com.naturalist.plants.heritage;
 
-import com.naturalist.observability.Observer;
+import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
+import com.naturalist.plants.cultivar.CultivarName;
 
-class SeedLineageQueryImpl implements SeedLineageQuery {
+import java.util.Set;
 
-    private final SeedLineageEntityQuery seedLineageEntityQuery;
+@DomainService
+class SeedLineageQueryImpl
+        extends AbstractEntityQuery<SeedLineageName, SeedLineage, SeedLineageCollection, SeedLineageRepository>
+        implements SeedLineageQuery {
 
-    SeedLineageQueryImpl(SeedLineageEntityQuery seedLineageEntityQuery) {
-        Observer.forClass(SeedLineageQueryImpl.class).arguments("constructor", i -> i
-                        .notNull(seedLineageEntityQuery, "seedLineageEntityQuery"))
-                .throwWhenInvalid();
-        this.seedLineageEntityQuery = seedLineageEntityQuery;
+    SeedLineageQueryImpl(SeedLineageRepository repository) {
+        super(repository);
     }
 
     @Override
-    public SeedLineageEntityQuery lineages() {
-        return seedLineageEntityQuery;
+    public SeedLineageCollection findByNameSet(Set<SeedLineageName> names) {
+        observer().arguments("findByNameSet", i -> i
+                        .identifierSet(names, "names"))
+                .throwWhenInvalid();
+        return SeedLineageCollection.of(repository().getByEntityNameSet(names));
+    }
+
+    @Override
+    public SeedLineageCollection forCultivarName(CultivarName cultivarName) {
+        observer().arguments("forCultivarName", i -> i
+                        .entityName(cultivarName, "cultivarName"))
+                .throwWhenInvalid();
+        return SeedLineageCollection.of(repository().getByCultivarName(cultivarName));
     }
 }

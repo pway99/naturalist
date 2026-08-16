@@ -1,20 +1,33 @@
 package com.naturalist.plants.cultivar;
 
-import com.naturalist.observability.Observer;
+import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
+import com.naturalist.plants.PlantSpeciesName;
 
-class CultivarQueryImpl implements CultivarQuery {
+import java.util.Set;
 
-    private final CultivarEntityQuery cultivarEntityQuery;
+@DomainService
+class CultivarQueryImpl
+        extends AbstractEntityQuery<CultivarName, Cultivar, CultivarCollection, CultivarRepository>
+        implements CultivarQuery {
 
-    CultivarQueryImpl(CultivarEntityQuery cultivarEntityQuery) {
-        Observer.forClass(CultivarQueryImpl.class).arguments("constructor", i -> i
-                        .notNull(cultivarEntityQuery, "cultivarEntityQuery"))
-                .throwWhenInvalid();
-        this.cultivarEntityQuery = cultivarEntityQuery;
+    CultivarQueryImpl(CultivarRepository repository) {
+        super(repository);
     }
 
     @Override
-    public CultivarEntityQuery cultivars() {
-        return cultivarEntityQuery;
+    public CultivarCollection findByNameSet(Set<CultivarName> names) {
+        observer().arguments("findByNameSet", i -> i
+                        .identifierSet(names, "names"))
+                .throwWhenInvalid();
+        return CultivarCollection.of(repository().getByEntityNameSet(names));
+    }
+
+    @Override
+    public CultivarCollection forPlantName(PlantSpeciesName plantName) {
+        observer().arguments("forPlantName", i -> i
+                        .entityName(plantName, "plantName"))
+                .throwWhenInvalid();
+        return CultivarCollection.of(repository().getByPlantName(plantName));
     }
 }

@@ -9,11 +9,11 @@ import com.naturalist.plants.PlantRankName;
 import java.util.List;
 
 @DomainService
-class PhytochemicalConstituentEntityRepositoryMock
+class PhytochemicalConstituentRepositoryMock
         extends AbstractTestEntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent, PhytochemicalConstituentTestEntitySource>
-        implements PhytochemicalConstituentRepository.PhytochemicalConstituentEntityRepository {
+        implements PhytochemicalConstituentRepository {
 
-    PhytochemicalConstituentEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    PhytochemicalConstituentRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 

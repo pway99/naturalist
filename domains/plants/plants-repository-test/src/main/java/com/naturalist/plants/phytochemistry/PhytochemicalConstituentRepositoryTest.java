@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link PhytochemicalConstituentRepository.PhytochemicalConstituentEntityRepository}.
+ * Behavioral contract for {@link PhytochemicalConstituentRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies PhytochemicalConstituent-specific identity constants and entity
@@ -29,11 +29,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * authoritative store, and the test fixtures must reference real compound
  * slugs so the entity passes record invariants.
  */
-interface PhytochemicalConstituentEntityRepositoryTest
+interface PhytochemicalConstituentRepositoryTest
         extends EntityRepositoryTest<PhytochemicalConstituentName, PhytochemicalConstituent> {
 
     @Override
-    PhytochemicalConstituentRepository.PhytochemicalConstituentEntityRepository repository();
+    PhytochemicalConstituentRepository repository();
 
     @Override
     default TestEntitySource<PhytochemicalConstituentName, PhytochemicalConstituent> source() {

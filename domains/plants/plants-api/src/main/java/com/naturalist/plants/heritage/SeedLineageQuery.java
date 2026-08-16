@@ -2,21 +2,13 @@ package com.naturalist.plants.heritage;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.plants.cultivar.CultivarName;
-import com.naturalist.plants.heritage.SeedLineageEntityCollections.SeedLineageCollection;
 
 /**
- * Namespace query for the heritage sub-context — the single discoverable
- * entry point for reading seed-lineage data.
+ * Read surface for the heritage sub-context. N=1 collapse (ADR-020): the sub-context
+ * holds a single entity, so this query <em>is</em> the entity query — no wrapping
+ * namespace, no accessor. Mirrors the top-level convention insects uses.
  */
-public interface SeedLineageQuery {
+public interface SeedLineageQuery extends EntityQuery<SeedLineageName, SeedLineage, SeedLineageCollection> {
 
-    SeedLineageEntityQuery lineages();
-
-    interface SeedLineageEntityQuery extends EntityQuery<SeedLineageName, SeedLineage, SeedLineageCollection> {
-
-        /**
-         * All lineages recorded for a given cultivar — the natural cultivar → lineages rollup.
-         */
-        SeedLineageCollection forCultivarName(CultivarName cultivarName);
-    }
+    SeedLineageCollection forCultivarName(CultivarName cultivarName);
 }

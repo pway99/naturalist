@@ -5,10 +5,12 @@ import com.naturalist.plants.PlantRankName;
 
 import java.util.List;
 
-class PlantProgramRepository {
-    protected interface PlantProgramEntityRepository
-            extends EntityRepository<PlantProgramName, PlantProgram> {
+/**
+ * Persistence port for the management sub-context. N=1 collapse (ADR-020): a top-level
+ * package-private interface rather than a namespace class, since the sub-context
+ * holds a single entity.
+ */
+interface PlantProgramRepository extends EntityRepository<PlantProgramName, PlantProgram> {
 
-        List<PlantProgram> getByPlantName(PlantRankName plantName);
-    }
+    List<PlantProgram> getByPlantName(PlantRankName plantRankName);
 }

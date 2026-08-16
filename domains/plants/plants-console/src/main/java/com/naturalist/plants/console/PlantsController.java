@@ -95,13 +95,13 @@ public class PlantsController {
         if (plant.isEmpty()) {
             return "redirect:/plants";
         }
-        var cultivars = cultivarQuery.cultivars().forPlantName(plantName).stream()
+        var cultivars = cultivarQuery.forPlantName(plantName).stream()
                 .sorted(Comparator.comparing((Cultivar c) -> c.name().value()))
                 .toList();
-        var programs = plantProgramQuery.programs().forPlantName(plantName).stream()
+        var programs = plantProgramQuery.forPlantName(plantName).stream()
                 .sorted(Comparator.comparing((PlantProgram p) -> p.name().value()))
                 .toList();
-        var constituents = phytochemicalConstituentQuery.constituents().forPlantName(plantName).stream()
+        var constituents = phytochemicalConstituentQuery.forPlantName(plantName).stream()
                 .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
                 .toList();
         model.addAttribute("plant", plant.get());
@@ -270,11 +270,11 @@ public class PlantsController {
     @GetMapping("/cultivars/{name}")
     String cultivarDetail(@PathVariable String name, Model model) {
         var cultivarName = CultivarName.of(name);
-        var cultivar = cultivarQuery.cultivars().getByName(cultivarName);
+        var cultivar = cultivarQuery.getByName(cultivarName);
         if (cultivar.isEmpty()) {
             return "redirect:/plants";
         }
-        var lineages = seedLineageQuery.lineages().forCultivarName(cultivarName).stream()
+        var lineages = seedLineageQuery.forCultivarName(cultivarName).stream()
                 .sorted(Comparator.comparing((SeedLineage s) -> s.name().value()))
                 .toList();
         model.addAttribute("cultivar", cultivar.get());
@@ -287,7 +287,7 @@ public class PlantsController {
     @GetMapping("/lineages/{name}")
     String lineageDetail(@PathVariable String name, Model model) {
         var lineageName = SeedLineageName.of(name);
-        var lineage = seedLineageQuery.lineages().getByName(lineageName);
+        var lineage = seedLineageQuery.getByName(lineageName);
         if (lineage.isEmpty()) {
             return "redirect:/plants";
         }
@@ -300,7 +300,7 @@ public class PlantsController {
     @GetMapping("/programs/{name}")
     String programDetail(@PathVariable String name, Model model) {
         var programName = PlantProgramName.of(name);
-        var program = plantProgramQuery.programs().getByName(programName);
+        var program = plantProgramQuery.getByName(programName);
         if (program.isEmpty()) {
             return "redirect:/plants";
         }
@@ -312,7 +312,7 @@ public class PlantsController {
 
     @GetMapping("/phytochemistry")
     String phytochemistryList(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<PhytochemicalConstituent> constituentsPage = phytochemicalConstituentQuery.constituents()
+        Page<PhytochemicalConstituent> constituentsPage = phytochemicalConstituentQuery
                 .findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("constituentsPage", constituentsPage);
         return "plants/phytochemistry/list";
@@ -321,7 +321,7 @@ public class PlantsController {
     @GetMapping("/phytochemistry/{name}")
     String constituentDetail(@PathVariable String name, Model model) {
         var constituentName = PhytochemicalConstituentName.of(name);
-        var constituent = phytochemicalConstituentQuery.constituents().getByName(constituentName);
+        var constituent = phytochemicalConstituentQuery.getByName(constituentName);
         if (constituent.isEmpty()) {
             return "redirect:/plants/phytochemistry";
         }

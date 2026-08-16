@@ -2,21 +2,13 @@ package com.naturalist.plants.management;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.plants.PlantRankName;
-import com.naturalist.plants.management.PlantProgramEntityCollections.PlantProgramCollection;
 
 /**
- * Namespace query for the management sub-context — the single discoverable
- * entry point for reading plant-program data.
+ * Read surface for the management sub-context. N=1 collapse (ADR-020): the sub-context
+ * holds a single entity, so this query <em>is</em> the entity query — no wrapping
+ * namespace, no accessor. Mirrors the top-level convention insects uses.
  */
-public interface PlantProgramQuery {
+public interface PlantProgramQuery extends EntityQuery<PlantProgramName, PlantProgram, PlantProgramCollection> {
 
-    PlantProgramEntityQuery programs();
-
-    interface PlantProgramEntityQuery extends EntityQuery<PlantProgramName, PlantProgram, PlantProgramCollection> {
-
-        /**
-         * All programs recorded for a given plant — the natural plant → programs rollup.
-         */
-        PlantProgramCollection forPlantName(PlantRankName plantName);
-    }
+    PlantProgramCollection forPlantName(PlantRankName plantRankName);
 }

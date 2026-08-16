@@ -157,40 +157,41 @@ chemistry catalog) is a service-layer rule, not a record invariant.
 
 ## Repository and query namespaces
 
-Every sub-context exposes a repository namespace class and a query namespace
-interface, following the convention in `domains/CLAUDE.md`. Seven repositories
-across five sub-contexts:
+The **top-level plants namespace** (N>1: five rank/role entities) keeps its namespace
+shape; the **four single-entity sub-contexts** are N=1-collapsed (ADR-020, M5).
 
 - `PlantRepository` (top-level package-private class) → `SpeciesRepository`,
   `OrderRepository`, `FamilyRepository`, `GenusRepository`, `EcologicalRoleRepository`
-- `CultivarRepository` (cultivar) → `CultivarEntityRepository`
-- `SeedLineageRepository` (heritage) → `SeedLineageEntityRepository`
-- `PlantProgramRepository` (management) → `PlantProgramEntityRepository`
-- `PhytochemicalConstituentRepository` (phytochemistry) →
-  `PhytochemicalConstituentEntityRepository`
+- `CultivarRepository`, `SeedLineageRepository`, `PlantProgramRepository`,
+  `PhytochemicalConstituentRepository` — each a **top-level package-private interface**
+  (no wrapping class, no nested `*EntityRepository`); the sub-context holds one entity.
 
 Read side, all public in api, adapters in `plants-core`:
 
 - `PlantQuery` → `species()` (+ `forGenusName`, `forFamilyName`), `orders()`,
   `families()` (+ `forOrderName`), `genera()` (+ `forFamilyName`),
   `ecologicalRoles()` (+ `forPlantName`)
-- `CultivarQuery` → `cultivars()` (+ `forPlantName`)
-- `SeedLineageQuery` → `lineages()` (+ `forCultivarName`)
-- `PlantProgramQuery` → `programs()` (+ `forPlantName`)
-- `PhytochemicalConstituentQuery` → `constituents()`
-  (+ `forPlantName`, `forCompoundName` — the cross-domain reverse lookup)
+- `CultivarQuery` **is** the cultivar query — `extends EntityQuery<…>` with `forPlantName`
+  inline; no `cultivars()` accessor, no nested type.
+- `SeedLineageQuery` (+ `forCultivarName`), `PlantProgramQuery` (+ `forPlantName`),
+  `PhytochemicalConstituentQuery` (+ `forPlantName`, `forCompoundName`) — same collapsed
+  shape.
 
-Collections: `PlantEntityCollections` (`SpeciesCollection`, `OrderCollection`,
-`FamilyCollection`, `GenusCollection`, `EcologicalRoleCollection`) plus one
-`*EntityCollections` namespace per sub-context. No aggregate factories exist yet — add them
-package-private and concrete in `plants-core` when a read model materializes.
+Collections: the top-level `PlantEntityCollections` namespace (`SpeciesCollection`,
+`OrderCollection`, `FamilyCollection`, `GenusCollection`, `EcologicalRoleCollection`);
+each sub-context has a **top-level** `<Entity>Collection` (no `*EntityCollections`
+namespace). No aggregate factories exist yet.
 
-The top-level plants namespace follows ADR-020: nested types drop the domain prefix
-and `Entity` infix (`FamilyQuery`, `GenusRepository`, `SpeciesCollection`), and the
-species accessor is `species()`, matching insects (M4, 2026-08-16). **One known
-deviation remains** (M5): the four single-entity sub-contexts (cultivar, heritage,
-management, phytochemistry) still wrap their lone type in a namespace where the N=1
-collapse rule says to skip it.
+The top-level plants namespace follows ADR-020 (M4, 2026-08-16): nested types drop the
+domain prefix and `Entity` infix (`FamilyQuery`, `GenusRepository`, `SpeciesCollection`),
+species accessor `species()`, matching insects. The four single-entity sub-contexts are
+N=1-collapsed (M5, 2026-08-16).
+
+**One deliberate deviation from the M5 plan:** the four `<Entity>TestContext` factories
+were *not* folded into `PlantsTestContext`. They live in their sub-context packages to
+reach the package-private `*QueryImpl`/`*RepositoryMock`; the root-package
+`PlantsTestContext` cannot (insects avoids this only because its impls share the root
+package). Each `*TestContext` was simplified to `new <Entity>QueryImpl(new <Entity>RepositoryMock(db))`.
 
 ## Domain-specific invariants
 

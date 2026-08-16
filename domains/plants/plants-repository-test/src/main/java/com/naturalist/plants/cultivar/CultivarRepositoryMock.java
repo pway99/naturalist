@@ -8,11 +8,11 @@ import com.naturalist.plants.PlantSpeciesName;
 import java.util.List;
 
 @DomainService
-class CultivarEntityRepositoryMock
+class CultivarRepositoryMock
         extends AbstractTestEntityRepository<CultivarName, Cultivar, CultivarTestEntitySource>
-        implements CultivarRepository.CultivarEntityRepository {
+        implements CultivarRepository {
 
-    CultivarEntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    CultivarRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 

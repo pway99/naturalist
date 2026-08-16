@@ -1,20 +1,42 @@
 package com.naturalist.plants.phytochemistry;
 
-import com.naturalist.observability.Observer;
+import com.naturalist.chemistry.compound.CompoundName;
+import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
+import com.naturalist.plants.PlantRankName;
 
-class PhytochemicalConstituentQueryImpl implements PhytochemicalConstituentQuery {
+import java.util.Set;
 
-    private final PhytochemicalConstituentEntityQuery phytochemicalConstituentEntityQuery;
+@DomainService
+class PhytochemicalConstituentQueryImpl
+        extends AbstractEntityQuery<PhytochemicalConstituentName, PhytochemicalConstituent, PhytochemicalConstituentCollection, PhytochemicalConstituentRepository>
+        implements PhytochemicalConstituentQuery {
 
-    PhytochemicalConstituentQueryImpl(PhytochemicalConstituentEntityQuery phytochemicalConstituentEntityQuery) {
-        Observer.forClass(PhytochemicalConstituentQueryImpl.class).arguments("constructor", i -> i
-                        .notNull(phytochemicalConstituentEntityQuery, "phytochemicalConstituentEntityQuery"))
-                .throwWhenInvalid();
-        this.phytochemicalConstituentEntityQuery = phytochemicalConstituentEntityQuery;
+    PhytochemicalConstituentQueryImpl(PhytochemicalConstituentRepository repository) {
+        super(repository);
     }
 
     @Override
-    public PhytochemicalConstituentEntityQuery constituents() {
-        return phytochemicalConstituentEntityQuery;
+    public PhytochemicalConstituentCollection findByNameSet(Set<PhytochemicalConstituentName> names) {
+        observer().arguments("findByNameSet", i -> i
+                        .identifierSet(names, "names"))
+                .throwWhenInvalid();
+        return PhytochemicalConstituentCollection.of(repository().getByEntityNameSet(names));
+    }
+
+    @Override
+    public PhytochemicalConstituentCollection forPlantName(PlantRankName plantName) {
+        observer().arguments("forPlantName", i -> i
+                        .identifier(plantName, "plantName"))
+                .throwWhenInvalid();
+        return PhytochemicalConstituentCollection.of(repository().getByPlantName(plantName));
+    }
+
+    @Override
+    public PhytochemicalConstituentCollection forCompoundName(CompoundName compoundName) {
+        observer().arguments("forCompoundName", i -> i
+                        .entityName(compoundName, "compoundName"))
+                .throwWhenInvalid();
+        return PhytochemicalConstituentCollection.of(repository().getByCompoundName(compoundName));
     }
 }

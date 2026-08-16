@@ -16,16 +16,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link CultivarRepository.CultivarEntityRepository}.
+ * Behavioral contract for {@link CultivarRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies Cultivar-specific identity constants and entity construction.
  */
-interface CultivarEntityRepositoryTest
+interface CultivarRepositoryTest
         extends EntityRepositoryTest<CultivarName, Cultivar> {
 
     @Override
-    CultivarRepository.CultivarEntityRepository repository();
+    CultivarRepository repository();
 
     @Override
     default TestEntitySource<CultivarName, Cultivar> source() {

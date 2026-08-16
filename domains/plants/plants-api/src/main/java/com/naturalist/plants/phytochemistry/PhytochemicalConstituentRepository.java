@@ -1,24 +1,18 @@
 package com.naturalist.plants.phytochemistry;
 
-import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityRepository;
 import com.naturalist.plants.PlantRankName;
+import com.naturalist.chemistry.compound.CompoundName;
 
 import java.util.List;
 
-class PhytochemicalConstituentRepository {
-    protected interface PhytochemicalConstituentEntityRepository
-            extends EntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent> {
+/**
+ * Persistence port for the phytochemistry sub-context. N=1 collapse (ADR-020): a top-level
+ * package-private interface rather than a namespace class, since the sub-context
+ * holds a single entity.
+ */
+interface PhytochemicalConstituentRepository extends EntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent> {
 
-        /**
-         * All constituents recorded for a given plant.
-         */
-        List<PhytochemicalConstituent> getByPlantName(PlantRankName plantName);
-
-        /**
-         * All constituents that reference a given compound — the cross-domain
-         * reverse lookup (which plants are known to produce this compound).
-         */
-        List<PhytochemicalConstituent> getByCompoundName(CompoundName compoundName);
-    }
+    List<PhytochemicalConstituent> getByPlantName(PlantRankName plantRankName);
+    List<PhytochemicalConstituent> getByCompoundName(CompoundName compoundName);
 }

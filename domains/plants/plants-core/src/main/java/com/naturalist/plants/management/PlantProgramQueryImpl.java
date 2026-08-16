@@ -1,20 +1,33 @@
 package com.naturalist.plants.management;
 
-import com.naturalist.observability.Observer;
+import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
+import com.naturalist.plants.PlantRankName;
 
-class PlantProgramQueryImpl implements PlantProgramQuery {
+import java.util.Set;
 
-    private final PlantProgramEntityQuery plantProgramEntityQuery;
+@DomainService
+class PlantProgramQueryImpl
+        extends AbstractEntityQuery<PlantProgramName, PlantProgram, PlantProgramCollection, PlantProgramRepository>
+        implements PlantProgramQuery {
 
-    PlantProgramQueryImpl(PlantProgramEntityQuery plantProgramEntityQuery) {
-        Observer.forClass(PlantProgramQueryImpl.class).arguments("constructor", i -> i
-                        .notNull(plantProgramEntityQuery, "plantProgramEntityQuery"))
-                .throwWhenInvalid();
-        this.plantProgramEntityQuery = plantProgramEntityQuery;
+    PlantProgramQueryImpl(PlantProgramRepository repository) {
+        super(repository);
     }
 
     @Override
-    public PlantProgramEntityQuery programs() {
-        return plantProgramEntityQuery;
+    public PlantProgramCollection findByNameSet(Set<PlantProgramName> names) {
+        observer().arguments("findByNameSet", i -> i
+                        .identifierSet(names, "names"))
+                .throwWhenInvalid();
+        return PlantProgramCollection.of(repository().getByEntityNameSet(names));
+    }
+
+    @Override
+    public PlantProgramCollection forPlantName(PlantRankName plantName) {
+        observer().arguments("forPlantName", i -> i
+                        .identifier(plantName, "plantName"))
+                .throwWhenInvalid();
+        return PlantProgramCollection.of(repository().getByPlantName(plantName));
     }
 }

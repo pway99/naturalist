@@ -2,21 +2,13 @@ package com.naturalist.plants.cultivar;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.plants.PlantSpeciesName;
-import com.naturalist.plants.cultivar.CultivarEntityCollections.CultivarCollection;
 
 /**
- * Namespace query for the cultivar sub-context — the single discoverable
- * entry point for reading cultivar data.
+ * Read surface for the cultivar sub-context. N=1 collapse (ADR-020): the sub-context
+ * holds a single entity, so this query <em>is</em> the entity query — no wrapping
+ * namespace, no accessor. Mirrors the top-level convention insects uses.
  */
-public interface CultivarQuery {
+public interface CultivarQuery extends EntityQuery<CultivarName, Cultivar, CultivarCollection> {
 
-    CultivarEntityQuery cultivars();
-
-    interface CultivarEntityQuery extends EntityQuery<CultivarName, Cultivar, CultivarCollection> {
-
-        /**
-         * All cultivars recorded for a given plant — the natural plant → cultivars rollup.
-         */
-        CultivarCollection forPlantName(PlantSpeciesName plantName);
-    }
+    CultivarCollection forPlantName(PlantSpeciesName plantSpeciesName);
 }

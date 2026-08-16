@@ -1,31 +1,17 @@
 package com.naturalist.plants.phytochemistry;
 
-import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.EntityQuery;
 import com.naturalist.plants.PlantRankName;
-import com.naturalist.plants.phytochemistry.PhytochemicalConstituentEntityCollections.PhytochemicalConstituentCollection;
+import com.naturalist.chemistry.compound.CompoundName;
 
 /**
- * Namespace query for the phytochemistry sub-context — the single
- * discoverable entry point for reading phytochemical-constituent data.
- *
- * <p>The two cross-entity rollups are the heart of the consumer surface:
- * <ul>
- *   <li>{@link PhytochemicalConstituentEntityQuery#forPlantName(PlantRankName)} —
- *       what compounds does a plant produce?</li>
- *   <li>{@link PhytochemicalConstituentEntityQuery#forCompoundName(CompoundName)} —
- *       what plants produce a given compound? (cross-domain reverse lookup)</li>
- * </ul>
+ * Read surface for the phytochemistry sub-context. N=1 collapse (ADR-020): the sub-context
+ * holds a single entity, so this query <em>is</em> the entity query — no wrapping
+ * namespace, no accessor. Mirrors the top-level convention insects uses.
  */
-public interface PhytochemicalConstituentQuery {
+public interface PhytochemicalConstituentQuery extends EntityQuery<PhytochemicalConstituentName, PhytochemicalConstituent, PhytochemicalConstituentCollection> {
 
-    PhytochemicalConstituentEntityQuery constituents();
+    PhytochemicalConstituentCollection forPlantName(PlantRankName plantRankName);
 
-    interface PhytochemicalConstituentEntityQuery
-            extends EntityQuery<PhytochemicalConstituentName, PhytochemicalConstituent, PhytochemicalConstituentCollection> {
-
-        PhytochemicalConstituentCollection forPlantName(PlantRankName plantName);
-
-        PhytochemicalConstituentCollection forCompoundName(CompoundName compoundName);
-    }
+    PhytochemicalConstituentCollection forCompoundName(CompoundName compoundName);
 }

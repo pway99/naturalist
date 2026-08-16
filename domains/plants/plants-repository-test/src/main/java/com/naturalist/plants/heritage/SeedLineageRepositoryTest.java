@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link SeedLineageRepository.SeedLineageEntityRepository}.
+ * Behavioral contract for {@link SeedLineageRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
  * Supplies SeedLineage-specific identity constants and entity construction.
@@ -26,11 +26,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * (italian-pear-nicks, amish-paste) so the constructed lineages are
  * service-layer-valid as well as record-valid.
  */
-interface SeedLineageEntityRepositoryTest
+interface SeedLineageRepositoryTest
         extends EntityRepositoryTest<SeedLineageName, SeedLineage> {
 
     @Override
-    SeedLineageRepository.SeedLineageEntityRepository repository();
+    SeedLineageRepository repository();
 
     @Override
     default TestEntitySource<SeedLineageName, SeedLineage> source() {

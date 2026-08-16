@@ -519,7 +519,7 @@ exception rather than an accident.
 
 ---
 
-## M5 — N=1 collapse in the four single-entity sub-contexts
+## M5 — N=1 collapse in the four single-entity sub-contexts  ✅ DONE 2026-08-16
 
 **Depends on:** nothing. Do with M4 — same files, same reviewers.
 
@@ -529,15 +529,18 @@ declare a top-level package-private `<Entity>Repository` interface and a top-lev
 hold exactly one entity and each wraps it anyway — eight namespace types carrying one
 member apiece, plus four `*EntityCollections` interfaces holding one class each.
 
-- [ ] `CultivarQuery` becomes `interface CultivarQuery extends EntityQuery<...>` with
+- [x] `CultivarQuery` becomes `interface CultivarQuery extends EntityQuery<...>` with
       `forPlantName` inline; drop the `cultivars()` accessor and `CultivarEntityQuery`.
-- [ ] Same for `SeedLineageQuery`, `PlantProgramQuery`, `PhytochemicalConstituentQuery`.
-- [ ] Same for the four repository namespace classes.
-- [ ] Collapse `CultivarEntityCollections` → top-level `CultivarCollection`; ×4.
-- [ ] Delete the now-redundant `*QueryImpl` pass-through adapters (`CultivarQueryImpl`
-      only delegates to `CultivarEntityQueryImpl`) and fold the four `*TestContext`
-      classes into `PlantsTestContext`.
-- [ ] Update call sites: `cultivarQuery.cultivars().forPlantName(x)` →
+- [x] Same for `SeedLineageQuery`, `PlantProgramQuery`, `PhytochemicalConstituentQuery`.
+- [x] Same for the four repository namespace classes.
+- [x] Collapse `CultivarEntityCollections` → top-level `CultivarCollection`; ×4.
+- [x] Delete the now-redundant `*QueryImpl` pass-through adapters (`CultivarQueryImpl`
+      only delegated to `CultivarEntityQueryImpl`); the entity impl becomes the query impl.
+- [~] **Fold the four `*TestContext` into `PlantsTestContext` — NOT done, by necessity.**
+      They live in their sub-context packages to reach the package-private
+      `*QueryImpl`/`*RepositoryMock`; `PlantsTestContext` (root package) cannot. Each was
+      simplified to a one-line `new <Entity>QueryImpl(new <Entity>RepositoryMock(db))` instead.
+- [x] Update call sites: `cultivarQuery.cultivars().forPlantName(x)` →
       `cultivarQuery.forPlantName(x)` in `PlantsController` and the core tests.
 
 **Note:** this reverses a claim in the old `domains/plants/CLAUDE.md` ("N=1 per
