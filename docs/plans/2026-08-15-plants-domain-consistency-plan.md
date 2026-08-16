@@ -156,29 +156,83 @@ backed out of. `lifeForm` stays on the taxon records: it is a morphological trai
 intrinsic to the taxon, not a site-specific assignment, and a reader should not need a
 second query to learn that a plant is a vine.
 
-### M2a — `PlantRankName` sealed type
+### M2a — `PlantRankName` sealed type  ✅ SHIPPED 2026-08-15
 
-- [ ] `domains/identifiers/.../plants/PlantRankName.java`, modelled on `InsectRankName`:
-      `sealed interface PlantRankName permits PlantFamilyName, PlantGenusName, PlantName`,
-      exposing `value()` and `rank()` (`LinealRank`), plus `of(String, LinealRank)`.
-- [ ] No `PlantOrderName` permit — there is no `PlantOrder` entity, and `InsectRankName`
-      only permits ranks that have one. Add it if and when an order entity lands.
-- [ ] **Naming wart to resolve here:** `PlantName` is the species-rank permit but is not
-      called `PlantSpeciesName`. Either rename it (wide but mechanical — it is referenced
-      across `plants-api`, `plants-core`, `garden`, and the JSON catalogs) or keep it and
-      document the exception on the sealed interface. Decide before M2b so consumers are
-      written once.
-- [ ] Jackson dispatch is declared **at the consuming field**, not on the interface —
-      copy the `@JsonTypeInfo(EXTERNAL_PROPERTY)` + `@JsonSubTypes` block from
-      `InsectFunctionalRole.parentName`. Getting this wrong silently emits
-      `{"valid":…,"notValid":…}` envelopes on write.
+- [x] `PlantRankName` permitting `PlantFamilyName`, `PlantGenusName`, `PlantName`, with
+      `value()`, `rank()` and `of(String, LinealRank)`. `PlantRankNameTest` covers each
+      permit, the factory, rejection of uncatalogued ranks, and class-qualified equality.
+- [x] No `PlantOrderName` permit — no `PlantOrder` entity exists.
+- [x] **`CultivarName` is deliberately not a permit.** A cultivated variety is a selection
+      within a species, not a rung below it. Admitting it would have forced `rank()` to
+      return null for one permit and — because a sealed type's permits must share a package
+      in the unnamed module — dragged `CultivarName` out of its sub-package. Both costs were
+      the type reporting that the concept does not belong. Cultivar is an orthogonal axis;
+      see the blueprint §D.
+- [x] **Garden migrated in the same effort.** `Planting.plantName` (a `PlantName`) became
+      `subject` (a `PlantRankName`), so a planting can finally be recorded at genus —
+      "a tray of unlabelled salvia starts" was previously unrepresentable. `cultivarName`
+      stays a separate component: two axes, two fields. `planting.json` gained a
+      `subjectRank` discriminator per row.
+- [x] Jackson dispatch declared at the consuming field, not on the interface.
+
+**Naming decision, taken and pending execution:** `PlantName` is the species-rank permit
+but does not say so — insects has no bare `InsectName`, because every insect name states
+its rank. The bare name asserts a primacy that does not exist: a plant is named on three
+axes (rank, cultivar, crop type), and `PlantName` is one rung of one of them. Renaming
+covers **both** the name and the entity:
+
+```
+Plant                     → PlantSpecies
+PlantName                 → PlantSpeciesName
+PlantCollection           → PlantSpeciesCollection
+PlantTestEntitySource     → PlantSpeciesTestEntitySource
+plants/plants.json        → plants/plant-species.json
+```
+
+~75 files in the union, a pure rename with no behaviour change. It also **dissolves M4's
+degeneracy**: with the entity named `PlantSpecies`, ADR-020's subject is "Species", giving
+`PlantQuery.SpeciesQuery` exactly as insects has — no documented exception needed.
+Out of scope for the rename: component names (`Cultivar.plantName` stays, still
+species-bound and still accurate), JSON field names, and the ADR-020 nested-type renames
+(M4's job).
+
+### M2a′ — Rank audit of the existing catalog  🚧 NEXT, blocks M2b
+
+**Do this before any record is reshaped.** M2b adds a `genusName` foreign key and requires
+every plant to resolve to a genus; a row whose slug claims a rank its evidence does not
+support would have that wrong rank cemented behind an FK and a data migration.
+
+The catalog was authored before the rank layer existed, so **a binomial slug is a claim
+about identification confidence, not a fact**. This is the blueprint's B1 discipline —
+catalogue at the most specific rank the evidence supports — applied retrospectively. The
+five known duplicates are the obvious cases, not necessarily the only ones.
+
+- [ ] For each of the 22 rows in `plants.json`, record: the current slug, what the entry's
+      description and common names actually evidence, the rank that evidence supports, and
+      the resulting action (keep as species / demote to genus / demote to family / merge
+      with an existing rank record).
+- [ ] Output is a **reclassification table reviewed before code moves**. Data authoring and
+      rank judgment are the deliverable here; no Java changes.
+- [ ] Carry the same test through `cultivars.json`, `plant-programs.json` and
+      `phytochemical-constituents.json` — each references a plant, and a demoted plant
+      re-points every reference to it.
+- [ ] Known from prior work: `creeping-thyme`, `ornamental-passiflora`, `dianthus`, `sage`
+      and `citrus` carry `"species": null` and duplicate an existing `PlantGenus` record.
+      Treat these as confirmed demotions, not as the full answer.
+
+**Rule of thumb for the audit:** a slug is honest at species rank only if the record names
+a species that could be distinguished in the field from its congeners. "Some salvia in the
+front bed" is a genus record whatever its slug says.
 
 ### M2b — Reshape `Plant` to species rank
 
+**Depends on M2a′.** Reshape only what the audit has confirmed is species rank.
+
 - [ ] Replace `TaxonomicClassification taxonomy` with `PlantGenusName genusName` +
       `TaxonomicSpecies epithet`; both validated (`.entityName`, `.namedValue`).
-- [ ] Delete the five genus-level rows from `plants.json`; their `PlantGenus` records are
-      now the sole home for those taxa.
+- [ ] Apply the audit's reclassification: demoted rows leave `plants.json`, their
+      references re-point at the surviving rank record, and their `PlantGenus`/`PlantFamily`
+      record becomes the sole home for that taxon.
 - [ ] `ForeignKeyConstraint` on `PlantTestEntitySource` → `PlantGenusTestEntitySource`.
 - [ ] Decide whether `Plant implements LinnaeanSpecies<PlantGenusName>`, mirroring
       `PlantGenus implements LinnaeanGenus<PlantFamilyName>`.
@@ -371,28 +425,34 @@ Forward-looking gaps, listed so they are not mistaken for oversights:
 ## Suggested ordering
 
 ```
-M1 ✅ decided (Option A)
+M1  ✅ decided (Option A)
+M2a ✅ PlantRankName + garden migration     ← shipped 2026-08-15
+M2d ✅ genus backfill (14 records)          ← shipped 2026-08-15
+M3  ✅ routes + linker                      ← shipped 2026-08-15
  │
- ├─→ M2a  PlantRankName                    ← unblocks M2b/M2c/M2e
- │    ├─→ M2b  Plant → species rank
- │    ├─→ M2c  PlantEcologicalRole         ← audit PestManagement first
- │    └─→ M2e  re-key the constituent
- │   M2d ✅ genus backfill (14 records)     ← shipped 2026-08-15
- │   M2f  hierarchy queries                ← after M2b + M2d (genus side done in M3)
+ ├─→ RENAME  Plant → PlantSpecies           ← decided, pure rename, do while tree is quiet
  │
- └─→ M3 ✅ routes + linker                 ← shipped 2026-08-15
+ └─→ M2a′  rank audit of the catalog        ← DATA JUDGMENT, blocks M2b
+       └─→ M2b  reshape to species rank     ← largest remaining change
+             ├─→ M2c  PlantEcologicalRole
+             ├─→ M2e  re-key the constituent
+             └─→ M2f  hierarchy queries
 
-M4 + M5  namespace cleanup                 ← independent, do whenever
+M4 + M5  namespace cleanup                  ← independent; M4 got simpler after the rename
 ```
 
-**M3 and M2d are done.** Next is **M2a** — the `PlantRankName` sealed type, including the
-`PlantName` vs `PlantSpeciesName` naming call — which gates M2b, M2c and M2e. With the
-genus catalog now complete, M2b's backfill has real records to point every plant at.
+**Next two, in either order — they do not touch the same things.**
 
-M2a is the gate for the rest of M2 and should land as its own PR, including the
-`PlantName` vs `PlantSpeciesName` naming call. M2d is pure data authoring and can run in
-parallel with anyone's code work.
+**The rename** is mechanical, has no behaviour to verify beyond a green build, and is
+cheapest while nothing else is in flight. Every milestone after it writes new consumer
+code, and each should be writing `PlantSpecies` from the start rather than being corrected
+later.
 
-M2b is now the largest remaining change — it drops a component other code reads. M2c is
-smaller than it looks: the role predicates have six template call sites and no
+**M2a′** is the one piece of this plan that is not a coding task. It is a judgment about
+plants, made by reading the catalog, and its output is a reviewed table rather than a diff.
+It blocks M2b absolutely: reshaping before re-assessing would cement a wrong rank behind a
+foreign key.
+
+After those, M2b is the largest remaining change — it drops a component other code reads.
+M2c is smaller than it looks: the role predicates have six template call sites and no
 cross-domain consumers.

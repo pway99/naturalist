@@ -3,7 +3,38 @@
 Coding conventions and structural rules for the plants domain. Narrative,
 ecological, and historical context lives in
 [`docs/briefings/plants-domain.md`](../../docs/briefings/plants-domain.md) — load that file when the
-conversation is about the *what* and *why* rather than the *how*.
+conversation is about the *what* and *why* rather than the *how*. Domain vocabulary and
+the cross-domain relationship map live in [`docs/plants-ubl.md`](docs/plants-ubl.md).
+
+## Plants is being brought into line with insects
+
+Plants was one of the first domains built. Insects then became the focus, and it was in
+modelling insects that the working answers emerged — how to carry Linnaean rank, how to
+place an organism in a clade, and how to record a find at the rank its evidence supports.
+Plants predates all of it.
+
+**Three rules hold for every step of that alignment.** They are not milestones; they
+govern whatever milestone is in flight. Current work is tracked in
+[the consistency plan](../../docs/plans/2026-08-15-plants-domain-consistency-plan.md).
+
+**1. Insects is the reference; plants moves.** Where the two disagree on shape — rank
+entities, name types, cross-rank attachment, read models — insects is right by default and
+plants changes. Deviating needs a stated plants-specific reason recorded here, not an
+inherited accident. The design itself is written up in
+[`docs/plans/organism-domain-blueprint.md`](../../docs/plans/organism-domain-blueprint.md).
+
+**2. The catalog is test data, not fact.** `plants.json` and its siblings were authored
+before the rank layer existed. A binomial in a slug is a *claim about identification
+confidence*, not a given — several rows name a rank the evidence does not support. Assign
+each record to the most specific rank its evidence actually supports and no further; this
+is the blueprint's B1 discipline applied retrospectively, and it is the same rule whether
+the identifier is a vision model or a human reading the catalog. Never reshape a record
+before its rank has been re-assessed — a foreign key added to a wrong rank is far more
+expensive to undo than to get right first.
+
+**3. Align first, abstract second.** Generalising into `kernels/taxonomy` or
+`kernels/clades` waits until plants matches insects and the two can be read side by side.
+An abstraction drawn from one finished domain and one mid-migration is drawn from noise.
 
 ## Sub-context layout
 
