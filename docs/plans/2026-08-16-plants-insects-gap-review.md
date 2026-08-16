@@ -68,25 +68,26 @@ differently, or deliberately defers).
    Record the root-entity exception (`Plant` is both domain noun and subject) in
    `domains/CLAUDE.md`.
 3. **M5 — N=1 collapse** for the four single-entity sub-contexts. Do with M4.
-4. **Cosmetic:** `TestPlantsIdentifiers` uses plural scope names (`PlantFamilies`,
+4. **M6 — split `PlantLifeForm`** into `GrowthHabit` (USDA growth-habit vocab) + `LifeCycle`; use categories stay off both. Decision recorded 2026-08-16; do with M4/M5.
+5. **Cosmetic:** `TestPlantsIdentifiers` uses plural scope names (`PlantFamilies`,
    `PlantGenera`) where insects uses singular; fold into M4.
 
 ### B. Structural parity (medium, needs design)
 
-5. **Rank-polymorphic read model** — a `PlantTaxonView` sealed over per-rank views plus a
+6. **Rank-polymorphic read model** — a `PlantTaxonView` sealed over per-rank views plus a
    package-private factory, mirroring `InsectTaxonView`. This is the cleanest next parity
    step and would let the console stop hand-assembling rank pages.
-6. **Write side** — `PlantCommand` + a `Transaction`, and `with*` methods on the mutable
+7. **Write side** — `PlantCommand` + a `Transaction`, and `with*` methods on the mutable
    records. Prerequisite for anything that creates/edits plant data.
 
 ### C. Strategic / MVP (large, sequence later)
 
-7. **Decide the plant collection unit.** Is `garden.Planting` the plant-side
+8. **Decide the plant collection unit.** Is `garden.Planting` the plant-side
    `FieldObservation`, or does plants need its own observation entity? Decide before
    building, to avoid duplicating the concept.
-8. **Images + vision identification** — the MVP feature (images stay on device). Depends on
+9. **Images + vision identification** — the MVP feature (images stay on device). Depends on
    the write side and a decision on the collection unit.
-9. **Clade activation** — kernel work (plant clade permits + trait function); blocked on the
+10. **Clade activation** — kernel work (plant clade permits + trait function); blocked on the
    clades kernel, tracked as effort #2 Phase 6.
 
 ### D. The abstraction pass (rule 3)

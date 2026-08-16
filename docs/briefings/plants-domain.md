@@ -176,15 +176,33 @@ All cross-domain references are by `EntityName` slug via the shared
 
 ## Open design questions
 
-- **GrowthForm vs PlantRole.** The current model uses `PlantLifeForm` (annual,
-  perennial, vine, shrub, tree, grass) for management cadence and a many-to-many
-  `Set<PlantRole>` for ecological function. Borage is the test case for the
-  many-to-many shape: POLLINATOR_SUPPORT + GROUND_COVER + INSECT_LARVAL_HOST
-  simultaneously. The open question is whether a separate `GrowthForm` enum
-  (FRUIT_TREE, FRUIT_VINE, VEGETABLE_CROP, COVER_CROP, ORNAMENTAL_WOODY,
-  POLLINATOR_PLANT) earns its keep alongside the existing axes, or whether
-  it would just duplicate information already encoded in `PlantLifeForm` +
-  `PlantRole`.
+- **GrowthForm — resolved 2026-08-16.** The floated `GrowthForm` enum
+  (FRUIT_TREE, FRUIT_VINE, VEGETABLE_CROP, COVER_CROP, …) is rejected: those are
+  *use* categories, not botanical forms. "Fruit tree" alone spans unrelated taxa —
+  stone fruit (*Prunus*, Rosaceae), citrus (*Citrus*, Rutaceae), fig (*Ficus*,
+  Moraceae), pome (*Malus/Pyrus*, Rosaceae) — so a value like FRUIT_TREE triple-counts
+  taxonomy (the rank chain), habit (tree), and use (fruit) in one token.
+
+  The real defect is in the *existing* field: `PlantLifeForm` conflates two orthogonal
+  botanical axes — **growth habit** (vine/shrub/tree/grass) and **life-cycle duration**
+  (annual/perennial). Its own javadoc admits it ("vines may be annual or perennial —
+  captured in life form regardless of duration"), and herbaceous non-grass plants
+  (tomato, borage, dill) have no habit term at all, only a duration.
+
+  The fix uses recognised botanical vocabularies rather than inventing one — split into
+  two enums:
+
+  - **`GrowthHabit`** — the USDA PLANTS *Growth Habit* set a botanist recognises:
+    `TREE, SHRUB, SUBSHRUB, FORB_HERB, GRAMINOID, VINE`.
+  - **`LifeCycle`** — `ANNUAL, BIENNIAL, PERENNIAL`.
+
+  Use categories stay off both. Ecological function is already the many-to-many
+  `Set<PlantRole>` (borage remains the test case: POLLINATOR_SUPPORT + GROUND_COVER +
+  INSECT_LARVAL_HOST at once); agronomic use (fruit/vegetable/cover crop) belongs to a
+  future `CropType` axis (anticipated, not yet built). The academic Raunkiær life-form
+  system (phanerophyte/therophyte/…) was considered and set aside as too abstract for a
+  garden-management and young-naturalist catalog. **Implementation is folded into the
+  M4/M5 cleanup — see the consistency plan (M6).**
 
 - **Aggregate factory placement.** No `PlantAggregate` yet. If one materializes
   (Plant + Cultivars + Programs + Constituents assembled by name), the

@@ -538,6 +538,41 @@ read the rule backwards. That line is already corrected on the `plants-consisten
 
 ---
 
+## M6 — Split `PlantLifeForm` into `GrowthHabit` + `LifeCycle`
+
+**Decision recorded 2026-08-16** (briefing → *Open design questions*). `PlantLifeForm`
+(`ANNUAL, PERENNIAL, VINE, SHRUB, TREE, GRASS`) conflates two orthogonal botanical axes —
+growth **habit** and life-**cycle** — and herbaceous non-grass plants have no habit term.
+Split into two enums using recognised vocabularies instead of inventing one:
+
+- **`GrowthHabit`** — USDA PLANTS *Growth Habit*: `TREE, SHRUB, SUBSHRUB, FORB_HERB,
+  GRAMINOID, VINE`.
+- **`LifeCycle`** — `ANNUAL, BIENNIAL, PERENNIAL`.
+
+**Use categories are out of scope** (fruit/vegetable/cover crop): those are the anticipated
+agronomic `CropType` axis (not yet built) or the existing `Set<PlantRole>`, never a growth
+form. `FRUIT_TREE`-style values are rejected — they triple-count taxonomy + habit + use.
+Raunkiær life-forms considered and set aside as too abstract for this catalog.
+
+**Do with M4/M5** — same files, same reviewer, and it is another arity change to
+`PlantSpecies` so batching avoids a second ripple across the same consumers.
+
+- [ ] Add `GrowthHabit` and `LifeCycle` enums in `plants-api` (Durrell-style javadoc per
+      value, as `PlantLifeForm` has today).
+- [ ] Replace `PlantSpecies.lifeForm` (`PlantLifeForm`) with `growthHabit` (`GrowthHabit`)
+      + `lifeCycle` (`LifeCycle`); update `invariants()` (both `notNull`).
+- [ ] Migrate `plant-species.json`: every row gains `growthHabit` + `lifeCycle`. The four
+      woody/vine/grass rows carry their habit and gain an explicit duration; the
+      annual/perennial rows become `FORB_HERB` + their duration (unless a vine/etc.).
+- [ ] Delete `PlantLifeForm`.
+- [ ] Consumer ripple (grep confirmed): `PlantSpecies.java`, `PlantSpeciesTest`,
+      `PlantSpeciesEntityRepositoryTest` (newEntity/ghostEntity/modifiedEntity),
+      `plants/detail.jte` and `plants/list.jte` (the "Life form" line becomes two).
+- [ ] Update `domains/plants/CLAUDE.md` (identity/invariants + the `plant-species.json`
+      field docs) to describe the two axes.
+
+---
+
 ## Deliberately out of scope
 
 Forward-looking gaps, listed so they are not mistaken for oversights:
@@ -591,6 +626,7 @@ references (`PlantProgram`, `PhytochemicalConstituent`, garden's `Planting`) car
   renders a member-plants placeholder (and `PlantsController` carries a stale comment saying
   `genusName` "does not exist yet"); this milestone wires the rollup and removes both.
 - **M4 — ADR-020 namespace naming** and **M5 — N=1 collapse.** Independent, mechanical.
+- **M6 — split `PlantLifeForm`** into `GrowthHabit` + `LifeCycle` (botanical axes). Do with M4/M5 — another `PlantSpecies` arity change over the same consumers.
 
 Not in this plan but surfaced since: the console-parity follow-on (lands on `/plants/orders`,
 taxonomic breadcrumb) shipped 2026-08-16; the larger insects-parity gaps (rank-polymorphic
