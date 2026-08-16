@@ -210,11 +210,26 @@ rows, and `plants/detail.jte` / `list.jte`. Grep for `new Plant(` and `taxonomy(
       in `plants.json`, including the five moved organisms — no ecological data is lost
       in the move, which was the whole objection to a naive delete.
 
-### M2d — Genus backfill
+### M2d — Genus backfill  ✅ SHIPPED 2026-08-15
 
-- [ ] Author a `PlantGenus` record per genus referenced by a surviving `Plant`. **16 of
-      21 are missing** — real Linnaean data plus a four-level `Description` each. This is
-      the bulk of the calendar time in M2 and is data authoring, not code.
+- [x] Author a `PlantGenus` record per genus referenced by a surviving `Plant`.
+      **14 distinct genera were missing, not 16** — the earlier figure counted plant
+      *rows* with an uncatalogued genus, and `Trifolium` and `Solanum` each carry two
+      plants. Catalog goes 5 → 19 records; all 14 parent families already existed, so no
+      family authoring was needed.
+- [x] `PlantGenusCatalogDataTest` — encodes M2d's acceptance criterion as a test rather
+      than a one-time achievement: every genus a `Plant` references has a record, every
+      genus resolves to a catalogued family, each genus's locally-carried `family`
+      epithet agrees with its parent record, and slugs are valid lower-kebab-case
+      matching the lowercased epithet. Without the first assertion, adding a plant with
+      an uncatalogued genus silently re-opens the gap and M2b's backfill has to be redone.
+
+Descriptions are written at **genus** level, not species level — under Option A these
+records are the permanent home for genus-only identifications, so `Trifolium` covers both
+clovers and `Solanum` covers tomato and eggplant. The five pre-existing genus records
+(`thymus`, `passiflora`, `dianthus`, `salvia`, `citrus`) still read as species
+descriptions, a legacy of having been created as stand-ins for the duplicated plant rows.
+Worth rewriting when M2c touches them to add `lifeForm`.
 
 ### M2e — Re-key the genus-level constituent
 
@@ -362,7 +377,7 @@ M1 ✅ decided (Option A)
  │    ├─→ M2b  Plant → species rank
  │    ├─→ M2c  PlantEcologicalRole         ← audit PestManagement first
  │    └─→ M2e  re-key the constituent
- │   M2d  genus backfill (16 records)      ← data authoring, parallelisable
+ │   M2d ✅ genus backfill (14 records)     ← shipped 2026-08-15
  │   M2f  hierarchy queries                ← after M2b + M2d (genus side done in M3)
  │
  └─→ M3 ✅ routes + linker                 ← shipped 2026-08-15
@@ -370,14 +385,14 @@ M1 ✅ decided (Option A)
 M4 + M5  namespace cleanup                 ← independent, do whenever
 ```
 
-**M3 is done.** Next best is **M2d** — authoring the 16 missing `PlantGenus` records is
-pure data work, blocks M2b's backfill, and needs no code decisions. **M2a** can run
-alongside it and is the gate for the rest of M2.
+**M3 and M2d are done.** Next is **M2a** — the `PlantRankName` sealed type, including the
+`PlantName` vs `PlantSpeciesName` naming call — which gates M2b, M2c and M2e. With the
+genus catalog now complete, M2b's backfill has real records to point every plant at.
 
 M2a is the gate for the rest of M2 and should land as its own PR, including the
 `PlantName` vs `PlantSpeciesName` naming call. M2d is pure data authoring and can run in
 parallel with anyone's code work.
 
-M2b is the largest *code* change (it drops a component other code reads); M2d is the
-largest *time* cost (16 genus records of real Linnaean data). M2c is smaller than it
-looks — the role predicates have six template call sites and no cross-domain consumers.
+M2b is now the largest remaining change — it drops a component other code reads. M2c is
+smaller than it looks: the role predicates have six template call sites and no
+cross-domain consumers.

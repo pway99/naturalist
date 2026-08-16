@@ -105,5 +105,319 @@
         "locale": "en"
       }
     ]
+  },
+  {
+    "name": "aristolochia",
+    "familyName": "aristolochiaceae",
+    "order": "Piperales",
+    "family": "Aristolochiaceae",
+    "genus": "Aristolochia",
+    "description": {
+      "preschool": "Pipevines are climbing plants with flowers shaped like curved pipes. A fly crawls inside looking for a meal, gets stuck for a little while, and comes out dusted with pollen. Special caterpillars eat the leaves and nothing else.",
+      "elementary": "Aristolochia is the pipevine genus. Its flowers are not shaped like ordinary flowers — they form a curved tube with a chamber at the bottom, and small flies crawl in following a smell. Downward-pointing hairs keep the fly inside for a day while the flower dusts it with pollen, then the hairs wilt and the fly escapes to the next flower. Every pipevine species makes bitter poisons called aristolochic acids. Swallowtail caterpillars in one particular group are the only insects that can eat these leaves — they store the poison in their bodies and stay poisonous for life, which is why birds avoid them.",
+      "secondary": "Aristolochia L. (Aristolochiaceae) — a large genus of lianas, vines, and herbaceous perennials distributed across the tropics and warm temperate zones. The flowers are the diagnostic feature: a fused perianth forming a curved tube (the 'pipe') terminating in a chamber that houses the gynostemium. Pollination is by temporary trap: downward-pointing trichomes admit small Diptera and prevent exit until the anthers dehisce, after which the trichomes wilt and release the pollen-laden visitor. All species accumulate aristolochic acids — nitrophenanthrene carboxylic acids that are potent feeding deterrents to generalist herbivores. The tribe Troidini (Papilionidae) is the specialist counter-adaptation: its larvae feed exclusively on Aristolochia and sequester the acids through pupation into the adult. At Oak Vista, Aristolochia californica is the single catalogued species and the keystone host for Battus philenor.",
+      "university": "Aristolochia L. — Aristolochiaceae: Aristolochioideae. Roughly 400–500 accepted species; the genus is a textbook case of coevolutionary specialisation. Aristolochic acids I and II are the principal defensive metabolites, biosynthesised via the benzylisoquinoline alkaloid pathway and stored in leaf and stem tissue. They are nephrotoxic and carcinogenic to mammals and function as broad-spectrum antifeedants. Troidini larvae possess the physiological tolerance to sequester rather than metabolise these compounds, retaining them through pupation into the imago and into the eggs — maternal transfer produces aposematically coloured egg clusters that are themselves chemically defended. Pollination is myophilous and sapromyophilous: the perianth chamber emits oligosulphides and other decay volatiles that recruit Ceratopogonidae, Chloropidae, and Phoridae. The trap is non-lethal; visitors are released at anthesis. Cross-domain link: the aristolochic acid constituents recorded for A. californica connect the plants catalog to the chemistry compound catalog and to the insects catalog through B. philenor's chemical defence."
+    },
+    "commonNames": [
+      {
+        "label": "Pipevine",
+        "locale": "en"
+      },
+      {
+        "label": "Birthwort",
+        "locale": "en"
+      },
+      {
+        "label": "Dutchman's Pipe",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "pelargonium",
+    "familyName": "geraniaceae",
+    "order": "Geraniales",
+    "family": "Geraniaceae",
+    "genus": "Pelargonium",
+    "description": {
+      "preschool": "These bushy plants have soft leaves that smell like roses or lemons or mint when you rub them. The smell comes from tiny drops of oil on the leaf hairs. Bees visit the small pink flowers.",
+      "elementary": "Pelargonium is the genus most people call 'geraniums', though true geraniums are a different plant. Most Pelargonium species come from the dry parts of southern Africa, which is why they handle Chico's hot dry summers so well. The scented ones are covered in tiny glandular hairs that burst when brushed and release fragrant oil — different species smell like rose, lemon, mint, or apple. The oil discourages many insects from eating the leaves. The flowers are lopsided rather than symmetrical, with a hidden nectar tube that only certain insects can reach.",
+      "secondary": "Pelargonium L'Hér. (Geraniaceae) — a genus of subshrubs, shrubs, and succulents centred on the Cape Floristic Region of southern Africa. Distinguished from Geranium by floral symmetry: Pelargonium flowers are zygomorphic, with a nectar spur fused to the pedicel and two upper petals differentiated from the three lower. Scented-leaf species carry dense peltate and capitate glandular trichomes producing monoterpene and sesquiterpene essential oils; the composition is species-specific and gives the rose, citrus, and mint scent classes of horticulture. At Oak Vista the genus is represented by P. graveolens, planted as a hedge — the dense woody architecture serves as overwintering habitat and windbreak, a structural role independent of its floral resources.",
+      "university": "Pelargonium L'Hér. ex Aiton — Geraniaceae. Approximately 280 species, with the primary radiation in the winter-rainfall Cape region; the Mediterranean-climate origin explains the genus's performance under Sacramento Valley summer drought. The concealed nectary — a spur adnate to the pedicel rather than a free structure — restricts nectar access by corolla-tube depth and drives the long-tongued pollinator associations documented in the southern African species. Essential oil chemistry in the scented-leaf group is dominated by geraniol, citronellol, and linalool in ratios that are largely cultivar-stable and form the basis of the geranium oil trade. The glandular trichome exudate has documented acaricidal and antifeedant activity. Ecologically at Oak Vista, the hedge's contribution is primarily architectural rather than trophic: persistent woody structure supplies refugial microhabitat with buffered temperature and humidity, supporting overwintering Coccinellidae and Chrysopidae adjacent to the annual cropping beds."
+    },
+    "commonNames": [
+      {
+        "label": "Scented Geranium",
+        "locale": "en"
+      },
+      {
+        "label": "Storksbill",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "trifolium",
+    "familyName": "fabaceae",
+    "order": "Fabales",
+    "family": "Fabaceae",
+    "genus": "Trifolium",
+    "description": {
+      "preschool": "Clovers have three little leaves on each stalk and round flower heads packed with tiny flowers. Bees love them. Clover roots have bumps on them where helpful bacteria live and make food for the soil.",
+      "elementary": "Trifolium is the clover genus — the name means 'three leaves'. What looks like one clover flower is actually a tight cluster of many tiny flowers, each holding a drop of nectar, which is why bees work a clover patch for so long. Clovers are legumes, so bacteria live in bumps on their roots and pull nitrogen gas out of the air, turning it into fertiliser the plant and the soil can use. This is why clover is planted as a cover crop: it feeds the soil instead of draining it. Oak Vista grows both an annual clover that is resown each year and a perennial one that spreads by runners and stays.",
+      "secondary": "Trifolium L. (Fabaceae) — a large genus of annual and perennial herbs distributed across temperate and subtropical regions. The inflorescence is a dense capitulum or short raceme of papilionaceous florets; each floret's keel encloses the nectary, and floral tube depth determines the accessible pollinator guild — shallow-tubed species such as T. repens serve the full bee guild, while longer-tubed species favour Bombus and other long-tongued visitors. All species form root nodules through symbiosis with Rhizobium leguminosarum biovar trifolii, fixing atmospheric dinitrogen. At Oak Vista the genus fills the cover-crop and nitrogen-fixation roles with two contrasting life histories: T. incarnatum (annual, tall red capitula, resown) and T. repens (perennial, stoloniferous, forming a persistent living mulch that also hosts lycaenid larvae).",
+      "university": "Trifolium L. — Fabaceae: Faboideae, tribe Trifolieae. Roughly 300 species. Symbiotic nitrogen fixation proceeds through the Nod-factor signalling cascade: flavonoids exuded by the root induce rhizobial nod gene expression, the resulting lipochitooligosaccharides trigger root hair curling and infection thread formation, and bacteroids differentiate within indeterminate nodules where nitrogenase reduces N₂ to NH₃ under microaerobic conditions maintained by leghaemoglobin. Field contribution in a well-nodulated stand is commonly reported in the range of 50–200 kg N/ha/yr depending on species, stand density, and management. Agronomically the fixed nitrogen becomes plant-available through mineralisation of clover residue rather than direct transfer, so termination timing governs the release curve. At Oak Vista both species additionally serve trophic roles: T. repens is a larval host for several Lycaenidae, and both provide concentrated nectar during the spring flush that sustains the parasitoid and pollinator community supporting the adjacent tomato beds."
+    },
+    "commonNames": [
+      {
+        "label": "Clover",
+        "locale": "en"
+      },
+      {
+        "label": "Trefoil",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "lobularia",
+    "familyName": "brassicaceae",
+    "order": "Brassicales",
+    "family": "Brassicaceae",
+    "genus": "Lobularia",
+    "description": {
+      "preschool": "Sweet alyssum makes a low carpet of tiny white or purple flowers that smell like honey. The flowers are so small that only very tiny insects can use them — and those tiny insects are the ones that protect the garden.",
+      "elementary": "Lobularia is a small genus from the Mediterranean and the Canary Islands. The flowers are minute — four petals in a cross, the pattern that gives the mustard family its old name — and the nectar sits in a shallow, open cup rather than down a tube. That shape matters enormously: most flowers are too deep for very small insects to feed from, but alyssum is exactly right for the tiny parasitoid wasps and hoverflies whose larvae eat aphids. Planting alyssum is a way of feeding the garden's own pest control. It blooms nearly continuously in a Chico summer and reseeds itself readily.",
+      "secondary": "Lobularia Desv. (Brassicaceae) — a small genus of low annual and short-lived perennial herbs native to the Mediterranean basin and Macaronesia. Flowers are tetramerous and cruciform, borne in dense terminal racemes, with lateral nectaries exposed at the base of the short staminal ring. The shallow, unconcealed nectar presentation is functionally the defining trait: it places the reward within reach of micro-Hymenoptera and small Diptera with mouthparts under 1 mm, a guild excluded from most tubular flowers. At Oak Vista, L. maritima is grown explicitly as beneficial insect habitat rather than for ornament — the target consumers are aphidophagous Syrphidae and parasitoid Braconidae and Aphelinidae whose adults require carbohydrate to sustain fecundity and longevity between host encounters.",
+      "university": "Lobularia Desv. — Brassicaceae: tribe Anastaticeae. Approximately five species; L. maritima is the horticulturally dominant taxon and is naturalised widely in Mediterranean-climate regions including California. The genus is a standard component of conservation biological control plantings, where its value derives from nectar accessibility rather than nectar volume: parasitoid longevity and realised fecundity are frequently sugar-limited in the field, and accessible floral carbohydrate has repeatedly been shown to raise both. As a Brassicaceae it produces glucosinolates and consequently hosts Pieris rapae, an unwanted secondary consequence in a garden also growing brassicas — the trade-off is recognised at Oak Vista and accepted because the parasitoid subsidy exceeds the pest recruitment. Flowering phenology under Sacramento Valley conditions is effectively continuous from spring through autumn with light summer irrigation, giving an unbroken carbohydrate supply across the period when aphid populations on the tomato and brassica beds are active."
+    },
+    "commonNames": [
+      {
+        "label": "Sweet Alyssum",
+        "locale": "en"
+      },
+      {
+        "label": "Alyssum",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "anethum",
+    "familyName": "apiaceae",
+    "order": "Apiales",
+    "family": "Apiaceae",
+    "genus": "Anethum",
+    "description": {
+      "preschool": "Dill is a tall feathery herb with flat yellow flower heads that look like little umbrellas. The flat top is a landing pad for small helpful insects. Striped swallowtail caterpillars eat the leaves.",
+      "elementary": "Anethum is the dill genus, a member of the carrot family. Its flowers grow in umbels — flat-topped clusters where every tiny flower sits at the same height, forming a platform an insect can simply walk across. This is why umbels are so valuable in a garden: parasitoid wasps and flies can land and feed without having to reach into anything. Dill also serves a second role. Swallowtail caterpillars feed on plants in the carrot family, so a dill patch is both a feeding station for beneficial insects and a nursery for butterflies. Letting some dill flower and set seed rather than harvesting it all is a deliberate choice.",
+      "secondary": "Anethum L. (Apiaceae) — a small genus of aromatic annual herbs, with A. graveolens the sole widely recognised species. Growth form is a hollow-stemmed annual to 1.5 m with finely dissected filiform leaves and compound umbels of small yellow flowers. The umbel architecture presents exposed nectaries (stylopodia) at a uniform height, making it one of the most accessible floral resources available to short-mouthparted Hymenoptera and Diptera. At Oak Vista dill occupies two roles simultaneously: beneficial insect habitat via the umbel resource, and larval host for Papilionidae — the same dual function shared with the other catalogued Apiaceae, Petroselinum. Bolting is rapid under Chico summer heat, which shortens the leaf harvest window but accelerates arrival of the floral resource.",
+      "university": "Anethum L. — Apiaceae: Apioideae. The umbelliferous nectary is the stylopodium, a swollen nectar-secreting disc at the style base, fully exposed and requiring no manipulation by the visitor; the resulting visitor spectrum is exceptionally broad and skewed toward taxa excluded from zygomorphic or tubular flowers — Ichneumonidae, Braconidae, Chalcidoidea, Syrphidae, Tachinidae. Foliar and seed chemistry is dominated by carvone and limonene, with the seed oil typically carvone-rich; the family's characteristic furanocoumarins are present and are the compounds Papilionidae larvae have evolved cytochrome P450-mediated tolerance to, the classic Berenbaum coevolutionary system. At Oak Vista the practical management tension is that leaf harvest and floral provisioning compete for the same plants, resolved by staggered sowing so that a fraction of the stand is always permitted to reach anthesis."
+    },
+    "commonNames": [
+      {
+        "label": "Dill",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "borago",
+    "familyName": "boraginaceae",
+    "order": "Boraginales",
+    "family": "Boraginaceae",
+    "genus": "Borago",
+    "description": {
+      "preschool": "Borage is a bristly plant with bright blue star flowers that hang down like little lamps. Bumblebees hold on underneath and buzz until the pollen falls out. The flowers keep making new nectar all day.",
+      "elementary": "Borago is a small Mediterranean genus, and borage is the one nearly everyone grows. The flowers point downward with their petals swept back, so a bee has to hang underneath and grip the cone of anthers in the middle. Bumblebees do this well: they vibrate their flight muscles without flying, and the shaking knocks pollen loose — buzz pollination. Borage's real distinction is nectar. Most flowers refill slowly, but a borage flower replenishes nectar within minutes of being emptied, so bees return to the same plant again and again through the day.",
+      "secondary": "Borago L. (Boraginaceae) — a small genus of coarse annual and perennial herbs from the Mediterranean, with B. officinalis the cultivated species. The whole plant is covered in stiff setose trichomes. Flowers are pendant and pentamerous with strongly reflexed corolla lobes exposing a protruding cone of connivent anthers; the presentation requires the visitor to approach from below and favours sonication by Bombus and other buzz-capable bees. Nectar secretion rate is the trait of horticultural note — replenishment is unusually rapid, sustaining repeat visitation rather than a single depletion event. At Oak Vista borage is grown purely for pollinator support and self-sows readily enough that volunteer thinning is an active management program rather than an afterthought.",
+      "university": "Borago L. — Boraginaceae: Boraginoideae. B. officinalis is the type and effectively the only species in cultivation. Nectar secretion in the genus is among the highest recorded for temperate annual herbs on a per-flower-per-day basis, and the sugar composition is sucrose-dominant with substantial hexose fractions; the combination of high volume, rapid replenishment and extended flowering underlies its standing as a nectar plant. Seed oil is a commercial source of γ-linolenic acid (typically 18–25% of total fatty acids), the highest natural concentration of any cultivated seed. The genus also produces pyrrolizidine alkaloids in vegetative tissue — hepatotoxic to mammals in quantity, the reason culinary use of the leaf is limited despite the flowers being benign. Self-seeding is vigorous under Sacramento Valley conditions: the seed bank persists and volunteer density in the following season routinely exceeds useful stand density, which is what the pipevine-adjacent bed management program addresses."
+    },
+    "commonNames": [
+      {
+        "label": "Borage",
+        "locale": "en"
+      },
+      {
+        "label": "Starflower",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "viola",
+    "familyName": "violaceae",
+    "order": "Malpighiales",
+    "family": "Violaceae",
+    "genus": "Viola",
+    "description": {
+      "preschool": "Violets are small plants with heart-shaped leaves and little purple flowers close to the ground. They like shady corners. Some butterfly caterpillars will eat violet leaves and nothing else at all.",
+      "elementary": "Viola is the violet and pansy genus — a big one, found nearly everywhere in the temperate world. Violets do something unusual: they make two kinds of flowers. The purple spring flowers everyone notices open normally and are visited by bees, but later in the season the plant makes small closed flowers near the ground that never open and pollinate themselves. This second kind produces most of the seed. Violets matter to Oak Vista mainly as caterpillar food — fritillary butterflies lay eggs only on or near violets, and without a violet patch those butterflies simply cannot breed in the garden.",
+      "secondary": "Viola L. (Violaceae) — a large genus of perennial and annual herbs with a near-cosmopolitan temperate distribution. Flowers are zygomorphic and spurred, with the lower petal extended backwards into a nectar spur; the spring cohort is chasmogamous and insect-pollinated. Most species additionally produce cleistogamous flowers later in the season — apetalous, self-fertilising, borne at or below ground level — which typically contribute the majority of seed set. Many species are further myrmecochorous, with elaiosome-bearing seeds dispersed by ants. Ecologically the genus's most significant role is as the obligate larval host for Speyeria and Boloria fritillaries. At Oak Vista, V. odorata occupies shaded ground-cover positions and is retained specifically to keep fritillary breeding possible on site.",
+      "university": "Viola L. — Violaceae. Roughly 500–600 species; taxonomy is complicated by widespread hybridisation and polyploidy. The dimorphic breeding system — chasmogamous plus cleistogamous flowers on the same individual — is a canonical example of a mixed mating strategy, with the cleistogamous route offering reproductive assurance at low resource cost and the chasmogamous route maintaining outcrossed genetic variation. Fritillary oviposition behaviour is the ecologically load-bearing association: females of many Speyeria species oviposit in late summer on senescent litter near host violets rather than on the plant itself, first-instar larvae overwinter without feeding, and locate violet foliage on spring emergence. This decoupling of oviposition site from feeding site means that violet presence alone is insufficient — the surrounding litter layer must persist through winter, which constrains autumn cleanup practice in any garden intending to support fritillaries."
+    },
+    "commonNames": [
+      {
+        "label": "Violet",
+        "locale": "en"
+      },
+      {
+        "label": "Pansy",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "lathyrus",
+    "familyName": "fabaceae",
+    "order": "Fabales",
+    "family": "Fabaceae",
+    "genus": "Lathyrus",
+    "description": {
+      "preschool": "Sweet peas climb by curly tendrils that grab onto anything nearby. The flowers are big and sweet-smelling in pink and purple. Bumblebees push the petals open to get inside.",
+      "elementary": "Lathyrus is the vetchling and sweet pea genus. These are climbing legumes: the tip of each leaf is modified into a tendril that coils around whatever it touches, letting the plant grow upward without a woody stem. The flowers have the shape typical of the pea family — a big upper banner petal, two side wings, and a keel that hides the anthers. A visiting bee must be heavy enough to push the keel down, which is why bumblebees are the main pollinators and small bees mostly cannot work them. Like clover, Lathyrus fixes nitrogen through root bacteria. Sweet pea seeds are poisonous and must not be eaten, despite the name.",
+      "secondary": "Lathyrus L. (Fabaceae) — a genus of annual and perennial climbing and scrambling herbs distributed through the temperate northern hemisphere and montane East Africa and South America. Leaves are pinnate with the terminal leaflet modified into a branched tendril. The flower is papilionaceous with an explosive or piston pollination mechanism: the keel encloses the staminal column and requires a visitor of sufficient mass to depress it, restricting effective pollination largely to Bombus and other large bees. Root nodulation with Rhizobium provides nitrogen fixation comparable to other Faboideae. At Oak Vista L. odoratus fills a combined ornamental, pollinator-support and nitrogen-fixing role on vertical structures — a deliberate choice of a climbing legume where a non-fixing ornamental climber would have done the decorative job alone.",
+      "university": "Lathyrus L. — Fabaceae: Faboideae, tribe Fabeae. Approximately 160 species. The genus is toxicologically notable for β-N-oxalyl-L-α,β-diaminopropionic acid (ODAP/BOAA), a non-protein amino acid and glutamate analogue concentrated in the seed of L. sativus, the causative agent of neurolathyrism where grass pea forms a dietary staple under famine conditions. L. odoratus seed contains β-aminopropionitrile, associated with osteolathyrism through inhibition of lysyl oxidase and consequent disruption of collagen cross-linking; ornamental sweet pea seed is therefore not edible in any quantity. These non-protein amino acids are broadly interpreted as antiherbivore defences and place the genus alongside the plants catalog's other chemically defended taxa. The pollination mechanism has been well characterised as a piston type in which the staminal column extrudes pollen onto the visitor's ventral surface on keel depression, with the mass threshold acting as a mechanical filter on the visitor spectrum."
+    },
+    "commonNames": [
+      {
+        "label": "Sweet Pea",
+        "locale": "en"
+      },
+      {
+        "label": "Vetchling",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "festuca",
+    "familyName": "poaceae",
+    "order": "Poales",
+    "family": "Poaceae",
+    "genus": "Festuca",
+    "description": {
+      "preschool": "Fescue is a tough grass with deep roots. It makes the lawn at Oak Vista. We cut it tall instead of short, because tall grass gives little insects somewhere to live.",
+      "elementary": "Festuca is the fescue genus — grasses built for endurance rather than show. Their roots go far deeper than most lawn grasses, which is why a fescue lawn survives a Chico summer with less water than other turf. Grasses are wind-pollinated, so fescue flowers have no petals, no scent and no nectar; they hang out feathery stigmas to catch pollen drifting on the air. That means a lawn offers nothing to bees. What it does offer is structure and larval food: skipper butterfly caterpillars eat grass blades, and mowing high leaves enough leaf tissue for them and enough cover for ground-dwelling insects.",
+      "secondary": "Festuca L. (Poaceae) — a large genus of perennial bunch- and sod-forming grasses of temperate and montane regions worldwide. Inflorescences are panicles of few-flowered spikelets; pollination is anemophilous, with reduced perianth, exserted plumose stigmas and copious light pollen — the genus supplies no floral reward and sits outside the pollinator economy entirely. Ecological value in a managed garden is structural and trophic instead: deep fibrous root systems build soil organic matter and confer drought tolerance, and the sward hosts Hesperiinae larvae that feed on grass blades. At Oak Vista, F. arundinacea is the lawn matrix, mown at 100–150 mm rather than conventional turf height — the high-mow protocol preserves both skipper larval habitat and the humid basal microclimate used by Carabidae and other ground-active predators.",
+      "university": "Festuca L. — Poaceae: Pooideae, tribe Loliinae. Taxonomically complex, with roughly 450–650 species depending on circumscription and with tall fescue now frequently placed in Lolium or Schedonorus. The agronomically dominant feature of F. arundinacea is its association with the vertically transmitted endophyte Epichloë coenophiala, which confers drought and herbivory resistance through ergot and loline alkaloid production; the same alkaloids cause fescue toxicosis in grazing livestock, so endophyte status matters for any planting where animals graze. In an insect-conservation context the endophyte is a genuine trade-off, since alkaloid-positive stands are less suitable as Hesperiinae larval habitat — endophyte-free or novel-endophyte cultivars are preferable where lepidopteran hosting is an objective. Mowing height is the single strongest management lever on invertebrate abundance in turf: raising the cut increases leaf area index, buffers soil-surface temperature and humidity, and raises both detritivore and predator densities."
+    },
+    "commonNames": [
+      {
+        "label": "Fescue",
+        "locale": "en"
+      },
+      {
+        "label": "Tall Fescue",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "solanum",
+    "familyName": "solanaceae",
+    "order": "Solanales",
+    "family": "Solanaceae",
+    "genus": "Solanum",
+    "description": {
+      "preschool": "This family gives us tomatoes and eggplants. Their yellow flowers hide the pollen inside little tubes, and only bumblebees can shake it out by buzzing. The fruit is good to eat but the leaves are not.",
+      "elementary": "Solanum is one of the largest plant genera in the world and includes tomato, eggplant and potato. Its flowers keep pollen inside tube-shaped anthers with only a tiny pore at the tip, so pollen will not simply fall out — a bumblebee has to grip the anthers and vibrate hard to shake it free. Honeybees cannot do this, which is why bumblebees matter so much to a tomato crop. Nearly all Solanum species make bitter alkaloids that protect the leaves and unripe fruit from being eaten, and those compounds stay in the leaves even in the vegetables we grow, so the fruit is food and the foliage is not.",
+      "secondary": "Solanum L. (Solanaceae) — an exceptionally large genus of herbs, shrubs and small trees, most diverse in the Neotropics. Flowers are actinomorphic with connivent poricidal anthers forming a cone; pollen release requires sonication, restricting effective pollination to buzz-capable bees, principally Bombus and various Halictidae, and excluding Apis mellifera. Steroidal glycoalkaloids — tomatine in tomato, solasonine and solamargine in eggplant, solanine in potato — provide constitutive defence in foliage and unripe fruit and decline in the ripe fruit of domesticated forms. At Oak Vista the genus carries the food-crop role through two species with complementary heat responses: S. lycopersicum, which aborts flowers above roughly 35 °C, and S. melongena, which sets more fruit as temperatures rise — a pairing that keeps the beds productive across a Sacramento Valley summer.",
+      "university": "Solanum L. — Solanaceae. Approximately 1,200–1,500 accepted species, among the largest angiosperm genera and of disproportionate agricultural importance. Buzz pollination is the defining floral syndrome: poricidal anthers are released only by thoracic vibration at frequencies around 100–400 Hz, a behaviour present in Bombus, Xylocopa, Halictidae and many others but absent in Apis, which accounts for the yield response of greenhouse tomato to managed Bombus introduction. Steroidal glycoalkaloid biosynthesis proceeds from cholesterol via the GAME pathway; α-tomatine in S. lycopersicum declines sharply during ripening through glycosylation to non-bitter esculeoside A, the biochemical basis for foliage remaining defended while ripe fruit becomes palatable — a within-plant partitioning that also explains why specialist herbivores such as Manduca feed on the foliage rather than the fruit. Both Oak Vista species share the tomato pest complex (Aphididae, Noctuidae larvae), which is the load the surrounding beneficial insect infrastructure is designed to absorb."
+    },
+    "commonNames": [
+      {
+        "label": "Nightshade",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "prunus",
+    "familyName": "rosaceae",
+    "order": "Rosales",
+    "family": "Rosaceae",
+    "genus": "Prunus",
+    "description": {
+      "preschool": "These are the stone fruit trees — peaches, plums, cherries and almonds. Each fruit has one hard pit in the middle. In late winter the bare branches burst into pink or white blossom before any leaves appear.",
+      "elementary": "Prunus is the stone fruit genus. What makes it distinctive is the fruit: a single seed inside a hard stony shell, wrapped in flesh. Prunus trees flower very early — often on bare branches before the leaves come out — which makes them one of the first big nectar sources of the year, at a time when very little else is blooming and bees badly need it. That early timing is also the risk: a late frost during bloom can destroy the entire crop. The seeds and leaves contain compounds that release cyanide when crushed, which is why you never eat the kernel inside the pit.",
+      "secondary": "Prunus L. (Rosaceae) — a genus of deciduous and evergreen trees and shrubs comprising the stone fruits: peach, plum, cherry, apricot and almond. The fruit is a drupe with a lignified endocarp enclosing a single seed. Flowering is characteristically precocious, occurring before or with leaf emergence, and the pentamerous open flowers with exposed nectaries are broadly accessible — making the genus a critical early-season resource in a Mediterranean climate where the bloom precedes most herbaceous flowering by weeks. All parts except the mature fruit flesh contain cyanogenic glycosides. At Oak Vista the genus is represented by P. persica, whose management is dominated by two constraints: annual structural pruning to maintain fruiting wood, and dormant-season copper application timed against peach leaf curl before bud swell.",
+      "university": "Prunus L. — Rosaceae: Amygdaloideae. Roughly 200–400 species depending on subgeneric treatment. Defensive chemistry rests on cyanogenic glycosides — amygdalin and prunasin — compartmentalised away from the β-glucosidase that hydrolyses them; tissue damage brings enzyme and substrate together and liberates hydrogen cyanide, a classic two-component activated defence. Concentrations are highest in seed and young foliage and negligible in ripe mesocarp. Phenologically, precocious flowering imposes a well-documented trade-off between early pollinator access and frost exposure, and chill-hour requirement determines cultivar suitability by region — a constraint that is tightening in the Sacramento Valley as winter chill accumulation declines. The dominant pathogen at Oak Vista is Taphrina deformans (peach leaf curl), whose infection window is bud swell during wet conditions; control is necessarily preventative and dormant-season, since the fungus is inaccessible once leaf distortion is visible. This is the reasoning behind the plant program recorded for the tree rather than a reactive spray schedule."
+    },
+    "commonNames": [
+      {
+        "label": "Stone Fruit",
+        "locale": "en"
+      },
+      {
+        "label": "Peach",
+        "locale": "en"
+      },
+      {
+        "label": "Cherry",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "raphanus",
+    "familyName": "brassicaceae",
+    "order": "Brassicales",
+    "family": "Brassicaceae",
+    "genus": "Raphanus",
+    "description": {
+      "preschool": "Radishes have four-petalled flowers in white, pink and purple. Wild radish grows all over California without anyone planting it. Butterflies drink from the flowers.",
+      "elementary": "Raphanus is the radish genus. Beyond the root vegetable, wild radish is one of the most common roadside and field-edge wildflowers in California — it arrived from Europe long ago and now grows everywhere without being sown. The flowers hold a lot of nectar in an easy-to-reach position, and they bloom over a long season, so butterflies work them heavily. Like all members of the mustard family, radish leaves contain sharp-tasting compounds — the same chemistry that makes a radish root peppery — which is what protects them from most insects but attracts the cabbage white butterfly, whose caterpillars are adapted to eat exactly those plants.",
+      "secondary": "Raphanus L. (Brassicaceae) — a small genus of annual and biennial herbs native to Europe and Asia, of which R. sativus is both the cultivated radish and, in its wild and feral forms, a widespread California naturalised species. Flowers are tetramerous with a moderately elongated claw, presenting nectar less openly than Lobularia but still within reach of Lepidoptera and medium-tongued bees; the extended bloom period makes it a reliable bridging resource between spring and summer flowering peaks. As a Brassicaceae the genus produces glucosinolates hydrolysed by myrosinase to isothiocyanates on tissue damage. At Oak Vista wild radish is tolerated rather than planted, valued as butterfly forage — sulphurs, painted ladies and skippers are the observed visitors — with the accepted cost that it also supports Pieris rapae adjacent to any brassica planting.",
+      "university": "Raphanus L. — Brassicaceae: tribe Brassiceae. The glucosinolate–myrosinase system is the family's defining chemical defence: intact glucosinolates are stored separately from myrosinase and combine only on cell disruption, generating isothiocyanates, nitriles and thiocyanates that are toxic to generalist herbivores and microbes. Pierid larvae circumvent this through the nitrile-specifier protein, redirecting hydrolysis toward less toxic nitriles — the counter-adaptation underlying the Pieris–Brassicaceae association and one of the best-documented coevolutionary arms races in herbivory. Californian feral R. sativus is of additional interest as a case of hybrid-derived weediness, with populations showing introgression from R. raphanistrum and demonstrated rapid evolution of flowering time under selection. From a garden management standpoint the genus is a genuine trade-off rather than an unambiguous good: nectar subsidy to adult Lepidoptera is real and measurable, but so is the oviposition subsidy to a brassica pest, and the balance depends on what else is planted nearby."
+    },
+    "commonNames": [
+      {
+        "label": "Radish",
+        "locale": "en"
+      },
+      {
+        "label": "Wild Radish",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "ocimum",
+    "familyName": "lamiaceae",
+    "order": "Lamiales",
+    "family": "Lamiaceae",
+    "genus": "Ocimum",
+    "description": {
+      "preschool": "Basil is a leafy herb that smells strong and sweet when you touch it. It loves hot weather. If you let it flower, bees come — but the leaves stop tasting as good.",
+      "elementary": "Ocimum is the basil genus, from the tropics of Africa and Asia, which is why it thrives in Chico's heat and dies at the first frost. Basil is in the mint family, so it has square stems, paired leaves, and tiny oil glands on the leaf surface that release scent when crushed. Different types smell quite different — sweet Genovese basil for pesto, anise-scented Thai basil — because the mix of aromatic oils varies between varieties. Growing basil involves a choice: pinching off the flower spikes keeps the leaves tender and tasty, but letting them bloom feeds bees. Oak Vista does some of each.",
+      "secondary": "Ocimum L. (Lamiaceae) — a genus of aromatic annual and perennial herbs and subshrubs of tropical and subtropical Africa, Asia and South America, frost-sensitive throughout. Growth form is the family-typical quadrangular stem with decussate leaves; essential oils are produced in peltate glandular trichomes and released on mechanical disturbance. Flowers are bilabiate, borne in terminal verticillasters, and readily worked by bees when the plant is permitted to bolt. Chemotype varies markedly between cultivars of O. basilicum — linalool- and methyl-chavicol-dominant types correspond to the sweet and anise flavour classes respectively. At Oak Vista basil serves a dual food-crop and pollinator-support role, with the tension that culinary harvest requires suppressing exactly the inflorescences that provide the floral resource.",
+      "university": "Ocimum L. — Lamiaceae: Nepetoideae, tribe Ocimeae. Around 60 species; O. basilicum is a cultigen complex with pronounced chemotypic differentiation. Principal volatiles are linalool, methyl chavicol (estragole), eugenol, methyl cinnamate and citral, in cultivar-characteristic ratios that are largely heritable and form the basis of the culinary flavour classes; methyl chavicol is the anise note of Thai types and is a recognised rodent hepatocarcinogen at high experimental doses, though dietary culinary exposure is orders of magnitude lower. Terpenoid biosynthesis proceeds via both the plastidial MEP and cytosolic MVA pathways with the peltate trichome as the site of synthesis and storage. Photoperiod and heat both accelerate the transition to flowering, so the harvest-versus-bloom trade-off intensifies through a Sacramento Valley summer; staggered succession sowing is the standard resolution, permitting some cohorts to bolt for floral resource while younger ones remain vegetative for harvest."
+    },
+    "commonNames": [
+      {
+        "label": "Basil",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "petroselinum",
+    "familyName": "apiaceae",
+    "order": "Apiales",
+    "family": "Apiaceae",
+    "genus": "Petroselinum",
+    "description": {
+      "preschool": "Parsley grows as a bunch of green leaves the first year. If you leave it in the ground, the second year it grows tall and makes flat clusters of tiny white flowers that helpful insects love.",
+      "elementary": "Petroselinum is the parsley genus, a small one in the carrot family. Parsley is a biennial, meaning it lives two years and does something different in each: the first year it makes only a rosette of leaves — the part we harvest — and the second year it sends up a flowering stalk, sets seed and dies. Most gardeners pull it after the first year, but leaving a few plants to flower in the second year gives the garden a burst of tiny nectar-rich umbels that parasitoid wasps and hoverflies feed on. Like dill, parsley also feeds swallowtail caterpillars, so a plant may be shared between the kitchen and the butterflies.",
+      "secondary": "Petroselinum Hill (Apiaceae) — a small genus of biennial herbs of Mediterranean origin, with P. crispum the cultivated species in both flat-leaf and curly-leaf forms. The biennial habit is the defining management fact: vegetative rosette in year one, bolting to a compound umbel in year two following vernalisation. As with Anethum, the umbel presents exposed stylopodial nectaries at uniform height and is highly accessible to short-mouthparted parasitoid Hymenoptera and Diptera. Foliage hosts Papilionidae larvae. At Oak Vista, parsley is catalogued with both a food-crop and beneficial-insect-habitat role, with flat-leaf Italian preferred over curly for flavour — retaining second-year plants converts a spent culinary crop into a beneficial insect resource at no additional bed cost.",
+      "university": "Petroselinum Hill — Apiaceae: Apioideae. Bolting requires vernalisation, and premature bolting under Sacramento Valley conditions is typically a stress response to heat and water deficit rather than true vernalisation-induced flowering; distinguishing the two matters for seed saving, since stress-bolted plants are not reliable parents for biennial habit. Foliar chemistry includes apiole and myristicin (phenylpropenes) and the flavone apigenin, of which parsley is among the richest dietary sources. Furanocoumarins — bergapten and xanthotoxin — are present and are both the Papilionidae coevolutionary substrate and the cause of phytophotodermatitis in field workers handling foliage in sunlight, a practical hazard shared across the family. The umbelliferous nectary's value in conservation biological control is well established, and the biennial habit makes parsley an efficient dual-purpose planting: the same individual supplies culinary yield in year one and floral resource in year two, which is not true of the annual Apiaceae."
+    },
+    "commonNames": [
+      {
+        "label": "Parsley",
+        "locale": "en"
+      }
+    ]
   }
 ]

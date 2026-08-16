@@ -64,16 +64,19 @@ class PlantsFamilyDetailTemplateTest {
     }
 
     @Test
-    void familyDetail_rendersEmptyStateWhenTheFamilyHasNoGenera() {
+    void familyDetail_rendersEmptyStateWhenNoGeneraAreSupplied() {
+        // Exercises the template's empty branch, not a fact about the catalog:
+        // every family currently has at least one genus, so the empty list is
+        // supplied deliberately rather than found. Keeps the branch covered as
+        // the genus catalog grows.
         var template = TestTemplateEngine.create();
-        PlantFamily rosaceae = db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
-                .filter(f -> f.name().value().equals("rosaceae"))
+        PlantFamily anyFamily = db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .findFirst()
                 .orElseThrow();
 
         StringOutput output = new StringOutput();
         template.render("plants/families/detail.jte",
-                Map.of("family", rosaceae, "genera", List.of()), output);
+                Map.of("family", anyFamily, "genera", List.of()), output);
 
         assertThat(output.toString()).contains("No genera catalogued");
     }
