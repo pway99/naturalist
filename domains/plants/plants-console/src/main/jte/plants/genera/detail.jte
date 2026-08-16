@@ -15,7 +15,6 @@
 
     <h1>${commonName}</h1>
     <p>
-        ${genus.order().value()} &middot;
         <a href="/plants/families/${genus.familyName().value()}">${genus.family().value()}</a>
         &middot; <em>${genus.genus().value()}</em>
     </p>
@@ -30,7 +29,6 @@
         <h2>Identity</h2>
         <ul>
             <li><strong>Slug:</strong> <code>${genus.name().value()}</code></li>
-            <li><strong>Order:</strong> ${genus.order().value()}</li>
             <li>
                 <strong>Family:</strong>
                 <a href="/plants/families/${genus.familyName().value()}">

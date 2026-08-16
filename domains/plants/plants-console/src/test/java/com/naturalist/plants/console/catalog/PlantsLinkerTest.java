@@ -5,6 +5,7 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.plants.PlantFamilyName;
 import com.naturalist.plants.PlantGenusName;
+import com.naturalist.plants.PlantOrderName;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.heritage.SeedLineageName;
@@ -17,8 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Every plants-owned {@code EntityName} type must resolve to a URL.
  * <p>
- * {@code PlantsCatalogContribution} indexes families and genera for search, but
- * the linker had no case for either, and
+ * {@code PlantsCatalogContribution} indexes every rank for search, but the
+ * linker once had no case for family or genus, and
  * {@code SearchController.buildGroups} drops any hit whose linker returns
  * {@code null} — so family and genus hits were silently absent from results.
  * A missing case is invisible at runtime; this test is what makes it loud.
@@ -43,6 +44,12 @@ class PlantsLinkerTest {
     void linksPlantToPlantDetail() {
         assertThat(link(PlantSpeciesName.of("aristolochia-californica")))
                 .isEqualTo("/plants/aristolochia-californica");
+    }
+
+    @Test
+    void linksOrderToOrderDetail() {
+        assertThat(link(PlantOrderName.of("lamiales")))
+                .isEqualTo("/plants/orders/lamiales");
     }
 
     @Test
@@ -77,8 +84,8 @@ class PlantsLinkerTest {
 
     @Test
     void linksConstituentToPhytochemistryDetail() {
-        assertThat(link(PhytochemicalConstituentName.of("creeping-thyme-thymol")))
-                .isEqualTo("/plants/phytochemistry/creeping-thyme-thymol");
+        assertThat(link(PhytochemicalConstituentName.of("thymus-thymol")))
+                .isEqualTo("/plants/phytochemistry/thymus-thymol");
     }
 
     @Test

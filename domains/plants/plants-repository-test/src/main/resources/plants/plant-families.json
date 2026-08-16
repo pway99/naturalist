@@ -1,7 +1,7 @@
 [
   {
     "name": "apiaceae",
-    "order": "Apiales",
+    "orderName": "apiales",
     "family": "Apiaceae",
     "description": {
       "preschool": "Plants in the carrot family have lots of tiny white flowers gathered into flat lacy umbrellas. Dill, parsley, and fennel are all in this family — they smell good and the bees and helpful flies love them.",
@@ -26,7 +26,7 @@
   },
   {
     "name": "aristolochiaceae",
-    "order": "Piperales",
+    "orderName": "piperales",
     "family": "Aristolochiaceae",
     "description": {
       "preschool": "These special plants have flowers shaped like little pipes. California pipevine has dark, curly pipe-shaped flowers, and one special butterfly — the pipevine swallowtail — only lives on this plant family.",
@@ -47,7 +47,7 @@
   },
   {
     "name": "boraginaceae",
-    "order": "Boraginales",
+    "orderName": "boraginales",
     "family": "Boraginaceae",
     "description": {
       "preschool": "Borage flowers are bright blue stars that hang upside down, and the leaves are fuzzy and prickly. Bees love these blue flowers, and you can sometimes eat the tiny flowers — they taste a little like cucumber.",
@@ -68,7 +68,7 @@
   },
   {
     "name": "brassicaceae",
-    "order": "Brassicales",
+    "orderName": "brassicales",
     "family": "Brassicaceae",
     "description": {
       "preschool": "These plants have four-petal flowers shaped like little crosses. Mustard, cabbage, broccoli, and radishes are all in this family. The flowers are usually yellow or white, and the leaves often taste a little spicy.",
@@ -93,7 +93,7 @@
   },
   {
     "name": "caryophyllaceae",
-    "order": "Caryophyllales",
+    "orderName": "caryophyllales",
     "family": "Caryophyllaceae",
     "description": {
       "preschool": "The pink family has flowers with five pretty notched petals, like little fringed dresses. Carnations and dianthus are in this family — they smell sweet and many of them are bright pink, white, or red.",
@@ -114,7 +114,7 @@
   },
   {
     "name": "fabaceae",
-    "order": "Fabales",
+    "orderName": "fabales",
     "family": "Fabaceae",
     "description": {
       "preschool": "Pea and bean plants have funny pea-shaped flowers and leaves that fold up at night. Their roots have little bumps that put nutrients back into the soil — they help the soil get richer for the other plants growing nearby.",
@@ -139,7 +139,7 @@
   },
   {
     "name": "geraniaceae",
-    "order": "Geraniales",
+    "orderName": "geraniales",
     "family": "Geraniaceae",
     "description": {
       "preschool": "Geranium leaves smell wonderful when you brush them — like roses, lemons, or mint. The flowers are pretty pink or white. People grow scented geraniums for the smell of their leaves more than for the flowers.",
@@ -156,7 +156,7 @@
   },
   {
     "name": "lamiaceae",
-    "order": "Lamiales",
+    "orderName": "lamiales",
     "family": "Lamiaceae",
     "description": {
       "preschool": "The mint family has square stems and leaves that smell delicious when you crush them — basil, oregano, sage, lavender, mint, and thyme are all part of this family. Bees love the flowers, and we love the leaves for cooking.",
@@ -177,7 +177,7 @@
   },
   {
     "name": "passifloraceae",
-    "order": "Malpighiales",
+    "orderName": "malpighiales",
     "family": "Passifloraceae",
     "description": {
       "preschool": "Passion flowers look like alien spaceships — they have bright wheels of petals and threads, and they climb up fences and trees on long curly tendrils. Some passion flowers grow into delicious fruit called passion fruit.",
@@ -194,7 +194,7 @@
   },
   {
     "name": "poaceae",
-    "order": "Poales",
+    "orderName": "poales",
     "family": "Poaceae",
     "description": {
       "preschool": "Grass is the most common plant in the world! Lawns are made of grass, and so are wheat, rice, and corn. Grasses do not have showy flowers — the wind carries their pollen, not insects.",
@@ -211,7 +211,7 @@
   },
   {
     "name": "rosaceae",
-    "order": "Rosales",
+    "orderName": "rosales",
     "family": "Rosaceae",
     "description": {
       "preschool": "The rose family has lots of flowers we love — roses, apples, plums, peaches, strawberries, and cherries. Most have five petals, and many become delicious fruit after the flower fades.",
@@ -228,7 +228,7 @@
   },
   {
     "name": "rutaceae",
-    "order": "Sapindales",
+    "orderName": "sapindales",
     "family": "Rutaceae",
     "description": {
       "preschool": "Citrus trees give us oranges, lemons, limes, and grapefruit. The leaves and peels smell wonderfully fresh because they have tiny oil glands — try crushing a leaf or peeling an orange and breathing in!",
@@ -249,7 +249,7 @@
   },
   {
     "name": "solanaceae",
-    "order": "Solanales",
+    "orderName": "solanales",
     "family": "Solanaceae",
     "description": {
       "preschool": "The nightshade family includes tomatoes, peppers, potatoes, eggplant, and tobacco. Some nightshades — like tomatoes — are wonderful to eat. Others have plants with poisonous leaves, so we only eat the parts the plant says are safe (the ripe fruit, not the green leaves).",
@@ -266,7 +266,7 @@
   },
   {
     "name": "violaceae",
-    "order": "Malpighiales",
+    "orderName": "malpighiales",
     "family": "Violaceae",
     "description": {
       "preschool": "Violets are tiny, sweet-smelling flowers usually purple, blue, or white that grow close to the ground. The flowers and leaves are sometimes used to flavour candy and decorate cakes. Some violets bloom in the early spring before most other flowers.",

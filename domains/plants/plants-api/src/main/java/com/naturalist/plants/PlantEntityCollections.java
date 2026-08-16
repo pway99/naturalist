@@ -26,6 +26,21 @@ public interface PlantEntityCollections {
         }
     }
 
+    final class PlantOrderCollection extends BehavioralCollection<PlantOrder> {
+
+        PlantOrderCollection(Collection<PlantOrder> orders) {
+            super(orders);
+        }
+
+        public static PlantOrderCollection of(Collection<PlantOrder> orders) {
+            return new PlantOrderCollection(orders);
+        }
+
+        public static PlantOrderCollection empty() {
+            return new PlantOrderCollection(List.of());
+        }
+    }
+
     final class PlantFamilyCollection extends BehavioralCollection<PlantFamily> {
 
         PlantFamilyCollection(Collection<PlantFamily> families) {

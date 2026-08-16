@@ -25,4 +25,11 @@ class PlantFamilyEntityQueryImpl
                 .throwWhenInvalid();
         return PlantFamilyCollection.of(repository().getByEntityNameSet(names));
     }
+
+    @Override
+    public PlantFamilyCollection forOrderName(PlantOrderName orderName) {
+        observer().arguments("forOrderName", i -> i.entityName(orderName, "orderName"))
+                .throwWhenInvalid();
+        return PlantFamilyCollection.of(repository().getByOrderName(orderName));
+    }
 }

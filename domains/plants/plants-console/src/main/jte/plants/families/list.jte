@@ -21,7 +21,7 @@
                         <strong>${commonName}</strong>
                     </a>
                 </header>
-                <p class="taxonomy">${f.order().value()} &middot; <em>${f.family().value()}</em></p>
+                <p class="taxonomy">${f.orderName().value()} &middot; <em>${f.family().value()}</em></p>
                 <p class="description-preview">${f.description().preschool()}</p>
                 <footer>
                     <a href="/plants/families/${f.name().value()}">

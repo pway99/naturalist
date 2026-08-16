@@ -10,6 +10,8 @@
     <h1>Plant Catalog</h1>
     <p>
         Plants documented at Oak Vista.
+        <a href="/plants/orders">Browse orders &rarr;</a>
+        &middot;
         <a href="/plants/families">Browse families &rarr;</a>
         &middot;
         <a href="/plants/phytochemistry">View phytochemistry &rarr;</a>

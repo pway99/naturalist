@@ -5,7 +5,7 @@ import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.TaxonomicFamily;
-import com.naturalist.taxonomy.TaxonomicOrder;
+import com.naturalist.taxonomy.LinnaeanFamily;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -29,17 +29,17 @@ import java.util.function.Consumer;
  */
 public record PlantFamily(
         PlantFamilyName name,
-        TaxonomicOrder order,
+        PlantOrderName orderName,
         TaxonomicFamily family,
         Description description,
         Set<CommonName> commonNames
-) implements NamedEntity<PlantFamilyName> {
+) implements NamedEntity<PlantFamilyName>, LinnaeanFamily<PlantOrderName> {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .namedValue(order, "order")
+                .entityName(orderName, "orderName")
                 .namedValue(family, "family")
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames");

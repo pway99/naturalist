@@ -406,12 +406,12 @@ is an orthogonal axis (section D), never an extra permit:
 | Domain  | Ladder (rungs with entities)                  | Orthogonal axes  |
 |---------|-----------------------------------------------|------------------|
 | insects | ORDER → FAMILY → GENUS → SPECIES → SUBSPECIES | clade            |
-| plants  | FAMILY → GENUS → SPECIES                      | clade, cultivar  |
+| plants  | ORDER → FAMILY → GENUS → SPECIES              | clade, cultivar  |
 | fungi   | undecided                                     | undecided        |
 
 Two consequences:
 
-- **`<Domain>RankName` permits only rungs that have an entity.** Three for plants today,
+- **`<Domain>RankName` permits only rungs that have an entity.** Four for plants,
   five for insects. Do not permit a rank with no record behind it, and do not permit a
   non-rank — `CultivarName` belongs to the cultivar axis, not this type.
 - **`rank()` returning `LinealRank` therefore always works.** Every permit is a Linnaean

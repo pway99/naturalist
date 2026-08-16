@@ -1,0 +1,173 @@
+[
+  {
+    "name": "apiales",
+    "order": "Apiales",
+    "description": {
+      "preschool": "These plants hold their tiny flowers up on stalks that spread out like the ribs of an umbrella. Dill and parsley belong here. Lots of small helpful insects land on the flat tops to feed.",
+      "elementary": "Apiales is the order that contains the carrot family. Its signature is the umbel — a flower cluster where every stalk rises from the same point and ends at the same height, making a flat platform. That shape matters in a garden: tiny parasitoid wasps and hoverflies can walk across it and feed, where a deep tubular flower would shut them out. Many members are strongly aromatic, and several are the only food certain swallowtail caterpillars will eat.",
+      "secondary": "Apiales — order of flowering plants containing Apiaceae, Araliaceae and related families. The defining inflorescence is the compound umbel, with nectar presented on an exposed stylopodium at the style base. Because the reward needs no manipulation, the visitor spectrum is exceptionally broad and skewed toward short-mouthparted Hymenoptera and Diptera — the guild most conservation biological control depends on. Foliar chemistry across the order is dominated by furanocoumarins and phenylpropenes. At Oak Vista the order is represented by two Apiaceae genera, Anethum and Petroselinum, both grown for the kitchen and both permitted to bolt for the floral resource.",
+      "university": "Apiales — Asterid clade, Campanulid lineage. Roughly 2,000 genera. The linear furanocoumarins (bergapten, xanthotoxin) that characterise Apiaceae are the substrate of the Berenbaum coevolutionary system: Papilionidae larvae tolerate them through cytochrome P450-mediated detoxification, and the escalating chemistry-tolerance arms race between the two lineages is among the best-documented in herbivory. The same compounds cause phytophotodermatitis in humans handling foliage in sunlight, a practical field hazard across the order."
+    },
+    "commonNames": [
+      { "label": "Carrot order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "boraginales",
+    "order": "Boraginales",
+    "description": {
+      "preschool": "Plants in this group are often covered in stiff little hairs, and their flower buds uncurl from a coil like a fern or a scorpion's tail. Borage is one of them, with bright blue star flowers.",
+      "elementary": "Boraginales is the borage order. Two features give it away: the plants are usually bristly to the touch, and the flower cluster is coiled like a shepherd's crook, unrolling as each bud opens in turn. That unrolling habit means a single plant offers fresh flowers over many weeks rather than all at once — useful for bees, which get a dependable supply instead of one short glut.",
+      "secondary": "Boraginales — order containing Boraginaceae and allied families, characterised by scorpioid cymes and, in most members, dense setose indumentum. The sequential anthesis of a scorpioid cyme spreads floral reward over an extended period, and members of the order are consistently among the highest nectar producers per flower in temperate floras. At Oak Vista the order is represented by Borago officinalis, grown purely for pollinator support and self-seeding vigorously enough to warrant an active thinning program.",
+      "university": "Boraginales — Asterid clade; placement outside Lamiales was resolved by molecular phylogenetics and remains the subject of ongoing ordinal circumscription debate. Pyrrolizidine alkaloids occur widely across the order and are hepatotoxic to mammals in quantity, constraining culinary use of foliage even where flowers are benign. Nectar chemistry is sucrose-dominant with rapid replenishment, the trait underlying the order's standing in pollinator plantings."
+    },
+    "commonNames": [
+      { "label": "Borage order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "brassicales",
+    "order": "Brassicales",
+    "description": {
+      "preschool": "These plants have flowers with four petals arranged in a cross. Radish and sweet alyssum are in this group. Many of them taste peppery — that sharp taste is how the plant protects itself.",
+      "elementary": "Brassicales is the mustard order. Its flowers have four petals in a cross shape, which is where the old family name Cruciferae came from. The whole order shares a chemical defence: compounds called glucosinolates sit in the leaves, and when something bites, an enzyme converts them into the sharp mustard taste you know from radish and rocket. It works on most insects — but cabbage white caterpillars evolved a way around it, which is why they are found on almost every plant in this order.",
+      "secondary": "Brassicales — order defined by the glucosinolate–myrosinase defence system. Glucosinolates are stored separately from the myrosinase that hydrolyses them; tissue damage combines the two, releasing isothiocyanates toxic to generalist herbivores and microbes. Pieridae circumvent this via a nitrile-specifier protein that redirects hydrolysis toward less toxic products — the canonical coevolutionary arms race in herbivory. At Oak Vista the order appears as two Brassicaceae genera, Lobularia grown as beneficial insect habitat and Raphanus tolerated as butterfly forage, both carrying the accepted cost of also supporting Pieris rapae.",
+      "university": "Brassicales — Rosid clade, Malvid lineage. The glucosinolate pathway arose from a benzylglucosinolate origin in the order's stem lineage and diversified through repeated gene duplication in Brassicaceae. Arabidopsis thaliana, the principal plant genetic model, sits here, so the order's biochemistry is characterised in more depth than any other. The Pieridae–Brassicales system is dated to roughly contemporaneous radiations, one of the strongest available cases for escape-and-radiate coevolution."
+    },
+    "commonNames": [
+      { "label": "Mustard order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "caryophyllales",
+    "order": "Caryophyllales",
+    "description": {
+      "preschool": "This group includes pinks and carnations, with frilly-edged petals that look like they were cut with pinking shears. Many of them smell sweet and spicy, like cloves.",
+      "elementary": "Caryophyllales is a large and varied order — it holds the pinks and carnations, but also cacti, beets and spinach. The garden members usually have petals with a fringed or toothed edge, swollen joints on the stem, and paired leaves. Many are strongly scented and attract butterflies and long-tongued bees, which can reach nectar down a narrow tube that shorter-tongued insects cannot.",
+      "secondary": "Caryophyllales — a large, morphologically diverse order spanning Caryophyllaceae, Cactaceae, Amaranthaceae and Polygonaceae among others. The core Caryophyllales are notable for replacing anthocyanin pigments with betalains, a synapomorphy of considerable systematic weight; Caryophyllaceae is one of the families that retains anthocyanins. Garden members typically present nectar at the base of a narrow calyx tube, restricting access to Lepidoptera and long-tongued bees. At Oak Vista the order is represented by the genus Dianthus, grown for pollinator support and ornament.",
+      "university": "Caryophyllales — Superasterid clade. The betalain/anthocyanin distribution across the order is a long-standing systematic puzzle: the two pigment classes are mutually exclusive within a plant, and the polarity of the transition remains debated. The order also contains a disproportionate share of C4 and CAM lineages and of halophytes and extremophiles, making it a repeated testbed for studies of physiological adaptation to water and salt stress."
+    },
+    "commonNames": [
+      { "label": "Pink order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "fabales",
+    "order": "Fabales",
+    "description": {
+      "preschool": "These are the pea and bean plants. Their flowers look a bit like little butterflies or slippers. Under the ground their roots have bumps where helpful bacteria live and make food for the soil.",
+      "elementary": "Fabales is the legume order. Its flowers have a distinctive shape — a big upper petal like a banner, two side wings, and a keel underneath that hides the pollen. Most importantly, legumes partner with bacteria that live in bumps on their roots and pull nitrogen straight out of the air, turning it into fertiliser. That is why clover and peas are planted to feed the soil rather than drain it, and why they are the backbone of crop rotation.",
+      "secondary": "Fabales — order dominated by Fabaceae, the third-largest flowering plant family. The papilionaceous flower encloses the staminal column in a keel that a visitor must depress, filtering the pollinator spectrum by body mass. The order's defining ecological trait is symbiotic nitrogen fixation through rhizobial root nodules, mediated by the Nod-factor signalling cascade. At Oak Vista, Fabales supplies both the cover-crop nitrogen contribution (Trifolium, two species) and a nitrogen-fixing ornamental climber (Lathyrus).",
+      "university": "Fabales — Rosid clade, Fabid lineage. Nodulation is confined to the nitrogen-fixing clade spanning Fabales, Fagales, Cucurbitales and Rosales, and whether it arose once with multiple losses or repeatedly remains contested; the predisposition hypothesis currently has the stronger support. Non-protein amino acids are widespread across the order as antiherbivore defences, including the neurotoxic ODAP of Lathyrus sativus and the osteolathyrogenic β-aminopropionitrile of ornamental sweet pea seed."
+    },
+    "commonNames": [
+      { "label": "Legume order", "locale": "en" },
+      { "label": "Pea order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "geraniales",
+    "order": "Geraniales",
+    "description": {
+      "preschool": "These plants often have soft, deeply cut leaves that smell strong when you rub them. After the flower is finished the seed pod grows into a long point, like a stork's beak.",
+      "elementary": "Geraniales is the geranium order. Its most memorable feature is the fruit: as the seeds ripen the base of the flower stretches into a long beak, which is why several members are named after storks and cranes. When the beak dries it splits and twists, flinging or drilling the seeds away from the parent plant. Many species also carry scented oil glands on their leaves and stems.",
+      "secondary": "Geraniales — a small order centred on Geraniaceae. The diagnostic feature is the schizocarp with an elongated rostrum: the mericarps separate at maturity and, in many genera, the awn coils hygroscopically, driving the seed into the soil surface as humidity cycles. Pelargonium is distinguished from Geranium by zygomorphic flowers and a nectar spur adnate to the pedicel. At Oak Vista the order is represented by Pelargonium graveolens, planted as a hedge whose contribution is chiefly architectural — persistent woody structure providing overwintering refuge beside the annual beds.",
+      "university": "Geraniales — Rosid clade. Geraniaceae is a model system for plastid genome instability, showing exceptional rates of rearrangement, gene loss and accelerated substitution relative to other angiosperms. Pelargonium in particular carries one of the largest and most rearranged plastomes known. The genus's primary radiation in the winter-rainfall Cape region accounts for its performance under Mediterranean-climate summer drought."
+    },
+    "commonNames": [
+      { "label": "Geranium order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "lamiales",
+    "order": "Lamiales",
+    "description": {
+      "preschool": "Squeeze the stem of these plants and you will feel corners — the stems are square, not round. The leaves grow in pairs and often smell lovely. Mint, sage, thyme and basil are all here.",
+      "elementary": "Lamiales is the mint order, and it is easy to recognise: square stems, leaves in opposite pairs, and a strong smell when you crush a leaf. The flowers are two-lipped, with a lower lip that acts as a landing platform for a bee. The scent comes from tiny oil glands on the leaf surface, and those oils are the plant's defence — the same compounds that make these plants so useful in cooking are what discourage insects from eating them.",
+      "secondary": "Lamiales — a large order containing Lamiaceae, Oleaceae, Plantaginaceae and others. Lamiaceae is diagnosed by quadrangular stems, decussate phyllotaxy, bilabiate corollas and essential oils produced in peltate glandular trichomes. The bilabiate flower is a precision mechanism: the lower lip positions the visitor and the upper lip presses anthers against a specific part of its body, giving high pollen-transfer fidelity. At Oak Vista the order supplies three Lamiaceae genera — Thymus as ground cover, Salvia and Ocimum for kitchen and pollinators — making it the best-represented order in the catalog.",
+      "university": "Lamiales — Asterid clade, Lamiid lineage. Terpenoid biosynthesis proceeds through both the plastidial MEP and cytosolic MVA pathways, with the peltate glandular trichome as the site of synthesis and storage; chemotypic variation within species is often heritable and forms the basis of the culinary flavour classes. Salvia is notable for the staminal lever mechanism, a modified connective acting as a mass-triggered pollen applicator and a textbook case of floral mechanical filtering."
+    },
+    "commonNames": [
+      { "label": "Mint order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "malpighiales",
+    "order": "Malpighiales",
+    "description": {
+      "preschool": "This is a very big group of plants that do not all look alike. Violets are here, and so are passion flowers with their amazing fringed centres. Special butterflies lay eggs on both.",
+      "elementary": "Malpighiales is one of the largest plant orders and one of the hardest to describe, because its members look so different from one another — violets, willows, poinsettias and passion flowers are all in it. What links them was worked out from DNA rather than from appearance. Two of its families matter a lot at Oak Vista: violets feed fritillary caterpillars, and passion flowers feed Gulf Fritillary caterpillars. Neither butterfly can breed without them.",
+      "secondary": "Malpighiales — a very large rosid order whose circumscription was established almost entirely by molecular data; its morphological heterogeneity is such that no reliable synapomorphy unites it. The order contains a disproportionate share of tropical understorey lineages. At Oak Vista it supplies two obligate larval host relationships: Viola for Speyeria and Boloria fritillaries, and Passiflora for Agraulis vanillae. Both are cases where the plant's presence is the limiting factor on the butterfly's ability to breed on site, not merely a preference.",
+      "university": "Malpighiales — Rosid clade, Fabid lineage; roughly 16,000 species. The order is a standard example of a phylogenetically well-supported but morphologically undiagnosable clade, and its rapid early radiation — plausibly associated with the colonisation of tropical forest shade — leaves short backbone branches that continue to resist resolution. Passifloraceae is independently notable for cyanogenic glycoside defence and for extrafloral nectaries that recruit ant guards, alongside egg-mimic structures that deter Heliconiini oviposition."
+    },
+    "commonNames": [
+      { "label": "Violet order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "piperales",
+    "order": "Piperales",
+    "description": {
+      "preschool": "Pepper plants and pipevines belong here. Pipevine flowers are shaped like curved pipes, and a little fly has to crawl right inside to reach the middle.",
+      "elementary": "Piperales is the pepper order, and it includes both black pepper and the pipevines. It is an ancient group — these plants branched off early, before most flowering plants we know. Their flowers often do without ordinary petals. Aristolochia, the pipevine, has the most unusual arrangement: a curved tube that traps a small fly overnight, dusts it with pollen, then lets it go. Every pipevine also carries a strong poison that only one special group of butterfly caterpillars can eat.",
+      "secondary": "Piperales — a magnoliid order, outside the eudicots, containing Piperaceae, Aristolochiaceae and Saururaceae. Members typically show swollen nodes, distichous phyllotaxy and reduced or absent perianth differentiation. Aristolochiaceae is defined by the trap flower: a fused perianth forming a curved utricle with downward-pointing trichomes that admit small Diptera and release them at anthesis. At Oak Vista the order is represented by Aristolochia californica, the keystone host for Battus philenor and the source of the aristolochic acid constituents linking the plants catalog to chemistry.",
+      "university": "Piperales — magnoliid clade; its placement outside the eudicots makes the order significant for reconstructing early angiosperm floral evolution. Aristolochic acids are nitrophenanthrene carboxylic acids derived from the benzylisoquinoline alkaloid pathway, nephrotoxic and carcinogenic to mammals and broadly antifeedant to insects. Troidini (Papilionidae) sequester rather than metabolise them, retaining the compounds through pupation into the imago and into the egg via maternal transfer — one of the more complete sequestration systems documented in Lepidoptera."
+    },
+    "commonNames": [
+      { "label": "Pepper order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "poales",
+    "order": "Poales",
+    "description": {
+      "preschool": "Grasses belong here. They have long thin leaves and hollow stems with joints. Their flowers are small and green — they do not need to be pretty, because the wind carries their pollen.",
+      "elementary": "Poales is the grass order, and it feeds the world: wheat, rice, maize, barley and the lawn all sit here. Grasses gave up on attracting insects. Their flowers have no petals, no scent and no nectar; instead they hang out feathery stigmas and let the wind carry pollen between them. What grasses do offer a garden is structure and food for caterpillars — skipper butterflies lay eggs on grass blades, and a lawn mown high shelters far more insect life than one cut short.",
+      "secondary": "Poales — a monocot order containing Poaceae, Cyperaceae, Juncaceae and Bromeliaceae. Poaceae is anemophilous throughout: perianth reduced to lodicules, stigmas plumose, pollen small and copious. The order therefore sits outside the pollinator economy entirely, contributing to a garden through soil structure, drought tolerance and larval hosting instead. At Oak Vista, Festuca arundinacea forms the lawn matrix under a high-mow protocol that preserves both Hesperiinae larval habitat and the humid basal microclimate used by ground-active predators.",
+      "university": "Poales — commelinid monocot clade. Poaceae is the principal locus of C4 photosynthesis evolution, which arose independently more than twenty times within the family and underlies the Miocene expansion of tropical grasslands. Many pooid grasses host vertically transmitted Epichloë endophytes conferring drought and herbivory resistance through ergot and loline alkaloid production — beneficial agronomically, but a genuine trade-off where lepidopteran hosting is an objective, since alkaloid-positive stands are poorer larval habitat."
+    },
+    "commonNames": [
+      { "label": "Grass order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "rosales",
+    "order": "Rosales",
+    "description": {
+      "preschool": "Roses, apples, peaches and plums are all in this family group. Their flowers usually have five petals in a circle, and many of them turn into fruit we can eat.",
+      "elementary": "Rosales is the rose order, and it gives us a great many of our fruits — apples, pears, peaches, plums, cherries, strawberries and raspberries. The flowers are usually simple and open, with five petals and a ring of stamens, so almost any insect can reach the nectar. Many members flower very early, sometimes before their leaves appear, which makes them one of the first big food sources of the year for bees — and also puts the crop at risk if a late frost arrives.",
+      "secondary": "Rosales — order containing Rosaceae, Moraceae, Urticaceae, Cannabaceae and others. Rosaceae flowers are typically pentamerous, actinomorphic and open, with an exposed hypanthium nectary accessible to a broad visitor spectrum. Precocious flowering in the stone fruits is the ecologically significant trait: it supplies early-season nectar weeks before most herbaceous bloom, at the cost of frost exposure. At Oak Vista the order is represented by Prunus persica, whose management is dominated by annual structural pruning and dormant-season copper against peach leaf curl.",
+      "university": "Rosales — Rosid clade, Fabid lineage; a member of the nitrogen-fixing clade, with nodulating actinorhizal lineages in Rosales though not in Rosaceae. Cyanogenic glycoside defence via amygdalin and prunasin is a two-component activated system, substrate and β-glucosidase held in separate compartments until tissue damage. Chill-hour requirement governs cultivar suitability by region and is a live constraint under declining winter chill accumulation in the Sacramento Valley."
+    },
+    "commonNames": [
+      { "label": "Rose order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "sapindales",
+    "order": "Sapindales",
+    "description": {
+      "preschool": "Citrus trees are in this group — oranges, lemons and limes. Their white flowers smell wonderful, and bees travel a long way to reach them. The leaves smell good too if you scratch them.",
+      "elementary": "Sapindales is the order that includes citrus, maples, mangoes and cashews. Its members are mostly trees and shrubs with compound leaves — a single leaf divided into several leaflets. Citrus flowers are among the most attractive to honeybees of any cultivated plant, and citrus bloom is a major event in a garden's pollinator year. Scratch a citrus leaf and you will smell the oil stored in tiny glands, the same oil that scents the peel.",
+      "secondary": "Sapindales — order containing Rutaceae, Sapindaceae, Anacardiaceae and Meliaceae. Rutaceae is diagnosed by pellucid glands containing terpene-rich essential oils, visible as translucent dots when a leaf is held to light. Citrus flower fragrance is linalool-dominant, a profile strongly associated with honeybee floral tracking, and per-flower nectar yield is among the highest of cultivated tree crops. At Oak Vista the order is represented by the genus Citrus, catalogued at genus rank because several varieties are present and none has been keyed to species.",
+      "university": "Sapindales — Rosid clade, Malvid lineage. Rutaceae is a principal source of furanocoumarins and acridone alkaloids, and shares furanocoumarin chemistry with Apiaceae by convergence rather than common descent — an independent origin of the same Papilionidae-relevant defence, which is why swallowtail host records span both orders. Cultivated Citrus is a hybrid complex derived from C. maxima, C. reticulata and C. medica, so species-rank identification of garden trees is frequently unsound in principle as well as in practice."
+    },
+    "commonNames": [
+      { "label": "Citrus order", "locale": "en" },
+      { "label": "Soapberry order", "locale": "en" }
+    ]
+  },
+  {
+    "name": "solanales",
+    "order": "Solanales",
+    "description": {
+      "preschool": "Tomatoes, potatoes and eggplants are all in this group. Their flowers keep the pollen locked inside little tubes, and a bumblebee has to buzz very loudly to shake it out.",
+      "elementary": "Solanales is the nightshade order — tomatoes, potatoes, peppers, eggplants and morning glories. Its flowers do something unusual: the pollen is held inside tube-shaped anthers with only a tiny hole at the tip, so it will not simply fall out. A bumblebee grips the anthers and vibrates its flight muscles until the pollen shakes loose. Honeybees cannot do this, which is why bumblebees matter so much to a tomato crop. Nearly every plant in the order also makes bitter alkaloids that protect its leaves.",
+      "secondary": "Solanales — order containing Solanaceae and Convolvulaceae. Solanaceae flowers are characteristically actinomorphic with connivent poricidal anthers, requiring sonication at roughly 100–400 Hz for pollen release; the behaviour is present in Bombus, Xylocopa and Halictidae and absent in Apis, which is why managed bumblebee introduction raises greenhouse tomato yield. Steroidal glycoalkaloids provide constitutive foliar defence and decline in the ripe fruit of domesticated forms. At Oak Vista the order carries the food-crop role through two Solanum species with complementary heat responses.",
+      "university": "Solanales — Asterid clade, Lamiid lineage. Solanaceae is of disproportionate importance both agriculturally and as a genetic model, with tomato, potato, pepper, tobacco and petunia all serving as reference systems. Steroidal glycoalkaloid biosynthesis proceeds from cholesterol via the GAME pathway; α-tomatine declines during ripening through glycosylation to non-bitter esculeoside A, partitioning defence to foliage and unripe fruit while ripe fruit becomes palatable — the biochemical basis for specialist herbivores such as Manduca feeding on foliage rather than fruit."
+    },
+    "commonNames": [
+      { "label": "Nightshade order", "locale": "en" }
+    ]
+  }
+]

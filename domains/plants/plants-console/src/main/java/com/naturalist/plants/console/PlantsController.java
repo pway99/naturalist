@@ -12,6 +12,8 @@ import com.naturalist.plants.PlantFamily;
 import com.naturalist.plants.PlantFamilyName;
 import com.naturalist.plants.PlantGenus;
 import com.naturalist.plants.PlantGenusName;
+import com.naturalist.plants.PlantOrder;
+import com.naturalist.plants.PlantOrderName;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.PlantQuery;
 import com.naturalist.plants.PlantsTestContext;
@@ -100,6 +102,30 @@ public class PlantsController {
     }
 
     // ── Rank pages ────────────────────────────────────────────────────────
+
+    @GetMapping("/orders")
+    String orderList(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<PlantOrder> ordersPage =
+                plantQuery.orders().findPage(PageRequest.console(Math.max(0, page)));
+        model.addAttribute("ordersPage", ordersPage);
+        return "plants/orders/list";
+    }
+
+    @GetMapping("/orders/{name}")
+    String orderDetail(@PathVariable String name, Model model) {
+        var orderName = PlantOrderName.of(name);
+        var order = plantQuery.orders().getByName(orderName);
+        if (order.isEmpty()) {
+            return "redirect:/plants";
+        }
+        var families = plantQuery.families().forOrderName(orderName).stream()
+                .sorted(Comparator.comparing((PlantFamily f) -> f.name().value()))
+                .toList();
+        model.addAttribute("order", order.get());
+        model.addAttribute("families", families);
+        addDescription(model, order.get().description());
+        return "plants/orders/detail";
+    }
 
     @GetMapping("/families")
     String familyList(@RequestParam(defaultValue = "0") int page, Model model) {

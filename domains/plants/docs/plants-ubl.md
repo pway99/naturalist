@@ -30,6 +30,7 @@ graph TD
 
     subgraph Linnaean["Linnaean — what it IS"]
         RN["PlantRankName"]
+        O["PlantOrder"]
         F["PlantFamily"]
         G["PlantGenus"]
         S["PlantSpecies"]
@@ -47,6 +48,7 @@ graph TD
     P --> RN
     P --> CV
     P --> CT
+    RN --> O
     RN --> F
     RN --> G
     RN --> S
@@ -96,7 +98,7 @@ graph TD
 
 | Term | Meaning | Code |
 |---|---|---|
-| **rank record** | A taxon at family, genus or species rank. A permanent home at the rank the evidence supports — never a placeholder for a finer identification | `PlantFamily`, `PlantGenus`, `PlantSpecies` |
+| **rank record** | A taxon at order, family, genus or species rank. A permanent home at the rank the evidence supports — never a placeholder for a finer identification | `PlantOrder`, `PlantFamily`, `PlantGenus`, `PlantSpecies` |
 | **plant name** | What plant a record concerns, at whatever rank was resolved | `PlantRankName` |
 | **cultivar** | A named selection within a species: breeding status, fruit type, seed policy | `Cultivar` |
 | **seed lineage** | A cultivar's saved-seed history and adaptation program | `SeedLineage` |
@@ -124,9 +126,15 @@ classDiagram
         <<sealed interface>>
         value() rank()
     }
+    class PlantOrder {
+        PlantOrderName name
+        TaxonomicOrder order
+        Description description
+        Set~CommonName~ commonNames
+    }
     class PlantFamily {
         PlantFamilyName name
-        TaxonomicOrder order
+        PlantOrderName orderName
         TaxonomicFamily family
         Description description
         Set~CommonName~ commonNames
@@ -173,11 +181,13 @@ classDiagram
         Set~PlantTissue~ tissues
     }
 
+    PlantRankName <|.. PlantOrder : name type
     PlantRankName <|.. PlantFamily : name type
     PlantRankName <|.. PlantGenus : name type
     PlantRankName <|.. PlantSpecies : name type
     PlantSpecies --> PlantGenus : genusName
     PlantGenus --> PlantFamily : familyName
+    PlantFamily --> PlantOrder : orderName
     PlantEcologicalRole --> PlantRankName : plantName
     PlantProgram --> PlantRankName : plantName
     PhytochemicalConstituent --> PlantRankName : plantName
@@ -191,7 +201,8 @@ Vocabularies (enums): `PlantRole`, `PlantLifeForm`, `VarietyType`, `FruitType`,
 
 Three things the diagram is asserting:
 
-**The rank chain is typed end to end.** `PlantSpecies → PlantGenus → PlantFamily`, each by
+**The rank chain is typed end to end.** `PlantSpecies → PlantGenus → PlantFamily →
+PlantOrder`, each by
 a typed name with a foreign-key constraint behind it. Position is never carried as loose
 epithet strings; a taxon's parent is a reference, not a description.
 

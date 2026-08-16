@@ -31,6 +31,8 @@ public interface PlantQuery {
 
     PlantEntityQuery plants();
 
+    PlantOrderEntityQuery orders();
+
     PlantFamilyEntityQuery families();
 
     PlantGenusEntityQuery genera();
@@ -38,8 +40,16 @@ public interface PlantQuery {
     interface PlantEntityQuery extends EntityQuery<PlantSpeciesName, PlantSpecies, PlantSpeciesCollection> {
     }
 
+    interface PlantOrderEntityQuery
+            extends EntityQuery<PlantOrderName, PlantOrder,
+                    PlantEntityCollections.PlantOrderCollection> {
+    }
+
     interface PlantFamilyEntityQuery
             extends EntityQuery<PlantFamilyName, PlantFamily, PlantFamilyCollection> {
+
+        /** Families under an order, joined on the family's typed upward FK. */
+        PlantFamilyCollection forOrderName(PlantOrderName orderName);
     }
 
     PlantEcologicalRoleEntityQuery ecologicalRoles();

@@ -7,7 +7,6 @@ import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.LinnaeanGenus;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -27,13 +26,12 @@ import java.util.function.Consumer;
  * carried locally so a catalog-assembly chain check (this genus's
  * {@code family} epithet must equal its resolved parent family's
  * {@code family} epithet) does not require resolving the parent.
- * {@link #order} is similarly local for self-sufficient display without
- * resolving the family record.
+ * The order is deliberately <em>not</em> carried here: it is two rungs up, which is a
+ * copy rather than a chain check. Resolve it through the parent family.
  */
 public record PlantGenus(
         PlantGenusName name,
         PlantFamilyName familyName,
-        TaxonomicOrder order,
         TaxonomicFamily family,
         TaxonomicGenus genus,
         Description description,
@@ -45,7 +43,6 @@ public record PlantGenus(
         return i -> i
                 .entityName(name, "name")
                 .entityName(familyName, "familyName")
-                .namedValue(order, "order")
                 .namedValue(family, "family")
                 .namedValue(genus, "genus")
                 .valueObject(description, "description")

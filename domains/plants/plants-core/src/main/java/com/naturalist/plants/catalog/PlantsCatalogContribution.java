@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 
 /**
  * Forward-direction catalog contribution for the plants domain — emits one
- * {@link SearchableEntity} per {@link PlantSpecies} in the live catalog with the
- * tokens under which a young naturalist might search:
+ * {@link SearchableEntity} per catalogued plant taxon — order, family, genus and
+ * {@link PlantSpecies} — with the tokens under which a young naturalist might search:
  *
  * <ul>
  *   <li>the plant slug (e.g. {@code "aristolochia-californica"}) — the kernel
@@ -58,19 +58,23 @@ public class PlantsCatalogContribution implements CatalogContribution {
     private static final int ASSEMBLY_PAGE_SIZE = 1000;
 
     private final PlantQuery.PlantEntityQuery plants;
+    private final PlantQuery.PlantOrderEntityQuery orders;
     private final PlantQuery.PlantFamilyEntityQuery families;
     private final PlantQuery.PlantGenusEntityQuery genera;
 
     public PlantsCatalogContribution(PlantQuery.PlantEntityQuery plants,
+                                    PlantQuery.PlantOrderEntityQuery orders,
                                     PlantQuery.PlantFamilyEntityQuery families,
                                     PlantQuery.PlantGenusEntityQuery genera) {
         Observer.forClass(PlantsCatalogContribution.class)
                 .arguments("constructor", i -> i
                         .notNull(plants, "plants")
+                        .notNull(orders, "orders")
                         .notNull(families, "families")
                         .notNull(genera, "genera"))
                 .throwWhenInvalid();
         this.plants = plants;
+        this.orders = orders;
         this.families = families;
         this.genera = genera;
     }
@@ -82,7 +86,7 @@ public class PlantsCatalogContribution implements CatalogContribution {
 
     @Override
     public Stream<SearchableEntity> searchableEntities() {
-        return Stream.of(plantEntities(), familyEntities(), genusEntities())
+        return Stream.of(plantEntities(), orderEntities(), familyEntities(), genusEntities())
                 .flatMap(s -> s);
     }
 
@@ -102,6 +106,11 @@ public class PlantsCatalogContribution implements CatalogContribution {
                         plant, genusEpithets.get(plant.genusName().value())));
     }
 
+    private Stream<SearchableEntity> orderEntities() {
+        return Pages.stream(ASSEMBLY_PAGE_SIZE, orders::findPage)
+                .map(PlantsCatalogContribution::toSearchableOrder);
+    }
+
     private Stream<SearchableEntity> familyEntities() {
         return Pages.stream(ASSEMBLY_PAGE_SIZE, families::findPage)
                 .map(PlantsCatalogContribution::toSearchableFamily);
@@ -115,6 +124,11 @@ public class PlantsCatalogContribution implements CatalogContribution {
     private static SearchableEntity toSearchablePlant(PlantSpecies plant, String genusEpithet) {
         EntityRef target = new EntityRef(DOMAIN, plant.name());
         return new SearchableEntity(target, tokensFor(plant, genusEpithet));
+    }
+
+    private static SearchableEntity toSearchableOrder(PlantOrder orderEntity) {
+        EntityRef target = new EntityRef(DOMAIN, orderEntity.name());
+        return new SearchableEntity(target, tokensFor(orderEntity));
     }
 
     private static SearchableEntity toSearchableFamily(PlantFamily family) {
@@ -137,6 +151,14 @@ public class PlantsCatalogContribution implements CatalogContribution {
             tokens.add(genusEpithet.charAt(0) + ". " + species);
         }
         plant.commonNames().forEach(commonName -> tokens.add(commonName.label()));
+        return tokens.build();
+    }
+
+    private static Stream<String> tokensFor(PlantOrder orderEntity) {
+        Stream.Builder<String> tokens = Stream.builder();
+        tokens.add(orderEntity.name().value());
+        tokens.add(orderEntity.order().value());
+        orderEntity.commonNames().forEach(commonName -> tokens.add(commonName.label()));
         return tokens.build();
     }
 

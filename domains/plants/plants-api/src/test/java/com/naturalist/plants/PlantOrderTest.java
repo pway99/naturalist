@@ -6,28 +6,27 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
-import com.naturalist.taxonomy.TaxonomicFamily;
+import com.naturalist.taxonomy.TaxonomicOrder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PlantFamilyTest {
+class PlantOrderTest {
 
-    private static final Observer observer = Observer.forClass(PlantFamilyTest.class);
+    private static final Observer observer = Observer.forClass(PlantOrderTest.class);
 
     @Test
-    void fullyPopulatedFamilyIsValid() {
-        MethodObserver mo = observer.forMethod("fullyPopulatedFamilyIsValid");
-        PlantFamily family = new PlantFamily(
-                PlantFamilyName.of("lamiaceae"),
+    void fullyPopulatedOrderIsValid() {
+        MethodObserver mo = observer.forMethod("fullyPopulatedOrderIsValid");
+        PlantOrder order = new PlantOrder(
                 PlantOrderName.of("lamiales"),
-                TaxonomicFamily.of("Lamiaceae"),
+                TaxonomicOrder.of("Lamiales"),
                 description(),
-                Set.of(CommonName.of("mint family")));
+                Set.of(CommonName.of("mint order")));
 
-        InvariantObservation result = mo.namedEntity(family, "family");
+        InvariantObservation result = mo.namedEntity(order, "order");
 
         assertThat(result.violations()).isEmpty();
     }
@@ -35,14 +34,13 @@ class PlantFamilyTest {
     @Test
     void emptyCommonNamesIsValid() {
         MethodObserver mo = observer.forMethod("emptyCommonNamesIsValid");
-        PlantFamily family = new PlantFamily(
-                PlantFamilyName.of("aristolochiaceae"),
+        PlantOrder order = new PlantOrder(
                 PlantOrderName.of("piperales"),
-                TaxonomicFamily.of("Aristolochiaceae"),
+                TaxonomicOrder.of("Piperales"),
                 description(),
                 Set.of());
 
-        InvariantObservation result = mo.namedEntity(family, "family");
+        InvariantObservation result = mo.namedEntity(order, "order");
 
         assertThat(result.violations()).isEmpty();
     }
@@ -50,17 +48,16 @@ class PlantFamilyTest {
     @Test
     void allNullComponentsReportEveryViolation() {
         MethodObserver mo = observer.forMethod("allNullComponentsReportEveryViolation");
-        PlantFamily family = new PlantFamily(null, null, null, null, null);
+        PlantOrder order = new PlantOrder(null, null, null, null);
 
-        InvariantObservation result = mo.namedEntity(family, "family");
+        InvariantObservation result = mo.namedEntity(order, "order");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(
-                        ".family.name",
-                        ".family.orderName",
-                        ".family.family",
-                        ".family.description",
-                        ".family.commonNames");
+                        ".order.name",
+                        ".order.order",
+                        ".order.description",
+                        ".order.commonNames");
     }
 
     private static Description description() {

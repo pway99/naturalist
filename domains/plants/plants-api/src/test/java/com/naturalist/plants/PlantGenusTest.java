@@ -8,7 +8,6 @@ import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -36,7 +35,6 @@ class PlantGenusTest {
         PlantGenus genus = new PlantGenus(
                 PlantGenusName.of("thymus"),
                 null,
-                TaxonomicOrder.of("Lamiales"),
                 TaxonomicFamily.of("Lamiaceae"),
                 TaxonomicGenus.of("Thymus"),
                 description(),
@@ -51,7 +49,7 @@ class PlantGenusTest {
     @Test
     void allNullComponentsReportEveryViolation() {
         MethodObserver mo = observer.forMethod("allNullComponentsReportEveryViolation");
-        PlantGenus genus = new PlantGenus(null, null, null, null, null, null, null);
+        PlantGenus genus = new PlantGenus(null, null, null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(genus, "genus");
 
@@ -59,7 +57,6 @@ class PlantGenusTest {
                 .containsExactlyInAnyOrder(
                         ".genus.name",
                         ".genus.familyName",
-                        ".genus.order",
                         ".genus.family",
                         ".genus.genus",
                         ".genus.description",
@@ -70,7 +67,6 @@ class PlantGenusTest {
         return new PlantGenus(
                 PlantGenusName.of("thymus"),
                 PlantFamilyName.of("lamiaceae"),
-                TaxonomicOrder.of("Lamiales"),
                 TaxonomicFamily.of("Lamiaceae"),
                 TaxonomicGenus.of("Thymus"),
                 description(),

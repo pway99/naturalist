@@ -32,12 +32,14 @@ class PlantsCatalogContributionTest {
 
     private final PlantQuery.PlantEntityQuery entityQuery =
             new PlantEntityQueryImpl(new PlantSpeciesEntityRepositoryMock(db));
+    private final PlantQuery.PlantOrderEntityQuery orderQuery =
+            new PlantOrderEntityQueryImpl(new PlantOrderEntityRepositoryMock(db));
     private final PlantQuery.PlantFamilyEntityQuery familyQuery =
             new PlantFamilyEntityQueryImpl(new PlantFamilyEntityRepositoryMock(db));
     private final PlantQuery.PlantGenusEntityQuery genusQuery =
             new PlantGenusEntityQueryImpl(new PlantGenusEntityRepositoryMock(db));
     private final PlantsCatalogContribution contribution =
-            new PlantsCatalogContribution(entityQuery, familyQuery, genusQuery);
+            new PlantsCatalogContribution(entityQuery, orderQuery, familyQuery, genusQuery);
 
     @Test
     void domainIsPlants() {
@@ -46,21 +48,28 @@ class PlantsCatalogContributionTest {
 
     @Test
     void constructorRejectsNullPlantQuery() {
-        assertThatThrownBy(() -> new PlantsCatalogContribution(null, familyQuery, genusQuery))
+        assertThatThrownBy(() -> new PlantsCatalogContribution(null, orderQuery, familyQuery, genusQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("plants");
     }
 
     @Test
+    void constructorRejectsNullOrderQuery() {
+        assertThatThrownBy(() -> new PlantsCatalogContribution(entityQuery, null, familyQuery, genusQuery))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("orders");
+    }
+
+    @Test
     void constructorRejectsNullFamilyQuery() {
-        assertThatThrownBy(() -> new PlantsCatalogContribution(entityQuery, null, genusQuery))
+        assertThatThrownBy(() -> new PlantsCatalogContribution(entityQuery, orderQuery, null, genusQuery))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("families");
     }
 
     @Test
     void constructorRejectsNullGenusQuery() {
-        assertThatThrownBy(() -> new PlantsCatalogContribution(entityQuery, familyQuery, null))
+        assertThatThrownBy(() -> new PlantsCatalogContribution(entityQuery, orderQuery, familyQuery, null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("genera");
     }

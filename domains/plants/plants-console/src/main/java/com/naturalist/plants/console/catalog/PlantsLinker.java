@@ -4,6 +4,7 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantFamilyName;
+import com.naturalist.plants.PlantOrderName;
 import com.naturalist.plants.PlantGenusName;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.cultivar.CultivarName;
@@ -24,6 +25,7 @@ public class PlantsLinker implements EntityRefLinker {
     public String linkFor(EntityRef ref) {
         return switch (ref.name()) {
             case PlantSpeciesName n -> "/plants/" + n.value();
+            case PlantOrderName n -> "/plants/orders/" + n.value();
             case PlantFamilyName n -> "/plants/families/" + n.value();
             case PlantGenusName n -> "/plants/genera/" + n.value();
             case CultivarName n -> "/plants/cultivars/" + n.value();

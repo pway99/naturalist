@@ -27,6 +27,34 @@ public class TestPlantsIdentifiers {
     private TestPlantsIdentifiers() {
     }
 
+    public static class PlantOrders {
+
+        private PlantOrders() {
+        }
+
+        /** Fictitious identifier for the {@link com.naturalist.plants.PlantOrder} scope. */
+        public static class NotFound {
+            public static final PlantOrderName name = PlantOrderName.of("unobtainium-ales");
+        }
+
+        public static class Lamiales {
+            public static final PlantOrderName name = PlantOrderName.of("lamiales");
+        }
+
+        public static class Piperales {
+            public static final PlantOrderName name = PlantOrderName.of("piperales");
+        }
+
+        public static class Rosales {
+            public static final PlantOrderName name = PlantOrderName.of("rosales");
+        }
+
+        /** The only order with more than one catalogued family — Passifloraceae and Violaceae. */
+        public static class Malpighiales {
+            public static final PlantOrderName name = PlantOrderName.of("malpighiales");
+        }
+    }
+
     public static class PlantFamilies {
 
         private PlantFamilies() {

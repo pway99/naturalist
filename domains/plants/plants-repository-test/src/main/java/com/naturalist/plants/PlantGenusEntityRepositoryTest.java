@@ -8,7 +8,6 @@ import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
-import com.naturalist.taxonomy.TaxonomicOrder;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +51,6 @@ interface PlantGenusEntityRepositoryTest
         return new PlantGenus(
                 PlantGenusName.of("test-genus-xx"),
                 PlantFamilyName.of("apiaceae"),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
@@ -66,7 +64,6 @@ interface PlantGenusEntityRepositoryTest
         return new PlantGenus(
                 PlantGenusName.of("test-ghost-xx"),
                 PlantFamilyName.of("test-ghost-family-xx"),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),
@@ -78,7 +75,6 @@ interface PlantGenusEntityRepositoryTest
         return new PlantGenus(
                 original.name(),
                 PlantFamilyName.of("boraginaceae"),
-                TaxonomicOrder.of("Order" + RandomValue.string()),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
                 description(),

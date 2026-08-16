@@ -3,8 +3,9 @@ package com.naturalist.plants;
 import com.naturalist.taxonomy.LinealRank;
 
 /**
- * Sealed marker type for the three plant-side Linnaean rank names —
- * {@link PlantFamilyName}, {@link PlantGenusName}, {@link PlantSpeciesName}.
+ * Sealed marker type for the four plant-side Linnaean rank names —
+ * {@link PlantOrderName}, {@link PlantFamilyName}, {@link PlantGenusName},
+ * {@link PlantSpeciesName}.
  *
  * <p>Used as the subject reference on records that may attach to any rank: a planting
  * whose variety is known only to genus, a phytochemical constituent recorded for a whole
@@ -13,14 +14,9 @@ import com.naturalist.taxonomy.LinealRank;
  * officinalis</i>" — becomes a single-field update rather than a migration between
  * columns.
  *
- * <p>Three permits today. Only a rank with a record behind it earns one, and plants has
- * no {@code PlantSubspeciesName} — infraspecific specificity is expressed as a
- * {@code Cultivar}, a different axis entirely.
- *
- * <p><b>A fourth permit is owed.</b> {@code PlantOrder} does not exist yet, so
- * {@code PlantFamily} carries {@link com.naturalist.taxonomy.TaxonomicOrder} as a loose
- * epithet with nothing to reference — the same shape the species rung was rescued from.
- * That is unfinished work, not a decision; see M2g in the plants consistency plan.
+ * <p>Four permits — the full chain plants catalogues. Only a rank with a record behind it
+ * earns one, and plants has no {@code PlantSubspeciesName}: infraspecific specificity is
+ * expressed as a {@code Cultivar}, a different axis entirely.
  *
  * <h2>Cultivar is not a permit</h2>
  *
@@ -69,7 +65,7 @@ import com.naturalist.taxonomy.LinealRank;
  * }</pre>
  */
 public sealed interface PlantRankName
-        permits PlantFamilyName, PlantGenusName, PlantSpeciesName {
+        permits PlantOrderName, PlantFamilyName, PlantGenusName, PlantSpeciesName {
 
     /**
      * The slug string carried by this rank name. Exposed on the sealed interface so
@@ -93,6 +89,7 @@ public sealed interface PlantRankName
      */
     static PlantRankName of(String slug, LinealRank rank) {
         return switch (rank) {
+            case ORDER -> PlantOrderName.of(slug);
             case FAMILY -> PlantFamilyName.of(slug);
             case GENUS -> PlantGenusName.of(slug);
             case SPECIES -> PlantSpeciesName.of(slug);

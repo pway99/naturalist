@@ -15,7 +15,8 @@
     <a href="/plants" class="naturalist-backlink">&larr; Back to catalog</a>
 
     <h1>${commonName}</h1>
-    <p>${family.order().value()} &middot; <em>${family.family().value()}</em></p>
+    <p><a href="/plants/orders/${family.orderName().value()}">${family.orderName().value()}</a>
+        &middot; <em>${family.family().value()}</em></p>
 
     @template.components.description(
     preschool = descriptionPreschool,
@@ -27,7 +28,8 @@
         <h2>Identity</h2>
         <ul>
             <li><strong>Slug:</strong> <code>${family.name().value()}</code></li>
-            <li><strong>Order:</strong> ${family.order().value()}</li>
+            <li><strong>Order:</strong>
+                <a href="/plants/orders/${family.orderName().value()}">${family.orderName().value()}</a></li>
             <li><strong>Family:</strong> <em>${family.family().value()}</em></li>
             @if(!family.commonNames().isEmpty())
                 <li>

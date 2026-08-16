@@ -68,7 +68,8 @@ Three conditions on that, or it stops being a strategy and becomes a mess:
 
 ```
 plants-api/com/naturalist/plants/
-  PlantSpecies, PlantFamily, PlantGenus                        — botanical rank records
+  PlantOrder, PlantFamily, PlantGenus, PlantSpecies     — botanical rank records
+  PlantEcologicalRole                                   — roles held at any rank
   PlantLifeForm, PlantRole                              — vocabularies
   PlantRepository, PlantQuery, PlantEntityCollections   — namespaces
   PlantsDomain                                          — DomainId subtype
@@ -87,16 +88,28 @@ sub-context; `public` crosses the boundary.
 
 | Type                       | Location          | Identity                                    | Identifier class                                                     |
 |----------------------------|-------------------|---------------------------------------------|----------------------------------------------------------------------|
+| `PlantOrder`               | `plants/`         | `NamedEntity<PlantOrderName>`               | `identifiers/.../plants/PlantOrderName`                              |
 | `PlantFamily`              | `plants/`         | `NamedEntity<PlantFamilyName>`              | `identifiers/.../plants/PlantFamilyName`                             |
 | `PlantGenus`               | `plants/`         | `NamedEntity<PlantGenusName>`               | `identifiers/.../plants/PlantGenusName`                              |
-| `PlantSpecies`                    | `plants/`         | `NamedEntity<PlantSpeciesName>`                    | `identifiers/.../plants/PlantSpeciesName`                                   |
+| `PlantSpecies`             | `plants/`         | `NamedEntity<PlantSpeciesName>`             | `identifiers/.../plants/PlantSpeciesName`                            |
+| `PlantEcologicalRole`      | `plants/`         | `Entity<PlantEcologicalRoleId>`             | `identifiers/.../plants/PlantEcologicalRoleId`                       |
 | `Cultivar`                 | `cultivar/`       | `NamedEntity<CultivarName>`                 | `identifiers/.../plants/cultivar/CultivarName`                       |
 | `SeedLineage`              | `heritage/`       | `NamedEntity<SeedLineageName>`              | `identifiers/.../plants/heritage/SeedLineageName`                    |
 | `Provenance`               | `heritage/`       | `ValueObject`                               | —                                                                    |
 | `PlantProgram`             | `management/`     | `NamedEntity<PlantProgramName>`             | `identifiers/.../plants/management/PlantProgramName`                 |
 | `PhytochemicalConstituent` | `phytochemistry/` | `NamedEntity<PhytochemicalConstituentName>` | `identifiers/.../plants/phytochemistry/PhytochemicalConstituentName` |
 
-No `Aggregate` or `Entity<UUIDv7>` records in this domain yet.
+No `Aggregate` records in this domain yet. `PlantEcologicalRole` is the only
+`Entity<UUIDv7>` — it has no natural key because it is keyed by *which taxon* it
+describes, at whatever rank that taxon was catalogued.
+
+The four rank names are permits of **`PlantRankName`** (sealed, in
+`identifiers/.../plants/`), so anything that attaches to a plant — a role, a planting,
+a photograph — can name the rank the evidence actually supported. `rank()` is total:
+every permit answers with its `LinealRank`. Cultivar and crop type are *not* permits;
+they are orthogonal axes, not rungs. See
+[`docs/plans/organism-domain-blueprint.md`](../../docs/plans/organism-domain-blueprint.md)
+section D for the test that distinguishes the two.
 
 ## Soft FK chain
 
@@ -104,23 +117,29 @@ All cross-entity references are by `EntityName` slug — no compile-time couplin
 between sub-contexts beyond shared identifier classes.
 
 ```
-PlantGenus.familyName               → PlantFamily.name  (PlantFamilyName)
-PlantProgram.plantName              → PlantSpecies.name        (PlantSpeciesName)
-Cultivar.plantName                  → PlantSpecies.name        (PlantSpeciesName)
-SeedLineage.cultivarName            → Cultivar.name     (CultivarName)
-PhytochemicalConstituent.plantName  → PlantSpecies.name        (PlantSpeciesName)
+PlantFamily.orderName                 → PlantOrder.name   (PlantOrderName)
+PlantGenus.familyName                 → PlantFamily.name  (PlantFamilyName)
+PlantSpecies.genusName                → PlantGenus.name   (PlantGenusName)
+PlantEcologicalRole.plantName         → any rank record   (PlantRankName)
+PlantProgram.plantName                → PlantSpecies.name (PlantSpeciesName)
+Cultivar.plantName                    → PlantSpecies.name (PlantSpeciesName)
+SeedLineage.cultivarName              → Cultivar.name     (CultivarName)
+PhytochemicalConstituent.plantName    → PlantSpecies.name (PlantSpeciesName)
 PhytochemicalConstituent.compoundName → chemistry Compound.name (CompoundName)
-PlantSpecies.nativeBioregions              → kernels/biogeography Bioregion
+PlantSpecies.nativeBioregions         → kernels/biogeography Bioregion
 ```
 
-`PlantGenus.familyName` is the only typed upward rank FK that exists today, and
-`PlantGenusTestEntitySource` enforces it with a `ForeignKeyConstraint`. **`PlantSpecies`
-carries no `genusName`** — its position in the hierarchy is held only as the
-string-valued `taxonomy` component, so the rank chain terminates at genus and
-`PlantSpeciesTestEntitySource` declares no foreign keys. Closing that gap, and resolving
-the five organisms currently recorded as both a species-less `PlantSpecies` and a
-`PlantGenus`, is tracked in
-[`docs/plans/2026-08-15-plants-domain-consistency-plan.md`](../../docs/plans/2026-08-15-plants-domain-consistency-plan.md).
+**The rank chain is closed and enforced.** Order → family → genus → species is a
+typed upward FK at every rung, and each rank's `TestEntitySource` declares a
+`ForeignKeyConstraint` against its parent, so a fixture whose parent is missing
+fails at load rather than at some later query. `PlantOrder` is the top and declares
+none.
+
+`PlantEcologicalRole.plantName` is the exception that proves the rule: it points at
+*a* rank record rather than a specific one, which is why it is typed `PlantRankName`
+and why no foreign key can be declared for it — the fixture loader cannot know which
+of four sources to check. That is a real gap, not a design choice; it is the cost of
+cross-rank attachment until the loader learns about sealed FK targets.
 
 The `PhytochemicalConstituent.compoundName` reference is the only soft FK
 in this domain that crosses *domain* boundaries (rather than just sub-context
@@ -136,7 +155,8 @@ interface, following the convention in `domains/CLAUDE.md`. Seven repositories
 across five sub-contexts:
 
 - `PlantRepository` (top-level package-private class) → `PlantEntityRepository`,
-  `PlantFamilyEntityRepository`, `PlantGenusEntityRepository`
+  `PlantOrderEntityRepository`, `PlantFamilyEntityRepository`,
+  `PlantGenusEntityRepository`, `PlantEcologicalRoleEntityRepository`
 - `CultivarRepository` (cultivar) → `CultivarEntityRepository`
 - `SeedLineageRepository` (heritage) → `SeedLineageEntityRepository`
 - `PlantProgramRepository` (management) → `PlantProgramEntityRepository`
@@ -145,15 +165,17 @@ across five sub-contexts:
 
 Read side, all public in api, adapters in `plants-core`:
 
-- `PlantQuery` → `plants()`, `families()`, `genera()`
+- `PlantQuery` → `plants()`, `orders()`, `families()` (+ `forOrderName`),
+  `genera()` (+ `forFamilyName`), `ecologicalRoles()` (+ `forPlantName`)
 - `CultivarQuery` → `cultivars()` (+ `forPlantName`)
 - `SeedLineageQuery` → `lineages()` (+ `forCultivarName`)
 - `PlantProgramQuery` → `programs()` (+ `forPlantName`)
 - `PhytochemicalConstituentQuery` → `constituents()`
   (+ `forPlantName`, `forCompoundName` — the cross-domain reverse lookup)
 
-Collections: `PlantEntityCollections` (`PlantSpeciesCollection`,
-`PlantFamilyCollection`, `PlantGenusCollection`) plus one `*EntityCollections`
+Collections: `PlantEntityCollections` (`PlantSpeciesCollection`, `PlantOrderCollection`,
+`PlantFamilyCollection`, `PlantGenusCollection`, `PlantEcologicalRoleCollection`)
+plus one `*EntityCollections`
 namespace per sub-context. No aggregate factories exist yet — add them
 package-private and concrete in `plants-core` when a read model materializes.
 
@@ -169,18 +191,25 @@ Every record below has an invariant test in `plants-api/src/test/java` covering
 the valid shape, the all-null shape, and any domain-meaningful edge (empty role
 set, blank provenance, nullable-by-design fields).
 
-- `PlantFamily` — `name`, `order`, `family`, `description`, `commonNames`
-  required. An empty `commonNames` set means *no asserted vernacular name yet*.
-- `PlantGenus` — `name`, `familyName`, `order`, `family`, `genus`,
-  `description`, `commonNames` required. The redundant `order`/`family`
-  epithets are carried locally so a catalog-assembly chain check does not have
-  to resolve the parent record.
-- `PlantSpecies` — `name`, `taxonomy`, `description`, `roles`, `lifeForm`,
-  `nativeBioregions`, `commonNames` are all required (non-null). An empty
-  `nativeBioregions` set means *no asserted native range*, not *unknown*.
-  `taxonomy.genus` and `taxonomy.species` are individually nullable — the
-  taxonomy kernel permits family-level identification — so a `PlantSpecies` can
-  currently be catalogued with no resolved species.
+- `PlantOrder` — `name`, `order`, `description`, `commonNames` required. The top
+  of the chain, so no upward FK. An empty `commonNames` set means *no asserted
+  vernacular name yet*.
+- `PlantFamily` — `name`, `orderName`, `family`, `description`, `commonNames`
+  required.
+- `PlantGenus` — `name`, `familyName`, `family`, `genus`, `description`,
+  `commonNames` required. The redundant `family` epithet is carried locally so a
+  catalog-assembly chain check does not have to resolve the parent record. The
+  order is deliberately *not* carried — two rungs up is a copy, not a chain check.
+- `PlantSpecies` — `name`, `genusName`, `epithet`, `description`, `lifeForm`,
+  `nativeBioregions`, `commonNames` required (non-null). An empty
+  `nativeBioregions` set means *no asserted native range*, not *unknown*. A
+  species record is the bottom rung and nothing else: it holds no roles (those
+  live on `PlantEcologicalRole`) and no taxonomy string. `lifeForm` stays here
+  rather than moving up because a genus spans life forms — *Salvia* has both
+  annuals and perennials.
+- `PlantEcologicalRole` — `id`, `plantName`, `roles` required; `roles` non-empty.
+  `plantName` is a `PlantRankName`, so a role can be asserted of a genus when the
+  evidence stops there.
 - `Cultivar` — `name`, `plantName`, `description`, `varietyType`, `fruitType`,
   `seedSavingPolicy` required. `commonName` non-blank. `seedSource` and
   `gardenNotes` nullable.
@@ -199,15 +228,15 @@ set, blank provenance, nullable-by-design fields).
   enforced in record invariants).
 - `Provenance` (ValueObject) — `originator`, `originLocation` non-blank.
 
-## Behavioral predicates on the PlantSpecies record
+## Behavioral predicates on the ecological-role record
 
 These are first-class API methods, not inline `roles.contains(...)` checks at
 call sites:
 
-- `PlantSpecies.isKeystoneHost()` — `roles.contains(PlantRole.KEYSTONE_HOST)`. Drives
-  zero-pesticide constraints in the PestManagement application module.
-- `PlantSpecies.supportsBiocontrolInsects()` — `roles.contains(BENEFICIAL_INSECT_HABITAT)`.
-- `PlantSpecies.isNitrogenFixer()` — `roles.contains(NITROGEN_FIXER)`.
+- `PlantEcologicalRole.isKeystoneHost()` — `roles.contains(PlantRole.KEYSTONE_HOST)`.
+- `PlantEcologicalRole.supportsBiocontrolInsects()` — `roles.contains(BENEFICIAL_INSECT_HABITAT)`.
+- `PlantEcologicalRole.isNitrogenFixer()` — `roles.contains(NITROGEN_FIXER)`.
+- `PlantEcologicalRole.playsRole(PlantRole)` — generic membership check.
 - `PlantSpecies.isNativeTo(Bioregion)` — membership check on `nativeBioregions`.
 
 Cultivar has parallel predicates: `breedsTrueFromSeed()`, `requiresSeedSaving()`,
@@ -264,8 +293,8 @@ each other.
 
 Record invariant tests live in `plants-api/src/test/java/`, one per record,
 following the `Observer` → `MethodObserver` → `InvariantObservation` pattern
-described in `kernels/CLAUDE.md`: `PlantTest`, `PlantFamilyTest`,
-`PlantGenusTest`, `CultivarTest`, `SeedLineageTest`, `ProvenanceTest`,
+described in `kernels/CLAUDE.md`: `PlantSpeciesTest`, `PlantOrderTest`,
+`PlantFamilyTest`, `PlantGenusTest`, `PlantEcologicalRoleTest`, `CultivarTest`, `SeedLineageTest`, `ProvenanceTest`,
 `PlantProgramTest`, `PhytochemicalConstituentTest`.
 
 Repository contract tests live in `plants-repository-test/`. Mocks are
@@ -273,6 +302,7 @@ package-private — the test contexts, mock tests, and `plants-core` tests that
 construct them all live in the same package by design:
 
 - `PlantSpeciesEntityRepositoryTest`, `PlantSpeciesEntityRepositoryMock`, `PlantSpeciesEntityRepositoryMockTest`
+- `PlantOrderEntityRepositoryTest`, `PlantOrderEntityRepositoryMock`, `PlantOrderEntityRepositoryMockTest`
 - `PlantFamilyEntityRepositoryTest`, `PlantFamilyEntityRepositoryMock`, `PlantFamilyEntityRepositoryMockTest`
 - `PlantGenusEntityRepositoryTest`, `PlantGenusEntityRepositoryMock`, `PlantGenusEntityRepositoryMockTest`
 - `CultivarEntityRepositoryTest`, `CultivarEntityRepositoryMock`, `CultivarEntityRepositoryMockTest`
@@ -294,13 +324,25 @@ mirrors the Java sub-package.
 
 | Catalog                    | Path                                                    | Loaded by                                  |
 |----------------------------|---------------------------------------------------------|--------------------------------------------|
-| Plant families                   | `plants/plant-families.json`                            | `PlantFamilyTestEntitySource`              |
-| Plant genera                     | `plants/plant-genera.json`                              | `PlantGenusTestEntitySource`               |
-| Plants                     | `plants/plant-species.json`                                    | `PlantSpeciesTestEntitySource`                    |
+| Plant orders               | `plants/plant-orders.json`                              | `PlantOrderTestEntitySource`               |
+| Plant families             | `plants/plant-families.json`                            | `PlantFamilyTestEntitySource`              |
+| Plant genera               | `plants/plant-genera.json`                              | `PlantGenusTestEntitySource`               |
+| Plant species              | `plants/plant-species.json`                             | `PlantSpeciesTestEntitySource`             |
+| Plant ecological roles     | `plants/plant-ecological-roles.json`                    | `PlantEcologicalRoleTestEntitySource`      |
 | Cultivars                  | `plants/cultivar/cultivars.json`                        | `CultivarTestEntitySource`                 |
 | Seed lineages              | `plants/heritage/seed-lineages.json`                    | `SeedLineageTestEntitySource`              |
 | Plant programs                   | `plants/management/plant-programs.json`                 | `PlantProgramTestEntitySource`             |
 | Phytochemical constituents | `plants/phytochemistry/phytochemical-constituents.json` | `PhytochemicalConstituentTestEntitySource` |
+
+### `plant-orders.json`
+
+Each entry must include:
+
+- `"name": "<order-slug>"` — the `PlantOrderName` natural key, the lowercased
+  order epithet (`"lamiales"`, `"piperales"`)
+- `"order": "<Order>"` — `TaxonomicOrder` epithet, capitalised as in the
+  Linnaean literature
+- `"description": { ... }`, `"commonNames": [ ... ]` — as below
 
 ### `plant-families.json`
 
@@ -308,8 +350,10 @@ Each entry must include:
 
 - `"name": "<family-slug>"` — the `PlantFamilyName` natural key, the lowercased
   family epithet (`"lamiaceae"`, `"aristolochiaceae"`)
-- `"order": "<Order>"`, `"family": "<Family>"` — `TaxonomicOrder` /
-  `TaxonomicFamily` epithets, capitalised as in the Linnaean literature
+- `"orderName": "<order-slug>"` — typed upward FK to a `PlantOrder`, enforced by
+  `PlantFamilyTestEntitySource`
+- `"family": "<Family>"` — `TaxonomicFamily` epithet, capitalised as in the
+  Linnaean literature
 - `"description": { ... }` — Durrell four-level `Description`
 - `"commonNames": [ ... ]` — `Set<CommonName>`; `[]` means no asserted
   vernacular name yet
@@ -322,25 +366,36 @@ Each entry must include:
   genus epithet (`"thymus"`, `"salvia"`)
 - `"familyName": "<family-slug>"` — typed upward FK to a `PlantFamily`,
   enforced by `PlantGenusTestEntitySource`
-- `"order"`, `"family"`, `"genus"` — locally carried epithets; `family` must
-  match the resolved parent family's epithet
+- `"family"`, `"genus"` — locally carried epithets; `family` must match the
+  resolved parent family's epithet. No `"order"` — it is two rungs up
 - `"description": { ... }`, `"commonNames": [ ... ]` — as above
 
-### `plants.json`
+### `plant-species.json`
 
 Each entry must include:
 
-- `"name": "<plant-slug>"` — the `PlantSpeciesName` natural key (no `id` field; ADR-022).
-  Normally the lowercased binomial (`"aristolochia-californica"`). Five entries
-  currently use a common or bare-genus name instead and duplicate a
-  `PlantGenus` record; see the consistency plan.
-- `"taxonomy": { "order", "family", "genus", "species" }` — `TaxonomicClassification`
+- `"name": "<plant-slug>"` — the `PlantSpeciesName` natural key (no `id` field;
+  ADR-022), always the lowercased binomial (`"aristolochia-californica"`). A
+  vernacular or bare-genus slug means the record belongs at genus rank instead —
+  the 2026-08-16 rank audit demoted five of them.
+- `"genusName": "<genus-slug>"` — typed upward FK to a `PlantGenus`, enforced by
+  `PlantSpeciesTestEntitySource`
+- `"epithet": "<species>"` — `TaxonomicSpecies`, the species epithet alone
 - `"description": { "preschool", "elementary", "secondary", "university" }` — full
   Durrell four-level `Description`
-- `"roles": [ ... ]` — `Set<PlantRole>` by enum constant name
 - `"lifeForm": "<enum>"` — `PlantLifeForm` constant
 - `"nativeBioregions": [ "<bioregion-slug>", ... ]` — `Set<Bioregion>` by slug
   (empty array `[]` means no asserted native range, never null)
+
+### `plant-ecological-roles.json`
+
+Each entry must include:
+
+- `"id": "<uuidv7>"` — `PlantEcologicalRoleId`
+- `"plantRank": "<ORDER|FAMILY|GENUS|SPECIES>"` — the Jackson discriminator that
+  selects which `PlantRankName` permit `plantName` deserializes as
+- `"plantName": "<slug>"` — the taxon this role describes, at whichever rank
+- `"roles": [ ... ]` — `Set<PlantRole>` by enum constant name, non-empty
 
 ### `cultivar/cultivars.json`
 

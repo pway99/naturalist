@@ -2,7 +2,6 @@
   {
     "name": "thymus",
     "familyName": "lamiaceae",
-    "order": "Lamiales",
     "family": "Lamiaceae",
     "genus": "Thymus",
     "description": {
@@ -25,7 +24,6 @@
   {
     "name": "passiflora",
     "familyName": "passifloraceae",
-    "order": "Malpighiales",
     "family": "Passifloraceae",
     "genus": "Passiflora",
     "description": {
@@ -48,7 +46,6 @@
   {
     "name": "dianthus",
     "familyName": "caryophyllaceae",
-    "order": "Caryophyllales",
     "family": "Caryophyllaceae",
     "genus": "Dianthus",
     "description": {
@@ -71,7 +68,6 @@
   {
     "name": "salvia",
     "familyName": "lamiaceae",
-    "order": "Lamiales",
     "family": "Lamiaceae",
     "genus": "Salvia",
     "description": {
@@ -90,7 +86,6 @@
   {
     "name": "citrus",
     "familyName": "rutaceae",
-    "order": "Sapindales",
     "family": "Rutaceae",
     "genus": "Citrus",
     "description": {
@@ -109,7 +104,6 @@
   {
     "name": "aristolochia",
     "familyName": "aristolochiaceae",
-    "order": "Piperales",
     "family": "Aristolochiaceae",
     "genus": "Aristolochia",
     "description": {
@@ -136,7 +130,6 @@
   {
     "name": "pelargonium",
     "familyName": "geraniaceae",
-    "order": "Geraniales",
     "family": "Geraniaceae",
     "genus": "Pelargonium",
     "description": {
@@ -159,7 +152,6 @@
   {
     "name": "trifolium",
     "familyName": "fabaceae",
-    "order": "Fabales",
     "family": "Fabaceae",
     "genus": "Trifolium",
     "description": {
@@ -182,7 +174,6 @@
   {
     "name": "lobularia",
     "familyName": "brassicaceae",
-    "order": "Brassicales",
     "family": "Brassicaceae",
     "genus": "Lobularia",
     "description": {
@@ -205,7 +196,6 @@
   {
     "name": "anethum",
     "familyName": "apiaceae",
-    "order": "Apiales",
     "family": "Apiaceae",
     "genus": "Anethum",
     "description": {
@@ -224,7 +214,6 @@
   {
     "name": "borago",
     "familyName": "boraginaceae",
-    "order": "Boraginales",
     "family": "Boraginaceae",
     "genus": "Borago",
     "description": {
@@ -247,7 +236,6 @@
   {
     "name": "viola",
     "familyName": "violaceae",
-    "order": "Malpighiales",
     "family": "Violaceae",
     "genus": "Viola",
     "description": {
@@ -270,7 +258,6 @@
   {
     "name": "lathyrus",
     "familyName": "fabaceae",
-    "order": "Fabales",
     "family": "Fabaceae",
     "genus": "Lathyrus",
     "description": {
@@ -293,7 +280,6 @@
   {
     "name": "festuca",
     "familyName": "poaceae",
-    "order": "Poales",
     "family": "Poaceae",
     "genus": "Festuca",
     "description": {
@@ -316,7 +302,6 @@
   {
     "name": "solanum",
     "familyName": "solanaceae",
-    "order": "Solanales",
     "family": "Solanaceae",
     "genus": "Solanum",
     "description": {
@@ -335,7 +320,6 @@
   {
     "name": "prunus",
     "familyName": "rosaceae",
-    "order": "Rosales",
     "family": "Rosaceae",
     "genus": "Prunus",
     "description": {
@@ -362,7 +346,6 @@
   {
     "name": "raphanus",
     "familyName": "brassicaceae",
-    "order": "Brassicales",
     "family": "Brassicaceae",
     "genus": "Raphanus",
     "description": {
@@ -385,7 +368,6 @@
   {
     "name": "ocimum",
     "familyName": "lamiaceae",
-    "order": "Lamiales",
     "family": "Lamiaceae",
     "genus": "Ocimum",
     "description": {
@@ -404,7 +386,6 @@
   {
     "name": "petroselinum",
     "familyName": "apiaceae",
-    "order": "Apiales",
     "family": "Apiaceae",
     "genus": "Petroselinum",
     "description": {

@@ -9,8 +9,14 @@ class PlantRepository {
     protected interface PlantEntityRepository extends EntityRepository<PlantSpeciesName, PlantSpecies> {
     }
 
+    protected interface PlantOrderEntityRepository
+            extends EntityRepository<PlantOrderName, PlantOrder> {
+    }
+
     protected interface PlantFamilyEntityRepository
             extends EntityRepository<PlantFamilyName, PlantFamily> {
+
+        List<PlantFamily> getByOrderName(PlantOrderName orderName);
     }
 
     protected interface PlantGenusEntityRepository

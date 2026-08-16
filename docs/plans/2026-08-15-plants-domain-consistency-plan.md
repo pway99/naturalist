@@ -161,8 +161,8 @@ second query to learn that a plant is a vine.
 - [x] `PlantRankName` permitting `PlantFamilyName`, `PlantGenusName`, `PlantSpeciesName`, with
       `value()`, `rank()` and `of(String, LinealRank)`. `PlantRankNameTest` covers each
       permit, the factory, rejection of uncatalogued ranks, and class-qualified equality.
-- [x] No `PlantOrderName` permit — no `PlantOrder` entity existed. **This is debt, not
-      a decision; M2g builds it and adds the fourth permit.**
+- [x] No `PlantOrderName` permit — no `PlantOrder` entity existed. **This was debt, not
+      a decision; M2g built the entity and added the fourth permit.**
 - [x] **`CultivarName` is deliberately not a permit.** A cultivated variety is a selection
       within a species, not a rung below it. Admitting it would have forced `rank()` to
       return null for one permit and — because a sealed type's permits must share a package
@@ -352,7 +352,7 @@ abstraction pass (rule 3 in `domains/plants/CLAUDE.md`) should decide how to fix
 - [ ] `PhytochemicalConstituentQuery.forPlantName` becomes `forParentName`;
       `PlantsCompoundReferences` emits the parent ref at whatever rank it resolves.
 
-### M2g — `PlantOrder`, closing the top of the chain  🚧 NEXT after stabilisation
+### M2g — `PlantOrder`, closing the top of the chain  ✅ DONE 2026-08-16
 
 **The chain is unfinished at the top, not by decision.** M2b gave the species rung a typed
 parent and the UBL now asserts that "position is never carried as loose epithet strings; a
@@ -368,27 +368,28 @@ implements LinnaeanFamily<InsectOrderName>`, referencing a real `InsectOrder`.
 and every genus's `order` currently matches its family's. That consistency is what makes
 the replacement mechanical; it will not survive the next hand-authored record.
 
-- [ ] `PlantOrderName` in `domains/identifiers/.../plants/`, and a fourth `PlantRankName`
+- [x] `PlantOrderName` in `domains/identifiers/.../plants/`, and a fourth `PlantRankName`
       permit returning `LinealRank.ORDER`. Update `PlantRankName.of` and its test.
-- [ ] `PlantOrder` in `plants-api` — `NamedEntity<PlantOrderName>`, `LinnaeanOrder`,
+- [x] `PlantOrder` in `plants-api` — `NamedEntity<PlantOrderName>`, `LinnaeanOrder`,
       carrying its `TaxonomicOrder` epithet, `Description` and `commonNames`, mirroring
       `InsectOrder`.
-- [ ] `PlantFamily` swaps `TaxonomicOrder order` for `PlantOrderName orderName` and
+- [x] `PlantFamily` swaps `TaxonomicOrder order` for `PlantOrderName orderName` and
       implements `LinnaeanFamily<PlantOrderName>`.
-- [ ] `PlantGenus` drops `order` entirely — two levels up is not a chain check, it is a
+- [x] `PlantGenus` drops `order` entirely — two levels up is not a chain check, it is a
       copy. `family` stays for the one-level check its javadoc describes.
-- [ ] Author 13 `PlantOrder` records with real Linnaean data and four-level descriptions,
+- [x] Author 13 `PlantOrder` records with real Linnaean data and four-level descriptions,
       as M2d did for genera.
-- [ ] Repository, query, mock, contract cases, console route and linker case, matching
+- [x] Repository, query, mock, contract cases, console route and linker case, matching
       what M3 built for families and genera.
 
 **Then every rank source carries a foreign key.** This is the payoff worth naming: once
 `PlantOrder` exists, `PlantFamilyTestEntitySource` gains the constraint it has never been
 able to declare, and the whole ladder is enforced at load time —
 
-| Source | FK target | Today |
+| Source | FK target | Status |
 |---|---|---|
-| `PlantFamilyTestEntitySource` | `PlantOrderTestEntitySource` | **none — nothing to point at** |
+| `PlantOrderTestEntitySource` | — top of the chain | n/a |
+| `PlantFamilyTestEntitySource` | `PlantOrderTestEntitySource` | ✅ (M2g) |
 | `PlantGenusTestEntitySource` | `PlantFamilyTestEntitySource` | ✅ |
 | `PlantSpeciesTestEntitySource` | `PlantGenusTestEntitySource` | ✅ (M2b) |
 
@@ -402,6 +403,17 @@ covers that integrity instead.
 model that had no order rank; it will not satisfy these constraints as written. That is the
 expected direction of work — the model is made correct and the data is reshaped to fit it,
 never the reverse.
+
+**What landed.** 13 `PlantOrder` records; `plant-families.json` re-keyed from order epithet
+to order slug; `order` dropped from all 19 genus records. The data needed no other reshaping
+— every family resolved to one of the 13 orders on the first pass, and no order came out
+without a family. Two data tests now hold that line: `PlantFamilyCatalogDataTest` asserts
+both directions of the order↔family relation and the order slug/epithet convention, and the
+FK constraint refuses a bad fixture at load.
+
+`getByOrderName` on the family repository is exercised through `malpighiales` — the only
+order with two catalogued families (Passifloraceae, Violaceae), so the test distinguishes a
+real join from a single-entity lookup.
 
 ### M2f — Hierarchy queries
 
@@ -522,10 +534,10 @@ Forward-looking gaps, listed so they are not mistaken for oversights:
 - **No write side.** No `PlantCommand`, no `Transaction`, no `with*` methods. Fine while
   the console is read-only — but `domains/CLAUDE.md` requires a `with*` per mutable field,
   so this becomes a gap the moment writes land.
-- **No `PlantOrder` entity and no rank-polymorphic read model.** The insects equivalents
-  (`InsectTaxonView`, `Insect`) have no plants counterpart, and there is no order-rank
-  entity yet — M2g builds it, taking `PlantRankName` to four permits. The read model can follow once
-  M2 lands; neither blocks anything here.
+- **No rank-polymorphic read model.** The insects equivalents (`InsectTaxonView`,
+  `Insect`) have no plants counterpart. M2g closed the order-rank half of this gap,
+  taking `PlantRankName` to four permits; the read model can follow once M2 lands.
+  Neither blocks anything here.
 - **`TestPlantsIdentifiers` uses plural scope names** (`PlantFamilies`, `PlantGenera`)
   where insects uses the singular entity name (`InsectFamily`, `InsectGenus`). Cosmetic;
   fold into M4 if that milestone is already touching the file.
