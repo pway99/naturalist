@@ -266,8 +266,8 @@ treat that record as permanent, materialise ancestors — is in
 
 | | Plants |
 |---|---|
-| Ranks with entities | family → genus → species |
-| No order rank | Plants catalogues no `PlantOrder`; `TaxonomicOrder` is carried as an epithet on family and genus for self-sufficient display |
+| Ranks with entities | order → family → genus → species |
+| Order rank | `PlantOrder`, anchoring the top of the chain. `PlantFamily` references it by `orderName`, as `InsectFamily` does |
 | No subspecies | `PlantSpeciesName` is the finest Linnaean rung; further specificity is expressed as a `Cultivar`, which is a different axis |
 | Records | authored by hand, not by an identification service |
 

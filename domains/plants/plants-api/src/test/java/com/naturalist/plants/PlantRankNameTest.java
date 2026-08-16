@@ -46,7 +46,7 @@ class PlantRankNameTest {
 
     @Test
     void factoryRejectsRanksPlantsDoesNotCatalogue() {
-        // Plants has no order-rank entity and no subspecies name — a slug at those
+        // Plants has no subspecies name, and no order entity until M2g — a slug at those
         // ranks has nowhere to live, so the factory refuses rather than inventing one.
         assertThatThrownBy(() -> PlantRankName.of("lamiales", LinealRank.ORDER))
                 .isInstanceOf(IllegalArgumentException.class)

@@ -161,7 +161,8 @@ second query to learn that a plant is a vine.
 - [x] `PlantRankName` permitting `PlantFamilyName`, `PlantGenusName`, `PlantSpeciesName`, with
       `value()`, `rank()` and `of(String, LinealRank)`. `PlantRankNameTest` covers each
       permit, the factory, rejection of uncatalogued ranks, and class-qualified equality.
-- [x] No `PlantOrderName` permit — no `PlantOrder` entity exists.
+- [x] No `PlantOrderName` permit — no `PlantOrder` entity existed. **This is debt, not
+      a decision; M2g builds it and adds the fourth permit.**
 - [x] **`CultivarName` is deliberately not a permit.** A cultivated variety is a selection
       within a species, not a rung below it. Admitting it would have forced `rank()` to
       return null for one permit and — because a sealed type's permits must share a package
@@ -351,6 +352,57 @@ abstraction pass (rule 3 in `domains/plants/CLAUDE.md`) should decide how to fix
 - [ ] `PhytochemicalConstituentQuery.forPlantName` becomes `forParentName`;
       `PlantsCompoundReferences` emits the parent ref at whatever rank it resolves.
 
+### M2g — `PlantOrder`, closing the top of the chain  🚧 NEXT after stabilisation
+
+**The chain is unfinished at the top, not by decision.** M2b gave the species rung a typed
+parent and the UBL now asserts that "position is never carried as loose epithet strings; a
+taxon's parent is a reference, not a description." `PlantFamily.order` is exactly such a
+string — a `TaxonomicOrder` with no entity behind it and no constraint on it. `PlantGenus`
+is worse: it carries `order` *two levels up* from itself, a redundancy its javadoc only
+justifies for `family`.
+
+Insects has had this right throughout: `InsectFamily(name, orderName: InsectOrderName, …)
+implements LinnaeanFamily<InsectOrderName>`, referencing a real `InsectOrder`.
+
+**Do it now, while the epithets still agree.** 13 distinct orders across the 14 families,
+and every genus's `order` currently matches its family's. That consistency is what makes
+the replacement mechanical; it will not survive the next hand-authored record.
+
+- [ ] `PlantOrderName` in `domains/identifiers/.../plants/`, and a fourth `PlantRankName`
+      permit returning `LinealRank.ORDER`. Update `PlantRankName.of` and its test.
+- [ ] `PlantOrder` in `plants-api` — `NamedEntity<PlantOrderName>`, `LinnaeanOrder`,
+      carrying its `TaxonomicOrder` epithet, `Description` and `commonNames`, mirroring
+      `InsectOrder`.
+- [ ] `PlantFamily` swaps `TaxonomicOrder order` for `PlantOrderName orderName` and
+      implements `LinnaeanFamily<PlantOrderName>`.
+- [ ] `PlantGenus` drops `order` entirely — two levels up is not a chain check, it is a
+      copy. `family` stays for the one-level check its javadoc describes.
+- [ ] Author 13 `PlantOrder` records with real Linnaean data and four-level descriptions,
+      as M2d did for genera.
+- [ ] Repository, query, mock, contract cases, console route and linker case, matching
+      what M3 built for families and genera.
+
+**Then every rank source carries a foreign key.** This is the payoff worth naming: once
+`PlantOrder` exists, `PlantFamilyTestEntitySource` gains the constraint it has never been
+able to declare, and the whole ladder is enforced at load time —
+
+| Source | FK target | Today |
+|---|---|---|
+| `PlantFamilyTestEntitySource` | `PlantOrderTestEntitySource` | **none — nothing to point at** |
+| `PlantGenusTestEntitySource` | `PlantFamilyTestEntitySource` | ✅ |
+| `PlantSpeciesTestEntitySource` | `PlantGenusTestEntitySource` | ✅ (M2b) |
+
+A parent that does not exist then fails at fixture load with a named constraint, rather
+than surviving as a string nobody checks. `PlantEcologicalRoleTestEntitySource` stays
+without one — its `plantName` is a `PlantRankName` spanning three sources, and the
+framework's `ForeignKeyConstraint` resolves a single source class; its catalog-data test
+covers that integrity instead.
+
+**Expect the fixtures to be wrong, and fix the fixtures.** The JSON was authored against a
+model that had no order rank; it will not satisfy these constraints as written. That is the
+expected direction of work — the model is made correct and the data is reshaped to fit it,
+never the reverse.
+
 ### M2f — Hierarchy queries
 
 - [ ] `forGenusName` / `forFamilyName` on the plant query, `forFamilyName` on the genus
@@ -472,7 +524,7 @@ Forward-looking gaps, listed so they are not mistaken for oversights:
   so this becomes a gap the moment writes land.
 - **No `PlantOrder` entity and no rank-polymorphic read model.** The insects equivalents
   (`InsectTaxonView`, `Insect`) have no plants counterpart, and there is no order-rank
-  entity — so `PlantRankName` (M2a) permits three names, not five. Both can follow once
+  entity yet — M2g builds it, taking `PlantRankName` to four permits. The read model can follow once
   M2 lands; neither blocks anything here.
 - **`TestPlantsIdentifiers` uses plural scope names** (`PlantFamilies`, `PlantGenera`)
   where insects uses the singular entity name (`InsectFamily`, `InsectGenus`). Cosmetic;

@@ -13,9 +13,14 @@ import com.naturalist.taxonomy.LinealRank;
  * officinalis</i>" — becomes a single-field update rather than a migration between
  * columns.
  *
- * <p>Three permits, not five. Plants catalogues no order-rank entity, and
- * {@code PlantSubspeciesName} does not exist; only a rank with a record behind it earns
- * a permit.
+ * <p>Three permits today. Only a rank with a record behind it earns one, and plants has
+ * no {@code PlantSubspeciesName} — infraspecific specificity is expressed as a
+ * {@code Cultivar}, a different axis entirely.
+ *
+ * <p><b>A fourth permit is owed.</b> {@code PlantOrder} does not exist yet, so
+ * {@code PlantFamily} carries {@link com.naturalist.taxonomy.TaxonomicOrder} as a loose
+ * epithet with nothing to reference — the same shape the species rung was rescued from.
+ * That is unfinished work, not a decision; see M2g in the plants consistency plan.
  *
  * <h2>Cultivar is not a permit</h2>
  *

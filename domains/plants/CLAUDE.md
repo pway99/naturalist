@@ -29,14 +29,21 @@ better as `insectName`, for instance — and they are noted, not acted on. Chang
 reference mid-alignment means measuring against a moving target, and the discoveries worth
 applying to insects are not all in yet. Circle back when plants is done.
 
-**2. The catalog is test data, not fact.** `plants.json` and its siblings were authored
-before the rank layer existed. A binomial in a slug is a *claim about identification
-confidence*, not a given — several rows name a rank the evidence does not support. Assign
-each record to the most specific rank its evidence actually supports and no further; this
-is the blueprint's B1 discipline applied retrospectively, and it is the same rule whether
-the identifier is a vision model or a human reading the catalog. Never reshape a record
-before its rank has been re-assessed — a foreign key added to a wrong rank is far more
-expensive to undo than to get right first.
+**2. The catalog is test data, not fact — and it follows the model.** `plant-species.json`
+and its siblings were authored before the rank layer existed. A binomial in a slug is a
+*claim about identification confidence*, not a given — several rows named a rank the
+evidence did not support. Assign each record to the most specific rank its evidence
+actually supports and no further; this is the blueprint's B1 discipline applied
+retrospectively, and it is the same rule whether the identifier is a vision model or a
+human reading the catalog. Never reshape a record before its rank has been re-assessed — a
+foreign key added to a wrong rank is far more expensive to undo than to get right first.
+
+**Fixtures are reshaped to fit the model; a model is never bent to fit a fixture.** When a
+new constraint rejects existing data, the finding is about the data. Expect JSON to fail on
+first contact with a structure it predates, and fix the JSON. The one exception is the
+standing rule that real Oak Vista measurements are evidence: if a *value* is right and the
+model rejects it, that is a domain-model error worth stopping for. A missing parent record
+is not that; it is a gap to author.
 
 **3. Align first, abstract second.** Generalising into `kernels/taxonomy` or
 `kernels/clades` waits until plants matches insects and the two can be read side by side.
