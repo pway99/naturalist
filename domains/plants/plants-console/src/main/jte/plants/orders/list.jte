@@ -1,13 +1,15 @@
 @import com.naturalist.data.Page
 @import com.naturalist.plants.PlantOrder
 @import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.clades.Clade
 @import java.util.List
 
 @param Page<PlantOrder> ordersPage
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
+@param List<Clade> cladeTrail = java.util.List.of()
 
 @template.layout.page(title = "Plant Orders", content = @`
-    @template.plants.nav(breadcrumb = breadcrumb)
+    @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     <h1>Plant Orders</h1>
     <p>
         Order-rank records in the Oak Vista catalog — the top of the plant chain. A flower

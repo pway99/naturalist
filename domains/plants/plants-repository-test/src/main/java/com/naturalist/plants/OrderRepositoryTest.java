@@ -45,7 +45,8 @@ interface OrderRepositoryTest
                 PlantOrderName.of("test-order-xx"),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),
-                Set.of());
+                Set.of(),
+                null);
     }
 
     @Override
@@ -54,7 +55,8 @@ interface OrderRepositoryTest
                 PlantOrderName.of("test-ghost-order-xx"),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),
-                Set.of());
+                Set.of(),
+                null);
     }
 
     @Override
@@ -63,7 +65,8 @@ interface OrderRepositoryTest
                 original.name(),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),
-                Set.of(CommonName.of("alt-" + RandomValue.string())));
+                Set.of(CommonName.of("alt-" + RandomValue.string())),
+                null);
     }
 
     private static Description description() {

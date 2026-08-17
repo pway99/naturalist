@@ -135,6 +135,21 @@ typed upward FK at every rung, and each rank's `TestEntitySource` declares a
 fails at load rather than at some later query. `PlantOrder` is the top and declares
 none.
 
+**Clade placement is an axis, and it attaches at `PlantOrder` only.** `PlantOrder`
+carries `@Nullable Clade placedIn` (`kernels/clades`) locating the order in the
+rank-free phylogenetic tree (angiosperms → magnoliids / monocots / eudicots → …).
+This is a **stated deviation from insects**, which carries `placedIn` on every rank:
+every mainstream botanical clade node is *supra-ordinal* (above Order in APG IV), so
+a family, genus, or species resolves its clade transitively by walking up to its
+order — a per-rank `placedIn` would only replicate the order's value and invite drift.
+No `ForeignKeyConstraint`: integrity is type-level, since `Clade.of(slug)` throws on an
+unknown slug at fixture load, and `placedIn` is nullable-by-design (an order of genuinely
+uncertain placement carries `null`, never a fabricated node). There is **no
+plants-owned trait function** — plants declares no clade trait, so clade is pure
+placement, not inheritance. There is deliberately **no `PlantClass` rank**; supra-ordinal
+structure is clade content, never a fifth rung. `plants-api` depends on `clades` for this;
+it does **not** depend on `insects-api`. Design: `docs/plans/2026-08-16-plants-clades-design.md`.
+
 **Three references attach at a rank rather than a specific one** —
 `PlantEcologicalRole.plantName`, `PlantProgram.plantName`, and
 `PhytochemicalConstituent.plantName` are all typed `PlantRankName` (a role, a
@@ -201,7 +216,8 @@ set, blank provenance, nullable-by-design fields).
 
 - `PlantOrder` — `name`, `order`, `description`, `commonNames` required. The top
   of the chain, so no upward FK. An empty `commonNames` set means *no asserted
-  vernacular name yet*.
+  vernacular name yet*. `placedIn` (`@Nullable Clade`, `kernels/clades`) is a
+  nullable-by-design axis, not an invariant — see the clade-axis note below.
 - `PlantFamily` — `name`, `orderName`, `family`, `description`, `commonNames`
   required.
 - `PlantGenus` — `name`, `familyName`, `family`, `genus`, `description`,
@@ -354,6 +370,10 @@ Each entry must include:
   order epithet (`"lamiales"`, `"piperales"`)
 - `"order": "<Order>"` — `TaxonomicOrder` epithet, capitalised as in the
   Linnaean literature
+- `"placedIn": "<clade-slug>"` — the most-specific `kernels/clades` node for this
+  order (`"magnoliids"`, `"lamiids"`, `"fabids"`, …). Loaded via `Clade.of(slug)`;
+  an unknown slug fails at fixture load. Omit the field (or `null`) only when the
+  APG IV placement is genuinely uncertain — never fabricate a node
 - `"description": { ... }`, `"commonNames": [ ... ]` — as below
 
 ### `plant-families.json`

@@ -2,6 +2,7 @@
   {
     "name": "apiales",
     "order": "Apiales",
+    "placedIn": "campanulids",
     "description": {
       "preschool": "These plants hold their tiny flowers up on stalks that spread out like the ribs of an umbrella. Dill and parsley belong here. Lots of small helpful insects land on the flat tops to feed.",
       "elementary": "Apiales is the order that contains the carrot family. Its signature is the umbel — a flower cluster where every stalk rises from the same point and ends at the same height, making a flat platform. That shape matters in a garden: tiny parasitoid wasps and hoverflies can walk across it and feed, where a deep tubular flower would shut them out. Many members are strongly aromatic, and several are the only food certain swallowtail caterpillars will eat.",
@@ -15,6 +16,7 @@
   {
     "name": "boraginales",
     "order": "Boraginales",
+    "placedIn": "lamiids",
     "description": {
       "preschool": "Plants in this group are often covered in stiff little hairs, and their flower buds uncurl from a coil like a fern or a scorpion's tail. Borage is one of them, with bright blue star flowers.",
       "elementary": "Boraginales is the borage order. Two features give it away: the plants are usually bristly to the touch, and the flower cluster is coiled like a shepherd's crook, unrolling as each bud opens in turn. That unrolling habit means a single plant offers fresh flowers over many weeks rather than all at once — useful for bees, which get a dependable supply instead of one short glut.",
@@ -28,6 +30,7 @@
   {
     "name": "brassicales",
     "order": "Brassicales",
+    "placedIn": "malvids",
     "description": {
       "preschool": "These plants have flowers with four petals arranged in a cross. Radish and sweet alyssum are in this group. Many of them taste peppery — that sharp taste is how the plant protects itself.",
       "elementary": "Brassicales is the mustard order. Its flowers have four petals in a cross shape, which is where the old family name Cruciferae came from. The whole order shares a chemical defence: compounds called glucosinolates sit in the leaves, and when something bites, an enzyme converts them into the sharp mustard taste you know from radish and rocket. It works on most insects — but cabbage white caterpillars evolved a way around it, which is why they are found on almost every plant in this order.",
@@ -41,6 +44,7 @@
   {
     "name": "caryophyllales",
     "order": "Caryophyllales",
+    "placedIn": "superasterids",
     "description": {
       "preschool": "This group includes pinks and carnations, with frilly-edged petals that look like they were cut with pinking shears. Many of them smell sweet and spicy, like cloves.",
       "elementary": "Caryophyllales is a large and varied order — it holds the pinks and carnations, but also cacti, beets and spinach. The garden members usually have petals with a fringed or toothed edge, swollen joints on the stem, and paired leaves. Many are strongly scented and attract butterflies and long-tongued bees, which can reach nectar down a narrow tube that shorter-tongued insects cannot.",
@@ -54,6 +58,7 @@
   {
     "name": "fabales",
     "order": "Fabales",
+    "placedIn": "fabids",
     "description": {
       "preschool": "These are the pea and bean plants. Their flowers look a bit like little butterflies or slippers. Under the ground their roots have bumps where helpful bacteria live and make food for the soil.",
       "elementary": "Fabales is the legume order. Its flowers have a distinctive shape — a big upper petal like a banner, two side wings, and a keel underneath that hides the pollen. Most importantly, legumes partner with bacteria that live in bumps on their roots and pull nitrogen straight out of the air, turning it into fertiliser. That is why clover and peas are planted to feed the soil rather than drain it, and why they are the backbone of crop rotation.",
@@ -68,6 +73,7 @@
   {
     "name": "geraniales",
     "order": "Geraniales",
+    "placedIn": "malvids",
     "description": {
       "preschool": "These plants often have soft, deeply cut leaves that smell strong when you rub them. After the flower is finished the seed pod grows into a long point, like a stork's beak.",
       "elementary": "Geraniales is the geranium order. Its most memorable feature is the fruit: as the seeds ripen the base of the flower stretches into a long beak, which is why several members are named after storks and cranes. When the beak dries it splits and twists, flinging or drilling the seeds away from the parent plant. Many species also carry scented oil glands on their leaves and stems.",
@@ -81,6 +87,7 @@
   {
     "name": "lamiales",
     "order": "Lamiales",
+    "placedIn": "lamiids",
     "description": {
       "preschool": "Squeeze the stem of these plants and you will feel corners — the stems are square, not round. The leaves grow in pairs and often smell lovely. Mint, sage, thyme and basil are all here.",
       "elementary": "Lamiales is the mint order, and it is easy to recognise: square stems, leaves in opposite pairs, and a strong smell when you crush a leaf. The flowers are two-lipped, with a lower lip that acts as a landing platform for a bee. The scent comes from tiny oil glands on the leaf surface, and those oils are the plant's defence — the same compounds that make these plants so useful in cooking are what discourage insects from eating them.",
@@ -94,6 +101,7 @@
   {
     "name": "malpighiales",
     "order": "Malpighiales",
+    "placedIn": "fabids",
     "description": {
       "preschool": "This is a very big group of plants that do not all look alike. Violets are here, and so are passion flowers with their amazing fringed centres. Special butterflies lay eggs on both.",
       "elementary": "Malpighiales is one of the largest plant orders and one of the hardest to describe, because its members look so different from one another — violets, willows, poinsettias and passion flowers are all in it. What links them was worked out from DNA rather than from appearance. Two of its families matter a lot at Oak Vista: violets feed fritillary caterpillars, and passion flowers feed Gulf Fritillary caterpillars. Neither butterfly can breed without them.",
@@ -107,6 +115,7 @@
   {
     "name": "piperales",
     "order": "Piperales",
+    "placedIn": "magnoliids",
     "description": {
       "preschool": "Pepper plants and pipevines belong here. Pipevine flowers are shaped like curved pipes, and a little fly has to crawl right inside to reach the middle.",
       "elementary": "Piperales is the pepper order, and it includes both black pepper and the pipevines. It is an ancient group — these plants branched off early, before most flowering plants we know. Their flowers often do without ordinary petals. Aristolochia, the pipevine, has the most unusual arrangement: a curved tube that traps a small fly overnight, dusts it with pollen, then lets it go. Every pipevine also carries a strong poison that only one special group of butterfly caterpillars can eat.",
@@ -120,6 +129,7 @@
   {
     "name": "poales",
     "order": "Poales",
+    "placedIn": "commelinids",
     "description": {
       "preschool": "Grasses belong here. They have long thin leaves and hollow stems with joints. Their flowers are small and green — they do not need to be pretty, because the wind carries their pollen.",
       "elementary": "Poales is the grass order, and it feeds the world: wheat, rice, maize, barley and the lawn all sit here. Grasses gave up on attracting insects. Their flowers have no petals, no scent and no nectar; instead they hang out feathery stigmas and let the wind carry pollen between them. What grasses do offer a garden is structure and food for caterpillars — skipper butterflies lay eggs on grass blades, and a lawn mown high shelters far more insect life than one cut short.",
@@ -133,6 +143,7 @@
   {
     "name": "rosales",
     "order": "Rosales",
+    "placedIn": "fabids",
     "description": {
       "preschool": "Roses, apples, peaches and plums are all in this family group. Their flowers usually have five petals in a circle, and many of them turn into fruit we can eat.",
       "elementary": "Rosales is the rose order, and it gives us a great many of our fruits — apples, pears, peaches, plums, cherries, strawberries and raspberries. The flowers are usually simple and open, with five petals and a ring of stamens, so almost any insect can reach the nectar. Many members flower very early, sometimes before their leaves appear, which makes them one of the first big food sources of the year for bees — and also puts the crop at risk if a late frost arrives.",
@@ -146,6 +157,7 @@
   {
     "name": "sapindales",
     "order": "Sapindales",
+    "placedIn": "malvids",
     "description": {
       "preschool": "Citrus trees are in this group — oranges, lemons and limes. Their white flowers smell wonderful, and bees travel a long way to reach them. The leaves smell good too if you scratch them.",
       "elementary": "Sapindales is the order that includes citrus, maples, mangoes and cashews. Its members are mostly trees and shrubs with compound leaves — a single leaf divided into several leaflets. Citrus flowers are among the most attractive to honeybees of any cultivated plant, and citrus bloom is a major event in a garden's pollinator year. Scratch a citrus leaf and you will smell the oil stored in tiny glands, the same oil that scents the peel.",
@@ -160,6 +172,7 @@
   {
     "name": "solanales",
     "order": "Solanales",
+    "placedIn": "lamiids",
     "description": {
       "preschool": "Tomatoes, potatoes and eggplants are all in this group. Their flowers keep the pollen locked inside little tubes, and a bumblebee has to buzz very loudly to shake it out.",
       "elementary": "Solanales is the nightshade order — tomatoes, potatoes, peppers, eggplants and morning glories. Its flowers do something unusual: the pollen is held inside tube-shaped anthers with only a tiny hole at the tip, so it will not simply fall out. A bumblebee grips the anthers and vibrates its flight muscles until the pollen shakes loose. Honeybees cannot do this, which is why bumblebees matter so much to a tomato crop. Nearly every plant in the order also makes bitter alkaloids that protect its leaves.",

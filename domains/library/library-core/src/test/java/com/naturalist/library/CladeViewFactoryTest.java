@@ -113,8 +113,11 @@ class CladeViewFactoryTest {
     void treeContainsNestedChildren() {
         CladeQuery.CladeTreeNode tree = factory.buildTree();
 
-        // Eukaryota → Animalia → Arthropoda → Insecta
-        assertThat(tree.children()).hasSize(1);
+        // Eukaryota now roots two kingdoms — Animalia (insects) and Plantae
+        // (plants) — sorted by display name. The plant lineage joins the shared
+        // tree here, exactly as clades-kernel.md Phase 6 specified.
+        assertThat(tree.children().stream().map(CladeQuery.CladeTreeNode::slug).toList())
+                .containsExactly("animalia", "plantae");
         CladeQuery.CladeTreeNode animalia = tree.children().getFirst();
         assertThat(animalia.slug()).isEqualTo("animalia");
         assertThat(animalia.rank()).isEqualTo(Optional.of(LinealRank.KINGDOM));

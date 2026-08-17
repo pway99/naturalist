@@ -51,7 +51,24 @@ public sealed interface Clade
         Papilionoidea,
         Sophophora,
         Termitoidae,
-        Troidini {
+        Troidini,
+        // Plant lineage — joins the animal side at Eukaryota via Plantae.
+        // All botanical clades are supra-ordinal (above PlantOrder), so a
+        // plant taxon resolves its clade by walking up to its order's placedIn.
+        Plantae,
+        Angiosperms,
+        Magnoliids,
+        Monocots,
+        Commelinids,
+        Eudicots,
+        Superrosids,
+        Rosids,
+        Fabids,
+        Malvids,
+        Superasterids,
+        Asterids,
+        Lamiids,
+        Campanulids {
 
     @JsonValue
     String slug();
@@ -90,6 +107,20 @@ public sealed interface Clade
             case "sophophora" -> new Sophophora();
             case "termitoidae" -> new Termitoidae();
             case "troidini" -> new Troidini();
+            case "plantae" -> new Plantae();
+            case "angiosperms" -> new Angiosperms();
+            case "magnoliids" -> new Magnoliids();
+            case "monocots" -> new Monocots();
+            case "commelinids" -> new Commelinids();
+            case "eudicots" -> new Eudicots();
+            case "superrosids" -> new Superrosids();
+            case "rosids" -> new Rosids();
+            case "fabids" -> new Fabids();
+            case "malvids" -> new Malvids();
+            case "superasterids" -> new Superasterids();
+            case "asterids" -> new Asterids();
+            case "lamiids" -> new Lamiids();
+            case "campanulids" -> new Campanulids();
             default -> throw new IllegalArgumentException("Unknown clade: " + slug);
         };
     }

@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.RandomValue;
+import com.naturalist.clades.Magnoliids;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
@@ -24,7 +25,8 @@ class PlantOrderTest {
                 PlantOrderName.of("lamiales"),
                 TaxonomicOrder.of("Lamiales"),
                 description(),
-                Set.of(CommonName.of("mint order")));
+                Set.of(CommonName.of("mint order")),
+                new Magnoliids());
 
         InvariantObservation result = mo.namedEntity(order, "order");
 
@@ -32,13 +34,14 @@ class PlantOrderTest {
     }
 
     @Test
-    void emptyCommonNamesIsValid() {
-        MethodObserver mo = observer.forMethod("emptyCommonNamesIsValid");
+    void emptyCommonNamesAndNullPlacedInAreValid() {
+        MethodObserver mo = observer.forMethod("emptyCommonNamesAndNullPlacedInAreValid");
         PlantOrder order = new PlantOrder(
                 PlantOrderName.of("piperales"),
                 TaxonomicOrder.of("Piperales"),
                 description(),
-                Set.of());
+                Set.of(),
+                null);
 
         InvariantObservation result = mo.namedEntity(order, "order");
 
@@ -48,7 +51,7 @@ class PlantOrderTest {
     @Test
     void allNullComponentsReportEveryViolation() {
         MethodObserver mo = observer.forMethod("allNullComponentsReportEveryViolation");
-        PlantOrder order = new PlantOrder(null, null, null, null);
+        PlantOrder order = new PlantOrder(null, null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(order, "order");
 
@@ -58,6 +61,21 @@ class PlantOrderTest {
                         ".order.order",
                         ".order.description",
                         ".order.commonNames");
+    }
+
+    @Test
+    void withPlacedInReturnsNewInstanceWithUpdatedClade() {
+        PlantOrder order = new PlantOrder(
+                PlantOrderName.of("piperales"),
+                TaxonomicOrder.of("Piperales"),
+                description(),
+                Set.of(),
+                null);
+
+        PlantOrder updated = order.withPlacedIn(new Magnoliids());
+
+        assertThat(updated.placedIn()).isEqualTo(new Magnoliids());
+        assertThat(order.placedIn()).isNull();
     }
 
     private static Description description() {

@@ -1,5 +1,9 @@
 package com.naturalist.plants.console;
 
+import com.naturalist.clades.Clade;
+import com.naturalist.clades.CladeTraversal;
+import com.naturalist.clades.Eukaryota;
+import com.naturalist.clades.Plantae;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.Pages;
@@ -85,6 +89,7 @@ public class PlantsController {
         model.addAttribute("ecologicalRoles", Pages.stream(1000, plantQuery.ecologicalRoles()::findPage)
                 .collect(Collectors.toMap(r -> r.plantName().value(), r -> r, (a, b) -> a)));
         model.addAttribute("breadcrumb", plantaeRoot());
+        model.addAttribute("cladeTrail", catalogCladeRoot());
         return "plants/list";
     }
 
@@ -129,6 +134,50 @@ public class PlantsController {
         var segments = new ArrayList<BreadcrumbSegment>();
         segments.add(BreadcrumbSegment.link("Plantae", CATALOG_ROOT, "Kingdom"));
         return segments;
+    }
+
+    /**
+     * The clade-row counterpart to {@link #plantaeRoot()} for a kingdom-level catalog
+     * landing (all orders, all families, all species). Rather than stopping at the plant
+     * kingdom, the Tree of Life row descends to the deepest clade shared by every
+     * catalogued order — for a catalogue of flowering plants that is
+     * {@code Plantae › Angiosperms}. It shortens automatically if a lineage outside that
+     * clade is ever added (a conifer, say, would pull the shared ancestor back up to
+     * Plantae). Eukaryota, the shared root above Plantae, is dropped to keep the row in
+     * the plant world.
+     */
+    private List<Clade> catalogCladeRoot() {
+        List<Clade> orderClades = Pages.stream(1000, plantQuery.orders()::findPage)
+                .map(PlantOrder::placedIn)
+                .filter(clade -> clade != null)
+                .toList();
+        Clade sharedAncestor = lowestCommonAncestor(orderClades);
+        if (sharedAncestor == null) {
+            return List.of(new Plantae());
+        }
+        return CladeTraversal.ancestry(sharedAncestor).reversed().stream()
+                .filter(clade -> !(clade instanceof Eukaryota))
+                .toList();
+    }
+
+    /**
+     * The deepest clade shared by every clade in {@code clades} — their lowest common
+     * ancestor — or {@code null} when the set is empty. Walks the first clade's ancestry
+     * from the node upward and returns the first ancestor present in every clade's
+     * lineage. Package-private for test.
+     */
+    static Clade lowestCommonAncestor(List<Clade> clades) {
+        if (clades.isEmpty()) {
+            return null;
+        }
+        for (Clade candidate : CladeTraversal.ancestry(clades.getFirst())) {
+            boolean sharedByAll = clades.stream()
+                    .allMatch(clade -> CladeTraversal.ancestry(clade).contains(candidate));
+            if (sharedByAll) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     private static BreadcrumbSegment orderLink(PlantOrder order) {
@@ -200,6 +249,7 @@ public class PlantsController {
                 plantQuery.orders().findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("ordersPage", ordersPage);
         model.addAttribute("breadcrumb", plantaeRoot());
+        model.addAttribute("cladeTrail", catalogCladeRoot());
         return "plants/orders/list";
     }
 
@@ -216,8 +266,30 @@ public class PlantsController {
         model.addAttribute("order", order.get());
         model.addAttribute("families", families);
         model.addAttribute("breadcrumb", breadcrumbToOrder(order.get()));
+        model.addAttribute("cladeTrail", cladeTrailFor(order.get()));
         addDescription(model, order.get().description());
         return "plants/orders/detail";
+    }
+
+    /**
+     * The phylogenetic tree-of-life row for an order: the clade lineage from the
+     * plant kingdom (Plantae) down to the order's {@code placedIn} clade. Empty when
+     * the order carries no placement — plant clades are supra-ordinal, so lower ranks
+     * would resolve this by walking up to their order (deferred).
+     * <p>
+     * The row opens at Plantae to match the taxonomic breadcrumb above it, which also
+     * roots at Plantae. Eukaryota — the shared root where the plant and animal lineages
+     * meet — sits one click up from the Plantae node and in the full tree at {@code /clades},
+     * so it is omitted here to keep the row within the plant world.
+     */
+    private List<Clade> cladeTrailFor(PlantOrder order) {
+        Clade placedIn = order.placedIn();
+        if (placedIn == null) {
+            return List.of();
+        }
+        return CladeTraversal.ancestry(placedIn).reversed().stream()
+                .filter(clade -> !(clade instanceof Eukaryota))
+                .toList();
     }
 
     @GetMapping("/families")
@@ -226,6 +298,7 @@ public class PlantsController {
                 plantQuery.families().findPage(PageRequest.console(Math.max(0, page)));
         model.addAttribute("familiesPage", familiesPage);
         model.addAttribute("breadcrumb", plantaeRoot());
+        model.addAttribute("cladeTrail", catalogCladeRoot());
         return "plants/families/list";
     }
 

@@ -21,7 +21,11 @@ final class CladeRanks {
             Map.entry("hemiptera", LinealRank.ORDER),
             Map.entry("lepidoptera", LinealRank.ORDER),
             Map.entry("papilionidae", LinealRank.FAMILY),
-            Map.entry("termitoidae", LinealRank.FAMILY)
+            Map.entry("termitoidae", LinealRank.FAMILY),
+            // Plant kingdom — parallel to Animalia. Every plant clade *below*
+            // Plantae (angiosperms, magnoliids, eudicots, …) is rank-free by
+            // design and is deliberately absent here.
+            Map.entry("plantae", LinealRank.KINGDOM)
     );
 
     private CladeRanks() {}

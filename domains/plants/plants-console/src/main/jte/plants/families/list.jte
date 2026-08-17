@@ -1,13 +1,15 @@
 @import com.naturalist.data.Page
 @import com.naturalist.plants.PlantFamily
 @import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.clades.Clade
 @import java.util.List
 
 @param Page<PlantFamily> familiesPage
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
+@param List<Clade> cladeTrail = java.util.List.of()
 
 @template.layout.page(title = "Plant Families", content = @`
-    @template.plants.nav(breadcrumb = breadcrumb)
+    @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     <h1>Plant Families</h1>
     <p>
         Family-rank records are first-class catalog citizens, not placeholders — a

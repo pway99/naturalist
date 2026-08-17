@@ -86,7 +86,7 @@ bootstrap                   →  application
 <domain>-repository-rdms    →  <domain>-api
 <domain>-core               →  <domain>-api
 <domain>-api                →  framework, identifiers, field-notes
-<organism>-api              →  framework, identifiers, field-notes, taxonomy
+<organism>-api              →  framework, identifiers, field-notes, taxonomy, clades
 identifiers                 →  framework
 field-notes                 →  framework
 taxonomy                    →  framework
@@ -98,7 +98,7 @@ framework-test              →  framework
 Rules:
 
 1. api modules depend only on `framework`, `identifiers`, `field-notes`, (organism only)
-   `taxonomy`. Nothing else.
+   `taxonomy` and `clades`. Nothing else.
 2. core may import another domain's **api** only — never its core, repository-test, or
    repository-rdms.
 3. repository modules depend only on their own api (+ framework).

@@ -36,6 +36,10 @@
             <groupId>com.naturalist</groupId>
             <artifactId>taxonomy</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>clades</artifactId>
+        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency>

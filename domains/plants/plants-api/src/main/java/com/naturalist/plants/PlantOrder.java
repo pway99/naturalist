@@ -1,11 +1,13 @@
 package com.naturalist.plants;
 
+import com.naturalist.clades.Clade;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.LinnaeanOrder;
 import com.naturalist.taxonomy.TaxonomicOrder;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -25,16 +27,27 @@ import java.util.function.Consumer;
  * rescued from. With {@code PlantOrder} in place every rung references its parent, and
  * every rank fixture can declare a foreign key.
  * <p>
- * No {@code placedIn} component. Its insect counterpart carries a clade, but plants has no
- * clade permits in the kernel yet; when they arrive, this record and its siblings gain the
- * axis together.
+ * {@code placedIn} locates the order in the rank-free phylogenetic tree
+ * ({@code kernels/clades}) — angiosperms → magnoliids / monocots / eudicots → … .
+ * <b>Plants attaches the clade axis here and nowhere lower</b>, unlike insects, which
+ * carries {@code placedIn} on every rank. Every mainstream botanical clade node is
+ * supra-ordinal (above Order in APG IV), so a family, genus, or species resolves its
+ * clade transitively by walking up to its order; a per-rank {@code placedIn} would only
+ * replicate the order's value and invite drift. The reference is {@link Nullable}: an
+ * order whose placement is genuinely uncertain carries {@code null} rather than a
+ * fabricated node.
  */
 public record PlantOrder(
         PlantOrderName name,
         TaxonomicOrder order,
         Description description,
-        Set<CommonName> commonNames
+        Set<CommonName> commonNames,
+        @Nullable Clade placedIn
 ) implements NamedEntity<PlantOrderName>, LinnaeanOrder {
+
+    public PlantOrder withPlacedIn(@Nullable Clade value) {
+        return new PlantOrder(name, order, description, commonNames, value);
+    }
 
     @Override
     public Consumer<? extends Constraints> invariants() {

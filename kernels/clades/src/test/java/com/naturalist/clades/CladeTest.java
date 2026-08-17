@@ -28,7 +28,22 @@ class CladeTest {
             new Papilionoidea(),
             new Sophophora(),
             new Termitoidae(),
-            new Troidini());
+            new Troidini(),
+            // Plant lineage
+            new Plantae(),
+            new Angiosperms(),
+            new Magnoliids(),
+            new Monocots(),
+            new Commelinids(),
+            new Eudicots(),
+            new Superrosids(),
+            new Rosids(),
+            new Fabids(),
+            new Malvids(),
+            new Superasterids(),
+            new Asterids(),
+            new Lamiids(),
+            new Campanulids());
 
     @Test
     void everyPermitHasANonBlankSlug() {
@@ -79,6 +94,25 @@ class CladeTest {
         assertThat(new Arthropoda().parent()).contains(new Animalia());
         assertThat(new Animalia().parent()).contains(new Eukaryota());
         assertThat(new Eukaryota().parent()).isEmpty();
+    }
+
+    @Test
+    void parentChainResolvesFromFabidsToEukaryota() {
+        // Deepest plant path — through the rosid nodes — joins the shared
+        // tree at Eukaryota via Plantae. Every node above an order is rank-free.
+        assertThat(new Fabids().parent()).contains(new Rosids());
+        assertThat(new Rosids().parent()).contains(new Superrosids());
+        assertThat(new Superrosids().parent()).contains(new Eudicots());
+        assertThat(new Eudicots().parent()).contains(new Angiosperms());
+        assertThat(new Angiosperms().parent()).contains(new Plantae());
+        assertThat(new Plantae().parent()).contains(new Eukaryota());
+        assertThat(new Eukaryota().parent()).isEmpty();
+    }
+
+    @Test
+    void plantAndAnimalLineagesMeetAtEukaryota() {
+        assertThat(new Plantae().parent()).contains(new Eukaryota());
+        assertThat(new Animalia().parent()).contains(new Eukaryota());
     }
 
     @Test
