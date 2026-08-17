@@ -6,10 +6,10 @@
 @param CladeTrail cladeTrail = null
 
 <div class="context-bar">
-    @if(!breadcrumb.isEmpty())
-        @template.insects.breadcrumb(segments = breadcrumb)
-    @endif
     @if(cladeTrail != null)
         @template.insects.cladeTrail(trail = cladeTrail)
+    @endif
+    @if(!breadcrumb.isEmpty())
+        @template.insects.breadcrumb(segments = breadcrumb)
     @endif
 </div>

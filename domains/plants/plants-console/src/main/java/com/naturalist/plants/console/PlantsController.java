@@ -2,7 +2,6 @@ package com.naturalist.plants.console;
 
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
-import com.naturalist.clades.Eukaryota;
 import com.naturalist.clades.Plantae;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
@@ -142,10 +141,10 @@ public class PlantsController {
      * landing (all orders, all families, all species). Rather than stopping at the plant
      * kingdom, the Tree of Life row descends to the deepest clade shared by every
      * catalogued order — for a catalogue of flowering plants that is
-     * {@code Plantae › Angiosperms}. It shortens automatically if a lineage outside that
-     * clade is ever added (a conifer, say, would pull the shared ancestor back up to
-     * Plantae). Eukaryota, the shared root above Plantae, is dropped to keep the row in
-     * the plant world.
+     * {@code Eukaryota › Plantae › Angiosperms}. It shortens automatically if a lineage
+     * outside that clade is ever added (a conifer, say, would pull the shared ancestor
+     * back up to Plantae). The row runs to Eukaryota, the shared root, so the naturalist
+     * can cross into the animal kingdom there.
      */
     private List<Clade> catalogCladeRoot() {
         List<Clade> orderClades = Pages.stream(1000, plantQuery.orders()::findPage)
@@ -156,9 +155,7 @@ public class PlantsController {
         if (sharedAncestor == null) {
             return List.of(new Plantae());
         }
-        return CladeTraversal.ancestry(sharedAncestor).reversed().stream()
-                .filter(clade -> !(clade instanceof Eukaryota))
-                .toList();
+        return CladeTraversal.ancestry(sharedAncestor).reversed();
     }
 
     /**
@@ -278,19 +275,18 @@ public class PlantsController {
      * the order carries no placement — plant clades are supra-ordinal, so lower ranks
      * would resolve this by walking up to their order (deferred).
      * <p>
-     * The row opens at Plantae to match the taxonomic breadcrumb above it, which also
-     * roots at Plantae. Eukaryota — the shared root where the plant and animal lineages
-     * meet — sits one click up from the Plantae node and in the full tree at {@code /clades},
-     * so it is omitted here to keep the row within the plant world.
+     * The row runs up to Eukaryota, the shared root where the plant and animal lineages
+     * meet — the crossover point into the insect side. Plant clades link to their
+     * in-console pages; Eukaryota links to the shared cross-domain tree-of-life browser.
      */
     private List<Clade> cladeTrailFor(PlantOrder order) {
         Clade placedIn = order.placedIn();
         if (placedIn == null) {
             return List.of();
         }
-        return CladeTraversal.ancestry(placedIn).reversed().stream()
-                .filter(clade -> !(clade instanceof Eukaryota))
-                .toList();
+        // Root → placement, inclusive of Eukaryota: the shared root is the crossover
+        // into the animal kingdom, so a plant naturalist can reach the insect side.
+        return CladeTraversal.ancestry(placedIn).reversed();
     }
 
     // Lower ranks carry no clade of their own — plant clades are supra-ordinal — so a
@@ -332,10 +328,9 @@ public class PlantsController {
         }
         model.addAttribute("clade", clade);
         model.addAttribute("orders", ordersPlacedAt(clade));
+        model.addAttribute("childClades", PlantCladeTree.narrower(clade));
         model.addAttribute("breadcrumb", plantaeRoot());
-        model.addAttribute("cladeTrail", CladeTraversal.ancestry(clade).reversed().stream()
-                .filter(node -> !(node instanceof Eukaryota))
-                .toList());
+        model.addAttribute("cladeTrail", CladeTraversal.ancestry(clade).reversed());
         addDescription(model, clade.description());
         return "plants/clades/detail";
     }

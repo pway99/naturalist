@@ -24,6 +24,16 @@ public final class PlantCladeTree {
         return CladeCatalog.childrenOf(clade);
     }
 
+    /**
+     * Where a clade's node links. Plant clades open their in-console page; everything
+     * above Plantae — just Eukaryota, the shared root where the plant and animal
+     * kingdoms meet — links to the cross-domain tree-of-life browser, so a plant
+     * naturalist can cross into Animalia (and on to the insects) at the root.
+     */
+    public static String pageUrl(Clade clade) {
+        return isPlant(clade) ? "/plants/clades/" + clade.slug() : "/clades/" + clade.slug();
+    }
+
     /** A clade belongs to the plant catalog iff its lineage passes through Plantae. */
     public static boolean isPlant(Clade clade) {
         return CladeTraversal.ancestry(clade).stream().anyMatch(node -> node instanceof Plantae);

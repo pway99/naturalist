@@ -2,7 +2,6 @@ package com.naturalist.plants.console;
 
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
-import com.naturalist.clades.Eukaryota;
 import com.naturalist.clades.Magnoliids;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
@@ -17,30 +16,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PlantsCladeTrailTemplateTest {
 
-    // Piperales → magnoliids; the plant order's trail opens at Plantae (the shared
-    // Eukaryota root above it is omitted to keep the row within the plant world).
+    // Piperales → magnoliids; the trail runs root→subject, Eukaryota → … → Magnoliids.
     private static final List<Clade> MAGNOLIID_TRAIL =
-            CladeTraversal.ancestry(new Magnoliids()).reversed().stream()
-                    .filter(clade -> !(clade instanceof Eukaryota))
-                    .toList();
+            CladeTraversal.ancestry(new Magnoliids()).reversed();
 
     @Test
-    void rendersLineageFromPlantaeToSubjectLinkingIntoClades() {
+    void rendersLineageWithInConsolePlantNodesAndTheEukaryotaCrossover() {
         StringOutput output = new StringOutput();
         TestTemplateEngine.create().render(
                 "plants/cladeTrail.jte", Map.of("cladeTrail", MAGNOLIID_TRAIL), output);
 
         String html = output.toString();
         assertThat(html).contains("Tree of life");
-        // Nodes drive plant queries — they link into the plant catalog's clade pages,
-        // not the shared cross-domain tree-of-life browser.
+        // Plant clades drive plant queries — they link into the in-console clade pages.
         assertThat(html).contains("href=\"/plants/clades/plantae\"");
         assertThat(html).contains("href=\"/plants/clades/angiosperms\"");
         assertThat(html).contains("href=\"/plants/clades/magnoliids\"");
-        // The row opens at the plant kingdom, not the shared universal root.
-        assertThat(html).doesNotContain("/clades/eukaryota");
-        // Each node carries a hover dropdown of its narrower (child) clades — e.g. the
-        // Angiosperms node reaches Monocots, a child beyond the trail path itself.
+        // Eukaryota, the shared root, links to the cross-domain browser, and its dropdown
+        // reaches Animalia — the two-way bridge to the insect side.
+        assertThat(html).contains("href=\"/clades/eukaryota\"");
+        assertThat(html).contains("href=\"/clades/animalia\"");
+        // Each node's dropdown reaches its narrower clades (Angiosperms → Monocots).
         assertThat(html).contains("clade-menu");
         assertThat(html).contains("href=\"/plants/clades/monocots\"");
     }

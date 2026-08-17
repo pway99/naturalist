@@ -5,6 +5,7 @@
 
 @param Clade clade
 @param List<PlantOrder> orders = java.util.List.of()
+@param List<Clade> childClades = java.util.List.of()
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param List<Clade> cladeTrail = java.util.List.of()
 @param String descriptionPreschool = ""
@@ -23,12 +24,9 @@
     secondary = descriptionSecondary,
     university = descriptionUniversity)
 
-    <section>
-        <h2>Orders placed in this clade</h2>
-        @if(orders.isEmpty())
-            <p><em>No orders sit directly at this clade — open its dropdown in the Tree of
-                life above to drill into a narrower branch.</em></p>
-        @else
+    @if(!orders.isEmpty())
+        <section>
+            <h2>Orders placed in this clade</h2>
             <div class="entity-grid">
                 @for(var o : orders)
                     !{var commonName = o.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(o.order().value());}
@@ -46,6 +44,28 @@
                     </article>
                 @endfor
             </div>
-        @endif
-    </section>
+        </section>
+    @endif
+
+    @if(!childClades.isEmpty())
+        <section>
+            <h2>Clades within ${clade.displayName()}</h2>
+            <div class="entity-grid">
+                @for(var child : childClades)
+                    <article>
+                        <header>
+                            <a href="/plants/clades/${child.slug()}">
+                                <strong>${child.displayName()}</strong>
+                            </a>
+                        </header>
+                        <p class="description-preview">${child.description().preschool()}</p>
+                    </article>
+                @endfor
+            </div>
+        </section>
+    @endif
+
+    @if(orders.isEmpty() && childClades.isEmpty())
+        <p><em>No orders or narrower clades sit under this clade yet.</em></p>
+    @endif
 `)

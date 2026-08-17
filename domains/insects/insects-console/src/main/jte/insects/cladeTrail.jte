@@ -1,4 +1,7 @@
 @import com.naturalist.insects.console.CladeTrail
+@import com.naturalist.insects.console.CladeNav
+@import com.naturalist.clades.Clade
+@import com.naturalist.clades.CladeCatalog
 
 @param CladeTrail trail
 
@@ -9,7 +12,19 @@
             <span class="clade-trail-sep" aria-hidden="true">›</span>
         @endif
         !{var step = trail.steps().get(i);}
-        <a class="clade-trail-node" href="/clades/${step.cladeSlug()}">${step.displayName()}</a>
+        !{var node = Clade.of(step.cladeSlug());}
+        !{var narrower = CladeCatalog.childrenOf(node);}
+        <span class="clade-node">
+            <a class="clade-trail-node" href="${CladeNav.pageUrl(node)}">${step.displayName()}</a>
+            @if(!narrower.isEmpty())
+                <span class="clade-node-caret" aria-hidden="true">▾</span>
+                <span class="clade-menu" role="menu">
+                    @for(var child : narrower)
+                        <a role="menuitem" href="${CladeNav.pageUrl(child)}">${child.displayName()}</a>
+                    @endfor
+                </span>
+            @endif
+        </span>
     @endfor
     @if(trail.hasGap())
         <span class="clade-trail-sep" aria-hidden="true">·</span>

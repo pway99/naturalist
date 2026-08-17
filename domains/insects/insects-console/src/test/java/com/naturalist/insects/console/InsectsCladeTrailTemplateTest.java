@@ -28,6 +28,13 @@ class InsectsCladeTrailTemplateTest {
         assertThat(html).contains("href=\"/clades/eukaryota\"");
         assertThat(html).contains("href=\"/clades/insecta\"");
         assertThat(html).doesNotContain("not yet placed");
+        // Each node carries a hover dropdown of its narrower (child) clades — the
+        // Insecta node reaches Holometabola beyond the trail path itself.
+        assertThat(html).contains("clade-menu");
+        assertThat(html).contains("href=\"/clades/holometabola\"");
+        // Crossing kingdoms lands in the other console: Plantae, under Eukaryota, links
+        // into the plants catalog rather than the shared tree-of-life browser.
+        assertThat(html).contains("href=\"/plants/clades/plantae\"");
     }
 
     @Test
