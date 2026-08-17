@@ -1538,6 +1538,59 @@ figure.compound-depiction img {
     border-bottom-color: var(--pico-primary);
 }
 
+/* Hover/focus dropdowns on the clade breadcrumb — the plant clade navigator.
+   Each node anchors a menu of sibling ("same level") and child ("narrower")
+   clades so the tree of life is walkable inline without leaving the page. CSS
+   only: :hover for pointer, :focus-within for keyboard. The menu abuts the node
+   (no margin gap) so the pointer can cross into it without the hover dropping. */
+.clade-node {
+    position: relative;
+    display: inline-block;
+}
+
+.clade-node-caret {
+    font-style: normal;
+    font-size: 0.6rem;
+    color: rgba(58, 42, 24, 0.45);
+    margin-left: 0.15rem;
+}
+
+.clade-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 60;
+    min-width: 11rem;
+    padding: 0.35rem;
+    background: var(--parchment);
+    border: 1px solid rgba(139, 107, 61, 0.5);
+    border-radius: 0.4rem;
+    box-shadow: 0 4px 18px rgba(58, 42, 24, 0.28);
+    font-style: normal;
+}
+
+.clade-node:hover .clade-menu,
+.clade-node:focus-within .clade-menu {
+    display: block;
+}
+
+.clade-menu a {
+    display: block;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--sepia-ink-soft);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    border-bottom: none;
+}
+
+.clade-menu a:hover {
+    background: var(--parchment-deep);
+    color: var(--pico-primary);
+}
+
 /* Inline "?" info affordance — a small circled trigger sitting at the end of a
    breadcrumb/trail that toggles a native popover explaining the clade↔rank
    relationship. No JS: the HTML popover attribute owns open/dismiss. */

@@ -2,6 +2,7 @@
 @import com.naturalist.plants.PlantGenus
 @import com.naturalist.plants.PlantSpecies
 @import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.clades.Clade
 @import java.util.List
 
 @param PlantGenus genus
@@ -12,11 +13,12 @@
 @param String descriptionSecondary = ""
 @param String descriptionUniversity = ""
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
+@param List<Clade> cladeTrail = java.util.List.of()
 
 !{var commonName = genus.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value());}
 
 @template.layout.page(title = genus.genus().value(), content = @`
-    @template.plants.nav(breadcrumb = breadcrumb)
+    @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     <h1>${commonName}</h1>
     <p>
         <a href="/plants/families/${genus.familyName().value()}">${genus.family().value()}</a>

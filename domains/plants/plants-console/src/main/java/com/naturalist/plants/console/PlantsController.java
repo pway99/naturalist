@@ -1,7 +1,6 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.clades.Clade;
-import com.naturalist.clades.CladeCatalog;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Eukaryota;
 import com.naturalist.clades.Plantae;
@@ -117,6 +116,7 @@ public class PlantsController {
         model.addAttribute("programs", programs);
         model.addAttribute("constituents", constituents);
         model.addAttribute("breadcrumb", breadcrumbToSpecies(plant.get()));
+        model.addAttribute("cladeTrail", cladeTrailForSpecies(plant.get()));
         addDescription(model, plant.get().description());
         return "plants/detail";
     }
@@ -293,6 +293,22 @@ public class PlantsController {
                 .toList();
     }
 
+    // Lower ranks carry no clade of their own — plant clades are supra-ordinal — so a
+    // family/genus/species resolves its trail by walking up to its order's placement.
+
+    private List<Clade> cladeTrailForFamily(PlantFamily family) {
+        return orderOf(family).map(this::cladeTrailFor).orElseGet(List::of);
+    }
+
+    private List<Clade> cladeTrailForGenus(PlantGenus genus) {
+        return familyOf(genus).flatMap(this::orderOf).map(this::cladeTrailFor).orElseGet(List::of);
+    }
+
+    private List<Clade> cladeTrailForSpecies(PlantSpecies species) {
+        return genusOf(species).flatMap(this::familyOf).flatMap(this::orderOf)
+                .map(this::cladeTrailFor).orElseGet(List::of);
+    }
+
     // ── Clade pages (the tree-of-life driving plant queries) ─────────────
 
     /**
@@ -311,15 +327,11 @@ public class PlantsController {
         } catch (IllegalArgumentException notAClade) {
             return "redirect:/plants/orders";
         }
-        if (!isPlantClade(clade)) {
+        if (!PlantCladeTree.isPlant(clade)) {
             return "redirect:/plants/orders";
         }
-        List<Clade> childClades = CladeCatalog.childrenOf(clade).stream()
-                .filter(child -> !ordersInClade(child).isEmpty())
-                .toList();
         model.addAttribute("clade", clade);
-        model.addAttribute("orders", ordersInClade(clade));
-        model.addAttribute("childClades", childClades);
+        model.addAttribute("orders", ordersPlacedAt(clade));
         model.addAttribute("breadcrumb", plantaeRoot());
         model.addAttribute("cladeTrail", CladeTraversal.ancestry(clade).reversed().stream()
                 .filter(node -> !(node instanceof Eukaryota))
@@ -328,16 +340,14 @@ public class PlantsController {
         return "plants/clades/detail";
     }
 
-    /** A clade belongs to the plant catalog iff its lineage passes through Plantae. */
-    private static boolean isPlantClade(Clade clade) {
-        return CladeTraversal.ancestry(clade).stream().anyMatch(node -> node instanceof Plantae);
-    }
-
-    /** Every catalogued order whose clade placement lies within {@code clade}. */
-    private List<PlantOrder> ordersInClade(Clade clade) {
+    /**
+     * The catalogued orders placed directly at {@code clade} (its exact placement).
+     * Internal clades hold none — their orders live in the narrower clades below,
+     * reached through the breadcrumb dropdowns.
+     */
+    private List<PlantOrder> ordersPlacedAt(Clade clade) {
         return Pages.stream(1000, plantQuery.orders()::findPage)
-                .filter(order -> order.placedIn() != null
-                        && CladeTraversal.ancestry(order.placedIn()).contains(clade))
+                .filter(order -> clade.equals(order.placedIn()))
                 .sorted(Comparator.comparing((PlantOrder order) -> order.name().value()))
                 .toList();
     }
@@ -365,6 +375,7 @@ public class PlantsController {
         model.addAttribute("family", family.get());
         model.addAttribute("genera", genera);
         model.addAttribute("breadcrumb", breadcrumbToFamily(family.get()));
+        model.addAttribute("cladeTrail", cladeTrailForFamily(family.get()));
         addDescription(model, family.get().description());
         return "plants/families/detail";
     }
@@ -384,6 +395,7 @@ public class PlantsController {
                 plantQuery.families().getByName(genus.get().familyName()).orElse(null));
         model.addAttribute("species", species);
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus.get()));
+        model.addAttribute("cladeTrail", cladeTrailForGenus(genus.get()));
         addDescription(model, genus.get().description());
         return "plants/genera/detail";
     }

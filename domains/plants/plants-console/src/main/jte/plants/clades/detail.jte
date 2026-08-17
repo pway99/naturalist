@@ -5,7 +5,6 @@
 
 @param Clade clade
 @param List<PlantOrder> orders = java.util.List.of()
-@param List<Clade> childClades = java.util.List.of()
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param List<Clade> cladeTrail = java.util.List.of()
 @param String descriptionPreschool = ""
@@ -25,9 +24,10 @@
     university = descriptionUniversity)
 
     <section>
-        <h2>Orders in this clade</h2>
+        <h2>Orders placed in this clade</h2>
         @if(orders.isEmpty())
-            <p><em>No catalogued orders sit in this clade yet.</em></p>
+            <p><em>No orders sit directly at this clade — open its dropdown in the Tree of
+                life above to drill into a narrower branch.</em></p>
         @else
             <div class="entity-grid">
                 @for(var o : orders)
@@ -48,16 +48,4 @@
             </div>
         @endif
     </section>
-
-    @if(!childClades.isEmpty())
-        <section>
-            <h2>Narrower clades</h2>
-            <p>Drill further down the tree of life:</p>
-            <ul class="clade-children">
-                @for(var child : childClades)
-                    <li><a href="/plants/clades/${child.slug()}">${child.displayName()}</a></li>
-                @endfor
-            </ul>
-        </section>
-    @endif
 `)

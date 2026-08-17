@@ -39,6 +39,10 @@ class PlantsCladeTrailTemplateTest {
         assertThat(html).contains("href=\"/plants/clades/magnoliids\"");
         // The row opens at the plant kingdom, not the shared universal root.
         assertThat(html).doesNotContain("/clades/eukaryota");
+        // Each node carries a hover dropdown of its narrower (child) clades — e.g. the
+        // Angiosperms node reaches Monocots, a child beyond the trail path itself.
+        assertThat(html).contains("clade-menu");
+        assertThat(html).contains("href=\"/plants/clades/monocots\"");
     }
 
     @Test
