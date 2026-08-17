@@ -21,24 +21,24 @@ class PlantsCladeTrailTemplateTest {
             CladeTraversal.ancestry(new Magnoliids()).reversed();
 
     @Test
-    void rendersLineageWithInConsolePlantNodesAndTheEukaryotaCrossover() {
+    void rendersInConsoleLineageWithHoverDropdownsAndTheEukaryotaCrossover() {
         StringOutput output = new StringOutput();
         TestTemplateEngine.create().render(
                 "plants/cladeTrail.jte", Map.of("cladeTrail", MAGNOLIID_TRAIL), output);
 
         String html = output.toString();
         assertThat(html).contains("Tree of life");
-        // Plant clades drive plant queries — they link into the in-console clade pages.
+        // Every node lands on an in-console clade page — even Eukaryota, the shared root.
+        assertThat(html).contains("href=\"/plants/clades/eukaryota\"");
         assertThat(html).contains("href=\"/plants/clades/plantae\"");
-        assertThat(html).contains("href=\"/plants/clades/angiosperms\"");
         assertThat(html).contains("href=\"/plants/clades/magnoliids\"");
-        // Eukaryota, the shared root, links to the cross-domain browser, and its dropdown
-        // reaches Animalia — the two-way bridge to the insect side.
-        assertThat(html).contains("href=\"/clades/eukaryota\"");
-        assertThat(html).contains("href=\"/clades/animalia\"");
-        // Each node's dropdown reaches its narrower clades (Angiosperms → Monocots).
+        // Hover dropdowns present each node's narrower clades — Angiosperms → Monocots …
         assertThat(html).contains("clade-menu");
         assertThat(html).contains("href=\"/plants/clades/monocots\"");
+        // … and Eukaryota's dropdown reaches Animalia, crossing into the insects console.
+        assertThat(html).contains("href=\"/insects/clades/animalia\"");
+        // Never a link into the shared /clades tree-of-life browser.
+        assertThat(html).doesNotContain("href=\"/clades/");
     }
 
     @Test

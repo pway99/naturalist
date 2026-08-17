@@ -25,16 +25,18 @@ class InsectsCladeTrailTemplateTest {
         String html = output.toString();
         assertThat(html).contains("class=\"clade-trail-label\"");
         assertThat(html).contains("Tree of life");
-        assertThat(html).contains("href=\"/clades/eukaryota\"");
-        assertThat(html).contains("href=\"/clades/insecta\"");
+        // Every node lands in-console (/insects/clades), Eukaryota (the shared root) included,
+        // so the row never strands the naturalist in the shared tree-of-life browser.
+        assertThat(html).contains("href=\"/insects/clades/eukaryota\"");
+        assertThat(html).contains("href=\"/insects/clades/insecta\"");
         assertThat(html).doesNotContain("not yet placed");
-        // Each node carries a hover dropdown of its narrower (child) clades — the
-        // Insecta node reaches Holometabola beyond the trail path itself.
+        // Hover dropdowns present each node's narrower clades — Insecta → Holometabola …
         assertThat(html).contains("clade-menu");
-        assertThat(html).contains("href=\"/clades/holometabola\"");
-        // Crossing kingdoms lands in the other console: Plantae, under Eukaryota, links
-        // into the plants catalog rather than the shared tree-of-life browser.
+        assertThat(html).contains("href=\"/insects/clades/holometabola\"");
+        // … and Eukaryota's dropdown reaches Plantae, crossing into the plants console.
         assertThat(html).contains("href=\"/plants/clades/plantae\"");
+        // Never a link into the shared /clades browser.
+        assertThat(html).doesNotContain("href=\"/clades/");
     }
 
     @Test

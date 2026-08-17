@@ -323,8 +323,8 @@ public class PlantsController {
         } catch (IllegalArgumentException notAClade) {
             return "redirect:/plants/orders";
         }
-        if (!PlantCladeTree.isPlant(clade)) {
-            return "redirect:/plants/orders";
+        if (PlantCladeTree.isAnimal(clade)) {
+            return "redirect:/insects/clades/" + slug;
         }
         model.addAttribute("clade", clade);
         model.addAttribute("orders", ordersPlacedAt(clade));

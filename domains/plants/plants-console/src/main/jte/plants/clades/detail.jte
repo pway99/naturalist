@@ -1,6 +1,7 @@
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantOrder
 @import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.plants.console.PlantCladeTree
 @import java.util.List
 
 @param Clade clade
@@ -54,7 +55,7 @@
                 @for(var child : childClades)
                     <article>
                         <header>
-                            <a href="/plants/clades/${child.slug()}">
+                            <a href="${PlantCladeTree.pageUrl(child)}">
                                 <strong>${child.displayName()}</strong>
                             </a>
                         </header>

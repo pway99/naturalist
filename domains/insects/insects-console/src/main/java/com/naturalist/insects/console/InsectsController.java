@@ -1,12 +1,16 @@
 package com.naturalist.insects.console;
 
+import com.naturalist.clades.Clade;
+import com.naturalist.clades.CladeCatalog;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Eukaryota;
 import com.naturalist.clades.Insecta;
+import com.naturalist.clades.Plantae;
 import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
+import com.naturalist.data.Pages;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.insects.*;
 import com.naturalist.insects.console.render.InsectsParagraphCues;
@@ -229,7 +233,8 @@ public class InsectsController {
      * URL overrides for clades that own a landing page elsewhere in this
      * console. Insecta points at the catalog root (the orders listing) so its
      * breadcrumb segment is a click-back-to-the-top affordance. Every other
-     * clade falls back to its tree-of-life page at {@code /clades/{slug}}.
+     * clade falls back to its in-console clade page at {@code /insects/clades/{slug}} —
+     * never the shared tree-of-life browser.
      */
     private static final Map<String, String> CLADE_URL = Map.of(
             "insecta", "/insects/orders");
@@ -239,7 +244,25 @@ public class InsectsController {
                 .filter(c -> !(c instanceof Eukaryota))
                 .map(c -> {
                     String rank = CLADE_RANK_LABEL.get(c.slug());
-                    String url = CLADE_URL.getOrDefault(c.slug(), "/clades/" + c.slug());
+                    String url = CLADE_URL.getOrDefault(c.slug(), "/insects/clades/" + c.slug());
+                    return BreadcrumbSegment.link(c.displayName(), url, rank);
+                })
+                .toList();
+    }
+
+    /**
+     * The taxonomic breadcrumb for a clade page: the clade's <em>ranked</em> ancestors
+     * (Kingdom Animalia → Phylum Arthropoda → Class Insecta …) and no further. A clade can
+     * hold taxa placed at several ranks at once — Hemiptera carries both orders and genera —
+     * so there is no single rank path to descend into; the ladder simply stops at the last
+     * rank the clade unambiguously sits below.
+     */
+    private List<BreadcrumbSegment> cladeTaxonomicPrefix(Clade clade) {
+        return CladeTraversal.ancestry(clade).reversed().stream()
+                .filter(c -> CLADE_RANK_LABEL.containsKey(c.slug()))
+                .map(c -> {
+                    String rank = CLADE_RANK_LABEL.get(c.slug());
+                    String url = CLADE_URL.getOrDefault(c.slug(), "/insects/clades/" + c.slug());
                     return BreadcrumbSegment.link(c.displayName(), url, rank);
                 })
                 .toList();
@@ -294,6 +317,88 @@ public class InsectsController {
         List<CladeStep> steps = new ArrayList<>(view.ancestry());
         steps.add(view.subject());
         return new CladeTrail(steps, anchor.gapLabel());
+    }
+
+    // ── Clade pages (the tree of life, kept in-console) ──────────────────
+
+    /**
+     * A clade's page in the insect catalog: its description, the insect taxa placed directly
+     * at it grouped by Linnaean rank (Order / Family / Genus / Species — insects place clades
+     * at every rank, unlike the supra-ordinal plant clades), and its narrower child clades.
+     * The insect-side counterpart to the plants console's {@code /plants/clades/{slug}}, so the
+     * tree-of-life breadcrumb navigates in-console and never strands the naturalist in the
+     * shared browser. Plant clades bounce to the plants console; unknown slugs to the catalog.
+     */
+    @GetMapping("/clades/{slug}")
+    String cladeDetail(@PathVariable String slug, Model model) {
+        Clade clade;
+        try {
+            clade = Clade.of(slug);
+        } catch (IllegalArgumentException notAClade) {
+            return "redirect:/insects/orders";
+        }
+        if (CladeTraversal.ancestry(clade).stream().anyMatch(node -> node instanceof Plantae)) {
+            return "redirect:/plants/clades/" + slug;
+        }
+        var description = clade.description();
+        model.addAttribute("clade", clade);
+        model.addAttribute("orders", ordersPlacedAt(clade));
+        model.addAttribute("families", familiesPlacedAt(clade));
+        model.addAttribute("genera", generaPlacedAt(clade));
+        model.addAttribute("species", speciesPlacedAt(clade));
+        model.addAttribute("childClades", CladeCatalog.childrenOf(clade));
+        model.addAttribute("breadcrumb", cladeTaxonomicPrefix(clade));
+        model.addAttribute("cladeTrail", cladeTrailAt(slug));
+        model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
+        model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
+        model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
+        model.addAttribute("descriptionUniversity", descriptionRenderer.render(description.university()));
+        return "insects/clades/detail";
+    }
+
+    private CladeTrail cladeTrailAt(String slug) {
+        CladeView view = cladeQuery.getBySlug(slug).orElseThrow(
+                () -> new IllegalStateException("clade not found: " + slug));
+        List<CladeStep> steps = new ArrayList<>(view.ancestry());
+        steps.add(view.subject());
+        return new CladeTrail(steps, null);
+    }
+
+    private List<CladeTaxonCard> ordersPlacedAt(Clade clade) {
+        return Pages.stream(1000, insectQuery.orders()::findPage)
+                .filter(o -> clade.equals(o.placedIn()))
+                .sorted(Comparator.comparing((InsectOrder o) -> o.order().value()))
+                .map(o -> new CladeTaxonCard("/insects/orders/" + o.name().value(), o.order().value()))
+                .toList();
+    }
+
+    private List<CladeTaxonCard> familiesPlacedAt(Clade clade) {
+        return Pages.stream(1000, insectQuery.families()::findPage)
+                .filter(f -> clade.equals(f.placedIn()))
+                .sorted(Comparator.comparing((InsectFamily f) -> f.family().value()))
+                .map(f -> new CladeTaxonCard("/insects/families/" + f.name().value(), f.family().value()))
+                .toList();
+    }
+
+    private List<CladeTaxonCard> generaPlacedAt(Clade clade) {
+        return Pages.stream(1000, insectQuery.genera()::findPage)
+                .filter(g -> clade.equals(g.placedIn()))
+                .sorted(Comparator.comparing((InsectGenus g) -> g.genus().value()))
+                .map(g -> new CladeTaxonCard("/insects/genera/" + g.name().value(), g.genus().value()))
+                .toList();
+    }
+
+    private List<CladeTaxonCard> speciesPlacedAt(Clade clade) {
+        return Pages.stream(1000, insectQuery.species()::findPage)
+                .filter(s -> clade.equals(s.placedIn()))
+                .map(s -> {
+                    String genusEpithet = insectQuery.genera().getByName(s.genusName())
+                            .map(g -> g.genus().value()).orElse("");
+                    return new CladeTaxonCard("/insects/" + s.name().value(),
+                            (genusEpithet + " " + s.epithet().value()).trim());
+                })
+                .sorted(Comparator.comparing(CladeTaxonCard::name))
+                .toList();
     }
 
     private List<InsectCladeAnchors.LineageEntry> lineageToOrder(InsectOrder order) {

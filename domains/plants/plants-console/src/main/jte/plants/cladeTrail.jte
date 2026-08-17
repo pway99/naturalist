@@ -5,16 +5,14 @@
 @param List<Clade> cladeTrail = java.util.List.of()
 @param Clade current = null
 
-<%-- The phylogenetic row and the plant catalog's clade navigator, distinct from the
-     taxonomic rank breadcrumb. Plant clades link to their in-console page
-     (/plants/clades/{slug}, showing the orders placed there); on hover or keyboard focus
-     each opens a dropdown of its narrower (child) clades, so the whole clade tree is
-     walkable inline. Siblings need no dropdown — they are the parent node's children,
-     reached from the node one step to the left. Plant clades are all supra-ordinal, so
-     everything between Kingdom (Plantae) and Order is a rank-free clade. The row runs up
-     to Eukaryota, the shared root where the plant and animal kingdoms meet: its node
-     links to the cross-domain tree-of-life browser and its dropdown reaches Animalia, so
-     a naturalist can cross from plants to the insect side and back. --%>
+<%-- The phylogenetic tree-of-life row: a lineage of clade links, distinct from the
+     taxonomic rank breadcrumb. Every node links to its in-console clade page (routed by
+     PlantCladeTree.pageUrl — plant clades to /plants/clades, animal clades to
+     /insects/clades, the shared Eukaryota root to the current domain), so the row never
+     strands the naturalist in the shared tree-of-life browser. On hover or keyboard focus
+     each node opens a dropdown of its narrower (child) clades for quick drilling; the
+     child pages also list those clades. The row runs up to Eukaryota, the shared root
+     where the kingdoms meet — hovering it surfaces Animalia, the crossover to the insects. --%>
 @if(!cladeTrail.isEmpty())
     <nav class="clade-trail" aria-label="Phylogenetic lineage">
         <span class="clade-trail-label">Tree of life</span>
@@ -44,12 +42,12 @@
             id = "clade-trail-help",
             label = "What is this Tree of Life row?",
             text = "This row is the <strong>phylogenetic tree of life</strong> — the real evolutionary"
-                + " branches — and the plant catalog's clade navigator. Hover a name to drill into a"
-                + " narrower clade; click it to open its page. It runs up to <em>Eukaryota</em>, the"
-                + " shared root where plants and animals meet, so you can cross to the insect side there."
-                + " In plants, every branch between"
-                + " <em>Kingdom</em> and <em>Order</em> is a <strong>rank-free clade</strong> sitting where"
-                + " Phylum and Class would be, which is why a plant order has no Class rank above it.",
+                + " branches — shown parallel to the Linnaean rank ladder. Each name opens that clade's"
+                + " page (its organisms and narrower clades); hover to drill straight into a narrower"
+                + " clade. It runs up to <em>Eukaryota</em>, the shared root where plants and animals"
+                + " meet, so you can cross to the insect side. In plants, every branch between"
+                + " <em>Kingdom</em> and <em>Order</em> is a rank-free clade sitting where Phylum and"
+                + " Class would be — which is why a plant order has no Class rank above it.",
             moreHref = "/concepts/class",
             moreLabel = "What is a class? →")
     </nav>

@@ -1,5 +1,6 @@
 package com.naturalist.plants.console;
 
+import com.naturalist.clades.Animalia;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeCatalog;
 import com.naturalist.clades.CladeTraversal;
@@ -25,17 +26,22 @@ public final class PlantCladeTree {
     }
 
     /**
-     * Where a clade's node links. Plant clades open their in-console page; everything
-     * above Plantae — just Eukaryota, the shared root where the plant and animal
-     * kingdoms meet — links to the cross-domain tree-of-life browser, so a plant
-     * naturalist can cross into Animalia (and on to the insects) at the root.
+     * The in-console page for a clade, so the breadcrumb never strands the naturalist in
+     * the shared tree-of-life browser. Animal clades cross into the insects console; plant
+     * clades and the shared Eukaryota root stay in the plants console (each domain owns the
+     * root's page, showing its own organisms and offering the other kingdom as a child).
      */
     public static String pageUrl(Clade clade) {
-        return isPlant(clade) ? "/plants/clades/" + clade.slug() : "/clades/" + clade.slug();
+        return isAnimal(clade) ? "/insects/clades/" + clade.slug() : "/plants/clades/" + clade.slug();
     }
 
     /** A clade belongs to the plant catalog iff its lineage passes through Plantae. */
     public static boolean isPlant(Clade clade) {
         return CladeTraversal.ancestry(clade).stream().anyMatch(node -> node instanceof Plantae);
+    }
+
+    /** A clade belongs to the animal kingdom iff its lineage passes through Animalia. */
+    public static boolean isAnimal(Clade clade) {
+        return CladeTraversal.ancestry(clade).stream().anyMatch(node -> node instanceof Animalia);
     }
 }

@@ -1538,11 +1538,10 @@ figure.compound-depiction img {
     border-bottom-color: var(--pico-primary);
 }
 
-/* Hover/focus dropdowns on the clade breadcrumb — the plant clade navigator.
-   Each node anchors a menu of sibling ("same level") and child ("narrower")
-   clades so the tree of life is walkable inline without leaving the page. CSS
-   only: :hover for pointer, :focus-within for keyboard. The menu abuts the node
-   (no margin gap) so the pointer can cross into it without the hover dropping. */
+/* Hover/focus dropdowns on the clade breadcrumb — quick drill into a node's narrower
+   (child) clades without leaving the page. CSS only: :hover for pointer, :focus-within
+   for keyboard. The menu abuts the node (no margin gap) so the pointer can cross into it
+   without the hover dropping. Each item links to its in-console clade page. */
 .clade-node {
     position: relative;
     display: inline-block;
