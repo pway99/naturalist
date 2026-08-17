@@ -1,6 +1,7 @@
 package com.naturalist.plants.console;
 
 import com.naturalist.clades.Clade;
+import com.naturalist.clades.CladeCatalog;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Eukaryota;
 import com.naturalist.clades.Plantae;
@@ -289,6 +290,55 @@ public class PlantsController {
         }
         return CladeTraversal.ancestry(placedIn).reversed().stream()
                 .filter(clade -> !(clade instanceof Eukaryota))
+                .toList();
+    }
+
+    // ── Clade pages (the tree-of-life driving plant queries) ─────────────
+
+    /**
+     * A clade's page in the plant catalog: its four-level description plus the plant
+     * orders placed in it, and its narrower child clades to drill further in. This is
+     * the plants-domain counterpart to the shared {@code /clades/{slug}} tree-of-life
+     * page — where that one lists child clades, this one lists plant orders — so the
+     * Tree of Life breadcrumb navigates plant records and never leaves the console.
+     * Non-plant clades (and unknown slugs) redirect back to the order catalog.
+     */
+    @GetMapping("/clades/{slug}")
+    String cladeDetail(@PathVariable String slug, Model model) {
+        Clade clade;
+        try {
+            clade = Clade.of(slug);
+        } catch (IllegalArgumentException notAClade) {
+            return "redirect:/plants/orders";
+        }
+        if (!isPlantClade(clade)) {
+            return "redirect:/plants/orders";
+        }
+        List<Clade> childClades = CladeCatalog.childrenOf(clade).stream()
+                .filter(child -> !ordersInClade(child).isEmpty())
+                .toList();
+        model.addAttribute("clade", clade);
+        model.addAttribute("orders", ordersInClade(clade));
+        model.addAttribute("childClades", childClades);
+        model.addAttribute("breadcrumb", plantaeRoot());
+        model.addAttribute("cladeTrail", CladeTraversal.ancestry(clade).reversed().stream()
+                .filter(node -> !(node instanceof Eukaryota))
+                .toList());
+        addDescription(model, clade.description());
+        return "plants/clades/detail";
+    }
+
+    /** A clade belongs to the plant catalog iff its lineage passes through Plantae. */
+    private static boolean isPlantClade(Clade clade) {
+        return CladeTraversal.ancestry(clade).stream().anyMatch(node -> node instanceof Plantae);
+    }
+
+    /** Every catalogued order whose clade placement lies within {@code clade}. */
+    private List<PlantOrder> ordersInClade(Clade clade) {
+        return Pages.stream(1000, plantQuery.orders()::findPage)
+                .filter(order -> order.placedIn() != null
+                        && CladeTraversal.ancestry(order.placedIn()).contains(clade))
+                .sorted(Comparator.comparing((PlantOrder order) -> order.name().value()))
                 .toList();
     }
 

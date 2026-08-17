@@ -55,7 +55,7 @@ class PlantsOrderListTemplateTest {
 
         assertThat(output.toString())
                 .contains("Tree of life")
-                .contains("href=\"/clades/plantae\"")
-                .contains("href=\"/clades/angiosperms\"");
+                .contains("href=\"/plants/clades/plantae\"")
+                .contains("href=\"/plants/clades/angiosperms\"");
     }
 }

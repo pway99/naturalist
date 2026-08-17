@@ -4,6 +4,7 @@
 
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param List<Clade> cladeTrail = java.util.List.of()
+@param Clade current = null
 
 <%-- Two-row context bar mirroring insects/nav.jte: the taxonomic rank ladder
      (breadcrumb) and, below it, the phylogenetic tree-of-life row (cladeTrail).
@@ -14,6 +15,6 @@
         @template.plants.breadcrumb(segments = breadcrumb)
     @endif
     @if(!cladeTrail.isEmpty())
-        @template.plants.cladeTrail(cladeTrail = cladeTrail)
+        @template.plants.cladeTrail(cladeTrail = cladeTrail, current = current)
     @endif
 </div>

@@ -32,11 +32,13 @@ class PlantsCladeTrailTemplateTest {
 
         String html = output.toString();
         assertThat(html).contains("Tree of life");
-        assertThat(html).contains("href=\"/clades/plantae\"");
-        assertThat(html).contains("href=\"/clades/angiosperms\"");
-        assertThat(html).contains("href=\"/clades/magnoliids\"");
+        // Nodes drive plant queries — they link into the plant catalog's clade pages,
+        // not the shared cross-domain tree-of-life browser.
+        assertThat(html).contains("href=\"/plants/clades/plantae\"");
+        assertThat(html).contains("href=\"/plants/clades/angiosperms\"");
+        assertThat(html).contains("href=\"/plants/clades/magnoliids\"");
         // The row opens at the plant kingdom, not the shared universal root.
-        assertThat(html).doesNotContain("href=\"/clades/eukaryota\"");
+        assertThat(html).doesNotContain("/clades/eukaryota");
     }
 
     @Test
