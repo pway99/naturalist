@@ -30,7 +30,8 @@ class PlantRankNameDispatchTest {
     private static final List<Class<?>> CONSUMERS = List.of(
             PlantEcologicalRole.class,
             PlantProgram.class,
-            PhytochemicalConstituent.class);
+            PhytochemicalConstituent.class,
+            FieldObservation.class);
 
     @Test
     void everyConsumerDispatchesOverEveryPermit() {
