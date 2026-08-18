@@ -400,5 +400,23 @@
         "locale": "en"
       }
     ]
+  },
+  {
+    "name": "helianthus",
+    "familyName": "asteraceae",
+    "family": "Asteraceae",
+    "genus": "Helianthus",
+    "description": {
+      "preschool": "Sunflowers! Tall plants with big golden flower heads that turn to follow the sun. Bees love them, and later the middle fills with seeds that birds come to eat.",
+      "elementary": "Helianthus is the sunflower genus. Young sunflower buds track the sun across the sky each day — a movement called heliotropism. A tall stalk holds up a giant flower head, really hundreds of tiny flowers, ringed by golden strap-flowers. After bees pollinate it, the head fills with seeds that finches and other birds feast on. Some sunflowers live for only one year; others come back every year.",
+      "secondary": "Helianthus is a North American genus of about seventy annual and perennial species in Asteraceae. Its capitulum bears sterile golden ray florets and fertile disc florets that mature into seed; young heads show solar tracking (heliotropism) that ceases at anthesis, leaving the head facing east. Roots exude allelopathic compounds that suppress neighbours. At Oak Vista a sunflower stands in the front meadow — a genus-level resource for pollinators through bloom and for granivorous birds afterward.",
+      "university": "Helianthus L. — Asteraceae, roughly seventy species centred in North America, including the domesticated H. annuus and perennials such as H. tuberosus. Diagnostic: large radiate capitula with typically yellow ligulate ray florets and numerous disc florets; heliotropic pre-anthesis growth driven by differential stem elongation; inulin storage in perennial roots. Allelopathy via chlorogenic and isochlorogenic acids and terpenoids structures meadow competition. Ecosystem role at Oak Vista: staggered bloom provides nectar and pollen for Apoidea and seed for granivorous passerines; the genus-level record sits above whichever species occupies the front meadow."
+    },
+    "commonNames": [
+      {
+        "label": "Sunflower",
+        "locale": "en"
+      }
+    ]
   }
 ]

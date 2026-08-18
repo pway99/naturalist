@@ -182,5 +182,26 @@
     "commonNames": [
       { "label": "Nightshade order", "locale": "en" }
     ]
+  },
+  {
+    "name": "asterales",
+    "order": "Asterales",
+    "placedIn": "campanulids",
+    "description": {
+      "preschool": "Sunflowers and daisies belong here. What looks like one big flower is really hundreds of tiny flowers packed together, and the bright 'petals' around the edge are little flowers too.",
+      "elementary": "Asterales is the sunflower and daisy order — the largest group of flowering plants on Earth. Its clever trick is the flower head: what looks like a single bloom is actually a tight cluster of many small flowers acting as one, so a bee that visits once pollinates dozens at a time. Sunflowers, daisies, lettuce, and dandelions all belong to this order.",
+      "secondary": "Asterales is a campanulid order defined by the capitulum — a compact inflorescence of many small florets, subtended by an involucre of bracts, that functions visually and mechanically as a single flower. Secondary pollen presentation and the storage of carbon as inulin rather than starch are further hallmarks. Asteraceae, the largest plant family, dominates the order and the front-meadow flora at Oak Vista.",
+      "university": "Asterales (campanulids / euasterids II) — roughly eleven families, overwhelmingly Asteraceae (25,000+ species). Synapomorphies include the pseudanthial capitulum, a plunger-style secondary pollen-presentation mechanism, and inulin as the principal storage carbohydrate. The capitulum's success lies in modular florets marketed under a single pollinator-attraction unit, enabling rapid diversification under generalist entomophily. At Oak Vista the order anchors the front meadow's late-season nectar and seed resources, supporting pollinators and granivorous birds."
+    },
+    "commonNames": [
+      {
+        "label": "Sunflower order",
+        "locale": "en"
+      },
+      {
+        "label": "Aster order",
+        "locale": "en"
+      }
+    ]
   }
 ]

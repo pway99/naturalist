@@ -280,5 +280,30 @@
         "locale": "en"
       }
     ]
+  },
+  {
+    "name": "asteraceae",
+    "orderName": "asterales",
+    "family": "Asteraceae",
+    "description": {
+      "preschool": "The daisy family. Every sunflower is really a bunch of tiny flowers crowded together, with bright petal-flowers making a ring around the outside to tell the bees 'land here'.",
+      "elementary": "Asteraceae is the daisy or sunflower family — the biggest plant family in the world. Each 'flower' is really a head made of many tiny flowers: the ones around the edge have long straps that look like petals and attract insects, while the ones in the middle make the seeds. This design is wonderful for bees and butterflies, and the seeds later feed birds.",
+      "secondary": "Asteraceae is a cosmopolitan family of roughly 25,000 species, defined by the capitulum of ray and disc florets, an involucre of phyllaries, and the cypsela fruit often crowned by a pappus for wind dispersal. Its chemistry runs to sesquiterpene lactones, polyacetylenes, and inulin. The family gives Oak Vista's front meadow a long, overlapping bloom that sustains generalist pollinators through late summer.",
+      "university": "Family Asteraceae (Asterales) — the largest angiosperm family. Floral architecture: a capitulum bearing zygomorphic ray florets and actinomorphic disc florets within an involucre of phyllaries; syngenesious anthers form a tube through which the elongating style plunges, effecting secondary pollen presentation. Fruit: a cypsela with pappus enabling anemochory. Phytochemistry: sesquiterpene lactones (antifeedant and allelopathic), polyacetylenes, and inulin storage. Ecologically the family's generalist entomophily and staggered phenology make it a keystone nectar and pollen resource; Oak Vista's meadow depends on it for late-season pollinator and granivore support."
+    },
+    "commonNames": [
+      {
+        "label": "Daisy Family",
+        "locale": "en"
+      },
+      {
+        "label": "Sunflower Family",
+        "locale": "en"
+      },
+      {
+        "label": "Aster Family",
+        "locale": "en"
+      }
+    ]
   }
 ]
