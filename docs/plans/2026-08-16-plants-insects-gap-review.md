@@ -25,6 +25,11 @@ The **rank-model alignment is essentially done.** As of 2026-08-16 plants has:
 - Console parity: `/plants` lands on `/plants/orders`, species list at `/plants/species`,
   and the taxonomic breadcrumb header on every rank page (shipped 2026-08-16, not part of
   the consistency plan).
+- **Clade placement (shipped 2026-08-16, after the consistency batch):** 16 APG-style
+  plant clades in the kernel (`Plantae` → `Angiosperms` → `Eudicots`/`Monocots` → … →
+  `Lamiids`), `PlantOrder.placedIn` (`@Nullable Clade`, supra-ordinal — order only), a
+  console clade navigator, dedicated in-console clade pages, and two-way cross-domain
+  clade navigation (plants ↔ insects share the clade pages). Gap #10 is closed.
 
 Plants also has **genuine domain richness insects lacks** — `cultivar`, `heritage`
 (seed lineage + provenance), `phytochemistry`, and `management` (programs). These are not
@@ -43,11 +48,11 @@ differently, or deliberately defers).
 | Rank entities Order→Species + `RankName` | ✅ present | — | Reached parity this session (M2b/M2g). |
 | **Rank-polymorphic read model** (`InsectTaxonView` sealed over per-rank `*View`, + factory; `Insect`) | ❌ none | **true gap** | No `PlantTaxonView`. A rank page assembles its parts ad hoc in the controller. Biggest structural gap. |
 | **Write side** (`InsectCommand`, `CatalogIdentification` aggregate, `Transaction`, `with*` methods) | ❌ none | **true gap** | Plants is read-only. `domains/CLAUDE.md` requires a `with*` per mutable field the moment writes land. |
-| **Collection unit** (`FieldObservation` — "a naturalist observed this") | ❌ none | **true gap** | No way to record that someone grew/observed a plant. Analogue would be a planting/observation, and `garden.Planting` may already be the plant-side collection unit — worth deciding rather than duplicating. |
+| **Collection unit** (`FieldObservation` — "a naturalist observed this") | ◐ designed | **decided 2026-08-18** | Resolved to a new `known-organisms` domain (`KnownOrganism`, cross-domain `EntityRef` subject), distinct from both `garden.Planting` and ephemeral sightings. Design captured; build unscheduled. |
 | **Images at a rank** (`InsectImage`, hierarchical image query, add-photo command) | ❌ none | **true gap** | No `PlantImage`. Relevant to the MVP vision-ID goal (images stay on device). |
 | **Vision identification** (`VisionService`, `InsectIdentificationCommand`) | ❌ none | **true gap (later)** | The MVP feature per project memory. Depends on the write side + images. |
 | **Features/field marks** (`InsectFeature`, `FeatureAssignment`, `InsectFeatureView`) | ❌ none | **true gap (later)** | The "why this ID?" evidence surface. |
-| **Clade placement** (`@Nullable Clade placedIn`, `InsectClades`) | ❌ none | **intentional defer** | Kernel has no plant clade permits yet; needs a plants-owned trait function. Blueprint & `kernels/CLAUDE.md` document this as pending. |
+| **Clade placement** (`@Nullable Clade placedIn`, `InsectClades`) | ✅ present | — | Shipped 2026-08-16: 16 plant clades in the kernel, `PlantOrder.placedIn`, console clade pages + cross-domain nav. |
 | **Functional guild / roles** (`InsectFunctionalRole`, `FunctionalGuild`) | ~ partial | **intentional difference** | Plants has `PlantEcologicalRole` + `PlantRole`. Covers the "roles" need; no guild *pages* yet. |
 | **Life stages** (rich `lifestage` subpackage) | n/a | **intentional difference** | No plant analogue by nature; plants has cultivar/heritage/phytochemistry instead. |
 | **Citations / library integration** (`InsectCitationView`, citation associations) | ❌ none | **true gap (later)** | Plants records reference chemistry compounds but have no citation surface. |
@@ -80,13 +85,16 @@ differently, or deliberately defers).
 
 ### C. Strategic / MVP (large, sequence later)
 
-8. **Decide the plant collection unit.** Is `garden.Planting` the plant-side
-   `FieldObservation`, or does plants need its own observation entity? Decide before
-   building, to avoid duplicating the concept.
+8. ~~**Decide the plant collection unit.**~~ ✅ DECIDED 2026-08-18 — it is neither
+   `garden.Planting` nor a plants-side observation: a new top-of-DAG **`known-organisms`**
+   domain with a single `KnownOrganism` entity (cross-domain `EntityRef` subject, owner,
+   nickname, optional location). See
+   [`2026-08-18-known-organisms-design.md`](2026-08-18-known-organisms-design.md).
+   **Build not yet scheduled.**
 9. **Images + vision identification** — the MVP feature (images stay on device). Depends on
    the write side and a decision on the collection unit.
-10. **Clade activation** — kernel work (plant clade permits + trait function); blocked on the
-   clades kernel, tracked as effort #2 Phase 6.
+10. ~~**Clade activation**~~ ✅ DONE 2026-08-16 — 16 plant clades in the kernel,
+   `PlantOrder.placedIn`, console clade navigator + two-way cross-domain navigation.
 
 ### D. The abstraction pass (rule 3)
 
