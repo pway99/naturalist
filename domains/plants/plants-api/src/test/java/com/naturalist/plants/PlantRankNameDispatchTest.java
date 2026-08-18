@@ -31,7 +31,8 @@ class PlantRankNameDispatchTest {
             PlantEcologicalRole.class,
             PlantProgram.class,
             PhytochemicalConstituent.class,
-            FieldObservation.class);
+            FieldObservation.class,
+            PlantImage.class);
 
     @Test
     void everyConsumerDispatchesOverEveryPermit() {

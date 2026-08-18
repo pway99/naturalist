@@ -80,6 +80,11 @@ public class TestPlantsIdentifiers {
         public static class Malpighiales {
             public static final PlantOrderName name = PlantOrderName.of("malpighiales");
         }
+
+        /** Sunflower order — authored with the front-meadow Helianthus for the S2 image stack. */
+        public static class Asterales {
+            public static final PlantOrderName name = PlantOrderName.of("asterales");
+        }
     }
 
     public static class PlantFamilies {
@@ -97,6 +102,11 @@ public class TestPlantsIdentifiers {
 
         public static class Apiaceae {
             public static final PlantFamilyName name = PlantFamilyName.of("apiaceae");
+        }
+
+        /** Daisy/sunflower family — authored for the S2 image stack (front-meadow Helianthus). */
+        public static class Asteraceae {
+            public static final PlantFamilyName name = PlantFamilyName.of("asteraceae");
         }
 
         public static class Aristolochiaceae {
@@ -201,6 +211,19 @@ public class TestPlantsIdentifiers {
         public static class Trifolium {
             public static final PlantGenusName name = PlantGenusName.of("trifolium");
         }
+
+        /**
+         * Sunflower genus — the front-meadow sunflower is catalogued here at genus rank
+         * (species unconfirmed). Carries the S2 sunflower image.
+         */
+        public static class Helianthus {
+            public static final PlantGenusName name = PlantGenusName.of("helianthus");
+        }
+
+        /** Tomato genus — the back-garden tomato-patch image attaches here (not a single species). */
+        public static class Solanum {
+            public static final PlantGenusName name = PlantGenusName.of("solanum");
+        }
     }
 
     public static class Plants {
@@ -221,10 +244,28 @@ public class TestPlantsIdentifiers {
                     CultivarName.of("unobtainium-cultivar");
             public static final SeedLineageName seedLineageName =
                     SeedLineageName.of("unobtainium-lineage");
+            public static final PlantImageId imageId =
+                    PlantImageId.of(UUID.fromString("026bb000-0000-7000-8000-0000000000ff"));
         }
 
         public static class CaliforniaPipevine {
             public static final PlantSpeciesName name = PlantSpeciesName.of("aristolochia-californica");
+
+            /**
+             * Two photographs attached at the species rank — the known pair the image
+             * repository/query contract tests read. Both were captured under patrick's
+             * pipevine field observation (a single trellis-wall sighting, two frames), so
+             * they exercise the {@code observationId} link.
+             */
+            public static class Images {
+                private Images() {
+                }
+
+                public static final PlantImageId Wide5905 =
+                        PlantImageId.of(UUID.fromString("026bb000-0000-7000-8000-000000000001"));
+                public static final PlantImageId WideC072 =
+                        PlantImageId.of(UUID.fromString("026bb000-0000-7000-8000-000000000002"));
+            }
 
             public static class Programs {
                 private Programs() {

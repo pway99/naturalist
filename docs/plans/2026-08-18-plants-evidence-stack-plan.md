@@ -7,7 +7,12 @@
 `PlantTaxonView` then composes a rank record with its images and features.
 
 **Status (2026-08-18):** S1 `FieldObservation` **shipped** (commits `4dd84cd0`, `9a279f05`) —
-entity + id + repository/query stack + fixtures, contract green. **Next: S2 `PlantImage`.**
+entity + id + repository/query stack + fixtures, contract green. S2 `PlantImage`
+**code-complete, pending `mvn verify`** — `PlantImageId` + `PlantImage` (parentName
+`PlantRankName`, nullable `observationId`, `FileName resourceName`) + invariant/dispatch tests
++ `ImageRepository`/mock/contract + `PlantImageTestEntitySource` + `plant-images.json`
+(4 fixtures) + `ImageCollection` + `PlantQuery.images()`/`forParentName`, wired through
+`PlantQueryImpl`/`PlantsTestContext`. **Next: S3 `PlantFeature` + `PlantFeatureAssignment`.**
 
 **Reference:** `domains/insects/` — this is a faithful port, adapted for plants (4 rank
 permits, no subspecies). Mirror the insects types, names, and test conventions.

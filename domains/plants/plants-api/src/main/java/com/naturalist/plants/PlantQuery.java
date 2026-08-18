@@ -8,6 +8,7 @@ import java.util.Set;
 import com.naturalist.plants.PlantEntityCollections.SpeciesCollection;
 import com.naturalist.plants.PlantEntityCollections.FamilyCollection;
 import com.naturalist.plants.PlantEntityCollections.GenusCollection;
+import com.naturalist.plants.PlantEntityCollections.ImageCollection;
 
 /**
  * Namespace query for the plants top-level sub-context — the single
@@ -70,6 +71,20 @@ public interface PlantQuery {
     EcologicalRoleQuery ecologicalRoles();
 
     FieldObservationQuery fieldObservations();
+
+    ImageQuery images();
+
+    interface ImageQuery
+            extends EntityQuery<PlantImageId, PlantImage, ImageCollection> {
+
+        /**
+         * All photographs attached at the given rank name — the plant analogue of
+         * {@code InsectQuery.ImageQuery.forParentName}. Attachment is by the image's typed
+         * {@link PlantImage#parentName()}, so a genus-level identification surfaces the
+         * genus's own photos, not its species'.
+         */
+        ImageCollection forParentName(PlantRankName parentName);
+    }
 
     interface GenusQuery
             extends EntityQuery<PlantGenusName, PlantGenus, GenusCollection> {

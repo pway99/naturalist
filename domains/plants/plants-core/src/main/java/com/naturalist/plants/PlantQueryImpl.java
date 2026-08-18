@@ -10,20 +10,23 @@ class PlantQueryImpl implements PlantQuery {
     private final GenusQuery plantGenusEntityQuery;
     private final EcologicalRoleQuery plantEcologicalRoleEntityQuery;
     private final FieldObservationQuery fieldObservationQuery;
+    private final ImageQuery imageQuery;
 
     PlantQueryImpl(SpeciesQuery plantEntityQuery,
                    OrderQuery plantOrderEntityQuery,
                    FamilyQuery plantFamilyEntityQuery,
                    GenusQuery plantGenusEntityQuery,
                    EcologicalRoleQuery plantEcologicalRoleEntityQuery,
-                   FieldObservationQuery fieldObservationQuery) {
+                   FieldObservationQuery fieldObservationQuery,
+                   ImageQuery imageQuery) {
         Observer.forClass(PlantQueryImpl.class).arguments("constructor", i -> i
                         .notNull(plantEntityQuery, "plantEntityQuery")
                         .notNull(plantOrderEntityQuery, "plantOrderEntityQuery")
                         .notNull(plantFamilyEntityQuery, "plantFamilyEntityQuery")
                         .notNull(plantGenusEntityQuery, "plantGenusEntityQuery")
                         .notNull(plantEcologicalRoleEntityQuery, "plantEcologicalRoleEntityQuery")
-                        .notNull(fieldObservationQuery, "fieldObservationQuery"))
+                        .notNull(fieldObservationQuery, "fieldObservationQuery")
+                        .notNull(imageQuery, "imageQuery"))
                 .throwWhenInvalid();
         this.plantEntityQuery = plantEntityQuery;
         this.plantOrderEntityQuery = plantOrderEntityQuery;
@@ -31,6 +34,7 @@ class PlantQueryImpl implements PlantQuery {
         this.plantGenusEntityQuery = plantGenusEntityQuery;
         this.plantEcologicalRoleEntityQuery = plantEcologicalRoleEntityQuery;
         this.fieldObservationQuery = fieldObservationQuery;
+        this.imageQuery = imageQuery;
     }
 
     @Override
@@ -61,5 +65,10 @@ class PlantQueryImpl implements PlantQuery {
     @Override
     public FieldObservationQuery fieldObservations() {
         return fieldObservationQuery;
+    }
+
+    @Override
+    public ImageQuery images() {
+        return imageQuery;
     }
 }

@@ -36,6 +36,12 @@ class PlantRepository {
         Optional<PlantEcologicalRole> getByPlantName(PlantRankName plantName);
     }
 
+    protected interface ImageRepository
+            extends EntityRepository<PlantImageId, PlantImage> {
+
+        List<PlantImage> getByParentName(PlantRankName parentName);
+    }
+
     protected interface FieldObservationRepository
             extends EntityRepository<FieldObservationId, FieldObservation> {
 

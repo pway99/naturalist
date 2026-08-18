@@ -29,5 +29,14 @@
     "subjectRank": "FAMILY",
     "subject": "lamiaceae",
     "observedOn": "2026-07-04T09:00:00Z"
+  },
+  {
+    "id": "026aa000-0000-7000-8000-000000000005",
+    "observedBy": "patrick-way",
+    "subjectRank": "SPECIES",
+    "subject": "aristolochia-californica",
+    "observedOn": "2026-05-09T23:38:00Z",
+    "notes": "pipevine in flower on the east trellis — two photos",
+    "location": "east trellis wall"
   }
 ]

@@ -86,6 +86,21 @@ public interface PlantEntityCollections {
         }
     }
 
+    final class ImageCollection extends BehavioralCollection<PlantImage> {
+
+        ImageCollection(Collection<PlantImage> images) {
+            super(images);
+        }
+
+        public static ImageCollection of(Collection<PlantImage> images) {
+            return new ImageCollection(images);
+        }
+
+        public static ImageCollection empty() {
+            return new ImageCollection(List.of());
+        }
+    }
+
     final class FieldObservationCollection extends BehavioralCollection<FieldObservation> {
 
         FieldObservationCollection(Collection<FieldObservation> observations) {
