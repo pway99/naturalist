@@ -85,4 +85,19 @@ public interface PlantEntityCollections {
             return new GenusCollection(List.of());
         }
     }
+
+    final class FieldObservationCollection extends BehavioralCollection<FieldObservation> {
+
+        FieldObservationCollection(Collection<FieldObservation> observations) {
+            super(observations);
+        }
+
+        public static FieldObservationCollection of(Collection<FieldObservation> observations) {
+            return new FieldObservationCollection(observations);
+        }
+
+        public static FieldObservationCollection empty() {
+            return new FieldObservationCollection(List.of());
+        }
+    }
 }

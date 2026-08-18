@@ -9,24 +9,28 @@ class PlantQueryImpl implements PlantQuery {
     private final FamilyQuery plantFamilyEntityQuery;
     private final GenusQuery plantGenusEntityQuery;
     private final EcologicalRoleQuery plantEcologicalRoleEntityQuery;
+    private final FieldObservationQuery fieldObservationQuery;
 
     PlantQueryImpl(SpeciesQuery plantEntityQuery,
                    OrderQuery plantOrderEntityQuery,
                    FamilyQuery plantFamilyEntityQuery,
                    GenusQuery plantGenusEntityQuery,
-                   EcologicalRoleQuery plantEcologicalRoleEntityQuery) {
+                   EcologicalRoleQuery plantEcologicalRoleEntityQuery,
+                   FieldObservationQuery fieldObservationQuery) {
         Observer.forClass(PlantQueryImpl.class).arguments("constructor", i -> i
                         .notNull(plantEntityQuery, "plantEntityQuery")
                         .notNull(plantOrderEntityQuery, "plantOrderEntityQuery")
                         .notNull(plantFamilyEntityQuery, "plantFamilyEntityQuery")
                         .notNull(plantGenusEntityQuery, "plantGenusEntityQuery")
-                        .notNull(plantEcologicalRoleEntityQuery, "plantEcologicalRoleEntityQuery"))
+                        .notNull(plantEcologicalRoleEntityQuery, "plantEcologicalRoleEntityQuery")
+                        .notNull(fieldObservationQuery, "fieldObservationQuery"))
                 .throwWhenInvalid();
         this.plantEntityQuery = plantEntityQuery;
         this.plantOrderEntityQuery = plantOrderEntityQuery;
         this.plantFamilyEntityQuery = plantFamilyEntityQuery;
         this.plantGenusEntityQuery = plantGenusEntityQuery;
         this.plantEcologicalRoleEntityQuery = plantEcologicalRoleEntityQuery;
+        this.fieldObservationQuery = fieldObservationQuery;
     }
 
     @Override
@@ -52,5 +56,10 @@ class PlantQueryImpl implements PlantQuery {
     @Override
     public EcologicalRoleQuery ecologicalRoles() {
         return plantEcologicalRoleEntityQuery;
+    }
+
+    @Override
+    public FieldObservationQuery fieldObservations() {
+        return fieldObservationQuery;
     }
 }

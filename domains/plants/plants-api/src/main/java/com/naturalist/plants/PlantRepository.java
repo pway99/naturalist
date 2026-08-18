@@ -1,9 +1,11 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.EntityRepository;
+import com.naturalist.naturalist.NaturalistName;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 class PlantRepository {
     protected interface SpeciesRepository extends EntityRepository<PlantSpeciesName, PlantSpecies> {
@@ -32,5 +34,14 @@ class PlantRepository {
 
         /** At most one role record per taxon — uniqueness is on {@code plantName}. */
         Optional<PlantEcologicalRole> getByPlantName(PlantRankName plantName);
+    }
+
+    protected interface FieldObservationRepository
+            extends EntityRepository<FieldObservationId, FieldObservation> {
+
+        List<FieldObservation> getByNaturalist(NaturalistName observedBy);
+
+        List<FieldObservation> getByNaturalistAndSubjects(
+                NaturalistName observedBy, Set<PlantRankName> subjects);
     }
 }

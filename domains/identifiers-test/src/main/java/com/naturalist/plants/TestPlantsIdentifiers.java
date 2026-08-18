@@ -5,6 +5,7 @@ import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.heritage.SeedLineageName;
 import com.naturalist.plants.management.PlantProgramName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
+import java.util.UUID;
 
 /**
  * Hardcoded EntityName constants for deterministic plants repository test authoring.
@@ -24,7 +25,33 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
  */
 public class TestPlantsIdentifiers {
 
+
     private TestPlantsIdentifiers() {
+    }
+
+    /**
+     * Plant field-observation ids (surrogate UUIDv7). Fixed so the JSON fixture and the
+     * contract tests agree. Patrick and Delia both observe solanum-lycopersicum, which lets
+     * the naturalist-scoped query tests prove exclusion.
+     */
+    public static class FieldObservations {
+
+        private FieldObservations() {
+        }
+
+        public static class NotFound {
+            public static final FieldObservationId id =
+                    FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-0000000000ff"));
+        }
+
+        public static final FieldObservationId PatrickTomato =
+                FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000001"));
+        public static final FieldObservationId DeliaTomato =
+                FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000002"));
+        public static final FieldObservationId PatrickTrifolium =
+                FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000003"));
+        public static final FieldObservationId PatrickLamiaceae =
+                FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000004"));
     }
 
     public static class PlantOrders {

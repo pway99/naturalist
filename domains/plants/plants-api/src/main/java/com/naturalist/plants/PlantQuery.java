@@ -1,8 +1,10 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.EntityQuery;
+import com.naturalist.naturalist.NaturalistName;
 
 import java.util.Optional;
+import java.util.Set;
 import com.naturalist.plants.PlantEntityCollections.SpeciesCollection;
 import com.naturalist.plants.PlantEntityCollections.FamilyCollection;
 import com.naturalist.plants.PlantEntityCollections.GenusCollection;
@@ -67,6 +69,8 @@ public interface PlantQuery {
 
     EcologicalRoleQuery ecologicalRoles();
 
+    FieldObservationQuery fieldObservations();
+
     interface GenusQuery
             extends EntityQuery<PlantGenusName, PlantGenus, GenusCollection> {
 
@@ -88,5 +92,20 @@ public interface PlantQuery {
          * state, not a missing record.
          */
         Optional<PlantEcologicalRole> forPlantName(PlantRankName plantName);
+    }
+
+    interface FieldObservationQuery
+            extends EntityQuery<FieldObservationId, FieldObservation,
+                    PlantEntityCollections.FieldObservationCollection> {
+
+        /** All of a naturalist's plant observations — the "my collection" surface. */
+        PlantEntityCollections.FieldObservationCollection forNaturalist(NaturalistName observedBy);
+
+        /**
+         * A naturalist's observations restricted to the given ranks — the bounded read
+         * port the rank pages use to render a per-entity "observed" indicator.
+         */
+        PlantEntityCollections.FieldObservationCollection forNaturalistAndSubjects(
+                NaturalistName observedBy, Set<PlantRankName> subjects);
     }
 }

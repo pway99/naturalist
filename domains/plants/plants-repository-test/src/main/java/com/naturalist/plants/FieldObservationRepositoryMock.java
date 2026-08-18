@@ -1,0 +1,39 @@
+package com.naturalist.plants;
+
+import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.infrastructure.DomainService;
+import com.naturalist.naturalist.NaturalistName;
+
+import java.util.List;
+import java.util.Set;
+
+@DomainService
+class FieldObservationRepositoryMock
+        extends AbstractTestEntityRepository<FieldObservationId, FieldObservation, FieldObservationTestEntitySource>
+        implements PlantRepository.FieldObservationRepository {
+
+    FieldObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
+        super(naturalistDatabase);
+    }
+
+    @Override
+    public List<FieldObservation> getByNaturalist(NaturalistName observedBy) {
+        observer().arguments("getByNaturalist", i -> i.identifier(observedBy, "observedBy"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(o -> observedBy.equals(o.observedBy()))
+                .toList();
+    }
+
+    @Override
+    public List<FieldObservation> getByNaturalistAndSubjects(NaturalistName observedBy, Set<PlantRankName> subjects) {
+        observer().arguments("getByNaturalistAndSubjects", i -> i
+                        .identifier(observedBy, "observedBy")
+                        .identifierSet(subjects, "subjects"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(o -> observedBy.equals(o.observedBy()) && subjects.contains(o.subject()))
+                .toList();
+    }
+}

@@ -1,0 +1,33 @@
+[
+  {
+    "id": "026aa000-0000-7000-8000-000000000001",
+    "observedBy": "patrick-way",
+    "subjectRank": "SPECIES",
+    "subject": "solanum-lycopersicum",
+    "observedOn": "2026-07-01T09:00:00Z",
+    "notes": "first ripe fruit of the season",
+    "location": "south bed"
+  },
+  {
+    "id": "026aa000-0000-7000-8000-000000000002",
+    "observedBy": "delia-durrell",
+    "subjectRank": "SPECIES",
+    "subject": "solanum-lycopersicum",
+    "observedOn": "2026-07-02T09:00:00Z"
+  },
+  {
+    "id": "026aa000-0000-7000-8000-000000000003",
+    "observedBy": "patrick-way",
+    "subjectRank": "GENUS",
+    "subject": "trifolium",
+    "observedOn": "2026-07-03T09:00:00Z",
+    "notes": "clover carpet flowering"
+  },
+  {
+    "id": "026aa000-0000-7000-8000-000000000004",
+    "observedBy": "patrick-way",
+    "subjectRank": "FAMILY",
+    "subject": "lamiaceae",
+    "observedOn": "2026-07-04T09:00:00Z"
+  }
+]
