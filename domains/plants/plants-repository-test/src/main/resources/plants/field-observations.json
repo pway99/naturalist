@@ -2,41 +2,51 @@
   {
     "id": "026aa000-0000-7000-8000-000000000001",
     "observedBy": "patrick-way",
-    "subjectRank": "SPECIES",
-    "subject": "solanum-lycopersicum",
     "observedOn": "2026-07-01T09:00:00Z",
     "notes": "first ripe fruit of the season",
-    "location": "south bed"
+    "location": "south bed",
+    "subject": {
+      "rank": "SPECIES",
+      "value": "solanum-lycopersicum"
+    }
   },
   {
     "id": "026aa000-0000-7000-8000-000000000002",
     "observedBy": "delia-durrell",
-    "subjectRank": "SPECIES",
-    "subject": "solanum-lycopersicum",
-    "observedOn": "2026-07-02T09:00:00Z"
+    "observedOn": "2026-07-02T09:00:00Z",
+    "subject": {
+      "rank": "SPECIES",
+      "value": "solanum-lycopersicum"
+    }
   },
   {
     "id": "026aa000-0000-7000-8000-000000000003",
     "observedBy": "patrick-way",
-    "subjectRank": "GENUS",
-    "subject": "trifolium",
     "observedOn": "2026-07-03T09:00:00Z",
-    "notes": "clover carpet flowering"
+    "notes": "clover carpet flowering",
+    "subject": {
+      "rank": "GENUS",
+      "value": "trifolium"
+    }
   },
   {
     "id": "026aa000-0000-7000-8000-000000000004",
     "observedBy": "patrick-way",
-    "subjectRank": "FAMILY",
-    "subject": "lamiaceae",
-    "observedOn": "2026-07-04T09:00:00Z"
+    "observedOn": "2026-07-04T09:00:00Z",
+    "subject": {
+      "rank": "FAMILY",
+      "value": "lamiaceae"
+    }
   },
   {
     "id": "026aa000-0000-7000-8000-000000000005",
     "observedBy": "patrick-way",
-    "subjectRank": "SPECIES",
-    "subject": "aristolochia-californica",
     "observedOn": "2026-05-09T23:38:00Z",
     "notes": "pipevine in flower on the east trellis — two photos",
-    "location": "east trellis wall"
+    "location": "east trellis wall",
+    "subject": {
+      "rank": "SPECIES",
+      "value": "aristolochia-californica"
+    }
   }
 ]

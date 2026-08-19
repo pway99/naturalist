@@ -31,7 +31,6 @@ class PlantRankNameDispatchTest {
             PlantEcologicalRole.class,
             PlantProgram.class,
             PhytochemicalConstituent.class,
-            FieldObservation.class,
             PlantImage.class);
 
     @Test

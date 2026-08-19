@@ -22,7 +22,7 @@ class PlantImageTest {
                 PlantSpeciesName.of("solanum-lycopersicum"),
                 Instant.parse("2026-08-18T15:00:00Z"),
                 FileName.of("IMG_9313.HEIC"),
-                FieldObservationId.create());
+                PlantObservationId.create());
 
         InvariantObservation result = mo.namedEntity(image, "image");
 

@@ -4,6 +4,7 @@ import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.OrganismObservation;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -17,8 +18,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Behavioral contract for {@link PlantRepository.FieldObservationRepository}.
  * Mirrors the insects field-observation contract, adapted to plant ranks.
  */
-interface FieldObservationRepositoryTest
-        extends EntityRepositoryTest<FieldObservationId, FieldObservation> {
+interface OrganismObservationRepositoryTest
+        extends EntityRepositoryTest<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>> {
 
     NaturalistName PATRICK = NaturalistName.of("patrick-way");
     NaturalistName DELIA = NaturalistName.of("delia-durrell");
@@ -27,53 +28,57 @@ interface FieldObservationRepositoryTest
     PlantRepository.FieldObservationRepository repository();
 
     @Override
-    default TestEntitySource<FieldObservationId, FieldObservation> source() {
-        return db.getNamed(FieldObservationTestEntitySource.class);
+    default TestEntitySource<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>> source() {
+        return db.getNamed(OrganismObservationTestEntitySource.class);
     }
 
     @Override
-    default FieldObservationId notFoundName() {
+    default PlantObservationId notFoundName() {
         return TestPlantsIdentifiers.FieldObservations.NotFound.id;
     }
 
     @Override
-    default List<FieldObservationId> knownEntityNames() {
+    default List<PlantObservationId> knownEntityNames() {
         return List.of(
                 TestPlantsIdentifiers.FieldObservations.PatrickTomato,
                 TestPlantsIdentifiers.FieldObservations.DeliaTomato);
     }
 
     @Override
-    default FieldObservation newEntity() {
-        return new FieldObservation(
-                FieldObservationId.create(),
+    default OrganismObservation<PlantObservationId, PlantRankName> newEntity() {
+        return new OrganismObservation<>(
+                PlantObservationId.create(),
                 PATRICK,
                 TestPlantsIdentifiers.PlantGenera.Trifolium.name,
                 Instant.parse("2026-07-10T09:00:00Z"),
                 "new observation",
-                null);
-    }
-
-    @Override
-    default FieldObservation ghostEntity() {
-        return new FieldObservation(
-                FieldObservationId.create(),
-                PATRICK,
-                TestPlantsIdentifiers.PlantGenera.Trifolium.name,
-                Instant.parse("2026-07-11T09:00:00Z"),
                 null,
                 null);
     }
 
     @Override
-    default FieldObservation modifiedEntity(FieldObservation original) {
-        return new FieldObservation(
+    default OrganismObservation<PlantObservationId, PlantRankName> ghostEntity() {
+        return new OrganismObservation<>(
+                PlantObservationId.create(),
+                PATRICK,
+                TestPlantsIdentifiers.PlantGenera.Trifolium.name,
+                Instant.parse("2026-07-11T09:00:00Z"),
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    default OrganismObservation<PlantObservationId, PlantRankName> modifiedEntity(
+            OrganismObservation<PlantObservationId, PlantRankName> original) {
+        return new OrganismObservation<>(
                 original.id(),
                 DELIA,
                 PlantSpeciesName.of("solanum-lycopersicum"),
                 Instant.parse("2026-07-12T09:00:00Z"),
                 "changed",
-                "north bed");
+                "north bed",
+                null);
     }
 
     @Test

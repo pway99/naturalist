@@ -96,7 +96,7 @@ public class PlantsTestContext {
         PlantQuery.EcologicalRoleQuery roleQuery =
                 new EcologicalRoleQueryImpl(new EcologicalRoleRepositoryMock(db));
         PlantQuery.FieldObservationQuery fieldObservationQuery =
-                new FieldObservationQueryImpl(new FieldObservationRepositoryMock(db));
+                new OrganismObservationQueryImpl(new OrganismObservationRepositoryMock(db));
         PlantQuery.ImageQuery imageQuery =
                 new ImageQueryImpl(new PlantImageRepositoryMock(db));
         return new PlantQueryImpl(entityQuery, orderQuery, familyQuery, genusQuery, roleQuery,

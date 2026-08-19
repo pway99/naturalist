@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.ddd.BehavioralCollection;
+import com.naturalist.observation.OrganismObservation;
 
 import java.util.Collection;
 import java.util.List;
@@ -101,13 +102,13 @@ public interface PlantEntityCollections {
         }
     }
 
-    final class FieldObservationCollection extends BehavioralCollection<FieldObservation> {
+    final class FieldObservationCollection extends BehavioralCollection<OrganismObservation<PlantObservationId, PlantRankName>> {
 
-        FieldObservationCollection(Collection<FieldObservation> observations) {
+        FieldObservationCollection(Collection<OrganismObservation<PlantObservationId, PlantRankName>> observations) {
             super(observations);
         }
 
-        public static FieldObservationCollection of(Collection<FieldObservation> observations) {
+        public static FieldObservationCollection of(Collection<OrganismObservation<PlantObservationId, PlantRankName>> observations) {
             return new FieldObservationCollection(observations);
         }
 

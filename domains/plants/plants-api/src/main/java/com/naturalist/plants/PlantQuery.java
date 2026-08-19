@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.OrganismObservation;
 
 import java.util.Optional;
 import java.util.Set;
@@ -110,7 +111,7 @@ public interface PlantQuery {
     }
 
     interface FieldObservationQuery
-            extends EntityQuery<FieldObservationId, FieldObservation,
+            extends EntityQuery<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>,
                     PlantEntityCollections.FieldObservationCollection> {
 
         /** All of a naturalist's plant observations — the "my collection" surface. */

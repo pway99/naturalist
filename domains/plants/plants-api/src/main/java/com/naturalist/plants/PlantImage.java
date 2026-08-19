@@ -35,9 +35,9 @@ import java.util.function.Consumer;
  * {@code "parentRank"} field, keeping {@code parentName} itself a plain slug string via
  * {@code EntityName}'s {@code @JsonValue}.
  * <p>
- * {@code observationId} is a nullable {@link FieldObservationId} link to the
- * {@link FieldObservation} the photo was captured under. {@code null} means a shared
- * catalog image with no owning naturalist (the pre-collection default).
+ * {@code observationId} is a nullable {@link PlantObservationId} link to the
+ * {@link com.naturalist.observation.OrganismObservation} the photo was captured under.
+ * {@code null} means a shared catalog image with no owning naturalist (the pre-collection default).
  * <p>
  * {@code resourceName} is a {@link FileName} wrapping the image filename as stored under
  * {@code plants/images/} in the classpath resources (e.g. {@code "IMG_9313.HEIC"}). The
@@ -58,7 +58,7 @@ public record PlantImage(
         PlantRankName parentName,
         Instant dateAdded,
         FileName resourceName,
-        @Nullable FieldObservationId observationId
+        @Nullable PlantObservationId observationId
 ) implements Entity<PlantImageId> {
 
     @Override

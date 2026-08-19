@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.data.EntityRepository;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.OrganismObservation;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,11 +44,11 @@ class PlantRepository {
     }
 
     protected interface FieldObservationRepository
-            extends EntityRepository<FieldObservationId, FieldObservation> {
+            extends EntityRepository<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>> {
 
-        List<FieldObservation> getByNaturalist(NaturalistName observedBy);
+        List<OrganismObservation<PlantObservationId, PlantRankName>> getByNaturalist(NaturalistName observedBy);
 
-        List<FieldObservation> getByNaturalistAndSubjects(
+        List<OrganismObservation<PlantObservationId, PlantRankName>> getByNaturalistAndSubjects(
                 NaturalistName observedBy, Set<PlantRankName> subjects);
     }
 }

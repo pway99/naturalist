@@ -3,25 +3,26 @@ package com.naturalist.plants;
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.OrganismObservation;
 import com.naturalist.plants.PlantEntityCollections.FieldObservationCollection;
 
 import java.util.Set;
 
 @DomainService
-class FieldObservationQueryImpl
+class OrganismObservationQueryImpl
         extends AbstractEntityQuery<
-        FieldObservationId,
-        FieldObservation,
+        PlantObservationId,
+        OrganismObservation<PlantObservationId, PlantRankName>,
         FieldObservationCollection,
         PlantRepository.FieldObservationRepository>
         implements PlantQuery.FieldObservationQuery {
 
-    FieldObservationQueryImpl(PlantRepository.FieldObservationRepository repository) {
+    OrganismObservationQueryImpl(PlantRepository.FieldObservationRepository repository) {
         super(repository);
     }
 
     @Override
-    public FieldObservationCollection findByNameSet(Set<FieldObservationId> names) {
+    public FieldObservationCollection findByNameSet(Set<PlantObservationId> names) {
         observer().arguments("findByNameSet", i -> i.identifierSet(names, "names"))
                 .throwWhenInvalid();
         return FieldObservationCollection.of(repository().getByEntityNameSet(names));

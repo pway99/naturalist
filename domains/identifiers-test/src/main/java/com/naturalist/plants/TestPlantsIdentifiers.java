@@ -40,18 +40,18 @@ public class TestPlantsIdentifiers {
         }
 
         public static class NotFound {
-            public static final FieldObservationId id =
-                    FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-0000000000ff"));
+            public static final PlantObservationId id =
+                    PlantObservationId.of(UUID.fromString("026aa000-0000-7000-8000-0000000000ff"));
         }
 
-        public static final FieldObservationId PatrickTomato =
-                FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000001"));
-        public static final FieldObservationId DeliaTomato =
-                FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000002"));
-        public static final FieldObservationId PatrickTrifolium =
-                FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000003"));
-        public static final FieldObservationId PatrickLamiaceae =
-                FieldObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000004"));
+        public static final PlantObservationId PatrickTomato =
+                PlantObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000001"));
+        public static final PlantObservationId DeliaTomato =
+                PlantObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000002"));
+        public static final PlantObservationId PatrickTrifolium =
+                PlantObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000003"));
+        public static final PlantObservationId PatrickLamiaceae =
+                PlantObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000004"));
     }
 
     public static class PlantOrders {
