@@ -5,21 +5,22 @@ import com.naturalist.insects.InsectEntityCollections.FieldObservationCollection
 import com.naturalist.naturalist.NaturalistName;
 
 import java.util.Set;
+import com.naturalist.observation.OrganismObservation;
 
-class FieldObservationQueryImpl
+class OrganismObservationQueryImpl
         extends AbstractEntityQuery<
-        FieldObservationId,
-        FieldObservation,
+        InsectObservationId,
+        OrganismObservation<InsectObservationId, InsectRankName>,
         FieldObservationCollection,
         InsectRepository.FieldObservationRepository>
         implements InsectQuery.FieldObservationQuery {
 
-    FieldObservationQueryImpl(InsectRepository.FieldObservationRepository repository) {
+    OrganismObservationQueryImpl(InsectRepository.FieldObservationRepository repository) {
         super(repository);
     }
 
     @Override
-    public FieldObservationCollection findByNameSet(Set<FieldObservationId> names) {
+    public FieldObservationCollection findByNameSet(Set<InsectObservationId> names) {
         observer().arguments("findByNameSet", i -> i.identifierSet(names, "names"))
                 .throwWhenInvalid();
         return FieldObservationCollection.of(repository().getByEntityNameSet(names));

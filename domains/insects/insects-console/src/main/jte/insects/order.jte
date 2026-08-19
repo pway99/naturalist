@@ -1,4 +1,4 @@
-@import com.naturalist.insects.FieldObservation
+@import com.naturalist.observation.OrganismObservation
 @import com.naturalist.insects.InsectCitationView
 @import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectFamily
@@ -27,7 +27,7 @@
 @param List<FeatureGroup> featureGroups = List.of()
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 @param List<InsectImage> images = List.of()
-@param Map<InsectImageId, FieldObservation> observations = Map.of()
+@param Map<InsectImageId, OrganismObservation> observations = Map.of()
 
 !{var commonName = order.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(order.order().value());}
 <%-- The CSRF token is read the same way layout/page.jte reads it — plain request

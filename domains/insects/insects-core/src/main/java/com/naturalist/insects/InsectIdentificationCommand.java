@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import com.naturalist.observation.OrganismObservation;
+import com.naturalist.observation.Identification;
 
 /**
  * Orchestrates the full insect identification flow: vision identification
@@ -121,7 +123,7 @@ public class InsectIdentificationCommand {
         writeCitations(authorityRefs);
 
         // 6. INSECT TRANSACTION -- pure DB writes
-        var observationId = FieldObservationId.create();
+        var observationId = InsectObservationId.create();
         var capturedAt = image.metadata().capturedAt() != null
                 ? image.metadata().capturedAt() : Instant.now();
 
@@ -129,7 +131,7 @@ public class InsectIdentificationCommand {
                 InsectImageId.create(), rankName, Instant.now(),
                 storedFileName, observationId);
 
-        var observation = new FieldObservation(
+        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 observationId, naturalist, rankName, capturedAt,
                 (notes == null || notes.isBlank()) ? null : notes,
                 image.metadata().location(),

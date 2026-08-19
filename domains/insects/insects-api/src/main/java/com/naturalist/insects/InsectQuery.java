@@ -10,6 +10,7 @@ import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 
 import java.util.Optional;
 import java.util.Set;
+import com.naturalist.observation.OrganismObservation;
 
 /**
  * Namespace query for the insects bounded context — the single discoverable entry point
@@ -121,7 +122,7 @@ public interface InsectQuery {
     }
 
     interface FieldObservationQuery
-            extends EntityQuery<FieldObservationId, FieldObservation,
+            extends EntityQuery<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>,
                     InsectEntityCollections.FieldObservationCollection> {
 
         /** All of a naturalist's observations — used for the species-list "my collection" filter. */

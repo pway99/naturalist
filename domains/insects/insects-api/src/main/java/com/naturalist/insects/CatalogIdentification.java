@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import com.naturalist.observation.OrganismObservation;
 
 /**
  * Write-side consistency boundary for insect catalog identification — the
@@ -25,7 +26,7 @@ public record CatalogIdentification(
         IdentifiedRankEntity identifiedEntity,
         TaxonomicClassification taxonomy,
         InsectImage image,
-        FieldObservation observation,
+        OrganismObservation<InsectObservationId, InsectRankName> observation,
         List<InsectFeature> newFeatures,
         List<InsectFeatureAssignment> featureAssignments,
         Map<InsectRankName, Description> parentDescriptions

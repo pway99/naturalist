@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.naturalist.observation.OrganismObservation;
 
 class CatalogIdentificationTest {
 
@@ -109,7 +110,7 @@ class CatalogIdentificationTest {
     @Test
     void mismatchedObservationSubjectReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedObservationSubjectReportsViolation");
-        var wrongSubject = new FieldObservation(
+        var wrongSubject = new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID,
                 NaturalistName.of("pat"),
                 InsectSpeciesName.of("wrong-species"),
@@ -128,7 +129,7 @@ class CatalogIdentificationTest {
     @Test
     void mismatchedImageObservationIdReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedImageObservationIdReportsViolation");
-        var differentObservationId = FieldObservationId.create();
+        var differentObservationId = InsectObservationId.create();
         var imageWithWrongObsId = new InsectImage(
                 InsectImageId.create(),
                 SPECIES_NAME,
@@ -149,7 +150,7 @@ class CatalogIdentificationTest {
 
     private static final InsectSpeciesName SPECIES_NAME = InsectSpeciesName.of("vanessa-cardui");
     private static final InsectGenusName GENUS_NAME = InsectGenusName.of("vanessa");
-    private static final FieldObservationId OBSERVATION_ID = FieldObservationId.create();
+    private static final InsectObservationId OBSERVATION_ID = InsectObservationId.create();
 
     private static CatalogIdentification validCatalogIdentification() {
         return new CatalogIdentification(
@@ -183,8 +184,8 @@ class CatalogIdentificationTest {
                 OBSERVATION_ID);
     }
 
-    private static FieldObservation observation() {
-        return new FieldObservation(
+    private static OrganismObservation<InsectObservationId, InsectRankName> observation() {
+        return new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID,
                 NaturalistName.of("pat"),
                 SPECIES_NAME,

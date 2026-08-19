@@ -7,18 +7,19 @@ import com.naturalist.naturalist.NaturalistName;
 
 import java.util.List;
 import java.util.Set;
+import com.naturalist.observation.OrganismObservation;
 
 @DomainService
-class FieldObservationRepositoryMock
-        extends AbstractTestEntityRepository<FieldObservationId, FieldObservation, FieldObservationTestEntitySource>
+class OrganismObservationRepositoryMock
+        extends AbstractTestEntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, OrganismObservationTestEntitySource>
         implements InsectRepository.FieldObservationRepository {
 
-    FieldObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    OrganismObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 
     @Override
-    public List<FieldObservation> getByNaturalist(NaturalistName observedBy) {
+    public List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalist(NaturalistName observedBy) {
         observer().arguments("getByNaturalist", i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
@@ -27,7 +28,7 @@ class FieldObservationRepositoryMock
     }
 
     @Override
-    public List<FieldObservation> getByNaturalistAndSubjects(NaturalistName observedBy, Set<InsectRankName> subjects) {
+    public List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalistAndSubjects(NaturalistName observedBy, Set<InsectRankName> subjects) {
         observer().arguments("getByNaturalistAndSubjects", i -> i
                         .identifier(observedBy, "observedBy")
                         .identifierSet(subjects, "subjects"))

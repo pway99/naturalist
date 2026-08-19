@@ -10,12 +10,13 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.naturalist.observation.OrganismObservation;
 
 class PhotoAdditionTest {
 
     private static final Observer observer = Observer.forClass(PhotoAdditionTest.class);
     private static final InsectSpeciesName SPECIES_NAME = InsectSpeciesName.of("vanessa-cardui");
-    private static final FieldObservationId OBSERVATION_ID = FieldObservationId.create();
+    private static final InsectObservationId OBSERVATION_ID = InsectObservationId.create();
 
     @Test
     void validWithObservation_hasNoViolations() {
@@ -51,7 +52,7 @@ class PhotoAdditionTest {
     @Test
     void mismatchedObservationIdReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedObservationIdReportsViolation");
-        var differentObsId = FieldObservationId.create();
+        var differentObsId = InsectObservationId.create();
         PhotoAddition addition = new PhotoAddition(image(differentObsId), observation());
 
         InvariantObservation result = mo.observable(addition, "photoAddition");
@@ -74,7 +75,7 @@ class PhotoAdditionTest {
     @Test
     void mismatchedSubjectReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedSubjectReportsViolation");
-        var wrongSubject = new FieldObservation(
+        var wrongSubject = new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID,
                 NaturalistName.of("pat"),
                 InsectSpeciesName.of("wrong-species"),
@@ -92,11 +93,11 @@ class PhotoAdditionTest {
     void genusRankImage_validWithObservation() {
         MethodObserver mo = observer.forMethod("genusRankImage_validWithObservation");
         var genusName = InsectGenusName.of("vanessa");
-        var obsId = FieldObservationId.create();
+        var obsId = InsectObservationId.create();
         var genusImage = new InsectImage(
                 InsectImageId.create(), genusName, Instant.now(),
                 FileName.of("IMG_GENUS.jpg"), obsId);
-        var genusObservation = new FieldObservation(
+        var genusObservation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 obsId, NaturalistName.of("pat"), genusName,
                 Instant.now(), null, null, null);
         PhotoAddition addition = new PhotoAddition(genusImage, genusObservation);
@@ -108,14 +109,14 @@ class PhotoAdditionTest {
 
     // ----- fixtures -----
 
-    private static InsectImage image(FieldObservationId observationId) {
+    private static InsectImage image(InsectObservationId observationId) {
         return new InsectImage(
                 InsectImageId.create(), SPECIES_NAME, Instant.now(),
                 FileName.of("IMG_0001.jpg"), observationId);
     }
 
-    private static FieldObservation observation() {
-        return new FieldObservation(
+    private static OrganismObservation<InsectObservationId, InsectRankName> observation() {
+        return new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID, NaturalistName.of("pat"), SPECIES_NAME,
                 Instant.now(), null, null, null);
     }

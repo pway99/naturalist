@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.EntityRepository;
 
 import java.util.List;
+import com.naturalist.observation.OrganismObservation;
 
 /**
  * Namespace for the insects bounded context's write-side repositories — the single
@@ -123,12 +124,12 @@ class InsectRepository {
     }
 
     protected interface FieldObservationRepository
-            extends EntityRepository<FieldObservationId, FieldObservation> {
+            extends EntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> {
 
-        java.util.List<FieldObservation> getByNaturalist(
+        java.util.List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalist(
                 com.naturalist.naturalist.NaturalistName observedBy);
 
-        java.util.List<FieldObservation> getByNaturalistAndSubjects(
+        java.util.List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalistAndSubjects(
                 com.naturalist.naturalist.NaturalistName observedBy,
                 java.util.Set<InsectRankName> subjects);
     }

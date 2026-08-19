@@ -54,7 +54,7 @@ public record InsectImage(
         InsectRankName parentName,
         Instant dateAdded,
         FileName resourceName,
-        @Nullable FieldObservationId observationId
+        @Nullable InsectObservationId observationId
 ) implements Entity<InsectImageId> {
 
     @Override

@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.EntityCommand;
+import com.naturalist.observation.OrganismObservation;
 
 /**
  * Namespace command for the insects bounded context — the single discoverable entry
@@ -57,10 +58,10 @@ public interface InsectCommand {
     }
 
     /**
-     * Entity-level command surface for {@link FieldObservation}.
+     * Entity-level command surface for {@link OrganismObservation}.
      */
     interface FieldObservationCommand
-            extends EntityCommand<FieldObservationId, FieldObservation> {
+            extends EntityCommand<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> {
     }
 
     /**

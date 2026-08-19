@@ -88,7 +88,7 @@ class ImageCommandImplTest
 
     @org.junit.jupiter.api.Test
     void image_withObservationId_roundTrips() {
-        FieldObservationId obs = TestInsectsIdentifiers.FieldObservation.PatrickBattus;
+        InsectObservationId obs = TestInsectsIdentifiers.Observation.PatrickBattus;
         InsectImage img = new InsectImage(
                 InsectImageId.create(),
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,

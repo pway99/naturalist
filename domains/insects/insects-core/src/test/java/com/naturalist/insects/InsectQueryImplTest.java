@@ -29,8 +29,8 @@ class InsectQueryImplTest {
     OrderRepositoryMock orderRepository = new OrderRepositoryMock(db);
     InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(db);
     InsectFeatureAssignmentRepositoryMock featureAssignmentRepository = new InsectFeatureAssignmentRepositoryMock(db);
-    FieldObservationRepositoryMock fieldObservationRepository = new FieldObservationRepositoryMock(db);
-    InsectQuery.FieldObservationQuery fieldObservationQuery = new FieldObservationQueryImpl(fieldObservationRepository);
+    OrganismObservationRepositoryMock fieldObservationRepository = new OrganismObservationRepositoryMock(db);
+    InsectQuery.FieldObservationQuery fieldObservationQuery = new OrganismObservationQueryImpl(fieldObservationRepository);
     InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
     InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);

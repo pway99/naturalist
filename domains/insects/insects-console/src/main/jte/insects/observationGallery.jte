@@ -1,11 +1,11 @@
-@import com.naturalist.insects.FieldObservation
+@import com.naturalist.observation.OrganismObservation
 @import com.naturalist.insects.InsectImage
 @import com.naturalist.insects.InsectImageId
 @import java.util.List
 @import java.util.Map
 
 @param List<InsectImage> images = List.of()
-@param Map<InsectImageId, FieldObservation> observations = Map.of()
+@param Map<InsectImageId, OrganismObservation> observations = Map.of()
 @param String alt = ""
 @param String notesAction = ""
 @param String returnPath = ""

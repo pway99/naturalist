@@ -6,6 +6,7 @@ import com.naturalist.ddd.BehavioralMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import com.naturalist.observation.OrganismObservation;
 
 /**
  * Namespace for the insects bounded context's {@link BehavioralCollection} return types.
@@ -18,7 +19,7 @@ import java.util.Map;
  *   <li>{@link FamilyCollection} — multi-result return type for {@link InsectFamily}.</li>
  *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenus}.</li>
  *   <li>{@link FieldObservationCollection} — multi-result return type for
- *       {@link FieldObservation}.</li>
+ *       {@link OrganismObservation}.</li>
  *   <li>{@link FunctionalRoleCollection} — multi-result return type for
  *       {@link InsectFunctionalRole}.</li>
  *   <li>{@link OrderCollection} — multi-result return type for {@link InsectOrder}.</li>
@@ -60,13 +61,13 @@ public interface InsectEntityCollections {
         }
     }
 
-    final class FieldObservationCollection extends BehavioralCollection<FieldObservation> {
+    final class FieldObservationCollection extends BehavioralCollection<OrganismObservation<InsectObservationId, InsectRankName>> {
 
-        FieldObservationCollection(Collection<FieldObservation> observations) {
+        FieldObservationCollection(Collection<OrganismObservation<InsectObservationId, InsectRankName>> observations) {
             super(observations);
         }
 
-        public static FieldObservationCollection of(Collection<FieldObservation> observations) {
+        public static FieldObservationCollection of(Collection<OrganismObservation<InsectObservationId, InsectRankName>> observations) {
             return new FieldObservationCollection(observations);
         }
 

@@ -441,23 +441,23 @@ public class TestInsectsIdentifiers {
         }
     }
 
-    public static class FieldObservation {
+    public static class Observation {
 
-        private FieldObservation() {
+        private Observation() {
         }
 
         public static class NotFound {
-            public static final FieldObservationId id = FieldObservationId.of(
+            public static final InsectObservationId id = InsectObservationId.of(
                     UUID.fromString("019e9000-0000-7000-8000-0000deadbeef"));
         }
 
-        public static final FieldObservationId PatrickBattus = FieldObservationId.of(
+        public static final InsectObservationId PatrickBattus = InsectObservationId.of(
                 UUID.fromString("019e9000-0001-7000-8000-000000000001"));
-        public static final FieldObservationId PatrickEmpoasca = FieldObservationId.of(
+        public static final InsectObservationId PatrickEmpoasca = InsectObservationId.of(
                 UUID.fromString("019e9000-0002-7000-8000-000000000002"));
-        public static final FieldObservationId DeliaBattus = FieldObservationId.of(
+        public static final InsectObservationId DeliaBattus = InsectObservationId.of(
                 UUID.fromString("019e9000-0003-7000-8000-000000000003"));
-        public static final FieldObservationId DeliaEmpoasca = FieldObservationId.of(
+        public static final InsectObservationId DeliaEmpoasca = InsectObservationId.of(
                 UUID.fromString("019e9000-0004-7000-8000-000000000004"));
     }
 }

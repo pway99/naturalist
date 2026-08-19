@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.naturalist.observation.OrganismObservation;
 
-class FieldObservationTest {
+class OrganismObservationTest {
 
-    private final FieldObservation base = new FieldObservation(
-            FieldObservationId.create(),
+    private final OrganismObservation<InsectObservationId, InsectRankName> base = new OrganismObservation<InsectObservationId, InsectRankName>(
+            InsectObservationId.create(),
             NaturalistName.of("pat"),
             InsectSpeciesName.of("battus-philenor"),
             Instant.parse("2026-07-01T12:00:00Z"),

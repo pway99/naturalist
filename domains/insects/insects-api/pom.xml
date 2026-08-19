@@ -44,6 +44,10 @@
             <groupId>com.naturalist</groupId>
             <artifactId>habitat</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>observation</artifactId>
+        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency>

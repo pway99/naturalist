@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import com.naturalist.observation.OrganismObservation;
 
 @Controller
 @RequestMapping("/insects")
@@ -191,16 +192,16 @@ public class InsectsController {
     }
 
     /**
-     * Maps each image to the signed-in naturalist's own {@link FieldObservation}
+     * Maps each image to the signed-in naturalist's own {@link OrganismObservation}
      * for it, when one exists. Only the viewer's observations are exposed — the
      * gallery's notes form edits the viewer's own field notes, never someone
      * else's.
      */
-    private Map<InsectImageId, FieldObservation> observationLookup(
+    private Map<InsectImageId, OrganismObservation<InsectObservationId, InsectRankName>> observationLookup(
             List<InsectImage> images,
             java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer,
             InsectRankName subject) {
-        var lookup = new java.util.HashMap<InsectImageId, FieldObservation>();
+        var lookup = new java.util.HashMap<InsectImageId, OrganismObservation<InsectObservationId, InsectRankName>>();
         if (viewer.isEmpty()) {
             return lookup;
         }
@@ -505,7 +506,7 @@ public class InsectsController {
         if (mine && me.isPresent()) {
             java.util.Set<InsectRankName> mySubjects = insectQuery.fieldObservations()
                     .forNaturalist(me.get()).stream()
-                    .map(FieldObservation::subject)
+                    .map(OrganismObservation<InsectObservationId, InsectRankName>::subject)
                     .collect(java.util.stream.Collectors.toSet());
             speciesList = speciesPage.content().stream()
                     .filter(s -> mySubjects.contains(s.name()))
@@ -768,9 +769,9 @@ public class InsectsController {
         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
         List<InsectImage> galleryImages = i.observations().stream().toList();
         if (lens && viewer.isPresent()) {
-            java.util.Set<FieldObservationId> myObservationIds = insectQuery.fieldObservations()
+            java.util.Set<InsectObservationId> myObservationIds = insectQuery.fieldObservations()
                     .forNaturalist(viewer.get()).stream()
-                    .map(FieldObservation::id)
+                    .map(OrganismObservation<InsectObservationId, InsectRankName>::id)
                     .collect(java.util.stream.Collectors.toSet());
             galleryImages = galleryImages.stream()
                     .filter(img -> img.observationId() != null && myObservationIds.contains(img.observationId()))
@@ -821,8 +822,8 @@ public class InsectsController {
         if (me.isEmpty()) {
             return "redirect:/insects/" + name;
         }
-        var observation = new FieldObservation(
-                FieldObservationId.create(),
+        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
+                InsectObservationId.create(),
                 me.get(),
                 InsectSpeciesName.of(name),
                 Instant.now(),
@@ -853,9 +854,9 @@ public class InsectsController {
                        @RequestParam(value = "returnPath", required = false) String returnPath,
                        HttpServletRequest request) {
         var destination = safeReturnPath(returnPath, "/insects/" + name);
-        FieldObservationId obsId;
+        InsectObservationId obsId;
         try {
-            obsId = FieldObservationId.of(java.util.UUID.fromString(observationId));
+            obsId = InsectObservationId.of(java.util.UUID.fromString(observationId));
         } catch (IllegalArgumentException e) {
             // Malformed observationId -- same outcome as not-found, not a 500.
             return "redirect:" + destination;
@@ -879,12 +880,12 @@ public class InsectsController {
      * True when {@code viewer} is signed in as the naturalist who recorded
      * {@code obs}. Guards {@link #updateNotes} against naturalist A overwriting
      * naturalist B's field notes by POSTing B's observation id —
-     * {@link FieldObservationId} is a UUIDv7 and therefore time-ordered and
+     * {@link InsectObservationId} is a UUIDv7 and therefore time-ordered and
      * partially guessable, so the id alone is not proof of ownership.
      * Package-private (not {@code private}) so it is directly unit-testable
      * without standing up the controller's full servlet/database wiring.
      */
-    static boolean owns(FieldObservation obs,
+    static boolean owns(OrganismObservation<InsectObservationId, InsectRankName> obs,
                         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer) {
         return viewer.isPresent() && obs.observedBy().equals(viewer.get());
     }
@@ -918,7 +919,7 @@ public class InsectsController {
                       @RequestParam("newSubject") String newSubject,
                       @RequestParam("newSubjectRank") String newSubjectRank,
                       HttpServletRequest request) {
-        var obsId = FieldObservationId.of(java.util.UUID.fromString(observationId));
+        var obsId = InsectObservationId.of(java.util.UUID.fromString(observationId));
         var existing = insectQuery.fieldObservations().getByName(obsId);
         if (existing.isEmpty()) return "redirect:/insects/" + name;
 

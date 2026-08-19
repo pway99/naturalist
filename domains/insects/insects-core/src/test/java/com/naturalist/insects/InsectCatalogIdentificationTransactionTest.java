@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.naturalist.observation.OrganismObservation;
 
 class InsectCatalogIdentificationTransactionTest {
 
@@ -61,11 +62,11 @@ class InsectCatalogIdentificationTransactionTest {
         transaction.execute(first);
 
         // Second identification of the same species — different image and observation
-        var secondObsId = FieldObservationId.create();
+        var secondObsId = InsectObservationId.create();
         var secondImage = new InsectImage(
                 InsectImageId.create(), SPECIES_NAME, Instant.now(),
                 FileName.of("IMG_0002.jpg"), secondObsId);
-        var secondObs = new FieldObservation(
+        var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
                 secondObsId, NaturalistName.of("pat"), SPECIES_NAME,
                 Instant.now(), "second sighting", null, null);
         var second = new CatalogIdentification(
@@ -94,7 +95,7 @@ class InsectCatalogIdentificationTransactionTest {
 
         // Second species in same genus — parent ranks already exist
         var secondSpeciesName = InsectSpeciesName.of("fabricatus-secundus");
-        var secondObsId = FieldObservationId.create();
+        var secondObsId = InsectObservationId.create();
         var secondSpecies = new InsectSpecies(
                 secondSpeciesName, GENUS_NAME,
                 TaxonomicSpecies.of("secundus"),
@@ -104,7 +105,7 @@ class InsectCatalogIdentificationTransactionTest {
         var secondImage = new InsectImage(
                 InsectImageId.create(), secondSpeciesName, Instant.now(),
                 FileName.of("IMG_0003.jpg"), secondObsId);
-        var secondObs = new FieldObservation(
+        var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
                 secondObsId, NaturalistName.of("pat"), secondSpeciesName,
                 Instant.now(), null, null, null);
         var second = new CatalogIdentification(
@@ -128,7 +129,7 @@ class InsectCatalogIdentificationTransactionTest {
     void executePersistsFamilyLevelIdentification() {
         var familyName = InsectFamilyName.of("bogusidae");
         var orderName = InsectOrderName.of("neuroptera"); // real seeded order — FK valid
-        var obsId = FieldObservationId.create();
+        var obsId = InsectObservationId.create();
         var family = new InsectFamily(
                 familyName, orderName,
                 TaxonomicFamily.of("Bogusidae"), description(),
@@ -139,7 +140,7 @@ class InsectCatalogIdentificationTransactionTest {
         var image = new InsectImage(
                 InsectImageId.create(), familyName, Instant.now(),
                 FileName.of("IMG_0010.jpg"), obsId);
-        var observation = new FieldObservation(
+        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 obsId, NaturalistName.of("pat"), familyName,
                 Instant.now(), null, null, null);
         var id = new CatalogIdentification(
@@ -206,7 +207,7 @@ class InsectCatalogIdentificationTransactionTest {
     private static final InsectGenusName GENUS_NAME = InsectGenusName.of("fabricatus");
     private static final InsectFamilyName FAMILY_NAME = InsectFamilyName.of("fictitiidae");
     private static final InsectOrderName ORDER_NAME = InsectOrderName.of("testoptera");
-    private static final FieldObservationId OBSERVATION_ID = FieldObservationId.create();
+    private static final InsectObservationId OBSERVATION_ID = InsectObservationId.create();
 
     private static CatalogIdentification catalogIdentification() {
         return new CatalogIdentification(
@@ -238,8 +239,8 @@ class InsectCatalogIdentificationTransactionTest {
                 FileName.of("IMG_0001.jpg"), OBSERVATION_ID);
     }
 
-    private static FieldObservation observation() {
-        return new FieldObservation(
+    private static OrganismObservation<InsectObservationId, InsectRankName> observation() {
+        return new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID, NaturalistName.of("pat"), SPECIES_NAME,
                 Instant.now(), null, null, null);
     }

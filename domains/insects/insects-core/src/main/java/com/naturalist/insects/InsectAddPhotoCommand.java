@@ -6,10 +6,11 @@ import com.naturalist.observability.Observer;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
+import com.naturalist.observation.OrganismObservation;
 
 /**
  * Adds a photograph to a catalog entry at any Linnaean rank (order, family,
- * genus, or species), optionally recording a {@link FieldObservation} when a
+ * genus, or species), optionally recording a {@link OrganismObservation} when a
  * naturalist is signed in. Builds a {@link PhotoAddition} aggregate and
  * delegates to an {@link InsectAddPhotoTransaction} so the image and
  * observation are persisted atomically.
@@ -31,11 +32,11 @@ public class InsectAddPhotoCommand {
                         .namedValue(storedFileName, "storedFileName"))
                 .throwWhenInvalid();
 
-        FieldObservation observation = null;
-        FieldObservationId observationId = null;
+        OrganismObservation<InsectObservationId, InsectRankName> observation = null;
+        InsectObservationId observationId = null;
         if (naturalist != null) {
-            observationId = FieldObservationId.create();
-            observation = new FieldObservation(
+            observationId = InsectObservationId.create();
+            observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                     observationId, naturalist, subject, Instant.now(),
                     (notes == null || notes.isBlank()) ? null : notes,
                     (location == null || location.isBlank()) ? null : location,

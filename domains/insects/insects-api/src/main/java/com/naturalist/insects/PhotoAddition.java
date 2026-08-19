@@ -6,10 +6,11 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import com.naturalist.observation.OrganismObservation;
 
 /**
  * Write-side consistency boundary for adding a photograph to the catalog.
- * Carries an {@link InsectImage} and an optional {@link FieldObservation}
+ * Carries an {@link InsectImage} and an optional {@link OrganismObservation}
  * (present when a naturalist is signed in). Cross-entity invariants enforce
  * FK consistency: when the observation is present, the image's
  * {@code observationId} must match the observation's {@code id}, and the
@@ -19,7 +20,7 @@ import java.util.function.Consumer;
  */
 public record PhotoAddition(
         InsectImage image,
-        @Nullable FieldObservation observation
+        @Nullable OrganismObservation<InsectObservationId, InsectRankName> observation
 ) implements Aggregate {
 
     @Override

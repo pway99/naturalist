@@ -4,6 +4,8 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.insects.InsectFamily;
+import com.naturalist.insects.InsectObservationId;
+import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.InsectFamilyTestEntitySource;
 import com.naturalist.insects.InsectOrder;
 import com.naturalist.insects.InsectOrderName;
@@ -72,19 +74,19 @@ class InsectsFamiliesTemplateTest {
         InsectFamily anyFamily = new InsectFamilyTestEntitySource(database).entityStream()
                 .findFirst().orElseThrow();
         InsectOrder order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
-        var observationId = com.naturalist.insects.FieldObservationId.create();
+        var observationId = com.naturalist.insects.InsectObservationId.create();
         var image = new com.naturalist.insects.InsectImage(
                 com.naturalist.insects.InsectImageId.create(),
                 anyFamily.name(),
                 java.time.Instant.parse("2026-07-16T01:54:24Z"),
                 com.naturalist.data.FileName.of("beetle.jpg"),
                 observationId);
-        var identification = new com.naturalist.insects.Identification(
+        var identification = new com.naturalist.observation.Identification(
                 0.72,
                 "Elytra pattern and antenna shape match this family's diagnostic features.",
-                List.of(new com.naturalist.insects.Identification.Candidate(
+                List.of(new com.naturalist.observation.Identification.Candidate(
                         "Coccinellidae", "Ladybird beetle", 0.20)));
-        var observation = new com.naturalist.insects.FieldObservation(
+        var observation = new com.naturalist.observation.OrganismObservation<InsectObservationId, InsectRankName>(
                 observationId,
                 com.naturalist.naturalist.NaturalistName.of("pat-way"),
                 anyFamily.name(),

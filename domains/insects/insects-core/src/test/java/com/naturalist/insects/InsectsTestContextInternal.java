@@ -40,7 +40,7 @@ class InsectsTestContextInternal {
                 new OrderRepositoryMock(db),
                 new InsectFeatureRepositoryMock(db),
                 new InsectFeatureAssignmentRepositoryMock(db),
-                new FieldObservationRepositoryMock(db));
+                new OrganismObservationRepositoryMock(db));
 
         InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(repository.familyRepository);
         InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(repository.genusRepository, familyQuery);
@@ -48,7 +48,7 @@ class InsectsTestContextInternal {
         InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(
                 repository.imageRepository, speciesQuery, genusQuery, familyQuery);
         InsectQuery.FieldObservationQuery fieldObservationQuery =
-                new FieldObservationQueryImpl(repository.fieldObservationRepository);
+                new OrganismObservationQueryImpl(repository.fieldObservationRepository);
         InsectQuery.FunctionalRoleQuery functionalRoleQuery =
                 new FunctionalRoleQueryImpl(repository.functionalRoleRepository);
         InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(repository.orderRepository);
@@ -65,7 +65,7 @@ class InsectsTestContextInternal {
         InsectCommand.SpeciesCommand speciesCommand = new SpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new ImageCommandImpl(repository.imageRepository);
         InsectCommand.FieldObservationCommand fieldObservationCommand =
-                new FieldObservationCommandImpl(repository.fieldObservationRepository);
+                new OrganismObservationCommandImpl(repository.fieldObservationRepository);
         InsectCommand.OrderCommand orderCommand = new OrderCommandImpl(repository.orderRepository);
         InsectCommand.FamilyCommand familyCommand = new FamilyCommandImpl(repository.familyRepository);
         InsectCommand.GenusCommand genusCommand = new GenusCommandImpl(repository.genusRepository);

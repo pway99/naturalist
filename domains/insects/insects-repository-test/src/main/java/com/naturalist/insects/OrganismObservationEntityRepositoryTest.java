@@ -11,9 +11,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import com.naturalist.observation.OrganismObservation;
+import com.naturalist.observation.Identification;
 
-interface FieldObservationEntityRepositoryTest
-        extends EntityRepositoryTest<FieldObservationId, FieldObservation> {
+interface OrganismObservationEntityRepositoryTest
+        extends EntityRepositoryTest<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> {
 
     NaturalistName PATRICK = NaturalistName.of("patrick-way");
     NaturalistName DELIA = NaturalistName.of("delia-durrell");
@@ -22,26 +24,26 @@ interface FieldObservationEntityRepositoryTest
     InsectRepository.FieldObservationRepository repository();
 
     @Override
-    default TestEntitySource<FieldObservationId, FieldObservation> source() {
-        return db.getNamed(FieldObservationTestEntitySource.class);
+    default TestEntitySource<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> source() {
+        return db.getNamed(OrganismObservationTestEntitySource.class);
     }
 
     @Override
-    default FieldObservationId notFoundName() {
-        return TestInsectsIdentifiers.FieldObservation.NotFound.id;
+    default InsectObservationId notFoundName() {
+        return TestInsectsIdentifiers.Observation.NotFound.id;
     }
 
     @Override
-    default List<FieldObservationId> knownEntityNames() {
+    default List<InsectObservationId> knownEntityNames() {
         return List.of(
-                TestInsectsIdentifiers.FieldObservation.PatrickBattus,
-                TestInsectsIdentifiers.FieldObservation.DeliaBattus);
+                TestInsectsIdentifiers.Observation.PatrickBattus,
+                TestInsectsIdentifiers.Observation.DeliaBattus);
     }
 
     @Override
-    default FieldObservation newEntity() {
-        return new FieldObservation(
-                FieldObservationId.create(),
+    default OrganismObservation<InsectObservationId, InsectRankName> newEntity() {
+        return new OrganismObservation<InsectObservationId, InsectRankName>(
+                InsectObservationId.create(),
                 PATRICK,
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-01T08:00:00Z"),
@@ -50,9 +52,9 @@ interface FieldObservationEntityRepositoryTest
     }
 
     @Override
-    default FieldObservation ghostEntity() {
-        return new FieldObservation(
-                FieldObservationId.create(),
+    default OrganismObservation<InsectObservationId, InsectRankName> ghostEntity() {
+        return new OrganismObservation<InsectObservationId, InsectRankName>(
+                InsectObservationId.create(),
                 PATRICK,
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-02T08:00:00Z"),
@@ -61,8 +63,8 @@ interface FieldObservationEntityRepositoryTest
     }
 
     @Override
-    default FieldObservation modifiedEntity(FieldObservation original) {
-        return new FieldObservation(
+    default OrganismObservation<InsectObservationId, InsectRankName> modifiedEntity(OrganismObservation<InsectObservationId, InsectRankName> original) {
+        return new OrganismObservation<InsectObservationId, InsectRankName>(
                 original.id(),
                 DELIA,
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,

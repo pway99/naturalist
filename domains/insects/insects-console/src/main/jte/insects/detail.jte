@@ -6,7 +6,7 @@
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectImage
 @import com.naturalist.insects.InsectImageId
-@import com.naturalist.insects.FieldObservation
+@import com.naturalist.observation.OrganismObservation
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.insects.console.CladeTrail
 @import com.naturalist.insects.console.FeatureGroup
@@ -32,7 +32,7 @@
 @param java.util.List<com.naturalist.insects.console.AncestorIntro> ancestorIntros = List.of()
 @param boolean collected = false
 @param boolean lens = false
-@param Map<InsectImageId, FieldObservation> observations = java.util.Map.of()
+@param Map<InsectImageId, OrganismObservation> observations = java.util.Map.of()
 @param List<FeatureGroup> featureGroups = List.of()
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 

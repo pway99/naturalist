@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.util.List;
+import com.naturalist.observation.Identification;
 
 /**
  * Domain-typed result of vision identification — carries the identified rank
