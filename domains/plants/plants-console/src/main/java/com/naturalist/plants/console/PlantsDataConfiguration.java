@@ -2,10 +2,10 @@ package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.PlantSpeciesTestEntitySource;
-import com.naturalist.plants.cultivar.CultivarTestEntitySource;
-import com.naturalist.plants.heritage.SeedLineageTestEntitySource;
+import com.naturalist.plants.cultivar.PlantCultivarTestEntitySource;
+import com.naturalist.plants.heritage.PlantSeedLineageTestEntitySource;
 import com.naturalist.plants.management.PlantProgramTestEntitySource;
-import com.naturalist.plants.phytochemistry.PhytochemicalConstituentTestEntitySource;
+import com.naturalist.plants.phytochemistry.PlantPhytochemicalConstituentTestEntitySource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,13 +19,13 @@ public class PlantsDataConfiguration {
     }
 
     @Bean
-    CultivarTestEntitySource cultivarSource(NaturalistDatabase database) {
-        return new CultivarTestEntitySource(database);
+    PlantCultivarTestEntitySource cultivarSource(NaturalistDatabase database) {
+        return new PlantCultivarTestEntitySource(database);
     }
 
     @Bean
-    SeedLineageTestEntitySource seedLineageSource(NaturalistDatabase database) {
-        return new SeedLineageTestEntitySource(database);
+    PlantSeedLineageTestEntitySource seedLineageSource(NaturalistDatabase database) {
+        return new PlantSeedLineageTestEntitySource(database);
     }
 
     @Bean
@@ -34,7 +34,7 @@ public class PlantsDataConfiguration {
     }
 
     @Bean
-    PhytochemicalConstituentTestEntitySource phytochemicalConstituentSource(NaturalistDatabase database) {
-        return new PhytochemicalConstituentTestEntitySource(database);
+    PlantPhytochemicalConstituentTestEntitySource phytochemicalConstituentSource(NaturalistDatabase database) {
+        return new PlantPhytochemicalConstituentTestEntitySource(database);
     }
 }

@@ -22,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Lives in {@code com.naturalist.plants.phytochemistry} (not {@code .catalog})
- * so the test can see the package-private {@link PhytochemicalConstituentQueryImpl}
- * and the package-private {@link PhytochemicalConstituentRepositoryMock}
+ * so the test can see the package-private {@link PlantPhytochemicalConstituentQueryImpl}
+ * and the package-private {@link PlantPhytochemicalConstituentRepositoryMock}
  * without exposing either to the wider test classpath.
  */
 class PlantsCompoundReferencesTest {
@@ -35,9 +35,9 @@ class PlantsCompoundReferencesTest {
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     private final PhytochemicalConstituentRepository repository =
-            new PhytochemicalConstituentRepositoryMock(db);
+            new PlantPhytochemicalConstituentRepositoryMock(db);
     private final PhytochemicalConstituentQuery entityQuery =
-            new PhytochemicalConstituentQueryImpl(repository);
+            new PlantPhytochemicalConstituentQueryImpl(repository);
     private final PlantsCompoundReferences provider = new PlantsCompoundReferences(entityQuery);
 
     @Test

@@ -259,6 +259,14 @@ visibility:
 `EntitySubject` drops the domain prefix — `InsectSpecies` → `Species`, `InsectImage`
 → `Image`. The outer namespace carries the prefix.
 
+This bare-`EntitySubject` rule is for **nested** namespace types (and the N=1-collapsed
+ports that stand in for one). **Standalone concrete classes invert it**: query/command
+impls, repository mocks, test-entity-sources, contract tests, and their concrete unit
+tests carry `<DomainNoun><EntitySubject>` — `InsectSpeciesQueryImpl`,
+`PlantImageTestEntitySource`, `InsectSpeciesRepositoryMockTest` — because a loose class
+is navigated by its simple name alone and a bare name collides across domains. Ports and
+outer namespace types stay bare (or already-prefixed, like `InsectQuery`). See ADR-020 §5.
+
 Why repositories use a `class` and queries use an `interface`: nested types inside
 an `interface` are implicitly `public static` — visibility cannot be restricted. A
 `class` keeps repository contracts hidden (`protected` = package-private + subclass

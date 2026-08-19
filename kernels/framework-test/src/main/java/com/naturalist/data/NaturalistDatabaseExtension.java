@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * }</pre>
  *
  * <p>Extends {@link NaturalistDatabase} so tests can pass this instance directly to
- * constructors expecting the plain registry (e.g. {@code new SpeciesRepositoryMock(db)}).
+ * constructors expecting the plain registry (e.g. {@code new InsectSpeciesRepositoryMock(db)}).
  * Main-wired code (console bootstraps, CLI tools) uses {@link NaturalistDatabase#create()}
  * and carries no JUnit coupling.
  */

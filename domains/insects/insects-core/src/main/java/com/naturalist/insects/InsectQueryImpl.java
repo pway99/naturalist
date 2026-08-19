@@ -55,7 +55,7 @@ class InsectQueryImpl implements InsectQuery {
         this.orderQuery = orderQuery;
         InsectTaxonViewFactory factory =
                 new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);
-        this.taxonViewQuery = new TaxonViewQueryImpl(factory);
+        this.taxonViewQuery = new InsectTaxonViewQueryImpl(factory);
         InsectAncestryResolver ancestryResolver =
                 new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
         this.citationQuery = new InsectCitationQueryImpl(

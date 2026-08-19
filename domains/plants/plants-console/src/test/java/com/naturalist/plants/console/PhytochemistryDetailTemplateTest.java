@@ -2,7 +2,7 @@ package com.naturalist.plants.console;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
-import com.naturalist.plants.phytochemistry.PhytochemicalConstituentTestEntitySource;
+import com.naturalist.plants.phytochemistry.PlantPhytochemicalConstituentTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ class PhytochemistryDetailTemplateTest {
     @Test
     void phytochemistryDetail_rendersEveryConstituentWithoutError() {
         var template = TestTemplateEngine.create();
-        for (PhytochemicalConstituent constituent : new PhytochemicalConstituentTestEntitySource(NaturalistDatabase.create()).entityStream().toList()) {
+        for (PhytochemicalConstituent constituent : new PlantPhytochemicalConstituentTestEntitySource(NaturalistDatabase.create()).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("plants/phytochemistry/detail.jte",
                     Map.of("constituent", constituent), output);

@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Lives in {@code com.naturalist.plants} (not {@code .catalog}) so the test can
- * see the package-private {@link SpeciesQueryImpl} and the package-private
- * {@link SpeciesRepositoryMock} without exposing either to the wider test
+ * see the package-private {@link PlantSpeciesQueryImpl} and the package-private
+ * {@link PlantSpeciesRepositoryMock} without exposing either to the wider test
  * classpath.
  */
 class PlantsCatalogContributionTest {
@@ -31,13 +31,13 @@ class PlantsCatalogContributionTest {
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     private final PlantQuery.GenusQuery genusQuery =
-            new GenusQueryImpl(new GenusRepositoryMock(db));
+            new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
     private final PlantQuery.SpeciesQuery entityQuery =
-            new SpeciesQueryImpl(new SpeciesRepositoryMock(db), genusQuery);
+            new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(db), genusQuery);
     private final PlantQuery.OrderQuery orderQuery =
-            new OrderQueryImpl(new OrderRepositoryMock(db));
+            new PlantOrderQueryImpl(new PlantOrderRepositoryMock(db));
     private final PlantQuery.FamilyQuery familyQuery =
-            new FamilyQueryImpl(new FamilyRepositoryMock(db));
+            new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(db));
     private final PlantsCatalogContribution contribution =
             new PlantsCatalogContribution(entityQuery, orderQuery, familyQuery, genusQuery);
 

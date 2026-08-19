@@ -32,26 +32,26 @@ class InsectsTestContextInternal {
 
     private InsectsTestContextInternal(NaturalistDatabase db) {
         InsectRepository repository = InsectRepository.create(
-                new SpeciesRepositoryMock(db),
+                new InsectSpeciesRepositoryMock(db),
                 new InsectImageRepositoryMock(db),
-                new FamilyRepositoryMock(db),
-                new GenusRepositoryMock(db),
+                new InsectFamilyRepositoryMock(db),
+                new InsectGenusRepositoryMock(db),
                 new InsectFunctionalRoleRepositoryMock(db),
-                new OrderRepositoryMock(db),
+                new InsectOrderRepositoryMock(db),
                 new InsectFeatureRepositoryMock(db),
                 new InsectFeatureAssignmentRepositoryMock(db),
                 new InsectObservationRepositoryMock(db));
 
-        InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(repository.familyRepository);
-        InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(repository.genusRepository, familyQuery);
-        InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(repository.speciesRepository, genusQuery);
-        InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(
+        InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(repository.familyRepository);
+        InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(repository.genusRepository, familyQuery);
+        InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(repository.speciesRepository, genusQuery);
+        InsectQuery.ImageQuery imageQuery = new InsectImageQueryImpl(
                 repository.imageRepository, speciesQuery, genusQuery, familyQuery);
         InsectQuery.ObservationQuery observationQuery =
                 new InsectObservationQueryImpl(repository.observationRepository);
         InsectQuery.FunctionalRoleQuery functionalRoleQuery =
-                new FunctionalRoleQueryImpl(repository.functionalRoleRepository);
-        InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(repository.orderRepository);
+                new InsectFunctionalRoleQueryImpl(repository.functionalRoleRepository);
+        InsectQuery.OrderQuery orderQuery = new InsectOrderQueryImpl(repository.orderRepository);
 
         LibraryTestContext libraryContext = LibraryTestContext.create(db);
 
@@ -62,17 +62,17 @@ class InsectsTestContextInternal {
                 repository.featureRepository, repository.featureAssignmentRepository,
                 observationQuery);
 
-        InsectCommand.SpeciesCommand speciesCommand = new SpeciesCommandImpl(repository.speciesRepository);
-        InsectCommand.ImageCommand imageCommand = new ImageCommandImpl(repository.imageRepository);
+        InsectCommand.SpeciesCommand speciesCommand = new InsectSpeciesCommandImpl(repository.speciesRepository);
+        InsectCommand.ImageCommand imageCommand = new InsectImageCommandImpl(repository.imageRepository);
         InsectCommand.ObservationCommand observationCommand =
                 new InsectObservationCommandImpl(repository.observationRepository);
-        InsectCommand.OrderCommand orderCommand = new OrderCommandImpl(repository.orderRepository);
-        InsectCommand.FamilyCommand familyCommand = new FamilyCommandImpl(repository.familyRepository);
-        InsectCommand.GenusCommand genusCommand = new GenusCommandImpl(repository.genusRepository);
+        InsectCommand.OrderCommand orderCommand = new InsectOrderCommandImpl(repository.orderRepository);
+        InsectCommand.FamilyCommand familyCommand = new InsectFamilyCommandImpl(repository.familyRepository);
+        InsectCommand.GenusCommand genusCommand = new InsectGenusCommandImpl(repository.genusRepository);
         InsectCommand.FeatureCommand featureCommand =
-                new FeatureCommandImpl(repository.featureRepository);
+                new InsectFeatureCommandImpl(repository.featureRepository);
         InsectCommand.FeatureAssignmentCommand featureAssignmentCommand =
-                new FeatureAssignmentCommandImpl(repository.featureAssignmentRepository);
+                new InsectFeatureAssignmentCommandImpl(repository.featureAssignmentRepository);
         this.insectCommand = new InsectCommandImpl(
                 speciesCommand, imageCommand, observationCommand,
                 orderCommand, familyCommand, genusCommand,

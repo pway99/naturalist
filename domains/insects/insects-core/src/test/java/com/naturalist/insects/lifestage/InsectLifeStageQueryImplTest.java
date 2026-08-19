@@ -13,8 +13,8 @@ class InsectLifeStageQueryImplTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    LifeStageEntityRepositoryMock repository = new LifeStageEntityRepositoryMock(db);
-    InsectLifeStageQuery.LifeStageEntityQuery lifeStageEntityQuery = new LifeStageEntityQueryImpl(repository);
+    InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(db);
+    InsectLifeStageQuery.LifeStageEntityQuery lifeStageEntityQuery = new InsectLifeStageEntityQueryImpl(repository);
     InsectLifeStageQuery query = new InsectLifeStageQueryImpl(lifeStageEntityQuery);
 
     @Test

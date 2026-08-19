@@ -6,7 +6,7 @@ import java.util.Optional;
 
 /**
  * Thin adapter for {@link SoilProfileQuery}: validates the argument, then delegates aggregate
- * assembly to {@link SoilProfileFactory} (ADR-010). Mirrors {@code TaxonViewQueryImpl} — no
+ * assembly to {@link SoilProfileFactory} (ADR-010). Mirrors {@code InsectTaxonViewQueryImpl} — no
  * {@code @DomainService}: the factory-backed aggregate query is wired manually in the context
  * (its {@code SoilProfileFactory} is not a Spring bean), never component-scanned.
  */

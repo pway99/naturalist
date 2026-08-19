@@ -46,15 +46,16 @@ public class DomainServiceScan implements ImportBeanDefinitionRegistrar {
     static final List<String> BASE_PACKAGES = List.of("com.naturalist");
 
     /**
-     * Fully-qualified bean names, not the decapitalised short name. Two domains
-     * legitimately ship {@code @DomainService} classes with the same simple name
-     * once they follow the ADR-020 namespace convention — e.g. both
-     * {@code com.naturalist.insects.SpeciesQueryImpl} and
-     * {@code com.naturalist.plants.SpeciesQueryImpl}. Short-name generation would
-     * collide on {@code "speciesQueryImpl"} and the duplicate-skip below would
-     * silently drop the second domain's bean, leaving its query interface
-     * unsatisfiable at wiring time. The FQN keeps them distinct; injection is
-     * by type, so callers are unaffected.
+     * Fully-qualified bean names, not the decapitalised short name. Under the
+     * ADR-020 convention, standalone {@code @DomainService} adapters carry their
+     * domain prefix — e.g. {@code InsectSpeciesQueryImpl} and
+     * {@code PlantSpeciesQueryImpl} — so their simple names no longer collide.
+     * The FQN generator does not lean on that convention, though: were two
+     * domains ever to ship classes with the same simple name, short-name
+     * generation would collide on {@code "speciesQueryImpl"} and the
+     * duplicate-skip below would silently drop the second domain's bean, leaving
+     * its query interface unsatisfiable at wiring time. The FQN keeps them
+     * distinct regardless; injection is by type, so callers are unaffected.
      */
     private final BeanNameGenerator beanNameGenerator = new FullyQualifiedAnnotationBeanNameGenerator();
 

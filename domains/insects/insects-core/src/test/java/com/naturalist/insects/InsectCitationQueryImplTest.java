@@ -16,13 +16,13 @@ class InsectCitationQueryImplTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
-    GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
-    SpeciesRepositoryMock speciesRepository = new SpeciesRepositoryMock(db);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
+    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(db);
 
-    InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
-    InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
+    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
+    InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
+    InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
 
     LibraryTestContext libraryContext = LibraryTestContext.create(db);
     CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();

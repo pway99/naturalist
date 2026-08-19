@@ -61,6 +61,46 @@ Skip the namespace:
 - `interface <Entity>Repository extends EntityRepository<...>` (package-private)
 - `public interface <Entity>Query extends EntityQuery<...>`
 
+### 5. Standalone concrete adapters carry the domain prefix
+
+The bare-`EntitySubject` rule above applies **only to types nested inside a
+namespace** (`InsectQuery.SpeciesQuery`) and to the N=1-collapsed ports that stand in
+for one (`CultivarQuery`, `LifeStageRepository`). A nested port is already
+disambiguated by its outer type: two domains' `SpeciesQuery` are
+`InsectQuery.SpeciesQuery` and `PlantQuery.SpeciesQuery`, distinct at every use site.
+
+A **standalone concrete class** has no such outer type. It sits loose in its package,
+and the IDE's file-open dialog, symbol search, and auto-complete key on its simple
+name alone. When insects and plants both ship a bare `SpeciesQueryImpl`,
+`SpeciesRepositoryMock`, or `SpeciesTestEntitySource`, those simple names collide —
+every navigation lands on a disambiguation prompt. So:
+
+> **Standalone concrete adapters, sources, mocks, and contract-tests carry the domain
+> prefix; nested namespace ports stay bare.**
+
+Concretely, prefix `<DomainNoun>` onto the simple name of every:
+
+- query/command adapter — `InsectSpeciesQueryImpl`, `PlantCultivarQueryImpl`
+- repository mock — `InsectSpeciesRepositoryMock`
+- test-entity-source — `PlantImageTestEntitySource`
+- behavioral contract test — `InsectSpeciesRepositoryTest`,
+  `InsectFeatureEntityRepositoryTest`
+- the concrete unit test of any of the above — `InsectSpeciesQueryImplTest`,
+  `PlantCultivarTestEntitySourceTest`, `InsectSpeciesRepositoryMockTest`
+
+Leave unchanged: the outer namespace types (`InsectQuery`, `InsectRepository`,
+`InsectEntityCollections`) and their impls (`InsectQueryImpl` — already prefixed), the
+nested ports (`SpeciesQuery`, `ImageRepository`), N=1-collapsed ports (`CultivarQuery`,
+`LifeStageRepository`), and the shared entity/value types (`InsectSpecies`,
+`Species`-subjected collections).
+
+Rationale: the namespace `interface`/`class` *is* the disambiguator for the types it
+encloses, so repeating the prefix there would be noise (`InsectQuery.InsectSpeciesQuery`
+reads worse and buys nothing). A standalone class carries no such context; the prefix is
+the only thing that makes `InsectSpeciesQueryImpl` findable without collision. The two
+rules are the same principle — *disambiguate at the point of navigation* — applied to two
+different structures.
+
 ### Naming
 
 | Outer                           | Type        | Visibility      | Nested                                                  |
@@ -71,6 +111,16 @@ Skip the namespace:
 
 `EntitySubject` drops the domain prefix — `InsectSpecies` → `Species`. Outer namespace
 carries the prefix.
+
+Standalone concrete classes (section 5) invert this: they carry `<DomainNoun><EntitySubject>`.
+
+| Standalone class    | Example                                                    |
+|---------------------|-----------------------------------------------------------|
+| query/command impl  | `InsectSpeciesQueryImpl`, `PlantCultivarQueryImpl`        |
+| repository mock     | `InsectSpeciesRepositoryMock`                              |
+| test-entity-source  | `PlantImageTestEntitySource`                               |
+| contract test       | `InsectSpeciesRepositoryTest`                              |
+| concrete unit test  | `InsectSpeciesQueryImplTest`, `PlantCultivarTestEntitySourceTest` |
 
 ### Revisit when
 

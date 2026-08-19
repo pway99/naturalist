@@ -21,23 +21,23 @@ class InsectQueryImplTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    SpeciesRepositoryMock speciesRepository = new SpeciesRepositoryMock(db);
+    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(db);
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
-    FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
-    GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
     InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(db);
-    OrderRepositoryMock orderRepository = new OrderRepositoryMock(db);
+    InsectOrderRepositoryMock orderRepository = new InsectOrderRepositoryMock(db);
     InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(db);
     InsectFeatureAssignmentRepositoryMock featureAssignmentRepository = new InsectFeatureAssignmentRepositoryMock(db);
     InsectObservationRepositoryMock observationRepository = new InsectObservationRepositoryMock(db);
     InsectQuery.ObservationQuery observationQuery = new InsectObservationQueryImpl(observationRepository);
-    InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
-    InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
-    InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(
+    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
+    InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
+    InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
+    InsectQuery.ImageQuery imageQuery = new InsectImageQueryImpl(
             imageRepository, speciesQuery, genusQuery, familyQuery);
-    InsectQuery.FunctionalRoleQuery functionalRoleQuery = new FunctionalRoleQueryImpl(functionalRoleRepository);
-    InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
+    InsectQuery.FunctionalRoleQuery functionalRoleQuery = new InsectFunctionalRoleQueryImpl(functionalRoleRepository);
+    InsectQuery.OrderQuery orderQuery = new InsectOrderQueryImpl(orderRepository);
     com.naturalist.library.CitationAssociationQuery citationAssociationQuery =
             new com.naturalist.library.CitationAssociationQuery() {
                 @Override

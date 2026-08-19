@@ -4,7 +4,7 @@ import com.naturalist.data.NaturalistDatabase;
 
 /**
  * Same-package assembly seam for the heritage sub-context. Lives here (not folded into
- * {@code PlantsTestContext}) because SeedLineageQueryImpl and SeedLineageRepositoryMock are
+ * {@code PlantsTestContext}) because PlantSeedLineageQueryImpl and PlantSeedLineageRepositoryMock are
  * package-private in this package; the root-package PlantsTestContext cannot reach them.
  */
 public final class SeedLineageTestContext {
@@ -13,6 +13,6 @@ public final class SeedLineageTestContext {
     }
 
     public static SeedLineageQuery createQuery(NaturalistDatabase db) {
-        return new SeedLineageQueryImpl(new SeedLineageRepositoryMock(db));
+        return new PlantSeedLineageQueryImpl(new PlantSeedLineageRepositoryMock(db));
     }
 }

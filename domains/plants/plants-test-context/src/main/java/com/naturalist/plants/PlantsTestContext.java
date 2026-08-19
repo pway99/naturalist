@@ -86,19 +86,19 @@ public class PlantsTestContext {
      */
     private static PlantQuery createPlantQuery(NaturalistDatabase db) {
         PlantQuery.GenusQuery genusQuery =
-                new GenusQueryImpl(new GenusRepositoryMock(db));
+                new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
         PlantQuery.SpeciesQuery entityQuery =
-                new SpeciesQueryImpl(new SpeciesRepositoryMock(db), genusQuery);
+                new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(db), genusQuery);
         PlantQuery.FamilyQuery familyQuery =
-                new FamilyQueryImpl(new FamilyRepositoryMock(db));
+                new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(db));
         PlantQuery.OrderQuery orderQuery =
-                new OrderQueryImpl(new OrderRepositoryMock(db));
+                new PlantOrderQueryImpl(new PlantOrderRepositoryMock(db));
         PlantQuery.EcologicalRoleQuery roleQuery =
-                new EcologicalRoleQueryImpl(new EcologicalRoleRepositoryMock(db));
+                new PlantEcologicalRoleQueryImpl(new PlantEcologicalRoleRepositoryMock(db));
         PlantQuery.ObservationQuery observationQuery =
                 new PlantObservationQueryImpl(new PlantObservationRepositoryMock(db));
         PlantQuery.ImageQuery imageQuery =
-                new ImageQueryImpl(new PlantImageRepositoryMock(db));
+                new PlantImageQueryImpl(new PlantImageRepositoryMock(db));
         return new PlantQueryImpl(entityQuery, orderQuery, familyQuery, genusQuery, roleQuery,
                 observationQuery, imageQuery);
     }

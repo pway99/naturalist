@@ -17,18 +17,18 @@ class InsectTaxonViewFactoryTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    SpeciesRepositoryMock speciesRepository = new SpeciesRepositoryMock(db);
+    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(db);
     InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
-    GenusRepositoryMock genusRepository = new GenusRepositoryMock(db);
-    FamilyRepositoryMock familyRepository = new FamilyRepositoryMock(db);
-    OrderRepositoryMock orderRepository = new OrderRepositoryMock(db);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
+    InsectOrderRepositoryMock orderRepository = new InsectOrderRepositoryMock(db);
 
-    InsectQuery.FamilyQuery familyQuery = new FamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new GenusQueryImpl(genusRepository, familyQuery);
-    InsectQuery.SpeciesQuery speciesQuery = new SpeciesQueryImpl(speciesRepository, genusQuery);
-    InsectQuery.ImageQuery imageQuery = new ImageQueryImpl(
+    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
+    InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
+    InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
+    InsectQuery.ImageQuery imageQuery = new InsectImageQueryImpl(
             imageRepository, speciesQuery, genusQuery, familyQuery);
-    InsectQuery.OrderQuery orderQuery = new OrderQueryImpl(orderRepository);
+    InsectQuery.OrderQuery orderQuery = new InsectOrderQueryImpl(orderRepository);
 
     InsectTaxonViewFactory factory =
             new InsectTaxonViewFactory(speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery);

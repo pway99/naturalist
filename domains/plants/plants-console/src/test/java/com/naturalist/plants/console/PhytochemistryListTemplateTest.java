@@ -4,7 +4,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
-import com.naturalist.plants.phytochemistry.PhytochemicalConstituentTestEntitySource;
+import com.naturalist.plants.phytochemistry.PlantPhytochemicalConstituentTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ class PhytochemistryListTemplateTest {
 
     @Test
     void phytochemistryList_rendersWithoutError() {
-        Page<PhytochemicalConstituent> constituentsPage = new PhytochemicalConstituentTestEntitySource(
+        Page<PhytochemicalConstituent> constituentsPage = new PlantPhytochemicalConstituentTestEntitySource(
                 NaturalistDatabase.create()).pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 

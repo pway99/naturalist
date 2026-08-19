@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@code plantName} is a {@link com.naturalist.plants.PlantRankName} with no single-source
  * {@code ForeignKeyConstraint}; this test resolves it against the matching rank catalog.
  * The cross-domain {@code compoundName} reference is a service-layer rule and is not
- * checked here. See {@link PhytochemicalConstituentTestEntitySource}.
+ * checked here. See {@link PlantPhytochemicalConstituentTestEntitySource}.
  */
 class PhytochemicalConstituentCatalogDataTest {
 
@@ -21,7 +21,7 @@ class PhytochemicalConstituentCatalogDataTest {
 
     @Test
     void everyConstituentResolvesToACataloguedTaxonAtItsRank() {
-        assertThat(db.getNamed(PhytochemicalConstituentTestEntitySource.class)
+        assertThat(db.getNamed(PlantPhytochemicalConstituentTestEntitySource.class)
                 .entityStream().toList())
                 .allSatisfy(constituent -> assertThat(ranks.resolves(constituent.plantName()))
                         .as("constituent '%s' references %s taxon '%s'",
