@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.taxonomy.LinealRank;
+import com.naturalist.taxonomy.RankName;
 
 /**
  * Sealed marker type for the four plant-side Linnaean rank names —
@@ -65,24 +66,8 @@ import com.naturalist.taxonomy.LinealRank;
  * { "subjectRank": "GENUS", "subject": "salvia" }
  * }</pre>
  */
-public sealed interface PlantRankName
+public sealed interface PlantRankName extends RankName
         permits PlantOrderName, PlantFamilyName, PlantGenusName, PlantSpeciesName {
-
-    /**
-     * The slug string carried by this rank name. Exposed on the sealed interface so
-     * polymorphic consumers can read the slug without down-casting to a permit; every
-     * permit inherits the concrete implementation from
-     * {@link com.naturalist.ddd.EntityName}.
-     */
-    String value();
-
-    /**
-     * The {@link LinealRank} position this permit occupies on the Linnaean ladder. Total
-     * — every permit is a Linnaean rung by construction, so this never returns null. If
-     * a candidate permit would need it to, that candidate is an orthogonal axis rather
-     * than a rank.
-     */
-    LinealRank rank();
 
     /**
      * Creates the appropriate permit for the given slug and Linnaean rank. Only the

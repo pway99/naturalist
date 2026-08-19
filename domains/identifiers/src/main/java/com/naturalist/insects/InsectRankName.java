@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.taxonomy.LinealRank;
+import com.naturalist.taxonomy.RankName;
 
 /**
  * Sealed marker type for the five insect-side Linnaean rank names —
@@ -60,25 +61,8 @@ import com.naturalist.taxonomy.LinealRank;
  * {@code InsectSpeciesName}) continue to serialize as plain strings via the
  * {@link com.naturalist.ddd.EntityName} {@code @JsonValue} on {@code value()}.
  */
-public sealed interface InsectRankName
+public sealed interface InsectRankName extends RankName
         permits InsectOrderName, InsectFamilyName, InsectGenusName, InsectSpeciesName, InsectSubspeciesName {
-
-    /**
-     * The slug string carried by this rank name. Exposed on the sealed
-     * interface so polymorphic consumers (e.g. the {@code /insects/guild/{guild}}
-     * console page sorting by {@code parentName.value()}) can read the slug
-     * without down-casting to a specific permit. Every permit inherits the
-     * concrete implementation from {@link com.naturalist.ddd.EntityName}.
-     */
-    String value();
-
-    /**
-     * The {@link LinealRank} position this permit occupies on the Linnaean ladder.
-     * Lets polymorphic consumers read the rank directly without {@code instanceof}
-     * switching or reflective class-name inspection — the {@code guild.jte} rank
-     * badge being the canonical case.
-     */
-    LinealRank rank();
 
     /**
      * Creates the appropriate {@code InsectRankName} permit for the given slug
