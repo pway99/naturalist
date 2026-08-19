@@ -26,12 +26,12 @@ import java.util.function.Consumer;
  * object; deserialization rebuilds the concrete permit through the {@code RankNameReconstructor}
  * registered on the reading mapper (see the domain's observation test-entity source).
  */
-public record OrganismObservation<ID extends EntityId>(
+public record OrganismObservation<ID extends EntityId, R extends RankName>(
         ID id,
         NaturalistName observedBy,
         @JsonSerialize(using = RankNameSerializer.class)
         @JsonDeserialize(using = RankNameDeserializer.class)
-        RankName subject,
+        R subject,
         Instant observedOn,
         @Nullable String notes,
         @Nullable String location,
@@ -48,11 +48,11 @@ public record OrganismObservation<ID extends EntityId>(
                 .valueObjectOrNull(identification, "identification");
     }
 
-    public OrganismObservation<ID> withNotes(@Nullable String notes) {
+    public OrganismObservation<ID, R> withNotes(@Nullable String notes) {
         return new OrganismObservation<>(id, observedBy, subject, observedOn, notes, location, identification);
     }
 
-    public OrganismObservation<ID> withSubject(RankName subject) {
+    public OrganismObservation<ID, R> withSubject(R subject) {
         return new OrganismObservation<>(id, observedBy, subject, observedOn, notes, location, identification);
     }
 }

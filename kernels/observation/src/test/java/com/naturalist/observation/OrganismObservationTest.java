@@ -40,7 +40,7 @@ class OrganismObservationTest {
 
     @Test
     void withNotesPreservesEverythingElse() {
-        var obs = new OrganismObservation<>(
+        OrganismObservation<FakeObsId, FakeGenusName> obs = new OrganismObservation<>(
                 FakeObsId.create(), NaturalistName.of("ada"),
                 new FakeGenusName("salvia"), Instant.parse("2026-08-19T00:00:00Z"),
                 null, null, null);
@@ -52,14 +52,14 @@ class OrganismObservationTest {
 
     @Test
     void serializesSubjectAsSelfDescribingObjectAndRoundtrips() throws Exception {
-        var obs = new OrganismObservation<>(
+        OrganismObservation<FakeObsId, FakeGenusName> obs = new OrganismObservation<>(
                 FakeObsId.create(), NaturalistName.of("ada"),
                 new FakeGenusName("salvia"), Instant.parse("2026-08-19T00:00:00Z"),
                 null, null, null);
         String json = mapper().writeValueAsString(obs);
         assertThat(json).contains("\"rank\":\"GENUS\"").contains("\"value\":\"salvia\"");
-        var type = mapper().getTypeFactory().constructParametricType(OrganismObservation.class, FakeObsId.class);
-        OrganismObservation<FakeObsId> decoded = mapper().readValue(json, type);
+        var type = mapper().getTypeFactory().constructParametricType(OrganismObservation.class, FakeObsId.class, FakeGenusName.class);
+        OrganismObservation<FakeObsId, FakeGenusName> decoded = mapper().readValue(json, type);
         assertThat(decoded.subject().value()).isEqualTo("salvia");
         assertThat(decoded.id()).isEqualTo(obs.id());
     }
