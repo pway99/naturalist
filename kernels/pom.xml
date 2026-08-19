@@ -33,6 +33,7 @@
         <module>biogeography</module>
         <module>field-notes</module>
         <module>taxonomy</module>
+        <module>observation</module>
         <module>text-generation</module>
         <module>vision</module>
         <module>habitat</module>

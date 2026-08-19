@@ -133,6 +133,11 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>observation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>taxonomy</artifactId>
                 <version>${project.version}</version>
             </dependency>
