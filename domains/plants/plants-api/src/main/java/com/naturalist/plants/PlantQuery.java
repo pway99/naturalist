@@ -71,7 +71,7 @@ public interface PlantQuery {
 
     EcologicalRoleQuery ecologicalRoles();
 
-    FieldObservationQuery fieldObservations();
+    PlantObservationQuery observations();
 
     ImageQuery images();
 
@@ -110,18 +110,18 @@ public interface PlantQuery {
         Optional<PlantEcologicalRole> forPlantName(PlantRankName plantName);
     }
 
-    interface FieldObservationQuery
+    interface PlantObservationQuery
             extends EntityQuery<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>,
-                    PlantEntityCollections.FieldObservationCollection> {
+                    PlantEntityCollections.PlantObservationCollection> {
 
         /** All of a naturalist's plant observations — the "my collection" surface. */
-        PlantEntityCollections.FieldObservationCollection forNaturalist(NaturalistName observedBy);
+        PlantEntityCollections.PlantObservationCollection forNaturalist(NaturalistName observedBy);
 
         /**
          * A naturalist's observations restricted to the given ranks — the bounded read
          * port the rank pages use to render a per-entity "observed" indicator.
          */
-        PlantEntityCollections.FieldObservationCollection forNaturalistAndSubjects(
+        PlantEntityCollections.PlantObservationCollection forNaturalistAndSubjects(
                 NaturalistName observedBy, Set<PlantRankName> subjects);
     }
 }

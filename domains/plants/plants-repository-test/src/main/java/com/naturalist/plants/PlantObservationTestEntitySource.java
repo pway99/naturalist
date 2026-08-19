@@ -20,14 +20,14 @@ import java.util.List;
  * rank (null otherwise, which the FK enforcer treats as a pass), so a species-rank subject
  * is checked against the species source, a genus subject against the genus source, and so on.
  */
-public class OrganismObservationTestEntitySource
+public class PlantObservationTestEntitySource
         extends TestEntitySource<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>> {
 
     private final ObjectMapper mapper = TestDataHelper.newBaseMapper()
             .setInjectableValues(new InjectableValues.Std()
                     .addValue(RankNameReconstructor.class, (RankNameReconstructor) PlantRankName::of));
 
-    public OrganismObservationTestEntitySource(NaturalistDatabase database) {
+    public PlantObservationTestEntitySource(NaturalistDatabase database) {
         super(database);
         loadFile("plants/field-observations.json", this::parse);
     }

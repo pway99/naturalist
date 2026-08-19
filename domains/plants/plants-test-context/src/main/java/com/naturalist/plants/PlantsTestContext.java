@@ -95,11 +95,11 @@ public class PlantsTestContext {
                 new OrderQueryImpl(new OrderRepositoryMock(db));
         PlantQuery.EcologicalRoleQuery roleQuery =
                 new EcologicalRoleQueryImpl(new EcologicalRoleRepositoryMock(db));
-        PlantQuery.FieldObservationQuery fieldObservationQuery =
-                new OrganismObservationQueryImpl(new OrganismObservationRepositoryMock(db));
+        PlantQuery.PlantObservationQuery observationQuery =
+                new PlantObservationQueryImpl(new PlantObservationRepositoryMock(db));
         PlantQuery.ImageQuery imageQuery =
                 new ImageQueryImpl(new PlantImageRepositoryMock(db));
         return new PlantQueryImpl(entityQuery, orderQuery, familyQuery, genusQuery, roleQuery,
-                fieldObservationQuery, imageQuery);
+                observationQuery, imageQuery);
     }
 }

@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Set;
 
 @DomainService
-class OrganismObservationRepositoryMock
-        extends AbstractTestEntityRepository<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>, OrganismObservationTestEntitySource>
-        implements PlantRepository.FieldObservationRepository {
+class PlantObservationRepositoryMock
+        extends AbstractTestEntityRepository<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>, PlantObservationTestEntitySource>
+        implements PlantRepository.PlantObservationRepository {
 
-    OrganismObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    PlantObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 

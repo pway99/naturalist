@@ -73,7 +73,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
 
         // 3. Insert image and observation
         insectCommand.images().insert(identification.image());
-        insectCommand.fieldObservations().insert(identification.observation());
+        insectCommand.observations().insert(identification.observation());
 
         // 4. Save features and assignments -- save(), not insert(). A feature
         //    string that already exists in the catalog (very likely on a

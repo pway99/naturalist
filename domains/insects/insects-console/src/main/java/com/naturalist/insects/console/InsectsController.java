@@ -205,7 +205,7 @@ public class InsectsController {
         if (viewer.isEmpty()) {
             return lookup;
         }
-        var mine = insectQuery.fieldObservations()
+        var mine = insectQuery.observations()
                 .forNaturalistAndSubjects(viewer.get(), java.util.Set.of(subject));
         for (var img : images) {
             if (img.observationId() != null) {
@@ -504,7 +504,7 @@ public class InsectsController {
         java.util.Optional<com.naturalist.naturalist.NaturalistName> me = currentNaturalist(request);
         List<InsectSpecies> speciesList;
         if (mine && me.isPresent()) {
-            java.util.Set<InsectRankName> mySubjects = insectQuery.fieldObservations()
+            java.util.Set<InsectRankName> mySubjects = insectQuery.observations()
                     .forNaturalist(me.get()).stream()
                     .map(OrganismObservation<InsectObservationId, InsectRankName>::subject)
                     .collect(java.util.stream.Collectors.toSet());
@@ -769,7 +769,7 @@ public class InsectsController {
         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
         List<InsectImage> galleryImages = i.observations().stream().toList();
         if (lens && viewer.isPresent()) {
-            java.util.Set<InsectObservationId> myObservationIds = insectQuery.fieldObservations()
+            java.util.Set<InsectObservationId> myObservationIds = insectQuery.observations()
                     .forNaturalist(viewer.get()).stream()
                     .map(OrganismObservation<InsectObservationId, InsectRankName>::id)
                     .collect(java.util.stream.Collectors.toSet());
@@ -781,7 +781,7 @@ public class InsectsController {
         model.addAttribute("lens", lens && viewer.isPresent());
 
         var myObservations = viewer.isPresent()
-                ? insectQuery.fieldObservations()
+                ? insectQuery.observations()
                         .forNaturalistAndSubjects(viewer.get(), java.util.Set.<InsectRankName>of(speciesName))
                 : null;
         model.addAttribute("observations",
@@ -829,7 +829,7 @@ public class InsectsController {
                 Instant.now(),
                 (notes == null || notes.isBlank()) ? null : notes,
                 null, null);
-        insectCommand.fieldObservations().insert(observation);
+        insectCommand.observations().insert(observation);
         return "redirect:/insects/" + name;
     }
 
@@ -861,7 +861,7 @@ public class InsectsController {
             // Malformed observationId -- same outcome as not-found, not a 500.
             return "redirect:" + destination;
         }
-        var existing = insectQuery.fieldObservations().getByName(obsId);
+        var existing = insectQuery.observations().getByName(obsId);
         if (existing.isEmpty()) {
             return "redirect:" + destination;
         }
@@ -872,7 +872,7 @@ public class InsectsController {
             return "redirect:" + destination;
         }
         var updated = obs.withNotes((notes == null || notes.isBlank()) ? null : notes);
-        insectCommand.fieldObservations().update(updated);
+        insectCommand.observations().update(updated);
         return "redirect:" + destination;
     }
 
@@ -920,7 +920,7 @@ public class InsectsController {
                       @RequestParam("newSubjectRank") String newSubjectRank,
                       HttpServletRequest request) {
         var obsId = InsectObservationId.of(java.util.UUID.fromString(observationId));
-        var existing = insectQuery.fieldObservations().getByName(obsId);
+        var existing = insectQuery.observations().getByName(obsId);
         if (existing.isEmpty()) return "redirect:/insects/" + name;
 
         var obs = existing.get();
@@ -928,7 +928,7 @@ public class InsectsController {
                 newSubject, com.naturalist.taxonomy.LinealRank.valueOf(newSubjectRank));
 
         var updatedObs = obs.withSubject(newRankName);
-        insectCommand.fieldObservations().update(updatedObs);
+        insectCommand.observations().update(updatedObs);
 
         // TODO: update linked images' parentName to newRankName
         // (no query method to find images by observationId yet)

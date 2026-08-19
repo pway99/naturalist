@@ -10,7 +10,7 @@ class InsectQueryImpl implements InsectQuery {
 
     private final SpeciesQuery speciesQuery;
     private final ImageQuery imageQuery;
-    private final FieldObservationQuery fieldObservationQuery;
+    private final InsectObservationQuery observationQuery;
     private final FamilyQuery familyQuery;
     private final GenusQuery genusQuery;
     private final FunctionalRoleQuery functionalRoleQuery;
@@ -31,7 +31,7 @@ class InsectQueryImpl implements InsectQuery {
                     InsectLifeStageQuery insectLifeStageQuery,
                     InsectRepository.FeatureRepository featureRepository,
                     InsectRepository.FeatureAssignmentRepository featureAssignmentRepository,
-                    FieldObservationQuery fieldObservationQuery) {
+                    InsectObservationQuery observationQuery) {
         Observer.forClass(InsectQueryImpl.class).arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
@@ -44,11 +44,11 @@ class InsectQueryImpl implements InsectQuery {
                         .notNull(insectLifeStageQuery, "insectLifeStageQuery")
                         .notNull(featureRepository, "featureRepository")
                         .notNull(featureAssignmentRepository, "featureAssignmentRepository")
-                        .notNull(fieldObservationQuery, "fieldObservationQuery"))
+                        .notNull(observationQuery, "observationQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
-        this.fieldObservationQuery = fieldObservationQuery;
+        this.observationQuery = observationQuery;
         this.familyQuery = familyQuery;
         this.genusQuery = genusQuery;
         this.functionalRoleQuery = functionalRoleQuery;
@@ -83,8 +83,8 @@ class InsectQueryImpl implements InsectQuery {
     }
 
     @Override
-    public FieldObservationQuery fieldObservations() {
-        return fieldObservationQuery;
+    public InsectObservationQuery observations() {
+        return observationQuery;
     }
 
     @Override

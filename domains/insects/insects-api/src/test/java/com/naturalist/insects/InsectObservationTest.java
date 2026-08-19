@@ -8,7 +8,7 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.naturalist.observation.OrganismObservation;
 
-class OrganismObservationTest {
+class InsectObservationTest {
 
     private final OrganismObservation<InsectObservationId, InsectRankName> base = new OrganismObservation<InsectObservationId, InsectRankName>(
             InsectObservationId.create(),

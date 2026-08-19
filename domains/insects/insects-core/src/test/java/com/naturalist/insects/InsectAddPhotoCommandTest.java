@@ -32,7 +32,7 @@ class InsectAddPhotoCommandTest {
         assertThat(photo).isPresent();
         assertThat(photo.get().observationId()).isNotNull();
 
-        var observation = query.fieldObservations()
+        var observation = query.observations()
                 .getByName(photo.get().observationId());
         assertThat(observation).isPresent();
         assertThat(observation.get().observedBy()).isEqualTo(naturalist);
@@ -73,7 +73,7 @@ class InsectAddPhotoCommandTest {
         assertThat(photo.get().parentName()).isEqualTo(genus);
         assertThat(photo.get().observationId()).isNotNull();
 
-        var observation = query.fieldObservations()
+        var observation = query.observations()
                 .getByName(photo.get().observationId());
         assertThat(observation).isPresent();
         assertThat(observation.get().subject()).isEqualTo(genus);
@@ -93,7 +93,7 @@ class InsectAddPhotoCommandTest {
                 .findFirst();
         assertThat(photo).isPresent();
 
-        var observation = query.fieldObservations()
+        var observation = query.observations()
                 .getByName(photo.get().observationId());
         assertThat(observation).isPresent();
         assertThat(observation.get().notes()).isNull();

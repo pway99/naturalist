@@ -10,11 +10,11 @@ import java.util.Set;
 import com.naturalist.observation.OrganismObservation;
 
 @DomainService
-class OrganismObservationRepositoryMock
-        extends AbstractTestEntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, OrganismObservationTestEntitySource>
-        implements InsectRepository.FieldObservationRepository {
+class InsectObservationRepositoryMock
+        extends AbstractTestEntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectObservationTestEntitySource>
+        implements InsectRepository.InsectObservationRepository {
 
-    OrganismObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    InsectObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
 

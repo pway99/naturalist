@@ -15,21 +15,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link PlantRepository.FieldObservationRepository}.
+ * Behavioral contract for {@link PlantRepository.PlantObservationRepository}.
  * Mirrors the insects field-observation contract, adapted to plant ranks.
  */
-interface OrganismObservationRepositoryTest
+interface PlantObservationRepositoryTest
         extends EntityRepositoryTest<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>> {
 
     NaturalistName PATRICK = NaturalistName.of("patrick-way");
     NaturalistName DELIA = NaturalistName.of("delia-durrell");
 
     @Override
-    PlantRepository.FieldObservationRepository repository();
+    PlantRepository.PlantObservationRepository repository();
 
     @Override
     default TestEntitySource<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>> source() {
-        return db.getNamed(OrganismObservationTestEntitySource.class);
+        return db.getNamed(PlantObservationTestEntitySource.class);
     }
 
     @Override

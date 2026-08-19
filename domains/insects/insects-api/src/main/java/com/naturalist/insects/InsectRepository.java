@@ -37,7 +37,7 @@ class InsectRepository {
     final OrderRepository orderRepository;
     final FeatureRepository featureRepository;
     final FeatureAssignmentRepository featureAssignmentRepository;
-    final FieldObservationRepository fieldObservationRepository;
+    final InsectObservationRepository observationRepository;
 
     private InsectRepository(
             SpeciesRepository speciesRepository,
@@ -48,7 +48,7 @@ class InsectRepository {
             OrderRepository orderRepository,
             FeatureRepository featureRepository,
             FeatureAssignmentRepository featureAssignmentRepository,
-            FieldObservationRepository fieldObservationRepository) {
+            InsectObservationRepository observationRepository) {
         this.speciesRepository = speciesRepository;
         this.imageRepository = imageRepository;
         this.familyRepository = familyRepository;
@@ -57,7 +57,7 @@ class InsectRepository {
         this.orderRepository = orderRepository;
         this.featureRepository = featureRepository;
         this.featureAssignmentRepository = featureAssignmentRepository;
-        this.fieldObservationRepository = fieldObservationRepository;
+        this.observationRepository = observationRepository;
     }
 
     static InsectRepository create(
@@ -69,10 +69,10 @@ class InsectRepository {
             OrderRepository orderRepository,
             FeatureRepository featureRepository,
             FeatureAssignmentRepository featureAssignmentRepository,
-            FieldObservationRepository fieldObservationRepository) {
+            InsectObservationRepository observationRepository) {
         return new InsectRepository(speciesRepository, imageRepository, familyRepository,
                 genusRepository, functionalRoleRepository, orderRepository,
-                featureRepository, featureAssignmentRepository, fieldObservationRepository);
+                featureRepository, featureAssignmentRepository, observationRepository);
     }
 
     SpeciesRepository speciesRepository() {
@@ -107,8 +107,8 @@ class InsectRepository {
         return featureAssignmentRepository;
     }
 
-    FieldObservationRepository fieldObservationRepository() {
-        return fieldObservationRepository;
+    InsectObservationRepository observationRepository() {
+        return observationRepository;
     }
 
     protected interface SpeciesRepository
@@ -123,7 +123,7 @@ class InsectRepository {
         List<InsectImage> getByParentName(InsectRankName parentName);
     }
 
-    protected interface FieldObservationRepository
+    protected interface InsectObservationRepository
             extends EntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> {
 
         java.util.List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalist(

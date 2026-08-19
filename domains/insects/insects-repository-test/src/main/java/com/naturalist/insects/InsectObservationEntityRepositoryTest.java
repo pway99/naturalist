@@ -14,18 +14,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.observation.Identification;
 
-interface OrganismObservationEntityRepositoryTest
+interface InsectObservationEntityRepositoryTest
         extends EntityRepositoryTest<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> {
 
     NaturalistName PATRICK = NaturalistName.of("patrick-way");
     NaturalistName DELIA = NaturalistName.of("delia-durrell");
 
     @Override
-    InsectRepository.FieldObservationRepository repository();
+    InsectRepository.InsectObservationRepository repository();
 
     @Override
     default TestEntitySource<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> source() {
-        return db.getNamed(OrganismObservationTestEntitySource.class);
+        return db.getNamed(InsectObservationTestEntitySource.class);
     }
 
     @Override

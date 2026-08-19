@@ -6,7 +6,7 @@ class InsectCommandImpl implements InsectCommand {
 
     private final SpeciesCommand speciesCommand;
     private final ImageCommand imageCommand;
-    private final FieldObservationCommand fieldObservationCommand;
+    private final InsectObservationCommand observationCommand;
     private final OrderCommand orderCommand;
     private final FamilyCommand familyCommand;
     private final GenusCommand genusCommand;
@@ -14,14 +14,14 @@ class InsectCommandImpl implements InsectCommand {
     private final FeatureAssignmentCommand featureAssignmentCommand;
 
     InsectCommandImpl(SpeciesCommand speciesCommand, ImageCommand imageCommand,
-                       FieldObservationCommand fieldObservationCommand,
+                       InsectObservationCommand observationCommand,
                        OrderCommand orderCommand, FamilyCommand familyCommand,
                        GenusCommand genusCommand, FeatureCommand featureCommand,
                        FeatureAssignmentCommand featureAssignmentCommand) {
         Observer.forClass(InsectCommandImpl.class).arguments("constructor", i -> i
                         .notNull(speciesCommand, "speciesCommand")
                         .notNull(imageCommand, "imageCommand")
-                        .notNull(fieldObservationCommand, "fieldObservationCommand")
+                        .notNull(observationCommand, "observationCommand")
                         .notNull(orderCommand, "orderCommand")
                         .notNull(familyCommand, "familyCommand")
                         .notNull(genusCommand, "genusCommand")
@@ -30,7 +30,7 @@ class InsectCommandImpl implements InsectCommand {
                 .throwWhenInvalid();
         this.speciesCommand = speciesCommand;
         this.imageCommand = imageCommand;
-        this.fieldObservationCommand = fieldObservationCommand;
+        this.observationCommand = observationCommand;
         this.orderCommand = orderCommand;
         this.familyCommand = familyCommand;
         this.genusCommand = genusCommand;
@@ -49,8 +49,8 @@ class InsectCommandImpl implements InsectCommand {
     }
 
     @Override
-    public FieldObservationCommand fieldObservations() {
-        return fieldObservationCommand;
+    public InsectObservationCommand observations() {
+        return observationCommand;
     }
 
     @Override

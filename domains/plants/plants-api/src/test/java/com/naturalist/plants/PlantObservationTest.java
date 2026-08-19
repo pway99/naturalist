@@ -11,9 +11,9 @@ import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrganismObservationTest {
+class PlantObservationTest {
 
-    private static final Observer observer = Observer.forClass(OrganismObservationTest.class);
+    private static final Observer observer = Observer.forClass(PlantObservationTest.class);
 
     @Test
     void fullyPopulatedObservationIsValid() {

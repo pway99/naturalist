@@ -19,7 +19,7 @@ class InsectAddPhotoTransaction extends Transaction<PhotoAddition> {
     @Override
     protected void doExecute(PhotoAddition addition) {
         if (addition.observation() != null) {
-            insectCommand.fieldObservations().insert(addition.observation());
+            insectCommand.observations().insert(addition.observation());
         }
         insectCommand.images().insert(addition.image());
     }

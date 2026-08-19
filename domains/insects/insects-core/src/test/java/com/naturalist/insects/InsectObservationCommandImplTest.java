@@ -5,7 +5,7 @@ import com.naturalist.data.EntityCommandContractTest;
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.data.TestEntitySource;
-import com.naturalist.insects.InsectEntityCollections.FieldObservationCollection;
+import com.naturalist.insects.InsectEntityCollections.InsectObservationCollection;
 import com.naturalist.naturalist.NaturalistName;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -14,15 +14,15 @@ import java.util.List;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.observation.Identification;
 
-class OrganismObservationCommandImplTest
-        implements EntityCommandContractTest<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, FieldObservationCollection> {
+class InsectObservationCommandImplTest
+        implements EntityCommandContractTest<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectObservationCollection> {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    OrganismObservationRepositoryMock repository = new OrganismObservationRepositoryMock(db);
-    InsectCommand.FieldObservationCommand command = new OrganismObservationCommandImpl(repository);
-    InsectQuery.FieldObservationQuery query = new OrganismObservationQueryImpl(repository);
+    InsectObservationRepositoryMock repository = new InsectObservationRepositoryMock(db);
+    InsectCommand.InsectObservationCommand command = new InsectObservationCommandImpl(repository);
+    InsectQuery.InsectObservationQuery query = new InsectObservationQueryImpl(repository);
 
     @Override
     public EntityCommand<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> command() {
@@ -30,13 +30,13 @@ class OrganismObservationCommandImplTest
     }
 
     @Override
-    public EntityQuery<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, FieldObservationCollection> query() {
+    public EntityQuery<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectObservationCollection> query() {
         return query;
     }
 
     @Override
     public TestEntitySource<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> source() {
-        return db.getNamed(OrganismObservationTestEntitySource.class);
+        return db.getNamed(InsectObservationTestEntitySource.class);
     }
 
     @Override

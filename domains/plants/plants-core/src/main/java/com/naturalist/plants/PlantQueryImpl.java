@@ -9,7 +9,7 @@ class PlantQueryImpl implements PlantQuery {
     private final FamilyQuery plantFamilyEntityQuery;
     private final GenusQuery plantGenusEntityQuery;
     private final EcologicalRoleQuery plantEcologicalRoleEntityQuery;
-    private final FieldObservationQuery fieldObservationQuery;
+    private final PlantObservationQuery observationQuery;
     private final ImageQuery imageQuery;
 
     PlantQueryImpl(SpeciesQuery plantEntityQuery,
@@ -17,7 +17,7 @@ class PlantQueryImpl implements PlantQuery {
                    FamilyQuery plantFamilyEntityQuery,
                    GenusQuery plantGenusEntityQuery,
                    EcologicalRoleQuery plantEcologicalRoleEntityQuery,
-                   FieldObservationQuery fieldObservationQuery,
+                   PlantObservationQuery observationQuery,
                    ImageQuery imageQuery) {
         Observer.forClass(PlantQueryImpl.class).arguments("constructor", i -> i
                         .notNull(plantEntityQuery, "plantEntityQuery")
@@ -25,7 +25,7 @@ class PlantQueryImpl implements PlantQuery {
                         .notNull(plantFamilyEntityQuery, "plantFamilyEntityQuery")
                         .notNull(plantGenusEntityQuery, "plantGenusEntityQuery")
                         .notNull(plantEcologicalRoleEntityQuery, "plantEcologicalRoleEntityQuery")
-                        .notNull(fieldObservationQuery, "fieldObservationQuery")
+                        .notNull(observationQuery, "observationQuery")
                         .notNull(imageQuery, "imageQuery"))
                 .throwWhenInvalid();
         this.plantEntityQuery = plantEntityQuery;
@@ -33,7 +33,7 @@ class PlantQueryImpl implements PlantQuery {
         this.plantFamilyEntityQuery = plantFamilyEntityQuery;
         this.plantGenusEntityQuery = plantGenusEntityQuery;
         this.plantEcologicalRoleEntityQuery = plantEcologicalRoleEntityQuery;
-        this.fieldObservationQuery = fieldObservationQuery;
+        this.observationQuery = observationQuery;
         this.imageQuery = imageQuery;
     }
 
@@ -63,8 +63,8 @@ class PlantQueryImpl implements PlantQuery {
     }
 
     @Override
-    public FieldObservationQuery fieldObservations() {
-        return fieldObservationQuery;
+    public PlantObservationQuery observations() {
+        return observationQuery;
     }
 
     @Override

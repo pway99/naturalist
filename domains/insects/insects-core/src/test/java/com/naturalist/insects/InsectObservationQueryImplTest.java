@@ -7,13 +7,13 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrganismObservationQueryImplTest {
+class InsectObservationQueryImplTest {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    InsectQuery.FieldObservationQuery query =
-            new OrganismObservationQueryImpl(new OrganismObservationRepositoryMock(db));
+    InsectQuery.InsectObservationQuery query =
+            new InsectObservationQueryImpl(new InsectObservationRepositoryMock(db));
 
     @Test
     void forNaturalist_returnsOnlyThatNaturalistsObservations() {

@@ -14,14 +14,14 @@ import com.naturalist.taxonomy.RankNameReconstructor;
 import java.io.UncheckedIOException;
 import java.util.List;
 
-public class OrganismObservationTestEntitySource
+public class InsectObservationTestEntitySource
         extends TestEntitySource<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> {
 
     private final ObjectMapper mapper = TestDataHelper.newBaseMapper()
             .setInjectableValues(new InjectableValues.Std()
                     .addValue(RankNameReconstructor.class, (RankNameReconstructor) InsectRankName::of));
 
-    public OrganismObservationTestEntitySource(NaturalistDatabase database) {
+    public InsectObservationTestEntitySource(NaturalistDatabase database) {
         super(database);
         loadFile("insects/field-observations.json", this::parse);
     }

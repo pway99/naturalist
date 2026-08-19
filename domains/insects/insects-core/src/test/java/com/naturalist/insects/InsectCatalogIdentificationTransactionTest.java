@@ -51,8 +51,8 @@ class InsectCatalogIdentificationTransactionTest {
                 .isEqualTo(FileName.of("IMG_0001.jpg"));
 
         // Observation persisted
-        assertThat(query.fieldObservations().getByName(OBSERVATION_ID)).isPresent();
-        assertThat(query.fieldObservations().getByName(OBSERVATION_ID).get().observedBy())
+        assertThat(query.observations().getByName(OBSERVATION_ID)).isPresent();
+        assertThat(query.observations().getByName(OBSERVATION_ID).get().observedBy())
                 .isEqualTo(NaturalistName.of("pat"));
     }
 
@@ -84,8 +84,8 @@ class InsectCatalogIdentificationTransactionTest {
         assertThat(images.stream().toList()).hasSize(2);
 
         // Both observations persisted
-        assertThat(query.fieldObservations().getByName(OBSERVATION_ID)).isPresent();
-        assertThat(query.fieldObservations().getByName(secondObsId)).isPresent();
+        assertThat(query.observations().getByName(OBSERVATION_ID)).isPresent();
+        assertThat(query.observations().getByName(secondObsId)).isPresent();
     }
 
     @Test
@@ -154,7 +154,7 @@ class InsectCatalogIdentificationTransactionTest {
         assertThat(persistedFamily).isPresent();
         assertThat(persistedFamily.get().description()).isEqualTo(description());
         assertThat(query.images().forParentName(familyName).stream().toList()).hasSize(1);
-        assertThat(query.fieldObservations().getByName(obsId)).isPresent();
+        assertThat(query.observations().getByName(obsId)).isPresent();
     }
 
     @Test

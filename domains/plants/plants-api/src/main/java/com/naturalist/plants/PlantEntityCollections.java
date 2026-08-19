@@ -102,18 +102,18 @@ public interface PlantEntityCollections {
         }
     }
 
-    final class FieldObservationCollection extends BehavioralCollection<OrganismObservation<PlantObservationId, PlantRankName>> {
+    final class PlantObservationCollection extends BehavioralCollection<OrganismObservation<PlantObservationId, PlantRankName>> {
 
-        FieldObservationCollection(Collection<OrganismObservation<PlantObservationId, PlantRankName>> observations) {
+        PlantObservationCollection(Collection<OrganismObservation<PlantObservationId, PlantRankName>> observations) {
             super(observations);
         }
 
-        public static FieldObservationCollection of(Collection<OrganismObservation<PlantObservationId, PlantRankName>> observations) {
-            return new FieldObservationCollection(observations);
+        public static PlantObservationCollection of(Collection<OrganismObservation<PlantObservationId, PlantRankName>> observations) {
+            return new PlantObservationCollection(observations);
         }
 
-        public static FieldObservationCollection empty() {
-            return new FieldObservationCollection(List.of());
+        public static PlantObservationCollection empty() {
+            return new PlantObservationCollection(List.of());
         }
     }
 }

@@ -226,7 +226,7 @@ class InsectIdentificationCommandTest {
                 image, FileName.of("IMG_0002.jpg"),
                 NaturalistName.of("pat"), null);
 
-        var obs = query.fieldObservations().findPage(PageRequest.console(0));
+        var obs = query.observations().findPage(PageRequest.console(0));
         var withId = obs.content().stream()
                 .filter(o -> o.subject().equals(rankName)
                         && o.identification() != null)
