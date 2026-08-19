@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.data.EntityRepository;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 import java.util.List;
@@ -38,9 +39,9 @@ class PlantRepository {
     }
 
     protected interface ImageRepository
-            extends EntityRepository<PlantImageId, PlantImage> {
+            extends EntityRepository<PlantImageId, OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> {
 
-        List<PlantImage> getByParentName(PlantRankName parentName);
+        List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> getByParentName(PlantRankName parentName);
     }
 
     protected interface ObservationRepository

@@ -22,6 +22,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@code PlantOrderName} and left all three of these behind; this test turns that class
  * of miss into a build failure.
  * <p>
+ * {@code OrganismImage} no longer appears here: its {@code parentName} moved off
+ * {@code @JsonSubTypes} onto the shared {@code RankName} {@code {"rank","value"}} codec
+ * (registered {@code RankNameReconstructor}), so it is not a {@code @JsonSubTypes}
+ * dispatch consumer. The three records below still are.
+ * <p>
  * {@code Planting} in the garden domain declares the same dispatch and is covered by its
  * own copy of this test — plants-api cannot see garden-api.
  */
@@ -30,8 +35,7 @@ class PlantRankNameDispatchTest {
     private static final List<Class<?>> CONSUMERS = List.of(
             PlantEcologicalRole.class,
             PlantProgram.class,
-            PhytochemicalConstituent.class,
-            PlantImage.class);
+            PhytochemicalConstituent.class);
 
     @Test
     void everyConsumerDispatchesOverEveryPermit() {

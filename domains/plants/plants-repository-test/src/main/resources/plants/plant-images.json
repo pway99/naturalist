@@ -1,34 +1,42 @@
 [
   {
     "id": "026bb000-0000-7000-8000-000000000001",
-    "parentName": "aristolochia-californica",
-    "parentRank": "SPECIES",
     "dateAdded": "2026-05-09T23:38:37Z",
     "resourceName": "IMG_5905338E-63EC-495D-A63A-CA79AA9C066E.JPEG",
-    "observationId": "026aa000-0000-7000-8000-000000000005"
+    "observationId": "026aa000-0000-7000-8000-000000000005",
+    "parentName": {
+      "rank": "SPECIES",
+      "value": "aristolochia-californica"
+    }
   },
   {
     "id": "026bb000-0000-7000-8000-000000000002",
-    "parentName": "aristolochia-californica",
-    "parentRank": "SPECIES",
     "dateAdded": "2026-05-09T23:39:12Z",
     "resourceName": "IMG_C07242F4-5401-4DAB-9C07-007118F1C30E.JPEG",
-    "observationId": "026aa000-0000-7000-8000-000000000005"
+    "observationId": "026aa000-0000-7000-8000-000000000005",
+    "parentName": {
+      "rank": "SPECIES",
+      "value": "aristolochia-californica"
+    }
   },
   {
     "id": "026bb000-0000-7000-8000-000000000003",
-    "parentName": "helianthus",
-    "parentRank": "GENUS",
     "dateAdded": "2026-07-18T18:20:00Z",
     "resourceName": "IMG_9313.HEIC",
-    "observationId": null
+    "observationId": null,
+    "parentName": {
+      "rank": "GENUS",
+      "value": "helianthus"
+    }
   },
   {
     "id": "026bb000-0000-7000-8000-000000000004",
-    "parentName": "solanum",
-    "parentRank": "GENUS",
     "dateAdded": "2026-07-18T18:45:00Z",
     "resourceName": "IMG_9264.HEIC",
-    "observationId": null
+    "observationId": null,
+    "parentName": {
+      "rank": "GENUS",
+      "value": "solanum"
+    }
   }
 ]

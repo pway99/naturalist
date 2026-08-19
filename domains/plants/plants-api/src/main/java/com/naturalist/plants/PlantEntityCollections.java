@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.ddd.BehavioralCollection;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 import java.util.Collection;
@@ -87,13 +88,13 @@ public interface PlantEntityCollections {
         }
     }
 
-    final class ImageCollection extends BehavioralCollection<PlantImage> {
+    final class ImageCollection extends BehavioralCollection<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> {
 
-        ImageCollection(Collection<PlantImage> images) {
+        ImageCollection(Collection<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> images) {
             super(images);
         }
 
-        public static ImageCollection of(Collection<PlantImage> images) {
+        public static ImageCollection of(Collection<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> images) {
             return new ImageCollection(images);
         }
 

@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.plants.PlantEntityCollections.ImageCollection;
 
 import java.util.Set;
@@ -10,7 +11,7 @@ import java.util.Set;
 class PlantImageQueryImpl
         extends AbstractEntityQuery<
         PlantImageId,
-        PlantImage,
+        OrganismImage<PlantImageId, PlantObservationId, PlantRankName>,
         ImageCollection,
         PlantRepository.ImageRepository>
         implements PlantQuery.ImageQuery {

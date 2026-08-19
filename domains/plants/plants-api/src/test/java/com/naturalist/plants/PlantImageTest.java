@@ -4,6 +4,7 @@ import com.naturalist.data.FileName;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
+import com.naturalist.observation.OrganismImage;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -17,7 +18,7 @@ class PlantImageTest {
     @Test
     void fullyPopulatedImageIsValid() {
         MethodObserver mo = observer.forMethod("fullyPopulatedImageIsValid");
-        PlantImage image = new PlantImage(
+        OrganismImage<PlantImageId, PlantObservationId, PlantRankName> image = new OrganismImage<PlantImageId, PlantObservationId, PlantRankName>(
                 PlantImageId.create(),
                 PlantSpeciesName.of("solanum-lycopersicum"),
                 Instant.parse("2026-08-18T15:00:00Z"),
@@ -33,7 +34,7 @@ class PlantImageTest {
     void nullObservationIdIsValid() {
         // observationId is nullable-by-design — a shared catalog image has no owning observation.
         MethodObserver mo = observer.forMethod("nullObservationIdIsValid");
-        PlantImage image = new PlantImage(
+        OrganismImage<PlantImageId, PlantObservationId, PlantRankName> image = new OrganismImage<PlantImageId, PlantObservationId, PlantRankName>(
                 PlantImageId.create(),
                 PlantGenusName.of("trifolium"),
                 Instant.parse("2026-08-18T15:00:00Z"),
@@ -48,7 +49,8 @@ class PlantImageTest {
     @Test
     void allNullComponentsReportEveryViolation() {
         MethodObserver mo = observer.forMethod("allNullComponentsReportEveryViolation");
-        PlantImage image = new PlantImage(null, null, null, null, null);
+        OrganismImage<PlantImageId, PlantObservationId, PlantRankName> image =
+                new OrganismImage<PlantImageId, PlantObservationId, PlantRankName>(null, null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(image, "image");
 

@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 import java.util.Optional;
@@ -76,12 +77,12 @@ public interface PlantQuery {
     ImageQuery images();
 
     interface ImageQuery
-            extends EntityQuery<PlantImageId, PlantImage, ImageCollection> {
+            extends EntityQuery<PlantImageId, OrganismImage<PlantImageId, PlantObservationId, PlantRankName>, ImageCollection> {
 
         /**
          * All photographs attached at the given rank name — the plant analogue of
          * {@code InsectQuery.ImageQuery.forParentName}. Attachment is by the image's typed
-         * {@link PlantImage#parentName()}, so a genus-level identification surfaces the
+         * {@link OrganismImage#parentName()}, so a genus-level identification surfaces the
          * genus's own photos, not its species'.
          */
         ImageCollection forParentName(PlantRankName parentName);

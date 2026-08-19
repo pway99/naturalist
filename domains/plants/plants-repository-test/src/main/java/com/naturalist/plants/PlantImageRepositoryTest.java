@@ -4,6 +4,7 @@ import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.FileName;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.observation.OrganismImage;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -15,16 +16,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Behavioral contract for {@link PlantRepository.ImageRepository}. Mirrors the insects
  * image contract, adapted to plant ranks: attachment is by the image's typed
- * {@link PlantImage#parentName()}, resolved at whichever rank the identification supported.
+ * {@link OrganismImage#parentName()}, resolved at whichever rank the identification supported.
  */
 interface PlantImageRepositoryTest
-        extends EntityRepositoryTest<PlantImageId, PlantImage> {
+        extends EntityRepositoryTest<PlantImageId, OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> {
 
     @Override
     PlantRepository.ImageRepository repository();
 
     @Override
-    default TestEntitySource<PlantImageId, PlantImage> source() {
+    default TestEntitySource<PlantImageId, OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> source() {
         return db.getNamed(PlantImageTestEntitySource.class);
     }
 
@@ -41,8 +42,8 @@ interface PlantImageRepositoryTest
     }
 
     @Override
-    default PlantImage newEntity() {
-        return new PlantImage(
+    default OrganismImage<PlantImageId, PlantObservationId, PlantRankName> newEntity() {
+        return new OrganismImage<PlantImageId, PlantObservationId, PlantRankName>(
                 PlantImageId.create(),
                 TestPlantsIdentifiers.PlantGenera.Trifolium.name,
                 Instant.parse("2026-07-10T09:00:00Z"),
@@ -51,8 +52,8 @@ interface PlantImageRepositoryTest
     }
 
     @Override
-    default PlantImage ghostEntity() {
-        return new PlantImage(
+    default OrganismImage<PlantImageId, PlantObservationId, PlantRankName> ghostEntity() {
+        return new OrganismImage<PlantImageId, PlantObservationId, PlantRankName>(
                 PlantImageId.create(),
                 TestPlantsIdentifiers.PlantGenera.Trifolium.name,
                 Instant.parse("2026-07-11T09:00:00Z"),
@@ -61,8 +62,9 @@ interface PlantImageRepositoryTest
     }
 
     @Override
-    default PlantImage modifiedEntity(PlantImage original) {
-        return new PlantImage(
+    default OrganismImage<PlantImageId, PlantObservationId, PlantRankName> modifiedEntity(
+            OrganismImage<PlantImageId, PlantObservationId, PlantRankName> original) {
+        return new OrganismImage<PlantImageId, PlantObservationId, PlantRankName>(
                 original.id(),
                 TestPlantsIdentifiers.PlantGenera.Trifolium.name,
                 Instant.parse("2026-07-12T09:00:00Z"),
@@ -86,7 +88,7 @@ interface PlantImageRepositoryTest
         assertThat(results)
                 .allMatch(image -> image.parentName()
                         .equals(TestPlantsIdentifiers.Plants.CaliforniaPipevine.name));
-        assertThat(results.stream().map(PlantImage::id))
+        assertThat(results.stream().map(OrganismImage::id))
                 .contains(
                         TestPlantsIdentifiers.Plants.CaliforniaPipevine.Images.Wide5905,
                         TestPlantsIdentifiers.Plants.CaliforniaPipevine.Images.WideC072);
