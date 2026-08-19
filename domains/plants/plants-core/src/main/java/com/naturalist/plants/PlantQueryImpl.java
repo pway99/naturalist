@@ -9,7 +9,7 @@ class PlantQueryImpl implements PlantQuery {
     private final FamilyQuery plantFamilyEntityQuery;
     private final GenusQuery plantGenusEntityQuery;
     private final EcologicalRoleQuery plantEcologicalRoleEntityQuery;
-    private final PlantObservationQuery observationQuery;
+    private final ObservationQuery observationQuery;
     private final ImageQuery imageQuery;
 
     PlantQueryImpl(SpeciesQuery plantEntityQuery,
@@ -17,7 +17,7 @@ class PlantQueryImpl implements PlantQuery {
                    FamilyQuery plantFamilyEntityQuery,
                    GenusQuery plantGenusEntityQuery,
                    EcologicalRoleQuery plantEcologicalRoleEntityQuery,
-                   PlantObservationQuery observationQuery,
+                   ObservationQuery observationQuery,
                    ImageQuery imageQuery) {
         Observer.forClass(PlantQueryImpl.class).arguments("constructor", i -> i
                         .notNull(plantEntityQuery, "plantEntityQuery")
@@ -63,7 +63,7 @@ class PlantQueryImpl implements PlantQuery {
     }
 
     @Override
-    public PlantObservationQuery observations() {
+    public ObservationQuery observations() {
         return observationQuery;
     }
 

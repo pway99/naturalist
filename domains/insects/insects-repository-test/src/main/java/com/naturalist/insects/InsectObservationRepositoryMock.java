@@ -12,7 +12,7 @@ import com.naturalist.observation.OrganismObservation;
 @DomainService
 class InsectObservationRepositoryMock
         extends AbstractTestEntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectObservationTestEntitySource>
-        implements InsectRepository.InsectObservationRepository {
+        implements InsectRepository.ObservationRepository {
 
     InsectObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);

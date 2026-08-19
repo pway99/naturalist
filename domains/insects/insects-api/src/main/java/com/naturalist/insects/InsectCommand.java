@@ -33,7 +33,7 @@ public interface InsectCommand {
 
     ImageCommand images();
 
-    InsectObservationCommand observations();
+    ObservationCommand observations();
 
     OrderCommand orders();
 
@@ -60,7 +60,7 @@ public interface InsectCommand {
     /**
      * Entity-level command surface for {@link OrganismObservation}.
      */
-    interface InsectObservationCommand
+    interface ObservationCommand
             extends EntityCommand<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> {
     }
 

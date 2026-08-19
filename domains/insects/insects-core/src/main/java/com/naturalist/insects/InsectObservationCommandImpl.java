@@ -4,10 +4,10 @@ import com.naturalist.data.AbstractEntityCommand;
 import com.naturalist.observation.OrganismObservation;
 
 class InsectObservationCommandImpl
-        extends AbstractEntityCommand<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectRepository.InsectObservationRepository>
-        implements InsectCommand.InsectObservationCommand {
+        extends AbstractEntityCommand<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectRepository.ObservationRepository>
+        implements InsectCommand.ObservationCommand {
 
-    InsectObservationCommandImpl(InsectRepository.InsectObservationRepository repository) {
+    InsectObservationCommandImpl(InsectRepository.ObservationRepository repository) {
         super(repository);
     }
 }

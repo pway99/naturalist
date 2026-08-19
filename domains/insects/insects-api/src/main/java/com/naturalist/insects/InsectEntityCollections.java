@@ -18,7 +18,7 @@ import com.naturalist.observation.OrganismObservation;
  *   <li>{@link FeatureCollection} — multi-result return type for {@link InsectFeature}.</li>
  *   <li>{@link FamilyCollection} — multi-result return type for {@link InsectFamily}.</li>
  *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenus}.</li>
- *   <li>{@link InsectObservationCollection} — multi-result return type for
+ *   <li>{@link ObservationCollection} — multi-result return type for
  *       {@link OrganismObservation}.</li>
  *   <li>{@link FunctionalRoleCollection} — multi-result return type for
  *       {@link InsectFunctionalRole}.</li>
@@ -61,18 +61,18 @@ public interface InsectEntityCollections {
         }
     }
 
-    final class InsectObservationCollection extends BehavioralCollection<OrganismObservation<InsectObservationId, InsectRankName>> {
+    final class ObservationCollection extends BehavioralCollection<OrganismObservation<InsectObservationId, InsectRankName>> {
 
-        InsectObservationCollection(Collection<OrganismObservation<InsectObservationId, InsectRankName>> observations) {
+        ObservationCollection(Collection<OrganismObservation<InsectObservationId, InsectRankName>> observations) {
             super(observations);
         }
 
-        public static InsectObservationCollection of(Collection<OrganismObservation<InsectObservationId, InsectRankName>> observations) {
-            return new InsectObservationCollection(observations);
+        public static ObservationCollection of(Collection<OrganismObservation<InsectObservationId, InsectRankName>> observations) {
+            return new ObservationCollection(observations);
         }
 
-        public static InsectObservationCollection empty() {
-            return new InsectObservationCollection(List.of());
+        public static ObservationCollection empty() {
+            return new ObservationCollection(List.of());
         }
     }
 

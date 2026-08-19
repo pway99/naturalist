@@ -53,7 +53,7 @@ public interface InsectQuery {
 
     ImageQuery images();
 
-    InsectObservationQuery observations();
+    ObservationQuery observations();
 
     FamilyQuery families();
 
@@ -121,12 +121,12 @@ public interface InsectQuery {
         ImageCollection forRankHierarchy(InsectRankName rankName);
     }
 
-    interface InsectObservationQuery
+    interface ObservationQuery
             extends EntityQuery<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>,
-                    InsectEntityCollections.InsectObservationCollection> {
+                    InsectEntityCollections.ObservationCollection> {
 
         /** All of a naturalist's observations — used for the species-list "my collection" filter. */
-        InsectEntityCollections.InsectObservationCollection forNaturalist(
+        InsectEntityCollections.ObservationCollection forNaturalist(
                 com.naturalist.naturalist.NaturalistName observedBy);
 
         /**
@@ -134,7 +134,7 @@ public interface InsectQuery {
          * rank pages (order/family/genus/species detail), which pass the ranks they display to
          * render a per-entity "collected" indicator.
          */
-        InsectEntityCollections.InsectObservationCollection forNaturalistAndSubjects(
+        InsectEntityCollections.ObservationCollection forNaturalistAndSubjects(
                 com.naturalist.naturalist.NaturalistName observedBy,
                 java.util.Set<InsectRankName> subjects);
     }

@@ -10,7 +10,7 @@ class InsectQueryImpl implements InsectQuery {
 
     private final SpeciesQuery speciesQuery;
     private final ImageQuery imageQuery;
-    private final InsectObservationQuery observationQuery;
+    private final ObservationQuery observationQuery;
     private final FamilyQuery familyQuery;
     private final GenusQuery genusQuery;
     private final FunctionalRoleQuery functionalRoleQuery;
@@ -31,7 +31,7 @@ class InsectQueryImpl implements InsectQuery {
                     InsectLifeStageQuery insectLifeStageQuery,
                     InsectRepository.FeatureRepository featureRepository,
                     InsectRepository.FeatureAssignmentRepository featureAssignmentRepository,
-                    InsectObservationQuery observationQuery) {
+                    ObservationQuery observationQuery) {
         Observer.forClass(InsectQueryImpl.class).arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
@@ -83,7 +83,7 @@ class InsectQueryImpl implements InsectQuery {
     }
 
     @Override
-    public InsectObservationQuery observations() {
+    public ObservationQuery observations() {
         return observationQuery;
     }
 

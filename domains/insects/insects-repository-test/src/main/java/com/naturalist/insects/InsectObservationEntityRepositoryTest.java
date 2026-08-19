@@ -21,7 +21,7 @@ interface InsectObservationEntityRepositoryTest
     NaturalistName DELIA = NaturalistName.of("delia-durrell");
 
     @Override
-    InsectRepository.InsectObservationRepository repository();
+    InsectRepository.ObservationRepository repository();
 
     @Override
     default TestEntitySource<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> source() {

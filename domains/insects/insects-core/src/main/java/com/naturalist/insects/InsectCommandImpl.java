@@ -6,7 +6,7 @@ class InsectCommandImpl implements InsectCommand {
 
     private final SpeciesCommand speciesCommand;
     private final ImageCommand imageCommand;
-    private final InsectObservationCommand observationCommand;
+    private final ObservationCommand observationCommand;
     private final OrderCommand orderCommand;
     private final FamilyCommand familyCommand;
     private final GenusCommand genusCommand;
@@ -14,7 +14,7 @@ class InsectCommandImpl implements InsectCommand {
     private final FeatureAssignmentCommand featureAssignmentCommand;
 
     InsectCommandImpl(SpeciesCommand speciesCommand, ImageCommand imageCommand,
-                       InsectObservationCommand observationCommand,
+                       ObservationCommand observationCommand,
                        OrderCommand orderCommand, FamilyCommand familyCommand,
                        GenusCommand genusCommand, FeatureCommand featureCommand,
                        FeatureAssignmentCommand featureAssignmentCommand) {
@@ -49,7 +49,7 @@ class InsectCommandImpl implements InsectCommand {
     }
 
     @Override
-    public InsectObservationCommand observations() {
+    public ObservationCommand observations() {
         return observationCommand;
     }
 

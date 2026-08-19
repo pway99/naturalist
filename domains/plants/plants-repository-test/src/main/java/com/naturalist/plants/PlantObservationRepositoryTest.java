@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link PlantRepository.PlantObservationRepository}.
+ * Behavioral contract for {@link PlantRepository.ObservationRepository}.
  * Mirrors the insects field-observation contract, adapted to plant ranks.
  */
 interface PlantObservationRepositoryTest
@@ -25,7 +25,7 @@ interface PlantObservationRepositoryTest
     NaturalistName DELIA = NaturalistName.of("delia-durrell");
 
     @Override
-    PlantRepository.PlantObservationRepository repository();
+    PlantRepository.ObservationRepository repository();
 
     @Override
     default TestEntitySource<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>> source() {

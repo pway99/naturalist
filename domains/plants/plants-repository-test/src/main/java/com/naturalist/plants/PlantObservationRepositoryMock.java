@@ -12,7 +12,7 @@ import java.util.Set;
 @DomainService
 class PlantObservationRepositoryMock
         extends AbstractTestEntityRepository<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>, PlantObservationTestEntitySource>
-        implements PlantRepository.PlantObservationRepository {
+        implements PlantRepository.ObservationRepository {
 
     PlantObservationRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);

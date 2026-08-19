@@ -37,7 +37,7 @@ class InsectRepository {
     final OrderRepository orderRepository;
     final FeatureRepository featureRepository;
     final FeatureAssignmentRepository featureAssignmentRepository;
-    final InsectObservationRepository observationRepository;
+    final ObservationRepository observationRepository;
 
     private InsectRepository(
             SpeciesRepository speciesRepository,
@@ -48,7 +48,7 @@ class InsectRepository {
             OrderRepository orderRepository,
             FeatureRepository featureRepository,
             FeatureAssignmentRepository featureAssignmentRepository,
-            InsectObservationRepository observationRepository) {
+            ObservationRepository observationRepository) {
         this.speciesRepository = speciesRepository;
         this.imageRepository = imageRepository;
         this.familyRepository = familyRepository;
@@ -69,7 +69,7 @@ class InsectRepository {
             OrderRepository orderRepository,
             FeatureRepository featureRepository,
             FeatureAssignmentRepository featureAssignmentRepository,
-            InsectObservationRepository observationRepository) {
+            ObservationRepository observationRepository) {
         return new InsectRepository(speciesRepository, imageRepository, familyRepository,
                 genusRepository, functionalRoleRepository, orderRepository,
                 featureRepository, featureAssignmentRepository, observationRepository);
@@ -107,7 +107,7 @@ class InsectRepository {
         return featureAssignmentRepository;
     }
 
-    InsectObservationRepository observationRepository() {
+    ObservationRepository observationRepository() {
         return observationRepository;
     }
 
@@ -123,7 +123,7 @@ class InsectRepository {
         List<InsectImage> getByParentName(InsectRankName parentName);
     }
 
-    protected interface InsectObservationRepository
+    protected interface ObservationRepository
             extends EntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> {
 
         java.util.List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalist(

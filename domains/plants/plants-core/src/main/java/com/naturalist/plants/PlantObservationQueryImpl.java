@@ -4,7 +4,7 @@ import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.OrganismObservation;
-import com.naturalist.plants.PlantEntityCollections.PlantObservationCollection;
+import com.naturalist.plants.PlantEntityCollections.ObservationCollection;
 
 import java.util.Set;
 
@@ -13,34 +13,34 @@ class PlantObservationQueryImpl
         extends AbstractEntityQuery<
         PlantObservationId,
         OrganismObservation<PlantObservationId, PlantRankName>,
-        PlantObservationCollection,
-        PlantRepository.PlantObservationRepository>
-        implements PlantQuery.PlantObservationQuery {
+        ObservationCollection,
+        PlantRepository.ObservationRepository>
+        implements PlantQuery.ObservationQuery {
 
-    PlantObservationQueryImpl(PlantRepository.PlantObservationRepository repository) {
+    PlantObservationQueryImpl(PlantRepository.ObservationRepository repository) {
         super(repository);
     }
 
     @Override
-    public PlantObservationCollection findByNameSet(Set<PlantObservationId> names) {
+    public ObservationCollection findByNameSet(Set<PlantObservationId> names) {
         observer().arguments("findByNameSet", i -> i.identifierSet(names, "names"))
                 .throwWhenInvalid();
-        return PlantObservationCollection.of(repository().getByEntityNameSet(names));
+        return ObservationCollection.of(repository().getByEntityNameSet(names));
     }
 
     @Override
-    public PlantObservationCollection forNaturalist(NaturalistName observedBy) {
+    public ObservationCollection forNaturalist(NaturalistName observedBy) {
         observer().arguments("forNaturalist", i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
-        return PlantObservationCollection.of(repository().getByNaturalist(observedBy));
+        return ObservationCollection.of(repository().getByNaturalist(observedBy));
     }
 
     @Override
-    public PlantObservationCollection forNaturalistAndSubjects(NaturalistName observedBy, Set<PlantRankName> subjects) {
+    public ObservationCollection forNaturalistAndSubjects(NaturalistName observedBy, Set<PlantRankName> subjects) {
         observer().arguments("forNaturalistAndSubjects", i -> i
                         .identifier(observedBy, "observedBy")
                         .identifierSet(subjects, "subjects"))
                 .throwWhenInvalid();
-        return PlantObservationCollection.of(repository().getByNaturalistAndSubjects(observedBy, subjects));
+        return ObservationCollection.of(repository().getByNaturalistAndSubjects(observedBy, subjects));
     }
 }

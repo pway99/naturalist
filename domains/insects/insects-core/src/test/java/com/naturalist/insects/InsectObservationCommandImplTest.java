@@ -5,7 +5,7 @@ import com.naturalist.data.EntityCommandContractTest;
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.data.TestEntitySource;
-import com.naturalist.insects.InsectEntityCollections.InsectObservationCollection;
+import com.naturalist.insects.InsectEntityCollections.ObservationCollection;
 import com.naturalist.naturalist.NaturalistName;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -15,14 +15,14 @@ import com.naturalist.observation.OrganismObservation;
 import com.naturalist.observation.Identification;
 
 class InsectObservationCommandImplTest
-        implements EntityCommandContractTest<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectObservationCollection> {
+        implements EntityCommandContractTest<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, ObservationCollection> {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
     InsectObservationRepositoryMock repository = new InsectObservationRepositoryMock(db);
-    InsectCommand.InsectObservationCommand command = new InsectObservationCommandImpl(repository);
-    InsectQuery.InsectObservationQuery query = new InsectObservationQueryImpl(repository);
+    InsectCommand.ObservationCommand command = new InsectObservationCommandImpl(repository);
+    InsectQuery.ObservationQuery query = new InsectObservationQueryImpl(repository);
 
     @Override
     public EntityCommand<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> command() {
@@ -30,7 +30,7 @@ class InsectObservationCommandImplTest
     }
 
     @Override
-    public EntityQuery<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectObservationCollection> query() {
+    public EntityQuery<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, ObservationCollection> query() {
         return query;
     }
 

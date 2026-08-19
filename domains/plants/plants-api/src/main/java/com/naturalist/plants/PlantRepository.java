@@ -43,7 +43,7 @@ class PlantRepository {
         List<PlantImage> getByParentName(PlantRankName parentName);
     }
 
-    protected interface PlantObservationRepository
+    protected interface ObservationRepository
             extends EntityRepository<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>> {
 
         List<OrganismObservation<PlantObservationId, PlantRankName>> getByNaturalist(NaturalistName observedBy);

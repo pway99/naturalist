@@ -12,7 +12,7 @@ class InsectObservationQueryImplTest {
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
 
-    InsectQuery.InsectObservationQuery query =
+    InsectQuery.ObservationQuery query =
             new InsectObservationQueryImpl(new InsectObservationRepositoryMock(db));
 
     @Test
