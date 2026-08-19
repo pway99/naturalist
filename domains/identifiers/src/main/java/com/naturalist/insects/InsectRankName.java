@@ -8,12 +8,14 @@ import com.naturalist.taxonomy.RankName;
  * {@link InsectOrderName}, {@link InsectFamilyName}, {@link InsectGenusName},
  * {@link InsectSpeciesName}, {@link InsectSubspeciesName}.
  *
- * <p>Used as the parent reference type on records that may attach to any of
- * the four ranks. The canonical case is {@code InsectImage.parentName}:
- * a field photograph that identifies the organism to family, genus, species,
- * or subspecies — whichever rank the naturalist's confidence allows. Rank
- * transitions ("we now know this is <i>Empoasca fabae</i>, not just an
- * Empoasca") become a single-field update on the consumer record.
+ * <p>Used as the subject/parent reference type on records that may attach to any
+ * rank. The canonical cases are the shared kernel evidence records
+ * {@code OrganismObservation<InsectObservationId, InsectRankName>.subject} and
+ * {@code OrganismImage<InsectImageId, InsectObservationId, InsectRankName>.parentName}:
+ * a sighting or field photograph that identifies the organism to order, family,
+ * genus, species, or subspecies — whichever rank the naturalist's confidence
+ * allows. Rank transitions ("we now know this is <i>Empoasca fabae</i>, not just
+ * an Empoasca") become a single-field update on the consumer record.
  *
  * <p>The sealed permit list is the type-system enforcement: only insect-side
  * rank names compile into a slot typed {@code InsectRankName}. Cross-domain
@@ -27,39 +29,21 @@ import com.naturalist.taxonomy.RankName;
  *
  * <h2>JSON</h2>
  *
- * Jackson polymorphic dispatch is configured <em>at the consuming field</em>,
- * not on this interface, to avoid polluting every leaf-class serialization
- * site with an envelope wrapper. A consumer record declares the dispatch on
- * its component:
+ * {@code InsectRankName} extends the kernel {@link RankName}. The shared kernel
+ * evidence records serialize their rank reference through the kernel's field-level
+ * {@code @JsonSerialize(RankNameSerializer)} / {@code @JsonDeserialize(RankNameDeserializer)}
+ * codec, producing a self-describing object:
  *
  * <pre>{@code
- * public record InsectImage(
- *         ...
- *         @JsonTypeInfo(use = Id.NAME, property = "parentRank",
- *                       include = As.EXTERNAL_PROPERTY)
- *         @JsonSubTypes({
- *             @Type(value = InsectFamilyName.class,     name = "FAMILY"),
- *             @Type(value = InsectGenusName.class,      name = "GENUS"),
- *             @Type(value = InsectSpeciesName.class,    name = "SPECIES"),
- *             @Type(value = InsectSubspeciesName.class, name = "SUBSPECIES")
- *         })
- *         InsectRankName parentName,
- *         ...
- * ) { }
+ * { "rank": "GENUS", "value": "empoasca" }
  * }</pre>
  *
- * Produces flat JSON with the discriminator as a sibling field:
- *
- * <pre>{@code
- * {
- *   "parentRank": "GENUS",
- *   "parentName": "empoasca"
- * }
- * }</pre>
- *
- * Direct uses of the leaf classes (e.g., {@code InsectSpecies.name} typed
- * {@code InsectSpeciesName}) continue to serialize as plain strings via the
- * {@link com.naturalist.ddd.EntityName} {@code @JsonValue} on {@code value()}.
+ * On read the concrete permit is rebuilt by the domain's {@code RankNameReconstructor}
+ * ({@code InsectRankName::of}) registered on the mapper. Domain-local consumers that
+ * still declare field-level {@code @JsonSubTypes} dispatch remain valid; direct uses of
+ * the leaf classes (e.g. {@code InsectSpecies.name} typed {@code InsectSpeciesName})
+ * serialize as plain strings via the {@link com.naturalist.ddd.EntityName}
+ * {@code @JsonValue} on {@code value()}.
  */
 public sealed interface InsectRankName extends RankName
         permits InsectOrderName, InsectFamilyName, InsectGenusName, InsectSpeciesName, InsectSubspeciesName {

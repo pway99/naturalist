@@ -329,15 +329,17 @@ Repository contract tests live in `plants-repository-test/`. Mocks are
 package-private — the test contexts, mock tests, and `plants-core` tests that
 construct them all live in the same package by design:
 
-- `PlantSpeciesEntityRepositoryTest`, `PlantSpeciesEntityRepositoryMock`, `PlantSpeciesEntityRepositoryMockTest`
-- `PlantOrderEntityRepositoryTest`, `PlantOrderEntityRepositoryMock`, `PlantOrderEntityRepositoryMockTest`
-- `PlantFamilyEntityRepositoryTest`, `PlantFamilyEntityRepositoryMock`, `PlantFamilyEntityRepositoryMockTest`
-- `PlantGenusEntityRepositoryTest`, `PlantGenusEntityRepositoryMock`, `PlantGenusEntityRepositoryMockTest`
-- `CultivarEntityRepositoryTest`, `CultivarEntityRepositoryMock`, `CultivarEntityRepositoryMockTest`
-- `SeedLineageEntityRepositoryTest`, `SeedLineageEntityRepositoryMock`, `SeedLineageEntityRepositoryMockTest`
-- `PlantProgramEntityRepositoryTest`, `PlantProgramEntityRepositoryMock`, `PlantProgramEntityRepositoryMockTest`
-- `PhytochemicalConstituentEntityRepositoryTest`, `PhytochemicalConstituentEntityRepositoryMock`,
-  `PhytochemicalConstituentEntityRepositoryMockTest`
+- `PlantSpeciesRepositoryTest`, `PlantSpeciesRepositoryMock`, `PlantSpeciesRepositoryMockTest`
+- `PlantOrderRepositoryTest`, `PlantOrderRepositoryMock`, `PlantOrderRepositoryMockTest`
+- `PlantFamilyRepositoryTest`, `PlantFamilyRepositoryMock`, `PlantFamilyRepositoryMockTest`
+- `PlantGenusRepositoryTest`, `PlantGenusRepositoryMock`, `PlantGenusRepositoryMockTest`
+- `PlantCultivarRepositoryMock`, `PlantCultivarRepositoryMockTest`
+- `PlantSeedLineageRepositoryMock`, `PlantSeedLineageRepositoryMockTest`
+- `PlantProgramRepositoryMock`, `PlantProgramRepositoryMockTest`
+- `PlantPhytochemicalConstituentRepositoryMock`, `PlantPhytochemicalConstituentRepositoryMockTest`
+
+(Standalone concrete adapters carry the domain prefix and drop the "Entity" infix
+per ADR-020 §5; nested ports stay bare.)
 
 When adding a new entity to the domain, scaffold via the standard skills
 (`/test-entity-source`, `/entity-repository`, `/entity-query`) — see

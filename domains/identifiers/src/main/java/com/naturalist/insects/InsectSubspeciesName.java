@@ -15,7 +15,8 @@ import com.naturalist.taxonomy.LinealRank;
  * <p>
  * No {@code InsectSubspecies} aggregate exists yet; this name type ships
  * ahead of the entity so the {@link InsectRankName} permit list is closed
- * to the full Linnaean range that an {@code InsectImage} may attach to.
+ * to the full Linnaean range that a shared {@code OrganismObservation} /
+ * {@code OrganismImage} may attach to.
  * When a subspecies-rank record first enters the catalog, the entity
  * record's identity slot will be typed {@code InsectSubspeciesName}.
  */
