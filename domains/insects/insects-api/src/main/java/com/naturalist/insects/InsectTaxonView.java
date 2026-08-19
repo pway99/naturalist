@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.naturalist.ddd.ReadModel;
 import com.naturalist.insects.InsectEntityCollections.FeatureCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
@@ -36,7 +38,7 @@ import com.naturalist.insects.InsectEntityCollections.ImageCollection;
  * <p>{@link ImageCollection} is non-null but may be empty on every permit — a rank
  * record can be catalogued without photographs. Per-permit {@code invariants()}
  * enforce structural validity (presence and validity of the rank entity and the image
- * collection); referential integrity between {@link InsectImage#parentName()} and the
+ * collection); referential integrity between {@link OrganismImage#parentName()} and the
  * root rank's name is the assembly factory's responsibility, since the factory queries
  * images by that name and the match is tautological at construction time.
  *

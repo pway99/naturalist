@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -22,7 +24,7 @@ import java.util.function.Consumer;
  * role attaches to. The sealed {@link InsectRankName} marker statically
  * constrains the slot to the four insect-side rank names; cross-domain
  * names cannot compile in. The same cross-rank pattern as
- * {@link InsectImage} — one consumer of the pattern was coincidence;
+ * {@link OrganismImage} — one consumer of the pattern was coincidence;
  * two consumers are a pattern.
  * <p>
  * {@code guilds} is the structured assignment of which
@@ -40,7 +42,7 @@ import java.util.function.Consumer;
  * can be either beneficial or neutral, and {@code FOOD_WEB} participants
  * are usually neutral.
  * <p>
- * Jackson dispatch on {@code parentName} mirrors {@link InsectImage}:
+ * Jackson dispatch on {@code parentName} mirrors {@link OrganismImage}:
  * field-level {@code @JsonTypeInfo} with {@link As#EXTERNAL_PROPERTY}
  * flattens the discriminator into a sibling {@code "parentRank"} field,
  * keeping {@code parentName} itself a plain slug string via

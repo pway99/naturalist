@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -21,7 +23,7 @@ import java.util.function.Consumer;
  * Hemiptera has its own ordinal sequence independent of the assignment at
  * family Cicadellidae.
  * <p>
- * Jackson dispatch on {@code rankName} mirrors {@link InsectImage}: field-level
+ * Jackson dispatch on {@code rankName} mirrors {@link OrganismImage}: field-level
  * {@code @JsonTypeInfo} with {@link As#EXTERNAL_PROPERTY} flattens the
  * discriminator into a sibling {@code "rank"} field, keeping {@code rankName}
  * itself a plain slug string via {@code EntityName}'s {@code @JsonValue}.

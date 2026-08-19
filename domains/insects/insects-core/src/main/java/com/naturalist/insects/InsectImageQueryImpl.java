@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
@@ -10,7 +12,7 @@ import java.util.Set;
 class InsectImageQueryImpl
         extends AbstractEntityQuery<
         InsectImageId,
-        InsectImage,
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName>,
         ImageCollection,
         InsectRepository.ImageRepository>
         implements InsectQuery.ImageQuery {
@@ -59,20 +61,20 @@ class InsectImageQueryImpl
         return ImageCollection.of(images);
     }
 
-    private void collectForGenus(List<InsectImage> images, InsectGenusName genusName) {
+    private void collectForGenus(List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images, InsectGenusName genusName) {
         for (var species : speciesQuery.forGenusName(genusName).stream().toList()) {
             images.addAll(forParentName(species.name()).stream().toList());
         }
     }
 
-    private void collectForFamily(List<InsectImage> images, InsectFamilyName familyName) {
+    private void collectForFamily(List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images, InsectFamilyName familyName) {
         for (var genus : genusQuery.forFamilyName(familyName).stream().toList()) {
             images.addAll(forParentName(genus.name()).stream().toList());
             collectForGenus(images, genus.name());
         }
     }
 
-    private void collectForOrder(List<InsectImage> images, InsectOrderName orderName) {
+    private void collectForOrder(List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images, InsectOrderName orderName) {
         for (var family : familyQuery.forOrderName(orderName).stream().toList()) {
             images.addAll(forParentName(family.name()).stream().toList());
             collectForFamily(images, family.name());

@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.EntityCommand;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 /**
@@ -11,7 +12,7 @@ import com.naturalist.observation.OrganismObservation;
  * <p>Nested commands scope to a single entity each:
  * <ul>
  *   <li>{@link SpeciesCommand} — {@link InsectSpecies} mutations.</li>
- *   <li>{@link ImageCommand} — {@link InsectImage} mutations.</li>
+ *   <li>{@link ImageCommand} — {@link OrganismImage} mutations.</li>
  * </ul>
  *
  * <p><b>Scope.</b> The nested interfaces are <i>entity-level</i> commands — each
@@ -52,9 +53,9 @@ public interface InsectCommand {
     }
 
     /**
-     * Entity-level command surface for {@link InsectImage}.
+     * Entity-level command surface for {@link OrganismImage}.
      */
-    interface ImageCommand extends EntityCommand<InsectImageId, InsectImage> {
+    interface ImageCommand extends EntityCommand<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> {
     }
 
     /**

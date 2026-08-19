@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 class InsectCatalogIdentificationTransactionTest {
@@ -63,7 +64,7 @@ class InsectCatalogIdentificationTransactionTest {
 
         // Second identification of the same species — different image and observation
         var secondObsId = InsectObservationId.create();
-        var secondImage = new InsectImage(
+        var secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), SPECIES_NAME, Instant.now(),
                 FileName.of("IMG_0002.jpg"), secondObsId);
         var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
@@ -102,7 +103,7 @@ class InsectCatalogIdentificationTransactionTest {
                 description(),
                 Set.of(CommonName.of("Second Test Fly")),
                 null, null, null, null, null, null, null, null, null);
-        var secondImage = new InsectImage(
+        var secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), secondSpeciesName, Instant.now(),
                 FileName.of("IMG_0003.jpg"), secondObsId);
         var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
@@ -137,7 +138,7 @@ class InsectCatalogIdentificationTransactionTest {
         var taxonomy = new TaxonomicClassification(
                 TaxonomicOrder.of("Neuroptera"), TaxonomicFamily.of("Bogusidae"),
                 null, null);
-        var image = new InsectImage(
+        var image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), familyName, Instant.now(),
                 FileName.of("IMG_0010.jpg"), obsId);
         var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
@@ -233,8 +234,8 @@ class InsectCatalogIdentificationTransactionTest {
                 TaxonomicSpecies.of("imaginarius"));
     }
 
-    private static InsectImage image() {
-        return new InsectImage(
+    private static OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image() {
+        return new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), SPECIES_NAME, Instant.now(),
                 FileName.of("IMG_0001.jpg"), OBSERVATION_ID);
     }

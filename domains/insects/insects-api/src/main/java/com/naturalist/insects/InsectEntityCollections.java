@@ -6,6 +6,7 @@ import com.naturalist.ddd.BehavioralMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 /**
@@ -14,7 +15,7 @@ import com.naturalist.observation.OrganismObservation;
  * <p>Nested collections scope to a single entity each:
  * <ul>
  *   <li>{@link SpeciesCollection} — multi-result return type for {@link InsectSpecies}.</li>
- *   <li>{@link ImageCollection} — multi-result return type for {@link InsectImage}.</li>
+ *   <li>{@link ImageCollection} — multi-result return type for {@link OrganismImage}.</li>
  *   <li>{@link FeatureCollection} — multi-result return type for {@link InsectFeature}.</li>
  *   <li>{@link FamilyCollection} — multi-result return type for {@link InsectFamily}.</li>
  *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenus}.</li>
@@ -46,13 +47,13 @@ public interface InsectEntityCollections {
         }
     }
 
-    final class ImageCollection extends BehavioralCollection<InsectImage> {
+    final class ImageCollection extends BehavioralCollection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> {
 
-        ImageCollection(Collection<InsectImage> images) {
+        ImageCollection(Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images) {
             super(images);
         }
 
-        public static ImageCollection of(Collection<InsectImage> images) {
+        public static ImageCollection of(Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images) {
             return new ImageCollection(images);
         }
 
@@ -91,21 +92,21 @@ public interface InsectEntityCollections {
         }
     }
 
-    final class ImageGallery extends BehavioralMap<InsectRankName, InsectImage> {
+    final class ImageGallery extends BehavioralMap<InsectRankName, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> {
 
-        ImageGallery(Collection<InsectImage> images) {
-            super(images, InsectImage::parentName);
+        ImageGallery(Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images) {
+            super(images, OrganismImage::parentName);
         }
 
-        ImageGallery(Map<InsectRankName, ? extends Collection<InsectImage>> groups) {
+        ImageGallery(Map<InsectRankName, ? extends Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> groups) {
             super(groups);
         }
 
         /**
-         * Construct a gallery that auto-groups images by their {@link InsectImage#parentName()}.
+         * Construct a gallery that auto-groups images by their {@link OrganismImage#parentName()}.
          * Use when the card entity matches the image parent rank (e.g. species cards).
          */
-        public static ImageGallery of(Collection<InsectImage> images) {
+        public static ImageGallery of(Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images) {
             return new ImageGallery(images);
         }
 
@@ -114,7 +115,7 @@ public interface InsectEntityCollections {
          * name. Use when the card entity is a higher rank than the image parent (e.g. order
          * cards showing descendant species images).
          */
-        public static ImageGallery grouped(Map<InsectRankName, ? extends Collection<InsectImage>> groups) {
+        public static ImageGallery grouped(Map<InsectRankName, ? extends Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> groups) {
             return new ImageGallery(groups);
         }
 

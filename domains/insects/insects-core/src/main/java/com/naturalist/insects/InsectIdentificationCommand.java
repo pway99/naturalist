@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.observation.Identification;
 
@@ -127,7 +128,7 @@ public class InsectIdentificationCommand {
         var capturedAt = image.metadata().capturedAt() != null
                 ? image.metadata().capturedAt() : Instant.now();
 
-        var insectImage = new InsectImage(
+        var insectImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), rankName, Instant.now(),
                 storedFileName, observationId);
 

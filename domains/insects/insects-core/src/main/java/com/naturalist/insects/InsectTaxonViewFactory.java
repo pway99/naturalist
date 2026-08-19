@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.naturalist.insects.InsectEntityCollections.FeatureCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.observability.Level;
@@ -21,7 +23,7 @@ import java.util.Optional;
  * </ul>
  *
  * <p>Image fetch is uniform across ranks — {@code imageQuery.forParentName(name)} returns
- * the photographs attached at that rank, since {@code InsectImage.parentName} is itself
+ * the photographs attached at that rank, since {@code OrganismImage.parentName} is itself
  * polymorphic over {@code InsectRankName} (Path A). No persistence identifiers flow
  * between the entity and image queries (ADR-021).
  *

@@ -1,11 +1,12 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.Transaction;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 /**
  * Persists a {@link PhotoAddition} aggregate atomically — inserts the
- * optional {@link OrganismObservation} before the {@link InsectImage} so the
+ * optional {@link OrganismObservation} before the {@link OrganismImage} so the
  * image's {@code observationId} FK is satisfied on insert.
  */
 class InsectAddPhotoTransaction extends Transaction<PhotoAddition> {

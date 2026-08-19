@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 @Controller
@@ -198,7 +199,7 @@ public class InsectsController {
      * else's.
      */
     private Map<InsectImageId, OrganismObservation<InsectObservationId, InsectRankName>> observationLookup(
-            List<InsectImage> images,
+            List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images,
             java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer,
             InsectRankName subject) {
         var lookup = new java.util.HashMap<InsectImageId, OrganismObservation<InsectObservationId, InsectRankName>>();
@@ -486,7 +487,7 @@ public class InsectsController {
                 HttpServletRequest request, Model model) {
         boolean mine = collectionLensOn(request);
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
-        List<InsectImage> allImages = new ArrayList<>();
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> allImages = new ArrayList<>();
         Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = new LinkedHashMap<>();
         Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
         Map<InsectGenusName, InsectGenus> genusByName = new LinkedHashMap<>();
@@ -537,7 +538,7 @@ public class InsectsController {
             orderByName.computeIfAbsent(family.orderName(),
                     n -> insectQuery.orders().getByName(n).orElseThrow());
         }
-        Map<InsectRankName, Collection<InsectImage>> imagesByFamily = new LinkedHashMap<>();
+        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByFamily = new LinkedHashMap<>();
         for (var family : familyPage.content()) {
             imagesByFamily.put(family.name(),
                     insectQuery.images().forRankHierarchy(family.name()).stream().toList());
@@ -565,7 +566,7 @@ public class InsectsController {
         var genera = insectQuery.genera().forFamilyName(familyName).stream()
                 .sorted(Comparator.comparing(g -> g.name().value()))
                 .toList();
-        Map<InsectRankName, Collection<InsectImage>> imagesByGenus = new LinkedHashMap<>();
+        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByGenus = new LinkedHashMap<>();
         for (var g : genera) {
             imagesByGenus.put(g.name(),
                     insectQuery.images().forRankHierarchy(g.name()).stream().toList());
@@ -585,7 +586,7 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToFamily(family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToFamily(family, order)));
         model.addAttribute("ancestorIntros", introsForFamily(order));
-        List<InsectImage> rankImages = insectQuery.images()
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> rankImages = insectQuery.images()
                 .forParentName(familyName).stream().toList();
         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
                 currentNaturalist(request);
@@ -599,7 +600,7 @@ public class InsectsController {
     String orders(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectOrder> orderPage = insectQuery.orders()
                 .findPage(PageRequest.console(Math.max(0, page)));
-        Map<InsectRankName, Collection<InsectImage>> imagesByOrder = new LinkedHashMap<>();
+        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByOrder = new LinkedHashMap<>();
         for (var order : orderPage.content()) {
             imagesByOrder.put(order.name(),
                     insectQuery.images().forRankHierarchy(order.name()).stream().toList());
@@ -625,7 +626,7 @@ public class InsectsController {
         var families = insectQuery.families().forOrderName(orderName).stream()
                 .sorted(Comparator.comparing(f -> f.name().value()))
                 .toList();
-        Map<InsectRankName, Collection<InsectImage>> imagesByFamily = new LinkedHashMap<>();
+        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByFamily = new LinkedHashMap<>();
         for (var f : families) {
             imagesByFamily.put(f.name(),
                     insectQuery.images().forRankHierarchy(f.name()).stream().toList());
@@ -644,7 +645,7 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToOrder(order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToOrder(order)));
         model.addAttribute("ancestorIntros", classOnlyIntros());
-        List<InsectImage> rankImages = insectQuery.images()
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> rankImages = insectQuery.images()
                 .forParentName(orderName).stream().toList();
         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
                 currentNaturalist(request);
@@ -663,7 +664,7 @@ public class InsectsController {
             familyByName.computeIfAbsent(genus.familyName(),
                     n -> insectQuery.families().getByName(n).orElseThrow());
         }
-        Map<InsectRankName, Collection<InsectImage>> imagesByGenus = new LinkedHashMap<>();
+        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByGenus = new LinkedHashMap<>();
         for (var genus : genusPage.content()) {
             imagesByGenus.put(genus.name(),
                     insectQuery.images().forRankHierarchy(genus.name()).stream().toList());
@@ -694,7 +695,7 @@ public class InsectsController {
                 .stream()
                 .sorted(Comparator.comparing(s -> s.name().value()))
                 .toList();
-        Map<InsectRankName, Collection<InsectImage>> imagesBySpecies = new LinkedHashMap<>();
+        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesBySpecies = new LinkedHashMap<>();
         for (var s : members) {
             imagesBySpecies.put(s.name(),
                     insectQuery.images().forParentName(s.name()).stream().toList());
@@ -715,7 +716,7 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus, family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToGenus(genus, family, order)));
         model.addAttribute("ancestorIntros", introsForGenus(order, family));
-        List<InsectImage> rankImages = insectQuery.images()
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> rankImages = insectQuery.images()
                 .forParentName(genusName).stream().toList();
         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
                 currentNaturalist(request);
@@ -767,7 +768,7 @@ public class InsectsController {
                 .toList());
         boolean lens = collectionLensOn(request);
         java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
-        List<InsectImage> galleryImages = i.observations().stream().toList();
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> galleryImages = i.observations().stream().toList();
         if (lens && viewer.isPresent()) {
             java.util.Set<InsectObservationId> myObservationIds = insectQuery.observations()
                     .forNaturalist(viewer.get()).stream()

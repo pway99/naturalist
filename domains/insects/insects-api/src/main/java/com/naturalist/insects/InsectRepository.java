@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.EntityRepository;
 
 import java.util.List;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 /**
@@ -12,7 +13,7 @@ import com.naturalist.observation.OrganismObservation;
  * <p>Nested repositories scope to a single entity each:
  * <ul>
  *   <li>{@link SpeciesRepository} — {@link InsectSpecies} entities.</li>
- *   <li>{@link ImageRepository} — {@link InsectImage} entities.</li>
+ *   <li>{@link ImageRepository} — {@link OrganismImage} entities.</li>
  *   <li>{@link FamilyRepository} — {@link InsectFamily} entities.</li>
  *   <li>{@link GenusRepository} — {@link InsectGenus} entities.</li>
  *   <li>{@link FunctionalRoleRepository} — {@link InsectFunctionalRole} entities.</li>
@@ -118,9 +119,9 @@ class InsectRepository {
     }
 
     protected interface ImageRepository
-            extends EntityRepository<InsectImageId, InsectImage> {
+            extends EntityRepository<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> {
 
-        List<InsectImage> getByParentName(InsectRankName parentName);
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> getByParentName(InsectRankName parentName);
     }
 
     protected interface ObservationRepository

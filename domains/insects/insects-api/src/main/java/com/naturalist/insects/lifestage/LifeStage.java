@@ -1,5 +1,7 @@
 package com.naturalist.insects.lifestage;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.naturalist.ddd.NamedEntity;
@@ -28,7 +30,7 @@ public sealed interface LifeStage extends NamedEntity<LifeStageName>
 
     /**
      * The typed name of the catalogued rank (family, genus, or species) this
-     * stage is attached to. Mirrors {@code InsectImage.parentName}: the sealed
+     * stage is attached to. Mirrors {@code OrganismImage.parentName}: the sealed
      * {@link InsectRankName} marker statically constrains the slot to insect-side
      * rank names. Jackson dispatch is declared on each permit's component, not
      * here, to keep the discriminator off direct leaf-class serialization.

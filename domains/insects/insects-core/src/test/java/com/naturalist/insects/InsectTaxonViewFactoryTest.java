@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.naturalist.data.NaturalistDatabaseExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observability.Observer;
@@ -51,7 +53,7 @@ class InsectTaxonViewFactoryTest {
         assertThat(value.images().stream())
                 .as("every image carries the root species name (factory-owned referential integrity)")
                 .allMatch(image -> image.parentName().equals(value.species().name()));
-        assertThat(value.images().stream().map(InsectImage::id))
+        assertThat(value.images().stream().map(OrganismImage::id))
                 .contains(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.Images.PipevineSwallowtail.id);
 
         assertThat(observer.observable(value, "taxonView").violations()).isEmpty();
@@ -89,7 +91,7 @@ class InsectTaxonViewFactoryTest {
         assertThat(value.images().stream())
                 .as("every image carries the root genus name (factory-owned referential integrity)")
                 .allMatch(image -> image.parentName().equals(value.genus().name()));
-        assertThat(value.images().stream().map(InsectImage::id))
+        assertThat(value.images().stream().map(OrganismImage::id))
                 .contains(TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.id);
 
         assertThat(observer.observable(value, "taxonView").violations()).isEmpty();

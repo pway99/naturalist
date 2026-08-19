@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.naturalist.data.EntityCommand;
 import com.naturalist.data.EntityCommandContractTest;
 import com.naturalist.data.EntityQuery;
@@ -13,7 +15,7 @@ import java.time.Instant;
 import java.util.List;
 
 class InsectImageCommandImplTest
-        implements EntityCommandContractTest<InsectImageId, InsectImage, ImageCollection> {
+        implements EntityCommandContractTest<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, ImageCollection> {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
@@ -30,17 +32,17 @@ class InsectImageCommandImplTest
             repository, speciesQuery, genusQuery, familyQuery);
 
     @Override
-    public EntityCommand<InsectImageId, InsectImage> command() {
+    public EntityCommand<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> command() {
         return command;
     }
 
     @Override
-    public EntityQuery<InsectImageId, InsectImage, ImageCollection> query() {
+    public EntityQuery<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, ImageCollection> query() {
         return query;
     }
 
     @Override
-    public TestEntitySource<InsectImageId, InsectImage> source() {
+    public TestEntitySource<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> source() {
         return db.getNamed(InsectImageTestEntitySource.class);
     }
 
@@ -57,8 +59,8 @@ class InsectImageCommandImplTest
     }
 
     @Override
-    public InsectImage newEntity() {
-        return new InsectImage(
+    public OrganismImage<InsectImageId, InsectObservationId, InsectRankName> newEntity() {
+        return new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-04-20T12:00:00Z"),
@@ -67,8 +69,8 @@ class InsectImageCommandImplTest
     }
 
     @Override
-    public InsectImage ghostEntity() {
-        return new InsectImage(
+    public OrganismImage<InsectImageId, InsectObservationId, InsectRankName> ghostEntity() {
+        return new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-04-21T12:00:00Z"),
@@ -77,8 +79,8 @@ class InsectImageCommandImplTest
     }
 
     @Override
-    public InsectImage modifiedEntity(InsectImage original) {
-        return new InsectImage(
+    public OrganismImage<InsectImageId, InsectObservationId, InsectRankName> modifiedEntity(OrganismImage<InsectImageId, InsectObservationId, InsectRankName> original) {
+        return new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 original.id(),
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name,
                 Instant.parse("2026-05-01T08:30:00Z"),
@@ -89,14 +91,14 @@ class InsectImageCommandImplTest
     @org.junit.jupiter.api.Test
     void image_withObservationId_roundTrips() {
         InsectObservationId obs = TestInsectsIdentifiers.Observation.PatrickBattus;
-        InsectImage img = new InsectImage(
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> img = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 java.time.Instant.parse("2026-06-20T08:00:00Z"),
                 com.naturalist.data.FileName.of("IMG_OBS.HEIC"),
                 obs);
         command.insert(img);
-        InsectImage found = query.getByName(img.id()).orElseThrow();
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> found = query.getByName(img.id()).orElseThrow();
         org.assertj.core.api.Assertions.assertThat(found.observationId()).isEqualTo(obs);
     }
 }

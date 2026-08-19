@@ -10,6 +10,7 @@ import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 
 import java.util.Optional;
 import java.util.Set;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 /**
@@ -22,7 +23,7 @@ import com.naturalist.observation.OrganismObservation;
  *       (rank entity + images), rooted at whichever Linnaean rank the parent name
  *       identifies (family, genus, or species).</li>
  *   <li>{@link SpeciesQuery} — {@link InsectSpecies} entities in isolation.</li>
- *   <li>{@link ImageQuery} — {@link InsectImage} entities in isolation.</li>
+ *   <li>{@link ImageQuery} — {@link OrganismImage} entities in isolation.</li>
 
  *   <li>{@link FamilyQuery} — {@link InsectFamily} entities in isolation.</li>
  *   <li>{@link GenusQuery} — {@link InsectGenus} entities in isolation.</li>
@@ -33,7 +34,7 @@ import com.naturalist.observation.OrganismObservation;
  * <p><b>Usage:</b>
  * <pre>{@code
  * insectQuery.species().getByName(speciesName);      // InsectSpecies
- * insectQuery.images().getByName(imageName);         // InsectImage
+ * insectQuery.images().getByName(imageName);         // OrganismImage
  * insectQuery.taxonView().getByName(speciesName);    // InsectSpeciesView
  * insectQuery.taxonView().getByName(genusName);      // InsectGenusView
  * insectQuery.taxonView().getByName(familyName);     // InsectFamilyView
@@ -107,7 +108,7 @@ public interface InsectQuery {
     }
 
     interface ImageQuery
-            extends EntityQuery<InsectImageId, InsectImage, ImageCollection> {
+            extends EntityQuery<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, ImageCollection> {
 
         ImageCollection forParentName(InsectRankName parentName);
 

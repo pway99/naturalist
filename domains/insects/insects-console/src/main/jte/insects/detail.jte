@@ -4,7 +4,9 @@
 @import com.naturalist.insects.InsectGenus
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
-@import com.naturalist.insects.InsectImage
+@import com.naturalist.observation.OrganismImage
+@import com.naturalist.insects.InsectObservationId
+@import com.naturalist.insects.InsectRankName
 @import com.naturalist.insects.InsectImageId
 @import com.naturalist.observation.OrganismObservation
 @import com.naturalist.insects.console.BreadcrumbSegment
@@ -19,7 +21,7 @@
 @param InsectGenus genus
 @param InsectFamily family
 @param InsectOrder order
-@param List<InsectImage> images
+@param List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images
 @param List<LifeStage> stages = List.of()
 @param InsectFunctionalRole role = null
 @param InsectCitationView citations = null

@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistDatabaseExtension;
@@ -14,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InsectImageQueryImplTest
-        implements EntityQueryContractTest<InsectImageId, InsectImage, ImageCollection> {
+        implements EntityQueryContractTest<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, ImageCollection> {
 
     @RegisterExtension
     NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
@@ -30,7 +32,7 @@ class InsectImageQueryImplTest
             repository, speciesQuery, genusQuery, familyQuery);
 
     @Override
-    public EntityQuery<InsectImageId, InsectImage, ImageCollection> query() {
+    public EntityQuery<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, ImageCollection> query() {
         return query;
     }
 
@@ -55,7 +57,7 @@ class InsectImageQueryImplTest
         assertThat(collection.stream())
                 .allMatch(image -> image.parentName()
                         .equals(TestInsectsIdentifiers.InsectGenus.Empoasca.name));
-        assertThat(collection.stream().map(InsectImage::id))
+        assertThat(collection.stream().map(OrganismImage::id))
                 .contains(
                         TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.id,
                         TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.id);

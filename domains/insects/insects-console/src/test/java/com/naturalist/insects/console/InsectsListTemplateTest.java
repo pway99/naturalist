@@ -3,8 +3,11 @@ package com.naturalist.insects.console;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.insects.InsectImage;
+import com.naturalist.observation.OrganismImage;
+import com.naturalist.insects.InsectImageId;
 import com.naturalist.insects.InsectImageTestEntitySource;
+import com.naturalist.insects.InsectObservationId;
+import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.InsectSpeciesTestEntitySource;
@@ -30,7 +33,7 @@ class InsectsListTemplateTest {
         NaturalistDatabase database = NaturalistDatabase.create();
         Page<InsectSpecies> speciesPage = new InsectSpeciesTestEntitySource(database)
                 .pageOf(PageRequest.console(0));
-        Map<InsectSpeciesName, List<InsectImage>> imagesBySpecies =
+        Map<InsectSpeciesName, List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesBySpecies =
                 new InsectImageTestEntitySource(database).entityStream()
                         .filter(image -> image.parentName() instanceof InsectSpeciesName)
                         .collect(Collectors.groupingBy(image -> (InsectSpeciesName) image.parentName()));

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 class CatalogIdentificationTest {
@@ -91,7 +92,7 @@ class CatalogIdentificationTest {
     @Test
     void mismatchedImageParentReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedImageParentReportsViolation");
-        var wrongParent = new InsectImage(
+        var wrongParent = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 InsectSpeciesName.of("wrong-species"),
                 Instant.now(),
@@ -130,7 +131,7 @@ class CatalogIdentificationTest {
     void mismatchedImageObservationIdReportsViolation() {
         MethodObserver mo = observer.forMethod("mismatchedImageObservationIdReportsViolation");
         var differentObservationId = InsectObservationId.create();
-        var imageWithWrongObsId = new InsectImage(
+        var imageWithWrongObsId = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 SPECIES_NAME,
                 Instant.now(),
@@ -175,8 +176,8 @@ class CatalogIdentificationTest {
                 TaxonomicSpecies.of("cardui"));
     }
 
-    private static InsectImage image() {
-        return new InsectImage(
+    private static OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image() {
+        return new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 SPECIES_NAME,
                 Instant.now(),

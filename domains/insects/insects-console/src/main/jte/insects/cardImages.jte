@@ -1,7 +1,10 @@
-@import com.naturalist.insects.InsectImage
+@import com.naturalist.observation.OrganismImage
+@import com.naturalist.insects.InsectImageId
+@import com.naturalist.insects.InsectObservationId
+@import com.naturalist.insects.InsectRankName
 @import java.util.List
 
-@param List<InsectImage> images
+@param List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images
 @param String linkUrl
 @param String alt
 

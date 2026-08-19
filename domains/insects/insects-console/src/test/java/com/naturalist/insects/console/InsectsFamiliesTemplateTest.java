@@ -1,9 +1,12 @@
 package com.naturalist.insects.console;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.insects.InsectFamily;
+import com.naturalist.insects.InsectImageId;
 import com.naturalist.insects.InsectObservationId;
 import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.InsectFamilyTestEntitySource;
@@ -75,7 +78,7 @@ class InsectsFamiliesTemplateTest {
                 .findFirst().orElseThrow();
         InsectOrder order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
         var observationId = com.naturalist.insects.InsectObservationId.create();
-        var image = new com.naturalist.insects.InsectImage(
+        var image = new com.naturalist.observation.OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 com.naturalist.insects.InsectImageId.create(),
                 anyFamily.name(),
                 java.time.Instant.parse("2026-07-16T01:54:24Z"),

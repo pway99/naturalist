@@ -2,7 +2,9 @@
 @import com.naturalist.insects.InsectCitationView
 @import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectFamily
-@import com.naturalist.insects.InsectImage
+@import com.naturalist.observation.OrganismImage
+@import com.naturalist.insects.InsectObservationId
+@import com.naturalist.insects.InsectRankName
 @import com.naturalist.insects.InsectImageId
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.console.AncestorIntro
@@ -26,7 +28,7 @@
 @param List<AncestorIntro> ancestorIntros = List.of()
 @param List<FeatureGroup> featureGroups = List.of()
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
-@param List<InsectImage> images = List.of()
+@param List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images = List.of()
 @param Map<InsectImageId, OrganismObservation> observations = Map.of()
 
 !{var commonName = order.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(order.order().value());}

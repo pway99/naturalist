@@ -6,6 +6,7 @@ import com.naturalist.observability.Observer;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 /**
@@ -43,7 +44,7 @@ public class InsectAddPhotoCommand {
                     null);
         }
 
-        var image = new InsectImage(
+        var image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), subject, Instant.now(),
                 storedFileName, observationId);
 

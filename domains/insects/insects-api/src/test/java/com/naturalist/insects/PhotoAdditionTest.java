@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 class PhotoAdditionTest {
@@ -94,7 +95,7 @@ class PhotoAdditionTest {
         MethodObserver mo = observer.forMethod("genusRankImage_validWithObservation");
         var genusName = InsectGenusName.of("vanessa");
         var obsId = InsectObservationId.create();
-        var genusImage = new InsectImage(
+        var genusImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), genusName, Instant.now(),
                 FileName.of("IMG_GENUS.jpg"), obsId);
         var genusObservation = new OrganismObservation<InsectObservationId, InsectRankName>(
@@ -109,8 +110,8 @@ class PhotoAdditionTest {
 
     // ----- fixtures -----
 
-    private static InsectImage image(InsectObservationId observationId) {
-        return new InsectImage(
+    private static OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image(InsectObservationId observationId) {
+        return new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), SPECIES_NAME, Instant.now(),
                 FileName.of("IMG_0001.jpg"), observationId);
     }

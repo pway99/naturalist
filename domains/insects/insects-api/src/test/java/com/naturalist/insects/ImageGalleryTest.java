@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.OrganismImage;
+
 import com.naturalist.data.FileName;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageGallery;
@@ -18,8 +20,8 @@ class ImageGalleryTest {
     private static final InsectGenusName GENUS_C = InsectGenusName.of("genus-c");
     private static final InsectOrderName ORDER_X = InsectOrderName.of("order-x");
 
-    private static InsectImage image(InsectRankName parent, String filename) {
-        return new InsectImage(
+    private static OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image(InsectRankName parent, String filename) {
+        return new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(),
                 parent,
                 Instant.now(),
