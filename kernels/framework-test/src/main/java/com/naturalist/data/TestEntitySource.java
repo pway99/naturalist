@@ -1,5 +1,7 @@
 package com.naturalist.data;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.ddd.Named;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.ForeignKeyConstraintException;
@@ -304,9 +306,24 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
                 .forEach(this::loadFile);
     }
 
+    /**
+     * The Jackson mapper this source uses to read and write its catalog. Defaults to the
+     * shared base mapper. A source whose entity has a component needing per-domain
+     * (de)serialization — e.g. an {@code OrganismObservation} subject — overrides this to
+     * register the domain's codec.
+     */
+    protected ObjectMapper mapper() {
+        return TestDataHelper.mapper;
+    }
+
     public void loadFile(String relativePath) {
-        loadFile(relativePath,
-                json -> TestDataHelper.readObjectsFromString(() -> json, entityClass()));
+        loadFile(relativePath, json -> {
+            try {
+                return mapper().readerForListOf(entityClass()).readValue(json);
+            } catch (JsonProcessingException e) {
+                throw new java.io.UncheckedIOException(e);
+            }
+        });
     }
 
     /**
@@ -385,12 +402,12 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     private void writeJsonAtomic(Path target, List<ENTITY> entities) {
         try {
-            var listType = TestDataHelper.mapper.getTypeFactory()
+            var listType = mapper().getTypeFactory()
                     .constructCollectionType(List.class, writableClass());
             List<Object> writables = entities.stream()
                     .map(this::writable)
                     .collect(Collectors.toList());
-            byte[] bytes = TestDataHelper.mapper.writerFor(listType)
+            byte[] bytes = mapper().writerFor(listType)
                     .withDefaultPrettyPrinter()
                     .writeValueAsBytes(writables);
             Path tmp = target.resolveSibling(target.getFileName() + ".tmp");

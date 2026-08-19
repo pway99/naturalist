@@ -13,9 +13,13 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class TestDataHelper {
-    static final ObjectMapper mapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    public static ObjectMapper newBaseMapper() {
+        return new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    }
+
+    static final ObjectMapper mapper = newBaseMapper();
 
     public static String readFileToString(String path) {
         ClassLoader classLoader = TestDataHelper.class.getClassLoader();
