@@ -6,6 +6,7 @@ import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeSta
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -85,13 +86,24 @@ public record Insect(
         @Nullable InsectSpeciesView species,
         LifeStageCollection lifeStages,
         @Nullable InsectCitationView citations,
-        @Nullable InsectFeatureView features
+        @Nullable InsectFeatureView features,
+        @Nullable InsectFunctionalRole role,
+        /**
+         * The entry rank's direct sub-taxa (order→families, family→genera,
+         * genus→species; empty for species — no rank below it). Non-null.
+         * Unlike the rank-chain permits above (whose {@code images()} are
+         * always empty — they carry only the identified organism's own
+         * observations), each element here carries its own populated child
+         * gallery, so the rank page's child cards can render photos without
+         * a separate per-card fetch.
+         */
+        List<InsectTaxonView> children
 ) implements ReadModel {
 
     /**
      * Zero-state read model — empty observations, no rank identified, empty
-     * life stages. Useful as the starting point for progressive refinement
-     * via the {@code with*} mutators.
+     * life stages, no children. Useful as the starting point for progressive
+     * refinement via the {@code with*} mutators.
      */
     public static Insect empty() {
         return new Insect(
@@ -102,7 +114,9 @@ public record Insect(
                 null,
                 LifeStageCollection.empty(),
                 null,
-                null);
+                null,
+                null,
+                List.of());
     }
 
     /**
@@ -138,35 +152,43 @@ public record Insect(
     }
 
     public Insect withObservations(ImageCollection observations) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
     public Insect withOrder(@Nullable InsectOrderView order) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
     public Insect withFamily(@Nullable InsectFamilyView family) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
     public Insect withGenus(@Nullable InsectGenusView genus) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
     public Insect withSpecies(@Nullable InsectSpeciesView species) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
     public Insect withLifeStages(LifeStageCollection lifeStages) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
     public Insect withCitations(@Nullable InsectCitationView citations) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
     public Insect withFeatures(@Nullable InsectFeatureView features) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
+    }
+
+    public Insect withRole(@Nullable InsectFunctionalRole role) {
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
+    }
+
+    public Insect withChildren(List<InsectTaxonView> children) {
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
     @Override
@@ -203,6 +225,8 @@ public record Insect(
                 .readModel(citations, "citations")
             )
             .whenNotNull(features, f -> f.readModel(features, "features"))
+            .namedEntityOrNull(role, "role")
+            .notNull(children, "children")
         ;
     }
 }

@@ -1,9 +1,11 @@
 package com.naturalist.insects;
 
+import com.naturalist.insects.InsectEntityCollections.FeatureCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,6 +33,7 @@ class InsectFactory {
     private final InsectLifeStageQuery lifeStageQuery;
     private final InsectQuery.CitationQuery citationQuery;
     private final InsectQuery.FeatureQuery featureQuery;
+    private final InsectQuery.FunctionalRoleQuery roleQuery;
 
     InsectFactory(InsectQuery.SpeciesQuery speciesQuery,
                   InsectQuery.ImageQuery imageQuery,
@@ -39,7 +42,8 @@ class InsectFactory {
                   InsectQuery.OrderQuery orderQuery,
                   InsectLifeStageQuery lifeStageQuery,
                   InsectQuery.CitationQuery citationQuery,
-                  InsectQuery.FeatureQuery featureQuery) {
+                  InsectQuery.FeatureQuery featureQuery,
+                  InsectQuery.FunctionalRoleQuery roleQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
@@ -48,7 +52,8 @@ class InsectFactory {
                         .notNull(orderQuery, "orderQuery")
                         .notNull(lifeStageQuery, "lifeStageQuery")
                         .notNull(citationQuery, "citationQuery")
-                        .notNull(featureQuery, "featureQuery"))
+                        .notNull(featureQuery, "featureQuery")
+                        .notNull(roleQuery, "roleQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
@@ -58,6 +63,7 @@ class InsectFactory {
         this.lifeStageQuery = lifeStageQuery;
         this.citationQuery = citationQuery;
         this.featureQuery = featureQuery;
+        this.roleQuery = roleQuery;
     }
 
     Optional<Insect> buildByName(InsectRankName name) {
@@ -70,7 +76,9 @@ class InsectFactory {
                                 .withSpecies(InsectSpeciesView.of(species))
                                 .withLifeStages(lifeStageQuery.lifeStages().forParentName(speciesName))
                                 .withCitations(citationQuery.findByRankName(speciesName))
-                                .withFeatures(featureQuery.findByRankName(speciesName));
+                                .withFeatures(featureQuery.findByRankName(speciesName))
+                                .withRole(roleQuery.getByParentName(speciesName).orElse(null))
+                                .withChildren(List.of());
                         insect = resolveGenus(insect, species.genusName());
                         return observe(insect);
                     });
@@ -81,7 +89,9 @@ class InsectFactory {
                                 .withGenus(InsectGenusView.of(genus))
                                 .withLifeStages(lifeStageQuery.lifeStages().forParentName(genusName))
                                 .withCitations(citationQuery.findByRankName(genusName))
-                                .withFeatures(featureQuery.findByRankName(genusName));
+                                .withFeatures(featureQuery.findByRankName(genusName))
+                                .withRole(roleQuery.getByParentName(genusName).orElse(null))
+                                .withChildren(speciesChildren(genusName));
                         insect = resolveFamily(insect, genus.familyName());
                         return observe(insect);
                     });
@@ -92,7 +102,9 @@ class InsectFactory {
                                 .withFamily(InsectFamilyView.of(family))
                                 .withLifeStages(lifeStageQuery.lifeStages().forParentName(familyName))
                                 .withCitations(citationQuery.findByRankName(familyName))
-                                .withFeatures(featureQuery.findByRankName(familyName));
+                                .withFeatures(featureQuery.findByRankName(familyName))
+                                .withRole(roleQuery.getByParentName(familyName).orElse(null))
+                                .withChildren(genusChildren(familyName));
                         insect = resolveOrder(insect, family.orderName());
                         return observe(insect);
                     });
@@ -102,9 +114,32 @@ class InsectFactory {
                             .withOrder(InsectOrderView.of(order))
                             .withLifeStages(lifeStageQuery.lifeStages().forParentName(orderName))
                             .withCitations(citationQuery.findByRankName(orderName))
-                            .withFeatures(featureQuery.findByRankName(orderName))));
+                            .withFeatures(featureQuery.findByRankName(orderName))
+                            .withRole(roleQuery.getByParentName(orderName).orElse(null))
+                            .withChildren(familyChildren(orderName))));
             case InsectSubspeciesName _ -> Optional.empty();
         };
+    }
+
+    private List<InsectTaxonView> familyChildren(InsectOrderName orderName) {
+        return familyQuery.forOrderName(orderName).stream()
+                .map(f -> (InsectTaxonView) InsectFamilyView.of(
+                        f, imageQuery.forRankHierarchy(f.name()), FeatureCollection.empty()))
+                .toList();
+    }
+
+    private List<InsectTaxonView> genusChildren(InsectFamilyName familyName) {
+        return genusQuery.forFamilyName(familyName).stream()
+                .map(g -> (InsectTaxonView) InsectGenusView.of(
+                        g, imageQuery.forRankHierarchy(g.name()), FeatureCollection.empty()))
+                .toList();
+    }
+
+    private List<InsectTaxonView> speciesChildren(InsectGenusName genusName) {
+        return speciesQuery.forGenusName(genusName).stream()
+                .map(s -> (InsectTaxonView) InsectSpeciesView.of(
+                        s, imageQuery.forParentName(s.name()), FeatureCollection.empty()))
+                .toList();
     }
 
     private Insect resolveGenus(Insect insect, InsectGenusName genusName) {

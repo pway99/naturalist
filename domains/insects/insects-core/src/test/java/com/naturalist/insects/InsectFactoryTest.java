@@ -54,6 +54,9 @@ class InsectFactoryTest {
     InsectQuery.FeatureQuery featureQuery = new InsectFeatureQueryImpl(
             featureRepository, assignmentRepository, ancestryResolver);
 
+    InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(db);
+    InsectQuery.FunctionalRoleQuery roleQuery = new InsectFunctionalRoleQueryImpl(functionalRoleRepository);
+
     /**
      * Stub lifestage query — returns empty collections. InsectLifeStageQueryImpl is
      * package-private inside {@code com.naturalist.insects.lifestage} and not accessible
@@ -90,7 +93,7 @@ class InsectFactoryTest {
 
     InsectFactory factory = new InsectFactory(
             speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
-            lifeStageQuery, citationQuery, featureQuery);
+            lifeStageQuery, citationQuery, featureQuery, roleQuery);
 
     @Test
     void buildByName_rejectsNull() {
@@ -186,5 +189,32 @@ class InsectFactoryTest {
         Insect insect = factory.buildByName(name).orElseThrow();
         assertThat(insect.features()).isNotNull();
         assertThat(insect.features().subject()).isEqualTo(name);
+    }
+
+    @Test
+    void buildByName_orderName_composesFamilyChildren() {
+        Insect insect = factory.buildByName(InsectOrderName.of("lepidoptera")).orElseThrow();
+        assertThat(insect.children()).isNotEmpty();
+        assertThat(insect.children()).allSatisfy(c ->
+                assertThat(c).isInstanceOf(InsectFamilyView.class));
+    }
+
+    @Test
+    void buildByName_speciesName_hasNoChildren() {
+        Insect insect = factory.buildByName(
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name).orElseThrow();
+        assertThat(insect.children()).isEmpty();
+    }
+
+    @Test
+    void buildByName_composesRole_whenPresent() {
+        // battus-philenor has a seeded SPECIES-rank InsectFunctionalRole
+        // (guild KEYSTONE) in insect-functional-roles.json.
+        Insect insect = factory.buildByName(
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name).orElseThrow();
+
+        assertThat(insect.role()).isNotNull();
+        assertThat(insect.role().parentName()).isEqualTo(
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
     }
 }

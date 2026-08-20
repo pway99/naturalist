@@ -40,6 +40,8 @@ class InsectTest {
         assertThat(insect.lifeStages().stream()).isEmpty();
         assertThat(insect.citations()).isNull();
         assertThat(insect.features()).isNull();
+        assertThat(insect.role()).isNull();
+        assertThat(insect.children()).isEmpty();
     }
 
     // ----- identifiedTo() -----
@@ -238,7 +240,9 @@ class InsectTest {
                 null, null, null, null,
                 LifeStageCollection.empty(),
                 null,
-                null);
+                null,
+                null,
+                List.of());
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -254,7 +258,9 @@ class InsectTest {
                 null, null, null, null,
                 null,
                 null,
-                null);
+                null,
+                null,
+                List.of());
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -273,7 +279,9 @@ class InsectTest {
                 speciesView(),
                 LifeStageCollection.empty(),
                 null,
-                null);
+                null,
+                null,
+                List.of());
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -292,7 +300,9 @@ class InsectTest {
                 null,
                 LifeStageCollection.empty(),
                 null,
-                null);
+                null,
+                null,
+                List.of());
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -311,7 +321,9 @@ class InsectTest {
                 null,
                 LifeStageCollection.empty(),
                 null,
-                null);
+                null,
+                null,
+                List.of());
 
         InvariantObservation result = mo.observable(insect, "insect");
 
@@ -408,6 +420,16 @@ class InsectTest {
         var mo = observer.forMethod("featuresDescent_reportsNestedViolations");
         assertThat(mo.observable(insect, "insect").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".insect.features.subject");
+    }
+
+    // ----- invariants() role + children -----
+
+    @Test
+    void childrenNull_reportsInvariantViolation() {
+        Insect insect = Insect.empty().withChildren(null);
+        var mo = observer.forMethod("childrenNull_reportsInvariantViolation");
+        assertThat(mo.observable(insect, "insect").violationNamesRemovingPrefix(mo.observationPoint()))
+                .contains(".insect.children");
     }
 
     // ----- helpers -----
