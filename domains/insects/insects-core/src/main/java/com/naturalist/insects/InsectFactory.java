@@ -69,56 +69,29 @@ class InsectFactory {
     Optional<Insect> buildByName(InsectRankName name) {
         observer.arguments("buildByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return switch (name) {
-            case InsectSpeciesName speciesName -> speciesQuery.getByName(speciesName)
-                    .map(species -> {
-                        Insect insect = Insect.empty()
-                                .withObservations(imageQuery.forParentName(speciesName))
-                                .withSpecies(InsectSpeciesView.of(species))
-                                .withLifeStages(lifeStageQuery.lifeStages().forParentName(speciesName))
-                                .withCitations(citationQuery.findByRankName(speciesName))
-                                .withFeatures(featureQuery.findByRankName(speciesName))
-                                .withRole(roleQuery.getByParentName(speciesName).orElse(null))
-                                .withChildren(List.of());
-                        insect = resolveGenus(insect, species.genusName());
-                        return observe(insect);
-                    });
-            case InsectGenusName genusName -> genusQuery.getByName(genusName)
-                    .map(genus -> {
-                        Insect insect = Insect.empty()
-                                .withObservations(imageQuery.forParentName(genusName))
-                                .withGenus(InsectGenusView.of(genus))
-                                .withLifeStages(lifeStageQuery.lifeStages().forParentName(genusName))
-                                .withCitations(citationQuery.findByRankName(genusName))
-                                .withFeatures(featureQuery.findByRankName(genusName))
-                                .withRole(roleQuery.getByParentName(genusName).orElse(null))
-                                .withChildren(speciesChildren(genusName));
-                        insect = resolveFamily(insect, genus.familyName());
-                        return observe(insect);
-                    });
-            case InsectFamilyName familyName -> familyQuery.getByName(familyName)
-                    .map(family -> {
-                        Insect insect = Insect.empty()
-                                .withObservations(imageQuery.forParentName(familyName))
-                                .withFamily(InsectFamilyView.of(family))
-                                .withLifeStages(lifeStageQuery.lifeStages().forParentName(familyName))
-                                .withCitations(citationQuery.findByRankName(familyName))
-                                .withFeatures(featureQuery.findByRankName(familyName))
-                                .withRole(roleQuery.getByParentName(familyName).orElse(null))
-                                .withChildren(genusChildren(familyName));
-                        insect = resolveOrder(insect, family.orderName());
-                        return observe(insect);
-                    });
-            case InsectOrderName orderName -> orderQuery.getByName(orderName)
-                    .map(order -> observe(Insect.empty()
-                            .withObservations(imageQuery.forParentName(orderName))
-                            .withOrder(InsectOrderView.of(order))
-                            .withLifeStages(lifeStageQuery.lifeStages().forParentName(orderName))
-                            .withCitations(citationQuery.findByRankName(orderName))
-                            .withFeatures(featureQuery.findByRankName(orderName))
-                            .withRole(roleQuery.getByParentName(orderName).orElse(null))
-                            .withChildren(familyChildren(orderName))));
+            case InsectSpeciesName sn -> speciesQuery.getByName(sn).map(s -> observe(
+                    resolveGenus(base(sn).withSpecies(InsectSpeciesView.of(s)).withChildren(List.of()),
+                            s.genusName())));
+            case InsectGenusName gn -> genusQuery.getByName(gn).map(g -> observe(
+                    resolveFamily(base(gn).withGenus(InsectGenusView.of(g)).withChildren(speciesChildren(gn)),
+                            g.familyName())));
+            case InsectFamilyName fn -> familyQuery.getByName(fn).map(f -> observe(
+                    resolveOrder(base(fn).withFamily(InsectFamilyView.of(f)).withChildren(genusChildren(fn)),
+                            f.orderName())));
+            case InsectOrderName on -> orderQuery.getByName(on).map(o -> observe(
+                    base(on).withOrder(InsectOrderView.of(o)).withChildren(familyChildren(on))));
             case InsectSubspeciesName _ -> Optional.empty();
         };
+    }
+
+    /** The rank-keyed attributes every Insect carries, whatever the rank. */
+    private Insect base(InsectRankName name) {
+        return Insect.empty()
+                .withObservations(imageQuery.forParentName(name))
+                .withLifeStages(lifeStageQuery.lifeStages().forParentName(name))
+                .withCitations(citationQuery.findByRankName(name))
+                .withFeatures(featureQuery.findByRankName(name))
+                .withRole(roleQuery.getByParentName(name).orElse(null));
     }
 
     private List<InsectTaxonView> familyChildren(InsectOrderName orderName) {
