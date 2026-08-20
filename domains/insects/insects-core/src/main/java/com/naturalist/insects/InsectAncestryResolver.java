@@ -2,8 +2,10 @@ package com.naturalist.insects;
 
 import com.naturalist.taxonomy.RankAncestry;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -25,9 +27,16 @@ class InsectAncestryResolver {
         this.familyQuery = familyQuery;
     }
 
-    /** subject first, ancestors ascending up to the order. */
-    List<InsectRankName> resolveAncestry(InsectRankName rankName) {
-        return RankAncestry.ancestry(rankName, this::parentOf);
+    /** The rank's Linnaean ancestry as an ancestor-first ordered set (order → … → subject).
+     *  Ordered (LinkedHashSet) so it serves both a batched multi-rank query and ancestor-first
+     *  grouping; a Set because the ancestry chain has no duplicate ranks. */
+    Set<InsectRankName> ancestry(InsectRankName rankName) {
+        List<InsectRankName> subjectFirst = RankAncestry.ancestry(rankName, this::parentOf); // subject-first
+        LinkedHashSet<InsectRankName> ancestorFirst = new LinkedHashSet<>();
+        for (int i = subjectFirst.size() - 1; i >= 0; i--) {
+            ancestorFirst.add(subjectFirst.get(i));
+        }
+        return ancestorFirst;
     }
 
     /** Attributes across the ancestry tagged with source rank (blueprint C2). */

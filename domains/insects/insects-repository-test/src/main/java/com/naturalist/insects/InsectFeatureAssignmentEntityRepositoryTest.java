@@ -7,7 +7,9 @@ import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
@@ -78,6 +80,26 @@ interface InsectFeatureAssignmentEntityRepositoryTest
         assertThatThrownBy(() -> repository().getByRankName(null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("rankName");
+    }
+
+    @Test
+    default void getByRankNames_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByRankNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("rankNames");
+    }
+
+    @Test
+    default void getByRankNames_returnsAssignmentsAcrossTheGivenRanks() {
+        var result = repository().getByRankNames(Set.of(
+                InsectOrderName.of("diptera"), InsectOrderName.of("lepidoptera")));
+        assertThat(result).isNotEmpty();
+        assertThat(result).extracting(a -> a.rankName().value())
+                .contains("diptera", "lepidoptera")
+                .doesNotContain("coleoptera");
+        // sanity: every returned assignment is in the requested set
+        assertThat(result).allSatisfy(a ->
+                assertThat(a.rankName().value()).isIn("diptera", "lepidoptera"));
     }
 
     @Test

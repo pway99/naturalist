@@ -5,6 +5,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
+import java.util.Set;
 
 @DomainService
 class InsectFeatureAssignmentRepositoryMock
@@ -22,6 +23,16 @@ class InsectFeatureAssignmentRepositoryMock
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(a -> a.rankName().equals(rankName))
+                .toList();
+    }
+
+    @Override
+    public List<InsectFeatureAssignment> getByRankNames(Set<InsectRankName> rankNames) {
+        observer().arguments("getByRankNames",
+                        i -> i.identifierSet(rankNames, "rankNames"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(a -> rankNames.contains(a.rankName()))
                 .toList();
     }
 

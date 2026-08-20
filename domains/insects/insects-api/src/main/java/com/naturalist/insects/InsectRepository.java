@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.EntityRepository;
 
 import java.util.List;
+import java.util.Set;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
@@ -167,6 +168,8 @@ class InsectRepository {
             extends EntityRepository<InsectFeatureAssignmentId, InsectFeatureAssignment> {
 
         List<InsectFeatureAssignment> getByRankName(InsectRankName rankName);
+
+        List<InsectFeatureAssignment> getByRankNames(Set<InsectRankName> rankNames);
 
         List<InsectFeatureAssignment> getByFeatureId(InsectFeatureId featureId);
     }

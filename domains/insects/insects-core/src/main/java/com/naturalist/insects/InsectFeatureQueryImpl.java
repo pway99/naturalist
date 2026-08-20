@@ -5,7 +5,7 @@ import com.naturalist.observability.Observer;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,41 +45,35 @@ class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
         observer.arguments("findByRankName", i -> i.identifier(subject, "subject"))
                 .throwWhenInvalid();
 
-        List<InsectRankName> ancestry = ancestryResolver.resolveAncestry(subject); // subject-first
-        Map<InsectRankName, List<InsectFeatureAssignment>> assignmentsByRank = new LinkedHashMap<>();
+        Set<InsectRankName> ancestry = ancestryResolver.ancestry(subject); // ancestor-first, ordered
 
-        // Ancestor-first: walk the ancestry in reverse (order → … → subject).
-        for (int a = ancestry.size() - 1; a >= 0; a--) {
-            InsectRankName rank = ancestry.get(a);
-            List<InsectFeatureAssignment> atRank = assignmentRepository.getByRankName(rank).stream()
-                    .sorted(Comparator.comparingInt(InsectFeatureAssignment::ordinal))
-                    .toList();
-            if (atRank.isEmpty()) {
-                continue;
-            }
-            assignmentsByRank.put(rank, atRank);
-        }
+        // One batched fetch of every assignment across the whole ancestry.
+        Map<InsectRankName, List<InsectFeatureAssignment>> byRank =
+                assignmentRepository.getByRankNames(ancestry).stream()
+                        .collect(Collectors.groupingBy(InsectFeatureAssignment::rankName));
 
-        Set<InsectFeatureId> allIds = assignmentsByRank.values().stream()
-                .flatMap(List::stream)
-                .map(InsectFeatureAssignment::featureId)
-                .collect(Collectors.toSet());
-        Map<InsectFeatureId, InsectFeature> resolved = new LinkedHashMap<>();
+        // One batched fetch of every referenced feature.
+        Set<InsectFeatureId> allIds = byRank.values().stream().flatMap(List::stream)
+                .map(InsectFeatureAssignment::featureId).collect(Collectors.toSet());
+        Map<InsectFeatureId, InsectFeature> resolved = new HashMap<>();
         if (!allIds.isEmpty()) {
-            // single batched fetch across the ancestry
             for (InsectFeature f : featureRepository.getByEntityNameSet(allIds)) {
                 resolved.put(f.id(), f);
             }
         }
 
+        // Build groups ancestor-first via the ordered set, features ordinal-sorted per rank.
         List<InsectFeatureView.RankGroup> groups = new ArrayList<>();
-        for (Map.Entry<InsectRankName, List<InsectFeatureAssignment>> entry : assignmentsByRank.entrySet()) {
-            List<InsectFeature> features = entry.getValue().stream()
+        for (InsectRankName rank : ancestry) {
+            List<InsectFeatureAssignment> atRank = byRank.getOrDefault(rank, List.of());
+            if (atRank.isEmpty()) continue;
+            List<InsectFeature> features = atRank.stream()
+                    .sorted(Comparator.comparingInt(InsectFeatureAssignment::ordinal))
                     .map(x -> resolved.get(x.featureId()))
                     .filter(Objects::nonNull)
                     .toList();
             if (!features.isEmpty()) {
-                groups.add(new InsectFeatureView.RankGroup(entry.getKey(), features));
+                groups.add(new InsectFeatureView.RankGroup(rank, features));
             }
         }
 
