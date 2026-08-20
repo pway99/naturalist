@@ -559,19 +559,9 @@ public class InsectsController {
         InsectFamily family = insect.get().family().family();
         InsectOrder order = insect.get().order().order();
         var description = family.description();
-        var genera = insectQuery.genera().forFamilyName(familyName).stream()
-                .sorted(Comparator.comparing(g -> g.name().value()))
-                .toList();
-        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByGenus = new LinkedHashMap<>();
-        for (var g : genera) {
-            imagesByGenus.put(g.name(),
-                    insectQuery.images().forRankHierarchy(g.name()).stream().toList());
-        }
-        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByGenus);
         model.addAttribute("family", family);
         model.addAttribute("order", order);
-        model.addAttribute("genera", genera);
-        model.addAttribute("gallery", gallery);
+        model.addAttribute("children", insect.get().children());
         model.addAttribute("citations", insect.get().citations());
         model.addAttribute("features", insect.get().features());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -619,18 +609,8 @@ public class InsectsController {
         }
         InsectOrder order = insect.get().order().order();
         var description = order.description();
-        var families = insectQuery.families().forOrderName(orderName).stream()
-                .sorted(Comparator.comparing(f -> f.name().value()))
-                .toList();
-        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByFamily = new LinkedHashMap<>();
-        for (var f : families) {
-            imagesByFamily.put(f.name(),
-                    insectQuery.images().forRankHierarchy(f.name()).stream().toList());
-        }
-        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByFamily);
         model.addAttribute("order", order);
-        model.addAttribute("families", families);
-        model.addAttribute("gallery", gallery);
+        model.addAttribute("children", insect.get().children());
         model.addAttribute("citations", insect.get().citations());
         model.addAttribute("features", insect.get().features());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -686,22 +666,10 @@ public class InsectsController {
         InsectFamily family = insect.get().family().family();
         InsectOrder order = insect.get().order().order();
         var description = genus.description();
-        var members = insectQuery.species()
-                .forGenusName(genusName)
-                .stream()
-                .sorted(Comparator.comparing(s -> s.name().value()))
-                .toList();
-        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesBySpecies = new LinkedHashMap<>();
-        for (var s : members) {
-            imagesBySpecies.put(s.name(),
-                    insectQuery.images().forParentName(s.name()).stream().toList());
-        }
-        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesBySpecies);
         model.addAttribute("genus", genus);
         model.addAttribute("family", family);
         model.addAttribute("order", order);
-        model.addAttribute("species", members);
-        model.addAttribute("gallery", gallery);
+        model.addAttribute("children", insect.get().children());
         model.addAttribute("citations", insect.get().citations());
         model.addAttribute("features", insect.get().features());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -787,8 +755,7 @@ public class InsectsController {
         model.addAttribute("citations", i.citations());
         model.addAttribute("features", i.features());
         model.addAttribute("glossaryLinker", glossaryLinker);
-        model.addAttribute("role",
-                insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));
+        model.addAttribute("role", i.role());
         boolean collected = myObservations != null && !myObservations.isEmpty();
         model.addAttribute("collected", collected);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));

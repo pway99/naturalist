@@ -200,6 +200,15 @@ class InsectFactoryTest {
     }
 
     @Test
+    void buildByName_orderName_familyChildrenAreAlphabeticallySorted() {
+        Insect insect = factory.buildByName(InsectOrderName.of("lepidoptera")).orElseThrow();
+
+        assertThat(insect.children())
+                .extracting(c -> c.name().value())
+                .containsExactly("hesperiidae", "nymphalidae", "papilionidae", "pieridae");
+    }
+
+    @Test
     void buildByName_speciesName_hasNoChildren() {
         Insect insect = factory.buildByName(
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name).orElseThrow();

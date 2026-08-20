@@ -40,7 +40,7 @@ class InsectsOrdersTemplateTest {
                 "insects/order.jte",
                 Map.of(
                         "order", anyOrder,
-                        "families", List.of(),
+                        "children", List.of(),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -48,5 +48,35 @@ class InsectsOrdersTemplateTest {
                 output);
 
         assertThat(output.toString()).isNotBlank();
+    }
+
+    @Test
+    void order_rendersChildFamilyCardFromPermit() {
+        NaturalistDatabase database = NaturalistDatabase.create();
+        InsectFamily anyFamily = new InsectFamilyTestEntitySource(database).entityStream()
+                .findFirst().orElseThrow();
+        InsectOrder order = new InsectOrderTestEntitySource(database)
+                .getByName(anyFamily.orderName()).orElseThrow();
+        InsectTaxonView familyChild = InsectFamilyView.of(
+                anyFamily,
+                InsectEntityCollections.ImageCollection.empty(),
+                InsectEntityCollections.FeatureCollection.empty());
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render(
+                "insects/order.jte",
+                Map.of(
+                        "order", order,
+                        "children", List.of(familyChild),
+                        "descriptionPreschool", "p",
+                        "descriptionElementary", "e",
+                        "descriptionSecondary", "s",
+                        "descriptionUniversity", "u"),
+                output);
+
+        String familyDisplayName = anyFamily.commonNames().stream().findFirst()
+                .map(cn -> cn.label()).orElse(anyFamily.name().value());
+        assertThat(output.toString()).contains(familyDisplayName);
+        assertThat(output.toString()).contains("/insects/families/" + anyFamily.name().value());
     }
 }

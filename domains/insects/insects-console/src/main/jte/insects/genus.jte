@@ -1,6 +1,5 @@
 @import com.naturalist.observation.OrganismObservation
 @import com.naturalist.insects.InsectCitationView
-@import com.naturalist.insects.InsectEntityCollections
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectGenus
 @import com.naturalist.observation.OrganismImage
@@ -8,7 +7,8 @@
 @import com.naturalist.insects.InsectRankName
 @import com.naturalist.insects.InsectImageId
 @import com.naturalist.insects.InsectOrder
-@import com.naturalist.insects.InsectSpecies
+@import com.naturalist.insects.InsectSpeciesView
+@import com.naturalist.insects.InsectTaxonView
 @import com.naturalist.insects.console.AncestorIntro
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.insects.console.CladeTrail
@@ -20,9 +20,8 @@
 @param InsectGenus genus
 @param InsectFamily family
 @param InsectOrder order
-@param List<InsectSpecies> species
+@param List<InsectTaxonView> children = List.of()
 @param InsectCitationView citations = null
-@param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -69,27 +68,30 @@
 
     <section>
         <h2>Species in this genus</h2>
-        @if(species.isEmpty())
+        @if(children.isEmpty())
             <p><em>No species catalogued under this genus yet.</em></p>
         @else
             <div class="entity-grid">
-                @for(var s : species)
-                    !{var speciesCommonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
-                    <article>
-                        <header>
-                            <a href="/insects/${s.name().value()}">
-                                <strong>${speciesCommonName}</strong>
-                            </a>
-                        </header>
-                        <dl class="taxonomy">
-                            <dt>species</dt>
-                            <dd><em>${s.epithet().value()}</em></dd>
-                        </dl>
-                        !{var childImages = gallery.forEntity(s.name()).stream().toList();}
-                        @if(!childImages.isEmpty())
-                            @template.insects.cardImages(images = childImages, linkUrl = "/insects/" + s.name().value(), alt = speciesCommonName)
-                        @endif
-                    </article>
+                @for(var child : children)
+                    @if(child instanceof InsectSpeciesView sv)
+                        !{var s = sv.species();}
+                        !{var speciesCommonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
+                        <article>
+                            <header>
+                                <a href="/insects/${s.name().value()}">
+                                    <strong>${speciesCommonName}</strong>
+                                </a>
+                            </header>
+                            <dl class="taxonomy">
+                                <dt>species</dt>
+                                <dd><em>${s.epithet().value()}</em></dd>
+                            </dl>
+                            !{var childImages = sv.images().stream().toList();}
+                            @if(!childImages.isEmpty())
+                                @template.insects.cardImages(images = childImages, linkUrl = "/insects/" + s.name().value(), alt = speciesCommonName)
+                            @endif
+                        </article>
+                    @endif
                 @endfor
             </div>
         @endif

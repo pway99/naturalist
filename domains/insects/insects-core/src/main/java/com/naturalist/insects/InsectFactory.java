@@ -5,6 +5,7 @@ import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,6 +126,7 @@ class InsectFactory {
         return familyQuery.forOrderName(orderName).stream()
                 .map(f -> (InsectTaxonView) InsectFamilyView.of(
                         f, imageQuery.forRankHierarchy(f.name()), FeatureCollection.empty()))
+                .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
 
@@ -132,6 +134,7 @@ class InsectFactory {
         return genusQuery.forFamilyName(familyName).stream()
                 .map(g -> (InsectTaxonView) InsectGenusView.of(
                         g, imageQuery.forRankHierarchy(g.name()), FeatureCollection.empty()))
+                .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
 
@@ -139,6 +142,7 @@ class InsectFactory {
         return speciesQuery.forGenusName(genusName).stream()
                 .map(s -> (InsectTaxonView) InsectSpeciesView.of(
                         s, imageQuery.forParentName(s.name()), FeatureCollection.empty()))
+                .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
 

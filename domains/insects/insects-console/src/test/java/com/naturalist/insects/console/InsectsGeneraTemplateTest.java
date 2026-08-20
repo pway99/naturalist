@@ -54,7 +54,7 @@ class InsectsGeneraTemplateTest {
                         "genus", anyGenus,
                         "family", family,
                         "order", order,
-                        "species", List.of(),
+                        "children", List.of(),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -62,5 +62,41 @@ class InsectsGeneraTemplateTest {
                 output);
 
         assertThat(output.toString()).isNotBlank();
+    }
+
+    @Test
+    void genus_rendersChildSpeciesCardFromPermit() {
+        NaturalistDatabase database = NaturalistDatabase.create();
+        InsectOrderTestEntitySource orderSource = new InsectOrderTestEntitySource(database);
+        InsectSpecies anySpecies = new InsectSpeciesTestEntitySource(database).entityStream()
+                .findFirst().orElseThrow();
+        InsectGenus genus = new InsectGenusTestEntitySource(database)
+                .getByName(anySpecies.genusName()).orElseThrow();
+        InsectFamily family = new InsectFamilyTestEntitySource(database)
+                .getByName(genus.familyName()).orElseThrow();
+        InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
+        InsectTaxonView speciesChild = InsectSpeciesView.of(
+                anySpecies,
+                InsectEntityCollections.ImageCollection.empty(),
+                InsectEntityCollections.FeatureCollection.empty());
+        StringOutput output = new StringOutput();
+
+        TestTemplateEngine.create().render(
+                "insects/genus.jte",
+                Map.of(
+                        "genus", genus,
+                        "family", family,
+                        "order", order,
+                        "children", List.of(speciesChild),
+                        "descriptionPreschool", "p",
+                        "descriptionElementary", "e",
+                        "descriptionSecondary", "s",
+                        "descriptionUniversity", "u"),
+                output);
+
+        String speciesDisplayName = anySpecies.commonNames().stream().findFirst()
+                .map(cn -> cn.label()).orElse(anySpecies.name().value());
+        assertThat(output.toString()).contains(speciesDisplayName);
+        assertThat(output.toString()).contains("/insects/" + anySpecies.name().value());
     }
 }
