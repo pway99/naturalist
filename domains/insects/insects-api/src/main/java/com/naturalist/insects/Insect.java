@@ -84,7 +84,8 @@ public record Insect(
         @Nullable InsectGenusView genus,
         @Nullable InsectSpeciesView species,
         LifeStageCollection lifeStages,
-        @Nullable InsectCitationView citations
+        @Nullable InsectCitationView citations,
+        @Nullable InsectFeatureView features
 ) implements ReadModel {
 
     /**
@@ -100,6 +101,7 @@ public record Insect(
                 null,
                 null,
                 LifeStageCollection.empty(),
+                null,
                 null);
     }
 
@@ -136,31 +138,35 @@ public record Insect(
     }
 
     public Insect withObservations(ImageCollection observations) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
     }
 
     public Insect withOrder(@Nullable InsectOrderView order) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
     }
 
     public Insect withFamily(@Nullable InsectFamilyView family) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
     }
 
     public Insect withGenus(@Nullable InsectGenusView genus) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
     }
 
     public Insect withSpecies(@Nullable InsectSpeciesView species) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
     }
 
     public Insect withLifeStages(LifeStageCollection lifeStages) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
     }
 
     public Insect withCitations(@Nullable InsectCitationView citations) {
-        return new Insect(observations, order, family, genus, species, lifeStages, citations);
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
+    }
+
+    public Insect withFeatures(@Nullable InsectFeatureView features) {
+        return new Insect(observations, order, family, genus, species, lifeStages, citations, features);
     }
 
     @Override
@@ -196,6 +202,7 @@ public record Insect(
             .whenNotNull(citations, c -> c
                 .readModel(citations, "citations")
             )
+            .whenNotNull(features, f -> f.readModel(features, "features"))
         ;
     }
 }

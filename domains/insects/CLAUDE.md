@@ -74,10 +74,13 @@ shared through a type.
 Rank-polymorphic identification means most vision identifications land at ORDER or
 FAMILY, not SPECIES. The four rank pages therefore carry the same evidence surfaces:
 
-**`features.jte`** — renders `List<FeatureGroup>`, the console-side reshaping of
-`InsectFeatureView` (lineage-composite, ancestor-first, ordinal-ordered within a rank).
-Built by `FeatureGroup.of(view)`; handlers populate it via the controller's private
-`featureGroups(InsectRankName)` helper.
+**`features.jte`** — renders `insect.features()`, an `InsectFeatureView`
+(lineage-composite, ancestor-first, ordinal-ordered within a rank) composed directly
+into the `Insect` read model. `InsectFactory` populates it via
+`.withFeatures(featureQuery.findByRankName(name))`, symmetric with `.withCitations(...)`;
+each rank handler reads it straight off the `Insect` it already resolved — no separate
+per-page fetch. `InsectFeatureView.groups()` are `RankGroup`s (rank + ordinal-ordered
+`InsectFeature`s); the template formats each group's rank label with `RankLabel.of(...)`.
 
 **`observationGallery.jte`** — photo, `%` confidence, "Why this ID?" evidence
 disclosure, "Also considered" alternatives, and the field-notes form. Sourced from

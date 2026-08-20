@@ -188,10 +188,6 @@ public class InsectsController {
                 intro("Species " + binomial, "intro-species-open", species.description()));
     }
 
-    private InsectFeatureView featureView(InsectRankName rankName) {
-        return insectQuery.features().findByRankName(rankName);
-    }
-
     /**
      * Maps each image to the signed-in naturalist's own {@link OrganismObservation}
      * for it, when one exists. Only the viewer's observations are exposed — the
@@ -577,7 +573,7 @@ public class InsectsController {
         model.addAttribute("genera", genera);
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
-        model.addAttribute("features", featureView(familyName));
+        model.addAttribute("features", insect.get().features());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -636,7 +632,7 @@ public class InsectsController {
         model.addAttribute("families", families);
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
-        model.addAttribute("features", featureView(orderName));
+        model.addAttribute("features", insect.get().features());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -707,7 +703,7 @@ public class InsectsController {
         model.addAttribute("species", members);
         model.addAttribute("gallery", gallery);
         model.addAttribute("citations", insect.get().citations());
-        model.addAttribute("features", featureView(genusName));
+        model.addAttribute("features", insect.get().features());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -789,7 +785,7 @@ public class InsectsController {
                 observationLookup(galleryImages, viewer, speciesName));
 
         model.addAttribute("citations", i.citations());
-        model.addAttribute("features", featureView(speciesName));
+        model.addAttribute("features", i.features());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("role",
                 insectQuery.functionalRoles().getByParentName(speciesName).orElse(null));

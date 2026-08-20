@@ -48,6 +48,12 @@ class InsectFactoryTest {
     InsectQuery.CitationQuery citationQuery = new InsectCitationQueryImpl(
             citationAssociationQuery, libraryCitationQuery, ancestryResolver);
 
+    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(db);
+    InsectFeatureAssignmentRepositoryMock assignmentRepository =
+            new InsectFeatureAssignmentRepositoryMock(db);
+    InsectQuery.FeatureQuery featureQuery = new InsectFeatureQueryImpl(
+            featureRepository, assignmentRepository, ancestryResolver);
+
     /**
      * Stub lifestage query — returns empty collections. InsectLifeStageQueryImpl is
      * package-private inside {@code com.naturalist.insects.lifestage} and not accessible
@@ -84,7 +90,7 @@ class InsectFactoryTest {
 
     InsectFactory factory = new InsectFactory(
             speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
-            lifeStageQuery, citationQuery);
+            lifeStageQuery, citationQuery, featureQuery);
 
     @Test
     void buildByName_rejectsNull() {
@@ -172,5 +178,13 @@ class InsectFactoryTest {
         assertThat(insect.citations().citations())
                 .extracting(c -> c.citation().name().value())
             .contains("eol-battus-philenor-130502", "eol-lepidoptera-747");
+    }
+
+    @Test
+    void buildByName_composesFeatureView() {
+        InsectSpeciesName name = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        Insect insect = factory.buildByName(name).orElseThrow();
+        assertThat(insect.features()).isNotNull();
+        assertThat(insect.features().subject()).isEqualTo(name);
     }
 }

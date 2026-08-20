@@ -64,7 +64,7 @@ class InsectQueryImpl implements InsectQuery {
                 featureRepository, featureAssignmentRepository, ancestryResolver);
         this.insectFactory = new InsectFactory(
                 speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
-                insectLifeStageQuery, this.citationQuery);
+                insectLifeStageQuery, this.citationQuery, this.featureQuery);
     }
 
     @Override

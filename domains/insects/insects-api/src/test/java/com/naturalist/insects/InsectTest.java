@@ -39,6 +39,7 @@ class InsectTest {
         assertThat(insect.species()).isNull();
         assertThat(insect.lifeStages().stream()).isEmpty();
         assertThat(insect.citations()).isNull();
+        assertThat(insect.features()).isNull();
     }
 
     // ----- identifiedTo() -----
@@ -236,6 +237,7 @@ class InsectTest {
                 null,
                 null, null, null, null,
                 LifeStageCollection.empty(),
+                null,
                 null);
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -250,6 +252,7 @@ class InsectTest {
         Insect insect = new Insect(
                 ImageCollection.empty(),
                 null, null, null, null,
+                null,
                 null,
                 null);
 
@@ -269,6 +272,7 @@ class InsectTest {
                 null,
                 speciesView(),
                 LifeStageCollection.empty(),
+                null,
                 null);
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -287,6 +291,7 @@ class InsectTest {
                 genusView(),
                 null,
                 LifeStageCollection.empty(),
+                null,
                 null);
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -305,6 +310,7 @@ class InsectTest {
                 null,
                 null,
                 LifeStageCollection.empty(),
+                null,
                 null);
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -390,6 +396,18 @@ class InsectTest {
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".insect.speciesBelongsToGenus");
+    }
+
+    // ----- invariants() features descent -----
+
+    @Test
+    void featuresDescent_reportsNestedViolations() {
+        // A structurally invalid features view (null subject) surfaces under ".features".
+        InsectFeatureView badFeatures = new InsectFeatureView(null, List.of());
+        Insect insect = Insect.empty().withFeatures(badFeatures);
+        var mo = observer.forMethod("featuresDescent_reportsNestedViolations");
+        assertThat(mo.observable(insect, "insect").violationNamesRemovingPrefix(mo.observationPoint()))
+                .contains(".insect.features.subject");
     }
 
     // ----- helpers -----

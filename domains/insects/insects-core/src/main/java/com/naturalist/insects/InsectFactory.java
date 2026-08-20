@@ -30,6 +30,7 @@ class InsectFactory {
     private final InsectQuery.OrderQuery orderQuery;
     private final InsectLifeStageQuery lifeStageQuery;
     private final InsectQuery.CitationQuery citationQuery;
+    private final InsectQuery.FeatureQuery featureQuery;
 
     InsectFactory(InsectQuery.SpeciesQuery speciesQuery,
                   InsectQuery.ImageQuery imageQuery,
@@ -37,7 +38,8 @@ class InsectFactory {
                   InsectQuery.FamilyQuery familyQuery,
                   InsectQuery.OrderQuery orderQuery,
                   InsectLifeStageQuery lifeStageQuery,
-                  InsectQuery.CitationQuery citationQuery) {
+                  InsectQuery.CitationQuery citationQuery,
+                  InsectQuery.FeatureQuery featureQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(imageQuery, "imageQuery")
@@ -45,7 +47,8 @@ class InsectFactory {
                         .notNull(familyQuery, "familyQuery")
                         .notNull(orderQuery, "orderQuery")
                         .notNull(lifeStageQuery, "lifeStageQuery")
-                        .notNull(citationQuery, "citationQuery"))
+                        .notNull(citationQuery, "citationQuery")
+                        .notNull(featureQuery, "featureQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
@@ -54,6 +57,7 @@ class InsectFactory {
         this.orderQuery = orderQuery;
         this.lifeStageQuery = lifeStageQuery;
         this.citationQuery = citationQuery;
+        this.featureQuery = featureQuery;
     }
 
     Optional<Insect> buildByName(InsectRankName name) {
@@ -65,7 +69,8 @@ class InsectFactory {
                                 .withObservations(imageQuery.forParentName(speciesName))
                                 .withSpecies(InsectSpeciesView.of(species))
                                 .withLifeStages(lifeStageQuery.lifeStages().forParentName(speciesName))
-                                .withCitations(citationQuery.findByRankName(speciesName));
+                                .withCitations(citationQuery.findByRankName(speciesName))
+                                .withFeatures(featureQuery.findByRankName(speciesName));
                         insect = resolveGenus(insect, species.genusName());
                         return observe(insect);
                     });
@@ -75,7 +80,8 @@ class InsectFactory {
                                 .withObservations(imageQuery.forParentName(genusName))
                                 .withGenus(InsectGenusView.of(genus))
                                 .withLifeStages(lifeStageQuery.lifeStages().forParentName(genusName))
-                                .withCitations(citationQuery.findByRankName(genusName));
+                                .withCitations(citationQuery.findByRankName(genusName))
+                                .withFeatures(featureQuery.findByRankName(genusName));
                         insect = resolveFamily(insect, genus.familyName());
                         return observe(insect);
                     });
@@ -85,7 +91,8 @@ class InsectFactory {
                                 .withObservations(imageQuery.forParentName(familyName))
                                 .withFamily(InsectFamilyView.of(family))
                                 .withLifeStages(lifeStageQuery.lifeStages().forParentName(familyName))
-                                .withCitations(citationQuery.findByRankName(familyName));
+                                .withCitations(citationQuery.findByRankName(familyName))
+                                .withFeatures(featureQuery.findByRankName(familyName));
                         insect = resolveOrder(insect, family.orderName());
                         return observe(insect);
                     });
@@ -94,7 +101,8 @@ class InsectFactory {
                             .withObservations(imageQuery.forParentName(orderName))
                             .withOrder(InsectOrderView.of(order))
                             .withLifeStages(lifeStageQuery.lifeStages().forParentName(orderName))
-                            .withCitations(citationQuery.findByRankName(orderName))));
+                            .withCitations(citationQuery.findByRankName(orderName))
+                            .withFeatures(featureQuery.findByRankName(orderName))));
             case InsectSubspeciesName _ -> Optional.empty();
         };
     }
