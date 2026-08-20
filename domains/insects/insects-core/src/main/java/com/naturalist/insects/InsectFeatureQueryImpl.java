@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,8 +16,9 @@ import java.util.stream.Collectors;
  * Lineage-composite feature resolution — the feature analog of
  * {@link InsectCitationQueryImpl}. Walks the ancestry chain from the subject
  * rank up to the order, gathers feature assignments at each rank, resolves
- * the {@link InsectFeature} entities, and composes the result as an
- * {@link InsectFeatureView} with ancestor-first ordering.
+ * the {@link InsectFeature} entities, and composes the result as a
+ * display-ready {@link InsectFeatureView} — one {@link InsectFeatureView.RankGroup}
+ * per contributing rank, ancestor-first, ordinal-ordered within a group.
  */
 class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
 
@@ -40,51 +41,40 @@ class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
     }
 
     @Override
-    public Optional<InsectFeatureView> findByRankName(InsectRankName subject) {
+    public InsectFeatureView findByRankName(InsectRankName subject) {
         observer.arguments("findByRankName", i -> i.identifier(subject, "subject"))
                 .throwWhenInvalid();
 
-        List<InsectRankName> ancestry = ancestryResolver.resolveAncestry(subject);
+        List<InsectRankName> ancestry = ancestryResolver.resolveAncestry(subject); // subject-first
+        List<InsectFeatureView.RankGroup> groups = new ArrayList<>();
 
-        // Gather all assignments across the ancestry, tagged with provenance.
-        // Ancestry is already ordered subject-first → ancestor-last; we want
-        // ancestor-first in the result, so we reverse the walk order.
-        List<InsectFeatureAssignment> allAssignments = new ArrayList<>();
-        for (int i = ancestry.size() - 1; i >= 0; i--) {
-            InsectRankName rank = ancestry.get(i);
-            List<InsectFeatureAssignment> atRank = assignmentRepository.getByRankName(rank);
-            atRank.stream()
+        // Ancestor-first: walk the ancestry in reverse (order → … → subject).
+        for (int a = ancestry.size() - 1; a >= 0; a--) {
+            InsectRankName rank = ancestry.get(a);
+            List<InsectFeatureAssignment> atRank = assignmentRepository.getByRankName(rank).stream()
                     .sorted(Comparator.comparingInt(InsectFeatureAssignment::ordinal))
-                    .forEach(allAssignments::add);
-        }
-
-        if (allAssignments.isEmpty()) {
-            InsectFeatureView view = new InsectFeatureView(subject, List.of());
-            observer.observable(view, "featureView").observe(Level.WARN);
-            return Optional.of(view);
-        }
-
-        // Batch-resolve all referenced features.
-        Set<InsectFeatureId> featureIds = allAssignments.stream()
-                .map(InsectFeatureAssignment::featureId)
-                .collect(Collectors.toSet());
-        Map<InsectFeatureId, InsectFeature> resolved = new LinkedHashMap<>();
-        for (InsectFeature f : featureRepository.getByEntityNameSet(featureIds)) {
-            resolved.put(f.id(), f);
-        }
-
-        // Assemble RankedFeature entries.
-        List<InsectFeatureView.RankedFeature> ranked = new ArrayList<>();
-        for (InsectFeatureAssignment a : allAssignments) {
-            InsectFeature feature = resolved.get(a.featureId());
-            if (feature != null) {
-                ranked.add(new InsectFeatureView.RankedFeature(feature, a.rankName(), a.ordinal()));
+                    .toList();
+            if (atRank.isEmpty()) {
+                continue;
+            }
+            Set<InsectFeatureId> ids = atRank.stream()
+                    .map(InsectFeatureAssignment::featureId).collect(Collectors.toSet());
+            Map<InsectFeatureId, InsectFeature> resolved = new LinkedHashMap<>();
+            for (InsectFeature f : featureRepository.getByEntityNameSet(ids)) {
+                resolved.put(f.id(), f);
+            }
+            List<InsectFeature> features = atRank.stream()
+                    .map(x -> resolved.get(x.featureId()))
+                    .filter(Objects::nonNull)
+                    .toList();
+            if (!features.isEmpty()) {
+                groups.add(new InsectFeatureView.RankGroup(rank, features));
             }
         }
 
-        InsectFeatureView view = new InsectFeatureView(subject, List.copyOf(ranked));
+        InsectFeatureView view = new InsectFeatureView(subject, List.copyOf(groups));
         observer.observable(view, "featureView").observe(Level.WARN);
-        return Optional.of(view);
+        return view;
     }
 
     @Override

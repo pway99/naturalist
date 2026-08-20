@@ -170,11 +170,13 @@ public interface InsectQuery {
     interface FeatureQuery {
 
         /**
-         * Returns the lineage-composited {@link InsectFeatureView} for the given rank —
-         * the full conspicuous-to-diagnostic feature list the organism inherits from its
-         * ancestry. Returns {@link Optional#empty()} when no entity exists at the given name.
+         * Returns the lineage-composited, display-ready {@link InsectFeatureView} for the
+         * given rank — the full conspicuous-to-diagnostic groups the organism inherits
+         * from its ancestry, one {@link InsectFeatureView.RankGroup} per contributing rank.
+         * Never {@code null}; {@link InsectFeatureView#groups()} is empty when no rank in
+         * the ancestry carries a feature assignment.
          */
-        Optional<InsectFeatureView> findByRankName(InsectRankName subject);
+        InsectFeatureView findByRankName(InsectRankName subject);
 
         /**
          * Returns the ranks carrying the given feature — the reverse lookup ("which taxa

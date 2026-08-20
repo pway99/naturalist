@@ -173,9 +173,9 @@ class InsectCatalogIdentificationTransactionTest {
         transaction.execute(id);
 
         var featureView = query.features().findByRankName(SPECIES_NAME);
-        assertThat(featureView).isPresent();
-        assertThat(featureView.get().features()).hasSize(1);
-        assertThat(featureView.get().features().getFirst().feature().value())
+        assertThat(featureView.groups()).hasSize(1);
+        assertThat(featureView.groups().getFirst().features()).hasSize(1);
+        assertThat(featureView.groups().getFirst().features().getFirst().value())
                 .isEqualTo("hovering flight");
     }
 

@@ -11,7 +11,7 @@
 @import com.naturalist.observation.OrganismObservation
 @import com.naturalist.insects.console.BreadcrumbSegment
 @import com.naturalist.insects.console.CladeTrail
-@import com.naturalist.insects.console.FeatureGroup
+@import com.naturalist.insects.InsectFeatureView
 @import com.naturalist.library.console.GlossaryLinker
 @import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
@@ -35,7 +35,7 @@
 @param boolean collected = false
 @param boolean lens = false
 @param Map<InsectImageId, OrganismObservation> observations = java.util.Map.of()
-@param List<FeatureGroup> featureGroups = List.of()
+@param InsectFeatureView features = null
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
@@ -215,6 +215,6 @@
     @endif
 
     @template.insects.citations(citations = citations)
-    @template.insects.features(featureGroups = featureGroups, glossaryLinker = glossaryLinker)
+    @template.insects.features(features = features, glossaryLinker = glossaryLinker)
 
 `)

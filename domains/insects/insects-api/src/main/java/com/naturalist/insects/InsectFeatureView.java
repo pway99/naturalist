@@ -8,49 +8,40 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Lineage-composite view of identification features at a given rank — the insect
- * analog of {@link InsectCitationView} for citations.
+ * Lineage-composite, display-ready view of identification features at a given rank —
+ * the insect analog of {@link InsectCitationView} for citations.
  * <p>
  * The view composites the subject rank's own features with those inherited from its
- * ancestors via {@link InsectFeatureAssignment}. Each feature is tagged with its
- * source rank via {@link RankedFeature} so the consumer can group the display
- * ("Order-level marks: … / Family-level marks: …").
+ * ancestors via {@link InsectFeatureAssignment}, pre-grouped by contributing rank so
+ * the console can render directly ("Order-level marks: … / Family-level marks: …")
+ * without reshaping the data itself.
  * <p>
- * Ordering contract: ancestor ranks first (most general), descendant ranks last (most
- * specific). Within a rank, features are ordered by {@link RankedFeature#ordinal()}.
- * The composited list is therefore globally conspicuous→diagnostic.
+ * Ordering contract: ancestor groups first (most general), descendant groups last
+ * (most specific). Within a group, features are ordered by their assignment ordinal.
+ * The composited groups are therefore globally conspicuous→diagnostic.
  */
 public record InsectFeatureView(
         InsectRankName subject,
-        List<RankedFeature> features
+        List<RankGroup> groups
 ) implements ReadModel {
 
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .identifier(subject, "subject")
-                .notNull(features, "features");
+                .notNull(groups, "groups");
     }
 
-    /**
-     * A resolved feature tagged with the rank that contributed it — provenance for
-     * a single entry in the lineage-composite feature list.
-     *
-     * @param feature    the resolved {@link InsectFeature} entity
-     * @param assignedAt which rank in the lineage contributed this feature
-     * @param ordinal    position in the conspicuous-to-diagnostic ordering for that rank
-     */
-    public record RankedFeature(
-            InsectFeature feature,
-            InsectRankName assignedAt,
-            int ordinal
+    /** The field marks contributed at one rank in the lineage, ordinal-ordered. */
+    public record RankGroup(
+            InsectRankName rank,
+            List<InsectFeature> features
     ) implements ValueObject {
-
         @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i
-                    .notNull(feature, "feature")
-                    .identifier(assignedAt, "assignedAt");
+                    .identifier(rank, "rank")
+                    .notNull(features, "features");
         }
     }
 }

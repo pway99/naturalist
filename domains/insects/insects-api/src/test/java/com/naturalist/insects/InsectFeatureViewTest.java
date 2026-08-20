@@ -16,51 +16,36 @@ class InsectFeatureViewTest {
     @Test
     void validView_hasNoInvariantViolations() {
         MethodObserver mo = observer.forMethod("validView_hasNoInvariantViolations");
-
         InsectFeatureView view = new InsectFeatureView(
                 InsectSpeciesName.of("battus-philenor"),
-                List.of(new InsectFeatureView.RankedFeature(
-                        InsectFeature.of(InsectFeatureId.create(), "scaled wings"),
+                List.of(new InsectFeatureView.RankGroup(
                         InsectOrderName.of("lepidoptera"),
-                        0)));
-
-        InvariantObservation result = mo.observable(view, "view");
-        assertThat(result.violations()).isEmpty();
+                        List.of(InsectFeature.of(InsectFeatureId.create(), "scaled wings")))));
+        assertThat(mo.observable(view, "view").violations()).isEmpty();
     }
 
     @Test
     void nullComponents_reportInvariantViolations() {
         MethodObserver mo = observer.forMethod("nullComponents_reportInvariantViolations");
-
         InsectFeatureView view = new InsectFeatureView(null, null);
-
-        InvariantObservation result = mo.observable(view, "view");
-        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".view.subject", ".view.features");
+        assertThat(mo.observable(view, "view").violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactlyInAnyOrder(".view.subject", ".view.groups");
     }
 
     @Test
-    void validRankedFeature_hasNoInvariantViolations() {
-        MethodObserver mo = observer.forMethod("validRankedFeature_hasNoInvariantViolations");
-
-        InsectFeatureView.RankedFeature rf = new InsectFeatureView.RankedFeature(
-                InsectFeature.of(InsectFeatureId.create(), "tailed hindwings"),
+    void validRankGroup_hasNoInvariantViolations() {
+        MethodObserver mo = observer.forMethod("validRankGroup_hasNoInvariantViolations");
+        InsectFeatureView.RankGroup group = new InsectFeatureView.RankGroup(
                 InsectFamilyName.of("papilionidae"),
-                1);
-
-        InvariantObservation result = mo.observable(rf, "rankedFeature");
-        assertThat(result.violations()).isEmpty();
+                List.of(InsectFeature.of(InsectFeatureId.create(), "tailed hindwings")));
+        assertThat(mo.observable(group, "rankGroup").violations()).isEmpty();
     }
 
     @Test
-    void nullRankedFeatureComponents_reportInvariantViolations() {
-        MethodObserver mo = observer.forMethod("nullRankedFeatureComponents_reportInvariantViolations");
-
-        InsectFeatureView.RankedFeature rf = new InsectFeatureView.RankedFeature(
-                null, null, 0);
-
-        InvariantObservation result = mo.observable(rf, "rankedFeature");
-        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
-                .containsExactlyInAnyOrder(".rankedFeature.feature", ".rankedFeature.assignedAt");
+    void nullRankGroupComponents_reportInvariantViolations() {
+        MethodObserver mo = observer.forMethod("nullRankGroupComponents_reportInvariantViolations");
+        InsectFeatureView.RankGroup group = new InsectFeatureView.RankGroup(null, null);
+        assertThat(mo.observable(group, "rankGroup").violationNamesRemovingPrefix(mo.observationPoint()))
+                .containsExactlyInAnyOrder(".rankGroup.rank", ".rankGroup.features");
     }
 }
