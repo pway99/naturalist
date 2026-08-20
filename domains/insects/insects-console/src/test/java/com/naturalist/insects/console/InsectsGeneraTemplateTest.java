@@ -77,8 +77,7 @@ class InsectsGeneraTemplateTest {
         InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
         InsectTaxonView speciesChild = InsectSpeciesView.of(
                 anySpecies,
-                InsectEntityCollections.ImageCollection.empty(),
-                InsectEntityCollections.FeatureCollection.empty());
+                InsectEntityCollections.ImageCollection.empty());
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render(

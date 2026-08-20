@@ -19,9 +19,6 @@ import com.naturalist.observation.OrganismObservation;
  *
  * <p>Nested queries scope to a single consistency concern each:
  * <ul>
- *   <li>{@link TaxonViewQuery} — the catalog-view {@link InsectTaxonView}
- *       (rank entity + images), rooted at whichever Linnaean rank the parent name
- *       identifies (family, genus, or species).</li>
  *   <li>{@link SpeciesQuery} — {@link InsectSpecies} entities in isolation.</li>
  *   <li>{@link ImageQuery} — {@link OrganismImage} entities in isolation.</li>
 
@@ -35,9 +32,6 @@ import com.naturalist.observation.OrganismObservation;
  * <pre>{@code
  * insectQuery.species().getByName(speciesName);      // InsectSpecies
  * insectQuery.images().getByName(imageName);         // OrganismImage
- * insectQuery.taxonView().getByName(speciesName);    // InsectSpeciesView
- * insectQuery.taxonView().getByName(genusName);      // InsectGenusView
- * insectQuery.taxonView().getByName(familyName);     // InsectFamilyView
  * insectQuery.families().getByName(familyName);      // InsectFamily
  * insectQuery.genera().getByName(genusName);         // InsectGenus
  * insectQuery.genera().forFamilyName(familyName);    // genera under a family
@@ -47,8 +41,6 @@ import com.naturalist.observation.OrganismObservation;
  * }</pre>
  */
 public interface InsectQuery {
-
-    TaxonViewQuery taxonView();
 
     SpeciesQuery species();
 
@@ -76,18 +68,6 @@ public interface InsectQuery {
      * the name is an {@link InsectSubspeciesName} (no subspecies entity exists yet).
      */
     Optional<Insect> getByName(InsectRankName name);
-
-    interface TaxonViewQuery {
-
-        /**
-         * Resolve the {@link InsectTaxonView} rooted at the given rank name. The
-         * concrete permit returned matches the {@link InsectRankName} permit passed in
-         * (species → {@link InsectSpeciesView}, genus → {@link InsectGenusView},
-         * family → {@link InsectFamilyView}). Subspecies-rank names always return
-         * {@link Optional#empty()} — no subspecies entity exists in the catalog yet.
-         */
-        Optional<InsectTaxonView> getByName(InsectRankName name);
-    }
 
     interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
 

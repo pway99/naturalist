@@ -59,8 +59,7 @@ class InsectsOrdersTemplateTest {
                 .getByName(anyFamily.orderName()).orElseThrow();
         InsectTaxonView familyChild = InsectFamilyView.of(
                 anyFamily,
-                InsectEntityCollections.ImageCollection.empty(),
-                InsectEntityCollections.FeatureCollection.empty());
+                InsectEntityCollections.ImageCollection.empty());
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render(

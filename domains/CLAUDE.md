@@ -306,8 +306,8 @@ Short version:
 (namespace class), `InsectQuery` (namespace interface), `InsectEntityCollections`
 (collection namespace), `InsectSpecies` (nested value-object graph). Adapters
 live in `insects-core/`: `InsectQueryImpl`, `SpeciesQueryImpl`, `ImageQueryImpl`,
-`TaxonViewQueryImpl`, and the aggregate factory `InsectTaxonViewFactory`
-(concrete, no interface — the template for factory placement).
+and the read-model factory `InsectFactory` (concrete, no interface — the
+template for factory placement).
 
 ## Test Fixtures Use Real Data
 

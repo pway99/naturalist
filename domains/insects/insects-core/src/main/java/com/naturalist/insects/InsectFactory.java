@@ -1,6 +1,5 @@
 package com.naturalist.insects;
 
-import com.naturalist.insects.InsectEntityCollections.FeatureCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
@@ -125,7 +124,7 @@ class InsectFactory {
     private List<InsectTaxonView> familyChildren(InsectOrderName orderName) {
         return familyQuery.forOrderName(orderName).stream()
                 .map(f -> (InsectTaxonView) InsectFamilyView.of(
-                        f, imageQuery.forRankHierarchy(f.name()), FeatureCollection.empty()))
+                        f, imageQuery.forRankHierarchy(f.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
@@ -133,7 +132,7 @@ class InsectFactory {
     private List<InsectTaxonView> genusChildren(InsectFamilyName familyName) {
         return genusQuery.forFamilyName(familyName).stream()
                 .map(g -> (InsectTaxonView) InsectGenusView.of(
-                        g, imageQuery.forRankHierarchy(g.name()), FeatureCollection.empty()))
+                        g, imageQuery.forRankHierarchy(g.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
@@ -141,7 +140,7 @@ class InsectFactory {
     private List<InsectTaxonView> speciesChildren(InsectGenusName genusName) {
         return speciesQuery.forGenusName(genusName).stream()
                 .map(s -> (InsectTaxonView) InsectSpeciesView.of(
-                        s, imageQuery.forParentName(s.name()), FeatureCollection.empty()))
+                        s, imageQuery.forParentName(s.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
     }

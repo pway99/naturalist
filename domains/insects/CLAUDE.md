@@ -19,9 +19,11 @@ catalog entities: `InsectSpeciesView`, `InsectGenusView`, `InsectFamilyView`,
 `InsectOrderView`. Each permit composes its rank entity with the `ImageCollection`
 of photographs attached at that rank — a read-side projection, not a consistency
 boundary. Identity is the root's typed `InsectRankName`, returned polymorphically
-by `name()`. Assembled by name through `InsectTaxonViewFactory` and read via
-`insectQuery.taxonView().getByName(rankName)`; `InsectSubspeciesName` is permitted
-on `InsectRankName` but yields `Optional.empty()` (no subspecies entity exists yet).
+by `name()`. No standalone query — used only as the rank-chain and child-card
+building blocks assembled inside the `Insect` read model, by `InsectFactory`.
+Permits carry no `features()` slot; features live on `Insect` as
+`InsectFeatureView`. `InsectSubspeciesName` is permitted on `InsectRankName` but
+yields `Optional.empty()` (no subspecies entity exists yet).
 
 ## The Naturalist's Collection
 

@@ -136,8 +136,7 @@ class InsectsFamiliesTemplateTest {
         InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
         InsectTaxonView genusChild = InsectGenusView.of(
                 anyGenus,
-                InsectEntityCollections.ImageCollection.empty(),
-                InsectEntityCollections.FeatureCollection.empty());
+                InsectEntityCollections.ImageCollection.empty());
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render(

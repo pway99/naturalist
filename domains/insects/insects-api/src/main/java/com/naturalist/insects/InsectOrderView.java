@@ -1,6 +1,5 @@
 package com.naturalist.insects;
 
-import com.naturalist.insects.InsectEntityCollections.FeatureCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.observability.Constraints;
 
@@ -13,17 +12,15 @@ import java.util.function.Consumer;
  */
 public record InsectOrderView(
         InsectOrder order,
-        ImageCollection images,
-        FeatureCollection features
+        ImageCollection images
 ) implements InsectTaxonView {
 
-    public static InsectOrderView of(InsectOrder order, ImageCollection images,
-                                     FeatureCollection features) {
-        return new InsectOrderView(order, images, features);
+    public static InsectOrderView of(InsectOrder order, ImageCollection images) {
+        return new InsectOrderView(order, images);
     }
 
     public static InsectOrderView of(InsectOrder order) {
-        return new InsectOrderView(order, ImageCollection.empty(), FeatureCollection.empty());
+        return new InsectOrderView(order, ImageCollection.empty());
     }
 
     @Override
@@ -35,7 +32,6 @@ public record InsectOrderView(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .namedEntity(order, "order")
-                .behavioralCollection(images, "images")
-                .behavioralCollection(features, "features");
+                .behavioralCollection(images, "images");
     }
 }

@@ -113,7 +113,6 @@ class InsectQueryImplTest {
         assertThat(insectQuery.genera()).isSameAs(genusQuery);
         assertThat(insectQuery.functionalRoles()).isSameAs(functionalRoleQuery);
         assertThat(insectQuery.orders()).isSameAs(orderQuery);
-        assertThat(insectQuery.taxonView()).isNotNull();
         assertThat(insectQuery.citations()).isNotNull();
         assertThat(insectQuery.features()).isNotNull();
     }
@@ -127,7 +126,6 @@ class InsectQueryImplTest {
         assertThat(insectQuery.genera()).isSameAs(insectQuery.genera());
         assertThat(insectQuery.functionalRoles()).isSameAs(insectQuery.functionalRoles());
         assertThat(insectQuery.orders()).isSameAs(insectQuery.orders());
-        assertThat(insectQuery.taxonView()).isSameAs(insectQuery.taxonView());
         assertThat(insectQuery.citations()).isSameAs(insectQuery.citations());
         assertThat(insectQuery.features()).isSameAs(insectQuery.features());
     }

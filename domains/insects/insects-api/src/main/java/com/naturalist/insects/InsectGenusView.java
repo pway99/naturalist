@@ -1,6 +1,5 @@
 package com.naturalist.insects;
 
-import com.naturalist.insects.InsectEntityCollections.FeatureCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
@@ -15,17 +14,15 @@ import java.util.function.Consumer;
  */
 public record InsectGenusView(
         InsectGenus genus,
-        ImageCollection images,
-        FeatureCollection features
+        ImageCollection images
 ) implements InsectTaxonView {
 
-    public static InsectGenusView of(InsectGenus genus, ImageCollection images,
-                                     FeatureCollection features) {
-        return new InsectGenusView(genus, images, features);
+    public static InsectGenusView of(InsectGenus genus, ImageCollection images) {
+        return new InsectGenusView(genus, images);
     }
 
     public static InsectGenusView of(InsectGenus genus) {
-        return new InsectGenusView(genus, ImageCollection.empty(), FeatureCollection.empty());
+        return new InsectGenusView(genus, ImageCollection.empty());
     }
 
     @Override
@@ -54,7 +51,6 @@ public record InsectGenusView(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .namedEntity(genus, "genus")
-                .behavioralCollection(images, "images")
-                .behavioralCollection(features, "features");
+                .behavioralCollection(images, "images");
     }
 }
