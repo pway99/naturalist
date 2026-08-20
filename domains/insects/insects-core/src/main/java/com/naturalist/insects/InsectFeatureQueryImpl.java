@@ -46,7 +46,7 @@ class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
                 .throwWhenInvalid();
 
         List<InsectRankName> ancestry = ancestryResolver.resolveAncestry(subject); // subject-first
-        List<InsectFeatureView.RankGroup> groups = new ArrayList<>();
+        Map<InsectRankName, List<InsectFeatureAssignment>> assignmentsByRank = new LinkedHashMap<>();
 
         // Ancestor-first: walk the ancestry in reverse (order → … → subject).
         for (int a = ancestry.size() - 1; a >= 0; a--) {
@@ -57,18 +57,29 @@ class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
             if (atRank.isEmpty()) {
                 continue;
             }
-            Set<InsectFeatureId> ids = atRank.stream()
-                    .map(InsectFeatureAssignment::featureId).collect(Collectors.toSet());
-            Map<InsectFeatureId, InsectFeature> resolved = new LinkedHashMap<>();
-            for (InsectFeature f : featureRepository.getByEntityNameSet(ids)) {
+            assignmentsByRank.put(rank, atRank);
+        }
+
+        Set<InsectFeatureId> allIds = assignmentsByRank.values().stream()
+                .flatMap(List::stream)
+                .map(InsectFeatureAssignment::featureId)
+                .collect(Collectors.toSet());
+        Map<InsectFeatureId, InsectFeature> resolved = new LinkedHashMap<>();
+        if (!allIds.isEmpty()) {
+            // single batched fetch across the ancestry
+            for (InsectFeature f : featureRepository.getByEntityNameSet(allIds)) {
                 resolved.put(f.id(), f);
             }
-            List<InsectFeature> features = atRank.stream()
+        }
+
+        List<InsectFeatureView.RankGroup> groups = new ArrayList<>();
+        for (Map.Entry<InsectRankName, List<InsectFeatureAssignment>> entry : assignmentsByRank.entrySet()) {
+            List<InsectFeature> features = entry.getValue().stream()
                     .map(x -> resolved.get(x.featureId()))
                     .filter(Objects::nonNull)
                     .toList();
             if (!features.isEmpty()) {
-                groups.add(new InsectFeatureView.RankGroup(rank, features));
+                groups.add(new InsectFeatureView.RankGroup(entry.getKey(), features));
             }
         }
 
