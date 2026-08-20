@@ -1,16 +1,15 @@
 package com.naturalist.insects;
 
-import java.util.ArrayList;
+import com.naturalist.taxonomy.RankAncestry;
+
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
- * Resolves the Linnaean ancestry chain for an {@link InsectRankName} — the subject
- * rank followed by its ancestors up to the order.
- * <p>
- * Shared by {@link InsectCitationQueryImpl} (citations) and
- * {@link InsectFeatureQueryImpl} (features) — both need "everything at this rank
- * plus everything inherited from ancestors, tagged with provenance." The traversal
- * is the reuse; the types are distinct.
+ * The insects wrapper over {@link RankAncestry}: the single place the insect FK chain
+ * (species→genus→family→order) is encoded, as {@link #parentOf}. Shared by
+ * {@link InsectCitationQueryImpl} and {@link InsectFeatureQueryImpl}.
  */
 class InsectAncestryResolver {
 
@@ -26,42 +25,25 @@ class InsectAncestryResolver {
         this.familyQuery = familyQuery;
     }
 
-    /**
-     * Returns the ancestry chain starting from the given rank and walking upward
-     * to the order. The subject rank is always first; ancestors follow in ascending
-     * Linnaean order (species → genus → family → order).
-     */
+    /** subject first, ancestors ascending up to the order. */
     List<InsectRankName> resolveAncestry(InsectRankName rankName) {
-        List<InsectRankName> ancestry = new ArrayList<>();
-        ancestry.add(rankName);
+        return RankAncestry.ancestry(rankName, this::parentOf);
+    }
 
+    /** Attributes across the ancestry tagged with source rank (blueprint C2). */
+    <A> List<RankAncestry.AtRank<InsectRankName, A>> inherited(
+            InsectRankName subject, Function<InsectRankName, List<A>> attributesAt) {
+        return RankAncestry.inherited(subject, this::parentOf, attributesAt);
+    }
+
+    /** The insect FK chain: the parent rank of a given rank, empty at the order (or a gap). */
+    private Optional<InsectRankName> parentOf(InsectRankName rankName) {
         return switch (rankName) {
-            case InsectSpeciesName speciesName -> {
-                speciesQuery.getByName(speciesName).ifPresent(species -> {
-                    ancestry.add(species.genusName());
-                    genusQuery.getByName(species.genusName()).ifPresent(genus -> {
-                        ancestry.add(genus.familyName());
-                        familyQuery.getByName(genus.familyName()).ifPresent(family ->
-                                ancestry.add(family.orderName()));
-                    });
-                });
-                yield ancestry;
-            }
-            case InsectGenusName genusName -> {
-                genusQuery.getByName(genusName).ifPresent(genus -> {
-                    ancestry.add(genus.familyName());
-                    familyQuery.getByName(genus.familyName()).ifPresent(family ->
-                            ancestry.add(family.orderName()));
-                });
-                yield ancestry;
-            }
-            case InsectFamilyName familyName -> {
-                familyQuery.getByName(familyName).ifPresent(family ->
-                        ancestry.add(family.orderName()));
-                yield ancestry;
-            }
-            case InsectOrderName _ -> ancestry;
-            case InsectSubspeciesName _ -> ancestry;
+            case InsectSpeciesName s -> speciesQuery.getByName(s).map(InsectSpecies::genusName);
+            case InsectGenusName g -> genusQuery.getByName(g).map(InsectGenus::familyName);
+            case InsectFamilyName f -> familyQuery.getByName(f).map(InsectFamily::orderName);
+            case InsectOrderName o -> Optional.empty();
+            case InsectSubspeciesName ss -> Optional.empty();
         };
     }
 }

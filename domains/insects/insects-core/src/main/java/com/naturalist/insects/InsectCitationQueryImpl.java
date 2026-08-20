@@ -4,7 +4,6 @@ import com.naturalist.authority.Citation;
 import com.naturalist.authority.CitationName;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
-import com.naturalist.library.CitationAssociation;
 import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.library.CitationQuery;
 import com.naturalist.observability.Level;
@@ -45,15 +44,12 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
         observer.arguments("findByRankName", i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
 
-        List<InsectRankName> ancestry = ancestryResolver.resolveAncestry(rankName);
-        List<PendingCitation> pending = new ArrayList<>();
-
-        for (InsectRankName rank : ancestry) {
-            EntityRef ref = new EntityRef(INSECTS, (EntityName) rank);
-            for (CitationAssociation a : citationAssociationQuery.findBySubject(ref).stream().toList()) {
-                pending.add(new PendingCitation(a.citationName(), rank, a.note()));
-            }
-        }
+        List<PendingCitation> pending = ancestryResolver.inherited(rankName, rank ->
+                        citationAssociationQuery.findBySubject(new EntityRef(INSECTS, (EntityName) rank))
+                                .stream().toList())
+                .stream()
+                .map(at -> new PendingCitation(at.value().citationName(), at.sourceRank(), at.value().note()))
+                .toList();
 
         if (pending.isEmpty()) {
             InsectCitationView view = new InsectCitationView(rankName, List.of());
