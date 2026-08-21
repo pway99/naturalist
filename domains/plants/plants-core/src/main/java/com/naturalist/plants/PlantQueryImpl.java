@@ -11,6 +11,7 @@ class PlantQueryImpl implements PlantQuery {
     private final EcologicalRoleQuery plantEcologicalRoleEntityQuery;
     private final ObservationQuery observationQuery;
     private final ImageQuery imageQuery;
+    private final FeatureQuery featureQuery;
 
     PlantQueryImpl(SpeciesQuery plantEntityQuery,
                    OrderQuery plantOrderEntityQuery,
@@ -18,7 +19,8 @@ class PlantQueryImpl implements PlantQuery {
                    GenusQuery plantGenusEntityQuery,
                    EcologicalRoleQuery plantEcologicalRoleEntityQuery,
                    ObservationQuery observationQuery,
-                   ImageQuery imageQuery) {
+                   ImageQuery imageQuery,
+                   FeatureQuery featureQuery) {
         Observer.forClass(PlantQueryImpl.class).arguments("constructor", i -> i
                         .notNull(plantEntityQuery, "plantEntityQuery")
                         .notNull(plantOrderEntityQuery, "plantOrderEntityQuery")
@@ -26,7 +28,8 @@ class PlantQueryImpl implements PlantQuery {
                         .notNull(plantGenusEntityQuery, "plantGenusEntityQuery")
                         .notNull(plantEcologicalRoleEntityQuery, "plantEcologicalRoleEntityQuery")
                         .notNull(observationQuery, "observationQuery")
-                        .notNull(imageQuery, "imageQuery"))
+                        .notNull(imageQuery, "imageQuery")
+                        .notNull(featureQuery, "featureQuery"))
                 .throwWhenInvalid();
         this.plantEntityQuery = plantEntityQuery;
         this.plantOrderEntityQuery = plantOrderEntityQuery;
@@ -35,6 +38,7 @@ class PlantQueryImpl implements PlantQuery {
         this.plantEcologicalRoleEntityQuery = plantEcologicalRoleEntityQuery;
         this.observationQuery = observationQuery;
         this.imageQuery = imageQuery;
+        this.featureQuery = featureQuery;
     }
 
     @Override
@@ -70,5 +74,10 @@ class PlantQueryImpl implements PlantQuery {
     @Override
     public ImageQuery images() {
         return imageQuery;
+    }
+
+    @Override
+    public FeatureQuery features() {
+        return featureQuery;
     }
 }

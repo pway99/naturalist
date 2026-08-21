@@ -99,7 +99,10 @@ public class PlantsTestContext {
                 new PlantObservationQueryImpl(new PlantObservationRepositoryMock(db));
         PlantQuery.ImageQuery imageQuery =
                 new PlantImageQueryImpl(new PlantImageRepositoryMock(db));
+        PlantQuery.FeatureQuery featureQuery =
+                new PlantFeatureQueryImpl(new PlantFeatureRepositoryMock(db),
+                        new PlantFeatureAssignmentRepositoryMock(db));
         return new PlantQueryImpl(entityQuery, orderQuery, familyQuery, genusQuery, roleQuery,
-                observationQuery, imageQuery);
+                observationQuery, imageQuery, featureQuery);
     }
 }

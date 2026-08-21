@@ -11,6 +11,7 @@ import com.naturalist.plants.PlantEntityCollections.SpeciesCollection;
 import com.naturalist.plants.PlantEntityCollections.FamilyCollection;
 import com.naturalist.plants.PlantEntityCollections.GenusCollection;
 import com.naturalist.plants.PlantEntityCollections.ImageCollection;
+import com.naturalist.plants.PlantEntityCollections.FeatureCollection;
 
 /**
  * Namespace query for the plants top-level sub-context — the single
@@ -75,6 +76,17 @@ public interface PlantQuery {
     ObservationQuery observations();
 
     ImageQuery images();
+
+    FeatureQuery features();
+
+    interface FeatureQuery {
+
+        /**
+         * Field marks assigned DIRECTLY at the given rank (no ancestry walk — that is
+         * a later slice).
+         */
+        FeatureCollection forRankName(PlantRankName rankName);
+    }
 
     interface ImageQuery
             extends EntityQuery<PlantImageId, OrganismImage<PlantImageId, PlantObservationId, PlantRankName>, ImageCollection> {
