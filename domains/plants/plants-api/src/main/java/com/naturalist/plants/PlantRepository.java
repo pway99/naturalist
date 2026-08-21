@@ -56,4 +56,14 @@ class PlantRepository {
     protected interface FeatureRepository
             extends EntityRepository<PlantFeatureId, PlantFeature> {
     }
+
+    protected interface FeatureAssignmentRepository
+            extends EntityRepository<PlantFeatureAssignmentId, PlantFeatureAssignment> {
+
+        List<PlantFeatureAssignment> getByRankName(PlantRankName rankName);
+
+        List<PlantFeatureAssignment> getByRankNames(Set<PlantRankName> rankNames);
+
+        List<PlantFeatureAssignment> getByFeatureId(PlantFeatureId featureId);
+    }
 }
