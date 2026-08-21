@@ -2,6 +2,9 @@ package com.naturalist.plants;
 
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
+import com.naturalist.plants.cultivar.CultivarQuery;
+import com.naturalist.plants.management.PlantProgramQuery;
+import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
 
 import java.util.Optional;
 
@@ -21,6 +24,9 @@ class PlantFactory {
     private final PlantQuery.FeatureQuery featureQuery;
     private final PlantQuery.EcologicalRoleQuery roleQuery;
     private final PlantQuery.ImageQuery imageQuery;
+    private final CultivarQuery cultivarQuery;
+    private final PlantProgramQuery programQuery;
+    private final PhytochemicalConstituentQuery constituentQuery;
 
     PlantFactory(PlantQuery.SpeciesQuery speciesQuery,
                  PlantQuery.GenusQuery genusQuery,
@@ -28,7 +34,10 @@ class PlantFactory {
                  PlantQuery.OrderQuery orderQuery,
                  PlantQuery.FeatureQuery featureQuery,
                  PlantQuery.EcologicalRoleQuery roleQuery,
-                 PlantQuery.ImageQuery imageQuery) {
+                 PlantQuery.ImageQuery imageQuery,
+                 CultivarQuery cultivarQuery,
+                 PlantProgramQuery programQuery,
+                 PhytochemicalConstituentQuery constituentQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(genusQuery, "genusQuery")
@@ -36,7 +45,10 @@ class PlantFactory {
                         .notNull(orderQuery, "orderQuery")
                         .notNull(featureQuery, "featureQuery")
                         .notNull(roleQuery, "roleQuery")
-                        .notNull(imageQuery, "imageQuery"))
+                        .notNull(imageQuery, "imageQuery")
+                        .notNull(cultivarQuery, "cultivarQuery")
+                        .notNull(programQuery, "programQuery")
+                        .notNull(constituentQuery, "constituentQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.genusQuery = genusQuery;
@@ -45,13 +57,21 @@ class PlantFactory {
         this.featureQuery = featureQuery;
         this.roleQuery = roleQuery;
         this.imageQuery = imageQuery;
+        this.cultivarQuery = cultivarQuery;
+        this.programQuery = programQuery;
+        this.constituentQuery = constituentQuery;
     }
 
     Optional<Plant> buildByName(PlantRankName name) {
         observer.arguments("buildByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return switch (name) {
             case PlantSpeciesName sn -> speciesQuery.getByName(sn).map(s -> observe(
-                    resolveGenus(base(sn).withSpecies(PlantSpeciesView.of(s)).withChildren(java.util.List.of()),
+                    resolveGenus(base(sn)
+                            .withSpecies(PlantSpeciesView.of(s))
+                            .withChildren(java.util.List.of())
+                            .withCultivars(cultivarQuery.forPlantName(sn))
+                            .withPrograms(programQuery.forPlantName(sn))
+                            .withConstituents(constituentQuery.forPlantName(sn)),
                             s.genusName())));
             case PlantGenusName gn -> genusQuery.getByName(gn).map(g -> observe(
                     resolveFamily(base(gn).withGenus(PlantGenusView.of(g)).withChildren(speciesChildren(gn)),

@@ -119,13 +119,13 @@ public class PlantsController {
             return "redirect:/plants";
         }
         PlantSpecies species = plant.get().species().species();
-        var cultivars = cultivarQuery.forPlantName(plantName).stream()
+        var cultivars = plant.get().cultivars().stream()
                 .sorted(Comparator.comparing((Cultivar c) -> c.name().value()))
                 .toList();
-        var programs = plantProgramQuery.forPlantName(plantName).stream()
+        var programs = plant.get().programs().stream()
                 .sorted(Comparator.comparing((PlantProgram p) -> p.name().value()))
                 .toList();
-        var constituents = phytochemicalConstituentQuery.forPlantName(plantName).stream()
+        var constituents = plant.get().constituents().stream()
                 .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
                 .toList();
         model.addAttribute("plant", species);

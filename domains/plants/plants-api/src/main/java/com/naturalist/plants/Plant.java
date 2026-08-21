@@ -3,6 +3,9 @@ package com.naturalist.plants;
 import com.naturalist.ddd.ReadModel;
 import com.naturalist.observability.Constraints;
 import com.naturalist.plants.PlantEntityCollections.ImageCollection;
+import com.naturalist.plants.cultivar.CultivarCollection;
+import com.naturalist.plants.management.PlantProgramCollection;
+import com.naturalist.plants.phytochemistry.PhytochemicalConstituentCollection;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -34,12 +37,28 @@ public record Plant(
          */
         List<PlantTaxonView> children,
         @Nullable PlantEcologicalRole role,
-        ImageCollection images
+        ImageCollection images,
+        /**
+         * Cultivars bred from this taxon. Species-only — non-empty only when {@link #species}
+         * is set; every other rank carries {@link CultivarCollection#empty()}.
+         */
+        CultivarCollection cultivars,
+        /**
+         * Management programs targeting this taxon. Species-only in current composition —
+         * see {@code PlantFactory}; the underlying query attaches at any rank.
+         */
+        PlantProgramCollection programs,
+        /**
+         * Phytochemical constituents recorded for this taxon. Species-only in current
+         * composition — see {@code PlantFactory}; the underlying query attaches at any rank.
+         */
+        PhytochemicalConstituentCollection constituents
 ) implements ReadModel {
 
     /** Zero-state read model — no rank identified. Starting point for {@code with*} refinement. */
     public static Plant empty() {
-        return new Plant(null, null, null, null, null, List.of(), null, ImageCollection.empty());
+        return new Plant(null, null, null, null, null, List.of(), null, ImageCollection.empty(),
+                CultivarCollection.empty(), PlantProgramCollection.empty(), PhytochemicalConstituentCollection.empty());
     }
 
     /** Most-specific identified rank's typed name, if any. */
@@ -68,35 +87,58 @@ public record Plant(
     }
 
     public Plant withOrder(@Nullable PlantOrderView order) {
-        return new Plant(order, family, genus, species, features, children, role, images);
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
     }
 
     public Plant withFamily(@Nullable PlantFamilyView family) {
-        return new Plant(order, family, genus, species, features, children, role, images);
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
     }
 
     public Plant withGenus(@Nullable PlantGenusView genus) {
-        return new Plant(order, family, genus, species, features, children, role, images);
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
     }
 
     public Plant withSpecies(@Nullable PlantSpeciesView species) {
-        return new Plant(order, family, genus, species, features, children, role, images);
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
     }
 
     public Plant withFeatures(@Nullable PlantFeatureView features) {
-        return new Plant(order, family, genus, species, features, children, role, images);
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
     }
 
     public Plant withChildren(List<PlantTaxonView> children) {
-        return new Plant(order, family, genus, species, features, children, role, images);
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
     }
 
     public Plant withRole(@Nullable PlantEcologicalRole role) {
-        return new Plant(order, family, genus, species, features, children, role, images);
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
     }
 
     public Plant withImages(ImageCollection images) {
-        return new Plant(order, family, genus, species, features, children, role, images);
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
+    }
+
+    public Plant withCultivars(CultivarCollection cultivars) {
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
+    }
+
+    public Plant withPrograms(PlantProgramCollection programs) {
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
+    }
+
+    public Plant withConstituents(PhytochemicalConstituentCollection constituents) {
+        return new Plant(order, family, genus, species, features, children, role, images,
+                cultivars, programs, constituents);
     }
 
     @Override
@@ -118,6 +160,9 @@ public record Plant(
                 .whenNotNull(features, f -> f.readModel(features, "features"))
                 .notNull(children, "children")
                 .namedEntityOrNull(role, "role")
-                .behavioralCollection(images, "images");
+                .behavioralCollection(images, "images")
+                .behavioralCollection(cultivars, "cultivars")
+                .behavioralCollection(programs, "programs")
+                .behavioralCollection(constituents, "constituents");
     }
 }

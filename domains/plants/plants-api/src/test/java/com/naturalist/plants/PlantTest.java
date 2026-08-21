@@ -100,4 +100,21 @@ class PlantTest {
         assertThat(plant.role()).isNull();
         assertThat(observer.forMethod("roleImages").observable(plant, "plant").violations()).isEmpty();
     }
+
+    @Test
+    void withCultivars_carries_andEmptyDefaultsAreNonNull() {
+        Plant plant = Plant.empty();
+        assertThat(plant.cultivars().isEmpty()).isTrue();
+        assertThat(plant.programs().isEmpty()).isTrue();
+        assertThat(plant.constituents().isEmpty()).isTrue();
+        assertThat(observer.forMethod("extras").observable(plant, "plant").violations()).isEmpty();
+    }
+
+    @Test
+    void nullCultivars_reportsViolation() {
+        var mo = observer.forMethod("nullCultivars");
+        Plant plant = Plant.empty().withCultivars(null);
+        assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
+                .contains(".plant.cultivars");
+    }
 }

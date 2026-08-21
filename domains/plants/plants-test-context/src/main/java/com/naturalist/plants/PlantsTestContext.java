@@ -47,11 +47,11 @@ public class PlantsTestContext {
     private final PhytochemicalConstituentQuery phytochemicalConstituentQuery;
 
     private PlantsTestContext(NaturalistDatabase db) {
-        this.plantQuery = createPlantQuery(db);
         this.cultivarQuery = CultivarTestContext.createQuery(db);
         this.seedLineageQuery = SeedLineageTestContext.createQuery(db);
         this.plantProgramQuery = PlantProgramTestContext.createQuery(db);
         this.phytochemicalConstituentQuery = PhytochemicalConstituentTestContext.createQuery(db);
+        this.plantQuery = createPlantQuery(db, cultivarQuery, plantProgramQuery, phytochemicalConstituentQuery);
     }
 
     public static PlantsTestContext create(NaturalistDatabase db) {
@@ -84,7 +84,10 @@ public class PlantsTestContext {
      * root package and a sibling test context would collide with this class
      * in the same namespace.
      */
-    private static PlantQuery createPlantQuery(NaturalistDatabase db) {
+    private static PlantQuery createPlantQuery(NaturalistDatabase db,
+                                                CultivarQuery cultivarQuery,
+                                                PlantProgramQuery plantProgramQuery,
+                                                PhytochemicalConstituentQuery phytochemicalConstituentQuery) {
         PlantQuery.GenusQuery genusQuery =
                 new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
         PlantQuery.SpeciesQuery entityQuery =
@@ -105,6 +108,7 @@ public class PlantsTestContext {
                 new PlantFeatureQueryImpl(new PlantFeatureRepositoryMock(db),
                         new PlantFeatureAssignmentRepositoryMock(db), ancestryResolver);
         return new PlantQueryImpl(entityQuery, orderQuery, familyQuery, genusQuery, roleQuery,
-                observationQuery, imageQuery, featureQuery);
+                observationQuery, imageQuery, featureQuery, cultivarQuery, plantProgramQuery,
+                phytochemicalConstituentQuery);
     }
 }

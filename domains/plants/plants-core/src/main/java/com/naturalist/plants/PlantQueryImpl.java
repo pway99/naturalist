@@ -1,6 +1,9 @@
 package com.naturalist.plants;
 
 import com.naturalist.observability.Observer;
+import com.naturalist.plants.cultivar.CultivarQuery;
+import com.naturalist.plants.management.PlantProgramQuery;
+import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
 
 import java.util.Optional;
 
@@ -14,6 +17,9 @@ class PlantQueryImpl implements PlantQuery {
     private final ObservationQuery observationQuery;
     private final ImageQuery imageQuery;
     private final FeatureQuery featureQuery;
+    private final CultivarQuery cultivarQuery;
+    private final PlantProgramQuery programQuery;
+    private final PhytochemicalConstituentQuery constituentQuery;
     private final PlantFactory plantFactory;
 
     PlantQueryImpl(SpeciesQuery plantEntityQuery,
@@ -23,7 +29,10 @@ class PlantQueryImpl implements PlantQuery {
                    EcologicalRoleQuery plantEcologicalRoleEntityQuery,
                    ObservationQuery observationQuery,
                    ImageQuery imageQuery,
-                   FeatureQuery featureQuery) {
+                   FeatureQuery featureQuery,
+                   CultivarQuery cultivarQuery,
+                   PlantProgramQuery programQuery,
+                   PhytochemicalConstituentQuery constituentQuery) {
         Observer.forClass(PlantQueryImpl.class).arguments("constructor", i -> i
                         .notNull(plantEntityQuery, "plantEntityQuery")
                         .notNull(plantOrderEntityQuery, "plantOrderEntityQuery")
@@ -32,7 +41,10 @@ class PlantQueryImpl implements PlantQuery {
                         .notNull(plantEcologicalRoleEntityQuery, "plantEcologicalRoleEntityQuery")
                         .notNull(observationQuery, "observationQuery")
                         .notNull(imageQuery, "imageQuery")
-                        .notNull(featureQuery, "featureQuery"))
+                        .notNull(featureQuery, "featureQuery")
+                        .notNull(cultivarQuery, "cultivarQuery")
+                        .notNull(programQuery, "programQuery")
+                        .notNull(constituentQuery, "constituentQuery"))
                 .throwWhenInvalid();
         this.plantEntityQuery = plantEntityQuery;
         this.plantOrderEntityQuery = plantOrderEntityQuery;
@@ -42,9 +54,12 @@ class PlantQueryImpl implements PlantQuery {
         this.observationQuery = observationQuery;
         this.imageQuery = imageQuery;
         this.featureQuery = featureQuery;
+        this.cultivarQuery = cultivarQuery;
+        this.programQuery = programQuery;
+        this.constituentQuery = constituentQuery;
         this.plantFactory = new PlantFactory(
                 plantEntityQuery, plantGenusEntityQuery, plantFamilyEntityQuery, plantOrderEntityQuery, featureQuery,
-                plantEcologicalRoleEntityQuery, imageQuery);
+                plantEcologicalRoleEntityQuery, imageQuery, cultivarQuery, programQuery, constituentQuery);
     }
 
     @Override
