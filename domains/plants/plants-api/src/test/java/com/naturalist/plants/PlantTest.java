@@ -82,4 +82,22 @@ class PlantTest {
         assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".plant.children");
     }
+
+    @Test
+    void withRole_and_withImages_carry() {
+        PlantEcologicalRole role = new PlantEcologicalRole(
+                PlantEcologicalRoleId.create(), PlantGenusName.of("helianthus"),
+                java.util.Set.of(com.naturalist.plants.PlantRole.KEYSTONE_HOST));
+        Plant plant = Plant.empty().withRole(role);
+        assertThat(plant.role()).isEqualTo(role);
+        assertThat(plant.images()).isNotNull();
+        assertThat(plant.images().isEmpty()).isTrue();
+    }
+
+    @Test
+    void emptyPlant_roleNull_imagesEmpty_noViolations() {
+        Plant plant = Plant.empty();
+        assertThat(plant.role()).isNull();
+        assertThat(observer.forMethod("roleImages").observable(plant, "plant").violations()).isEmpty();
+    }
 }

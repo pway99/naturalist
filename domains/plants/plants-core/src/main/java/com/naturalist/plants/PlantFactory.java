@@ -19,24 +19,32 @@ class PlantFactory {
     private final PlantQuery.FamilyQuery familyQuery;
     private final PlantQuery.OrderQuery orderQuery;
     private final PlantQuery.FeatureQuery featureQuery;
+    private final PlantQuery.EcologicalRoleQuery roleQuery;
+    private final PlantQuery.ImageQuery imageQuery;
 
     PlantFactory(PlantQuery.SpeciesQuery speciesQuery,
                  PlantQuery.GenusQuery genusQuery,
                  PlantQuery.FamilyQuery familyQuery,
                  PlantQuery.OrderQuery orderQuery,
-                 PlantQuery.FeatureQuery featureQuery) {
+                 PlantQuery.FeatureQuery featureQuery,
+                 PlantQuery.EcologicalRoleQuery roleQuery,
+                 PlantQuery.ImageQuery imageQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(genusQuery, "genusQuery")
                         .notNull(familyQuery, "familyQuery")
                         .notNull(orderQuery, "orderQuery")
-                        .notNull(featureQuery, "featureQuery"))
+                        .notNull(featureQuery, "featureQuery")
+                        .notNull(roleQuery, "roleQuery")
+                        .notNull(imageQuery, "imageQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.genusQuery = genusQuery;
         this.familyQuery = familyQuery;
         this.orderQuery = orderQuery;
         this.featureQuery = featureQuery;
+        this.roleQuery = roleQuery;
+        this.imageQuery = imageQuery;
     }
 
     Optional<Plant> buildByName(PlantRankName name) {
@@ -57,7 +65,10 @@ class PlantFactory {
     }
 
     private Plant base(PlantRankName name) {
-        return Plant.empty().withFeatures(featureQuery.findByRankName(name));
+        return Plant.empty()
+                .withFeatures(featureQuery.findByRankName(name))
+                .withRole(roleQuery.forPlantName(name).orElse(null))
+                .withImages(imageQuery.forParentName(name));
     }
 
     private java.util.List<PlantTaxonView> familyChildren(PlantOrderName orderName) {

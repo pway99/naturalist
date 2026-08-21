@@ -5,6 +5,10 @@
 @import com.naturalist.plants.console.BreadcrumbSegment
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantFeatureView
+@import com.naturalist.observation.OrganismImage
+@import com.naturalist.plants.PlantImageId
+@import com.naturalist.plants.PlantObservationId
+@import com.naturalist.plants.PlantRankName
 @import java.util.List
 
 @param PlantGenus genus
@@ -17,6 +21,7 @@
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param List<Clade> cladeTrail = java.util.List.of()
 @param PlantFeatureView features = null
+@param List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> images = java.util.List.of()
 
 !{var commonName = genus.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value());}
 
@@ -33,6 +38,8 @@
     elementary = descriptionElementary,
     secondary = descriptionSecondary,
     university = descriptionUniversity)
+
+    @template.plants.gallery(images = images, alt = commonName)
 
     @template.plants.features(features = features)
 

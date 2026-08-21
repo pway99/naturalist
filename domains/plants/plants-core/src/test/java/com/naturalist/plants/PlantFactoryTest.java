@@ -23,7 +23,12 @@ class PlantFactoryTest {
         PlantAncestryResolver resolver = new PlantAncestryResolver(speciesQuery, genusQuery, familyQuery);
         PlantQuery.FeatureQuery featureQuery = new PlantFeatureQueryImpl(
                 new PlantFeatureRepositoryMock(db), new PlantFeatureAssignmentRepositoryMock(db), resolver);
-        return new PlantFactory(speciesQuery, genusQuery, familyQuery, orderQuery, featureQuery);
+        PlantQuery.EcologicalRoleQuery roleQuery =
+                new PlantEcologicalRoleQueryImpl(new PlantEcologicalRoleRepositoryMock(db));
+        PlantQuery.ImageQuery imageQuery =
+                new PlantImageQueryImpl(new PlantImageRepositoryMock(db));
+        return new PlantFactory(speciesQuery, genusQuery, familyQuery, orderQuery,
+                featureQuery, roleQuery, imageQuery);
     }
 
     @Test
@@ -77,5 +82,12 @@ class PlantFactoryTest {
     void buildByName_speciesName_hasNoChildren() {
         Plant plant = factory().buildByName(PlantSpeciesName.of("aristolochia-californica")).orElseThrow();
         assertThat(plant.children()).isEmpty();
+    }
+
+    @Test
+    void buildByName_composesImages_forSpeciesWithSeededPhotos() {
+        // aristolochia-californica has 2 seeded images (plant-images.json).
+        Plant plant = factory().buildByName(PlantSpeciesName.of("aristolochia-californica")).orElseThrow();
+        assertThat(plant.images().stream().toList()).hasSize(2);
     }
 }

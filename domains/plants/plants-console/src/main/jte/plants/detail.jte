@@ -8,6 +8,10 @@
 @import com.naturalist.plants.console.BreadcrumbSegment
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantFeatureView
+@import com.naturalist.observation.OrganismImage
+@import com.naturalist.plants.PlantImageId
+@import com.naturalist.plants.PlantObservationId
+@import com.naturalist.plants.PlantRankName
 
 @param PlantSpecies plant
 @param PlantEcologicalRole ecologicalRole = null
@@ -21,6 +25,7 @@
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param List<Clade> cladeTrail = java.util.List.of()
 @param PlantFeatureView features = null
+@param List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> images = java.util.List.of()
 
 @template.layout.page(title = plant.name().value(), content = @`
     @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
@@ -35,6 +40,8 @@
     elementary = descriptionElementary,
     secondary = descriptionSecondary,
     university = descriptionUniversity)
+
+    @template.plants.gallery(images = images, alt = plant.name().value())
 
     @template.plants.features(features = features)
 
