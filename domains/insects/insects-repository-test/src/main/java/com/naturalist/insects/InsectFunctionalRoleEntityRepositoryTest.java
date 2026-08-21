@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
@@ -92,5 +93,28 @@ interface InsectFunctionalRoleEntityRepositoryTest
         assertThatThrownBy(() -> repository().getByParentName(null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("parentName");
+    }
+
+    @Test
+    default void getByParentNames_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByParentNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("parentNames");
+    }
+
+    @Test
+    default void getByParentNames_returnsRolesAcrossTheGivenParents() {
+        var results = repository().getByParentNames(Set.of(
+                TestInsectsIdentifiers.InsectFamily.Syrphidae.name,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.name));
+
+        assertThat(results.stream().map(InsectFunctionalRole::id))
+                .contains(
+                        TestInsectsIdentifiers.InsectFamily.Syrphidae.FunctionalRole.id,
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.FunctionalRole.id);
+        assertThat(results).allSatisfy(role ->
+                assertThat(role.parentName()).isIn(
+                        TestInsectsIdentifiers.InsectFamily.Syrphidae.name,
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.name));
     }
 }

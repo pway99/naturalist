@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -105,5 +106,28 @@ class InsectImageQueryImplTest
 
         assertThat(collection).isNotNull();
         assertThat(collection.isEmpty()).isTrue();
+    }
+
+    @Test
+    void forParentNames_rejectsNull() {
+        assertThatThrownBy(() -> query.forParentNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("parentNames");
+    }
+
+    @Test
+    void forParentNames_returnsImagesAcrossTheGivenParents() {
+        ImageCollection collection = query.forParentNames(Set.of(
+                TestInsectsIdentifiers.InsectGenus.Empoasca.name,
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name));
+
+        assertThat(collection.stream().map(OrganismImage::id))
+                .contains(
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.id,
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.id);
+        assertThat(collection.stream())
+                .allSatisfy(image -> assertThat(image.parentName()).isIn(
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.name,
+                        TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name));
     }
 }

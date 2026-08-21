@@ -35,7 +35,7 @@
                 </header>
                 <dl class="taxonomy">
                     <dt>family</dt>
-                    <dd><a href="/insects/families/${g.familyName().value()}">${family.family().value()}</a></dd>
+                    <dd><a href="/insects/families/${g.familyName().value()}">${family != null ? family.family().value() : g.familyName().value()}</a></dd>
                     <dt>genus</dt>
                     <dd><em>${g.genus().value()}</em></dd>
                 </dl>

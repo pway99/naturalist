@@ -39,4 +39,11 @@ class InsectFunctionalRoleQueryImpl
                 .throwWhenInvalid();
         return repository().getByParentName(parentName);
     }
+
+    @Override
+    public FunctionalRoleCollection getByParentNames(Set<InsectRankName> parentNames) {
+        observer().arguments("getByParentNames", i -> i.observableCollection(parentNames, "parentNames"))
+                .throwWhenInvalid();
+        return FunctionalRoleCollection.of(repository().getByParentNames(parentNames));
+    }
 }

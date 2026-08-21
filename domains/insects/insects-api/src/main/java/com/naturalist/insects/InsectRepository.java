@@ -160,6 +160,8 @@ class InsectRepository {
         List<InsectFunctionalRole> getByGuild(FunctionalGuild guild);
 
         java.util.Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName);
+
+        List<InsectFunctionalRole> getByParentNames(Set<InsectRankName> parentNames);
     }
 
     protected interface OrderRepository

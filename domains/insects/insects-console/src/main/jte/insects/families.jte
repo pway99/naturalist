@@ -35,7 +35,7 @@
                 </header>
                 <dl class="taxonomy">
                     <dt>order</dt>
-                    <dd>${order.order().value()}</dd>
+                    <dd>${order != null ? order.order().value() : f.orderName().value()}</dd>
                     <dt>family</dt>
                     <dd>${f.family().value()}</dd>
                 </dl>

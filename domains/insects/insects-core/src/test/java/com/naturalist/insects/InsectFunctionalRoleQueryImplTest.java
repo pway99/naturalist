@@ -120,4 +120,30 @@ class InsectFunctionalRoleQueryImplTest
         assertThat(parentRankClasses).containsExactlyInAnyOrder(
                 InsectFamilyName.class, InsectGenusName.class, InsectSpeciesName.class);
     }
+
+    @Test
+    void getByParentNames_rejectsNull() {
+        assertThatThrownBy(() -> query.getByParentNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("parentNames");
+    }
+
+    @Test
+    void getByParentNames_returnsRolesAcrossTheGivenParents() {
+        FunctionalRoleCollection collection = query.getByParentNames(Set.of(
+                TestInsectsIdentifiers.InsectFamily.Syrphidae.name,
+                TestInsectsIdentifiers.InsectGenus.Empoasca.name));
+
+        assertThat(collection.stream().map(InsectFunctionalRole::parentName))
+                .contains(
+                        TestInsectsIdentifiers.InsectFamily.Syrphidae.name,
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.name)
+                // battus-philenor carries its own role record but was not requested —
+                // proves the filter narrows rather than returning the whole catalog.
+                .doesNotContain(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+        assertThat(collection.stream())
+                .allSatisfy(role -> assertThat(role.parentName()).isIn(
+                        TestInsectsIdentifiers.InsectFamily.Syrphidae.name,
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.name));
+    }
 }

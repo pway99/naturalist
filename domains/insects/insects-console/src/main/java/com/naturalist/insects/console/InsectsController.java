@@ -387,11 +387,19 @@ public class InsectsController {
     }
 
     private List<CladeTaxonCard> speciesPlacedAt(Clade clade) {
-        return Pages.stream(1000, insectQuery.species()::findPage)
+        List<InsectSpecies> placedSpecies = Pages.stream(1000, insectQuery.species()::findPage)
                 .filter(s -> clade.equals(s.placedIn()))
+                .toList();
+        java.util.Set<InsectGenusName> genusNameSet = placedSpecies.stream()
+                .map(InsectSpecies::genusName)
+                .collect(java.util.stream.Collectors.toSet());
+        Map<InsectGenusName, InsectGenus> genusByName = new LinkedHashMap<>();
+        insectQuery.genera().findByNameSet(genusNameSet).stream()
+                .forEach(genus -> genusByName.put(genus.name(), genus));
+        return placedSpecies.stream()
                 .map(s -> {
-                    String genusEpithet = insectQuery.genera().getByName(s.genusName())
-                            .map(g -> g.genus().value()).orElse("");
+                    InsectGenus genus = genusByName.get(s.genusName());
+                    String genusEpithet = genus != null ? genus.genus().value() : "";
                     return new CladeTaxonCard("/insects/" + s.name().value(),
                             (genusEpithet + " " + s.epithet().value()).trim());
                 })
@@ -483,20 +491,35 @@ public class InsectsController {
                 HttpServletRequest request, Model model) {
         boolean mine = collectionLensOn(request);
         Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
-        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> allImages = new ArrayList<>();
+        List<InsectSpecies> speciesInPage = speciesPage.content();
+
+        java.util.Set<InsectRankName> speciesNameSet = speciesInPage.stream()
+                .<InsectRankName>map(InsectSpecies::name)
+                .collect(java.util.stream.Collectors.toSet());
+        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.of(
+                insectQuery.images().forParentNames(speciesNameSet).stream().toList());
+
         Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = new LinkedHashMap<>();
-        Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
+        insectQuery.functionalRoles().getByParentNames(speciesNameSet).stream()
+                .forEach(role -> {
+                    if (role.parentName() instanceof InsectSpeciesName parentSpeciesName) {
+                        rolesBySpecies.put(parentSpeciesName, role);
+                    }
+                });
+
+        java.util.Set<InsectGenusName> genusNameSet = speciesInPage.stream()
+                .map(InsectSpecies::genusName)
+                .collect(java.util.stream.Collectors.toSet());
         Map<InsectGenusName, InsectGenus> genusByName = new LinkedHashMap<>();
-        for (var species : speciesPage.content()) {
-            allImages.addAll(insectQuery.images().forParentName(species.name()).stream().toList());
-            insectQuery.functionalRoles().getByParentName(species.name())
-                    .ifPresent(role -> rolesBySpecies.put(species.name(), role));
-            InsectGenus genus = genusByName.computeIfAbsent(species.genusName(),
-                    n -> insectQuery.genera().getByName(n).orElseThrow());
-            familyByName.computeIfAbsent(genus.familyName(),
-                    n -> insectQuery.families().getByName(n).orElseThrow());
-        }
-        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.of(allImages);
+        insectQuery.genera().findByNameSet(genusNameSet).stream()
+                .forEach(genus -> genusByName.put(genus.name(), genus));
+
+        java.util.Set<InsectFamilyName> familyNameSet = genusByName.values().stream()
+                .map(InsectGenus::familyName)
+                .collect(java.util.stream.Collectors.toSet());
+        Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
+        insectQuery.families().findByNameSet(familyNameSet).stream()
+                .forEach(family -> familyByName.put(family.name(), family));
 
         java.util.Optional<com.naturalist.naturalist.NaturalistName> me = currentNaturalist(request);
         List<InsectSpecies> speciesList;
@@ -529,11 +552,12 @@ public class InsectsController {
     String families(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectFamily> familyPage = insectQuery.families()
                 .findPage(PageRequest.console(Math.max(0, page)));
+        java.util.Set<InsectOrderName> orderNameSet = familyPage.content().stream()
+                .map(InsectFamily::orderName)
+                .collect(java.util.stream.Collectors.toSet());
         Map<InsectOrderName, InsectOrder> orderByName = new LinkedHashMap<>();
-        for (var family : familyPage.content()) {
-            orderByName.computeIfAbsent(family.orderName(),
-                    n -> insectQuery.orders().getByName(n).orElseThrow());
-        }
+        insectQuery.orders().findByNameSet(orderNameSet).stream()
+                .forEach(order -> orderByName.put(order.name(), order));
         Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByFamily = new LinkedHashMap<>();
         for (var family : familyPage.content()) {
             imagesByFamily.put(family.name(),
@@ -635,11 +659,12 @@ public class InsectsController {
     String genera(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectGenus> genusPage = insectQuery.genera()
                 .findPage(PageRequest.console(Math.max(0, page)));
+        java.util.Set<InsectFamilyName> familyNameSet = genusPage.content().stream()
+                .map(InsectGenus::familyName)
+                .collect(java.util.stream.Collectors.toSet());
         Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
-        for (var genus : genusPage.content()) {
-            familyByName.computeIfAbsent(genus.familyName(),
-                    n -> insectQuery.families().getByName(n).orElseThrow());
-        }
+        insectQuery.families().findByNameSet(familyNameSet).stream()
+                .forEach(family -> familyByName.put(family.name(), family));
         Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByGenus = new LinkedHashMap<>();
         for (var genus : genusPage.content()) {
             imagesByGenus.put(genus.name(),

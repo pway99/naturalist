@@ -47,6 +47,13 @@ class InsectImageQueryImpl
     }
 
     @Override
+    public ImageCollection forParentNames(Set<InsectRankName> parentNames) {
+        observer().arguments("forParentNames", i -> i.observableCollection(parentNames, "parentNames"))
+                .throwWhenInvalid();
+        return ImageCollection.of(repository().getByParentNames(parentNames));
+    }
+
+    @Override
     public ImageCollection forRankHierarchy(InsectRankName rankName) {
         observer().arguments("forRankHierarchy", i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();

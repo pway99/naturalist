@@ -95,6 +95,9 @@ public interface InsectQuery {
 
         ImageCollection forParentName(InsectRankName parentName);
 
+        /** Batched sibling of {@link #forParentName(InsectRankName)} across a set of ranks. */
+        ImageCollection forParentNames(Set<InsectRankName> parentNames);
+
         /**
          * Returns all images for the given rank and all descendant ranks in the
          * Linnaean hierarchy. For a species, this is just the species' own images.
@@ -144,6 +147,9 @@ public interface InsectQuery {
         FunctionalRoleCollection getByGuild(FunctionalGuild guild);
 
         Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName);
+
+        /** Batched sibling of {@link #getByParentName(InsectRankName)} across a set of ranks. */
+        FunctionalRoleCollection getByParentNames(Set<InsectRankName> parentNames);
     }
 
     interface OrderQuery extends EntityQuery<InsectOrderName, InsectOrder, OrderCollection> {
