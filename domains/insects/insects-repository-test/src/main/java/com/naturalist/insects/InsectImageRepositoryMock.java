@@ -29,7 +29,7 @@ class InsectImageRepositoryMock
 
     @Override
     public List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> getByParentNames(Set<InsectRankName> parentNames) {
-        observer().arguments("getByParentNames", i -> i.identifierSet(parentNames, "parentNames"))
+        observer().arguments("getByParentNames", i -> i.observableCollection(parentNames, "parentNames"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(image -> parentNames.contains(image.parentName()))

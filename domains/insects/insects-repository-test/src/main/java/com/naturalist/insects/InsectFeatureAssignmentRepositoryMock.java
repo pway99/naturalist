@@ -29,7 +29,7 @@ class InsectFeatureAssignmentRepositoryMock
     @Override
     public List<InsectFeatureAssignment> getByRankNames(Set<InsectRankName> rankNames) {
         observer().arguments("getByRankNames",
-                        i -> i.identifierSet(rankNames, "rankNames"))
+                        i -> i.observableCollection(rankNames, "rankNames"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(a -> rankNames.contains(a.rankName()))

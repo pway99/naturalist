@@ -105,6 +105,20 @@ public class Constraints {
     }
 
     /**
+     * Validate a non-null {@link Collection} of {@link Observable} elements and
+     * descend into each element's own {@link Observable#invariants()}. Null
+     * collection fails; empty collection passes — pair with {@link #notEmpty}
+     * when empty is also illegal. Generalizes {@link #valueObjectCollection} from
+     * {@link ValueObject} to any {@link Observable} — use for collections whose
+     * element type is not a {@code ValueObject} (e.g. a taxonomy {@code RankName}
+     * set, whose {@code invariants()} runtime-dispatches to its backing
+     * {@code EntityName}).
+     */
+    public <O extends Observable> Constraints observableCollection(Collection<? extends O> value, String name) {
+        return add(new ObservableCollectionConstraint<>(value, name));
+    }
+
+    /**
      * Validate a non-null {@link BehavioralCollection} child and descend into its
      * invariants. Type-specific counterpart to {@link #observable} for behavioral
      * collection children — most commonly an {@code ImageCollection} or
