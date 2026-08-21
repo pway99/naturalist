@@ -1,0 +1,91 @@
+package com.naturalist.plants;
+
+import com.naturalist.ddd.ReadModel;
+import com.naturalist.observability.Constraints;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.function.Consumer;
+
+/**
+ * The Plant read model — in-memory composition of everything known about a plant at
+ * whatever identification depth was reached. Chunk 1 carries only the rank chain
+ * ({@code @Nullable} {@link PlantOrderView}/{@link PlantFamilyView}/{@link PlantGenusView}/
+ * {@link PlantSpeciesView}), populated top-down to the resolved depth. Features, children,
+ * role, images, and species extras fold in over later chunks (see the design of record).
+ * Mirrors {@code Insect}.
+ *
+ * <p>Construction never throws; invalid states are reported by {@link #invariants()} when a
+ * consumer asks an {@link com.naturalist.observability.Observer} to walk them.
+ */
+public record Plant(
+        @Nullable PlantOrderView order,
+        @Nullable PlantFamilyView family,
+        @Nullable PlantGenusView genus,
+        @Nullable PlantSpeciesView species
+) implements ReadModel {
+
+    /** Zero-state read model — no rank identified. Starting point for {@code with*} refinement. */
+    public static Plant empty() {
+        return new Plant(null, null, null, null);
+    }
+
+    /** Most-specific identified rank's typed name, if any. */
+    public Optional<PlantRankName> identifiedTo() {
+        if (species != null) return Optional.of(species.name());
+        if (genus != null) return Optional.of(genus.name());
+        if (family != null) return Optional.of(family.name());
+        if (order != null) return Optional.of(order.name());
+        return Optional.empty();
+    }
+
+    public Optional<PlantOrderName> orderName() {
+        return order == null ? Optional.empty() : Optional.of(order.name());
+    }
+
+    public Optional<PlantFamilyName> familyName() {
+        return family == null ? Optional.empty() : Optional.of(family.name());
+    }
+
+    public Optional<PlantGenusName> genusName() {
+        return genus == null ? Optional.empty() : Optional.of(genus.name());
+    }
+
+    public Optional<PlantSpeciesName> speciesName() {
+        return species == null ? Optional.empty() : Optional.of(species.name());
+    }
+
+    public Plant withOrder(@Nullable PlantOrderView order) {
+        return new Plant(order, family, genus, species);
+    }
+
+    public Plant withFamily(@Nullable PlantFamilyView family) {
+        return new Plant(order, family, genus, species);
+    }
+
+    public Plant withGenus(@Nullable PlantGenusView genus) {
+        return new Plant(order, family, genus, species);
+    }
+
+    public Plant withSpecies(@Nullable PlantSpeciesView species) {
+        return new Plant(order, family, genus, species);
+    }
+
+    @Override
+    public Consumer<? extends Constraints> invariants() {
+        return i -> i
+                .whenNotNull(order, o -> o.readModel(order, "order"))
+                .whenNotNull(family, f -> f
+                        .readModel(family, "family")
+                        .notNull(order, "family:order")
+                        .isTrue(family.belongsToOrder(order), "familyBelongsToOrder"))
+                .whenNotNull(genus, g -> g
+                        .readModel(genus, "genus")
+                        .notNull(family, "genus:family")
+                        .isTrue(genus.belongsToFamily(family), "genusBelongsToFamily"))
+                .whenNotNull(species, s -> s
+                        .readModel(species, "species")
+                        .notNull(genus, "species:genus")
+                        .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus"));
+    }
+}

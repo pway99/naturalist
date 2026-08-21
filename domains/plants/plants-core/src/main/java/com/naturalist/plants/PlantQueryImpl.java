@@ -2,6 +2,8 @@ package com.naturalist.plants;
 
 import com.naturalist.observability.Observer;
 
+import java.util.Optional;
+
 class PlantQueryImpl implements PlantQuery {
 
     private final SpeciesQuery plantEntityQuery;
@@ -12,6 +14,7 @@ class PlantQueryImpl implements PlantQuery {
     private final ObservationQuery observationQuery;
     private final ImageQuery imageQuery;
     private final FeatureQuery featureQuery;
+    private final PlantFactory plantFactory;
 
     PlantQueryImpl(SpeciesQuery plantEntityQuery,
                    OrderQuery plantOrderEntityQuery,
@@ -39,6 +42,8 @@ class PlantQueryImpl implements PlantQuery {
         this.observationQuery = observationQuery;
         this.imageQuery = imageQuery;
         this.featureQuery = featureQuery;
+        this.plantFactory = new PlantFactory(
+                plantEntityQuery, plantGenusEntityQuery, plantFamilyEntityQuery, plantOrderEntityQuery);
     }
 
     @Override
@@ -79,5 +84,10 @@ class PlantQueryImpl implements PlantQuery {
     @Override
     public FeatureQuery features() {
         return featureQuery;
+    }
+
+    @Override
+    public Optional<Plant> getByName(PlantRankName name) {
+        return plantFactory.buildByName(name);
     }
 }

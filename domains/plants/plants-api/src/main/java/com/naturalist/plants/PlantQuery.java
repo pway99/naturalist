@@ -43,6 +43,13 @@ public interface PlantQuery {
 
     GenusQuery genera();
 
+    /**
+     * The composed {@link Plant} read model for a taxon at the given rank — the rank
+     * record plus its resolved ancestry spine (later chunks fold in features, children,
+     * role, images, and species extras). Empty when no entity exists at that rank name.
+     */
+    Optional<Plant> getByName(PlantRankName rankName);
+
     interface SpeciesQuery extends EntityQuery<PlantSpeciesName, PlantSpecies, SpeciesCollection> {
 
         /**

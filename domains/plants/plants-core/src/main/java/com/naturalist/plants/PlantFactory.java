@@ -1,0 +1,74 @@
+package com.naturalist.plants;
+
+import com.naturalist.observability.Level;
+import com.naturalist.observability.Observer;
+
+import java.util.Optional;
+
+/**
+ * Name-keyed, rank-polymorphic assembly of the {@link Plant} read model. Resolves the rank
+ * chain from the given {@link PlantRankName} upward to the order. Chunk 1 composes only the
+ * ancestry spine; base attributes (images, features, role) and children fold in over later
+ * chunks. Mirrors {@code InsectFactory}.
+ */
+class PlantFactory {
+
+    private final Observer observer = Observer.forClass(getClass());
+    private final PlantQuery.SpeciesQuery speciesQuery;
+    private final PlantQuery.GenusQuery genusQuery;
+    private final PlantQuery.FamilyQuery familyQuery;
+    private final PlantQuery.OrderQuery orderQuery;
+
+    PlantFactory(PlantQuery.SpeciesQuery speciesQuery,
+                 PlantQuery.GenusQuery genusQuery,
+                 PlantQuery.FamilyQuery familyQuery,
+                 PlantQuery.OrderQuery orderQuery) {
+        observer.arguments("constructor", i -> i
+                        .notNull(speciesQuery, "speciesQuery")
+                        .notNull(genusQuery, "genusQuery")
+                        .notNull(familyQuery, "familyQuery")
+                        .notNull(orderQuery, "orderQuery"))
+                .throwWhenInvalid();
+        this.speciesQuery = speciesQuery;
+        this.genusQuery = genusQuery;
+        this.familyQuery = familyQuery;
+        this.orderQuery = orderQuery;
+    }
+
+    Optional<Plant> buildByName(PlantRankName name) {
+        observer.arguments("buildByName", i -> i.identifier(name, "name")).throwWhenInvalid();
+        return switch (name) {
+            case PlantSpeciesName sn -> speciesQuery.getByName(sn).map(s -> observe(
+                    resolveGenus(Plant.empty().withSpecies(PlantSpeciesView.of(s)), s.genusName())));
+            case PlantGenusName gn -> genusQuery.getByName(gn).map(g -> observe(
+                    resolveFamily(Plant.empty().withGenus(PlantGenusView.of(g)), g.familyName())));
+            case PlantFamilyName fn -> familyQuery.getByName(fn).map(f -> observe(
+                    resolveOrder(Plant.empty().withFamily(PlantFamilyView.of(f)), f.orderName())));
+            case PlantOrderName on -> orderQuery.getByName(on).map(o -> observe(
+                    Plant.empty().withOrder(PlantOrderView.of(o))));
+        };
+    }
+
+    private Plant resolveGenus(Plant plant, PlantGenusName genusName) {
+        return genusQuery.getByName(genusName)
+                .map(genus -> resolveFamily(plant.withGenus(PlantGenusView.of(genus)), genus.familyName()))
+                .orElse(plant);
+    }
+
+    private Plant resolveFamily(Plant plant, PlantFamilyName familyName) {
+        return familyQuery.getByName(familyName)
+                .map(family -> resolveOrder(plant.withFamily(PlantFamilyView.of(family)), family.orderName()))
+                .orElse(plant);
+    }
+
+    private Plant resolveOrder(Plant plant, PlantOrderName orderName) {
+        return orderQuery.getByName(orderName)
+                .map(order -> plant.withOrder(PlantOrderView.of(order)))
+                .orElse(plant);
+    }
+
+    private Plant observe(Plant plant) {
+        observer.observable(plant, "plant").observe(Level.WARN);
+        return plant;
+    }
+}
