@@ -54,6 +54,26 @@ public class TestPlantsIdentifiers {
                 PlantObservationId.of(UUID.fromString("026aa000-0000-7000-8000-000000000004"));
     }
 
+    /**
+     * Plant feature ids (surrogate UUIDv7). Fixed so the JSON fixture and the
+     * contract tests agree.
+     */
+    public static class PlantFeatures {
+
+        private PlantFeatures() {
+        }
+
+        public static class NotFound {
+            public static final PlantFeatureId id =
+                    PlantFeatureId.of(UUID.fromString("026cc000-0000-7000-8000-0000000000ff"));
+        }
+
+        public static final PlantFeatureId RayFlorets =
+                PlantFeatureId.of(UUID.fromString("026cc000-0000-7000-8000-000000000001"));
+        public static final PlantFeatureId OppositeLeaves =
+                PlantFeatureId.of(UUID.fromString("026cc000-0000-7000-8000-000000000002"));
+    }
+
     public static class PlantOrders {
 
         private PlantOrders() {
