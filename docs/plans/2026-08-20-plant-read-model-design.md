@@ -159,11 +159,16 @@ per `domains/plants/CLAUDE.md` rule 4 names the red in its commit.
   detail templates. Feature values render as **plain text** (no glossary linker — plants has
   none; a linker is a separate future feature).
 
-### Chunk 3 — children
-- Fold the child-rank lists into `plant.children()` as `PlantTaxonView` permits carrying
-  their galleries (batched); rewrite the child-card sections of `orders/detail.jte`,
-  `families/detail.jte`, `genera/detail.jte` to iterate the permits; delete the child-entity
-  queries + `families`/`genera`/`species` model attributes from the handlers.
+### Chunk 3 — children  ·  *plan: [chunk3-children-plan.md](2026-08-21-plant-read-model-chunk3-children-plan.md)*
+- Fold the child-rank lists into `plant.children()` as `PlantTaxonView` permits; rewrite
+  the child-card sections of `orders/detail.jte`, `families/detail.jte`, `genera/detail.jte`
+  to iterate the permits; delete the child-entity queries + `families`/`genera`/`species`
+  model attributes from the handlers.
+- **Deviation (shipped):** child views carry **empty** galleries, not populated ones. The
+  plant child cards render name + taxonomy + description-preview only (no thumbnails), and
+  plants `ImageQuery` has no subtree query (`forRankHierarchy` doesn't exist). Populated
+  child galleries are a separate future slice (needs a subtree image query + a card-image
+  component).
 
 ### Chunk 4 — role + images
 - `EcologicalRoleQuery.getByPlantNames(Set)` (batched); `Plant.withRole(...)` +
