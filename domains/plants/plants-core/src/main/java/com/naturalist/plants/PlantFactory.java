@@ -18,35 +18,43 @@ class PlantFactory {
     private final PlantQuery.GenusQuery genusQuery;
     private final PlantQuery.FamilyQuery familyQuery;
     private final PlantQuery.OrderQuery orderQuery;
+    private final PlantQuery.FeatureQuery featureQuery;
 
     PlantFactory(PlantQuery.SpeciesQuery speciesQuery,
                  PlantQuery.GenusQuery genusQuery,
                  PlantQuery.FamilyQuery familyQuery,
-                 PlantQuery.OrderQuery orderQuery) {
+                 PlantQuery.OrderQuery orderQuery,
+                 PlantQuery.FeatureQuery featureQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
                         .notNull(genusQuery, "genusQuery")
                         .notNull(familyQuery, "familyQuery")
-                        .notNull(orderQuery, "orderQuery"))
+                        .notNull(orderQuery, "orderQuery")
+                        .notNull(featureQuery, "featureQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.genusQuery = genusQuery;
         this.familyQuery = familyQuery;
         this.orderQuery = orderQuery;
+        this.featureQuery = featureQuery;
     }
 
     Optional<Plant> buildByName(PlantRankName name) {
         observer.arguments("buildByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return switch (name) {
             case PlantSpeciesName sn -> speciesQuery.getByName(sn).map(s -> observe(
-                    resolveGenus(Plant.empty().withSpecies(PlantSpeciesView.of(s)), s.genusName())));
+                    resolveGenus(base(sn).withSpecies(PlantSpeciesView.of(s)), s.genusName())));
             case PlantGenusName gn -> genusQuery.getByName(gn).map(g -> observe(
-                    resolveFamily(Plant.empty().withGenus(PlantGenusView.of(g)), g.familyName())));
+                    resolveFamily(base(gn).withGenus(PlantGenusView.of(g)), g.familyName())));
             case PlantFamilyName fn -> familyQuery.getByName(fn).map(f -> observe(
-                    resolveOrder(Plant.empty().withFamily(PlantFamilyView.of(f)), f.orderName())));
+                    resolveOrder(base(fn).withFamily(PlantFamilyView.of(f)), f.orderName())));
             case PlantOrderName on -> orderQuery.getByName(on).map(o -> observe(
-                    Plant.empty().withOrder(PlantOrderView.of(o))));
+                    base(on).withOrder(PlantOrderView.of(o))));
         };
+    }
+
+    private Plant base(PlantRankName name) {
+        return Plant.empty().withFeatures(featureQuery.findByRankName(name));
     }
 
     private Plant resolveGenus(Plant plant, PlantGenusName genusName) {

@@ -95,10 +95,11 @@ public class PlantsController {
     @GetMapping("/{name}")
     String detail(@PathVariable String name, Model model) {
         var plantName = PlantSpeciesName.of(name);
-        var plant = plantQuery.species().getByName(plantName);
-        if (plant.isEmpty()) {
+        var plant = plantQuery.getByName(plantName);
+        if (plant.isEmpty() || plant.get().species() == null) {
             return "redirect:/plants";
         }
+        PlantSpecies species = plant.get().species().species();
         var cultivars = cultivarQuery.forPlantName(plantName).stream()
                 .sorted(Comparator.comparing((Cultivar c) -> c.name().value()))
                 .toList();
@@ -108,15 +109,16 @@ public class PlantsController {
         var constituents = phytochemicalConstituentQuery.forPlantName(plantName).stream()
                 .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
                 .toList();
-        model.addAttribute("plant", plant.get());
+        model.addAttribute("plant", species);
         model.addAttribute("ecologicalRole",
                 plantQuery.ecologicalRoles().forPlantName(plantName).orElse(null));
         model.addAttribute("cultivars", cultivars);
         model.addAttribute("programs", programs);
         model.addAttribute("constituents", constituents);
-        model.addAttribute("breadcrumb", breadcrumbToSpecies(plant.get()));
-        model.addAttribute("cladeTrail", cladeTrailForSpecies(plant.get()));
-        addDescription(model, plant.get().description());
+        model.addAttribute("features", plant.get().features());
+        model.addAttribute("breadcrumb", breadcrumbToSpecies(species));
+        model.addAttribute("cladeTrail", cladeTrailForSpecies(species));
+        addDescription(model, species.description());
         return "plants/detail";
     }
 
@@ -254,18 +256,20 @@ public class PlantsController {
     @GetMapping("/orders/{name}")
     String orderDetail(@PathVariable String name, Model model) {
         var orderName = PlantOrderName.of(name);
-        var order = plantQuery.orders().getByName(orderName);
-        if (order.isEmpty()) {
+        var plant = plantQuery.getByName(orderName);
+        if (plant.isEmpty() || plant.get().order() == null) {
             return "redirect:/plants";
         }
+        PlantOrder order = plant.get().order().order();
         var families = plantQuery.families().forOrderName(orderName).stream()
                 .sorted(Comparator.comparing((PlantFamily f) -> f.name().value()))
                 .toList();
-        model.addAttribute("order", order.get());
+        model.addAttribute("order", order);
         model.addAttribute("families", families);
-        model.addAttribute("breadcrumb", breadcrumbToOrder(order.get()));
-        model.addAttribute("cladeTrail", cladeTrailFor(order.get()));
-        addDescription(model, order.get().description());
+        model.addAttribute("features", plant.get().features());
+        model.addAttribute("breadcrumb", breadcrumbToOrder(order));
+        model.addAttribute("cladeTrail", cladeTrailFor(order));
+        addDescription(model, order.description());
         return "plants/orders/detail";
     }
 
@@ -360,38 +364,42 @@ public class PlantsController {
     @GetMapping("/families/{name}")
     String familyDetail(@PathVariable String name, Model model) {
         var familyName = PlantFamilyName.of(name);
-        var family = plantQuery.families().getByName(familyName);
-        if (family.isEmpty()) {
+        var plant = plantQuery.getByName(familyName);
+        if (plant.isEmpty() || plant.get().family() == null) {
             return "redirect:/plants";
         }
+        PlantFamily family = plant.get().family().family();
         var genera = plantQuery.genera().forFamilyName(familyName).stream()
                 .sorted(Comparator.comparing((PlantGenus g) -> g.name().value()))
                 .toList();
-        model.addAttribute("family", family.get());
+        model.addAttribute("family", family);
         model.addAttribute("genera", genera);
-        model.addAttribute("breadcrumb", breadcrumbToFamily(family.get()));
-        model.addAttribute("cladeTrail", cladeTrailForFamily(family.get()));
-        addDescription(model, family.get().description());
+        model.addAttribute("features", plant.get().features());
+        model.addAttribute("breadcrumb", breadcrumbToFamily(family));
+        model.addAttribute("cladeTrail", cladeTrailForFamily(family));
+        addDescription(model, family.description());
         return "plants/families/detail";
     }
 
     @GetMapping("/genera/{name}")
     String genusDetail(@PathVariable String name, Model model) {
         var genusName = PlantGenusName.of(name);
-        var genus = plantQuery.genera().getByName(genusName);
-        if (genus.isEmpty()) {
+        var plant = plantQuery.getByName(genusName);
+        if (plant.isEmpty() || plant.get().genus() == null) {
             return "redirect:/plants";
         }
+        PlantGenus genus = plant.get().genus().genus();
         var species = plantQuery.species().forGenusName(genusName).stream()
                 .sorted(Comparator.comparing((PlantSpecies s) -> s.name().value()))
                 .toList();
-        model.addAttribute("genus", genus.get());
+        model.addAttribute("genus", genus);
         model.addAttribute("family",
-                plantQuery.families().getByName(genus.get().familyName()).orElse(null));
+                plantQuery.families().getByName(genus.familyName()).orElse(null));
         model.addAttribute("species", species);
-        model.addAttribute("breadcrumb", breadcrumbToGenus(genus.get()));
-        model.addAttribute("cladeTrail", cladeTrailForGenus(genus.get()));
-        addDescription(model, genus.get().description());
+        model.addAttribute("features", plant.get().features());
+        model.addAttribute("breadcrumb", breadcrumbToGenus(genus));
+        model.addAttribute("cladeTrail", cladeTrailForGenus(genus));
+        addDescription(model, genus.description());
         return "plants/genera/detail";
     }
 

@@ -43,7 +43,7 @@ class PlantQueryImpl implements PlantQuery {
         this.imageQuery = imageQuery;
         this.featureQuery = featureQuery;
         this.plantFactory = new PlantFactory(
-                plantEntityQuery, plantGenusEntityQuery, plantFamilyEntityQuery, plantOrderEntityQuery);
+                plantEntityQuery, plantGenusEntityQuery, plantFamilyEntityQuery, plantOrderEntityQuery, featureQuery);
     }
 
     @Override

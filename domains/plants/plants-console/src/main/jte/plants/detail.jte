@@ -7,6 +7,7 @@
 @import java.util.List
 @import com.naturalist.plants.console.BreadcrumbSegment
 @import com.naturalist.clades.Clade
+@import com.naturalist.plants.PlantFeatureView
 
 @param PlantSpecies plant
 @param PlantEcologicalRole ecologicalRole = null
@@ -19,6 +20,7 @@
 @param String descriptionUniversity = ""
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param List<Clade> cladeTrail = java.util.List.of()
+@param PlantFeatureView features = null
 
 @template.layout.page(title = plant.name().value(), content = @`
     @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
@@ -33,6 +35,8 @@
     elementary = descriptionElementary,
     secondary = descriptionSecondary,
     university = descriptionUniversity)
+
+    @template.plants.features(features = features)
 
     <section>
         <h2>Identity</h2>

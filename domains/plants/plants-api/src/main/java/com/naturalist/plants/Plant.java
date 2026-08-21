@@ -22,12 +22,13 @@ public record Plant(
         @Nullable PlantOrderView order,
         @Nullable PlantFamilyView family,
         @Nullable PlantGenusView genus,
-        @Nullable PlantSpeciesView species
+        @Nullable PlantSpeciesView species,
+        @Nullable PlantFeatureView features
 ) implements ReadModel {
 
     /** Zero-state read model — no rank identified. Starting point for {@code with*} refinement. */
     public static Plant empty() {
-        return new Plant(null, null, null, null);
+        return new Plant(null, null, null, null, null);
     }
 
     /** Most-specific identified rank's typed name, if any. */
@@ -56,19 +57,23 @@ public record Plant(
     }
 
     public Plant withOrder(@Nullable PlantOrderView order) {
-        return new Plant(order, family, genus, species);
+        return new Plant(order, family, genus, species, features);
     }
 
     public Plant withFamily(@Nullable PlantFamilyView family) {
-        return new Plant(order, family, genus, species);
+        return new Plant(order, family, genus, species, features);
     }
 
     public Plant withGenus(@Nullable PlantGenusView genus) {
-        return new Plant(order, family, genus, species);
+        return new Plant(order, family, genus, species, features);
     }
 
     public Plant withSpecies(@Nullable PlantSpeciesView species) {
-        return new Plant(order, family, genus, species);
+        return new Plant(order, family, genus, species, features);
+    }
+
+    public Plant withFeatures(@Nullable PlantFeatureView features) {
+        return new Plant(order, family, genus, species, features);
     }
 
     @Override
@@ -86,6 +91,7 @@ public record Plant(
                 .whenNotNull(species, s -> s
                         .readModel(species, "species")
                         .notNull(genus, "species:genus")
-                        .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus"));
+                        .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus"))
+                .whenNotNull(features, f -> f.readModel(features, "features"));
     }
 }

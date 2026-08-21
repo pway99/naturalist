@@ -11,7 +11,6 @@ import com.naturalist.plants.PlantEntityCollections.SpeciesCollection;
 import com.naturalist.plants.PlantEntityCollections.FamilyCollection;
 import com.naturalist.plants.PlantEntityCollections.GenusCollection;
 import com.naturalist.plants.PlantEntityCollections.ImageCollection;
-import com.naturalist.plants.PlantEntityCollections.FeatureCollection;
 
 /**
  * Namespace query for the plants top-level sub-context — the single
@@ -89,10 +88,11 @@ public interface PlantQuery {
     interface FeatureQuery {
 
         /**
-         * Field marks assigned DIRECTLY at the given rank (no ancestry walk — that is
-         * a later slice).
+         * The lineage-composite field marks for a taxon at the given rank — the rank's own
+         * assignments plus those inherited from its ancestors, grouped ancestor-first,
+         * ordinal-ordered within a group. Mirrors {@code InsectQuery.FeatureQuery.findByRankName}.
          */
-        FeatureCollection forRankName(PlantRankName rankName);
+        PlantFeatureView findByRankName(PlantRankName subject);
     }
 
     interface ImageQuery

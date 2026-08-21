@@ -3,6 +3,7 @@
 @import com.naturalist.plants.PlantSpecies
 @import com.naturalist.plants.console.BreadcrumbSegment
 @import com.naturalist.clades.Clade
+@import com.naturalist.plants.PlantFeatureView
 @import java.util.List
 
 @param PlantGenus genus
@@ -14,6 +15,7 @@
 @param String descriptionUniversity = ""
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param List<Clade> cladeTrail = java.util.List.of()
+@param PlantFeatureView features = null
 
 !{var commonName = genus.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value());}
 
@@ -30,6 +32,8 @@
     elementary = descriptionElementary,
     secondary = descriptionSecondary,
     university = descriptionUniversity)
+
+    @template.plants.features(features = features)
 
     <section>
         <h2>Identity</h2>

@@ -20,7 +20,10 @@ class PlantFactoryTest {
                 new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(db));
         PlantQuery.OrderQuery orderQuery =
                 new PlantOrderQueryImpl(new PlantOrderRepositoryMock(db));
-        return new PlantFactory(speciesQuery, genusQuery, familyQuery, orderQuery);
+        PlantAncestryResolver resolver = new PlantAncestryResolver(speciesQuery, genusQuery, familyQuery);
+        PlantQuery.FeatureQuery featureQuery = new PlantFeatureQueryImpl(
+                new PlantFeatureRepositoryMock(db), new PlantFeatureAssignmentRepositoryMock(db), resolver);
+        return new PlantFactory(speciesQuery, genusQuery, familyQuery, orderQuery, featureQuery);
     }
 
     @Test
@@ -51,5 +54,14 @@ class PlantFactoryTest {
     void buildByName_nullName_throws() {
         assertThat(catchThrowable(() -> factory().buildByName(null)))
                 .isInstanceOf(com.naturalist.exception.InvariantViolationException.class);
+    }
+
+    @Test
+    void buildByName_composesAncestryFeatures() {
+        Plant plant = factory().buildByName(PlantGenusName.of("helianthus")).orElseThrow();
+        assertThat(plant.features()).isNotNull();
+        assertThat(plant.features().groups().stream().map(g -> g.rank()))
+                .containsExactly(PlantOrderName.of("asterales"),
+                        PlantFamilyName.of("asteraceae"), PlantGenusName.of("helianthus"));
     }
 }

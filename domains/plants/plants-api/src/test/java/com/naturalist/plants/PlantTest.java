@@ -42,4 +42,18 @@ class PlantTest {
         Plant plant = Plant.empty().withOrder(PlantOrderView.of(order));
         assertThat(plant.identifiedTo()).contains(PlantOrderName.of("lamiales"));
     }
+
+    @Test
+    void withFeatures_carriesFeatureView() {
+        PlantFeatureView fv = new PlantFeatureView(PlantOrderName.of("asterales"), java.util.List.of());
+        Plant plant = Plant.empty().withFeatures(fv);
+        assertThat(plant.features()).isEqualTo(fv);
+    }
+
+    @Test
+    void emptyPlant_hasNullFeatures_andNoViolations() {
+        Plant plant = Plant.empty();
+        assertThat(plant.features()).isNull();
+        assertThat(observer.forMethod("emptyFeatures").observable(plant, "plant").violations()).isEmpty();
+    }
 }
