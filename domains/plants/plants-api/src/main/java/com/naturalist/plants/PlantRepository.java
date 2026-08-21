@@ -52,4 +52,8 @@ class PlantRepository {
         List<OrganismObservation<PlantObservationId, PlantRankName>> getByNaturalistAndSubjects(
                 NaturalistName observedBy, Set<PlantRankName> subjects);
     }
+
+    protected interface FeatureRepository
+            extends EntityRepository<PlantFeatureId, PlantFeature> {
+    }
 }
