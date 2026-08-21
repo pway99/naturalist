@@ -191,6 +191,16 @@ Quick-reference constraints:
 - Cross-domain joins are prohibited; cross-domain FK enforcement is deferred to the RDBMS layer
 - Each repository manages its own secondary indexes. No cross-repository queries within a
   sub-context. No cross-sub-context repository access.
+- **Fan-out must batch — never per-element in a loop.** Calling a repository or query once
+  per element of a prior result (`for` / `stream().map` / `computeIfAbsent` / recursive
+  descent) is an N+1 that scales with catalog size and degrades production; it passes on
+  seed data and fails in prod. Add a batched sibling — `getByXNames(Set<NAME>)` /
+  `forXNames(Set<NAME>)` — and resolve the whole set in one call, or use the inherited
+  `EntityQuery.findByNameSet(Set<NAME>)` for by-name lookups. Validate the set argument with
+  `observableCollection(...)` for `RankName` sets and `entityNameCollection(...)` for concrete
+  `EntityName` sets. Reference: `InsectImageQueryImpl.forRankHierarchy` (subtree resolved in a
+  handful of batched calls, not a per-node walk) and the `getByRankNames`/`getByParentNames`
+  repository methods.
 
 ### Repository Behavioral Contract
 
