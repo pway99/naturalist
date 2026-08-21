@@ -1,4 +1,5 @@
-@import com.naturalist.plants.PlantFamily
+@import com.naturalist.plants.PlantFamilyView
+@import com.naturalist.plants.PlantTaxonView
 @import com.naturalist.plants.PlantOrder
 @import java.util.List
 @import com.naturalist.plants.console.BreadcrumbSegment
@@ -6,7 +7,7 @@
 @import com.naturalist.plants.PlantFeatureView
 
 @param PlantOrder order
-@param List<PlantFamily> families = java.util.List.of()
+@param List<PlantTaxonView> children = java.util.List.of()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -48,21 +49,24 @@
 
     <section>
         <h2>Families in this order</h2>
-        @if(families.isEmpty())
+        @if(children.isEmpty())
             <p><em>No families catalogued under this order yet.</em></p>
         @else
             <div class="entity-grid">
-                @for(var f : families)
-                    !{var familyCommonName = f.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(f.family().value());}
-                    <article>
-                        <header>
-                            <a href="/plants/families/${f.name().value()}">
-                                <strong>${familyCommonName}</strong>
-                            </a>
-                        </header>
-                        <p class="taxonomy"><em>${f.family().value()}</em></p>
-                        <p class="description-preview">${f.description().preschool()}</p>
-                    </article>
+                @for(var child : children)
+                    @if(child instanceof PlantFamilyView fv)
+                        !{var f = fv.family();}
+                        !{var familyCommonName = f.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(f.family().value());}
+                        <article>
+                            <header>
+                                <a href="/plants/families/${f.name().value()}">
+                                    <strong>${familyCommonName}</strong>
+                                </a>
+                            </header>
+                            <p class="taxonomy"><em>${f.family().value()}</em></p>
+                            <p class="description-preview">${f.description().preschool()}</p>
+                        </article>
+                    @endif
                 @endfor
             </div>
         @endif

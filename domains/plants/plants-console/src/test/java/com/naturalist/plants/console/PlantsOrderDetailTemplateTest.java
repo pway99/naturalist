@@ -3,8 +3,10 @@ package com.naturalist.plants.console;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.PlantFamily;
 import com.naturalist.plants.PlantFamilyTestEntitySource;
+import com.naturalist.plants.PlantFamilyView;
 import com.naturalist.plants.PlantOrder;
 import com.naturalist.plants.PlantOrderTestEntitySource;
+import com.naturalist.plants.PlantTaxonView;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
@@ -29,12 +31,13 @@ class PlantsOrderDetailTemplateTest {
 
         for (PlantOrder order : db.getNamed(PlantOrderTestEntitySource.class)
                 .entityStream().toList()) {
-            List<PlantFamily> families = allFamilies.stream()
+            List<PlantTaxonView> children = allFamilies.stream()
                     .filter(f -> order.name().equals(f.orderName()))
+                    .map(f -> (PlantTaxonView) PlantFamilyView.of(f))
                     .toList();
             StringOutput output = new StringOutput();
             template.render("plants/orders/detail.jte",
-                    Map.of("order", order, "families", families), output);
+                    Map.of("order", order, "children", children), output);
             assertThat(output.toString())
                     .as("rendered output for %s", order.name().value())
                     .isNotBlank();
@@ -48,13 +51,14 @@ class PlantsOrderDetailTemplateTest {
                 .filter(o -> o.name().value().equals("lamiales"))
                 .findFirst()
                 .orElseThrow();
-        List<PlantFamily> families = db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
+        List<PlantTaxonView> children = db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .filter(f -> lamiales.name().equals(f.orderName()))
+                .map(f -> (PlantTaxonView) PlantFamilyView.of(f))
                 .toList();
 
         StringOutput output = new StringOutput();
         template.render("plants/orders/detail.jte",
-                Map.of("order", lamiales, "families", families), output);
+                Map.of("order", lamiales, "children", children), output);
 
         assertThat(output.toString())
                 .contains("/plants/families/lamiaceae")
@@ -73,7 +77,7 @@ class PlantsOrderDetailTemplateTest {
 
         StringOutput output = new StringOutput();
         template.render("plants/orders/detail.jte",
-                Map.of("order", anyOrder, "families", List.of()), output);
+                Map.of("order", anyOrder, "children", List.of()), output);
 
         assertThat(output.toString()).contains("No families catalogued");
     }

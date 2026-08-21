@@ -5,6 +5,8 @@ import com.naturalist.plants.PlantFamily;
 import com.naturalist.plants.PlantFamilyTestEntitySource;
 import com.naturalist.plants.PlantGenus;
 import com.naturalist.plants.PlantGenusTestEntitySource;
+import com.naturalist.plants.PlantGenusView;
+import com.naturalist.plants.PlantTaxonView;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
@@ -30,12 +32,13 @@ class PlantsFamilyDetailTemplateTest {
 
         for (PlantFamily family : db.getNamed(PlantFamilyTestEntitySource.class)
                 .entityStream().toList()) {
-            List<PlantGenus> genera = allGenera.stream()
+            List<PlantTaxonView> children = allGenera.stream()
                     .filter(g -> family.name().equals(g.familyName()))
+                    .map(g -> (PlantTaxonView) PlantGenusView.of(g))
                     .toList();
             StringOutput output = new StringOutput();
             template.render("plants/families/detail.jte",
-                    Map.of("family", family, "genera", genera), output);
+                    Map.of("family", family, "children", children), output);
             assertThat(output.toString())
                     .as("rendered output for %s", family.name().value())
                     .isNotBlank();
@@ -49,13 +52,14 @@ class PlantsFamilyDetailTemplateTest {
                 .filter(f -> f.name().value().equals("lamiaceae"))
                 .findFirst()
                 .orElseThrow();
-        List<PlantGenus> genera = db.getNamed(PlantGenusTestEntitySource.class).entityStream()
+        List<PlantTaxonView> children = db.getNamed(PlantGenusTestEntitySource.class).entityStream()
                 .filter(g -> lamiaceae.name().equals(g.familyName()))
+                .map(g -> (PlantTaxonView) PlantGenusView.of(g))
                 .toList();
 
         StringOutput output = new StringOutput();
         template.render("plants/families/detail.jte",
-                Map.of("family", lamiaceae, "genera", genera), output);
+                Map.of("family", lamiaceae, "children", children), output);
 
         assertThat(output.toString())
                 .contains("/plants/genera/thymus")
@@ -76,7 +80,7 @@ class PlantsFamilyDetailTemplateTest {
 
         StringOutput output = new StringOutput();
         template.render("plants/families/detail.jte",
-                Map.of("family", anyFamily, "genera", List.of()), output);
+                Map.of("family", anyFamily, "children", List.of()), output);
 
         assertThat(output.toString()).contains("No genera catalogued");
     }

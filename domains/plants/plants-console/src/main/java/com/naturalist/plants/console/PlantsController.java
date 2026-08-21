@@ -261,11 +261,8 @@ public class PlantsController {
             return "redirect:/plants";
         }
         PlantOrder order = plant.get().order().order();
-        var families = plantQuery.families().forOrderName(orderName).stream()
-                .sorted(Comparator.comparing((PlantFamily f) -> f.name().value()))
-                .toList();
         model.addAttribute("order", order);
-        model.addAttribute("families", families);
+        model.addAttribute("children", plant.get().children());
         model.addAttribute("features", plant.get().features());
         model.addAttribute("breadcrumb", breadcrumbToOrder(order));
         model.addAttribute("cladeTrail", cladeTrailFor(order));
@@ -369,11 +366,8 @@ public class PlantsController {
             return "redirect:/plants";
         }
         PlantFamily family = plant.get().family().family();
-        var genera = plantQuery.genera().forFamilyName(familyName).stream()
-                .sorted(Comparator.comparing((PlantGenus g) -> g.name().value()))
-                .toList();
         model.addAttribute("family", family);
-        model.addAttribute("genera", genera);
+        model.addAttribute("children", plant.get().children());
         model.addAttribute("features", plant.get().features());
         model.addAttribute("breadcrumb", breadcrumbToFamily(family));
         model.addAttribute("cladeTrail", cladeTrailForFamily(family));
@@ -389,13 +383,10 @@ public class PlantsController {
             return "redirect:/plants";
         }
         PlantGenus genus = plant.get().genus().genus();
-        var species = plantQuery.species().forGenusName(genusName).stream()
-                .sorted(Comparator.comparing((PlantSpecies s) -> s.name().value()))
-                .toList();
         model.addAttribute("genus", genus);
         model.addAttribute("family",
                 plantQuery.families().getByName(genus.familyName()).orElse(null));
-        model.addAttribute("species", species);
+        model.addAttribute("children", plant.get().children());
         model.addAttribute("features", plant.get().features());
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus));
         model.addAttribute("cladeTrail", cladeTrailForGenus(genus));

@@ -56,4 +56,30 @@ class PlantTest {
         assertThat(plant.features()).isNull();
         assertThat(observer.forMethod("emptyFeatures").observable(plant, "plant").violations()).isEmpty();
     }
+
+    @Test
+    void withChildren_carriesTheList() {
+        PlantOrder order = new PlantOrder(
+                PlantOrderName.of("asterales"),
+                com.naturalist.taxonomy.TaxonomicOrder.of("Asterales"),
+                new com.naturalist.fieldnotes.Description("a", "b", "c", "d"),
+                java.util.Set.of(), null);
+        Plant plant = Plant.empty().withChildren(java.util.List.of(PlantOrderView.of(order)));
+        assertThat(plant.children()).hasSize(1);
+    }
+
+    @Test
+    void emptyPlant_hasEmptyChildren_notNull_andNoViolations() {
+        Plant plant = Plant.empty();
+        assertThat(plant.children()).isEmpty();
+        assertThat(observer.forMethod("emptyChildren").observable(plant, "plant").violations()).isEmpty();
+    }
+
+    @Test
+    void nullChildren_reportsViolation() {
+        var mo = observer.forMethod("nullChildren");
+        Plant plant = Plant.empty().withChildren(null);
+        assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
+                .contains(".plant.children");
+    }
 }

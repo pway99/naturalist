@@ -1,12 +1,13 @@
 @import com.naturalist.plants.PlantFamily
-@import com.naturalist.plants.PlantGenus
+@import com.naturalist.plants.PlantGenusView
+@import com.naturalist.plants.PlantTaxonView
 @import java.util.List
 @import com.naturalist.plants.console.BreadcrumbSegment
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantFeatureView
 
 @param PlantFamily family
-@param List<PlantGenus> genera = java.util.List.of()
+@param List<PlantTaxonView> children = java.util.List.of()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -51,21 +52,24 @@
 
     <section>
         <h2>Genera in this family</h2>
-        @if(genera.isEmpty())
+        @if(children.isEmpty())
             <p><em>No genera catalogued under this family yet.</em></p>
         @else
             <div class="entity-grid">
-                @for(var g : genera)
-                    !{var genusCommonName = g.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(g.genus().value());}
-                    <article>
-                        <header>
-                            <a href="/plants/genera/${g.name().value()}">
-                                <strong>${genusCommonName}</strong>
-                            </a>
-                        </header>
-                        <p class="taxonomy"><em>${g.genus().value()}</em></p>
-                        <p class="description-preview">${g.description().preschool()}</p>
-                    </article>
+                @for(var child : children)
+                    @if(child instanceof PlantGenusView gv)
+                        !{var g = gv.genus();}
+                        !{var genusCommonName = g.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(g.genus().value());}
+                        <article>
+                            <header>
+                                <a href="/plants/genera/${g.name().value()}">
+                                    <strong>${genusCommonName}</strong>
+                                </a>
+                            </header>
+                            <p class="taxonomy"><em>${g.genus().value()}</em></p>
+                            <p class="description-preview">${g.description().preschool()}</p>
+                        </article>
+                    @endif
                 @endfor
             </div>
         @endif

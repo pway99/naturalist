@@ -5,8 +5,9 @@ import com.naturalist.plants.PlantFamily;
 import com.naturalist.plants.PlantFamilyTestEntitySource;
 import com.naturalist.plants.PlantGenus;
 import com.naturalist.plants.PlantGenusTestEntitySource;
-import com.naturalist.plants.PlantSpecies;
 import com.naturalist.plants.PlantSpeciesTestEntitySource;
+import com.naturalist.plants.PlantSpeciesView;
+import com.naturalist.plants.PlantTaxonView;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
@@ -70,14 +71,15 @@ class PlantsGenusDetailTemplateTest {
                 .filter(g -> g.name().value().equals("trifolium"))
                 .findFirst()
                 .orElseThrow();
-        List<PlantSpecies> species = db.getNamed(PlantSpeciesTestEntitySource.class).entityStream()
+        List<PlantTaxonView> children = db.getNamed(PlantSpeciesTestEntitySource.class).entityStream()
                 .filter(s -> trifolium.name().equals(s.genusName()))
+                .map(s -> (PlantTaxonView) PlantSpeciesView.of(s))
                 .toList();
 
         Map<String, Object> params = new HashMap<>();
         params.put("genus", trifolium);
         params.put("family", null);
-        params.put("species", species);
+        params.put("children", children);
         StringOutput output = new StringOutput();
         template.render("plants/genera/detail.jte", params, output);
 

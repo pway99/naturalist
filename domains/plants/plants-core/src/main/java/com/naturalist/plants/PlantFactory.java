@@ -43,18 +43,42 @@ class PlantFactory {
         observer.arguments("buildByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return switch (name) {
             case PlantSpeciesName sn -> speciesQuery.getByName(sn).map(s -> observe(
-                    resolveGenus(base(sn).withSpecies(PlantSpeciesView.of(s)), s.genusName())));
+                    resolveGenus(base(sn).withSpecies(PlantSpeciesView.of(s)).withChildren(java.util.List.of()),
+                            s.genusName())));
             case PlantGenusName gn -> genusQuery.getByName(gn).map(g -> observe(
-                    resolveFamily(base(gn).withGenus(PlantGenusView.of(g)), g.familyName())));
+                    resolveFamily(base(gn).withGenus(PlantGenusView.of(g)).withChildren(speciesChildren(gn)),
+                            g.familyName())));
             case PlantFamilyName fn -> familyQuery.getByName(fn).map(f -> observe(
-                    resolveOrder(base(fn).withFamily(PlantFamilyView.of(f)), f.orderName())));
+                    resolveOrder(base(fn).withFamily(PlantFamilyView.of(f)).withChildren(genusChildren(fn)),
+                            f.orderName())));
             case PlantOrderName on -> orderQuery.getByName(on).map(o -> observe(
-                    base(on).withOrder(PlantOrderView.of(o))));
+                    base(on).withOrder(PlantOrderView.of(o)).withChildren(familyChildren(on))));
         };
     }
 
     private Plant base(PlantRankName name) {
         return Plant.empty().withFeatures(featureQuery.findByRankName(name));
+    }
+
+    private java.util.List<PlantTaxonView> familyChildren(PlantOrderName orderName) {
+        return familyQuery.forOrderName(orderName).stream()
+                .map(f -> (PlantTaxonView) PlantFamilyView.of(f))
+                .sorted(java.util.Comparator.comparing(v -> v.name().value()))
+                .toList();
+    }
+
+    private java.util.List<PlantTaxonView> genusChildren(PlantFamilyName familyName) {
+        return genusQuery.forFamilyName(familyName).stream()
+                .map(g -> (PlantTaxonView) PlantGenusView.of(g))
+                .sorted(java.util.Comparator.comparing(v -> v.name().value()))
+                .toList();
+    }
+
+    private java.util.List<PlantTaxonView> speciesChildren(PlantGenusName genusName) {
+        return speciesQuery.forGenusName(genusName).stream()
+                .map(s -> (PlantTaxonView) PlantSpeciesView.of(s))
+                .sorted(java.util.Comparator.comparing(v -> v.name().value()))
+                .toList();
     }
 
     private Plant resolveGenus(Plant plant, PlantGenusName genusName) {

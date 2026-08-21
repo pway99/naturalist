@@ -64,4 +64,18 @@ class PlantFactoryTest {
                 .containsExactly(PlantOrderName.of("asterales"),
                         PlantFamilyName.of("asteraceae"), PlantGenusName.of("helianthus"));
     }
+
+    @Test
+    void buildByName_orderName_composesFamilyChildren() {
+        Plant plant = factory().buildByName(PlantOrderName.of("asterales")).orElseThrow();
+        assertThat(plant.children()).isNotEmpty();
+        assertThat(plant.children()).allSatisfy(c ->
+                assertThat(c).isInstanceOf(PlantFamilyView.class));
+    }
+
+    @Test
+    void buildByName_speciesName_hasNoChildren() {
+        Plant plant = factory().buildByName(PlantSpeciesName.of("aristolochia-californica")).orElseThrow();
+        assertThat(plant.children()).isEmpty();
+    }
 }

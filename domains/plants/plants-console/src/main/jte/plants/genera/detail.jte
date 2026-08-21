@@ -1,6 +1,7 @@
 @import com.naturalist.plants.PlantFamily
 @import com.naturalist.plants.PlantGenus
-@import com.naturalist.plants.PlantSpecies
+@import com.naturalist.plants.PlantSpeciesView
+@import com.naturalist.plants.PlantTaxonView
 @import com.naturalist.plants.console.BreadcrumbSegment
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantFeatureView
@@ -8,7 +9,7 @@
 
 @param PlantGenus genus
 @param PlantFamily family = null
-@param List<PlantSpecies> species = java.util.List.of()
+@param List<PlantTaxonView> children = java.util.List.of()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -62,21 +63,24 @@
 
     <section>
         <h2>Species in this genus</h2>
-        @if(species.isEmpty())
+        @if(children.isEmpty())
             <p><em>No species catalogued under this genus yet.</em></p>
         @else
             <div class="entity-grid">
-                @for(var s : species)
-                    !{var speciesLabel = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value() + " " + s.epithet().value());}
-                    <article>
-                        <header>
-                            <a href="/plants/${s.name().value()}">
-                                <strong>${speciesLabel}</strong>
-                            </a>
-                        </header>
-                        <p class="taxonomy"><em>${genus.genus().value()} ${s.epithet().value()}</em></p>
-                        <p class="description-preview">${s.description().preschool()}</p>
-                    </article>
+                @for(var child : children)
+                    @if(child instanceof PlantSpeciesView sv)
+                        !{var s = sv.species();}
+                        !{var speciesLabel = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value() + " " + s.epithet().value());}
+                        <article>
+                            <header>
+                                <a href="/plants/${s.name().value()}">
+                                    <strong>${speciesLabel}</strong>
+                                </a>
+                            </header>
+                            <p class="taxonomy"><em>${genus.genus().value()} ${s.epithet().value()}</em></p>
+                            <p class="description-preview">${s.description().preschool()}</p>
+                        </article>
+                    @endif
                 @endfor
             </div>
         @endif

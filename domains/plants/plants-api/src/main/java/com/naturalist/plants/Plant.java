@@ -4,6 +4,7 @@ import com.naturalist.ddd.ReadModel;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -23,12 +24,19 @@ public record Plant(
         @Nullable PlantFamilyView family,
         @Nullable PlantGenusView genus,
         @Nullable PlantSpeciesView species,
-        @Nullable PlantFeatureView features
+        @Nullable PlantFeatureView features,
+        /**
+         * Direct sub-taxa of the identified rank, each wrapped as its rank's {@link PlantTaxonView}
+         * permit with EMPTY {@code images()} — plants render no child thumbnails (a future
+         * gallery-bearing variant would be a separate slice). Never null; empty for species (the
+         * bottom rank) and for {@link #empty()}.
+         */
+        List<PlantTaxonView> children
 ) implements ReadModel {
 
     /** Zero-state read model — no rank identified. Starting point for {@code with*} refinement. */
     public static Plant empty() {
-        return new Plant(null, null, null, null, null);
+        return new Plant(null, null, null, null, null, List.of());
     }
 
     /** Most-specific identified rank's typed name, if any. */
@@ -57,23 +65,27 @@ public record Plant(
     }
 
     public Plant withOrder(@Nullable PlantOrderView order) {
-        return new Plant(order, family, genus, species, features);
+        return new Plant(order, family, genus, species, features, children);
     }
 
     public Plant withFamily(@Nullable PlantFamilyView family) {
-        return new Plant(order, family, genus, species, features);
+        return new Plant(order, family, genus, species, features, children);
     }
 
     public Plant withGenus(@Nullable PlantGenusView genus) {
-        return new Plant(order, family, genus, species, features);
+        return new Plant(order, family, genus, species, features, children);
     }
 
     public Plant withSpecies(@Nullable PlantSpeciesView species) {
-        return new Plant(order, family, genus, species, features);
+        return new Plant(order, family, genus, species, features, children);
     }
 
     public Plant withFeatures(@Nullable PlantFeatureView features) {
-        return new Plant(order, family, genus, species, features);
+        return new Plant(order, family, genus, species, features, children);
+    }
+
+    public Plant withChildren(List<PlantTaxonView> children) {
+        return new Plant(order, family, genus, species, features, children);
     }
 
     @Override
@@ -92,6 +104,7 @@ public record Plant(
                         .readModel(species, "species")
                         .notNull(genus, "species:genus")
                         .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus"))
-                .whenNotNull(features, f -> f.readModel(features, "features"));
+                .whenNotNull(features, f -> f.readModel(features, "features"))
+                .notNull(children, "children");
     }
 }
