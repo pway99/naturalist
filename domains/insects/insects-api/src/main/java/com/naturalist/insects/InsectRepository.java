@@ -117,12 +117,16 @@ class InsectRepository {
             extends EntityRepository<InsectSpeciesName, InsectSpecies> {
 
         List<InsectSpecies> getByGenusName(InsectGenusName genusName);
+
+        List<InsectSpecies> getByGenusNames(Set<InsectGenusName> genusNames);
     }
 
     protected interface ImageRepository
             extends EntityRepository<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> {
 
         List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> getByParentName(InsectRankName parentName);
+
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> getByParentNames(Set<InsectRankName> parentNames);
     }
 
     protected interface ObservationRepository
@@ -146,6 +150,8 @@ class InsectRepository {
             extends EntityRepository<InsectGenusName, InsectGenus> {
 
         List<InsectGenus> getByFamilyName(InsectFamilyName familyName);
+
+        List<InsectGenus> getByFamilyNames(Set<InsectFamilyName> familyNames);
     }
 
     protected interface FunctionalRoleRepository

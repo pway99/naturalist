@@ -85,6 +85,9 @@ public interface InsectQuery {
          * from the result.
          */
         SpeciesCollection forFamilyName(InsectFamilyName familyName);
+
+        /** Batched sibling of {@link #forGenusName(InsectGenusName)} across a set of genera. */
+        SpeciesCollection forGenusNames(Set<InsectGenusName> genusNames);
     }
 
     interface ImageQuery
@@ -128,6 +131,9 @@ public interface InsectQuery {
     interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenus, GenusCollection> {
 
         GenusCollection forFamilyName(InsectFamilyName familyName);
+
+        /** Batched sibling of {@link #forFamilyName(InsectFamilyName)} across a set of families. */
+        GenusCollection forFamilyNames(Set<InsectFamilyName> familyNames);
 
         GenusCollection forOrderName(InsectOrderName orderName);
     }

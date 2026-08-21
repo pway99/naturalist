@@ -5,6 +5,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
+import java.util.Set;
 
 @DomainService
 class InsectGenusRepositoryMock
@@ -22,6 +23,16 @@ class InsectGenusRepositoryMock
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(g -> familyName.equals(g.familyName()))
+                .toList();
+    }
+
+    @Override
+    public List<InsectGenus> getByFamilyNames(Set<InsectFamilyName> familyNames) {
+        observer().arguments("getByFamilyNames",
+                        i -> i.entityNameCollection(familyNames, "familyNames"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(g -> familyNames.contains(g.familyName()))
                 .toList();
     }
 }

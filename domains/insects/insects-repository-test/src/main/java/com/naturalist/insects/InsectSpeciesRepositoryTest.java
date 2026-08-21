@@ -143,4 +143,29 @@ interface InsectSpeciesRepositoryTest
         assertThat(results).isEmpty();
     }
 
+    @Test
+    default void getByGenusNames_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByGenusNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("genusNames");
+    }
+
+    @Test
+    default void getByGenusNames_returnsSpeciesAcrossTheGivenGenera() {
+        var result = repository().getByGenusNames(Set.of(
+                TestInsectsIdentifiers.InsectGenus.Drosophila.name,
+                TestInsectsIdentifiers.InsectGenus.Battus.name));
+
+        assertThat(result).extracting(InsectSpecies::name)
+                .contains(
+                        TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name,
+                        TestInsectsIdentifiers.InsectSpecies.DrosophilaMelanogaster.name,
+                        TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name)
+                .doesNotContain(TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
+        assertThat(result).allSatisfy(species ->
+                assertThat(species.genusName()).isIn(
+                        TestInsectsIdentifiers.InsectGenus.Drosophila.name,
+                        TestInsectsIdentifiers.InsectGenus.Battus.name));
+    }
+
 }

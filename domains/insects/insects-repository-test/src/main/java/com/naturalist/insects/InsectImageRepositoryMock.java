@@ -7,6 +7,7 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
+import java.util.Set;
 
 @DomainService
 class InsectImageRepositoryMock
@@ -23,6 +24,15 @@ class InsectImageRepositoryMock
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(image -> image.parentName().equals(parentName))
+                .toList();
+    }
+
+    @Override
+    public List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> getByParentNames(Set<InsectRankName> parentNames) {
+        observer().arguments("getByParentNames", i -> i.identifierSet(parentNames, "parentNames"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(image -> parentNames.contains(image.parentName()))
                 .toList();
     }
 }

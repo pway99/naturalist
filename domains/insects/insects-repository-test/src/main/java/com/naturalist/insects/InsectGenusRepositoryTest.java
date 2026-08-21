@@ -114,4 +114,28 @@ interface InsectGenusRepositoryTest
         assertThat(results).isEmpty();
     }
 
+    @Test
+    default void getByFamilyNames_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByFamilyNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("familyNames");
+    }
+
+    @Test
+    default void getByFamilyNames_returnsGeneraAcrossTheGivenFamilies() {
+        var result = repository().getByFamilyNames(Set.of(
+                TestInsectsIdentifiers.InsectFamily.Papilionidae.name,
+                TestInsectsIdentifiers.InsectFamily.Apidae.name));
+
+        assertThat(result).extracting(InsectGenus::name)
+                .contains(
+                        TestInsectsIdentifiers.InsectGenus.Battus.name,
+                        TestInsectsIdentifiers.InsectGenus.Apis.name)
+                .doesNotContain(TestInsectsIdentifiers.InsectGenus.Halictus.name);
+        assertThat(result).allSatisfy(genus ->
+                assertThat(genus.familyName()).isIn(
+                        TestInsectsIdentifiers.InsectFamily.Papilionidae.name,
+                        TestInsectsIdentifiers.InsectFamily.Apidae.name));
+    }
+
 }

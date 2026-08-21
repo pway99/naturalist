@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -108,5 +109,28 @@ interface InsectImageRepositoryTest
         var results = repository().getByParentName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
 
         assertThat(results).isEmpty();
+    }
+
+    @Test
+    default void getByParentNames_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByParentNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("parentNames");
+    }
+
+    @Test
+    default void getByParentNames_returnsImagesAcrossTheGivenParents() {
+        var results = repository().getByParentNames(Set.of(
+                TestInsectsIdentifiers.InsectGenus.Empoasca.name,
+                TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name));
+
+        assertThat(results.stream().map(OrganismImage::id))
+                .contains(
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9047.id,
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.Images.Img9048.id);
+        assertThat(results).allSatisfy(image ->
+                assertThat(image.parentName()).isIn(
+                        TestInsectsIdentifiers.InsectGenus.Empoasca.name,
+                        TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name));
     }
 }

@@ -5,9 +5,9 @@ import com.naturalist.observation.OrganismImage;
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class InsectImageQueryImpl
         extends AbstractEntityQuery<
@@ -50,34 +50,48 @@ class InsectImageQueryImpl
     public ImageCollection forRankHierarchy(InsectRankName rankName) {
         observer().arguments("forRankHierarchy", i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
-        var images = new ArrayList<>(forParentName(rankName).stream().toList());
+        return ImageCollection.of(repository().getByParentNames(subtreeRanks(rankName)));
+    }
+
+    /**
+     * The full set of rank names in {@code rankName}'s subtree — the rank itself plus every
+     * descendant rank down to species — resolved with one batched taxonomy query per rank
+     * level (not one per node), so an order's subtree costs a handful of queries rather than
+     * O(subtree size).
+     */
+    private Set<InsectRankName> subtreeRanks(InsectRankName rankName) {
+        Set<InsectRankName> ranks = new LinkedHashSet<>();
+        ranks.add(rankName);
         switch (rankName) {
             case InsectSpeciesName _ -> { /* species is the leaf — no descendants */ }
-            case InsectGenusName genusName -> collectForGenus(images, genusName);
-            case InsectFamilyName familyName -> collectForFamily(images, familyName);
-            case InsectOrderName orderName -> collectForOrder(images, orderName);
             case InsectSubspeciesName _ -> { /* no entity yet */ }
+            case InsectGenusName genusName ->
+                    speciesQuery.forGenusName(genusName).stream()
+                            .map(InsectSpecies::name)
+                            .forEach(ranks::add);
+            case InsectFamilyName familyName -> {
+                Set<InsectGenusName> genusNames = genusQuery.forFamilyName(familyName).stream()
+                        .map(InsectGenus::name)
+                        .collect(Collectors.toSet());
+                ranks.addAll(genusNames);
+                speciesQuery.forGenusNames(genusNames).stream()
+                        .map(InsectSpecies::name)
+                        .forEach(ranks::add);
+            }
+            case InsectOrderName orderName -> {
+                Set<InsectFamilyName> familyNames = familyQuery.forOrderName(orderName).stream()
+                        .map(InsectFamily::name)
+                        .collect(Collectors.toSet());
+                ranks.addAll(familyNames);
+                Set<InsectGenusName> genusNames = genusQuery.forFamilyNames(familyNames).stream()
+                        .map(InsectGenus::name)
+                        .collect(Collectors.toSet());
+                ranks.addAll(genusNames);
+                speciesQuery.forGenusNames(genusNames).stream()
+                        .map(InsectSpecies::name)
+                        .forEach(ranks::add);
+            }
         }
-        return ImageCollection.of(images);
-    }
-
-    private void collectForGenus(List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images, InsectGenusName genusName) {
-        for (var species : speciesQuery.forGenusName(genusName).stream().toList()) {
-            images.addAll(forParentName(species.name()).stream().toList());
-        }
-    }
-
-    private void collectForFamily(List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images, InsectFamilyName familyName) {
-        for (var genus : genusQuery.forFamilyName(familyName).stream().toList()) {
-            images.addAll(forParentName(genus.name()).stream().toList());
-            collectForGenus(images, genus.name());
-        }
-    }
-
-    private void collectForOrder(List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images, InsectOrderName orderName) {
-        for (var family : familyQuery.forOrderName(orderName).stream().toList()) {
-            images.addAll(forParentName(family.name()).stream().toList());
-            collectForFamily(images, family.name());
-        }
+        return ranks;
     }
 }
