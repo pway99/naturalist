@@ -9,6 +9,7 @@ import com.naturalist.data.Pages;
 import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
+import com.naturalist.plants.Plant;
 import com.naturalist.plants.PlantSpecies;
 import com.naturalist.plants.PlantFamily;
 import com.naturalist.plants.PlantFamilyName;
@@ -53,7 +54,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -135,8 +135,8 @@ public class PlantsController {
         model.addAttribute("constituents", constituents);
         model.addAttribute("features", plant.get().features());
         model.addAttribute("images", plant.get().images().stream().toList());
-        model.addAttribute("breadcrumb", breadcrumbToSpecies(species));
-        model.addAttribute("cladeTrail", cladeTrailForSpecies(species));
+        model.addAttribute("breadcrumb", breadcrumbFor(plant.get()));
+        model.addAttribute("cladeTrail", cladeTrailFor(plant.get()));
         addDescription(model, species.description());
         return "plants/detail";
     }
@@ -214,50 +214,57 @@ public class PlantsController {
                 "/plants/genera/" + genus.name().value(), "Genus");
     }
 
-    private List<BreadcrumbSegment> breadcrumbToOrder(PlantOrder order) {
+    /**
+     * The taxonomic breadcrumb for a resolved {@link Plant}, read straight off its rank
+     * chain — Plantae root, a link per ancestor, the subject rank as the current segment.
+     * Replaces the former per-rank re-query helpers now that the read model carries the
+     * ancestry. A missing ancestor (null view) shortens the trail rather than failing.
+     */
+    static List<BreadcrumbSegment> breadcrumbFor(Plant plant) {
         var segments = plantaeRoot();
-        segments.add(BreadcrumbSegment.current(order.order().value(), "Order"));
+        boolean speciesSubject = plant.species() != null;
+        boolean genusSubject = !speciesSubject && plant.genus() != null;
+        boolean familySubject = !speciesSubject && !genusSubject && plant.family() != null;
+
+        boolean orderIsAncestor = plant.family() != null || plant.genus() != null || plant.species() != null;
+        if (plant.order() != null && orderIsAncestor) {
+            segments.add(orderLink(plant.order().order()));
+        }
+        if (plant.family() != null && !familySubject) {
+            segments.add(familyLink(plant.family().family()));
+        }
+        if (plant.genus() != null && !genusSubject) {
+            segments.add(genusLink(plant.genus().genus()));
+        }
+        if (speciesSubject) {
+            String genusEpithet = plant.genus() != null ? plant.genus().genus().genus().value() + " " : "";
+            segments.add(BreadcrumbSegment.current(
+                    genusEpithet + plant.species().species().epithet().value(), "Species"));
+        } else if (genusSubject) {
+            segments.add(BreadcrumbSegment.current(plant.genus().genus().genus().value(), "Genus"));
+        } else if (familySubject) {
+            segments.add(BreadcrumbSegment.current(plant.family().family().family().value(), "Family"));
+        } else if (plant.order() != null) {
+            segments.add(BreadcrumbSegment.current(plant.order().order().order().value(), "Order"));
+        }
         return segments;
     }
 
-    private List<BreadcrumbSegment> breadcrumbToFamily(PlantFamily family) {
-        var segments = plantaeRoot();
-        orderOf(family).ifPresent(o -> segments.add(orderLink(o)));
-        segments.add(BreadcrumbSegment.current(family.family().value(), "Family"));
-        return segments;
-    }
-
-    private List<BreadcrumbSegment> breadcrumbToGenus(PlantGenus genus) {
-        var segments = plantaeRoot();
-        var family = familyOf(genus);
-        family.flatMap(this::orderOf).ifPresent(o -> segments.add(orderLink(o)));
-        family.ifPresent(f -> segments.add(familyLink(f)));
-        segments.add(BreadcrumbSegment.current(genus.genus().value(), "Genus"));
-        return segments;
-    }
-
-    private List<BreadcrumbSegment> breadcrumbToSpecies(PlantSpecies species) {
-        var segments = plantaeRoot();
-        var genus = genusOf(species);
-        var family = genus.flatMap(this::familyOf);
-        family.flatMap(this::orderOf).ifPresent(o -> segments.add(orderLink(o)));
-        family.ifPresent(f -> segments.add(familyLink(f)));
-        genus.ifPresent(g -> segments.add(genusLink(g)));
-        String label = genus.map(g -> g.genus().value() + " ").orElse("") + species.epithet().value();
-        segments.add(BreadcrumbSegment.current(label, "Species"));
-        return segments;
-    }
-
-    private Optional<PlantOrder> orderOf(PlantFamily family) {
-        return plantQuery.orders().getByName(family.orderName());
-    }
-
-    private Optional<PlantFamily> familyOf(PlantGenus genus) {
-        return plantQuery.families().getByName(genus.familyName());
-    }
-
-    private Optional<PlantGenus> genusOf(PlantSpecies species) {
-        return plantQuery.genera().getByName(species.genusName());
+    /**
+     * The tree-of-life clade row for a resolved {@link Plant}: the lineage from the plant
+     * kingdom down to the order's {@code placedIn} clade. Read off {@code plant.order()}
+     * (present for every rank via the resolved ancestry); empty when the order carries no
+     * placement. Plant clades are supra-ordinal, so lower ranks resolve through the order.
+     */
+    static List<Clade> cladeTrailFor(Plant plant) {
+        if (plant.order() == null) {
+            return List.of();
+        }
+        Clade placedIn = plant.order().order().placedIn();
+        if (placedIn == null) {
+            return List.of();
+        }
+        return CladeTraversal.ancestry(placedIn).reversed();
     }
 
     // ── Rank pages ────────────────────────────────────────────────────────
@@ -284,46 +291,10 @@ public class PlantsController {
         model.addAttribute("children", plant.get().children());
         model.addAttribute("features", plant.get().features());
         model.addAttribute("images", plant.get().images().stream().toList());
-        model.addAttribute("breadcrumb", breadcrumbToOrder(order));
-        model.addAttribute("cladeTrail", cladeTrailFor(order));
+        model.addAttribute("breadcrumb", breadcrumbFor(plant.get()));
+        model.addAttribute("cladeTrail", cladeTrailFor(plant.get()));
         addDescription(model, order.description());
         return "plants/orders/detail";
-    }
-
-    /**
-     * The phylogenetic tree-of-life row for an order: the clade lineage from the
-     * plant kingdom (Plantae) down to the order's {@code placedIn} clade. Empty when
-     * the order carries no placement — plant clades are supra-ordinal, so lower ranks
-     * would resolve this by walking up to their order (deferred).
-     * <p>
-     * The row runs up to Eukaryota, the shared root where the plant and animal lineages
-     * meet — the crossover point into the insect side. Plant clades link to their
-     * in-console pages; Eukaryota links to the shared cross-domain tree-of-life browser.
-     */
-    private List<Clade> cladeTrailFor(PlantOrder order) {
-        Clade placedIn = order.placedIn();
-        if (placedIn == null) {
-            return List.of();
-        }
-        // Root → placement, inclusive of Eukaryota: the shared root is the crossover
-        // into the animal kingdom, so a plant naturalist can reach the insect side.
-        return CladeTraversal.ancestry(placedIn).reversed();
-    }
-
-    // Lower ranks carry no clade of their own — plant clades are supra-ordinal — so a
-    // family/genus/species resolves its trail by walking up to its order's placement.
-
-    private List<Clade> cladeTrailForFamily(PlantFamily family) {
-        return orderOf(family).map(this::cladeTrailFor).orElseGet(List::of);
-    }
-
-    private List<Clade> cladeTrailForGenus(PlantGenus genus) {
-        return familyOf(genus).flatMap(this::orderOf).map(this::cladeTrailFor).orElseGet(List::of);
-    }
-
-    private List<Clade> cladeTrailForSpecies(PlantSpecies species) {
-        return genusOf(species).flatMap(this::familyOf).flatMap(this::orderOf)
-                .map(this::cladeTrailFor).orElseGet(List::of);
     }
 
     // ── Clade pages (the tree-of-life driving plant queries) ─────────────
@@ -390,8 +361,8 @@ public class PlantsController {
         model.addAttribute("children", plant.get().children());
         model.addAttribute("features", plant.get().features());
         model.addAttribute("images", plant.get().images().stream().toList());
-        model.addAttribute("breadcrumb", breadcrumbToFamily(family));
-        model.addAttribute("cladeTrail", cladeTrailForFamily(family));
+        model.addAttribute("breadcrumb", breadcrumbFor(plant.get()));
+        model.addAttribute("cladeTrail", cladeTrailFor(plant.get()));
         addDescription(model, family.description());
         return "plants/families/detail";
     }
@@ -406,12 +377,12 @@ public class PlantsController {
         PlantGenus genus = plant.get().genus().genus();
         model.addAttribute("genus", genus);
         model.addAttribute("family",
-                plantQuery.families().getByName(genus.familyName()).orElse(null));
+                plant.get().family() == null ? null : plant.get().family().family());
         model.addAttribute("children", plant.get().children());
         model.addAttribute("features", plant.get().features());
         model.addAttribute("images", plant.get().images().stream().toList());
-        model.addAttribute("breadcrumb", breadcrumbToGenus(genus));
-        model.addAttribute("cladeTrail", cladeTrailForGenus(genus));
+        model.addAttribute("breadcrumb", breadcrumbFor(plant.get()));
+        model.addAttribute("cladeTrail", cladeTrailFor(plant.get()));
         addDescription(model, genus.description());
         return "plants/genera/detail";
     }
