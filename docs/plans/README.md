@@ -94,6 +94,9 @@ not loaded by default.
 | [archive/2026-07-12-naturalist-insect-collection-design.md](archive/2026-07-12-naturalist-insect-collection-design.md) | 2026-07-12 | Design spec for naturalist collection: `FieldObservation` entity, collection lens, header filter chip, per-naturalist photo ownership. |
 | [archive/2026-07-12-naturalist-insect-collection-plan.md](archive/2026-07-12-naturalist-insect-collection-plan.md) | 2026-07-12 | Implementation plan for naturalist collection feature. |
 | [archive/2026-07-14-insect-record-helpers.md](archive/2026-07-14-insect-record-helpers.md) | 2026-07-14 | `InsectRankName.of(slug, rank)` static factory, `FieldObservation.withNotes`/`.withSubject` mutation helpers, controller simplification. |
+| [archive/2026-08-20-plants-s3-feature-stack-plan.md](archive/2026-08-20-plants-s3-feature-stack-plan.md) | 2026-08-20 | Plants evidence-stack S3: `PlantFeature` + `PlantFeatureAssignment` entity/repository/query stack + direct-rank `features().forRankName`. Mirrors the insects feature substrate. (The direct-rank query was later superseded by the ancestry `findByRankName` in the Plant read-model effort.) |
+| [archive/insect-rank-page/](archive/insect-rank-page/) | 2026-08-20 | Insect rank-page read model: `Insect` **is** the rank read model (design + stage 1 features, stage 2 role + children, stage 3 retire dead `taxonView()`/permit `features()` slot). Controller reads each rank page off `insectQuery.getByName(...)`. |
+| [archive/plant-read-model/](archive/plant-read-model/) | 2026-08-21 | Plant read model: composed `Plant` graph via `PlantQuery.getByName` + `PlantFactory` (design + 6 chunks — skeleton, ancestry features, children, role + photo gallery, species extras, breadcrumb-off-read-model cleanup). The plants parallel of the insect rank-page effort; retires controller hand-collation of the rank-page graph. |
 
 ## Where else to look
 
