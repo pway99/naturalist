@@ -2,13 +2,11 @@ package com.naturalist.insects.lifestage;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.LifeStageName;
 
 import java.util.List;
 
-@DomainService
 public class InsectLifeStageEntityRepositoryMock
         extends AbstractTestEntityRepository<LifeStageName, LifeStage, InsectLifeStageTestEntitySource>
         implements LifeStageRepository.LifeStageEntityRepository {

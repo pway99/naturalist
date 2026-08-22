@@ -4,12 +4,10 @@ import com.naturalist.observation.OrganismImage;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
 import java.util.Set;
 
-@DomainService
 class InsectImageRepositoryMock
         extends AbstractTestEntityRepository<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, InsectImageTestEntitySource>
         implements InsectRepository.ImageRepository {

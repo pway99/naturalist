@@ -2,13 +2,11 @@ package com.naturalist.insects;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@DomainService
 class InsectFunctionalRoleRepositoryMock
         extends AbstractTestEntityRepository<InsectFunctionalRoleId, InsectFunctionalRole, InsectFunctionalRoleTestEntitySource>
         implements InsectRepository.FunctionalRoleRepository {

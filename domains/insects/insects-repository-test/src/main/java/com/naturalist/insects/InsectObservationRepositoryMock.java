@@ -2,14 +2,12 @@ package com.naturalist.insects;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
 
 import java.util.List;
 import java.util.Set;
 import com.naturalist.observation.OrganismObservation;
 
-@DomainService
 class InsectObservationRepositoryMock
         extends AbstractTestEntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectObservationTestEntitySource>
         implements InsectRepository.ObservationRepository {

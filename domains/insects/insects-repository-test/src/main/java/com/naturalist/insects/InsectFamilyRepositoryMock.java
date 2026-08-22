@@ -2,11 +2,9 @@ package com.naturalist.insects;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
 
-@DomainService
 class InsectFamilyRepositoryMock
         extends AbstractTestEntityRepository<InsectFamilyName, InsectFamily, InsectFamilyTestEntitySource>
         implements InsectRepository.FamilyRepository {
