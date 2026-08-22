@@ -36,10 +36,24 @@
         <jte.version>3.2.1</jte.version>
         <cdk.version>2.12</cdk.version>
         <archunit.version>1.4.2</archunit.version>
+        <aspectj.version>1.9.25</aspectj.version>
     </properties>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>weaver-agent-path</id>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -55,6 +69,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.2</version>
+                    <configuration>
+                        <argLine>-javaagent:${org.aspectj:aspectjweaver:jar}</argLine>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -73,6 +90,16 @@
                 <groupId>com.tngtech.archunit</groupId>
                 <artifactId>archunit-junit5</artifactId>
                 <version>${archunit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectj.version}</version>
             </dependency>
 
             <!-- KERNELS -->
@@ -559,4 +586,14 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <!-- Test-only: AspectJ load-time weaver, present on every module's test classpath so
+             the surefire -javaagent path resolves everywhere. Never in a production artifact. -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
