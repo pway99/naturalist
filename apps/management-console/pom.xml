@@ -82,6 +82,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>garden-repository-rdms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>insects-console</artifactId>
         </dependency>
         <dependency>
