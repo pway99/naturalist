@@ -1,7 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.FileName;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.naturalist.NaturalistName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectAddPhotoCommandTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
     InsectAddPhotoCommand command = new InsectAddPhotoCommand(context.addPhotoTransaction());

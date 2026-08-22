@@ -1,6 +1,6 @@
 package com.naturalist.soil;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.soil.observation.LabAnalysis;
 import com.naturalist.soil.observation.NutrientName;
 import com.naturalist.soil.observation.Nutrients;
@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FglOptimumGoldenMasterTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     private final SoilProfileQuery query = SoilsTestContextInternal.create(db).soilProfileQuery();
 

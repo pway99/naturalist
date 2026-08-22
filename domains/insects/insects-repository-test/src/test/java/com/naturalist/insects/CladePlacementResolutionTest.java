@@ -6,7 +6,7 @@ import com.naturalist.clades.Holometabola;
 import com.naturalist.clades.Lepidoptera;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.clades.Troidini;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.insects.lifestage.Hemimetabolous;
 import com.naturalist.insects.lifestage.Holometabolous;
 import com.naturalist.insects.lifestage.InsectLifeStages;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CladePlacementResolutionTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     @Test
     void battusPhilenorPlacementResolvesToHolometabolyTraitViaTroidini() {

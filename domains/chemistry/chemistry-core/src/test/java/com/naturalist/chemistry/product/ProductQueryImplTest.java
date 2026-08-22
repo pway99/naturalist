@@ -2,7 +2,7 @@ package com.naturalist.chemistry.product;
 
 import com.naturalist.chemistry.TestChemistryIdentifiers;
 import com.naturalist.chemistry.compound.CompoundName;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ProductQueryImplTest {
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     ProductRepository repository = new ProductEntityRepositoryMock(db);
     ProductQuery productQuery = new ProductQueryImpl(repository);

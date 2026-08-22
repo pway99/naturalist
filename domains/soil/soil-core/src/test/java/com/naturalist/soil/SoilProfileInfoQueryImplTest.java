@@ -2,7 +2,7 @@ package com.naturalist.soil;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
@@ -11,7 +11,7 @@ class SoilProfileInfoQueryImplTest
         implements EntityQueryContractTest<SoilProfileName, SoilProfileInfo, SoilProfileInfoCollection> {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     SoilProfileInfoQuery query =
             new SoilProfileInfoQueryImpl(new SoilProfileInfoEntityRepositoryMock(db));

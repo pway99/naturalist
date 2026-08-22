@@ -33,7 +33,7 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituentTestContext;
  * {@code *TestEntitySource} classes; do not grow write methods on this class.
  *
  * <p><b>Not a JUnit extension.</b> Consumers that need per-method reset wrap
- * a {@code NaturalistDatabaseExtension} (from {@code framework-test})
+ * a {@code NaturalistTestExtension} (from {@code framework-test})
  * alongside this context. Keeping the extension concern out preserves use
  * from non-test contexts (e.g. the eventual plants-console bootstrap during
  * pre-RDBMS development).

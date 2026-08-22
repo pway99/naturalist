@@ -7,7 +7,7 @@ import com.naturalist.authority.CitationName;
 import com.naturalist.authority.ExternalAuthority;
 import com.naturalist.authority.OnlineSource;
 import com.naturalist.data.FileName;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.library.LibraryTestContext;
@@ -52,7 +52,7 @@ class InsectIdentificationCommandTest {
             """;
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
     InsectQuery query = context.insectQuery();

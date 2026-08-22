@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.library.CitationQuery;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InsectCitationQueryImplTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
     InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);

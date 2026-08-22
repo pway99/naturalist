@@ -1,7 +1,7 @@
 package com.naturalist.chemistry.element;
 
 import com.naturalist.chemistry.TestChemistryIdentifiers;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ElementQueryImplTest {
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     ElementRepository repository = new ElementEntityRepositoryMock(db);
     ElementQuery elementQuery = new ElementQueryImpl(repository);

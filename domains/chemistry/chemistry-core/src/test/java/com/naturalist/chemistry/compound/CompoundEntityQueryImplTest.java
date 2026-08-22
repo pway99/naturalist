@@ -4,7 +4,7 @@ import com.naturalist.chemistry.TestChemistryIdentifiers;
 import com.naturalist.chemistry.compound.CompoundEntityCollections.CompoundCollection;
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
@@ -13,7 +13,7 @@ class CompoundEntityQueryImplTest
         implements EntityQueryContractTest<CompoundName, Compound, CompoundCollection> {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     CompoundRepository.CompoundEntityRepository repository = new CompoundEntityRepositoryMock(db);
     CompoundQuery.CompoundEntityQuery query = new CompoundEntityQueryImpl(repository);

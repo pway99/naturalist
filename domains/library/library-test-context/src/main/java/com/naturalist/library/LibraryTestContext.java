@@ -9,7 +9,7 @@ import com.naturalist.data.NaturalistDatabase;
  * package-private {@code ConceptQueryImpl} without promoting either to public.
  *
  * <p>Read seam only. Not a JUnit extension — consumers needing per-method reset
- * wrap a {@code NaturalistDatabaseExtension} alongside this context.
+ * wrap a {@code NaturalistTestExtension} alongside this context.
  */
 public class LibraryTestContext {
 

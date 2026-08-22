@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.taxonomy.LinealRank;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 class InsectFeatureQueryImplTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
     InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);

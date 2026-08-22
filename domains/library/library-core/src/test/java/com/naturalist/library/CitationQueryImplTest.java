@@ -1,7 +1,7 @@
 package com.naturalist.library;
 
 import com.naturalist.authority.CitationName;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CitationQueryImplTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     CitationRepository repository = new CitationRepositoryMock(db);
     CitationQuery citationQuery = new CitationQueryImpl(repository);

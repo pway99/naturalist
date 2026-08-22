@@ -3,7 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.EntityCommand;
 import com.naturalist.data.EntityCommandContractTest;
 import com.naturalist.data.EntityQuery;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.insects.InsectEntityCollections.ObservationCollection;
 import com.naturalist.naturalist.NaturalistName;
@@ -18,7 +18,7 @@ class InsectObservationCommandImplTest
         implements EntityCommandContractTest<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, ObservationCollection> {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectObservationRepositoryMock repository = new InsectObservationRepositoryMock(db);
     InsectCommand.ObservationCommand command = new InsectObservationCommandImpl(repository);

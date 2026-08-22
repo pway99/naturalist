@@ -12,7 +12,7 @@ import com.naturalist.chemistry.element.ElementQuery;
 import com.naturalist.chemistry.element.ElementQueryTestContextInternal;
 import com.naturalist.chemistry.product.ProductQuery;
 import com.naturalist.chemistry.product.ProductQueryTestContextInternal;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Pages;
 import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ChemistryCatalogContributionTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     private final CompoundQuery.CompoundEntityQuery compounds =
             CompoundQueryTestContextInternal.createEntityQuery(db);

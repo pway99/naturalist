@@ -1,6 +1,6 @@
 package com.naturalist.soil;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.garden.CropTypeName;
 import com.naturalist.soil.observation.LabAnalysis;
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class SoilProfileFactoryTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     SoilProfileQuery query = SoilsTestContextInternal.create(db).soilProfileQuery();
 

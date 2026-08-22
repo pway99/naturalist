@@ -4,7 +4,7 @@ import com.naturalist.RandomValue;
 import com.naturalist.data.EntityCommand;
 import com.naturalist.data.EntityCommandContractTest;
 import com.naturalist.data.EntityQuery;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
@@ -18,7 +18,7 @@ class InsectSpeciesCommandImplTest
         implements EntityCommandContractTest<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectSpeciesRepositoryMock repository = new InsectSpeciesRepositoryMock(db);
     InsectCommand.SpeciesCommand command = new InsectSpeciesCommandImpl(repository);

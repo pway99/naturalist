@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.InvariantViolationException;
@@ -25,7 +25,7 @@ class InsectFactoryTest {
     static final Observer observer = Observer.forClass(InsectFactoryTest.class);
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
     InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);

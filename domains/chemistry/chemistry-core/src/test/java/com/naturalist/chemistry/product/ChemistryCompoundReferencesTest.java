@@ -9,7 +9,7 @@ import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Products;
 import com.naturalist.chemistry.catalog.ChemistryCompoundReferences;
 import com.naturalist.chemistry.compound.CompoundName;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ChemistryCompoundReferencesTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     private final ProductRepository repository = new ProductEntityRepositoryMock(db);
     private final ProductQuery products = new ProductQueryImpl(repository);

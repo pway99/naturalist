@@ -2,7 +2,7 @@ package com.naturalist.insects.lifestage;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageName;
@@ -20,7 +20,7 @@ class InsectLifeStageEntityQueryImplTest
         implements EntityQueryContractTest<LifeStageName, LifeStage, LifeStageCollection> {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(db);
     InsectLifeStageQuery.LifeStageEntityQuery query = new InsectLifeStageEntityQueryImpl(repository);

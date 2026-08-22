@@ -3,7 +3,7 @@ package com.naturalist.plants;
 import com.naturalist.catalog.*;
 import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.catalog.inmem.CatalogAssembly;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Pages;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.exception.InvariantViolationException;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PlantsCatalogContributionTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     private final PlantQuery.GenusQuery genusQuery =
             new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));

@@ -1,7 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.FileName;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.naturalist.NaturalistName;
@@ -25,7 +25,7 @@ import com.naturalist.observation.OrganismObservation;
 class InsectCatalogIdentificationTransactionTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
     InsectQuery query = context.insectQuery();

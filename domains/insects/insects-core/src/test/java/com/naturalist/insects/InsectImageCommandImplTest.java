@@ -6,7 +6,7 @@ import com.naturalist.data.EntityCommand;
 import com.naturalist.data.EntityCommandContractTest;
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.FileName;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -18,7 +18,7 @@ class InsectImageCommandImplTest
         implements EntityCommandContractTest<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, ImageCollection> {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectImageRepositoryMock repository = new InsectImageRepositoryMock(db);
     InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);

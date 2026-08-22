@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * <pre>{@code
  * @RegisterExtension
- * NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+ * NaturalistTestExtension db = NaturalistTestExtension.create();
  * }</pre>
  *
  * <p>Extends {@link NaturalistDatabase} so tests can pass this instance directly to
@@ -20,14 +20,14 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * Main-wired code (console bootstraps, CLI tools) uses {@link NaturalistDatabase#create()}
  * and carries no JUnit coupling.
  */
-public class NaturalistDatabaseExtension extends NaturalistDatabase implements BeforeEachCallback {
+public class NaturalistTestExtension extends NaturalistDatabase implements BeforeEachCallback {
 
-    private NaturalistDatabaseExtension() {
+    private NaturalistTestExtension() {
         super();
     }
 
-    public static NaturalistDatabaseExtension create() {
-        return new NaturalistDatabaseExtension();
+    public static NaturalistTestExtension create() {
+        return new NaturalistTestExtension();
     }
 
     @Override

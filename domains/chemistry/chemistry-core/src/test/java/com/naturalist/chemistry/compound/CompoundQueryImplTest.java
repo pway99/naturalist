@@ -1,6 +1,6 @@
 package com.naturalist.chemistry.compound;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CompoundQueryImplTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     CompoundEntityRepositoryMock compoundRepository = new CompoundEntityRepositoryMock(db);
     DepictionEntityRepositoryMock depictionRepository = new DepictionEntityRepositoryMock(db);

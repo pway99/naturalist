@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ImageQueryImplHierarchyTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
     InsectQuery query = context.insectQuery();

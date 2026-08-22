@@ -4,7 +4,7 @@ import com.naturalist.catalog.*;
 import com.naturalist.catalog.inmem.CatalogAssembly;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.PlantsDomain;
@@ -32,7 +32,7 @@ class PlantsCompoundReferencesTest {
     private static final CompoundName ARISTOLOCHIC_ACID_II = CompoundName.of("aristolochic-acid-ii");
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     private final PhytochemicalConstituentRepository repository =
             new PlantPhytochemicalConstituentRepositoryMock(db);

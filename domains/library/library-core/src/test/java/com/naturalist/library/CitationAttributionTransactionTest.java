@@ -5,7 +5,7 @@ import com.naturalist.authority.AuthoritySource;
 import com.naturalist.authority.CitationName;
 import com.naturalist.authority.OnlineSource;
 import com.naturalist.catalog.EntityRef;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectsDomain;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CitationAttributionTransactionTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     CitationRepository citationRepository = new CitationRepositoryMock(db);
     CitationAssociationRepository citationAssociationRepository = new CitationAssociationRepositoryMock(db);

@@ -26,7 +26,7 @@ import com.naturalist.library.LibraryTestContext;
  * exercising the public write port end-to-end, not for fixture loading.
  *
  * <p><b>Not a JUnit extension.</b> Consumers that need per-method reset wrap a
- * {@code NaturalistDatabaseExtension} (from {@code framework-test}) alongside
+ * {@code NaturalistTestExtension} (from {@code framework-test}) alongside
  * this context. Keeping the extension concern out of this class preserves use
  * from non-test contexts (e.g. console bootstraps during pre-RDBMS development).
  */

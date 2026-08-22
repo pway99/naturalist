@@ -2,7 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.catalog.*;
 import com.naturalist.catalog.inmem.CatalogAssembly;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Pages;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.catalog.InsectsCatalogContribution;
@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InsectsCatalogContributionTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     private final InsectQuery.FamilyQuery familyQuery =
             new InsectFamilyQueryImpl(new InsectFamilyRepositoryMock(db));

@@ -11,7 +11,7 @@ import java.util.Map;
  * <p>This class holds no JUnit lifecycle concern — it is a plain source registry
  * usable from any context (main-wired controllers during pre-RDBMS development,
  * tests, CLI tools). For the JUnit per-method reset behavior, use
- * {@link NaturalistDatabaseExtension}.
+ * {@link NaturalistTestExtension}.
  */
 public class NaturalistDatabase {
     final Map<Class<?>, Object> sourceMap = new HashMap<>();

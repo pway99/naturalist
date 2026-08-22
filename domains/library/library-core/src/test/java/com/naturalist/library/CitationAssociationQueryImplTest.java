@@ -2,7 +2,7 @@ package com.naturalist.library;
 
 import com.naturalist.authority.CitationName;
 import com.naturalist.catalog.EntityRef;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectsDomain;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CitationAssociationQueryImplTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     CitationAssociationRepositoryMock repository = new CitationAssociationRepositoryMock(db);
     CitationAssociationQueryImpl query = new CitationAssociationQueryImpl(repository);

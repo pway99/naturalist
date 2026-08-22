@@ -1,6 +1,6 @@
 package com.naturalist.library;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConceptQueryImplTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     ConceptRepository repository = new ConceptRepositoryMock(db);
     ConceptQuery conceptQuery = new ConceptQueryImpl(repository);

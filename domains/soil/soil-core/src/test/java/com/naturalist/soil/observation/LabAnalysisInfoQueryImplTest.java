@@ -2,7 +2,7 @@ package com.naturalist.soil.observation;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.soil.TestSoilIdentifiers;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ class LabAnalysisInfoQueryImplTest
         implements EntityQueryContractTest<LabAnalysisId, LabAnalysisInfo, LabAnalysisInfoCollection> {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     LabAnalysisInfoQuery query = new LabAnalysisInfoQueryImpl(new LabAnalysisInfoEntityRepositoryMock(db));
 

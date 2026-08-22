@@ -11,7 +11,7 @@ import com.naturalist.clades.Holometabola;
 import com.naturalist.clades.Sophophora;
 import com.naturalist.clades.Termitoidae;
 import com.naturalist.clades.Troidini;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.insects.lifestage.Hemimetabolous;
 import com.naturalist.insects.lifestage.Holometabolous;
 import com.naturalist.insects.lifestage.MetabolyTrait;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ParaphylyPlacementMonotonicityTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     // -- Utility: DAG-descendant check --
 
