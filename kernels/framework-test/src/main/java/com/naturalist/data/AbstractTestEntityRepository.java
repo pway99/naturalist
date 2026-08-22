@@ -3,6 +3,7 @@ package com.naturalist.data;
 import com.naturalist.ddd.Named;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -67,8 +68,26 @@ public abstract class AbstractTestEntityRepository<
         return testEntitySource().pageOf(pageRequest);
     }
 
+    /**
+     * Walks the class hierarchy starting at the runtime type to find the point where
+     * {@code AbstractTestEntityRepository}'s type parameters were bound, then reads off
+     * the {@code NTS} argument. A direct subclass (the usual case: a mock extending this
+     * class with concrete type arguments) resolves on the first iteration. An additional
+     * plain subclass with no type parameters of its own — e.g. a production-named
+     * {@code <Entity>RepositoryRdms} extending an {@code <Entity>RepositoryMock} — does
+     * not itself carry a {@link ParameterizedType} generic superclass, so the walk
+     * continues up to the mock that does.
+     */
     @SuppressWarnings("unchecked")
     Class<NTS> ntsClass() {
-        return (Class<NTS>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
+        for (Class<?> current = getClass(); current != null; current = current.getSuperclass()) {
+            Type genericSuperclass = current.getGenericSuperclass();
+            if (genericSuperclass instanceof ParameterizedType parameterized
+                    && parameterized.getRawType() == AbstractTestEntityRepository.class) {
+                return (Class<NTS>) parameterized.getActualTypeArguments()[2];
+            }
+        }
+        throw new IllegalStateException(
+                "Could not resolve TestEntitySource type argument for " + getClass());
     }
 }
