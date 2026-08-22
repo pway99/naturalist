@@ -70,7 +70,11 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.2</version>
                     <configuration>
-                        <argLine>-javaagent:${org.aspectj:aspectjweaver:jar}</argLine>
+                        <!-- The sun-misc-unsafe-memory-access=allow flag silences the JEP-498
+                             warning aspectjweaver's load-time weaver triggers on JDK 25 (it calls
+                             the terminally-deprecated sun.misc.Unsafe::objectFieldOffset). Harmless;
+                             drop the flag once AspectJ stops using Unsafe. -->
+                        <argLine>-javaagent:${org.aspectj:aspectjweaver:jar} --sun-misc-unsafe-memory-access=allow</argLine>
                     </configuration>
                 </plugin>
             </plugins>
