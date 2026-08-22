@@ -15,6 +15,7 @@
         <module>library-api</module>
         <module>library-core</module>
         <module>library-repository-test</module>
+        <module>library-repository-rdms</module>
         <module>library-test-context</module>
         <module>library-console</module>
     </modules>

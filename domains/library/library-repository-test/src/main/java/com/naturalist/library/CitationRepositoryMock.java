@@ -4,9 +4,7 @@ import com.naturalist.authority.Citation;
 import com.naturalist.authority.CitationName;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 
-@DomainService
 class CitationRepositoryMock
         extends AbstractTestEntityRepository<CitationName, Citation, CitationTestEntitySource>
         implements CitationRepository {

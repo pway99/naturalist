@@ -4,11 +4,9 @@ import com.naturalist.authority.CitationName;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
 
-@DomainService
 class CitationAssociationRepositoryMock
         extends AbstractTestEntityRepository<CitationAssociationId, CitationAssociation, CitationAssociationTestEntitySource>
         implements CitationAssociationRepository {

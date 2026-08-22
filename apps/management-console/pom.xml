@@ -94,6 +94,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>library-repository-rdms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>plants-console</artifactId>
         </dependency>
         <dependency>
