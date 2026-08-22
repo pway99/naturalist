@@ -1,10 +1,10 @@
 ---
 name: entity-repository
 description: >
-  Create the full repository stack for an existing NamedEntity: the repository
+  Create the full repository stack for an existing domain entity: the repository
   super-interface (or add to an existing one), the in-memory mock, the behavioral
   contract test interface, and the mock test class. Use when adding a repository for
-  a domain entity that already has a NamedTestEntitySource and TestIdentifiers. Triggers
+  a domain entity that already has a TestEntitySource and TestIdentifiers. Triggers
   on phrases like "create a repository for Foo", "add repository for the Bar entity", or
   explicit invocations like "/entity-repository <EntityClassName>".
 allowed-tools: Read Write Edit Glob Grep Bash
@@ -17,11 +17,16 @@ argument-hint: <EntityClassName>
 
 Given an entity class name in $ARGUMENTS, scaffold the complete repository stack:
 
-1. Repository super-interface in the api module (or add a nested interface to an existing one)
+1. Repository super-interface namespace in the api module (or add a nested interface to an existing one)
 2. In-memory mock repository in the repository-test module
 3. Behavioral contract test interface in the repository-test module (`src/main/java`)
 4. Mock test class in the repository-test module (`src/test/java`)
 5. Add `identifiers-test` dependency to repository-test pom.xml if not already present
+
+Naming follows ADR-020 §5: the **nested** repository interface drops the domain prefix and
+the `Entity` infix (`SpeciesRepository` inside `InsectRepository`); the **standalone**
+concrete classes carry the full entity class name and drop the infix
+(`InsectSpeciesRepositoryMock`, not `InsectSpeciesEntityRepositoryMock`).
 
 ---
 
@@ -29,12 +34,14 @@ Given an entity class name in $ARGUMENTS, scaffold the complete repository stack
 
 Before starting, verify the following exist. If any are missing, stop and report to the user.
 
-- The entity class implementing `NamedEntity<<Entity>Name>`
-- `<Entity>Name` in `domains/identifiers/` (domain records carry no persistence id per ADR-021)
-- `<Entity>TestEntitySource` extending `NamedTestEntitySource` in
+- The entity class implementing `NamedEntity<<Entity>Name>` (slug identity) or
+  `Entity<<Entity>Id>` (UUIDv7 identity — observations, images, fact records)
+- The key class in `domains/identifiers/` — an `EntityName` subclass for a `NamedEntity`
+  (records carry no `PersistenceId`; ADR-022), or an `EntityId` subclass for an `Entity`
+- `<Entity>TestEntitySource` extending `TestEntitySource` in
   `<domain>-repository-test/src/main/java/`
 - `Test<Domain>Identifiers` in `domains/identifiers-test/src/main/java/` with at least
-  two known `EntityName` constants and a `NotFound` inner class for this entity type
+  two known key constants and a `NotFound` inner class for this entity type
 
 ---
 
@@ -42,88 +49,102 @@ Before starting, verify the following exist. If any are missing, stop and report
 
 Find the entity class. Read it to determine:
 
-- The entity's `EntityName` type (e.g. `PlantName`)
-- The entity's package (e.g. `com.naturalist.plants`)
-- The domain module name (e.g. `plants`)
+- The entity's **key type** — its `EntityName` subclass (e.g. `PlantSpeciesName`) or
+  `EntityId` subclass (e.g. `PlantImageId`)
+- The entity's package (e.g. `com.naturalist.plants`) and the domain module (e.g. `plants`)
+- The **domain noun** for the namespace (e.g. `Plant` → `PlantRepository`) and the
+  **entity subject** (the entity class name minus the domain prefix: `PlantSpecies` →
+  `Species`)
 - All record components — classify each as:
-    - **Immutable**: canonical `EntityName` (`name`) — never modified in update tests
-    - **FK EntityName**: an `EntityName` referencing another entity (e.g. `PlantName plantName`
-      on `Cultivar`) — the referenced entity must exist in test data when constructing
-      update/insert test instances
+    - **Immutable**: the canonical key (`name`/`id`) — never modified in update tests
+    - **FK EntityName**: an `EntityName` referencing another entity (e.g. `PlantGenusName
+      genusName` on `PlantSpecies`) — the referenced entity must exist in test data when
+      constructing update/insert test instances
     - **Mutable**: all other components — must be modified in the update expected-result test
 
-Also locate:
-
-- The `NamedTestEntitySource` subclass for this entity
-- The `Test<Domain>Identifiers` class and its constants for this entity
-- The `<domain>-repository-test/pom.xml`
+Also locate the `<Entity>TestEntitySource` subclass, the `Test<Domain>Identifiers` class
+and its constants for this entity, and the `<domain>-repository-test/pom.xml`.
 
 ---
 
-## Step 2 — Repository Super-Interface in the API Module
+## Step 2 — Repository Super-Interface Namespace in the API Module
 
-Check whether a repository super-interface already exists in the entity's package. Search
-for a file matching `*Repository.java` in the package directory.
+Reference implementation: `InsectRepository` in `insects-api` (the namespace `class`) and
+`PlantRepository` in `plants-api`.
 
-### If a super-interface exists in the same package
+Check whether a repository namespace already exists in the entity's package
+(`*Repository.java`).
 
-Read it and add the new nested entity repository interface:
+### If a namespace `class` exists in the same package (N>1)
+
+Read it and add a new nested entity repository interface, named by the bare entity subject:
 
 ```java
-interface <Existing>Repository {
+class <DomainNoun>Repository {
     // ... existing nested interfaces ...
-    interface <Entity>EntityRepository extends NamedEntityRepository<<Entity>Name, <Entity>> {}
+    protected interface <EntitySubject>Repository extends EntityRepository<<Entity>Name, <Entity>> {}
 }
 ```
 
-### If no super-interface exists in the package
+### If no namespace exists and this is the first entity in the package (N=1)
 
-Create a new one. The name is the package-level domain noun + `Repository` (e.g.
-`PlantRepository` for `com.naturalist.plants`, `CultivarRepository` for
-`com.naturalist.plants.cultivar`):
+Per the ADR-020 N=1 collapse rule, skip the namespace: declare a top-level
+package-private `<EntitySubject>Repository` interface directly (no wrapping class). Promote
+it into a namespace `class` only when a second entity joins the package.
 
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.Incubating;
 import com.naturalist.data.EntityRepository;
 
-@Incubating("Investigating a pattern where repositories are nested within a single interface")
-interface <Package>Repository {
-    interface <Entity>EntityRepository extends NamedEntityRepository<<Entity>Name, <Entity>> {}
-}
+interface <EntitySubject>Repository extends EntityRepository<<Entity>Name, <Entity>> {}
 ```
 
 Key rules:
 
-- **Package-private** — both the outer and nested interfaces
-- **One super-interface per package** — entities in different packages get their own
-- The `@Incubating` annotation is required while the pattern is under evaluation
+- **Package-private** — the namespace `class` and (via `protected`) its nested interfaces;
+  a top-level collapsed interface is package-private too
+- The namespace is a `class`, not an `interface`, so nested contracts can carry their own
+  access modifiers (inside an interface they would be implicitly `public`) — ADR-020
+- Domain-specific select methods (e.g. `getByGenusName`, `getByParentNames`) are declared
+  on the nested interface; **fan-out must batch** — add a `Set`-taking sibling rather than
+  looping a single-key select (domains/CLAUDE.md)
 
 ---
 
 ## Step 3 — In-Memory Mock Repository
 
-Create in `<domain>-repository-test/src/main/java/` in the entity's package:
+Create in `<domain>-repository-test/src/main/java/` in the entity's package. The mock
+carries the full entity class name, drops the `Entity` infix, and is marked `@DomainService`
+so the Spring runtime bridge can discover it (ADR-025):
 
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.infrastructure.DomainService;
 
-public class <Entity>EntityRepositoryMock
-        extends AbstractTestNamedEntityRepository<<Entity>Name, <Entity>, <Entity>TestEntitySource>
-        implements <Package>Repository.<Entity>EntityRepository {
+@DomainService
+class <Entity>RepositoryMock
+        extends AbstractTestEntityRepository<<Entity>Name, <Entity>, <Entity>TestEntitySource>
+        implements <DomainNoun>Repository.<EntitySubject>Repository {
 
-    protected <Entity>EntityRepositoryMock(NaturalistDatabase naturalistDatabase) {
+    <Entity>RepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);
     }
+
+    // Implement any domain-specific select methods declared on the nested interface here,
+    // resolving the source via testEntitySource(). Validate arguments through observer()
+    // first; batch Set-taking selects — never loop a single-key select.
 }
 ```
 
-`AbstractNamedEntityRepository` already holds a class-scoped `Observer` and exposes it
-via `observer()`. Do not redeclare one on the mock.
+`AbstractTestEntityRepository` resolves the shared source via
+`naturalistDatabase.getNamed(<Entity>TestEntitySource.class)` and holds a class-scoped
+`Observer` exposed via `observer()`. Do not redeclare one on the mock. For an N=1 collapsed
+package the `implements` clause is the top-level `<EntitySubject>Repository` instead of the
+nested form.
 
 ---
 
@@ -131,31 +152,31 @@ via `observer()`. Do not redeclare one on the mock.
 
 Create in `<domain>-repository-test/src/main/java/` in the entity's package. This is the
 most complex artifact — read the entity's record components carefully to construct correct
-test instances.
+test instances. Reference: `InsectSpeciesRepositoryTest`.
 
-The contract reuses `NamedEntityRepositoryContractTest` from `framework-test`, which
+The contract extends `EntityRepositoryTest<NAME, ENTITY>` from `framework-test`, which
 supplies the full test suite for the four repository methods (`getByName`,
-`getByEntityNameSet`, `insert`, `update`). The per-domain interface supplies identity
-hooks and entity-construction helpers.
+`getByEntityNameSet`, `insert`, `update`), the `@RegisterExtension NaturalistTestExtension
+db` field, and the abstract `repository()` / `source()` hooks. The per-domain interface
+supplies identity hooks and entity-construction helpers.
 
-### Identity hooks (required)
+### Hooks
 
-- `notFoundName()` — a fictitious `<Entity>Name` guaranteed absent from the catalog
-  (use `Test<Domain>Identifiers.NotFound.<entity>`)
-- `knownEntityNames()` — at least two known names present in the test data
-
-### Write-side hooks (required)
-
-- `newEntity()` — a new valid entity with a unique name not in the catalog
-  (synthetic name, e.g. `"test-<entity>-xx"`)
-- `ghostEntity()` — an entity whose name does not exist in the catalog (used for the
-  `update_unknownName_throwsEntityNotFoundException` test)
-- `modifiedEntity(ENTITY original)` — the original entity with every mutable field
-  changed to a distinct value; `name` is carried forward unchanged
+- `repository()` — narrow the return type to the nested repository interface
+- `source()` — `default` returning `db.getNamed(<Entity>TestEntitySource.class)`
+- `notFoundName()` — a fictitious key guaranteed absent (use `Test<Domain>Identifiers.NotFound.<entity>`)
+- `knownEntityNames()` — at least two known keys present in the test data
+- `newEntity()` — a new valid entity with a unique key not in the catalog (synthetic slug,
+  e.g. `"test-<entity>-xx"`, or a fresh `EntityId`)
+- `ghostEntity()` — an entity whose key does not exist in the catalog (used for
+  `update_unknownName_throwsEntityNotFoundException`)
+- `modifiedEntity(ENTITY original)` — the original with every mutable field changed to a
+  distinct value via `RandomValue` where constraints permit; the key is carried forward unchanged
 
 ### Test instance construction rules
 
-- Domain records carry no persistence id (ADR-021) — do not pass or assert on one
+- Records carry no `PersistenceId` (ADR-022) — a `NamedEntity` carries only its `EntityName`;
+  an `Entity` carries its `EntityId` (which *is* part of identity and asserted)
 - Use the entity's record constructor directly — no factory methods needed in tests
 - For ValueObject components, construct inline with minimal but valid values
 - For FK `EntityName` fields, reference a name that exists in the test data (from
@@ -168,19 +189,29 @@ hooks and entity-construction helpers.
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
+import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
+import com.naturalist.data.TestEntitySource;
 // ... entity-specific imports ...
 
 import java.util.List;
 
 /**
- * Behavioral contract for {@link <Package>Repository.<Entity>EntityRepository}.
+ * Behavioral contract for {@link <DomainNoun>Repository.<EntitySubject>Repository}.
  * <p>
- * Inherits the full test suite from {@link NamedEntityRepositoryContractTest}; supplies
- * only the identity hooks and entity-construction helpers specific to {@link <Entity>}.
+ * Inherits the {@link EntityRepositoryTest} cases (ADR-002); supplies the identity
+ * hooks and entity-construction helpers specific to {@link <Entity>}.
  */
-interface <Entity>EntityRepositoryTest
-        extends NamedEntityRepositoryContractTest<<Entity>Name, <Entity>> {
+interface <Entity>RepositoryTest
+        extends EntityRepositoryTest<<Entity>Name, <Entity>> {
+
+    @Override
+    <DomainNoun>Repository.<EntitySubject>Repository repository();
+
+    @Override
+    default TestEntitySource<<Entity>Name, <Entity>> source() {
+        return db.getNamed(<Entity>TestEntitySource.class);
+    }
 
     @Override
     default <Entity>Name notFoundName() {
@@ -215,26 +246,22 @@ interface <Entity>EntityRepositoryTest
 
 ## Step 5 — Mock Test Class
 
-Create in `<domain>-repository-test/src/test/java/` in the entity's package:
+Create in `<domain>-repository-test/src/test/java/` in the entity's package. It supplies
+only the concrete `repository()`; `db` and `source()` are inherited:
 
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-class <Entity>EntityRepositoryMockTest implements <Entity>EntityRepositoryTest {
+class <Entity>RepositoryMockTest implements <Entity>RepositoryTest {
     @Override
-    public <Package>Repository.<Entity>EntityRepository repository() {
-        return new <Entity>EntityRepositoryMock(db);
-    }
-
-    @Override
-    public <Entity>TestEntitySource source() {
-        return db.getNamed(<Entity>TestEntitySource.class);
+    public <DomainNoun>Repository.<EntitySubject>Repository repository() {
+        return new <Entity>RepositoryMock(db);
     }
 }
 ```
 
-`db` is the `NaturalistDatabaseExtension` field contributed by
-`NamedEntityRepositoryContractTest`; no extra `@RegisterExtension` is needed here.
+`db` is the `NaturalistTestExtension` field contributed by `EntityRepositoryTest`; no extra
+`@RegisterExtension` is needed here.
 
 ---
 
@@ -267,10 +294,15 @@ results to the user.
 
 ## Naming Conventions Summary
 
-| Artifact         | Name                               | Location                                      |
-|------------------|------------------------------------|-----------------------------------------------|
-| Super-interface  | `<Package>Repository`              | `<domain>-api/src/main/java/.../`             |
-| Nested interface | `<Entity>EntityRepository`         | nested inside super-interface                 |
-| Mock             | `<Entity>EntityRepositoryMock`     | `<domain>-repository-test/src/main/java/.../` |
-| Contract test    | `<Entity>EntityRepositoryTest`     | `<domain>-repository-test/src/main/java/.../` |
-| Mock test        | `<Entity>EntityRepositoryMockTest` | `<domain>-repository-test/src/test/java/.../` |
+| Artifact          | Name                          | Location                                      |
+|-------------------|-------------------------------|-----------------------------------------------|
+| Namespace class   | `<DomainNoun>Repository`      | `<domain>-api/src/main/java/.../`             |
+| Nested interface  | `<EntitySubject>Repository`   | nested inside the namespace class              |
+| Mock              | `<Entity>RepositoryMock`      | `<domain>-repository-test/src/main/java/.../` |
+| Contract test     | `<Entity>RepositoryTest`      | `<domain>-repository-test/src/main/java/.../` |
+| Mock test         | `<Entity>RepositoryMockTest`  | `<domain>-repository-test/src/test/java/.../` |
+
+`<Entity>` is the full entity class name (`InsectSpecies`); `<EntitySubject>` drops the
+domain prefix (`Species`); `<DomainNoun>` is the namespace prefix (`Insect`). For an N=1
+package the namespace class is skipped and the nested interface becomes a top-level
+package-private `<EntitySubject>Repository`.

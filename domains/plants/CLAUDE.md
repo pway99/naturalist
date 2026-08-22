@@ -349,7 +349,7 @@ When adding a new entity to the domain, scaffold via the standard skills
 
 Authoritative catalogs live under
 `plants-repository-test/src/main/resources/plants/`, each loaded by its
-corresponding `NamedTestEntitySource` at test time. The resource sub-directory
+corresponding `TestEntitySource` at test time. The resource sub-directory
 mirrors the Java sub-package.
 
 | Catalog                    | Path                                                    | Loaded by                                  |

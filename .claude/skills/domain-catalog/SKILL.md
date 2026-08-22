@@ -48,7 +48,7 @@ create entities, queries, or repositories.
 - `<domain>-api/src/main/java/com/naturalist/<domain>/` package exists.
 - At least one `NamedEntity` in the domain whose `EntityName` you can
   emit search tokens for (the contribution needs a non-empty source).
-- A `<Entity>EntityQuery` with `allEntityNames()` / `findByNameSet(...)`
+- A `<EntitySubject>Query` with `allEntityNames()` / `findByNameSet(...)`
   surface for every entity the contribution will iterate. If queries
   are missing, run `/entity-query` first.
 
@@ -194,9 +194,9 @@ public class <Domain>CatalogContribution implements
 
             private static final DomainId DOMAIN = new <Domain>Domain();
 
-            private final <Package > Query.<Entity>EntityQuery < entityPlural >;
+            private final <DomainNoun>Query.<EntitySubject>Query < entityPlural >;
 
-            public <Domain > CatalogContribution( < Package > Query.<Entity>EntityQuery < entityPlural >){
+            public <Domain > CatalogContribution( <DomainNoun>Query.<EntitySubject>Query < entityPlural >){
                 Observer.forClass( < Domain > CatalogContribution.class)
                 .arguments("constructor", i -> i.notNull( < entityPlural >, "<entityPlural>"))
                 .throwWhenInvalid();
@@ -277,7 +277,7 @@ package com.naturalist.
 
 import com.naturalist.catalog.*;
 import com.naturalist.catalog.inmem.CatalogAssembly;
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.<domain>.catalog.<Domain>CatalogContribution;
 import org.junit.jupiter.api.Test;
@@ -291,12 +291,12 @@ class
 <Domain> CatalogContributionTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
-    private final <Package > Repository.<Entity>EntityRepository repository =
-            new <Entity>EntityRepositoryMock(db);
-    private final <Package > Query.<Entity>EntityQuery entityQuery =
-            new <Entity>EntityQueryImpl(repository);
+    private final <DomainNoun>Repository.<EntitySubject>Repository repository =
+            new <Entity>RepositoryMock(db);
+    private final <DomainNoun>Query.<EntitySubject>Query entityQuery =
+            new <Entity>QueryImpl(repository);
     private final <Domain > CatalogContribution contribution =
             new <Domain>CatalogContribution(entityQuery);
 

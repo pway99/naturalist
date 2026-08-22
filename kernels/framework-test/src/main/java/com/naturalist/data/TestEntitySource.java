@@ -26,23 +26,23 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * In-memory data source for a {@link NamedEntity}. Keyed entirely on the entity's
- * {@link EntityName}; no numeric id is generated or tracked (ADR-021).
+ * In-memory data source for a domain entity, keyed on the entity's {@code key()}
+ * (the shared {@link Named} port): an {@code EntityName} slug for a {@code NamedEntity},
+ * or a UUIDv7 {@code EntityId} for an {@code Entity}. No numeric surrogate id is generated
+ * or tracked — {@code PersistenceId} does not exist in Java (ADR-022, superseding ADR-021).
  *
- * <p>JSON fixtures for a {@code NamedEntity} have no id field. Insertion is
- * name-keyed; the primary-key collision check is a name collision check. Any
- * additional {@link UniqueConstraint}s declared by the subclass are enforced
- * alongside it.
+ * <p>Insertion is key-keyed; the primary-key collision check is a {@code key()} collision
+ * check. Any {@link UniqueConstraint}s declared by the subclass are enforced alongside it,
+ * as are the intra-domain {@link ForeignKeyConstraint}s declared in
+ * {@link #foreignKeyConstraints()}.
  *
- * <p>Every subclass receives the surrounding {@link NaturalistDatabase} via
- * its constructor so that intra-domain referential-integrity checks (added
- * in subsequent work) can resolve foreign {@code TestEntitySource} peers
- * through {@link NaturalistDatabase#getNamed}. The reference is held even
- * for sources that declare no foreign-key constraints today — the wiring
- * is uniform.
+ * <p>Every subclass receives the surrounding {@link NaturalistDatabase} via its constructor
+ * so that intra-domain referential-integrity checks can resolve foreign
+ * {@code TestEntitySource} peers through {@link NaturalistDatabase#getNamed}. The reference
+ * is held even for sources that declare no foreign-key constraints — the wiring is uniform.
  *
- * @param <NAME>   the entity's name type
- * @param <ENTITY> the named entity type
+ * @param <NAME>   the entity's key type ({@code EntityName} or {@code EntityId} subtype)
+ * @param <ENTITY> the entity type
  */
 public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 

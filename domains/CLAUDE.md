@@ -110,18 +110,31 @@ Test data follows model/data separation: Java defines schema, JSON defines insta
 
 Use `/test-entity-source <EntityClassName> in <domain> module` to scaffold all three files.
 
-`NamedTestEntitySource<NAME, ENTITY>` enforces:
+`TestEntitySource<KEY, ENTITY extends Named<KEY>>` is the in-memory analog of an RDBMS
+table. It keys on the entity's `key()` (an `EntityName` for `NamedEntity`, an `EntityId`
+for `Entity`) and enforces:
 
-- **Name uniqueness** — the canonical `name()` is automatically checked on every insert;
+- **Key uniqueness** — the canonical `key()` is automatically checked on every insert;
   no subclass declaration required
 - **Secondary unique constraints** — declared per entity via `uniqueConstraints()`, which
   defaults to `List.of()`. Override only for fields annotated `@EntityIdentifier` (secondary
   unique `EntityName` fields) or `@UniqueValue` (plain value fields).
+- **Intra-domain foreign keys** — declared per entity via `foreignKeyConstraints()`, which
+  defaults to `List.of()`. Override with one `ForeignKeyConstraint.of(field, accessor,
+  ForeignSourceClass.class)` per reference so a fixture whose parent is missing fails at
+  load. Cross-*domain* references declare none (the DAG forbids in-memory resolution).
+
+Every source declares a `(NaturalistDatabase)` constructor and is acquired through
+`NaturalistDatabase#getNamed(...)`, which builds and caches the single shared instance —
+`NaturalistDatabase` is the only object that constructs a source (see Repository
+Architecture below).
 
 Conventions for JSON catalog files:
 
-- `"name": "<slug>"` — the `EntityName` natural key (e.g. `"calcium-sulfate-dihydrate"`)
-- No `id` field — domain records carry no `PersistenceId` (ADR-021)
+- `"name": "<slug>"` — the `EntityName` natural key of a `NamedEntity`
+  (e.g. `"calcium-sulfate-dihydrate"`); no `id` field (ADR-022)
+- `"id": "<uuidv7>"` — the `EntityId` of an `Entity` record (observations, images, fact
+  records); these carry an id and no `name`
 - Remaining fields match the record component names exactly
 - Enum values serialize by constant name (`"ROOT_MASS_FLOW"`, `"INORGANIC_SALT"`)
 - `PeriodicElement` uses chemical symbols (`"Ca"`, `"Mg"`, `"K"`)
@@ -186,8 +199,10 @@ Quick-reference constraints:
 - Repository interfaces are **package-private** in `<domain>-api`
 - A repository has exactly four responsibilities: entity cache, referential integrity,
   unique constraints, transactional consistency — no logic
-- `NaturalistDatabase` is the only object permitted to instantiate `NamedTestEntitySource` instances
-- Cross-domain references use `EntityName` slug — never `PersistenceId<Long>` (ADR-021)
+- `NaturalistDatabase` is the only object permitted to instantiate `TestEntitySource` instances;
+  acquire a source via `NaturalistDatabase#getNamed(...)`
+- Cross-domain references use `EntityName` slug; `Entity` records are never referenced
+  cross-domain by value (ADR-022, superseding the ADR-021 `PersistenceId` framing)
 - Cross-domain joins are prohibited; cross-domain FK enforcement is deferred to the RDBMS layer
 - Each repository manages its own secondary indexes. No cross-repository queries within a
   sub-context. No cross-sub-context repository access.
@@ -206,7 +221,7 @@ Quick-reference constraints:
 
 Every `NamedEntityRepository` has a behavioral contract defined as a `@Test default`
 interface in `<domain>-repository-test/src/main/java/`. Domain-specific contract
-interfaces extend `NamedEntityRepositoryContractTest<NAME, ENTITY>` from
+interfaces extend `EntityRepositoryTest<NAME, ENTITY>` from
 `kernels/framework-test`. The concrete interface supplies only identity constants and
 entity construction hooks — no test logic.
 
@@ -223,7 +238,7 @@ Concrete test interface hooks:
 | Hook                       | Purpose                                                                                           |
 |----------------------------|---------------------------------------------------------------------------------------------------|
 | `repository()`             | The repository under test                                                                         |
-| `source()`                 | The `NamedTestEntitySource` backing the test data                                                 |
+| `source()`                 | The `TestEntitySource` backing the test data                                                      |
 | `notFoundName()`           | A fictitious `NAME` guaranteed absent from the catalog                                            |
 | `knownEntityNames()`       | At least two known `NAME` constants from the test data                                            |
 | `newEntity()`              | A valid entity with a unique name, using `RandomValue` where field constraints permit             |

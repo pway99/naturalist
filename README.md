@@ -46,7 +46,7 @@ adapters/                 ports-and-adapters with heavy/vendor deps
 kernels/                  cross-cutting foundations
   framework/                NamedEntity, Entity, ValueObject, Aggregate,
                             BehavioralCollection, Observable, Resilience facade
-  framework-test/           NamedTestEntitySource, contract harness
+  framework-test/           TestEntitySource, NaturalistDatabase, contract harness
   field-notes/              Description (four-level Durrell description)
   taxonomy/                 Linnaean classification (organism domains)
   catalog/ + catalog-inmem/ cross-domain reference resolution

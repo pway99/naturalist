@@ -38,9 +38,27 @@ Spring (ADR-025).
 
 ### framework-test
 
-Test infrastructure. `NamedTestEntitySource`, `NamedTestEntitySourceTest`,
-`NamedEntityRepositoryContractTest`, `UniqueConstraint`. Used by all
-`<domain>-repository-test` modules. Never a compile-scope dependency.
+Test infrastructure. `TestEntitySource`, `TestEntitySourceTest`,
+`EntityRepositoryTest`, `UniqueConstraint`, `ForeignKeyConstraint`, and the
+`NaturalistDatabase` source registry with its JUnit lifecycle wrapper
+`NaturalistTestExtension`. Used by all `<domain>-repository-test` modules. Never a
+compile-scope dependency.
+
+`NaturalistDatabase` is the in-memory analog of the single production database
+(ADR-001): it owns every `TestEntitySource` and is the only object that constructs
+them. Acquire a source through `NaturalistDatabase#getNamed(SourceClass.class)`, which
+lazily builds and caches one instance per class so the whole test (or unwired
+composition root) shares one catalog. Each source subclass declares a
+`(NaturalistDatabase)` constructor — the signature `getNamed` reflects on — and enforces
+primary-key uniqueness, secondary `UniqueConstraint`s, and intra-domain
+`ForeignKeyConstraint`s. `NaturalistTestExtension extends NaturalistDatabase implements
+BeforeEachCallback`: registered as a static `@RegisterExtension` field, it resets the
+registry before each test; main-wired code uses `NaturalistDatabase.create()` and carries
+no JUnit coupling.
+
+An in-progress N+1 select-count gate lives alongside in `com.naturalist.data.count`
+(recorder, aspect, `@AllowRepeatedSelect`); it is not yet wired into
+`NaturalistTestExtension`. See `docs/plans/2026-08-21-n-plus-one-select-gate-plan.md`.
 
 ### field-notes  (`com.naturalist.fieldnotes`)
 
@@ -199,7 +217,7 @@ from outside the parent (e.g. `namedEntity(this, FooAggregate::fooInfo, "fooInfo
 Do not use the by-function form when the direct-value form suffices — the functional indirection adds no value when
 `this` can never be null.
 
-`Observer` validates entities at insertion points — `NamedTestEntitySource.insert()` calls
+`Observer` validates entities at insertion points — `TestEntitySource.insert()` calls
 `observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid()`. Insertion is an
 argument-validation site: the producer refuses bad input at its boundary. For method-body observation of *produced*
 state, the producer uses `.observe()` (metrics only) and hands the value to the consumer, which chooses the terminal

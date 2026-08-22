@@ -62,7 +62,8 @@ kernels/
   framework/          — NamedEntity, Entity, EntityName, EntityId, Aggregate,
                         ReadModel, ValueObject, Observable, Observer,
                         BehavioralCollection, Resilience facade
-  framework-test/     — NamedTestEntitySource, NamedTestEntitySourceTest, TestDataHelper
+  framework-test/     — TestEntitySource, TestEntitySourceTest, EntityRepositoryTest,
+                        NaturalistDatabase, NaturalistTestExtension, TestDataHelper
   field-notes/        — Description (four-level Durrell description)
   taxonomy/           — TaxonomicClassification (organism domains only)
   clades/             — Clade sealed type (evolutionary tree of life, trait-bearing nodes)

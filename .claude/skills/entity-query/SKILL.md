@@ -1,7 +1,7 @@
 ---
 name: entity-query
 description: >
-  Create the full query stack for an existing NamedEntity: the collection, the
+  Create the full query stack for an existing domain entity: the collection, the
   namespace query (or a nested entity query inside an existing one), the adapter
   implementation in the core module, and the contract test. Use when adding a
   read-side query for a domain entity that already has a repository and mock.
@@ -18,21 +18,27 @@ argument-hint: <EntityClassName>
 Given an entity class name in $ARGUMENTS, scaffold the complete read-side query
 stack:
 
-1. `<Entity>Collection` in the domain's entity-collections namespace (new file if
-   none exists in the package)
-2. `<Entity>EntityQuery` contract — nested in an existing namespace `*Query`
-   interface, or a new `<Package>Query` interface
-3. `<Entity>EntityQueryImpl` adapter in the core module, extending
-   `AbstractEntityQuery`
-4. Optional `<Package>QueryImpl` wiring — if the query is nested inside a
+1. `<EntitySubject>Collection` in the domain's entity-collections namespace (new
+   file if none exists in the package)
+2. `<EntitySubject>Query` contract — nested in an existing namespace `*Query`
+   interface, or a new `<DomainNoun>Query` interface
+3. `<Entity>QueryImpl` adapter in the core module, extending `AbstractEntityQuery`
+4. Optional `<DomainNoun>QueryImpl` wiring — if the query is nested inside a
    namespace, a package-private impl exposes it
-5. `<Entity>EntityQueryImplTest` implementing `EntityQueryContractTest` from
+5. `<Entity>QueryImplTest` implementing `EntityQueryContractTest` from
    `framework-test`
-6. Optional `<Package>QueryImplTest` covering constructor null-checks and
+6. Optional `<DomainNoun>QueryImplTest` covering constructor null-checks and
    accessor idempotence when a new namespace impl is created
 
-Reference implementation: the insects `InsectQuery` / `SpeciesQueryImpl` stack
-and the sub-package `InsectLifeStageQuery` / `LifeStageEntityQueryImpl` stack.
+Naming follows ADR-020 §5: **nested** namespace types drop the domain prefix and
+the `Entity` infix (`SpeciesQuery`, `SpeciesCollection` inside `InsectQuery` /
+`InsectEntityCollections`); **standalone** concrete classes carry the full entity
+class name and drop the infix (`InsectSpeciesQueryImpl`,
+`InsectSpeciesQueryImplTest`).
+
+Reference implementation: the insects `InsectQuery` / `InsectSpeciesQueryImpl`
+stack, and the sub-package `InsectLifeStageQuery` / `InsectLifeStageEntityQueryImpl`
+stack.
 
 ---
 
@@ -41,14 +47,15 @@ and the sub-package `InsectLifeStageQuery` / `LifeStageEntityQueryImpl` stack.
 Before starting, verify the following exist. If any are missing, stop and
 report to the user.
 
-- The entity class implementing `NamedEntity<<Entity>Name>`
-- `<Entity>Name` in `domains/identifiers/`
-- `<Package>Repository.<Entity>EntityRepository` contract (or equivalent
-  top-level repository interface) in `<domain>-api`
-- `<Entity>EntityRepositoryMock` + `<Entity>TestEntitySource` in
+- The entity class implementing `NamedEntity<<Entity>Name>` (slug) or
+  `Entity<<Entity>Id>` (UUIDv7)
+- The key class in `domains/identifiers/` (an `EntityName` or `EntityId` subclass)
+- `<DomainNoun>Repository.<EntitySubject>Repository` contract (or an equivalent
+  top-level repository interface for an N=1 package) in `<domain>-api`
+- `<Entity>RepositoryMock` + `<Entity>TestEntitySource` in
   `<domain>-repository-test/src/main/java/`
-- `Test<Domain>Identifiers` with at least two known `<Entity>Name` constants
-  and a `NotFound` fictitious constant
+- `Test<Domain>Identifiers` with at least two known key constants and a
+  `NotFound` fictitious constant
 
 ---
 
@@ -56,57 +63,54 @@ report to the user.
 
 Find the entity class. Read it to determine:
 
-- The entity's `EntityName` type (e.g. `LifeStageName`)
-- The entity's Java package (e.g. `com.naturalist.insects.lifestage`)
+- The entity's key type (e.g. `InsectSpeciesName`, `LifeStageName`)
+- The entity's Java package (e.g. `com.naturalist.insects`,
+  `com.naturalist.insects.lifestage`)
 - The domain module name (e.g. `insects`)
-- Whether an existing namespace query interface already lives in the same
-  package:
-    - `find <domain>-api/src/main/java/.../<package>/ -name "*Query.java"`
-- Whether an existing entity-collections namespace already lives in the same
-  package:
-    - `find <domain>-api/src/main/java/.../<package>/ -name "*EntityCollections.java"`
-- Whether an existing namespace query impl lives in `<domain>-core` in the
-  same package:
-    - `find <domain>-core/src/main/java/.../<package>/ -name "*QueryImpl.java"`
+- Whether an existing namespace query / collections namespace / namespace impl
+  already lives in the same package:
+    - `find <domain>-api/... -name "*Query.java"`
+    - `find <domain>-api/... -name "*EntityCollections.java"`
+    - `find <domain>-core/... -name "*QueryImpl.java"`
 
-**Namespace naming.** `<Package>Query` is the domain noun for the package:
+**Namespace naming.** `<DomainNoun>Query` is the domain noun for the package:
 `com.naturalist.insects` → `InsectQuery`; `com.naturalist.insects.lifestage` →
-`InsectLifeStageQuery` (sub-package compound noun). `<Entity>` drops the
-namespace prefix where unambiguous — `InsectSpecies` → `Species`,
-`InsectImage` → `Image`. For a sub-package entity that already reads cleanly
-without a prefix (`LifeStage`), keep the entity name as-is.
+`InsectLifeStageQuery` (sub-package compound noun). `<EntitySubject>` drops the
+namespace prefix — `InsectSpecies` → `Species`, `InsectImage` → `Image`. A
+sub-package entity that already reads cleanly without a prefix (`LifeStage`) keeps
+its name as the subject.
 
 ---
 
 ## Step 2 — Entity Collection in the API Module
 
-### If `<Package>EntityCollections.java` exists in the entity's package
+### If `<DomainNoun>EntityCollections.java` exists in the entity's package
 
-Add a nested `<Entity>Collection` final class. Nested types inside a public
+Add a nested `<EntitySubject>Collection` final class. Nested types inside a public
 interface are implicitly `public static`; the constructor stays package-private
 so only the domain's adapters can instantiate directly — callers go through
 `of(...)` or `empty()`.
 
 ```java
-final class <Entity>Collection extends BehavioralCollection<<Entity>> {
+final class <EntitySubject>Collection extends BehavioralCollection<<Entity>> {
 
-    <Entity>Collection(Collection<<Entity>> items) {
+    <EntitySubject>Collection(Collection<<Entity>> items) {
         super(items);
     }
 
-    public static <Entity>Collection of(Collection<<Entity>> items) {
-        return new <Entity>Collection(items);
+    public static <EntitySubject>Collection of(Collection<<Entity>> items) {
+        return new <EntitySubject>Collection(items);
     }
 
-    public static <Entity>Collection empty() {
-        return new <Entity>Collection(List.of());
+    public static <EntitySubject>Collection empty() {
+        return new <EntitySubject>Collection(List.of());
     }
 }
 ```
 
 ### If no collections namespace exists in the package
 
-Create a new `<Package>EntityCollections.java` in
+Create a new `<DomainNoun>EntityCollections.java` in
 `<domain>-api/src/main/java/.../<package>/`:
 
 ```java
@@ -117,15 +121,15 @@ import com.naturalist.ddd.BehavioralCollection;
 import java.util.Collection;
 import java.util.List;
 
-public interface <Package>EntityCollections {
+public interface <DomainNoun>EntityCollections {
 
-    final class <Entity>Collection extends BehavioralCollection<<Entity>> {
-        <Entity>Collection(Collection<<Entity>> items) { super(items); }
-        public static <Entity>Collection of(Collection<<Entity>> items) {
-            return new <Entity>Collection(items);
+    final class <EntitySubject>Collection extends BehavioralCollection<<Entity>> {
+        <EntitySubject>Collection(Collection<<Entity>> items) { super(items); }
+        public static <EntitySubject>Collection of(Collection<<Entity>> items) {
+            return new <EntitySubject>Collection(items);
         }
-        public static <Entity>Collection empty() {
-            return new <Entity>Collection(List.of());
+        public static <EntitySubject>Collection empty() {
+            return new <EntitySubject>Collection(List.of());
         }
     }
 }
@@ -135,18 +139,18 @@ public interface <Package>EntityCollections {
 
 ## Step 3 — Entity Query Contract in the API Module
 
-### If `<Package>Query.java` exists in the entity's package
+### If `<DomainNoun>Query.java` exists in the entity's package
 
 Read it. Add a new delegate accessor method and nested interface:
 
 ```java
-public interface <Package>Query {
+public interface <DomainNoun>Query {
     // ... existing accessors ...
-    <Entity>EntityQuery <entityPlural>();   // e.g. lifeStages(), cultivars()
+    <EntitySubject>Query <entitySubjectPlural>();   // e.g. species(), images()
 
     // ... existing nested interfaces ...
-    interface <Entity>EntityQuery
-            extends EntityQuery<<Entity>Name, <Entity>, <Entity>Collection> {
+    interface <EntitySubject>Query
+            extends EntityQuery<<Entity>Name, <Entity>, <EntitySubject>Collection> {
         // domain-specific methods go here, if any
     }
 }
@@ -154,26 +158,26 @@ public interface <Package>Query {
 
 ### If no namespace query exists
 
-Create a new `<Package>Query.java` in
+Create a new `<DomainNoun>Query.java` in
 `<domain>-api/src/main/java/.../<package>/`:
 
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
 import com.naturalist.data.EntityQuery;
-import com.naturalist.<domain>.<Entity>Name;
-import com.naturalist.<domain>.<subpackage>.<Package>EntityCollections.<Entity>Collection;
+import com.naturalist.identifiers.<domain>.<Entity>Name;
+import com.naturalist.<domain>.<subpackage>.<DomainNoun>EntityCollections.<EntitySubject>Collection;
 
 /**
  * Namespace query for the <package> sub-context — the single discoverable
  * entry point for reading <Entity> data.
  */
-public interface <Package>Query {
+public interface <DomainNoun>Query {
 
-    <Entity>EntityQuery <entityPlural>();
+    <EntitySubject>Query <entitySubjectPlural>();
 
-    interface <Entity>EntityQuery
-            extends EntityQuery<<Entity>Name, <Entity>, <Entity>Collection> {
+    interface <EntitySubject>Query
+            extends EntityQuery<<Entity>Name, <Entity>, <EntitySubject>Collection> {
     }
 }
 ```
@@ -183,43 +187,45 @@ Key rules:
 - **Always a `public interface`** — ADR-020: nested types inside an interface
   are implicitly `public static`, which is what queries want
 - **N=1 collapse**: if the package has exactly one entity and no existing
-  namespace, you may declare a top-level `<Entity>Query interface extends
+  namespace, declare a top-level `<EntitySubject>Query interface extends
   EntityQuery<...>` directly and skip the namespace wrapper. Ask the user
-  before doing this — the existing InsectQuery pattern is the usual choice.
+  before doing this — the existing `InsectQuery` namespace is the usual choice.
 
 ---
 
 ## Step 4 — Entity Query Adapter in the Core Module
 
-Create in `<domain>-core/src/main/java/` in the entity's package:
+Create in `<domain>-core/src/main/java/` in the entity's package. The standalone
+impl carries the full entity class name and drops the `Entity` infix
+(`InsectSpeciesQueryImpl`):
 
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
 import com.naturalist.data.AbstractEntityQuery;
-import com.naturalist.<domain>.<Entity>Name;
-import com.naturalist.<domain>.<subpackage>.<Package>EntityCollections.<Entity>Collection;
-import com.naturalist.<domain>.<subpackage>.<Package>Query.<Entity>EntityQuery;
+import com.naturalist.identifiers.<domain>.<Entity>Name;
+import com.naturalist.<domain>.<subpackage>.<DomainNoun>EntityCollections.<EntitySubject>Collection;
+import com.naturalist.<domain>.<subpackage>.<DomainNoun>Query.<EntitySubject>Query;
 
 import java.util.Set;
 
-class <Entity>EntityQueryImpl
+class <Entity>QueryImpl
         extends AbstractEntityQuery<
                         <Entity>Name,
                         <Entity>,
-                        <Entity>Collection,
-                        <Package>Repository.<Entity>EntityRepository>
-        implements <Entity>EntityQuery {
+                        <EntitySubject>Collection,
+                        <DomainNoun>Repository.<EntitySubject>Repository>
+        implements <EntitySubject>Query {
 
-    <Entity>EntityQueryImpl(<Package>Repository.<Entity>EntityRepository repository) {
+    <Entity>QueryImpl(<DomainNoun>Repository.<EntitySubject>Repository repository) {
         super(repository);
     }
 
     @Override
-    public <Entity>Collection findByNameSet(Set<<Entity>Name> names) {
+    public <EntitySubject>Collection findByNameSet(Set<<Entity>Name> names) {
         observer().arguments("findByNameSet", i -> i.entityNameCollection(names, "names"))
                 .throwWhenInvalid();
-        return <Entity>Collection.of(repository().getByEntityNameSet(names));
+        return <EntitySubject>Collection.of(repository().getByEntityNameSet(names));
     }
 }
 ```
@@ -230,14 +236,18 @@ Rules:
   the same package
 - `getByName` is inherited from `AbstractEntityQuery`; override only to add
   domain-specific semantics
-- Use `entityNameCollection(names, "names")` when `NAME extends EntityName`
+- Use `entityNameCollection(names, "names")` when the key `extends EntityName`
   (the common case). For UUID-keyed entities use `identifierSet(names, "names")`
+- **Sub-package disambiguation:** when the impl name would collide with the
+  namespace impl (e.g. both would be `InsectLifeStageQueryImpl`), the entity-level
+  impl keeps the `Entity` infix — `InsectLifeStageEntityQueryImpl` — to distinguish
+  it from the namespace `InsectLifeStageQueryImpl`
 
 ---
 
 ## Step 5 — Namespace Query Adapter (if the namespace is new)
 
-If Step 3 created a new `<Package>Query`, also create the namespace impl in
+If Step 3 created a new `<DomainNoun>Query`, also create the namespace impl in
 `<domain>-core/src/main/java/` in the entity's package:
 
 ```java
@@ -245,20 +255,20 @@ package com.naturalist.<domain>.<subpackage>;
 
 import com.naturalist.observability.Observer;
 
-class <Package>QueryImpl implements <Package>Query {
+class <DomainNoun>QueryImpl implements <DomainNoun>Query {
 
-    private final <Entity>EntityQuery <entity>EntityQuery;
+    private final <EntitySubject>Query <entitySubject>Query;
 
-    <Package>QueryImpl(<Entity>EntityQuery <entity>EntityQuery) {
-        Observer.forClass(<Package>QueryImpl.class).arguments("constructor", i -> i
-                        .notNull(<entity>EntityQuery, "<entity>EntityQuery"))
+    <DomainNoun>QueryImpl(<EntitySubject>Query <entitySubject>Query) {
+        Observer.forClass(<DomainNoun>QueryImpl.class).arguments("constructor", i -> i
+                        .notNull(<entitySubject>Query, "<entitySubject>Query"))
                 .throwWhenInvalid();
-        this.<entity>EntityQuery = <entity>EntityQuery;
+        this.<entitySubject>Query = <entitySubject>Query;
     }
 
     @Override
-    public <Entity>EntityQuery <entityPlural>() {
-        return <entity>EntityQuery;
+    public <EntitySubject>Query <entitySubjectPlural>() {
+        return <entitySubject>Query;
     }
 }
 ```
@@ -278,25 +288,25 @@ package com.naturalist.<domain>.<subpackage>;
 
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
-import com.naturalist.data.NaturalistDatabaseExtension;
-import com.naturalist.<domain>.<Entity>Name;
+import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.identifiers.<domain>.<Entity>Name;
 import com.naturalist.<domain>.Test<Domain>Identifiers;
-import com.naturalist.<domain>.<subpackage>.<Package>EntityCollections.<Entity>Collection;
+import com.naturalist.<domain>.<subpackage>.<DomainNoun>EntityCollections.<EntitySubject>Collection;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
-class <Entity>EntityQueryImplTest
-        implements EntityQueryContractTest<<Entity>Name, <Entity>, <Entity>Collection> {
+class <Entity>QueryImplTest
+        implements EntityQueryContractTest<<Entity>Name, <Entity>, <EntitySubject>Collection> {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
-    <Entity>EntityRepositoryMock repository = new <Entity>EntityRepositoryMock(db);
-    <Package>Query.<Entity>EntityQuery query = new <Entity>EntityQueryImpl(repository);
+    <Entity>RepositoryMock repository = new <Entity>RepositoryMock(db);
+    <DomainNoun>Query.<EntitySubject>Query query = new <Entity>QueryImpl(repository);
 
     @Override
-    public EntityQuery<<Entity>Name, <Entity>, <Entity>Collection> query() {
+    public EntityQuery<<Entity>Name, <Entity>, <EntitySubject>Collection> query() {
         return query;
     }
 
@@ -314,8 +324,8 @@ class <Entity>EntityQueryImplTest
 }
 ```
 
-`EntityQueryContractTest` lives in `kernels/framework-test`. The eight
-inherited `@Test default` methods cover argument validation, no-match, and
+`EntityQueryContractTest` lives in `kernels/framework-test`. The inherited
+`@Test default` methods cover argument validation, no-match, and
 expected-result paths for both `getByName` and `findByNameSet`.
 
 Add any domain-specific test methods (extra query methods defined on the
@@ -331,7 +341,7 @@ semantics, mirroring `InsectLifeStageQueryImplTest`:
 ```java
 package com.naturalist.<domain>.<subpackage>;
 
-import com.naturalist.data.NaturalistDatabaseExtension;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -339,31 +349,31 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class <Package>QueryImplTest {
+class <DomainNoun>QueryImplTest {
 
     @RegisterExtension
-    NaturalistDatabaseExtension db = NaturalistDatabaseExtension.create();
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
-    <Entity>EntityRepositoryMock repository = new <Entity>EntityRepositoryMock(db);
-    <Package>Query.<Entity>EntityQuery <entity>EntityQuery =
-            new <Entity>EntityQueryImpl(repository);
-    <Package>Query query = new <Package>QueryImpl(<entity>EntityQuery);
+    <Entity>RepositoryMock repository = new <Entity>RepositoryMock(db);
+    <DomainNoun>Query.<EntitySubject>Query <entitySubject>Query =
+            new <Entity>QueryImpl(repository);
+    <DomainNoun>Query query = new <DomainNoun>QueryImpl(<entitySubject>Query);
 
     @Test
     void accessors_returnNonNullDelegates() {
-        assertThat(query.<entityPlural>()).isSameAs(<entity>EntityQuery);
+        assertThat(query.<entitySubjectPlural>()).isSameAs(<entitySubject>Query);
     }
 
     @Test
     void accessors_idempotent() {
-        assertThat(query.<entityPlural>()).isSameAs(query.<entityPlural>());
+        assertThat(query.<entitySubjectPlural>()).isSameAs(query.<entitySubjectPlural>());
     }
 
     @Test
-    void constructor_rejectsNull<Entity>EntityQuery() {
-        assertThatThrownBy(() -> new <Package>QueryImpl(null))
+    void constructor_rejectsNull<EntitySubject>Query() {
+        assertThatThrownBy(() -> new <DomainNoun>QueryImpl(null))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContainingAll("<entity>EntityQuery");
+                .hasMessageContainingAll("<entitySubject>Query");
     }
 }
 ```
@@ -383,21 +393,24 @@ command to run:
 mvn test -pl domains/<domain>/<domain>-core -am
 ```
 
-The full inherited contract (eight tests per entity query) plus any
-domain-specific tests must pass.
+The full inherited contract plus any domain-specific tests must pass.
 
 ---
 
 ## Naming Conventions Summary
 
-| Artifact       | Name                                                        | Location                                     |
-|----------------|-------------------------------------------------------------|----------------------------------------------|
-| Collection     | `<Entity>Collection` nested in `<Package>EntityCollections` | `<domain>-api/src/main/java/.../<package>/`  |
-| Query contract | `<Entity>EntityQuery` nested in `<Package>Query`            | `<domain>-api/src/main/java/.../<package>/`  |
-| Query adapter  | `<Entity>EntityQueryImpl`                                   | `<domain>-core/src/main/java/.../<package>/` |
-| Namespace impl | `<Package>QueryImpl`                                        | `<domain>-core/src/main/java/.../<package>/` |
-| Contract test  | `<Entity>EntityQueryImplTest`                               | `<domain>-core/src/test/java/.../<package>/` |
-| Namespace test | `<Package>QueryImplTest`                                    | `<domain>-core/src/test/java/.../<package>/` |
+| Artifact       | Name                                                              | Location                                     |
+|----------------|------------------------------------------------------------------|----------------------------------------------|
+| Collection     | `<EntitySubject>Collection` nested in `<DomainNoun>EntityCollections` | `<domain>-api/src/main/java/.../<package>/`  |
+| Query contract | `<EntitySubject>Query` nested in `<DomainNoun>Query`             | `<domain>-api/src/main/java/.../<package>/`  |
+| Query adapter  | `<Entity>QueryImpl`                                               | `<domain>-core/src/main/java/.../<package>/` |
+| Namespace impl | `<DomainNoun>QueryImpl`                                           | `<domain>-core/src/main/java/.../<package>/` |
+| Contract test  | `<Entity>QueryImplTest`                                           | `<domain>-core/src/test/java/.../<package>/` |
+| Namespace test | `<DomainNoun>QueryImplTest`                                       | `<domain>-core/src/test/java/.../<package>/` |
+
+`<Entity>` is the full entity class name (`InsectSpecies`); `<EntitySubject>`
+drops the domain prefix (`Species`); `<DomainNoun>` is the namespace prefix
+(`Insect`).
 
 ---
 
@@ -406,6 +419,6 @@ domain-specific tests must pass.
 - ADR-010 — query design contract (thin, delegating, observe-and-dispatch)
 - ADR-011 — BehavioralCollection and `final class` rule
 - ADR-020 — namespace interface pattern (why queries use `interface` and
-  repositories use `class`)
-- ADR-021 — `PersistenceId` is adapter-internal
+  repositories use `class`; §5 standalone-vs-nested naming)
+- ADR-022 — single identity per entity (`key()`); no `PersistenceId`
 - `domains/CLAUDE.md` — query rules, N=1 collapse rule, namespace patterns

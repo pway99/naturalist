@@ -31,25 +31,27 @@ Repository interfaces are **package-private** in the `<domain>-api` module. They
 visible outside the domain. Inter-domain interaction goes through public service or query
 classes, never through direct repository access.
 
-### Dual-Key Strategy
+### Identity Strategy
 
-Every entity carries two identity values:
+There is no numeric surrogate key. `PersistenceId<Long>` was removed (ADR-022, superseding
+the ADR-021 adapter-key framing). Every entity carries exactly one identity value, exposed
+through the shared `Named<KEY>` port's `key()` accessor:
 
-| Key                   | Type              | Purpose                                                 |
-|-----------------------|-------------------|---------------------------------------------------------|
-| `PersistenceId<Long>` | Numeric surrogate | Intra-domain joins, RDBMS index performance             |
-| `EntityName`          | Slug natural key  | Cross-domain references, external APIs, stable identity |
-
-`PersistenceId<Long>` is null in JSON catalog data — assigned by `TestEntitySource` or the RDBMS
-on insert. It never crosses a domain boundary in application code.
+| Branch                       | Key type       | Purpose                                                          |
+|------------------------------|----------------|------------------------------------------------------------------|
+| `NamedEntity<EntityName>`    | Slug natural   | Cross-domain references, external APIs, stable identity          |
+| `Entity<EntityId>`           | UUIDv7         | Intra-domain identity for observations, images, fact records     |
 
 `EntityName` is always present, never null in catalog data, and is the stable reference used
-when one domain refers to an entity in another.
+when one domain refers to an entity in another. `EntityId` is a UUIDv7 generated at record
+construction (via the kernel generator; never `UUID.randomUUID()`), validated `version() == 7`
+at the boundary, and **never crosses a domain boundary by value**. No domain record carries a
+`PersistenceId` component — it does not exist in Java.
 
 ### Join Policy
 
 - **Intra-domain joins: permitted.** A domain's repository may join its own tables using
-  `PersistenceId<Long>` primary keys.
+  each entity's `key()` (an `EntityName` slug or an `EntityId`).
 - **Cross-domain joins: prohibited.** A repository never joins tables from another domain.
   Cross-domain references are held as `EntityName` slugs. The consuming domain resolves
   the reference by querying the foreign domain's repository separately.
@@ -79,10 +81,14 @@ and tested against a real database.
 constraint types (transactional consistency is handled by `Observer.throwWhenInvalid()` at
 insert time — the in-memory equivalent of a transaction-scoped invariant check):
 
-- **Primary key** — duplicate `PersistenceId` on insert throws `PrimaryKeyConstraintException`
+- **Primary key** — a duplicate `key()` on insert throws `PrimaryKeyConstraintException`
 - **Unique constraints** — declared via `uniqueConstraints()`, throw `UniqueConstraintException`
-- **Reference constraints** — declared via `referenceConstraints()`, throw
-  `ReferentialIntegrityException` (wired by `NaturalistDatabase` at construction)
+- **Foreign-key constraints** — declared per source via `foreignKeyConstraints()` as
+  `ForeignKeyConstraint.of(field, accessor, ForeignSourceClass.class)`, throw
+  `ForeignKeyConstraintException`. The enforcer resolves the foreign peer through
+  `NaturalistDatabase#getNamed`, which restricts declarations to *intra-domain* references —
+  a cross-domain FK would cross the `<domain>-repository-test` module boundary the DAG
+  forbids. Cross-domain referential integrity stays a service-layer concern.
 
 ### NaturalistDatabase
 
@@ -92,10 +98,22 @@ the single-database production strategy. It is the **only** object permitted to 
 
 Responsibilities:
 
-- Constructs and owns **all** `TestEntitySource` instances across **all domains**
-- Wires intra-domain reference constraints between sources at construction time
-- Implements `BeforeEachCallback` — resets all sources before each test method
-- Registered in tests as a static `@RegisterExtension` field
+- Owns **all** `TestEntitySource` instances across **all domains**, keyed by source class
+- Constructs each source lazily on first `getNamed(SourceClass.class)` and caches it, so
+  every caller — repository adapters, foreign-key resolution, tests, unwired console
+  bootstraps — shares one instance per source, hence one catalog. Each source declares a
+  `(NaturalistDatabase)` constructor, the signature `getNamed` reflects on
+- Foreign-key constraints are declared by each source in `foreignKeyConstraints()` and
+  resolve their peers back through the same `getNamed` registry
+
+`NaturalistDatabase` itself carries no JUnit coupling — it is usable from any context
+(main-wired console controllers during pre-RDBMS development, CLI tools, tests). The
+per-test lifecycle lives in its subclass **`NaturalistTestExtension`**:
+
+- `extends NaturalistDatabase implements BeforeEachCallback` — resets (`clear()`s) the
+  source registry before each test method
+- Registered in tests as a static `@RegisterExtension` field, and passed directly to
+  repository mocks and sources that expect a `NaturalistDatabase`
 
 The monolithic design is honest: the database is not split per domain, so the test database
 is not split per domain. A single `NaturalistDatabase` on the classpath gives every test
