@@ -112,6 +112,10 @@
             <groupId>com.naturalist</groupId>
             <artifactId>soil-console</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>soil-repository-rdms</artifactId>
+        </dependency>
 
         <!-- NATURALISTS -->
         <dependency>

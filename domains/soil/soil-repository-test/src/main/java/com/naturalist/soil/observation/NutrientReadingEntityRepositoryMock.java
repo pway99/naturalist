@@ -2,14 +2,12 @@ package com.naturalist.soil.observation;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
 
 /**
  * In-memory {@link NutrientReadingRepository} backed by {@link NutrientReadingTestEntitySource}.
  */
-@DomainService
 class NutrientReadingEntityRepositoryMock
         extends AbstractTestEntityRepository<NutrientReadingId, NutrientReading, NutrientReadingTestEntitySource>
         implements NutrientReadingRepository {

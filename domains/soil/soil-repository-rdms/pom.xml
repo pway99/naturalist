@@ -5,9 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.naturalist</groupId>
-        <artifactId>amateur-naturalist</artifactId>
+        <artifactId>soil</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>soil-repository-rdms</artifactId>
@@ -17,5 +16,15 @@
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <!-- Temporary DAG inversion: rdms depends on repository-test until the SQL-backed
+         repository body lands. Once real persistence replaces the mock delegation,
+         this dependency is removed in favor of rdms's own JDBC/JPA implementation. -->
+    <dependencies>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>soil-repository-test</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
