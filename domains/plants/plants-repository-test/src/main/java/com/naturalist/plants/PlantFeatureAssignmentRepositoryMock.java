@@ -2,12 +2,10 @@ package com.naturalist.plants;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
 import java.util.Set;
 
-@DomainService
 class PlantFeatureAssignmentRepositoryMock
         extends AbstractTestEntityRepository<PlantFeatureAssignmentId, PlantFeatureAssignment, PlantFeatureAssignmentTestEntitySource>
         implements PlantRepository.FeatureAssignmentRepository {

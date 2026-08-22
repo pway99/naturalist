@@ -2,12 +2,10 @@ package com.naturalist.plants;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observation.OrganismImage;
 
 import java.util.List;
 
-@DomainService
 class PlantImageRepositoryMock
         extends AbstractTestEntityRepository<PlantImageId, OrganismImage<PlantImageId, PlantObservationId, PlantRankName>, PlantImageTestEntitySource>
         implements PlantRepository.ImageRepository {

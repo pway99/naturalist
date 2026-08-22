@@ -2,12 +2,10 @@ package com.naturalist.plants.management;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantRankName;
 
 import java.util.List;
 
-@DomainService
 class PlantProgramRepositoryMock
         extends AbstractTestEntityRepository<PlantProgramName, PlantProgram, PlantProgramTestEntitySource>
         implements PlantProgramRepository {

@@ -2,12 +2,10 @@ package com.naturalist.plants.heritage;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.cultivar.CultivarName;
 
 import java.util.List;
 
-@DomainService
 class PlantSeedLineageRepositoryMock
         extends AbstractTestEntityRepository<SeedLineageName, SeedLineage, PlantSeedLineageTestEntitySource>
         implements SeedLineageRepository {

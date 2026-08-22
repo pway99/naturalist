@@ -437,6 +437,11 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>plants-repository-rdms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>plants-test-context</artifactId>
                 <version>${project.version}</version>
             </dependency>

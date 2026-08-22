@@ -2,12 +2,10 @@ package com.naturalist.plants.cultivar;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantSpeciesName;
 
 import java.util.List;
 
-@DomainService
 class PlantCultivarRepositoryMock
         extends AbstractTestEntityRepository<CultivarName, Cultivar, PlantCultivarTestEntitySource>
         implements CultivarRepository {
