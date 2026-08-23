@@ -1,6 +1,7 @@
 package com.naturalist.rewrite;
 
 import org.junit.jupiter.api.Test;
+import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 import org.openrewrite.test.TypeValidation;
@@ -12,11 +13,21 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
         spec.recipe(new AcquireDatabaseViaExtension())
-            // Same in-memory-stub type-attribution gap as Task 2's recipe test: NaturalistTypeStubs
-            // are parsed sources, never compiled to real .class files, so the JavaTemplate-generated
-            // NaturalistTestExtension/RegisterExtension identifiers can't be fully type-attributed
-            // here. The recipe's real-world target sources are always fully compiled, where this
-            // resolves correctly; see
+            // Put a REAL, resolvable org.junit.jupiter.api.extension.RegisterExtension on the parse
+            // classpath (junit-jupiter-api is already a transitive test dependency of this module via
+            // the junit-jupiter aggregator, so it's on this process's runtime classpath for
+            // JavaParser's classpath(String...) scan to find). Against these NaturalistTypeStubs
+            // alone, RegisterExtension would stay an unresolved bare identifier and never exercise
+            // the "annotation + declaration parses as 2 statements" failure mode that only appears
+            // once the annotation type genuinely resolves (as it does in a real, fully-compiled
+            // module) — this is exactly the gap that let the original monolithic-template
+            // implementation ship a crash undetected by these unit tests.
+            .parser(JavaParser.fromJavaVersion().classpath("junit-jupiter-api"))
+            // NaturalistTypeStubs are parsed sources, never compiled to real .class files, so the
+            // JavaTemplate-generated NaturalistTestExtension identifiers can't be fully
+            // type-attributed here (unlike RegisterExtension above, which now resolves for real).
+            // The recipe's real-world target sources are always fully compiled, where this resolves
+            // correctly; see
             // https://docs.openrewrite.org/reference/faq#im-seeing-lst-contains-missing-or-invalid-type-information-in-my-recipe-unit-tests-how-to-resolve
             .typeValidationOptions(TypeValidation.builder()
                 .identifiers(false)
@@ -41,7 +52,7 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
 
                 class T {
                     @RegisterExtension
-                    final NaturalistTestExtension db = NaturalistTestExtension.create();
+                    private final NaturalistTestExtension db = NaturalistTestExtension.create();
                 }
                 """
             )
