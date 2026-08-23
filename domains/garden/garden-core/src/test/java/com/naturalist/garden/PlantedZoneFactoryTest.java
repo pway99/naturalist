@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PlantedZoneFactoryTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final PlantedZoneQuery query = GardenTestContextInternal.create(db).plantedZoneQuery();
+    private final PlantedZoneQuery query = GardenTestContextInternal.create(nte).plantedZoneQuery();
 
     private static final SubZoneName SOUTH_ROW = SubZoneName.of("backyard-south");
 

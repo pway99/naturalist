@@ -42,10 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SoilConsoleTemplateTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private SoilTestContext context() {
-        return SoilTestContext.create(db);
+        return SoilTestContext.create(nte);
     }
 
     @Test
@@ -67,9 +67,9 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_rendersPanelAndCharacteristics() {
-        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+        SoilProfile box1 = SoilTestContext.create(nte).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
-        GlossaryLinker glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(db).glossaryTermQuery()
+        GlossaryLinker glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(nte).glossaryTermQuery()
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
         StringOutput output = new StringOutput();
 
@@ -107,7 +107,7 @@ class SoilConsoleTemplateTest {
      */
     @Test
     void profile_rendersRecommendationsWithNoneDistinctFromAbsent() {
-        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+        SoilProfile box1 = SoilTestContext.create(nte).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         StringOutput output = new StringOutput();
 
@@ -125,9 +125,9 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_linksGlossaryTermsWithDefinitionPopovers() {
-        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+        SoilProfile box1 = SoilTestContext.create(nte).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
-        GlossaryLinker glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(db).glossaryTermQuery()
+        GlossaryLinker glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(nte).glossaryTermQuery()
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
         StringOutput output = new StringOutput();
 
@@ -147,7 +147,7 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_linksNutrientLabelsToTheirSubstance() {
-        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+        SoilProfile box1 = SoilTestContext.create(nte).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         // A catalog that owns the element slugs, and a linker that routes them —
         // the same answers the assembled app gives.
@@ -172,7 +172,7 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_rendersWithoutLinksWhenNoResolverIsSupplied() {
-        SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
+        SoilProfile box1 = SoilTestContext.create(nte).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         StringOutput output = new StringOutput();
 

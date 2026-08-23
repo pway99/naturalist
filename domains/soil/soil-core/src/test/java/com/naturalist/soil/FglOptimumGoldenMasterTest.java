@@ -41,9 +41,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FglOptimumGoldenMasterTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final SoilProfileQuery query = SoilsTestContextInternal.create(db).soilProfileQuery();
+    private final SoilProfileQuery query = SoilsTestContextInternal.create(nte).soilProfileQuery();
 
     /**
      * Converts meq/100g of a cation to lbs/1000 ft². Empirically 0.91872, which is a soil mass of

@@ -17,12 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantsDetailTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void detail_rendersEveryPlantWithoutError() {
         var template = TestTemplateEngine.create();
-        for (PlantSpecies plant : db.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList()) {
+        for (PlantSpecies plant : nte.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("plants/detail.jte", Map.of("plant", plant), output);
             assertThat(output.toString())

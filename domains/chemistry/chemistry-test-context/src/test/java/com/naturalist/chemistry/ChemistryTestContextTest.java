@@ -11,10 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChemistryTestContextTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private final ChemistryTestContext context =
-            ChemistryTestContext.create(db);
+            ChemistryTestContext.create(nte);
 
     @Test
     void elementQueryReadsTheElementCatalog() {

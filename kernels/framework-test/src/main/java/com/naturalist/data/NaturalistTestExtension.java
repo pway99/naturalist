@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * <pre>{@code
  * @RegisterExtension
- * NaturalistTestExtension db = NaturalistTestExtension.create();
+ * NaturalistTestExtension nte = NaturalistTestExtension.create();
  * }</pre>
  *
  * <p>Extends {@link NaturalistDatabase} so tests can pass this instance directly to

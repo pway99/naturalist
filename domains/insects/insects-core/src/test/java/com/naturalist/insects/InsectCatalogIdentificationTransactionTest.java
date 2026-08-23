@@ -25,9 +25,9 @@ import com.naturalist.observation.OrganismObservation;
 class InsectCatalogIdentificationTransactionTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
+    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
     InsectQuery query = context.insectQuery();
     InsectCatalogIdentificationTransaction transaction = context.catalogIdentificationTransaction();
 

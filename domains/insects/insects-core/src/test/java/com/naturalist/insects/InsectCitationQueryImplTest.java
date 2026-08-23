@@ -14,17 +14,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InsectCitationQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(db);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
+    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
 
     InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
     InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
 
-    LibraryTestContext libraryContext = LibraryTestContext.create(db);
+    LibraryTestContext libraryContext = LibraryTestContext.create(nte);
     CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
     CitationQuery citationQuery = libraryContext.citationQuery();
 

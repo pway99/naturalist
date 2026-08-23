@@ -28,9 +28,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ChemistryCompoundReferencesTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final ProductRepository repository = new ProductEntityRepositoryMock(db);
+    private final ProductRepository repository = new ProductEntityRepositoryMock(nte);
     private final ProductQuery products = new ProductQueryImpl(repository);
     private final ChemistryCompoundReferences provider = new ChemistryCompoundReferences(products);
 

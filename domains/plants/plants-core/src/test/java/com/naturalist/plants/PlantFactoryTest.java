@@ -27,24 +27,24 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 class PlantFactoryTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private PlantFactory factory() {
         PlantQuery.GenusQuery genusQuery =
-                new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
+                new PlantGenusQueryImpl(new PlantGenusRepositoryMock(nte));
         PlantQuery.SpeciesQuery speciesQuery =
-                new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(db), genusQuery);
+                new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(nte), genusQuery);
         PlantQuery.FamilyQuery familyQuery =
-                new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(db));
+                new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(nte));
         PlantQuery.OrderQuery orderQuery =
-                new PlantOrderQueryImpl(new PlantOrderRepositoryMock(db));
+                new PlantOrderQueryImpl(new PlantOrderRepositoryMock(nte));
         PlantAncestryResolver resolver = new PlantAncestryResolver(speciesQuery, genusQuery, familyQuery);
         PlantQuery.FeatureQuery featureQuery = new PlantFeatureQueryImpl(
-                new PlantFeatureRepositoryMock(db), new PlantFeatureAssignmentRepositoryMock(db), resolver);
+                new PlantFeatureRepositoryMock(nte), new PlantFeatureAssignmentRepositoryMock(nte), resolver);
         PlantQuery.EcologicalRoleQuery roleQuery =
-                new PlantEcologicalRoleQueryImpl(new PlantEcologicalRoleRepositoryMock(db));
+                new PlantEcologicalRoleQueryImpl(new PlantEcologicalRoleRepositoryMock(nte));
         PlantQuery.ImageQuery imageQuery =
-                new PlantImageQueryImpl(new PlantImageRepositoryMock(db));
+                new PlantImageQueryImpl(new PlantImageRepositoryMock(nte));
         CultivarQuery cultivarStub = new CultivarQuery() {
             @Override public CultivarCollection forPlantName(PlantSpeciesName n) { return CultivarCollection.empty(); }
             @Override public Optional<Cultivar> getByName(CultivarName name) { throw new UnsupportedOperationException(); }

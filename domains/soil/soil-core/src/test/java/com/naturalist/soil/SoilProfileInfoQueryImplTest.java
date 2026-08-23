@@ -11,10 +11,10 @@ class SoilProfileInfoQueryImplTest
         implements EntityQueryContractTest<SoilProfileName, SoilProfileInfo, SoilProfileInfoCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     SoilProfileInfoQuery query =
-            new SoilProfileInfoQueryImpl(new SoilProfileInfoEntityRepositoryMock(db));
+            new SoilProfileInfoQueryImpl(new SoilProfileInfoEntityRepositoryMock(nte));
 
     @Override
     public EntityQuery<SoilProfileName, SoilProfileInfo, SoilProfileInfoCollection> query() {

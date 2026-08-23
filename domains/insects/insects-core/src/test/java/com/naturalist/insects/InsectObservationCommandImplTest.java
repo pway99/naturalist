@@ -18,9 +18,9 @@ class InsectObservationCommandImplTest
         implements EntityCommandContractTest<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, ObservationCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectObservationRepositoryMock repository = new InsectObservationRepositoryMock(db);
+    InsectObservationRepositoryMock repository = new InsectObservationRepositoryMock(nte);
     InsectCommand.ObservationCommand command = new InsectObservationCommandImpl(repository);
     InsectQuery.ObservationQuery query = new InsectObservationQueryImpl(repository);
 
@@ -36,7 +36,7 @@ class InsectObservationCommandImplTest
 
     @Override
     public TestEntitySource<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> source() {
-        return db.getNamed(InsectObservationTestEntitySource.class);
+        return nte.getNamed(InsectObservationTestEntitySource.class);
     }
 
     @Override

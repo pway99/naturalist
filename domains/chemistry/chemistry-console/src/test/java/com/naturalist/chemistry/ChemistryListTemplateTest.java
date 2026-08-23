@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChemistryListTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void list_rendersWithoutError() {
-        Page<Compound> compoundsPage = db.getNamed(CompoundTestEntitySource.class)
+        Page<Compound> compoundsPage = nte.getNamed(CompoundTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 

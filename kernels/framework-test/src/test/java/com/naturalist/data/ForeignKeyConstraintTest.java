@@ -20,12 +20,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ForeignKeyConstraintTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void insertWithResolvedForeignKeyPasses() {
-        ParentSource parents = db.getNamed(ParentSource.class);
-        ChildSource children = db.getNamed(ChildSource.class);
+        ParentSource parents = nte.getNamed(ParentSource.class);
+        ChildSource children = nte.getNamed(ChildSource.class);
 
         parents.insert(new Parent("alpha"));
         children.insert(new Child("a1", "alpha"));
@@ -36,7 +36,7 @@ class ForeignKeyConstraintTest {
     @Test
     void insertWithUnresolvedForeignKeyThrows() {
         // intentionally do not seed the parent — only get the child source
-        ChildSource children = db.getNamed(ChildSource.class);
+        ChildSource children = nte.getNamed(ChildSource.class);
 
         Child orphan = new Child("a1", "missing");
 
@@ -48,7 +48,7 @@ class ForeignKeyConstraintTest {
 
     @Test
     void nullForeignKeyValueIsSkipped() {
-        ChildSource children = db.getNamed(ChildSource.class);
+        ChildSource children = nte.getNamed(ChildSource.class);
 
         // null FK is a pass at the FK layer — record-invariant layer is the
         // place to forbid null when the FK is required.
@@ -59,8 +59,8 @@ class ForeignKeyConstraintTest {
 
     @Test
     void updateWithUnresolvedForeignKeyThrows() {
-        ParentSource parents = db.getNamed(ParentSource.class);
-        ChildSource children = db.getNamed(ChildSource.class);
+        ParentSource parents = nte.getNamed(ParentSource.class);
+        ChildSource children = nte.getNamed(ChildSource.class);
 
         parents.insert(new Parent("alpha"));
         children.insert(new Child("a1", "alpha"));
@@ -77,8 +77,8 @@ class ForeignKeyConstraintTest {
         // Reach for the child source first; the FK check lazily forces the
         // parent source to be constructed via NaturalistDatabase.getNamed —
         // the wiring an rdbms-shaped catalog relies on at startup.
-        ChildSource children = db.getNamed(ChildSource.class);
-        ParentSource parents = db.getNamed(ParentSource.class);
+        ChildSource children = nte.getNamed(ChildSource.class);
+        ParentSource parents = nte.getNamed(ParentSource.class);
         parents.insert(new Parent("alpha"));
 
         children.insert(new Child("a1", "alpha"));

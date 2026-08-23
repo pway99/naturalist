@@ -30,14 +30,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectsListTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void list_rendersWithoutError() {
-        Page<InsectSpecies> speciesPage = db.getNamed(InsectSpeciesTestEntitySource.class)
+        Page<InsectSpecies> speciesPage = nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         Map<InsectSpeciesName, List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesBySpecies =
-                db.getNamed(InsectImageTestEntitySource.class).entityStream()
+                nte.getNamed(InsectImageTestEntitySource.class).entityStream()
                         .filter(image -> image.parentName() instanceof InsectSpeciesName)
                         .collect(Collectors.groupingBy(image -> (InsectSpeciesName) image.parentName()));
         StringOutput output = new StringOutput();

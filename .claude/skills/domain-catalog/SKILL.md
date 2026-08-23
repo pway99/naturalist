@@ -291,10 +291,10 @@ class
 <Domain> CatalogContributionTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private final <DomainNoun>Repository.<EntitySubject>Repository repository =
-            new <Entity>RepositoryMock(db);
+            new <Entity>RepositoryMock(nte);
     private final <DomainNoun>Query.<EntitySubject>Query entityQuery =
             new <Entity>QueryImpl(repository);
     private final <Domain > CatalogContribution contribution =

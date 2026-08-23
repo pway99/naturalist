@@ -34,10 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DescriptionRendererTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private final DescriptionRenderer renderer = new DescriptionRenderer(PlantsParagraphCues.CUES);
-    private final List<PlantSpecies> plants = db.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList();
+    private final List<PlantSpecies> plants = nte.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList();
 
     // ── Catalog smoke test ───────────────────────────────────────────────
 

@@ -18,12 +18,12 @@ class InsectSpeciesCommandImplTest
         implements EntityCommandContractTest<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectSpeciesRepositoryMock repository = new InsectSpeciesRepositoryMock(db);
+    InsectSpeciesRepositoryMock repository = new InsectSpeciesRepositoryMock(nte);
     InsectCommand.SpeciesCommand command = new InsectSpeciesCommandImpl(repository);
     InsectQuery.GenusQuery genusQuery =
-            new InsectGenusQueryImpl(new InsectGenusRepositoryMock(db), new InsectFamilyQueryImpl(new InsectFamilyRepositoryMock(db)));
+            new InsectGenusQueryImpl(new InsectGenusRepositoryMock(nte), new InsectFamilyQueryImpl(new InsectFamilyRepositoryMock(nte)));
     InsectQuery.SpeciesQuery query = new InsectSpeciesQueryImpl(repository, genusQuery);
 
     @Override
@@ -38,7 +38,7 @@ class InsectSpeciesCommandImplTest
 
     @Override
     public TestEntitySource<InsectSpeciesName, InsectSpecies> source() {
-        return db.getNamed(InsectSpeciesTestEntitySource.class);
+        return nte.getNamed(InsectSpeciesTestEntitySource.class);
     }
 
     @Override

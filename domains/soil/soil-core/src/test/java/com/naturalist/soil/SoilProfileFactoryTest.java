@@ -32,9 +32,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class SoilProfileFactoryTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    SoilProfileQuery query = SoilsTestContextInternal.create(db).soilProfileQuery();
+    SoilProfileQuery query = SoilsTestContextInternal.create(nte).soilProfileQuery();
 
     @Test
     void getBySoilProfileName_nullArgument_throws() {
@@ -109,7 +109,7 @@ class SoilProfileFactoryTest {
     @Test
     void getBySoilProfileName_analysisReportingOneNutrient_assemblesWithEmptySlots() {
         LabAnalysisId shortPanel = LabAnalysisId.create();
-        db.getNamed(LabAnalysisInfoTestEntitySource.class).insert(new LabAnalysisInfo(
+        nte.getNamed(LabAnalysisInfoTestEntitySource.class).insert(new LabAnalysisInfo(
                 shortPanel,
                 TestSoilIdentifiers.SoilProfiles.Box1.name,
                 CropTypeName.of("lettuce"),
@@ -119,7 +119,7 @@ class SoilProfileFactoryTest {
                 null,
                 null,
                 "Synthetic short panel — structural fixture, not a real report."));
-        db.getNamed(NutrientReadingTestEntitySource.class).insert(new NutrientReading(
+        nte.getNamed(NutrientReadingTestEntitySource.class).insert(new NutrientReading(
                 NutrientReadingId.create(),
                 Nutrients.NITRATE_N,
                 shortPanel,

@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectAddPhotoCommandTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
+    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
     InsectAddPhotoCommand command = new InsectAddPhotoCommand(context.addPhotoTransaction());
     InsectQuery query = context.insectQuery();
 

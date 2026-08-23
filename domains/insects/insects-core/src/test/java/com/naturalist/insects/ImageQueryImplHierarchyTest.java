@@ -9,9 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ImageQueryImplHierarchyTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
+    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
     InsectQuery query = context.insectQuery();
 
     @Test

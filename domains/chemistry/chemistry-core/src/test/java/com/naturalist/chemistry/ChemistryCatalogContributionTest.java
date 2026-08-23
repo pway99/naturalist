@@ -32,12 +32,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ChemistryCatalogContributionTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private final CompoundQuery.CompoundEntityQuery compounds =
-            CompoundQueryTestContextInternal.createEntityQuery(db);
-    private final ProductQuery products = ProductQueryTestContextInternal.createQuery(db);
-    private final ElementQuery elements = ElementQueryTestContextInternal.createQuery(db);
+            CompoundQueryTestContextInternal.createEntityQuery(nte);
+    private final ProductQuery products = ProductQueryTestContextInternal.createQuery(nte);
+    private final ElementQuery elements = ElementQueryTestContextInternal.createQuery(nte);
     private final ChemistryCatalogContribution contribution =
             new ChemistryCatalogContribution(compounds, products, elements);
 

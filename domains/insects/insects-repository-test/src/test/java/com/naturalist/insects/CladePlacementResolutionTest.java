@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CladePlacementResolutionTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void battusPhilenorPlacementResolvesToHolometabolyTraitViaTroidini() {
         InsectSpeciesTestEntitySource species =
-                db.getNamed(InsectSpeciesTestEntitySource.class);
+                nte.getNamed(InsectSpeciesTestEntitySource.class);
 
         InsectSpecies battusPhilenor = species
                 .getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name)
@@ -54,7 +54,7 @@ class CladePlacementResolutionTest {
     @Test
     void battusPhilenorStagesResolveToHolometabolousSequenceViaResolver() {
         InsectSpeciesTestEntitySource species =
-                db.getNamed(InsectSpeciesTestEntitySource.class);
+                nte.getNamed(InsectSpeciesTestEntitySource.class);
 
         InsectSpecies battusPhilenor = species
                 .getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name)
@@ -71,7 +71,7 @@ class CladePlacementResolutionTest {
     @Test
     void papilionidaeFamilyStagesResolveToHolometabolousSequenceViaResolver() {
         InsectFamilyTestEntitySource families =
-                db.getNamed(InsectFamilyTestEntitySource.class);
+                nte.getNamed(InsectFamilyTestEntitySource.class);
 
         InsectFamily papilionidae = families
                 .getByName(TestInsectsIdentifiers.InsectFamily.Papilionidae.name)
@@ -88,7 +88,7 @@ class CladePlacementResolutionTest {
     @Test
     void andrenaGenusStagesResolveToHolometabolousSequenceViaResolver() {
         InsectGenusTestEntitySource genera =
-                db.getNamed(InsectGenusTestEntitySource.class);
+                nte.getNamed(InsectGenusTestEntitySource.class);
 
         InsectGenus andrena = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Andrena.name)
@@ -106,7 +106,7 @@ class CladePlacementResolutionTest {
     @Test
     void halictusGenusStagesResolveToHolometabolousSequenceViaResolver() {
         InsectGenusTestEntitySource genera =
-                db.getNamed(InsectGenusTestEntitySource.class);
+                nte.getNamed(InsectGenusTestEntitySource.class);
 
         InsectGenus halictus = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Halictus.name)
@@ -124,7 +124,7 @@ class CladePlacementResolutionTest {
     @Test
     void empoascaGenusPlacementResolvesToHemimetabolousTraitViaHemiptera() {
         InsectGenusTestEntitySource genera =
-                db.getNamed(InsectGenusTestEntitySource.class);
+                nte.getNamed(InsectGenusTestEntitySource.class);
 
         InsectGenus empoasca = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Empoasca.name)
@@ -143,7 +143,7 @@ class CladePlacementResolutionTest {
     @Test
     void empoascaGenusStagesResolveToHemimetabolousSequenceViaResolver() {
         InsectGenusTestEntitySource genera =
-                db.getNamed(InsectGenusTestEntitySource.class);
+                nte.getNamed(InsectGenusTestEntitySource.class);
 
         InsectGenus empoasca = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Empoasca.name)
@@ -159,7 +159,7 @@ class CladePlacementResolutionTest {
     @Test
     void chrysoperlaGenusStagesResolveToHolometabolousSequenceViaResolver() {
         InsectGenusTestEntitySource genera =
-                db.getNamed(InsectGenusTestEntitySource.class);
+                nte.getNamed(InsectGenusTestEntitySource.class);
 
         InsectGenus chrysoperla = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Chrysoperla.name)
@@ -205,7 +205,7 @@ class CladePlacementResolutionTest {
     private void assertFamilyResolvesToHolometabolousStages(
             InsectFamilyName name, com.naturalist.clades.Clade expectedPlacement) {
         InsectFamilyTestEntitySource families =
-                db.getNamed(InsectFamilyTestEntitySource.class);
+                nte.getNamed(InsectFamilyTestEntitySource.class);
 
         InsectFamily family = families.getByName(name).orElseThrow();
 
@@ -221,7 +221,7 @@ class CladePlacementResolutionTest {
     @Test
     void papilionidaeFamilyRecordCarriesItsCladePlacement() {
         InsectFamilyTestEntitySource families =
-                db.getNamed(InsectFamilyTestEntitySource.class);
+                nte.getNamed(InsectFamilyTestEntitySource.class);
 
         InsectFamily papilionidae = families
                 .getByName(TestInsectsIdentifiers.InsectFamily.Papilionidae.name)

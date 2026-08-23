@@ -20,9 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectFeatureSaveTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFeatureRepositoryMock repository = new InsectFeatureRepositoryMock(db);
+    InsectFeatureRepositoryMock repository = new InsectFeatureRepositoryMock(nte);
 
     @Test
     void save_valueAlreadyExists_reusesExistingRowIdAndCreatesNoSecondRow() {
@@ -34,7 +34,7 @@ class InsectFeatureSaveTest {
         assertThat(second.id()).isEqualTo(first.id());
         assertThat(repository.getByName(first.id())).isPresent();
 
-        long matchingRows = db.getNamed(InsectFeatureTestEntitySource.class)
+        long matchingRows = nte.getNamed(InsectFeatureTestEntitySource.class)
                 .entityStream()
                 .filter(f -> f.value().equals(value.toLowerCase()))
                 .count();

@@ -12,9 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ElementQueryImplTest {
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    ElementRepository repository = new ElementEntityRepositoryMock(db);
+    ElementRepository repository = new ElementEntityRepositoryMock(nte);
     ElementQuery elementQuery = new ElementQueryImpl(repository);
 
     @Test

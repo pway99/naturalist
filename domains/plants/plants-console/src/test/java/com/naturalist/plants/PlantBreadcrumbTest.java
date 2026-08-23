@@ -9,9 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantBreadcrumbTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final PlantsTestContext context = PlantsTestContext.create(db);
+    private final PlantsTestContext context = PlantsTestContext.create(nte);
 
     @Test
     void breadcrumb_forSpecies_isPlantaeThroughAncestorsToCurrent() {

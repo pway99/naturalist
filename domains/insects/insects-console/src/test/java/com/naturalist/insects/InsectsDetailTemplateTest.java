@@ -29,14 +29,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectsDetailTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void detail_rendersWithoutError() {
-        InsectOrderTestEntitySource orderSource = db.getNamed(InsectOrderTestEntitySource.class);
-        InsectFamilyTestEntitySource familySource = db.getNamed(InsectFamilyTestEntitySource.class);
-        InsectGenusTestEntitySource genusSource = db.getNamed(InsectGenusTestEntitySource.class);
-        InsectSpecies anySpecies = db.getNamed(InsectSpeciesTestEntitySource.class)
+        InsectOrderTestEntitySource orderSource = nte.getNamed(InsectOrderTestEntitySource.class);
+        InsectFamilyTestEntitySource familySource = nte.getNamed(InsectFamilyTestEntitySource.class);
+        InsectGenusTestEntitySource genusSource = nte.getNamed(InsectGenusTestEntitySource.class);
+        InsectSpecies anySpecies = nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .entityStream().findFirst().orElseThrow();
         InsectGenus genus = genusSource.getByName(anySpecies.genusName()).orElseThrow();
         InsectFamily family = familySource.getByName(genus.familyName()).orElseThrow();

@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InsectLifeStageQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(db);
+    InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(nte);
     InsectLifeStageQuery.LifeStageEntityQuery lifeStageEntityQuery = new InsectLifeStageEntityQueryImpl(repository);
     InsectLifeStageQuery query = new InsectLifeStageQueryImpl(lifeStageEntityQuery);
 

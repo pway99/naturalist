@@ -10,10 +10,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectObservationQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     InsectQuery.ObservationQuery query =
-            new InsectObservationQueryImpl(new InsectObservationRepositoryMock(db));
+            new InsectObservationQueryImpl(new InsectObservationRepositoryMock(nte));
 
     @Test
     void forNaturalist_returnsOnlyThatNaturalistsObservations() {

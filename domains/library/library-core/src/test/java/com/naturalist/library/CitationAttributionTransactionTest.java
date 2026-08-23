@@ -31,10 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CitationAttributionTransactionTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CitationRepository citationRepository = new CitationRepositoryMock(db);
-    CitationAssociationRepository citationAssociationRepository = new CitationAssociationRepositoryMock(db);
+    CitationRepository citationRepository = new CitationRepositoryMock(nte);
+    CitationAssociationRepository citationAssociationRepository = new CitationAssociationRepositoryMock(nte);
 
     LibraryCommand.CitationCommand citationCommand = new CitationCommandImpl(citationRepository);
     LibraryCommand.CitationAssociationCommand citationAssociationCommand =

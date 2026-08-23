@@ -52,9 +52,9 @@ class InsectIdentificationCommandTest {
             """;
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(db);
+    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
     InsectQuery query = context.insectQuery();
 
     private final VisionService stubService = (image, tool, prompt) ->
@@ -85,7 +85,7 @@ class InsectIdentificationCommandTest {
     };
 
     private InsectIdentificationCommand buildCommand(VisionService vision) {
-        var libraryContext = LibraryTestContext.create(db);
+        var libraryContext = LibraryTestContext.create(nte);
         return new InsectIdentificationCommand(
                 vision,
                 new NoOpTextGenerationService(),
@@ -155,8 +155,8 @@ class InsectIdentificationCommandTest {
 
         command.identify(image, FileName.of("IMG_0006.jpg"), NaturalistName.of("pat"), null);
 
-        var featureSource = db.getNamed(InsectFeatureTestEntitySource.class);
-        var assignmentSource = db.getNamed(InsectFeatureAssignmentTestEntitySource.class);
+        var featureSource = nte.getNamed(InsectFeatureTestEntitySource.class);
+        var assignmentSource = nte.getNamed(InsectFeatureAssignmentTestEntitySource.class);
         long featureCountAfterFirst = featureSource.entityStream().count();
         long assignmentCountAfterFirst = assignmentSource.entityStream().count();
         assertThat(featureCountAfterFirst).isGreaterThanOrEqualTo(3);
@@ -178,7 +178,7 @@ class InsectIdentificationCommandTest {
 
     @Test
     void identify_persistsCitationAssociationWhenCitationAlreadyExists() {
-        var libraryContext = LibraryTestContext.create(db);
+        var libraryContext = LibraryTestContext.create(nte);
         var cmd = new InsectIdentificationCommand(
                 stubService,
                 new NoOpTextGenerationService(),

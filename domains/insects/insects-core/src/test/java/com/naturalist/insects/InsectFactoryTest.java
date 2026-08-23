@@ -25,13 +25,13 @@ class InsectFactoryTest {
     static final Observer observer = Observer.forClass(InsectFactoryTest.class);
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(db);
-    InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
-    InsectOrderRepositoryMock orderRepository = new InsectOrderRepositoryMock(db);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
+    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
+    InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(nte);
+    InsectOrderRepositoryMock orderRepository = new InsectOrderRepositoryMock(nte);
 
     InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
@@ -40,7 +40,7 @@ class InsectFactoryTest {
             imageRepository, speciesQuery, genusQuery, familyQuery);
     InsectQuery.OrderQuery orderQuery = new InsectOrderQueryImpl(orderRepository);
 
-    LibraryTestContext libraryContext = LibraryTestContext.create(db);
+    LibraryTestContext libraryContext = LibraryTestContext.create(nte);
     CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
     CitationQuery libraryCitationQuery = libraryContext.citationQuery();
 
@@ -48,13 +48,13 @@ class InsectFactoryTest {
     InsectQuery.CitationQuery citationQuery = new InsectCitationQueryImpl(
             citationAssociationQuery, libraryCitationQuery, ancestryResolver);
 
-    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(db);
+    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(nte);
     InsectFeatureAssignmentRepositoryMock assignmentRepository =
-            new InsectFeatureAssignmentRepositoryMock(db);
+            new InsectFeatureAssignmentRepositoryMock(nte);
     InsectQuery.FeatureQuery featureQuery = new InsectFeatureQueryImpl(
             featureRepository, assignmentRepository, ancestryResolver);
 
-    InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(db);
+    InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(nte);
     InsectQuery.FunctionalRoleQuery roleQuery = new InsectFunctionalRoleQueryImpl(functionalRoleRepository);
 
     /**

@@ -13,9 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ProductQueryImplTest {
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    ProductRepository repository = new ProductEntityRepositoryMock(db);
+    ProductRepository repository = new ProductEntityRepositoryMock(nte);
     ProductQuery productQuery = new ProductQueryImpl(repository);
 
     @Test

@@ -16,11 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectsOrdersTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void orders_rendersWithoutError() {
-        Page<InsectOrder> orderPage = db.getNamed(InsectOrderTestEntitySource.class)
+        Page<InsectOrder> orderPage = nte.getNamed(InsectOrderTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
@@ -34,7 +34,7 @@ class InsectsOrdersTemplateTest {
 
     @Test
     void order_rendersWithoutError() {
-        InsectOrder anyOrder = db.getNamed(InsectOrderTestEntitySource.class).entityStream()
+        InsectOrder anyOrder = nte.getNamed(InsectOrderTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
         StringOutput output = new StringOutput();
 
@@ -54,9 +54,9 @@ class InsectsOrdersTemplateTest {
 
     @Test
     void order_rendersChildFamilyCardFromPermit() {
-        InsectFamily anyFamily = db.getNamed(InsectFamilyTestEntitySource.class).entityStream()
+        InsectFamily anyFamily = nte.getNamed(InsectFamilyTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
-        InsectOrder order = db.getNamed(InsectOrderTestEntitySource.class)
+        InsectOrder order = nte.getNamed(InsectOrderTestEntitySource.class)
                 .getByName(anyFamily.orderName()).orElseThrow();
         InsectTaxonView familyChild = InsectFamilyView.of(
                 anyFamily,

@@ -11,14 +11,14 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 class InsectFeatureQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(db);
-    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(db);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
+    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
+    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(nte);
     InsectFeatureAssignmentRepositoryMock assignmentRepository =
-            new InsectFeatureAssignmentRepositoryMock(db);
+            new InsectFeatureAssignmentRepositoryMock(nte);
 
     InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);

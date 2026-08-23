@@ -13,9 +13,9 @@ class CompoundEntityQueryImplTest
         implements EntityQueryContractTest<CompoundName, Compound, CompoundCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CompoundRepository.CompoundEntityRepository repository = new CompoundEntityRepositoryMock(db);
+    CompoundRepository.CompoundEntityRepository repository = new CompoundEntityRepositoryMock(nte);
     CompoundQuery.CompoundEntityQuery query = new CompoundEntityQueryImpl(repository);
 
     @Override

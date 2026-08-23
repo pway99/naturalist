@@ -21,13 +21,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantsCladeDetailTemplateTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void cladeDetail_showsDirectOrdersAndBreadcrumbDropdowns() {
         // Superasterids is the "both" case: Caryophyllales is placed directly on it, and it
         // still branches into a narrower Asterids clade reachable from the breadcrumb dropdown.
-        PlantOrder caryophyllales = db.getNamed(PlantOrderTestEntitySource.class).entityStream()
+        PlantOrder caryophyllales = nte.getNamed(PlantOrderTestEntitySource.class).entityStream()
                 .filter(o -> o.name().value().equals("caryophyllales"))
                 .findFirst().orElseThrow();
         List<Clade> trail = CladeTraversal.ancestry(new Superasterids()).reversed();

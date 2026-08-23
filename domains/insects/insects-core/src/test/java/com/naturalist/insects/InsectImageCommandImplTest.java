@@ -18,12 +18,12 @@ class InsectImageCommandImplTest
         implements EntityCommandContractTest<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, ImageCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectImageRepositoryMock repository = new InsectImageRepositoryMock(db);
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(db);
+    InsectImageRepositoryMock repository = new InsectImageRepositoryMock(nte);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
+    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
     InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
     InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
@@ -43,7 +43,7 @@ class InsectImageCommandImplTest
 
     @Override
     public TestEntitySource<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> source() {
-        return db.getNamed(InsectImageTestEntitySource.class);
+        return nte.getNamed(InsectImageTestEntitySource.class);
     }
 
     @Override

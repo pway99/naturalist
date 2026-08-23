@@ -19,11 +19,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantsListTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void list_rendersWithoutError() {
-        Page<PlantSpecies> plantsPage = db.getNamed(PlantSpeciesTestEntitySource.class)
+        Page<PlantSpecies> plantsPage = nte.getNamed(PlantSpeciesTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 

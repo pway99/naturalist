@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantsOrderListTemplateTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void orderList_rendersWithoutError() {
-        Page<PlantOrder> ordersPage = db
+        Page<PlantOrder> ordersPage = nte
                 .getNamed(PlantOrderTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
@@ -42,7 +42,7 @@ class PlantsOrderListTemplateTest {
 
     @Test
     void orderList_showsCatalogCladeRootWhenSupplied() {
-        Page<PlantOrder> ordersPage = db
+        Page<PlantOrder> ordersPage = nte
                 .getNamed(PlantOrderTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();

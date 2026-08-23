@@ -22,14 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantFamilyCatalogDataTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private List<PlantOrder> orders() {
-        return db.getNamed(PlantOrderTestEntitySource.class).entityStream().toList();
+        return nte.getNamed(PlantOrderTestEntitySource.class).entityStream().toList();
     }
 
     private List<PlantFamily> families() {
-        return db.getNamed(PlantFamilyTestEntitySource.class).entityStream().toList();
+        return nte.getNamed(PlantFamilyTestEntitySource.class).entityStream().toList();
     }
 
     @Test

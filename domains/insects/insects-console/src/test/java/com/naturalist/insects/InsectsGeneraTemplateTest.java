@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectsGeneraTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void genera_rendersWithoutError() {
-        Page<InsectGenus> genusPage = db.getNamed(InsectGenusTestEntitySource.class)
+        Page<InsectGenus> genusPage = nte.getNamed(InsectGenusTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
-        InsectFamilyTestEntitySource familySource = db.getNamed(InsectFamilyTestEntitySource.class);
+        InsectFamilyTestEntitySource familySource = nte.getNamed(InsectFamilyTestEntitySource.class);
         Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
         for (var genus : genusPage.content()) {
             familyByName.computeIfAbsent(genus.familyName(),
@@ -42,10 +42,10 @@ class InsectsGeneraTemplateTest {
 
     @Test
     void genus_rendersWithoutError() {
-        InsectOrderTestEntitySource orderSource = db.getNamed(InsectOrderTestEntitySource.class);
-        InsectGenusTestEntitySource genusSource = db.getNamed(InsectGenusTestEntitySource.class);
+        InsectOrderTestEntitySource orderSource = nte.getNamed(InsectOrderTestEntitySource.class);
+        InsectGenusTestEntitySource genusSource = nte.getNamed(InsectGenusTestEntitySource.class);
         InsectGenus anyGenus = genusSource.entityStream().findFirst().orElseThrow();
-        InsectFamily family = db.getNamed(InsectFamilyTestEntitySource.class)
+        InsectFamily family = nte.getNamed(InsectFamilyTestEntitySource.class)
                 .getByName(anyGenus.familyName()).orElseThrow();
         InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
         StringOutput output = new StringOutput();
@@ -68,12 +68,12 @@ class InsectsGeneraTemplateTest {
 
     @Test
     void genus_rendersChildSpeciesCardFromPermit() {
-        InsectOrderTestEntitySource orderSource = db.getNamed(InsectOrderTestEntitySource.class);
-        InsectSpecies anySpecies = db.getNamed(InsectSpeciesTestEntitySource.class).entityStream()
+        InsectOrderTestEntitySource orderSource = nte.getNamed(InsectOrderTestEntitySource.class);
+        InsectSpecies anySpecies = nte.getNamed(InsectSpeciesTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
-        InsectGenus genus = db.getNamed(InsectGenusTestEntitySource.class)
+        InsectGenus genus = nte.getNamed(InsectGenusTestEntitySource.class)
                 .getByName(anySpecies.genusName()).orElseThrow();
-        InsectFamily family = db.getNamed(InsectFamilyTestEntitySource.class)
+        InsectFamily family = nte.getNamed(InsectFamilyTestEntitySource.class)
                 .getByName(genus.familyName()).orElseThrow();
         InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
         InsectTaxonView speciesChild = InsectSpeciesView.of(

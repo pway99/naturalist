@@ -11,10 +11,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CompoundQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CompoundEntityRepositoryMock compoundRepository = new CompoundEntityRepositoryMock(db);
-    DepictionEntityRepositoryMock depictionRepository = new DepictionEntityRepositoryMock(db);
+    CompoundEntityRepositoryMock compoundRepository = new CompoundEntityRepositoryMock(nte);
+    DepictionEntityRepositoryMock depictionRepository = new DepictionEntityRepositoryMock(nte);
     CompoundQuery.CompoundEntityQuery compoundEntityQuery = new CompoundEntityQueryImpl(compoundRepository);
     CompoundQuery.DepictionQuery depictionQuery = new DepictionQueryImpl(depictionRepository);
     CompoundQuery compoundQuery = new CompoundQueryImpl(compoundEntityQuery, depictionQuery);

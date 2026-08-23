@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ParaphylyPlacementMonotonicityTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     // -- Utility: DAG-descendant check --
 
@@ -238,22 +238,22 @@ class ParaphylyPlacementMonotonicityTest {
     // -- Helpers --
 
     private InsectOrder loadOrder(InsectOrderName name) {
-        return db.getNamed(InsectOrderTestEntitySource.class)
+        return nte.getNamed(InsectOrderTestEntitySource.class)
                 .getByName(name).orElseThrow();
     }
 
     private InsectFamily loadFamily(InsectFamilyName name) {
-        return db.getNamed(InsectFamilyTestEntitySource.class)
+        return nte.getNamed(InsectFamilyTestEntitySource.class)
                 .getByName(name).orElseThrow();
     }
 
     private InsectGenus loadGenus(InsectGenusName name) {
-        return db.getNamed(InsectGenusTestEntitySource.class)
+        return nte.getNamed(InsectGenusTestEntitySource.class)
                 .getByName(name).orElseThrow();
     }
 
     private InsectSpecies loadSpecies(InsectSpeciesName name) {
-        return db.getNamed(InsectSpeciesTestEntitySource.class)
+        return nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .getByName(name).orElseThrow();
     }
 }

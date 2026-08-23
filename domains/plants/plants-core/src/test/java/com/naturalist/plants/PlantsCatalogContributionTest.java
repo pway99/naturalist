@@ -28,16 +28,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PlantsCatalogContributionTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private final PlantQuery.GenusQuery genusQuery =
-            new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
+            new PlantGenusQueryImpl(new PlantGenusRepositoryMock(nte));
     private final PlantQuery.SpeciesQuery entityQuery =
-            new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(db), genusQuery);
+            new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(nte), genusQuery);
     private final PlantQuery.OrderQuery orderQuery =
-            new PlantOrderQueryImpl(new PlantOrderRepositoryMock(db));
+            new PlantOrderQueryImpl(new PlantOrderRepositoryMock(nte));
     private final PlantQuery.FamilyQuery familyQuery =
-            new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(db));
+            new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(nte));
     private final PlantsCatalogContribution contribution =
             new PlantsCatalogContribution(entityQuery, orderQuery, familyQuery, genusQuery);
 

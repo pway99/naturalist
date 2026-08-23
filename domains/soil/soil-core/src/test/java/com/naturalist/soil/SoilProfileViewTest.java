@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SoilProfileViewTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final SoilProfileQuery query = SoilsTestContextInternal.create(db).soilProfileQuery();
+    private final SoilProfileQuery query = SoilsTestContextInternal.create(nte).soilProfileQuery();
 
     private LabAnalysis box1() {
         return query.getBySoilProfileName(TestSoilIdentifiers.SoilProfiles.Box1.name)

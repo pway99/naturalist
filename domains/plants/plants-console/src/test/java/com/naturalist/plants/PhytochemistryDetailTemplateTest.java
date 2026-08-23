@@ -20,12 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PhytochemistryDetailTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void phytochemistryDetail_rendersEveryConstituentWithoutError() {
         var template = TestTemplateEngine.create();
-        for (PhytochemicalConstituent constituent : db.getNamed(PlantPhytochemicalConstituentTestEntitySource.class).entityStream().toList()) {
+        for (PhytochemicalConstituent constituent : nte.getNamed(PlantPhytochemicalConstituentTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("plants/phytochemistry/detail.jte",
                     Map.of("constituent", constituent), output);

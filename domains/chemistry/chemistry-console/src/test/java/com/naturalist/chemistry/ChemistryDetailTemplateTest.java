@@ -20,12 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChemistryDetailTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void detail_rendersEveryCompoundWithoutError() {
         var template = TestTemplateEngine.create();
-        for (Compound compound : db.getNamed(CompoundTestEntitySource.class).entityStream().toList()) {
+        for (Compound compound : nte.getNamed(CompoundTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("chemistry/detail.jte", Map.of("compound", compound), output);
             assertThat(output.toString())
@@ -36,7 +36,7 @@ class ChemistryDetailTemplateTest {
 
     @Test
     void detail_linksConstituentElementsThatAreCatalogued() {
-        Compound gypsum = db.getNamed(CompoundTestEntitySource.class).entityStream()
+        Compound gypsum = nte.getNamed(CompoundTestEntitySource.class).entityStream()
                 .filter(c -> c.name().value().equals("calcium-sulfate-dihydrate"))
                 .findFirst().orElseThrow();
         StringOutput output = new StringOutput();
@@ -54,7 +54,7 @@ class ChemistryDetailTemplateTest {
 
     @Test
     void detail_leavesUncataloguedElementsAsPlainText() {
-        Compound gypsum = db.getNamed(CompoundTestEntitySource.class).entityStream()
+        Compound gypsum = nte.getNamed(CompoundTestEntitySource.class).entityStream()
                 .filter(c -> c.name().value().equals("calcium-sulfate-dihydrate"))
                 .findFirst().orElseThrow();
         StringOutput output = new StringOutput();

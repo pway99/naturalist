@@ -17,15 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantsOrderDetailTemplateTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void orderDetail_rendersEveryOrderWithoutError() {
         var template = TestTemplateEngine.create();
         List<PlantFamily> allFamilies =
-                db.getNamed(PlantFamilyTestEntitySource.class).entityStream().toList();
+                nte.getNamed(PlantFamilyTestEntitySource.class).entityStream().toList();
 
-        for (PlantOrder order : db.getNamed(PlantOrderTestEntitySource.class)
+        for (PlantOrder order : nte.getNamed(PlantOrderTestEntitySource.class)
                 .entityStream().toList()) {
             List<PlantTaxonView> children = allFamilies.stream()
                     .filter(f -> order.name().equals(f.orderName()))
@@ -43,11 +43,11 @@ class PlantsOrderDetailTemplateTest {
     @Test
     void orderDetail_rendersFamilyCardsWhenTheOrderHasThem() {
         var template = TestTemplateEngine.create();
-        PlantOrder lamiales = db.getNamed(PlantOrderTestEntitySource.class).entityStream()
+        PlantOrder lamiales = nte.getNamed(PlantOrderTestEntitySource.class).entityStream()
                 .filter(o -> o.name().value().equals("lamiales"))
                 .findFirst()
                 .orElseThrow();
-        List<PlantTaxonView> children = db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
+        List<PlantTaxonView> children = nte.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .filter(f -> lamiales.name().equals(f.orderName()))
                 .map(f -> (PlantTaxonView) PlantFamilyView.of(f))
                 .toList();
@@ -67,7 +67,7 @@ class PlantsOrderDetailTemplateTest {
         // every order currently has at least one family, so the empty list is
         // supplied deliberately rather than found.
         var template = TestTemplateEngine.create();
-        PlantOrder anyOrder = db.getNamed(PlantOrderTestEntitySource.class).entityStream()
+        PlantOrder anyOrder = nte.getNamed(PlantOrderTestEntitySource.class).entityStream()
                 .findFirst()
                 .orElseThrow();
 

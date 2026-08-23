@@ -17,12 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantProgramCatalogDataTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
-    private final PlantRankResolution ranks = new PlantRankResolution(db);
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
+    private final PlantRankResolution ranks = new PlantRankResolution(nte);
 
     @Test
     void everyProgramResolvesToACataloguedTaxonAtItsRank() {
-        assertThat(db.getNamed(PlantProgramTestEntitySource.class).entityStream().toList())
+        assertThat(nte.getNamed(PlantProgramTestEntitySource.class).entityStream().toList())
                 .allSatisfy(program -> assertThat(ranks.resolves(program.plantName()))
                         .as("program '%s' references %s taxon '%s'",
                                 program.name().value(), program.plantName().rank(),

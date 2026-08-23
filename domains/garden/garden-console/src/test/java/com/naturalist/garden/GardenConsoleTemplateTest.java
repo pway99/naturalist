@@ -17,10 +17,10 @@ class GardenConsoleTemplateTest {
     private static final LocalDate TODAY = LocalDate.of(2026, 8, 14);
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private GardenTestContext context() {
-        return GardenTestContext.create(db);
+        return GardenTestContext.create(nte);
     }
 
     private static String render(String template, Map<String, Object> params) {

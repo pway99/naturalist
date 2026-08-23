@@ -17,11 +17,11 @@ class InsectSpeciesQueryImplTest
         implements EntityQueryContractTest<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectSpeciesRepositoryMock repository = new InsectSpeciesRepositoryMock(db);
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
+    InsectSpeciesRepositoryMock repository = new InsectSpeciesRepositoryMock(nte);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
     InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, new InsectFamilyQueryImpl(familyRepository));
     InsectQuery.SpeciesQuery query = new InsectSpeciesQueryImpl(repository, genusQuery);
 

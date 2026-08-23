@@ -17,9 +17,9 @@ class LabAnalysisInfoQueryImplTest
         implements EntityQueryContractTest<LabAnalysisId, LabAnalysisInfo, LabAnalysisInfoCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    LabAnalysisInfoQuery query = new LabAnalysisInfoQueryImpl(new LabAnalysisInfoEntityRepositoryMock(db));
+    LabAnalysisInfoQuery query = new LabAnalysisInfoQueryImpl(new LabAnalysisInfoEntityRepositoryMock(nte));
 
     @Override
     public EntityQuery<LabAnalysisId, LabAnalysisInfo, LabAnalysisInfoCollection> query() {

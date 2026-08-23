@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PagesTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     record Item(String name) implements Named<String> {
         @Override
@@ -36,7 +36,7 @@ class PagesTest {
 
     @Test
     void streamWalksEveryPage() {
-        ItemSource source = db.getNamed(ItemSource.class);
+        ItemSource source = nte.getNamed(ItemSource.class);
         IntStream.range(0, 7)
                 .mapToObj(i -> new Item(String.format("item-%02d", i)))
                 .forEach(source::insert);
@@ -52,7 +52,7 @@ class PagesTest {
 
     @Test
     void streamOverEmptySourceYieldsNothing() {
-        ItemSource source = db.getNamed(ItemSource.class);
+        ItemSource source = nte.getNamed(ItemSource.class);
 
         Stream<Item> stream = Pages.stream(10, source::pageOf);
 
@@ -61,7 +61,7 @@ class PagesTest {
 
     @Test
     void streamIsLazy_loaderInvokedOnlyAsConsumed() {
-        ItemSource source = db.getNamed(ItemSource.class);
+        ItemSource source = nte.getNamed(ItemSource.class);
         IntStream.range(0, 100)
                 .mapToObj(i -> new Item(String.format("item-%03d", i)))
                 .forEach(source::insert);

@@ -300,9 +300,9 @@ class <Entity>QueryImplTest
         implements EntityQueryContractTest<<Entity>Name, <Entity>, <EntitySubject>Collection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    <Entity>RepositoryMock repository = new <Entity>RepositoryMock(db);
+    <Entity>RepositoryMock repository = new <Entity>RepositoryMock(nte);
     <DomainNoun>Query.<EntitySubject>Query query = new <Entity>QueryImpl(repository);
 
     @Override
@@ -352,9 +352,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class <DomainNoun>QueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    <Entity>RepositoryMock repository = new <Entity>RepositoryMock(db);
+    <Entity>RepositoryMock repository = new <Entity>RepositoryMock(nte);
     <DomainNoun>Query.<EntitySubject>Query <entitySubject>Query =
             new <Entity>QueryImpl(repository);
     <DomainNoun>Query query = new <DomainNoun>QueryImpl(<entitySubject>Query);

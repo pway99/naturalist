@@ -18,12 +18,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PhytochemicalConstituentCatalogDataTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
-    private final PlantRankResolution ranks = new PlantRankResolution(db);
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
+    private final PlantRankResolution ranks = new PlantRankResolution(nte);
 
     @Test
     void everyConstituentResolvesToACataloguedTaxonAtItsRank() {
-        assertThat(db.getNamed(PlantPhytochemicalConstituentTestEntitySource.class)
+        assertThat(nte.getNamed(PlantPhytochemicalConstituentTestEntitySource.class)
                 .entityStream().toList())
                 .allSatisfy(constituent -> assertThat(ranks.resolves(constituent.plantName()))
                         .as("constituent '%s' references %s taxon '%s'",

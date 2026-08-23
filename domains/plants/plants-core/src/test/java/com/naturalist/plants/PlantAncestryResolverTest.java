@@ -9,13 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantAncestryResolverTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private PlantAncestryResolver resolver() {
-        PlantQuery.GenusQuery genusQuery = new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
+        PlantQuery.GenusQuery genusQuery = new PlantGenusQueryImpl(new PlantGenusRepositoryMock(nte));
         PlantQuery.SpeciesQuery speciesQuery =
-                new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(db), genusQuery);
-        PlantQuery.FamilyQuery familyQuery = new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(db));
+                new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(nte), genusQuery);
+        PlantQuery.FamilyQuery familyQuery = new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(nte));
         return new PlantAncestryResolver(speciesQuery, genusQuery, familyQuery);
     }
 

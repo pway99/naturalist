@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PhytochemistryListTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void phytochemistryList_rendersWithoutError() {
-        Page<PhytochemicalConstituent> constituentsPage = db
+        Page<PhytochemicalConstituent> constituentsPage = nte
                 .getNamed(PlantPhytochemicalConstituentTestEntitySource.class).pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 

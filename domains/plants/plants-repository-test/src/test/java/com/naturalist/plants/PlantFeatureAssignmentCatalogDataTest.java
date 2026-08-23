@@ -22,14 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantFeatureAssignmentCatalogDataTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private List<PlantFeatureAssignment> assignments() {
-        return db.getNamed(PlantFeatureAssignmentTestEntitySource.class).entityStream().toList();
+        return nte.getNamed(PlantFeatureAssignmentTestEntitySource.class).entityStream().toList();
     }
 
     private List<PlantFeature> features() {
-        return db.getNamed(PlantFeatureTestEntitySource.class).entityStream().toList();
+        return nte.getNamed(PlantFeatureTestEntitySource.class).entityStream().toList();
     }
 
     @Test

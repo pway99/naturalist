@@ -10,11 +10,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SoilTestContextTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void assemblesBox1WithItsAnalysis() {
-        SoilTestContext context = SoilTestContext.create(db);
+        SoilTestContext context = SoilTestContext.create(nte);
 
         var profile = context.soilProfileQuery().getBySoilProfileName(SoilProfileName.of("box1"));
 

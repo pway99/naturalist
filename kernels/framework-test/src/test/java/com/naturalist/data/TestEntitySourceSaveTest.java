@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class TestEntitySourceSaveTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     record Item(String name, String value) implements Named<String> {
         @Override
@@ -67,7 +67,7 @@ class TestEntitySourceSaveTest {
     @Test
     void save_uniqueConstraintMatchWithoutWithKeyOverride_throwsUnsupportedOperationException() {
         ItemSourceWithoutWithKey source =
-                db.getNamed(ItemSourceWithoutWithKey.class);
+                nte.getNamed(ItemSourceWithoutWithKey.class);
         source.insert(new Item("item-a", "shared-value"));
 
         assertThatThrownBy(() -> source.save(new Item("item-b", "shared-value")))

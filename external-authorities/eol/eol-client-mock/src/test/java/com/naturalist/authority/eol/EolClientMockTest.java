@@ -15,9 +15,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class EolClientMockTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    EolClientMock client = new EolClientMock(db);
+    EolClientMock client = new EolClientMock(nte);
 
     private static final TestSubjectName SWALLOWTAIL = new TestSubjectName("battus-philenor");
     private static final TestSubjectName UNKNOWN = new TestSubjectName("unobtainium-bug");

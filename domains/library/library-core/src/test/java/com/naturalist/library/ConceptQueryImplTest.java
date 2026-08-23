@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConceptQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    ConceptRepository repository = new ConceptRepositoryMock(db);
+    ConceptRepository repository = new ConceptRepositoryMock(nte);
     ConceptQuery conceptQuery = new ConceptQueryImpl(repository);
 
     @Test

@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ElementCatalogDataTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private static final Map<String, String> NUTRIENT_ELEMENT_SYMBOLS = Map.of(
             "calcium", "Ca",
@@ -36,7 +36,7 @@ class ElementCatalogDataTest {
             "boron", "B");
 
     private ElementTestEntitySource source() {
-        return db.getNamed(ElementTestEntitySource.class);
+        return nte.getNamed(ElementTestEntitySource.class);
     }
 
     @Test

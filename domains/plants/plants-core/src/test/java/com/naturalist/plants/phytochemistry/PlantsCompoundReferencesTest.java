@@ -32,10 +32,10 @@ class PlantsCompoundReferencesTest {
     private static final CompoundName ARISTOLOCHIC_ACID_II = CompoundName.of("aristolochic-acid-ii");
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private final PhytochemicalConstituentRepository repository =
-            new PlantPhytochemicalConstituentRepositoryMock(db);
+            new PlantPhytochemicalConstituentRepositoryMock(nte);
     private final PhytochemicalConstituentQuery entityQuery =
             new PlantPhytochemicalConstituentQueryImpl(repository);
     private final PlantsCompoundReferences provider = new PlantsCompoundReferences(entityQuery);

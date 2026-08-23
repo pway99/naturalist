@@ -20,9 +20,9 @@ class InsectLifeStageEntityQueryImplTest
         implements EntityQueryContractTest<LifeStageName, LifeStage, LifeStageCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(db);
+    InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(nte);
     InsectLifeStageQuery.LifeStageEntityQuery query = new InsectLifeStageEntityQueryImpl(repository);
 
     @Override

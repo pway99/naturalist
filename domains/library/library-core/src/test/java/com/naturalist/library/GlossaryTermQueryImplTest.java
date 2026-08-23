@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GlossaryTermQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    GlossaryTermRepository repository = new GlossaryTermRepositoryMock(db);
+    GlossaryTermRepository repository = new GlossaryTermRepositoryMock(nte);
     GlossaryTermQuery glossaryTermQuery = new GlossaryTermQueryImpl(repository);
 
     @Test

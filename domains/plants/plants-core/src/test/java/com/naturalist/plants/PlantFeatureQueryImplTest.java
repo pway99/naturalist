@@ -12,16 +12,16 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 class PlantFeatureQueryImplTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private PlantFeatureQueryImpl featureQuery() {
-        PlantQuery.GenusQuery genusQuery = new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
+        PlantQuery.GenusQuery genusQuery = new PlantGenusQueryImpl(new PlantGenusRepositoryMock(nte));
         PlantQuery.SpeciesQuery speciesQuery =
-                new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(db), genusQuery);
-        PlantQuery.FamilyQuery familyQuery = new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(db));
+                new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(nte), genusQuery);
+        PlantQuery.FamilyQuery familyQuery = new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(nte));
         PlantAncestryResolver resolver = new PlantAncestryResolver(speciesQuery, genusQuery, familyQuery);
         return new PlantFeatureQueryImpl(
-                new PlantFeatureRepositoryMock(db), new PlantFeatureAssignmentRepositoryMock(db), resolver);
+                new PlantFeatureRepositoryMock(nte), new PlantFeatureAssignmentRepositoryMock(nte), resolver);
     }
 
     @Test

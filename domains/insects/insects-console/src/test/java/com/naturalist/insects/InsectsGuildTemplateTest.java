@@ -22,13 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsectsGuildTemplateTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void guild_rendersWithoutError() {
         FunctionalGuild selected = FunctionalGuild.POLLINATOR;
         List<InsectFunctionalRole> roles =
-                db.getNamed(InsectFunctionalRoleTestEntitySource.class).entityStream()
+                nte.getNamed(InsectFunctionalRoleTestEntitySource.class).entityStream()
                         .filter(r -> r.guilds().contains(selected))
                         .toList();
         StringOutput output = new StringOutput();

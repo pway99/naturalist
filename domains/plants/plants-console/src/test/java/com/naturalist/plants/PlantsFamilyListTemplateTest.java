@@ -18,11 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantsFamilyListTemplateTest {
 
     @RegisterExtension
-    final NaturalistTestExtension db = NaturalistTestExtension.create();
+    final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void familyList_rendersWithoutError() {
-        Page<PlantFamily> familiesPage = db
+        Page<PlantFamily> familiesPage = nte
                 .getNamed(PlantFamilyTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();

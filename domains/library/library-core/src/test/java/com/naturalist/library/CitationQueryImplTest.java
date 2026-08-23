@@ -12,9 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CitationQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CitationRepository repository = new CitationRepositoryMock(db);
+    CitationRepository repository = new CitationRepositoryMock(nte);
     CitationQuery citationQuery = new CitationQueryImpl(repository);
 
     @Test

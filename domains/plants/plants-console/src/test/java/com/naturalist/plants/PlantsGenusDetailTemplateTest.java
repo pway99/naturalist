@@ -19,16 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantsGenusDetailTemplateTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void genusDetail_rendersEveryGenusWithItsFamily() {
         var template = TestTemplateEngine.create();
         Map<String, PlantFamily> families = new HashMap<>();
-        db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
+        nte.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .forEach(f -> families.put(f.name().value(), f));
 
-        for (PlantGenus genus : db.getNamed(PlantGenusTestEntitySource.class).entityStream().toList()) {
+        for (PlantGenus genus : nte.getNamed(PlantGenusTestEntitySource.class).entityStream().toList()) {
             Map<String, Object> params = new HashMap<>();
             params.put("genus", genus);
             params.put("family", families.get(genus.familyName().value()));
@@ -43,7 +43,7 @@ class PlantsGenusDetailTemplateTest {
     @Test
     void genusDetail_linksUpToItsParentFamily() {
         var template = TestTemplateEngine.create();
-        PlantGenus thymus = db.getNamed(PlantGenusTestEntitySource.class).entityStream()
+        PlantGenus thymus = nte.getNamed(PlantGenusTestEntitySource.class).entityStream()
                 .filter(g -> g.name().value().equals("thymus"))
                 .findFirst()
                 .orElseThrow();
@@ -62,11 +62,11 @@ class PlantsGenusDetailTemplateTest {
     @Test
     void genusDetail_rendersMemberSpeciesWhenPresent() {
         var template = TestTemplateEngine.create();
-        PlantGenus trifolium = db.getNamed(PlantGenusTestEntitySource.class).entityStream()
+        PlantGenus trifolium = nte.getNamed(PlantGenusTestEntitySource.class).entityStream()
                 .filter(g -> g.name().value().equals("trifolium"))
                 .findFirst()
                 .orElseThrow();
-        List<PlantTaxonView> children = db.getNamed(PlantSpeciesTestEntitySource.class).entityStream()
+        List<PlantTaxonView> children = nte.getNamed(PlantSpeciesTestEntitySource.class).entityStream()
                 .filter(s -> trifolium.name().equals(s.genusName()))
                 .map(s -> (PlantTaxonView) PlantSpeciesView.of(s))
                 .toList();

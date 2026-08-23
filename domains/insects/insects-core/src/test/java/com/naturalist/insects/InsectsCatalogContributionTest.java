@@ -23,16 +23,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InsectsCatalogContributionTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private final InsectQuery.FamilyQuery familyQuery =
-            new InsectFamilyQueryImpl(new InsectFamilyRepositoryMock(db));
+            new InsectFamilyQueryImpl(new InsectFamilyRepositoryMock(nte));
     private final InsectQuery.GenusQuery genusQuery =
-            new InsectGenusQueryImpl(new InsectGenusRepositoryMock(db), familyQuery);
+            new InsectGenusQueryImpl(new InsectGenusRepositoryMock(nte), familyQuery);
     private final InsectQuery.SpeciesQuery speciesQuery =
-            new InsectSpeciesQueryImpl(new InsectSpeciesRepositoryMock(db), genusQuery);
+            new InsectSpeciesQueryImpl(new InsectSpeciesRepositoryMock(nte), genusQuery);
     private final InsectQuery.OrderQuery orderQuery =
-            new InsectOrderQueryImpl(new InsectOrderRepositoryMock(db));
+            new InsectOrderQueryImpl(new InsectOrderRepositoryMock(nte));
     private final InsectsCatalogContribution contribution =
             new InsectsCatalogContribution(speciesQuery, familyQuery, genusQuery, orderQuery);
 

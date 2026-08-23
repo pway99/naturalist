@@ -15,9 +15,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CitationAssociationQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CitationAssociationRepositoryMock repository = new CitationAssociationRepositoryMock(db);
+    CitationAssociationRepositoryMock repository = new CitationAssociationRepositoryMock(nte);
     CitationAssociationQueryImpl query = new CitationAssociationQueryImpl(repository);
 
     @Test

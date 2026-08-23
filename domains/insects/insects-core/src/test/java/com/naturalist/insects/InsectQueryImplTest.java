@@ -19,17 +19,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InsectQueryImplTest {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(db);
-    InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(db);
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(db);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(db);
-    InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(db);
-    InsectOrderRepositoryMock orderRepository = new InsectOrderRepositoryMock(db);
-    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(db);
-    InsectFeatureAssignmentRepositoryMock featureAssignmentRepository = new InsectFeatureAssignmentRepositoryMock(db);
-    InsectObservationRepositoryMock observationRepository = new InsectObservationRepositoryMock(db);
+    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
+    InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(nte);
+    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
+    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
+    InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(nte);
+    InsectOrderRepositoryMock orderRepository = new InsectOrderRepositoryMock(nte);
+    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(nte);
+    InsectFeatureAssignmentRepositoryMock featureAssignmentRepository = new InsectFeatureAssignmentRepositoryMock(nte);
+    InsectObservationRepositoryMock observationRepository = new InsectObservationRepositoryMock(nte);
     InsectQuery.ObservationQuery observationQuery = new InsectObservationQueryImpl(observationRepository);
     InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
     InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);

@@ -24,18 +24,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantGenusCatalogDataTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     private List<PlantGenus> genera() {
-        return db.getNamed(PlantGenusTestEntitySource.class).entityStream().toList();
+        return nte.getNamed(PlantGenusTestEntitySource.class).entityStream().toList();
     }
 
     private List<PlantSpecies> plants() {
-        return db.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList();
+        return nte.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList();
     }
 
     private List<PlantFamily> families() {
-        return db.getNamed(PlantFamilyTestEntitySource.class).entityStream().toList();
+        return nte.getNamed(PlantFamilyTestEntitySource.class).entityStream().toList();
     }
 
     @Test

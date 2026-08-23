@@ -18,15 +18,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlantsFamilyDetailTemplateTest {
 
     @RegisterExtension
-    private final NaturalistTestExtension db = NaturalistTestExtension.create();
+    private final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
     void familyDetail_rendersEveryFamilyWithoutError() {
         var template = TestTemplateEngine.create();
         List<PlantGenus> allGenera =
-                db.getNamed(PlantGenusTestEntitySource.class).entityStream().toList();
+                nte.getNamed(PlantGenusTestEntitySource.class).entityStream().toList();
 
-        for (PlantFamily family : db.getNamed(PlantFamilyTestEntitySource.class)
+        for (PlantFamily family : nte.getNamed(PlantFamilyTestEntitySource.class)
                 .entityStream().toList()) {
             List<PlantTaxonView> children = allGenera.stream()
                     .filter(g -> family.name().equals(g.familyName()))
@@ -44,11 +44,11 @@ class PlantsFamilyDetailTemplateTest {
     @Test
     void familyDetail_rendersGeneraCardsWhenTheFamilyHasThem() {
         var template = TestTemplateEngine.create();
-        PlantFamily lamiaceae = db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
+        PlantFamily lamiaceae = nte.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .filter(f -> f.name().value().equals("lamiaceae"))
                 .findFirst()
                 .orElseThrow();
-        List<PlantTaxonView> children = db.getNamed(PlantGenusTestEntitySource.class).entityStream()
+        List<PlantTaxonView> children = nte.getNamed(PlantGenusTestEntitySource.class).entityStream()
                 .filter(g -> lamiaceae.name().equals(g.familyName()))
                 .map(g -> (PlantTaxonView) PlantGenusView.of(g))
                 .toList();
@@ -70,7 +70,7 @@ class PlantsFamilyDetailTemplateTest {
         // supplied deliberately rather than found. Keeps the branch covered as
         // the genus catalog grows.
         var template = TestTemplateEngine.create();
-        PlantFamily anyFamily = db.getNamed(PlantFamilyTestEntitySource.class).entityStream()
+        PlantFamily anyFamily = nte.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .findFirst()
                 .orElseThrow();
 

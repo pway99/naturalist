@@ -20,9 +20,9 @@ class InsectFunctionalRoleQueryImplTest
         implements EntityQueryContractTest<InsectFunctionalRoleId, InsectFunctionalRole, FunctionalRoleCollection> {
 
     @RegisterExtension
-    NaturalistTestExtension db = NaturalistTestExtension.create();
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFunctionalRoleRepositoryMock repository = new InsectFunctionalRoleRepositoryMock(db);
+    InsectFunctionalRoleRepositoryMock repository = new InsectFunctionalRoleRepositoryMock(nte);
     InsectQuery.FunctionalRoleQuery query = new InsectFunctionalRoleQueryImpl(repository);
 
     @Override
