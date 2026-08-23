@@ -51,6 +51,9 @@ jte-classes/
 ### Scratch / transient exports ###
 temp/
 
+### Subagent-driven-development scratch workspace (ledgers, briefs, reports, diffs) ###
+.superpowers/
+
 ### Personal soil lab reports (contain physical address) ###
 domains/soil/*.pdf
 .claude/launch.json
