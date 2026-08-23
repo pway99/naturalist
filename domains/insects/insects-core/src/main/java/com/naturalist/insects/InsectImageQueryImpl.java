@@ -3,12 +3,14 @@ package com.naturalist.insects;
 import com.naturalist.observation.OrganismImage;
 
 import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@DomainService
 class InsectImageQueryImpl
         extends AbstractEntityQuery<
         InsectImageId,

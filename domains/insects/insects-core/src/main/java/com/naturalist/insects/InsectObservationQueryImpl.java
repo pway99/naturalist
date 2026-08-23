@@ -1,12 +1,14 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectEntityCollections.ObservationCollection;
 import com.naturalist.naturalist.NaturalistName;
 
 import java.util.Set;
 import com.naturalist.observation.OrganismObservation;
 
+@DomainService
 class InsectObservationQueryImpl
         extends AbstractEntityQuery<
         InsectObservationId,

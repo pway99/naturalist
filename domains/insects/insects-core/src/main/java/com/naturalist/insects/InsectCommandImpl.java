@@ -1,7 +1,9 @@
 package com.naturalist.insects;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 
+@DomainService
 class InsectCommandImpl implements InsectCommand {
 
     private final SpeciesCommand speciesCommand;

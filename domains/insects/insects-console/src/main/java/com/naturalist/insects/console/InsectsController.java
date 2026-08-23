@@ -7,7 +7,6 @@ import com.naturalist.clades.Eukaryota;
 import com.naturalist.clades.Insecta;
 import com.naturalist.clades.Plantae;
 import com.naturalist.data.FileName;
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.data.Pages;
@@ -16,11 +15,9 @@ import com.naturalist.insects.*;
 import com.naturalist.insects.console.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.insects.lifestage.LifeStage;
-import com.naturalist.authority.eol.EolClientMock;
 import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
-import com.naturalist.library.LibraryTestContext;
 import com.naturalist.library.console.GlossaryLinker;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.textgeneration.NoOpTextGenerationService;
@@ -101,30 +98,31 @@ public class InsectsController {
     private final GlossaryLinker glossaryLinker;
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
-    InsectsController(Resilience resilience, com.naturalist.vision.VisionService visionService) {
-        //TODO:: This will eventually be a spring managed bean
-        NaturalistDatabase db = NaturalistDatabase.create();
-        InsectsTestContext context = InsectsTestContext.create(db);
-        LibraryTestContext libraryContext = LibraryTestContext.create(db);
-        this.insectQuery = context.insectQuery();
-        this.insectCommand = context.insectCommand();
-        this.insectLifeStageQuery = context.insectLifeStageQuery();
+    InsectsController(Resilience resilience,
+                      com.naturalist.vision.VisionService visionService,
+                      InsectQuery insectQuery,
+                      InsectCommand insectCommand,
+                      InsectLifeStageQuery insectLifeStageQuery,
+                      CladeQuery cladeQuery,
+                      com.naturalist.library.GlossaryTermQuery glossaryTermQuery,
+                      com.naturalist.library.LibraryCommand libraryCommand,
+                      com.naturalist.authority.ExternalAuthority eolAuthority) {
+        this.insectQuery = insectQuery;
+        this.insectCommand = insectCommand;
+        this.insectLifeStageQuery = insectLifeStageQuery;
+        this.cladeQuery = cladeQuery;
         this.resilience = resilience;
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
         this.imageStorageService = new ImageStorageService(Path.of("data/images/insects"));
-        // TODO:: This will eventually be a spring managed bean
-        this.cladeQuery = libraryContext.cladeQuery();
-        this.glossaryLinker = GlossaryLinker.of(libraryContext.glossaryTermQuery()
-                .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE))
-                .content());
+        this.glossaryLinker = GlossaryLinker.of(glossaryTermQuery
+                .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
+        var catalogIdentificationTransaction =
+                new InsectCatalogIdentificationTransaction(insectCommand, insectQuery);
         this.identificationCommand = new InsectIdentificationCommand(
-                visionService,
-                new NoOpTextGenerationService(),
-                new EolClientMock(db),
-                libraryContext.libraryCommand(),
-                context.insectQuery(),
-                context.catalogIdentificationTransaction());
-        this.addPhotoCommand = new InsectAddPhotoCommand(context.addPhotoTransaction());
+                visionService, new NoOpTextGenerationService(), eolAuthority,
+                libraryCommand, insectQuery, catalogIdentificationTransaction);
+        this.addPhotoCommand = new InsectAddPhotoCommand(
+                new InsectAddPhotoTransaction(insectCommand));
     }
 
     /**

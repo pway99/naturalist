@@ -1,7 +1,9 @@
 package com.naturalist.library;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 
+@DomainService
 class LibraryCommandImpl implements LibraryCommand {
 
     private final CitationCommand citationCommand;

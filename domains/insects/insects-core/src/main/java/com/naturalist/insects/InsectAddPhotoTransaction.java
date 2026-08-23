@@ -9,11 +9,11 @@ import com.naturalist.observation.OrganismObservation;
  * optional {@link OrganismObservation} before the {@link OrganismImage} so the
  * image's {@code observationId} FK is satisfied on insert.
  */
-class InsectAddPhotoTransaction extends Transaction<PhotoAddition> {
+public class InsectAddPhotoTransaction extends Transaction<PhotoAddition> {
 
     private final InsectCommand insectCommand;
 
-    InsectAddPhotoTransaction(InsectCommand insectCommand) {
+    public InsectAddPhotoTransaction(InsectCommand insectCommand) {
         this.insectCommand = insectCommand;
     }
 

@@ -1,6 +1,7 @@
 package com.naturalist.library;
 
 import com.naturalist.data.Transaction;
+import com.naturalist.infrastructure.DomainService;
 
 /**
  * Persists a {@link CitationAttribution} atomically — the citation and its
@@ -38,6 +39,7 @@ import com.naturalist.data.Transaction;
  * meant to refresh the association, only the citation's authority content is
  * the thing that must never be overwritten by a lower-trust source.
  */
+@DomainService
 class CitationAttributionTransaction extends Transaction<CitationAttribution> {
 
     private final CitationRepository citationRepository;

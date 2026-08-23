@@ -1,11 +1,13 @@
 package com.naturalist.insects;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.observability.Observer;
 
 import java.util.Optional;
 
+@DomainService
 class InsectQueryImpl implements InsectQuery {
 
     private final SpeciesQuery speciesQuery;

@@ -52,6 +52,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>eol-client-mock</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>vision</artifactId>
         </dependency>
         <dependency>

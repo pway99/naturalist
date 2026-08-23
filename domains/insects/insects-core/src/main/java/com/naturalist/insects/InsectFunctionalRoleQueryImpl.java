@@ -1,11 +1,13 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.AbstractEntityQuery;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectEntityCollections.FunctionalRoleCollection;
 
 import java.util.Optional;
 import java.util.Set;
 
+@DomainService
 class InsectFunctionalRoleQueryImpl
         extends AbstractEntityQuery<
         InsectFunctionalRoleId,

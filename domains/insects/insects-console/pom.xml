@@ -45,6 +45,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>insects-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>library-api</artifactId>
         </dependency>
         <dependency>
@@ -73,7 +77,9 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TEMPORARY -->
+        <!-- TEMPORARY: still required by the JTE template tests, which build fixtures
+             via `new *TestEntitySource(NaturalistDatabase.create())`. Removed together
+             with the deferred console-test de-fork onto NaturalistTestExtension. -->
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>insects-test-context</artifactId>
