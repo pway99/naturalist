@@ -63,6 +63,19 @@
             <version>${jte.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- GlossaryLinkerTest / CladeRankLinksTest are plain unit tests; they need only
+             junit + assertj (versions from the spring-boot BOM imported above). These were
+             lost when library-test-context was dropped from this module in 2bdb01c9. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
