@@ -38,6 +38,10 @@
             <artifactId>soil-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>soil-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
@@ -55,10 +59,12 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>library-test-context</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>soil-test-context</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- TEST -->

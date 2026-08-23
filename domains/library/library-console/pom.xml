@@ -41,6 +41,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>library-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>taxonomy</artifactId>
         </dependency>
         <dependency>
@@ -50,12 +54,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-        </dependency>
-
-        <!-- TEMPORARY -->
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>library-test-context</artifactId>
         </dependency>
 
         <!-- TEST -->

@@ -30,6 +30,10 @@
             <artifactId>garden-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>garden-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
@@ -47,6 +51,7 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>garden-test-context</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- TEST -->

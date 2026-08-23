@@ -37,10 +37,6 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>eol-client-mock</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.naturalist</groupId>
             <artifactId>insects-api</artifactId>
         </dependency>
         <dependency>
@@ -54,10 +50,6 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>library-console</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>library-test-context</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
@@ -77,26 +69,19 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TEMPORARY: still required by the JTE template tests, which build fixtures
-             via `new *TestEntitySource(NaturalistDatabase.create())`. Removed together
-             with the deferred console-test de-fork onto NaturalistTestExtension. -->
+        <!-- TEST: the JTE template tests build fixtures via NaturalistTestExtension +
+             getNamed, so they need the extension (framework-test) and the domain's
+             *TestEntitySource classes (insects-repository-test) on the test classpath. -->
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>insects-test-context</artifactId>
+            <artifactId>framework-test</artifactId>
+            <scope>test</scope>
         </dependency>
-
-        <!-- TEST -->
-        <!-- these can be uncommented when the rdmbs adapter is available -->
-        <!--        <dependency>-->
-        <!--            <groupId>com.naturalist</groupId>-->
-        <!--            <artifactId>framework-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.naturalist</groupId>-->
-        <!--            <artifactId>insects-repository-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>insects-repository-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>gg.jte</groupId>
             <artifactId>jte</artifactId>

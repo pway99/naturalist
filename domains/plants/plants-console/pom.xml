@@ -41,6 +41,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>plants-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>clades</artifactId>
         </dependency>
         <dependency>
@@ -61,6 +65,7 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>plants-test-context</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- TEST -->
