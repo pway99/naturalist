@@ -1,5 +1,5 @@
 @import com.naturalist.clades.Clade
-@import com.naturalist.plants.console.PlantCladeTree
+@import com.naturalist.plants.PlantCladeTree
 @import java.util.List
 
 @param List<Clade> cladeTrail = java.util.List.of()

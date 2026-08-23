@@ -5,7 +5,7 @@
 @import com.naturalist.plants.management.PlantProgram
 @import com.naturalist.plants.phytochemistry.PhytochemicalConstituent
 @import java.util.List
-@import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.plants.BreadcrumbSegment
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantFeatureView
 @import com.naturalist.observation.OrganismImage

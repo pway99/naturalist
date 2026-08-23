@@ -2,7 +2,7 @@
 @import com.naturalist.plants.PlantGenus
 @import com.naturalist.plants.PlantSpeciesView
 @import com.naturalist.plants.PlantTaxonView
-@import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.plants.BreadcrumbSegment
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantFeatureView
 @import com.naturalist.observation.OrganismImage

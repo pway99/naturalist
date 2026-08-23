@@ -1,4 +1,4 @@
-@import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.plants.BreadcrumbSegment
 @import java.util.List
 
 @param List<BreadcrumbSegment> segments

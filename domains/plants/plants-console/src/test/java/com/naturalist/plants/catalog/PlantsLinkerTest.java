@@ -1,4 +1,4 @@
-package com.naturalist.plants.console.catalog;
+package com.naturalist.plants.catalog;
 
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;

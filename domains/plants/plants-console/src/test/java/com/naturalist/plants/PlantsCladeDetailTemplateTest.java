@@ -1,12 +1,10 @@
-package com.naturalist.plants.console;
+package com.naturalist.plants;
 
 import com.naturalist.clades.Asterids;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Superasterids;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.plants.PlantOrder;
-import com.naturalist.plants.PlantOrderTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 

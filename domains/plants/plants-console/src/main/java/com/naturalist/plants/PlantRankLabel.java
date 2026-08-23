@@ -1,6 +1,4 @@
-package com.naturalist.plants.console;
-
-import com.naturalist.plants.PlantRankName;
+package com.naturalist.plants;
 
 import java.util.Locale;
 

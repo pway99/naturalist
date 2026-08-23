@@ -1,6 +1,6 @@
 @import com.naturalist.data.Page
 @import com.naturalist.plants.PlantFamily
-@import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.plants.BreadcrumbSegment
 @import com.naturalist.clades.Clade
 @import java.util.List
 

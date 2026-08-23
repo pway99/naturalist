@@ -1,8 +1,6 @@
-package com.naturalist.plants.console;
+package com.naturalist.plants;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.plants.PlantSpecies;
-import com.naturalist.plants.PlantSpeciesTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 

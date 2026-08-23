@@ -1,4 +1,4 @@
-package com.naturalist.plants.console;
+package com.naturalist.plants;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;

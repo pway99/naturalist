@@ -1,4 +1,4 @@
-package com.naturalist.plants.console;
+package com.naturalist.plants;
 
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
@@ -8,17 +8,7 @@ import com.naturalist.data.Pages;
 import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
-import com.naturalist.plants.Plant;
-import com.naturalist.plants.PlantSpecies;
-import com.naturalist.plants.PlantFamily;
-import com.naturalist.plants.PlantFamilyName;
-import com.naturalist.plants.PlantGenus;
-import com.naturalist.plants.PlantGenusName;
-import com.naturalist.plants.PlantOrder;
-import com.naturalist.plants.PlantOrderName;
-import com.naturalist.plants.PlantSpeciesName;
-import com.naturalist.plants.PlantQuery;
-import com.naturalist.plants.console.render.PlantsParagraphCues;
+import com.naturalist.plants.render.PlantsParagraphCues;
 import com.naturalist.plants.cultivar.Cultivar;
 import com.naturalist.plants.cultivar.CultivarName;
 import com.naturalist.plants.cultivar.CultivarQuery;

@@ -2,7 +2,7 @@
 @import com.naturalist.plants.PlantTaxonView
 @import com.naturalist.plants.PlantOrder
 @import java.util.List
-@import com.naturalist.plants.console.BreadcrumbSegment
+@import com.naturalist.plants.BreadcrumbSegment
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantFeatureView
 @import com.naturalist.observation.OrganismImage

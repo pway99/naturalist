@@ -1,4 +1,4 @@
-package com.naturalist.plants.console;
+package com.naturalist.plants;
 
 import com.naturalist.clades.Animalia;
 import com.naturalist.clades.Clade;

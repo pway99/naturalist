@@ -1,7 +1,7 @@
 @import com.naturalist.clades.Clade
 @import com.naturalist.plants.PlantOrder
-@import com.naturalist.plants.console.BreadcrumbSegment
-@import com.naturalist.plants.console.PlantCladeTree
+@import com.naturalist.plants.BreadcrumbSegment
+@import com.naturalist.plants.PlantCladeTree
 @import java.util.List
 
 @param Clade clade

@@ -1,4 +1,4 @@
-package com.naturalist.plants.console;
+package com.naturalist.plants;
 
 /**
  * One segment of the plant taxonomic breadcrumb — the header row that traces a

@@ -1,5 +1,5 @@
 @import com.naturalist.plants.PlantFeatureView
-@import com.naturalist.plants.console.PlantRankLabel
+@import com.naturalist.plants.PlantRankLabel
 
 @param PlantFeatureView features = null
 

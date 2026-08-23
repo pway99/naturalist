@@ -1,4 +1,4 @@
-package com.naturalist.plants.console.render;
+package com.naturalist.plants.render;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;

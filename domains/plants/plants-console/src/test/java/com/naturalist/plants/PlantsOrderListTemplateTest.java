@@ -1,12 +1,10 @@
-package com.naturalist.plants.console;
+package com.naturalist.plants;
 
 import com.naturalist.clades.Angiosperms;
 import com.naturalist.clades.Plantae;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.plants.PlantOrder;
-import com.naturalist.plants.PlantOrderTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 

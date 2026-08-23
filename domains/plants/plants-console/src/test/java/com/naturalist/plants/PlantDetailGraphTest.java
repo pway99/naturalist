@@ -1,8 +1,6 @@
-package com.naturalist.plants.console;
+package com.naturalist.plants;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.plants.PlantSpeciesName;
-import com.naturalist.plants.PlantsTestContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
