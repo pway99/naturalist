@@ -7,6 +7,8 @@ import org.openrewrite.test.RewriteTest;
 import org.openrewrite.test.TypeValidation;
 
 import static org.openrewrite.java.Assertions.java;
+import static org.openrewrite.java.Assertions.srcMainJava;
+import static org.openrewrite.java.Assertions.srcTestJava;
 
 class AcquireDatabaseViaExtensionTest implements RewriteTest {
 
@@ -39,22 +41,24 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
         rewriteRun(
             java(NaturalistTypeStubs.NATURALIST_DATABASE),
             java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            java(
-                """
-                import com.naturalist.data.NaturalistDatabase;
-                class T {
-                    private final NaturalistDatabase db = NaturalistDatabase.create();
-                }
-                """,
-                """
-                import com.naturalist.data.NaturalistTestExtension;
-                import org.junit.jupiter.api.extension.RegisterExtension;
+            srcTestJava(
+                java(
+                    """
+                    import com.naturalist.data.NaturalistDatabase;
+                    class T {
+                        private final NaturalistDatabase db = NaturalistDatabase.create();
+                    }
+                    """,
+                    """
+                    import com.naturalist.data.NaturalistTestExtension;
+                    import org.junit.jupiter.api.extension.RegisterExtension;
 
-                class T {
-                    @RegisterExtension
-                    private final NaturalistTestExtension db = NaturalistTestExtension.create();
-                }
-                """
+                    class T {
+                        @RegisterExtension
+                        private final NaturalistTestExtension db = NaturalistTestExtension.create();
+                    }
+                    """
+                )
             )
         );
     }
@@ -64,23 +68,25 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
         rewriteRun(
             java(NaturalistTypeStubs.NATURALIST_DATABASE),
             java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            java(
-                """
-                import com.naturalist.data.NaturalistDatabase;
-                class T {
-                    void m() {
-                        NaturalistDatabase db = NaturalistDatabase.create();
+            srcTestJava(
+                java(
+                    """
+                    import com.naturalist.data.NaturalistDatabase;
+                    class T {
+                        void m() {
+                            NaturalistDatabase db = NaturalistDatabase.create();
+                        }
                     }
-                }
-                """,
-                """
-                import com.naturalist.data.NaturalistDatabase;
-                class T {
-                    void m() {
-                        NaturalistDatabase db = /*~~(hoist a @RegisterExtension NaturalistTestExtension field; do not create a bare NaturalistDatabase in a test)~~>*/NaturalistDatabase.create();
+                    """,
+                    """
+                    import com.naturalist.data.NaturalistDatabase;
+                    class T {
+                        void m() {
+                            NaturalistDatabase db = /*~~(hoist a @RegisterExtension NaturalistTestExtension field; do not create a bare NaturalistDatabase in a test)~~>*/NaturalistDatabase.create();
+                        }
                     }
-                }
-                """
+                    """
+                )
             )
         );
     }
@@ -90,13 +96,38 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
         rewriteRun(
             java(NaturalistTypeStubs.NATURALIST_DATABASE),
             java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            java(
-                """
-                import com.naturalist.data.NaturalistTestExtension;
-                class T {
-                    private final NaturalistTestExtension db = NaturalistTestExtension.create();
-                }
-                """   // no `after` => unchanged
+            srcTestJava(
+                java(
+                    """
+                    import com.naturalist.data.NaturalistTestExtension;
+                    class T {
+                        private final NaturalistTestExtension db = NaturalistTestExtension.create();
+                    }
+                    """   // no `after` => unchanged
+                )
+            )
+        );
+    }
+
+    @Test
+    void mainSourceFieldInitializerIsNotRewritten() {
+        // R2 is test-source-scoped: the same Case-A shape that gets retyped in src/test
+        // (see caseA_fieldInitializerIsRetypedToTheExtension) must be left untouched when it
+        // lives in src/main — e.g. TestDataConfiguration's Spring @Bean `return
+        // NaturalistDatabase.create();` and the main-source contract base TestEntitySourceTest
+        // (ADR-001) are sanctioned create() callers this recipe must never touch.
+        rewriteRun(
+            java(NaturalistTypeStubs.NATURALIST_DATABASE),
+            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+            srcMainJava(
+                java(
+                    """
+                    import com.naturalist.data.NaturalistDatabase;
+                    class T {
+                        private final NaturalistDatabase db = NaturalistDatabase.create();
+                    }
+                    """   // no `after` => unchanged in main source
+                )
             )
         );
     }

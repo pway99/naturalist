@@ -1,11 +1,15 @@
 package com.naturalist.rewrite;
 
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.Cursor;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
+import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.JavaIsoVisitor;
+import org.openrewrite.java.marker.JavaSourceSet;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaSourceFile;
 import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.TypeUtils;
 import org.openrewrite.marker.SearchResult;
@@ -31,6 +35,29 @@ public class NoCachedTestEntitySourceField extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new JavaIsoVisitor<ExecutionContext>() {
+
+            /**
+             * R3 is a test-only convention (caching a TestEntitySource in a field is only a
+             * staleness hazard against the extension's per-test registry reset); it must never
+             * touch {@code src/main} — e.g. the main-source contract base
+             * {@code TestEntitySourceTest} (ADR-001). Short-circuit on any source file whose
+             * {@link JavaSourceSet} marker name is not {@code "test"}; a file with no marker at
+             * all is treated as non-test (excluded), matching the conservative default.
+             */
+            @Override
+            public J visit(@Nullable Tree tree, ExecutionContext ctx) {
+                if (tree instanceof JavaSourceFile) {
+                    boolean isTest = ((JavaSourceFile) tree).getMarkers()
+                        .findFirst(JavaSourceSet.class)
+                        .map(s -> "test".equals(s.getName()))
+                        .orElse(false);
+                    if (!isTest) {
+                        return (J) tree;
+                    }
+                }
+                return super.visit(tree, ctx);
+            }
+
             @Override
             public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations vd, ExecutionContext ctx) {
                 J.VariableDeclarations v = super.visitVariableDeclarations(vd, ctx);
