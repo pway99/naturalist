@@ -2,7 +2,6 @@ package com.naturalist.chemistry.console;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.EntityRefLinker;
-import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundDepiction;
 import com.naturalist.chemistry.compound.CompoundName;
@@ -14,7 +13,6 @@ import com.naturalist.chemistry.element.ElementQuery;
 import com.naturalist.chemistry.product.Product;
 import com.naturalist.chemistry.product.ProductName;
 import com.naturalist.chemistry.product.ProductQuery;
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import org.springframework.http.MediaType;
@@ -40,15 +38,18 @@ public class ChemistryController {
     private final Catalog catalog;
     private final EntityRefLinker linker;
 
-    ChemistryController(DepictionRenderer depictionRenderer, Catalog catalog, EntityRefLinker linker) {
-        //TODO:: This will eventually be a spring managed bean
-        ChemistryTestContext context = ChemistryTestContext.create(NaturalistDatabase.create());
-        this.compoundQuery = context.compoundQuery();
-        this.productQuery = context.productQuery();
-        this.elementQuery = context.elementQuery();
+    ChemistryController(DepictionRenderer depictionRenderer,
+                        Catalog catalog,
+                        EntityRefLinker linker,
+                        CompoundQuery compoundQuery,
+                        ProductQuery productQuery,
+                        ElementQuery elementQuery) {
         this.depictionRenderer = depictionRenderer;
         this.catalog = catalog;
         this.linker = linker;
+        this.compoundQuery = compoundQuery;
+        this.productQuery = productQuery;
+        this.elementQuery = elementQuery;
     }
 
     @GetMapping
