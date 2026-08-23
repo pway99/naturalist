@@ -9,3 +9,13 @@ recipeList:
   - com.naturalist.rewrite.NoDirectTestEntitySourceConstruction
   - com.naturalist.rewrite.NoCachedTestEntitySourceField
   - com.naturalist.rewrite.AcquireDatabaseViaExtension
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.naturalist.EnforceQueryHygiene
+displayName: Naturalist query-hygiene enforcement
+description: >-
+  Fails the build on an N+1 fan-out: a repository or query select invoked inside a loop or a
+  per-element stream operation. The lexical, same-method backstop to the runtime select-count
+  gate; call the batched sibling once instead.
+recipeList:
+  - com.naturalist.rewrite.NoSelectInIteration
