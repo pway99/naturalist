@@ -2,15 +2,13 @@ package com.naturalist.soil.console;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.EntityRefLinker;
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
-import com.naturalist.library.LibraryTestContext;
+import com.naturalist.library.GlossaryTermQuery;
 import com.naturalist.library.console.GlossaryLinker;
 import com.naturalist.soil.SoilProfile;
 import com.naturalist.soil.SoilProfileInfoQuery;
 import com.naturalist.soil.SoilProfileName;
 import com.naturalist.soil.SoilProfileQuery;
-import com.naturalist.soil.SoilTestContext;
 import com.naturalist.soil.console.catalog.NutrientChemistryLinks;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,15 +31,16 @@ public class SoilsController {
     private final GlossaryLinker glossaryLinker;
     private final NutrientChemistryLinks chemistryLinks;
 
-    SoilsController(Catalog catalog, EntityRefLinker linker) {
-        // TODO: becomes a Spring-managed bean when the rdbms adapter replaces the in-memory context.
-        NaturalistDatabase db = NaturalistDatabase.create();
-        SoilTestContext context = SoilTestContext.create(db);
-        this.soilProfileInfoQuery = context.soilProfileInfoQuery();
-        this.soilProfileQuery = context.soilProfileQuery();
+    SoilsController(Catalog catalog,
+                    EntityRefLinker linker,
+                    SoilProfileInfoQuery soilProfileInfoQuery,
+                    SoilProfileQuery soilProfileQuery,
+                    GlossaryTermQuery glossaryTermQuery) {
+        this.soilProfileInfoQuery = soilProfileInfoQuery;
+        this.soilProfileQuery = soilProfileQuery;
         // Vocabulary for the inline definition popovers on the profile page. Same glossary the
         // insect Field Marks link against; loaded from the shared in-memory library context.
-        this.glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(db).glossaryTermQuery()
+        this.glossaryLinker = GlossaryLinker.of(glossaryTermQuery
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE))
                 .content());
         // Nutrient rows link to the substance each measures, resolved through the

@@ -1,15 +1,16 @@
 package com.naturalist.soil;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 
 import java.util.Optional;
 
 /**
  * Thin adapter for {@link SoilProfileQuery}: validates the argument, then delegates aggregate
- * assembly to {@link SoilProfileFactory} (ADR-010). Mirrors {@code InsectTaxonViewQueryImpl} — no
- * {@code @DomainService}: the factory-backed aggregate query is wired manually in the context
- * (its {@code SoilProfileFactory} is not a Spring bean), never component-scanned.
+ * assembly to {@link SoilProfileFactory} (ADR-010). Factory-backed query bean;
+ * {@link SoilProfileFactory} is injected.
  */
+@DomainService
 class SoilProfileQueryImpl implements SoilProfileQuery {
 
     private final Observer observer = Observer.forClass(getClass());

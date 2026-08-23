@@ -1,5 +1,6 @@
 package com.naturalist.soil;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.soil.observation.LabAnalysis;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  * {@code InsectTaxonViewFactory}. Per the producer/consumer rule (ADR-017) it validates its own
  * arguments with {@code throwWhenInvalid()} but only observes the assembled profile (metrics).
  */
+@DomainService
 class SoilProfileFactory {
 
     private final Observer observer = Observer.forClass(getClass());
