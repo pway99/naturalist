@@ -1,5 +1,5 @@
 @import com.naturalist.library.CladeQuery.CladeTreeNode
-@import com.naturalist.library.console.clade.CladeUrls
+@import com.naturalist.library.clade.CladeUrls
 @param CladeTreeNode node
 
 <li>

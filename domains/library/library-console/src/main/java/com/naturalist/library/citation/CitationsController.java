@@ -1,4 +1,4 @@
-package com.naturalist.library.console.citation;
+package com.naturalist.library.citation;
 
 import com.naturalist.authority.Citation;
 import com.naturalist.data.PageRequest;

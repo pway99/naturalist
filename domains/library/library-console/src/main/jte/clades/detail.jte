@@ -1,5 +1,5 @@
 @import com.naturalist.library.CladeView
-@import com.naturalist.library.console.clade.CladeUrls
+@import com.naturalist.library.clade.CladeUrls
 @import java.util.Map
 
 @param CladeView view

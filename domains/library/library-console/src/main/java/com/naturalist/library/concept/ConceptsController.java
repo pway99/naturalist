@@ -1,4 +1,4 @@
-package com.naturalist.library.console.concept;
+package com.naturalist.library.concept;
 
 import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;

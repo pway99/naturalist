@@ -1,6 +1,6 @@
 @import com.naturalist.insects.InsectFeatureView
 @import com.naturalist.insects.RankLabel
-@import com.naturalist.library.console.GlossaryLinker
+@import com.naturalist.library.GlossaryLinker
 
 @param InsectFeatureView features = null
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()

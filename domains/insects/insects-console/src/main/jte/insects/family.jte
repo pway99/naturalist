@@ -12,7 +12,7 @@
 @import com.naturalist.insects.BreadcrumbSegment
 @import com.naturalist.insects.CladeTrail
 @import com.naturalist.insects.InsectFeatureView
-@import com.naturalist.library.console.GlossaryLinker
+@import com.naturalist.library.GlossaryLinker
 @import java.util.List
 @import java.util.Map
 

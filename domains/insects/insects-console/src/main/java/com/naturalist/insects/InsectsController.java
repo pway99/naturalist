@@ -17,7 +17,7 @@ import com.naturalist.insects.lifestage.LifeStage;
 import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
-import com.naturalist.library.console.GlossaryLinker;
+import com.naturalist.library.GlossaryLinker;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.textgeneration.NoOpTextGenerationService;
 import com.naturalist.resilience.Resilient;

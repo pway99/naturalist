@@ -1,4 +1,4 @@
-package com.naturalist.library.console.glossary;
+package com.naturalist.library.glossary;
 
 import com.naturalist.data.PageRequest;
 import com.naturalist.library.GlossaryTerm;

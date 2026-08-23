@@ -1,6 +1,5 @@
-package com.naturalist.library.console;
+package com.naturalist.library;
 
-import com.naturalist.library.GlossaryTerm;
 import org.springframework.web.util.HtmlUtils;
 
 import java.util.ArrayList;

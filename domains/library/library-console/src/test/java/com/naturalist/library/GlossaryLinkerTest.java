@@ -1,7 +1,5 @@
-package com.naturalist.library.console;
+package com.naturalist.library;
 
-import com.naturalist.library.GlossaryTerm;
-import com.naturalist.library.GlossaryTermName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.naturalist.library.console.clade;
+package com.naturalist.library.clade;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.DomainId;

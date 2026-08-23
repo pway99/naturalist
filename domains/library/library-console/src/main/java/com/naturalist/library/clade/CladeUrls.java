@@ -1,4 +1,4 @@
-package com.naturalist.library.console.clade;
+package com.naturalist.library.clade;
 
 /**
  * Maps a clade slug to its tree-of-life page URL — the phylogenetic axis of
