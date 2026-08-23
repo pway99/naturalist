@@ -33,6 +33,16 @@ public class NoSelectInIteration extends Recipe {
     private static final String QUERY = "com.naturalist.data.EntityQuery";
     private static final Set<String> WRITES = Set.of("insert", "update", "save");
 
+    /**
+     * Pagination cursors: {@code getPage}/{@code findPage} are designed to be called once per
+     * page inside a loop that walks a paged result set (see {@code EntityRepositoryTest}'s
+     * page-walk contract test). This is not a per-element N+1 fan-out — there is no batched
+     * sibling to call instead, since the loop itself IS the batching mechanism (one select per
+     * page, not one select per already-collected element) — so these are excluded from
+     * select-site detection.
+     */
+    private static final Set<String> PAGING = Set.of("getPage", "findPage");
+
     private final transient Findings findings = new Findings(this);
 
     public static class Findings extends DataTable<Findings.Row> {
@@ -190,7 +200,8 @@ public class NoSelectInIteration extends Recipe {
         }
         boolean isPort = TypeUtils.isAssignableTo(REPOSITORY, declaring)
                       || TypeUtils.isAssignableTo(QUERY, declaring);
-        return isPort && !WRITES.contains(methodType.getName());
+        String name = methodType.getName();
+        return isPort && !WRITES.contains(name) && !PAGING.contains(name);
     }
 
     /**

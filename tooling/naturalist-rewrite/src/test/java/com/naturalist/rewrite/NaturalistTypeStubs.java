@@ -49,6 +49,7 @@ final class NaturalistTypeStubs {
         public interface EntityRepository<NAME, ENTITY> {
             Optional<ENTITY> getByName(NAME name);
             List<ENTITY> getByEntityNameSet(Set<NAME> nameSet);
+            Object getPage(int pageNumber);
             void insert(ENTITY entity);
             void update(ENTITY entity);
             ENTITY save(ENTITY entity);
@@ -63,6 +64,7 @@ final class NaturalistTypeStubs {
         public interface EntityQuery<NAME, E> {
             Optional<E> getByName(NAME name);
             List<E> findByNameSet(Set<NAME> nameSet);
+            Object findPage(int pageNumber);
         }
         """;
 

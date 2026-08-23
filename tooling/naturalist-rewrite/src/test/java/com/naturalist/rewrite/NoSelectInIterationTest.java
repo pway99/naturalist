@@ -267,6 +267,59 @@ class NoSelectInIterationTest implements RewriteTest {
     }
 
     @Test
+    void doesNotFlagGetPageInLoop() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    // pagination cursor: one getPage call per page, walking a paged result set —
+                    // not a per-element fan-out, and there is no batched sibling. Must stay clean.
+                    """
+                    package com.naturalist.data;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void walk() {
+                            int pageNumber = 0;
+                            while (pageNumber < 10_000) {
+                                repo.getPage(pageNumber);
+                                pageNumber++;
+                            }
+                        }
+                    }
+                    """
+                )
+            )
+        );
+    }
+
+    @Test
+    void doesNotFlagFindPageInLoop() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_QUERY),
+            java(NaturalistTypeStubs.FOO_QUERY),
+            srcMainJava(
+                java(
+                    // same pagination-cursor shape as getPage, on the query side.
+                    """
+                    package com.naturalist.data;
+                    class Q {
+                        private final FooQuery query;
+                        Q(FooQuery query) { this.query = query; }
+                        void walk() {
+                            for (int pageNumber = 0; pageNumber < 10_000; pageNumber++) {
+                                query.findPage(pageNumber);
+                            }
+                        }
+                    }
+                    """
+                )
+            )
+        );
+    }
+
+    @Test
     void doesNotFlagSelectInHelperCalledFromLoop() {
         rewriteRun(
             java(NaturalistTypeStubs.ENTITY_REPOSITORY),

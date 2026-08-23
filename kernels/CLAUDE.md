@@ -59,6 +59,10 @@ no JUnit coupling.
 An in-progress N+1 select-count gate lives alongside in `com.naturalist.data.count`
 (recorder, aspect, `@AllowRepeatedSelect`); it is not yet wired into
 `NaturalistTestExtension`. See `docs/plans/2026-08-21-n-plus-one-select-gate-plan.md`.
+A static backstop `NoSelectInIteration` (composite `com.naturalist.EnforceQueryHygiene`)
+lives in `tooling/naturalist-rewrite`, flagging loop/stream fan-out of repository/query
+selects in main source; it is DEFINED but NOT YET ARMED (pending remediation of the N+1s
+the reckoning found).
 
 ### field-notes  (`com.naturalist.fieldnotes`)
 
