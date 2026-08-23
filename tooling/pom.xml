@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>amateur-naturalist</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <packaging>pom</packaging>
+
+    <artifactId>tooling</artifactId>
+    <name>amateur-naturalist :: tooling</name>
+
+    <properties>
+        <rewrite-recipe-bom.version>3.36.0</rewrite-recipe-bom.version>
+        <junit-version>6.0.3</junit-version>
+        <assertj-version>3.26.0</assertj-version>
+    </properties>
+
+    <modules>
+        <module>naturalist-rewrite</module>
+    </modules>
+</project>

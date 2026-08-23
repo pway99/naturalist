@@ -25,6 +25,7 @@
         <module>domains</module>
         <module>external-authorities</module>
         <module>kernels</module>
+        <module>tooling</module>
     </modules>
 
     <properties>
@@ -595,6 +596,12 @@
             <dependency>
                 <groupId>com.naturalist</groupId>
                 <artifactId>management-console</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- TOOLING -->
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>naturalist-rewrite</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- ZONE -->
