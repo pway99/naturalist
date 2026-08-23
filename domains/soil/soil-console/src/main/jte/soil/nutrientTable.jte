@@ -1,4 +1,4 @@
-@import com.naturalist.soil.console.catalog.NutrientChemistryLinks
+@import com.naturalist.soil.catalog.NutrientChemistryLinks
 @import com.naturalist.soil.observation.NutrientLine
 @import java.util.List
 @param List<NutrientLine> lines

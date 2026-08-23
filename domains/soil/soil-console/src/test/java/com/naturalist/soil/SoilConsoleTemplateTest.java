@@ -1,4 +1,4 @@
-package com.naturalist.soil.console;
+package com.naturalist.soil;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.DomainId;
@@ -10,12 +10,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.garden.CropTypeName;
 import com.naturalist.library.LibraryTestContext;
-import com.naturalist.library.console.GlossaryLinker;
-import com.naturalist.soil.SoilProfile;
-import com.naturalist.soil.SoilProfileInfo;
-import com.naturalist.soil.SoilProfileName;
-import com.naturalist.soil.SoilTestContext;
-import com.naturalist.soil.console.catalog.NutrientChemistryLinks;
+import com.naturalist.library.GlossaryLinker;
+import com.naturalist.soil.catalog.NutrientChemistryLinks;
 import com.naturalist.soil.observation.LabAnalysis;
 import com.naturalist.soil.observation.LabAnalysisId;
 import com.naturalist.soil.observation.LabAnalysisInfo;

@@ -1,4 +1,4 @@
-package com.naturalist.soil.console;
+package com.naturalist.soil;
 
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;

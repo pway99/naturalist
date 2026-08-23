@@ -1,15 +1,11 @@
-package com.naturalist.soil.console;
+package com.naturalist.soil;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.EntityRefLinker;
 import com.naturalist.data.PageRequest;
 import com.naturalist.library.GlossaryTermQuery;
-import com.naturalist.library.console.GlossaryLinker;
-import com.naturalist.soil.SoilProfile;
-import com.naturalist.soil.SoilProfileInfoQuery;
-import com.naturalist.soil.SoilProfileName;
-import com.naturalist.soil.SoilProfileQuery;
-import com.naturalist.soil.console.catalog.NutrientChemistryLinks;
+import com.naturalist.library.GlossaryLinker;
+import com.naturalist.soil.catalog.NutrientChemistryLinks;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

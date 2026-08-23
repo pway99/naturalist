@@ -1,6 +1,6 @@
-@import com.naturalist.library.console.GlossaryLinker
+@import com.naturalist.library.GlossaryLinker
 @import com.naturalist.soil.SoilProfile
-@import com.naturalist.soil.console.catalog.NutrientChemistryLinks
+@import com.naturalist.soil.catalog.NutrientChemistryLinks
 @import com.naturalist.soil.observation.AssessmentSource
 @import com.naturalist.soil.observation.NutrientCategory
 @import com.naturalist.soil.observation.RecommendedAmount

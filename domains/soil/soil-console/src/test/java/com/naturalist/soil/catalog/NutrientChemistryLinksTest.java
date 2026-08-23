@@ -1,4 +1,4 @@
-package com.naturalist.soil.console.catalog;
+package com.naturalist.soil.catalog;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.DomainId;
