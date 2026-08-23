@@ -3,11 +3,13 @@ package com.naturalist.rewrite;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.Cursor;
 import org.openrewrite.ExecutionContext;
+import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
 import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.marker.JavaSourceSet;
+import org.openrewrite.java.search.UsesType;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.JavaSourceFile;
 import org.openrewrite.java.tree.JavaType;
@@ -34,7 +36,7 @@ public class NoCachedTestEntitySourceField extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new JavaIsoVisitor<ExecutionContext>() {
+        return Preconditions.check(new UsesType<>(BASE, true), new JavaIsoVisitor<ExecutionContext>() {
 
             /**
              * R3 is a test-only convention (caching a TestEntitySource in a field is only a
@@ -81,6 +83,6 @@ public class NoCachedTestEntitySourceField extends Recipe {
                 }
                 return parent.getParentTreeCursor().getValue() instanceof J.ClassDeclaration;
             }
-        };
+        });
     }
 }

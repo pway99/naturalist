@@ -1,10 +1,12 @@
 package com.naturalist.rewrite;
 
 import org.openrewrite.ExecutionContext;
+import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.JavaVisitor;
+import org.openrewrite.java.search.UsesType;
 import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.JavaType;
@@ -30,7 +32,7 @@ public class NoDirectTestEntitySourceConstruction extends Recipe {
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         // A plain JavaVisitor (not JavaIsoVisitor): the rewrite changes the node's own type from
         // J.NewClass to J.MethodInvocation, which the isomorphic visitor contract disallows.
-        return new JavaVisitor<ExecutionContext>() {
+        return Preconditions.check(new UsesType<>(BASE, true), new JavaVisitor<ExecutionContext>() {
             @Override
             public J visitNewClass(J.NewClass newClass, ExecutionContext ctx) {
                 J.NewClass nc = (J.NewClass) super.visitNewClass(newClass, ctx);
@@ -59,6 +61,6 @@ public class NoDirectTestEntitySourceConstruction extends Recipe {
                 // internal default.
                 return autoFormat(replacement, ctx, getCursor().getParentOrThrow());
             }
-        };
+        });
     }
 }
