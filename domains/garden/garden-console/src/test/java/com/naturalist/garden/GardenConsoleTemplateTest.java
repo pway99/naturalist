@@ -1,9 +1,10 @@
 package com.naturalist.garden;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,8 +16,11 @@ class GardenConsoleTemplateTest {
 
     private static final LocalDate TODAY = LocalDate.of(2026, 8, 14);
 
-    private static GardenTestContext context() {
-        return GardenTestContext.create(NaturalistDatabase.create());
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
+    private GardenTestContext context() {
+        return GardenTestContext.create(db);
     }
 
     private static String render(String template, Map<String, Object> params) {

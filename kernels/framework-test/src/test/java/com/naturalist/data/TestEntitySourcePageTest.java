@@ -3,6 +3,7 @@ package com.naturalist.data;
 import com.naturalist.ddd.Named;
 import com.naturalist.observability.Constraints;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -16,6 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * lookahead truth table from {@code docs/plans/paged-queries-plan.md} Section 2.
  */
 class TestEntitySourcePageTest {
+
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
 
     record Item(String name) implements Named<String> {
         @Override
@@ -33,8 +37,8 @@ class TestEntitySourcePageTest {
         }
     }
 
-    private static ItemSource sourceWith(int n) {
-        ItemSource source = NaturalistDatabase.create().getNamed(ItemSource.class);
+    private ItemSource sourceWith(int n) {
+        ItemSource source = db.getNamed(ItemSource.class);
         // names "item-00", "item-01", ... so ascending toString() order is also insertion order
         IntStream.range(0, n)
                 .mapToObj(i -> new Item(String.format("item-%02d", i)))
@@ -85,7 +89,7 @@ class TestEntitySourcePageTest {
     @Test
     void resultsAreOrderedAscendingByName() {
         // Insert deliberately out of order; expect ascending name() in the page.
-        ItemSource source = NaturalistDatabase.create().getNamed(ItemSource.class);
+        ItemSource source = db.getNamed(ItemSource.class);
         source.insert(new Item("zebra"));
         source.insert(new Item("apple"));
         source.insert(new Item("mango"));

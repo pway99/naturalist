@@ -5,7 +5,7 @@ import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.SearchResults;
 import com.naturalist.chemistry.element.ElementName;
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.garden.CropTypeName;
@@ -28,6 +28,7 @@ import com.naturalist.soil.observation.SecondaryNutrients;
 import com.naturalist.zone.ZoneName;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,8 +41,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SoilConsoleTemplateTest {
 
-    private static SoilTestContext context() {
-        return SoilTestContext.create(NaturalistDatabase.create());
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
+    private SoilTestContext context() {
+        return SoilTestContext.create(db);
     }
 
     @Test
@@ -63,7 +67,6 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_rendersPanelAndCharacteristics() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         GlossaryLinker glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(db).glossaryTermQuery()
@@ -104,7 +107,6 @@ class SoilConsoleTemplateTest {
      */
     @Test
     void profile_rendersRecommendationsWithNoneDistinctFromAbsent() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         StringOutput output = new StringOutput();
@@ -123,7 +125,6 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_linksGlossaryTermsWithDefinitionPopovers() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         GlossaryLinker glossaryLinker = GlossaryLinker.of(LibraryTestContext.create(db).glossaryTermQuery()
@@ -146,7 +147,6 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_linksNutrientLabelsToTheirSubstance() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         // A catalog that owns the element slugs, and a linker that routes them —
@@ -172,7 +172,6 @@ class SoilConsoleTemplateTest {
 
     @Test
     void profile_rendersWithoutLinksWhenNoResolverIsSupplied() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         SoilProfile box1 = SoilTestContext.create(db).soilProfileQuery()
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         StringOutput output = new StringOutput();

@@ -4,6 +4,7 @@ import com.naturalist.ddd.Named;
 import com.naturalist.exception.ForeignKeyConstraintException;
 import com.naturalist.observability.Constraints;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,9 +19,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 class ForeignKeyConstraintTest {
 
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void insertWithResolvedForeignKeyPasses() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         ParentSource parents = db.getNamed(ParentSource.class);
         ChildSource children = db.getNamed(ChildSource.class);
 
@@ -32,7 +35,6 @@ class ForeignKeyConstraintTest {
 
     @Test
     void insertWithUnresolvedForeignKeyThrows() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         // intentionally do not seed the parent — only get the child source
         ChildSource children = db.getNamed(ChildSource.class);
 
@@ -46,7 +48,6 @@ class ForeignKeyConstraintTest {
 
     @Test
     void nullForeignKeyValueIsSkipped() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         ChildSource children = db.getNamed(ChildSource.class);
 
         // null FK is a pass at the FK layer — record-invariant layer is the
@@ -58,7 +59,6 @@ class ForeignKeyConstraintTest {
 
     @Test
     void updateWithUnresolvedForeignKeyThrows() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         ParentSource parents = db.getNamed(ParentSource.class);
         ChildSource children = db.getNamed(ChildSource.class);
 
@@ -74,7 +74,6 @@ class ForeignKeyConstraintTest {
 
     @Test
     void lazySourceLoadingResolvesForeignKey() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         // Reach for the child source first; the FK check lazily forces the
         // parent source to be constructed via NaturalistDatabase.getNamed —
         // the wiring an rdbms-shaped catalog relies on at startup.

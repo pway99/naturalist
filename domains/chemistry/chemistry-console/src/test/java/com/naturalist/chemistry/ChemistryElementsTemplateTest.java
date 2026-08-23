@@ -3,10 +3,11 @@ package com.naturalist.chemistry;
 import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.element.Element;
 import com.naturalist.chemistry.element.ElementName;
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
@@ -14,8 +15,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ChemistryElementsTemplateTest {
 
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
     private final ChemistryTestContext context =
-            ChemistryTestContext.create(NaturalistDatabase.create());
+            ChemistryTestContext.create(db);
 
     @Test
     void list_rendersEveryElementLinkedToItsDetailPage() {

@@ -3,6 +3,7 @@ package com.naturalist.data;
 import com.naturalist.ddd.Named;
 import com.naturalist.observability.Constraints;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -22,6 +23,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * of failing loudly.
  */
 class TestEntitySourceSaveTest {
+
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
 
     record Item(String name, String value) implements Named<String> {
         @Override
@@ -63,7 +67,7 @@ class TestEntitySourceSaveTest {
     @Test
     void save_uniqueConstraintMatchWithoutWithKeyOverride_throwsUnsupportedOperationException() {
         ItemSourceWithoutWithKey source =
-                NaturalistDatabase.create().getNamed(ItemSourceWithoutWithKey.class);
+                db.getNamed(ItemSourceWithoutWithKey.class);
         source.insert(new Item("item-a", "shared-value"));
 
         assertThatThrownBy(() -> source.save(new Item("item-b", "shared-value")))

@@ -1,14 +1,18 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /** The species-rank Plant read model composes its cross-sub-context extras. */
 class PlantDetailGraphTest {
 
-    private final PlantsTestContext context = PlantsTestContext.create(NaturalistDatabase.create());
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
+    private final PlantsTestContext context = PlantsTestContext.create(db);
 
     @Test
     void speciesPlant_composesProgramsAndConstituents() {

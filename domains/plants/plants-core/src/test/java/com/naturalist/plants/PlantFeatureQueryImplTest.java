@@ -1,7 +1,8 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
@@ -10,8 +11,10 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 class PlantFeatureQueryImplTest {
 
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
     private PlantFeatureQueryImpl featureQuery() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         PlantQuery.GenusQuery genusQuery = new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
         PlantQuery.SpeciesQuery speciesQuery =
                 new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(db), genusQuery);

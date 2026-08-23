@@ -1,7 +1,8 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PlantGenusCatalogDataTest {
 
-    private final NaturalistDatabase db = NaturalistDatabase.create();
+    @RegisterExtension
+    private final NaturalistTestExtension db = NaturalistTestExtension.create();
 
     private List<PlantGenus> genera() {
         return db.getNamed(PlantGenusTestEntitySource.class).entityStream().toList();

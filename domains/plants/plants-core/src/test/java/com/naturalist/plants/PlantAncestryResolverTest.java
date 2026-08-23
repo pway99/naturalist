@@ -1,14 +1,17 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PlantAncestryResolverTest {
 
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
     private PlantAncestryResolver resolver() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         PlantQuery.GenusQuery genusQuery = new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
         PlantQuery.SpeciesQuery speciesQuery =
                 new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(db), genusQuery);

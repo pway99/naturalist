@@ -1,6 +1,6 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.plants.cultivar.Cultivar;
@@ -16,6 +16,7 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituentCollection;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Optional;
 import java.util.Set;
@@ -25,8 +26,10 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 class PlantFactoryTest {
 
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
     private PlantFactory factory() {
-        NaturalistDatabase db = NaturalistDatabase.create();
         PlantQuery.GenusQuery genusQuery =
                 new PlantGenusQueryImpl(new PlantGenusRepositoryMock(db));
         PlantQuery.SpeciesQuery speciesQuery =

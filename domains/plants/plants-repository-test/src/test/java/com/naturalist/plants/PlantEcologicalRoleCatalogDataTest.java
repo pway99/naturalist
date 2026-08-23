@@ -1,7 +1,8 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PlantEcologicalRoleCatalogDataTest {
 
-    private final NaturalistDatabase db = NaturalistDatabase.create();
+    @RegisterExtension
+    private final NaturalistTestExtension db = NaturalistTestExtension.create();
     private final PlantRankResolution ranks = new PlantRankResolution(db);
 
     @Test

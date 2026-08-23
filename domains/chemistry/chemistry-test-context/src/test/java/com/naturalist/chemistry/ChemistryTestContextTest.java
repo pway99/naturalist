@@ -1,16 +1,20 @@
 package com.naturalist.chemistry;
 
 import com.naturalist.chemistry.TestChemistryIdentifiers.Elements;
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ChemistryTestContextTest {
 
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
     private final ChemistryTestContext context =
-            ChemistryTestContext.create(NaturalistDatabase.create());
+            ChemistryTestContext.create(db);
 
     @Test
     void elementQueryReadsTheElementCatalog() {

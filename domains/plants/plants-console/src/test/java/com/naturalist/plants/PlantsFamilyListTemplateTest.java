@@ -1,10 +1,11 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
@@ -16,9 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PlantsFamilyListTemplateTest {
 
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void familyList_rendersWithoutError() {
-        Page<PlantFamily> familiesPage = NaturalistDatabase.create()
+        Page<PlantFamily> familiesPage = db
                 .getNamed(PlantFamilyTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();

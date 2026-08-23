@@ -3,6 +3,7 @@ package com.naturalist.data;
 import com.naturalist.ddd.Named;
 import com.naturalist.observability.Constraints;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,6 +14,9 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PagesTest {
+
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
 
     record Item(String name) implements Named<String> {
         @Override
@@ -32,7 +36,7 @@ class PagesTest {
 
     @Test
     void streamWalksEveryPage() {
-        ItemSource source = NaturalistDatabase.create().getNamed(ItemSource.class);
+        ItemSource source = db.getNamed(ItemSource.class);
         IntStream.range(0, 7)
                 .mapToObj(i -> new Item(String.format("item-%02d", i)))
                 .forEach(source::insert);
@@ -48,7 +52,7 @@ class PagesTest {
 
     @Test
     void streamOverEmptySourceYieldsNothing() {
-        ItemSource source = NaturalistDatabase.create().getNamed(ItemSource.class);
+        ItemSource source = db.getNamed(ItemSource.class);
 
         Stream<Item> stream = Pages.stream(10, source::pageOf);
 
@@ -57,7 +61,7 @@ class PagesTest {
 
     @Test
     void streamIsLazy_loaderInvokedOnlyAsConsumed() {
-        ItemSource source = NaturalistDatabase.create().getNamed(ItemSource.class);
+        ItemSource source = db.getNamed(ItemSource.class);
         IntStream.range(0, 100)
                 .mapToObj(i -> new Item(String.format("item-%03d", i)))
                 .forEach(source::insert);

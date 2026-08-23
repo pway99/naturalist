@@ -2,11 +2,12 @@ package com.naturalist.plants;
 
 import com.naturalist.clades.Angiosperms;
 import com.naturalist.clades.Plantae;
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -19,9 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PlantsOrderListTemplateTest {
 
+    @RegisterExtension
+    final NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void orderList_rendersWithoutError() {
-        Page<PlantOrder> ordersPage = NaturalistDatabase.create()
+        Page<PlantOrder> ordersPage = db
                 .getNamed(PlantOrderTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
@@ -38,7 +42,7 @@ class PlantsOrderListTemplateTest {
 
     @Test
     void orderList_showsCatalogCladeRootWhenSupplied() {
-        Page<PlantOrder> ordersPage = NaturalistDatabase.create()
+        Page<PlantOrder> ordersPage = db
                 .getNamed(PlantOrderTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
