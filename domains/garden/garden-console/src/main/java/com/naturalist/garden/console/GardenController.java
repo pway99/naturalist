@@ -1,8 +1,6 @@
 package com.naturalist.garden.console;
 
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
-import com.naturalist.garden.GardenTestContext;
 import com.naturalist.garden.Planting;
 import com.naturalist.garden.PlantedZone;
 import com.naturalist.garden.PlantedZoneQuery;
@@ -33,11 +31,9 @@ public class GardenController {
     private final PlantingQuery plantingQuery;
     private final PlantedZoneQuery plantedZoneQuery;
 
-    GardenController() {
-        // TODO: becomes a Spring-managed bean when the rdbms adapter replaces the in-memory context.
-        GardenTestContext context = GardenTestContext.create(NaturalistDatabase.create());
-        this.plantingQuery = context.plantingQuery();
-        this.plantedZoneQuery = context.plantedZoneQuery();
+    GardenController(PlantingQuery plantingQuery, PlantedZoneQuery plantedZoneQuery) {
+        this.plantingQuery = plantingQuery;
+        this.plantedZoneQuery = plantedZoneQuery;
     }
 
     @GetMapping

@@ -1,5 +1,6 @@
 package com.naturalist.garden;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.zone.ZoneName;
@@ -15,6 +16,7 @@ import java.util.Optional;
  * {@code SoilProfileFactory}. Per the producer/consumer rule (ADR-017) it validates its own
  * arguments with {@code throwWhenInvalid()} but only observes the assembled record.
  */
+@DomainService
 class PlantedZoneFactory {
 
     private final Observer observer = Observer.forClass(getClass());
