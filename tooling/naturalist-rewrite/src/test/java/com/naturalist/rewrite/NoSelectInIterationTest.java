@@ -294,6 +294,135 @@ class NoSelectInIterationTest implements RewriteTest {
     }
 
     @Test
+    void flagsRepositorySelectMethodReferenceInStreamMap() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    import java.util.Optional;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        List<Optional<String>> load(List<String> names) {
+                            return names.stream().map(repo::getByName).toList();
+                        }
+                    }
+                    """,
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    import java.util.Optional;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        List<Optional<String>> load(List<String> names) {
+                            return names.stream().map(%srepo::getByName).toList();
+                        }
+                    }
+                    """.formatted(MARK)
+                )
+            )
+        );
+    }
+
+    @Test
+    void flagsQuerySelectLambdaInStreamForEach() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_QUERY),
+            java(NaturalistTypeStubs.FOO_QUERY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    class Q {
+                        private final FooQuery query;
+                        Q(FooQuery query) { this.query = query; }
+                        void load(List<String> names) {
+                            names.stream().forEach(n -> query.getByName(n));
+                        }
+                    }
+                    """,
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    class Q {
+                        private final FooQuery query;
+                        Q(FooQuery query) { this.query = query; }
+                        void load(List<String> names) {
+                            names.stream().forEach(n -> %squery.getByName(n));
+                        }
+                    }
+                    """.formatted(MARK)
+                )
+            )
+        );
+    }
+
+    @Test
+    void flagsRepositorySelectInStreamFilterPredicate() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        List<String> load(List<String> names) {
+                            return names.stream().filter(n -> repo.getByName(n).isPresent()).toList();
+                        }
+                    }
+                    """,
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        List<String> load(List<String> names) {
+                            return names.stream().filter(n -> %srepo.getByName(n).isPresent()).toList();
+                        }
+                    }
+                    """.formatted(MARK)
+                )
+            )
+        );
+    }
+
+    @Test
+    void doesNotFlagSelectInNonFanOutLambda() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    // Optional.orElseGet supplier is not a per-element fan-out; a single deferred
+                    // lookup, not an N+1. Must stay clean.
+                    """
+                    package com.naturalist.data;
+                    import java.util.Optional;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        String load(Optional<String> maybe, String fallback) {
+                            return maybe.orElseGet(() -> repo.getByName(fallback).orElse(null));
+                        }
+                    }
+                    """
+                )
+            )
+        );
+    }
+
+    @Test
     void doesNotFlagLoopSelectInTestSource() {
         rewriteRun(
             java(NaturalistTypeStubs.ENTITY_REPOSITORY),

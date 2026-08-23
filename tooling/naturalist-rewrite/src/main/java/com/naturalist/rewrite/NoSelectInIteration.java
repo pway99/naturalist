@@ -8,14 +8,17 @@ import org.openrewrite.Recipe;
 import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.JavaIsoVisitor;
+import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.marker.JavaSourceSet;
 import org.openrewrite.java.search.UsesType;
+import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.JavaSourceFile;
 import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.TypeUtils;
 import org.openrewrite.marker.SearchResult;
 
+import java.util.List;
 import java.util.Set;
 
 public class NoSelectInIteration extends Recipe {
@@ -27,6 +30,25 @@ public class NoSelectInIteration extends Recipe {
     private static final String REPOSITORY = "com.naturalist.data.EntityRepository";
     private static final String QUERY = "com.naturalist.data.EntityQuery";
     private static final Set<String> WRITES = Set.of("insert", "update", "save");
+
+    /**
+     * Per-element stream fan-out ops: any {@code Stream}/{@code IntStream}/{@code LongStream}/
+     * {@code DoubleStream} instance method, plus {@code Iterable.forEach} and {@code Map.forEach}.
+     * A select passed as a lambda/method-reference argument to one of these runs once per element
+     * — the same N+1 shape as a loop body — so it is flagged the same way.
+     */
+    private static final List<MethodMatcher> FAN_OUT = List.of(
+        new MethodMatcher("java.util.stream.Stream *(..)"),
+        new MethodMatcher("java.util.stream.IntStream *(..)"),
+        new MethodMatcher("java.util.stream.LongStream *(..)"),
+        new MethodMatcher("java.util.stream.DoubleStream *(..)"),
+        new MethodMatcher("java.lang.Iterable forEach(..)"),
+        new MethodMatcher("java.util.Map forEach(..)")
+    );
+
+    private static boolean matchesFanOut(Expression e) {
+        return e instanceof J.MethodInvocation mi && FAN_OUT.stream().anyMatch(m -> m.matches(mi));
+    }
 
     @Override
     public String getDisplayName() {
@@ -80,6 +102,20 @@ public class NoSelectInIteration extends Recipe {
                 }
                 return SearchResult.found(m, MESSAGE);
             }
+
+            @Override
+            public J.MemberReference visitMemberReference(J.MemberReference mr, ExecutionContext ctx) {
+                J.MemberReference m = super.visitMemberReference(mr, ctx);
+                if (!isSelectSite(m.getMethodType())) {
+                    return m;
+                }
+                Cursor parent = nearestEnclosingInvocation(getCursor());
+                if (parent != null && parent.getValue() instanceof J.MethodInvocation fan
+                        && matchesFanOut(fan)) {
+                    return SearchResult.found(m, MESSAGE);
+                }
+                return m;
+            }
         };
         return Preconditions.check(
             Preconditions.or(new UsesType<>(REPOSITORY, true), new UsesType<>(QUERY, true)),
@@ -122,6 +158,15 @@ public class NoSelectInIteration extends Recipe {
             if (kind != null) {
                 return kind;
             }
+            if (value instanceof J.Lambda) {
+                Cursor parent = nearestEnclosingInvocation(cursor);
+                if (parent != null && parent.getValue() instanceof J.MethodInvocation fan
+                        && matchesFanOut(fan)) {
+                    return "stream:" + fan.getSimpleName();
+                }
+                // a lambda that is not a per-element fan-out arg is a scope boundary: stop.
+                return null;
+            }
             if (value instanceof J.MethodDeclaration || value instanceof J.ClassDeclaration) {
                 return null;
             }
@@ -129,6 +174,21 @@ public class NoSelectInIteration extends Recipe {
             cursor = cursor.getParent();
         }
         return null;
+    }
+
+    /**
+     * A lambda or method reference passed as a call argument sits under {@code JRightPadded} (the
+     * argument slot) and {@code JContainer} (the argument list) cursor frames before reaching the
+     * enclosing {@code J.MethodInvocation} — the visitor pushes a cursor frame for each padding/
+     * container wrapper itself (mirrors the {@code loopBodyKind} padding caveat below). Skip those
+     * non-{@code J} wrapper frames to find the nearest actual syntax-tree ancestor.
+     */
+    private static @Nullable Cursor nearestEnclosingInvocation(Cursor cursor) {
+        Cursor parent = cursor.getParent();
+        while (parent != null && !(parent.getValue() instanceof J)) {
+            parent = parent.getParent();
+        }
+        return parent;
     }
 
     /**
