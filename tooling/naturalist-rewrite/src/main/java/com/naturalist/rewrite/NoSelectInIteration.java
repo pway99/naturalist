@@ -79,9 +79,25 @@ public class NoSelectInIteration extends Recipe {
         new MethodMatcher("java.util.stream.IntStream *(..)"),
         new MethodMatcher("java.util.stream.LongStream *(..)"),
         new MethodMatcher("java.util.stream.DoubleStream *(..)"),
-        new MethodMatcher("java.lang.Iterable forEach(..)"),
-        new MethodMatcher("java.util.Map forEach(..)")
+        new MethodMatcher("java.lang.Iterable forEach(..)", true),
+        new MethodMatcher("java.util.Map forEach(..)", true)
     );
+
+    private static final String STREAM = "java.util.stream.BaseStream";
+
+    /**
+     * Labels a matched fan-out invocation for the data table: {@code "stream:" + name} when the
+     * invocation's declaring type is a {@code BaseStream} (Stream/IntStream/LongStream/
+     * DoubleStream), otherwise {@code "iterable:" + name} for Iterable/Map.forEach — which are
+     * collection operations, not stream operations, and must not be mislabeled as "stream:...".
+     */
+    private static String fanOutKind(J.MethodInvocation fan) {
+        JavaType.Method methodType = fan.getMethodType();
+        JavaType.FullyQualified declaring = methodType == null ? null : methodType.getDeclaringType();
+        String prefix = declaring != null && TypeUtils.isAssignableTo(STREAM, declaring)
+            ? "stream:" : "iterable:";
+        return prefix + fan.getSimpleName();
+    }
 
     private static boolean matchesFanOut(Expression e) {
         return e instanceof J.MethodInvocation mi && FAN_OUT.stream().anyMatch(m -> m.matches(mi));
@@ -149,7 +165,7 @@ public class NoSelectInIteration extends Recipe {
                 Cursor parent = nearestEnclosingInvocation(getCursor());
                 if (parent != null && parent.getValue() instanceof J.MethodInvocation fan
                         && matchesFanOut(fan)) {
-                    return recordAndMark(m, "stream:" + fan.getSimpleName(), m.getMethodType(), ctx);
+                    return recordAndMark(m, fanOutKind(fan), m.getMethodType(), ctx);
                 }
                 return m;
             }
@@ -231,7 +247,7 @@ public class NoSelectInIteration extends Recipe {
                 Cursor parent = nearestEnclosingInvocation(cursor);
                 if (parent != null && parent.getValue() instanceof J.MethodInvocation fan
                         && matchesFanOut(fan)) {
-                    return "stream:" + fan.getSimpleName();
+                    return fanOutKind(fan);
                 }
                 // a lambda that is not a per-element fan-out arg is a scope boundary: stop.
                 return null;

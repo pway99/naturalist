@@ -452,6 +452,78 @@ class NoSelectInIterationTest implements RewriteTest {
     }
 
     @Test
+    void flagsRepositorySelectInArrayListForEach() {
+        rewriteRun(
+            spec -> spec.dataTable(NoSelectInIteration.Findings.Row.class, rows -> {
+                assertThat(rows).hasSize(1);
+                assertThat(rows.get(0).iterationKind()).isEqualTo("iterable:forEach");
+            }),
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.ArrayList;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(ArrayList<String> names) {
+                            names.forEach(repo::getByName);
+                        }
+                    }
+                    """,
+                    """
+                    package com.naturalist.data;
+                    import java.util.ArrayList;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(ArrayList<String> names) {
+                            names.forEach(%srepo::getByName);
+                        }
+                    }
+                    """.formatted(MARK)
+                )
+            )
+        );
+    }
+
+    @Test
+    void flagsQuerySelectInHashMapForEach() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_QUERY),
+            java(NaturalistTypeStubs.FOO_QUERY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.HashMap;
+                    class Q {
+                        private final FooQuery query;
+                        Q(FooQuery query) { this.query = query; }
+                        void load(HashMap<String, String> m) {
+                            m.forEach((k, v) -> query.getByName(k));
+                        }
+                    }
+                    """,
+                    """
+                    package com.naturalist.data;
+                    import java.util.HashMap;
+                    class Q {
+                        private final FooQuery query;
+                        Q(FooQuery query) { this.query = query; }
+                        void load(HashMap<String, String> m) {
+                            m.forEach((k, v) -> %squery.getByName(k));
+                        }
+                    }
+                    """.formatted(MARK)
+                )
+            )
+        );
+    }
+
+    @Test
     void doesNotFlagSelectInNonFanOutLambda() {
         rewriteRun(
             java(NaturalistTypeStubs.ENTITY_REPOSITORY),
