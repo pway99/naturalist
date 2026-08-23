@@ -1,4 +1,4 @@
-package com.naturalist.chemistry.console;
+package com.naturalist.chemistry;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.EntityRefLinker;
@@ -6,7 +6,7 @@ import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundDepiction;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.chemistry.compound.CompoundQuery;
-import com.naturalist.chemistry.console.catalog.BackReferencesViewModel;
+import com.naturalist.chemistry.catalog.BackReferencesViewModel;
 import com.naturalist.chemistry.element.Element;
 import com.naturalist.chemistry.element.ElementName;
 import com.naturalist.chemistry.element.ElementQuery;

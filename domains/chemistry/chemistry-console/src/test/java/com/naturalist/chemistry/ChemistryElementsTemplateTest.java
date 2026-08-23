@@ -1,4 +1,4 @@
-package com.naturalist.chemistry.console;
+package com.naturalist.chemistry;
 
 import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.element.Element;

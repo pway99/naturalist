@@ -1,5 +1,5 @@
 @import com.naturalist.chemistry.compound.Compound
-@import com.naturalist.chemistry.console.catalog.BackReferencesViewModel
+@import com.naturalist.chemistry.catalog.BackReferencesViewModel
 
 @param Compound compound
 @param boolean hasDepiction = false

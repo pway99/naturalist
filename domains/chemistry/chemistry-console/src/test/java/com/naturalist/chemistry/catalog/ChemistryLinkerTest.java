@@ -1,4 +1,4 @@
-package com.naturalist.chemistry.console.catalog;
+package com.naturalist.chemistry.catalog;
 
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;

@@ -1,4 +1,4 @@
-package com.naturalist.chemistry.console;
+package com.naturalist.chemistry;
 
 import com.naturalist.chemistry.compound.CompoundDepiction;
 import com.naturalist.chemistry.compound.DepictionId;

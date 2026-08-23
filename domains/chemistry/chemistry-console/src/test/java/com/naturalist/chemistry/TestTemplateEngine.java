@@ -1,4 +1,4 @@
-package com.naturalist.chemistry.console;
+package com.naturalist.chemistry;
 
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;
