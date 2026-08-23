@@ -1,11 +1,12 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.insects.FunctionalGuild;
 import com.naturalist.insects.InsectFunctionalRole;
 import com.naturalist.insects.InsectFunctionalRoleTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -20,11 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class InsectsGuildTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void guild_rendersWithoutError() {
         FunctionalGuild selected = FunctionalGuild.POLLINATOR;
         List<InsectFunctionalRole> roles =
-                new InsectFunctionalRoleTestEntitySource(NaturalistDatabase.create()).entityStream()
+                db.getNamed(InsectFunctionalRoleTestEntitySource.class).entityStream()
                         .filter(r -> r.guilds().contains(selected))
                         .toList();
         StringOutput output = new StringOutput();

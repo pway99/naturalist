@@ -1,8 +1,9 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
@@ -15,10 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PlantsDetailTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void detail_rendersEveryPlantWithoutError() {
         var template = TestTemplateEngine.create();
-        for (PlantSpecies plant : new PlantSpeciesTestEntitySource(NaturalistDatabase.create()).entityStream().toList()) {
+        for (PlantSpecies plant : db.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("plants/detail.jte", Map.of("plant", plant), output);
             assertThat(output.toString())

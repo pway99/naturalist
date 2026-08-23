@@ -1,12 +1,13 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PlantPhytochemicalConstituentTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
@@ -19,10 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PhytochemistryListTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void phytochemistryList_rendersWithoutError() {
-        Page<PhytochemicalConstituent> constituentsPage = new PlantPhytochemicalConstituentTestEntitySource(
-                NaturalistDatabase.create()).pageOf(PageRequest.console(0));
+        Page<PhytochemicalConstituent> constituentsPage = db
+                .getNamed(PlantPhytochemicalConstituentTestEntitySource.class).pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
         TestTemplateEngine.create().render("plants/phytochemistry/list.jte",

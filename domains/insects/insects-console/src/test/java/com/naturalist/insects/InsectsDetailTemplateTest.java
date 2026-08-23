@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.insects.InsectFamily;
 import com.naturalist.insects.InsectFamilyTestEntitySource;
 import com.naturalist.insects.InsectGenus;
@@ -11,6 +11,7 @@ import com.naturalist.insects.InsectSpecies;
 import com.naturalist.insects.InsectSpeciesTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -27,13 +28,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class InsectsDetailTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void detail_rendersWithoutError() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        InsectOrderTestEntitySource orderSource = new InsectOrderTestEntitySource(database);
-        InsectFamilyTestEntitySource familySource = new InsectFamilyTestEntitySource(database);
-        InsectGenusTestEntitySource genusSource = new InsectGenusTestEntitySource(database);
-        InsectSpecies anySpecies = new InsectSpeciesTestEntitySource(database)
+        InsectOrderTestEntitySource orderSource = db.getNamed(InsectOrderTestEntitySource.class);
+        InsectFamilyTestEntitySource familySource = db.getNamed(InsectFamilyTestEntitySource.class);
+        InsectGenusTestEntitySource genusSource = db.getNamed(InsectGenusTestEntitySource.class);
+        InsectSpecies anySpecies = db.getNamed(InsectSpeciesTestEntitySource.class)
                 .entityStream().findFirst().orElseThrow();
         InsectGenus genus = genusSource.getByName(anySpecies.genusName()).orElseThrow();
         InsectFamily family = familySource.getByName(genus.familyName()).orElseThrow();

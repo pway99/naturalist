@@ -2,7 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.observation.OrganismImage;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.insects.InsectEntityCollections;
@@ -20,6 +20,7 @@ import com.naturalist.insects.InsectOrderTestEntitySource;
 import com.naturalist.insects.InsectTaxonView;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,11 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class InsectsFamiliesTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void families_rendersWithoutError() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        InsectOrderTestEntitySource orderSource = new InsectOrderTestEntitySource(database);
-        Page<InsectFamily> familyPage = new InsectFamilyTestEntitySource(database)
+        InsectOrderTestEntitySource orderSource = db.getNamed(InsectOrderTestEntitySource.class);
+        Page<InsectFamily> familyPage = db.getNamed(InsectFamilyTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         Map<InsectOrderName, InsectOrder> orderByName = new LinkedHashMap<>();
         for (var family : familyPage.content()) {
@@ -53,9 +56,8 @@ class InsectsFamiliesTemplateTest {
 
     @Test
     void family_rendersWithoutError() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        InsectOrderTestEntitySource orderSource = new InsectOrderTestEntitySource(database);
-        InsectFamily anyFamily = new InsectFamilyTestEntitySource(database).entityStream()
+        InsectOrderTestEntitySource orderSource = db.getNamed(InsectOrderTestEntitySource.class);
+        InsectFamily anyFamily = db.getNamed(InsectFamilyTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
         InsectOrder order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
         StringOutput output = new StringOutput();
@@ -77,9 +79,8 @@ class InsectsFamiliesTemplateTest {
 
     @Test
     void family_rendersRankImagesWithEvidence() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        InsectOrderTestEntitySource orderSource = new InsectOrderTestEntitySource(database);
-        InsectFamily anyFamily = new InsectFamilyTestEntitySource(database).entityStream()
+        InsectOrderTestEntitySource orderSource = db.getNamed(InsectOrderTestEntitySource.class);
+        InsectFamily anyFamily = db.getNamed(InsectFamilyTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
         InsectOrder order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
         var observationId = com.naturalist.insects.InsectObservationId.create();
@@ -127,11 +128,10 @@ class InsectsFamiliesTemplateTest {
 
     @Test
     void family_rendersChildGenusCardFromPermit() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        InsectOrderTestEntitySource orderSource = new InsectOrderTestEntitySource(database);
-        InsectGenus anyGenus = new InsectGenusTestEntitySource(database).entityStream()
+        InsectOrderTestEntitySource orderSource = db.getNamed(InsectOrderTestEntitySource.class);
+        InsectGenus anyGenus = db.getNamed(InsectGenusTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
-        InsectFamily family = new InsectFamilyTestEntitySource(database)
+        InsectFamily family = db.getNamed(InsectFamilyTestEntitySource.class)
                 .getByName(anyGenus.familyName()).orElseThrow();
         InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
         InsectTaxonView genusChild = InsectGenusView.of(

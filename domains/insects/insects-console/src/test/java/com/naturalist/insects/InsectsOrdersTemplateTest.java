@@ -1,11 +1,12 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.insects.*;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class InsectsOrdersTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void orders_rendersWithoutError() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        Page<InsectOrder> orderPage = new InsectOrderTestEntitySource(database)
+        Page<InsectOrder> orderPage = db.getNamed(InsectOrderTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
@@ -31,8 +34,7 @@ class InsectsOrdersTemplateTest {
 
     @Test
     void order_rendersWithoutError() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        InsectOrder anyOrder = new InsectOrderTestEntitySource(database).entityStream()
+        InsectOrder anyOrder = db.getNamed(InsectOrderTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
         StringOutput output = new StringOutput();
 
@@ -52,10 +54,9 @@ class InsectsOrdersTemplateTest {
 
     @Test
     void order_rendersChildFamilyCardFromPermit() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        InsectFamily anyFamily = new InsectFamilyTestEntitySource(database).entityStream()
+        InsectFamily anyFamily = db.getNamed(InsectFamilyTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
-        InsectOrder order = new InsectOrderTestEntitySource(database)
+        InsectOrder order = db.getNamed(InsectOrderTestEntitySource.class)
                 .getByName(anyFamily.orderName()).orElseThrow();
         InsectTaxonView familyChild = InsectFamilyView.of(
                 anyFamily,

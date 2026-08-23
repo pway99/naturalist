@@ -1,10 +1,11 @@
 package com.naturalist.plants;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PlantPhytochemicalConstituentTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
@@ -18,10 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PhytochemistryDetailTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void phytochemistryDetail_rendersEveryConstituentWithoutError() {
         var template = TestTemplateEngine.create();
-        for (PhytochemicalConstituent constituent : new PlantPhytochemicalConstituentTestEntitySource(NaturalistDatabase.create()).entityStream().toList()) {
+        for (PhytochemicalConstituent constituent : db.getNamed(PlantPhytochemicalConstituentTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("plants/phytochemistry/detail.jte",
                     Map.of("constituent", constituent), output);

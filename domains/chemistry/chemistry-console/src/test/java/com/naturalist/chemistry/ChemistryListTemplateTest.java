@@ -2,11 +2,12 @@ package com.naturalist.chemistry;
 
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundTestEntitySource;
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
@@ -19,9 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ChemistryListTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void list_rendersWithoutError() {
-        Page<Compound> compoundsPage = new CompoundTestEntitySource(NaturalistDatabase.create())
+        Page<Compound> compoundsPage = db.getNamed(CompoundTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 

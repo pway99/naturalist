@@ -1,7 +1,8 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
@@ -13,6 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * nutrient link to plain text, which no other test would notice.
  */
 class ElementCatalogDataTest {
+
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
 
     private static final Map<String, String> NUTRIENT_ELEMENT_SYMBOLS = Map.of(
             "calcium", "Ca",
@@ -32,7 +36,7 @@ class ElementCatalogDataTest {
             "boron", "B");
 
     private ElementTestEntitySource source() {
-        return new ElementTestEntitySource(NaturalistDatabase.create());
+        return db.getNamed(ElementTestEntitySource.class);
     }
 
     @Test

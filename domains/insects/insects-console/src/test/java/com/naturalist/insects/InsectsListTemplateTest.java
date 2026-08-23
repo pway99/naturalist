@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.observation.OrganismImage;
@@ -13,6 +13,7 @@ import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.InsectSpeciesTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -28,13 +29,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class InsectsListTemplateTest {
 
+    @RegisterExtension
+    NaturalistTestExtension db = NaturalistTestExtension.create();
+
     @Test
     void list_rendersWithoutError() {
-        NaturalistDatabase database = NaturalistDatabase.create();
-        Page<InsectSpecies> speciesPage = new InsectSpeciesTestEntitySource(database)
+        Page<InsectSpecies> speciesPage = db.getNamed(InsectSpeciesTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         Map<InsectSpeciesName, List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesBySpecies =
-                new InsectImageTestEntitySource(database).entityStream()
+                db.getNamed(InsectImageTestEntitySource.class).entityStream()
                         .filter(image -> image.parentName() instanceof InsectSpeciesName)
                         .collect(Collectors.groupingBy(image -> (InsectSpeciesName) image.parentName()));
         StringOutput output = new StringOutput();
