@@ -40,4 +40,48 @@ final class NaturalistTypeStubs {
             public BarTestEntitySource(NaturalistDatabase database, String label) { super(database); }
         }
         """;
+
+    static final String ENTITY_REPOSITORY = """
+        package com.naturalist.data;
+        import java.util.List;
+        import java.util.Optional;
+        import java.util.Set;
+        public interface EntityRepository<NAME, ENTITY> {
+            Optional<ENTITY> getByName(NAME name);
+            List<ENTITY> getByEntityNameSet(Set<NAME> nameSet);
+            void insert(ENTITY entity);
+            void update(ENTITY entity);
+            ENTITY save(ENTITY entity);
+        }
+        """;
+
+    static final String ENTITY_QUERY = """
+        package com.naturalist.data;
+        import java.util.List;
+        import java.util.Optional;
+        import java.util.Set;
+        public interface EntityQuery<NAME, E> {
+            Optional<E> getByName(NAME name);
+            List<E> findByNameSet(Set<NAME> nameSet);
+        }
+        """;
+
+    static final String FOO_REPOSITORY = """
+        package com.naturalist.data;
+        import java.util.List;
+        import java.util.Optional;
+        import java.util.Set;
+        public interface FooRepository extends EntityRepository<String, String> {
+            List<String> getByParentNames(Set<String> parents);
+        }
+        """;
+
+    static final String FOO_QUERY = """
+        package com.naturalist.data;
+        import java.util.List;
+        import java.util.Optional;
+        import java.util.Set;
+        public interface FooQuery extends EntityQuery<String, String> {
+        }
+        """;
 }
