@@ -1,10 +1,8 @@
 package com.naturalist.library.console.citation;
 
 import com.naturalist.authority.Citation;
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
 import com.naturalist.library.CitationQuery;
-import com.naturalist.library.LibraryTestContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +15,8 @@ class CitationsController {
 
     private final CitationQuery citationQuery;
 
-    CitationsController() {
-        // TODO:: This will eventually be a spring managed bean
-        this.citationQuery = LibraryTestContext.create(NaturalistDatabase.create()).citationQuery();
+    CitationsController(CitationQuery citationQuery) {
+        this.citationQuery = citationQuery;
     }
 
     @GetMapping("/citations")

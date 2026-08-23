@@ -1,11 +1,9 @@
 package com.naturalist.library.console.glossary;
 
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
 import com.naturalist.library.GlossaryTerm;
 import com.naturalist.library.GlossaryTermName;
 import com.naturalist.library.GlossaryTermQuery;
-import com.naturalist.library.LibraryTestContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +17,8 @@ class GlossaryController {
 
     private final GlossaryTermQuery glossaryTermQuery;
 
-    GlossaryController() {
-        // TODO:: This will eventually be a spring managed bean
-        this.glossaryTermQuery = LibraryTestContext.create(NaturalistDatabase.create()).glossaryTermQuery();
+    GlossaryController(GlossaryTermQuery glossaryTermQuery) {
+        this.glossaryTermQuery = glossaryTermQuery;
     }
 
     @GetMapping("/glossary")

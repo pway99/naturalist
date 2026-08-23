@@ -1,12 +1,10 @@
 package com.naturalist.library.console.concept;
 
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.library.Concept;
 import com.naturalist.library.ConceptName;
 import com.naturalist.library.ConceptQuery;
-import com.naturalist.library.LibraryTestContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +19,8 @@ class ConceptsController {
     private final ConceptQuery conceptQuery;
     private final DescriptionRenderer descriptionRenderer = new DescriptionRenderer(List.of());
 
-    ConceptsController() {
-        // TODO:: This will eventually be a spring managed bean
-        this.conceptQuery = LibraryTestContext.create(NaturalistDatabase.create()).conceptQuery();
+    ConceptsController(ConceptQuery conceptQuery) {
+        this.conceptQuery = conceptQuery;
     }
 
     @GetMapping("/concepts")

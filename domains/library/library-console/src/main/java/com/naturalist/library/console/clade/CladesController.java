@@ -2,11 +2,9 @@ package com.naturalist.library.console.clade;
 
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.EntityRefLinker;
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeView;
-import com.naturalist.library.LibraryTestContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,10 +23,8 @@ public class CladesController {
     private final EntityRefLinker linker;
     private final DescriptionRenderer descriptionRenderer = new DescriptionRenderer(List.of());
 
-    CladesController(Catalog catalog, EntityRefLinker linker) {
-        // TODO:: cladeQuery will eventually be a spring managed bean; catalog and
-        // linker are already app beans injected here.
-        this.cladeQuery = LibraryTestContext.create(NaturalistDatabase.create()).cladeQuery();
+    CladesController(Catalog catalog, EntityRefLinker linker, CladeQuery cladeQuery) {
+        this.cladeQuery = cladeQuery;
         this.catalog = catalog;
         this.linker = linker;
     }
