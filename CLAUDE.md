@@ -132,3 +132,20 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
   equality by value. This is a domain invariant for `Entity` records and is documented
   in each event/observation domain's own `CLAUDE.md`; it is no longer encoded in a
   separate kernel subtype.
+
+## Completeness verification
+
+Before declaring any development task complete, run the architectural-enforcement
+gate in addition to `mvn verify`:
+
+```bash
+mvn install -DskipTests && mvn rewrite:dryRun -Drewrite.failOnDryRunResults=true
+```
+
+This runs the `com.naturalist.EnforceArchitecture` OpenRewrite recipes
+(`tooling/naturalist-rewrite`) across the whole reactor's source and fails on any
+pending fix or marker — the invariants ArchUnit cannot reach repo-wide (e.g. acquire
+`TestEntitySource` via `NaturalistDatabase#getNamed`, obtain the test database from a
+`@RegisterExtension NaturalistTestExtension` field, never cache a `TestEntitySource`
+in a field). Developers auto-apply the fixable ones with `mvn rewrite:run`. Design:
+[`docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md`](docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md).
