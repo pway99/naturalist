@@ -1,4 +1,4 @@
-@import com.naturalist.insects.console.BreadcrumbSegment
+@import com.naturalist.insects.BreadcrumbSegment
 @import java.util.List
 
 @param List<BreadcrumbSegment> segments

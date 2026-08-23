@@ -1,7 +1,7 @@
-package com.naturalist.insects.console;
+package com.naturalist.insects;
 
-import com.naturalist.insects.console.InsectCladeAnchors.Anchor;
-import com.naturalist.insects.console.InsectCladeAnchors.LineageEntry;
+import com.naturalist.insects.InsectCladeAnchors.Anchor;
+import com.naturalist.insects.InsectCladeAnchors.LineageEntry;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

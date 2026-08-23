@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;

@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.insects;
 
 /**
  * One segment of the taxonomic breadcrumb. {@code rank} is the Linnaean-rank

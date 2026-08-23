@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeCatalog;
@@ -11,8 +11,7 @@ import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.data.Pages;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
-import com.naturalist.insects.*;
-import com.naturalist.insects.console.render.InsectsParagraphCues;
+import com.naturalist.insects.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.insects.lifestage.LifeStage;
 import com.naturalist.library.CladeQuery;

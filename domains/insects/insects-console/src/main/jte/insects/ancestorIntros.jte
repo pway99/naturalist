@@ -1,4 +1,4 @@
-@import com.naturalist.insects.console.AncestorIntro
+@import com.naturalist.insects.AncestorIntro
 @import java.util.List
 
 @param List<AncestorIntro> intros

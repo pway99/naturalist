@@ -1,5 +1,5 @@
 @import com.naturalist.insects.InsectFeatureView
-@import com.naturalist.insects.console.RankLabel
+@import com.naturalist.insects.RankLabel
 @import com.naturalist.library.console.GlossaryLinker
 
 @param InsectFeatureView features = null

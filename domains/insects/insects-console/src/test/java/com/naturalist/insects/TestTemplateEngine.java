@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.insects;
 
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;

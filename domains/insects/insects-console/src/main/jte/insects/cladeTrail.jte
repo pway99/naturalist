@@ -1,5 +1,5 @@
-@import com.naturalist.insects.console.CladeTrail
-@import com.naturalist.insects.console.CladeNav
+@import com.naturalist.insects.CladeTrail
+@import com.naturalist.insects.CladeNav
 @import com.naturalist.clades.Clade
 @import com.naturalist.clades.CladeCatalog
 

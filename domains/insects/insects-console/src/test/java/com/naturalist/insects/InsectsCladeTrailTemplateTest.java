@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.insects;
 
 import com.naturalist.library.CladeStep;
 import gg.jte.output.StringOutput;

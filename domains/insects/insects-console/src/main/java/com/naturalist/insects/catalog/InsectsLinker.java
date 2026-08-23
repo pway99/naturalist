@@ -1,4 +1,4 @@
-package com.naturalist.insects.console.catalog;
+package com.naturalist.insects.catalog;
 
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.catalog.EntityRefLinker;

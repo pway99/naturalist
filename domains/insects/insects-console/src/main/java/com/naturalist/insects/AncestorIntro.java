@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.insects;
 
 /**
  * Renderable view-model for one collapsible "ancestor intro" panel on a

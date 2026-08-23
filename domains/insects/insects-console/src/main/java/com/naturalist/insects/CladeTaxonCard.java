@@ -1,4 +1,4 @@
-package com.naturalist.insects.console;
+package com.naturalist.insects;
 
 /**
  * A taxon placed at a clade, as shown on the insect clade page: a display name and the URL

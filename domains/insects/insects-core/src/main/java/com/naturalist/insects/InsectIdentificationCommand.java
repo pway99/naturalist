@@ -52,7 +52,7 @@ import com.naturalist.observation.Identification;
  * grounded descriptions but never gate it — the vision result is
  * authoritative for rank determination.
  */
-public class InsectIdentificationCommand {
+class InsectIdentificationCommand {
 
     private static final String TOOL_NAME = "propose_insect_species";
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -66,7 +66,7 @@ public class InsectIdentificationCommand {
     private final InsectQuery insectQuery;
     private final InsectCatalogIdentificationTransaction transaction;
 
-    public InsectIdentificationCommand(VisionService visionService,
+    InsectIdentificationCommand(VisionService visionService,
                                         TextGenerationService textGenerationService,
                                         ExternalAuthority externalAuthority,
                                         LibraryCommand libraryCommand,

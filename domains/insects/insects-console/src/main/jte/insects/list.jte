@@ -7,9 +7,9 @@
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.InsectSpeciesName
 @import com.naturalist.insects.FunctionalGuild
-@import com.naturalist.insects.console.AncestorIntro
-@import com.naturalist.insects.console.BreadcrumbSegment
-@import com.naturalist.insects.console.CladeTrail
+@import com.naturalist.insects.AncestorIntro
+@import com.naturalist.insects.BreadcrumbSegment
+@import com.naturalist.insects.CladeTrail
 @import com.naturalist.data.Page
 @import java.util.List
 @import java.util.Map

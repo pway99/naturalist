@@ -32,7 +32,7 @@ import java.util.Set;
  * is exact-string matching only, not semantic deduplication — see the
  * step-4 comment in {@link #doExecute} for what it does and does not cover.
  */
-public class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentification> {
+class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentification> {
 
     private static final Description PLACEHOLDER = new Description(
             "Identified via vision — description pending.",
@@ -43,7 +43,7 @@ public class InsectCatalogIdentificationTransaction extends Transaction<CatalogI
     private final InsectCommand insectCommand;
     private final InsectQuery insectQuery;
 
-    public InsectCatalogIdentificationTransaction(InsectCommand insectCommand, InsectQuery insectQuery) {
+    InsectCatalogIdentificationTransaction(InsectCommand insectCommand, InsectQuery insectQuery) {
         this.insectCommand = insectCommand;
         this.insectQuery = insectQuery;
     }

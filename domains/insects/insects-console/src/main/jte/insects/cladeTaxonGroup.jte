@@ -1,4 +1,4 @@
-@import com.naturalist.insects.console.CladeTaxonCard
+@import com.naturalist.insects.CladeTaxonCard
 @import java.util.List
 
 @param String heading

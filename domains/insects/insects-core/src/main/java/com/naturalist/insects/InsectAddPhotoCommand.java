@@ -16,12 +16,12 @@ import com.naturalist.observation.OrganismObservation;
  * delegates to an {@link InsectAddPhotoTransaction} so the image and
  * observation are persisted atomically.
  */
-public class InsectAddPhotoCommand {
+class InsectAddPhotoCommand {
 
     private final Observer observer = Observer.forClass(InsectAddPhotoCommand.class);
     private final InsectAddPhotoTransaction transaction;
 
-    public InsectAddPhotoCommand(InsectAddPhotoTransaction transaction) {
+    InsectAddPhotoCommand(InsectAddPhotoTransaction transaction) {
         this.transaction = transaction;
     }
 

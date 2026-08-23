@@ -1,8 +1,8 @@
 @import com.naturalist.clades.Clade
-@import com.naturalist.insects.console.CladeTaxonCard
-@import com.naturalist.insects.console.CladeNav
-@import com.naturalist.insects.console.BreadcrumbSegment
-@import com.naturalist.insects.console.CladeTrail
+@import com.naturalist.insects.CladeTaxonCard
+@import com.naturalist.insects.CladeNav
+@import com.naturalist.insects.BreadcrumbSegment
+@import com.naturalist.insects.CladeTrail
 @import java.util.List
 
 @param Clade clade

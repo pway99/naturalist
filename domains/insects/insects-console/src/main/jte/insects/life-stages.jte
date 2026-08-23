@@ -1,9 +1,9 @@
 @import com.naturalist.insects.InsectFamily
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
-@import com.naturalist.insects.console.AncestorIntro
-@import com.naturalist.insects.console.BreadcrumbSegment
-@import com.naturalist.insects.console.CladeTrail
+@import com.naturalist.insects.AncestorIntro
+@import com.naturalist.insects.BreadcrumbSegment
+@import com.naturalist.insects.CladeTrail
 @import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
 

@@ -9,8 +9,8 @@
 @import com.naturalist.insects.InsectRankName
 @import com.naturalist.insects.InsectImageId
 @import com.naturalist.observation.OrganismObservation
-@import com.naturalist.insects.console.BreadcrumbSegment
-@import com.naturalist.insects.console.CladeTrail
+@import com.naturalist.insects.BreadcrumbSegment
+@import com.naturalist.insects.CladeTrail
 @import com.naturalist.insects.InsectFeatureView
 @import com.naturalist.library.console.GlossaryLinker
 @import com.naturalist.insects.lifestage.LifeStage
@@ -31,7 +31,7 @@
 @param String descriptionUniversity = ""
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
-@param java.util.List<com.naturalist.insects.console.AncestorIntro> ancestorIntros = List.of()
+@param java.util.List<com.naturalist.insects.AncestorIntro> ancestorIntros = List.of()
 @param boolean collected = false
 @param boolean lens = false
 @param Map<InsectImageId, OrganismObservation> observations = java.util.Map.of()

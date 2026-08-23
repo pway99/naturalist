@@ -1,4 +1,4 @@
-package com.naturalist.insects.console.render;
+package com.naturalist.insects.render;
 
 import java.util.List;
 
