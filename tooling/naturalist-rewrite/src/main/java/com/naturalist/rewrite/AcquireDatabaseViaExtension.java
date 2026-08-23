@@ -10,14 +10,17 @@ import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.MethodMatcher;
+import org.openrewrite.java.RenameVariable;
 import org.openrewrite.java.marker.JavaSourceSet;
 import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.JavaSourceFile;
+import org.openrewrite.java.tree.Statement;
 import org.openrewrite.java.tree.TypeUtils;
 import org.openrewrite.marker.SearchResult;
 
 import java.util.Comparator;
+import java.util.UUID;
 
 public class AcquireDatabaseViaExtension extends Recipe {
 
@@ -25,6 +28,7 @@ public class AcquireDatabaseViaExtension extends Recipe {
         new MethodMatcher("com.naturalist.data.NaturalistDatabase create()");
     private static final String DB = "com.naturalist.data.NaturalistDatabase";
     private static final String EXT = "com.naturalist.data.NaturalistTestExtension";
+    private static final String NTE = "nte";
     private static final String MARK =
         "hoist a @RegisterExtension NaturalistTestExtension field; "
       + "do not create a bare NaturalistDatabase in a test";
@@ -80,16 +84,69 @@ public class AcquireDatabaseViaExtension extends Recipe {
             }
 
             /**
+             * Entry point for a matched Case-A field: decides whether the handle also needs
+             * renaming to {@code nte} (see the ordering note on the rename branch below), then
+             * delegates the actual retype to {@link #buildRetypedDeclaration}.
+             */
+            private J.VariableDeclarations retypeCaseAField(J.VariableDeclarations vd, ExecutionContext ctx) {
+                Cursor scope = getCursor();
+                J.VariableDeclarations.NamedVariable originalVariable = vd.getVariables().get(0);
+                String originalName = originalVariable.getSimpleName();
+
+                // No rename needed: either the handle is already called `nte`, or renaming it
+                // would collide with another field the enclosing class already declares `nte`
+                // (renaming into a collision would produce a duplicate declaration - non-compiling
+                // code). Either way, retype in place under the existing name.
+                if (NTE.equals(originalName) || classAlreadyDeclaresNte(scope, originalVariable)) {
+                    return buildRetypedDeclaration(vd, scope, ctx, this);
+                }
+
+                // Renaming must be scheduled BEFORE the declaration is rebuilt, and against the
+                // ORIGINAL, still-`NaturalistDatabase`-typed declaration node - not a version
+                // already retyped to `nte`. Two LST facts force this ordering:
+                //   1. `RenameVariable`'s own visitVariable locates its target NamedVariable by
+                //      `id` equality (LST equals()/hashCode() are `@EqualsAndHashCode.Include`
+                //      on `id` only), and `doAfterVisit` visitors run only once this whole tree
+                //      traversal has finished - by which time a freshly-JavaTemplate-built
+                //      declaration would carry a brand-new id. Scheduling the rename against
+                //      such a fresh declaration would never find its trigger, so NOTHING would
+                //      get renamed - not the declaration, not the references.
+                //   2. Scheduling the rename against the ORIGINAL (untouched) declaration keeps
+                //      the id RenameVariable is searching for intact, so its trigger fires; its
+                //      own `with*` rebuilds preserve ids on the way back up, so a second, chained
+                //      pass can still find the (now nte-named) declaration by id afterwards and
+                //      retype it. `doAfterVisit` runs its scheduled visitors in registration
+                //      order against the progressively-updated tree, so listing the rename first
+                //      guarantees the retype pass sees the already-renamed declaration.
+                // Verified empirically (see AcquireDatabaseViaExtensionTest
+                // .caseA_referencesAreRenamedAlongWithTheDeclaration): every reference to the old
+                // name - a method-invocation select and a constructor argument - is renamed to
+                // `nte` along with the declaration.
+                UUID declarationId = vd.getId();
+                doAfterVisit(new RenameVariable<>(originalVariable, NTE));
+                doAfterVisit(new JavaIsoVisitor<ExecutionContext>() {
+                    @Override
+                    public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations renamed, ExecutionContext ctx2) {
+                        if (renamed.getId().equals(declarationId)) {
+                            return buildRetypedDeclaration(renamed, getCursor(), ctx2, this);
+                        }
+                        return super.visitVariableDeclarations(renamed, ctx2);
+                    }
+                });
+                return vd;
+            }
+
+            /**
              * Two templates, NEVER one: a template whose first line is an annotation
-             * ({@code @RegisterExtension}) followed by a declaration parses — once
+             * ({@code @RegisterExtension}) followed by a declaration parses - once
              * {@code RegisterExtension} resolves to a real annotation type (true against a
-             * fully-compiled classpath, though not against in-memory-only test stubs) — as TWO
+             * fully-compiled classpath, though not against in-memory-only test stubs) - as TWO
              * statements, and {@code JavaTemplate.apply()} against a single-statement
              * {@code replace()} coordinate rejects that ("generated 2"). Reproduced against the real,
              * fully-compiled plants-console module.
              * <p>
              * Instead: (1) rebuild just the declaration ({@code Type name = Type.create()}, no
-             * annotation) as one coherent template — a single statement, always safe — then (2) add
+             * annotation) as one coherent template - a single statement, always safe - then (2) add
              * {@code @RegisterExtension} separately via the {@code addAnnotation()} coordinate. Never
              * combine an annotation and a declaration into one {@code replace()} template.
              * <p>
@@ -104,9 +161,17 @@ public class AcquireDatabaseViaExtension extends Recipe {
              * template call produces an internally consistent declarator/type/initializer with no
              * such stray.
              */
-            private J.VariableDeclarations retypeCaseAField(J.VariableDeclarations vd, ExecutionContext ctx) {
-                Cursor scope = getCursor();
-
+            // The recipe's own field access/annotation-adding machinery (maybeAddImport,
+            // maybeAutoFormat, maybeRemoveImport) is stateful per-visitor-instance, keyed off
+            // that instance's OWN cursor. This method is invoked from two different visitor
+            // instances (the outer Case-A matcher directly, and the chained rename-then-retype
+            // pass's own anonymous visitor via doAfterVisit) - calling those methods unqualified
+            // would silently resolve to the OUTER instance (Java resolves an unqualified method
+            // this class doesn't declare by walking out to the enclosing instance), using ITS
+            // stale cursor instead of the currently-executing visitor's. Taking the visitor
+            // explicitly and calling through it keeps every stateful call bound to whichever
+            // visitor is actually mid-traversal.
+            private J.VariableDeclarations buildRetypedDeclaration(J.VariableDeclarations vd, Cursor scope, ExecutionContext ctx, JavaIsoVisitor<ExecutionContext> visitor) {
                 // The trailing `;` is load-bearing, not decoration: without it, this statement
                 // parses fine when it is the class's only member (every unit-test fixture here),
                 // but once a member follows it (every real Case-A field in practice — a test class
@@ -139,12 +204,33 @@ public class AcquireDatabaseViaExtension extends Recipe {
                 // repo's own compiled jars are stale/absent). So the usual type-driven "add import
                 // only if referenced" machinery can't see this reference; add both imports
                 // unconditionally instead (onlyIfReferenced=false).
-                maybeAddImport(EXT, false);
-                maybeAddImport("org.junit.jupiter.api.extension.RegisterExtension", false);
-                maybeRemoveImport(DB);
+                visitor.maybeAddImport(EXT, false);
+                visitor.maybeAddImport("org.junit.jupiter.api.extension.RegisterExtension", false);
+                visitor.maybeRemoveImport(DB);
                 // Same-type replacement (field VariableDeclarations): normalize the added
                 // @RegisterExtension annotation + retyped declaration formatting.
-                return maybeAutoFormat(vd, withAnnotation.withPrefix(vd.getPrefix()), ctx);
+                return visitor.maybeAutoFormat(vd, withAnnotation.withPrefix(vd.getPrefix()), ctx);
+            }
+
+            /**
+             * Collision guard: renaming the Case-A handle to {@code nte} must not shadow or
+             * duplicate another field the enclosing class already declares under that name.
+             * Scans the enclosing {@link J.ClassDeclaration} body's own field declarations only
+             * (not method-local variables in unrelated scopes, which Java would let shadow a
+             * renamed field anyway) for any variable named {@code nte} other than {@code self}.
+             */
+            private boolean classAlreadyDeclaresNte(Cursor cursor, J.VariableDeclarations.NamedVariable self) {
+                J.ClassDeclaration classDecl = cursor.dropParentUntil(v -> v instanceof J.ClassDeclaration).getValue();
+                for (Statement stmt : classDecl.getBody().getStatements()) {
+                    if (stmt instanceof J.VariableDeclarations) {
+                        for (J.VariableDeclarations.NamedVariable candidate : ((J.VariableDeclarations) stmt).getVariables()) {
+                            if (!candidate.getId().equals(self.getId()) && NTE.equals(candidate.getSimpleName())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
             }
 
             @Override

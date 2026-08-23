@@ -55,7 +55,122 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
 
                     class T {
                         @RegisterExtension
+                        private final NaturalistTestExtension nte = NaturalistTestExtension.create();
+                    }
+                    """
+                )
+            )
+        );
+    }
+
+    @Test
+    void caseA_referencesAreRenamedAlongWithTheDeclaration() {
+        // The critical proof: renaming only the declaration would leave `db.getNamed(...)`
+        // and `new FooTestEntitySource(db)` referring to a symbol that no longer exists,
+        // so the file would not compile. Both a method-invocation select and a
+        // constructor-argument reference must follow the rename to `nte`.
+        rewriteRun(
+            java(NaturalistTypeStubs.NATURALIST_DATABASE),
+            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+            java(NaturalistTypeStubs.TEST_ENTITY_SOURCE),
+            java(NaturalistTypeStubs.FOO_SOURCE),
+            srcTestJava(
+                java(
+                    """
+                    import com.naturalist.data.FooTestEntitySource;
+                    import com.naturalist.data.NaturalistDatabase;
+
+                    class T {
+                        private final NaturalistDatabase db = NaturalistDatabase.create();
+                        private final FooTestEntitySource foo = new FooTestEntitySource(db);
+
+                        void m() {
+                            db.getNamed(String.class);
+                        }
+                    }
+                    """,
+                    // `com.naturalist.data.NaturalistDatabase` lingers here (a pre-existing,
+                    // documented `maybeRemoveImport` limitation - see retypeCaseAField's own
+                    // comments: it keys off TypesInUse, not printed text). `new
+                    // FooTestEntitySource(nte)` resolves against a constructor typed
+                    // `(NaturalistDatabase)`, and `nte.getNamed(...)` resolves to a method
+                    // declared on NaturalistDatabase, so both keep NaturalistDatabase in
+                    // TypesInUse even though its name no longer appears in source text. An
+                    // unused import doesn't break compilation - only the rename itself
+                    // (declaration + every reference) is the required outcome here.
+                    """
+                    import com.naturalist.data.FooTestEntitySource;
+                    import com.naturalist.data.NaturalistDatabase;
+                    import com.naturalist.data.NaturalistTestExtension;
+                    import org.junit.jupiter.api.extension.RegisterExtension;
+
+                    class T {
+                        @RegisterExtension
+                        private final NaturalistTestExtension nte = NaturalistTestExtension.create();
+                        private final FooTestEntitySource foo = new FooTestEntitySource(nte);
+
+                        void m() {
+                            nte.getNamed(String.class);
+                        }
+                    }
+                    """
+                )
+            )
+        );
+    }
+
+    @Test
+    void caseA_alreadyNamedNteIsRetypedWithoutRename() {
+        rewriteRun(
+            java(NaturalistTypeStubs.NATURALIST_DATABASE),
+            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+            srcTestJava(
+                java(
+                    """
+                    import com.naturalist.data.NaturalistDatabase;
+                    class T {
+                        private final NaturalistDatabase nte = NaturalistDatabase.create();
+                    }
+                    """,
+                    """
+                    import com.naturalist.data.NaturalistTestExtension;
+                    import org.junit.jupiter.api.extension.RegisterExtension;
+
+                    class T {
+                        @RegisterExtension
+                        private final NaturalistTestExtension nte = NaturalistTestExtension.create();
+                    }
+                    """
+                )
+            )
+        );
+    }
+
+    @Test
+    void caseA_collisionWithExistingNteFieldKeepsOriginalName() {
+        // Renaming `db` to `nte` here would collide with the class's other `nte` field and
+        // produce a duplicate declaration. The retype must still happen, but the handle
+        // keeps its original name.
+        rewriteRun(
+            java(NaturalistTypeStubs.NATURALIST_DATABASE),
+            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+            srcTestJava(
+                java(
+                    """
+                    import com.naturalist.data.NaturalistDatabase;
+                    class T {
+                        private final NaturalistDatabase db = NaturalistDatabase.create();
+                        private final String nte = "existing";
+                    }
+                    """,
+                    """
+                    import com.naturalist.data.NaturalistTestExtension;
+                    import org.junit.jupiter.api.extension.RegisterExtension;
+
+                    class T {
+                        @RegisterExtension
                         private final NaturalistTestExtension db = NaturalistTestExtension.create();
+                        private final String nte = "existing";
                     }
                     """
                 )
