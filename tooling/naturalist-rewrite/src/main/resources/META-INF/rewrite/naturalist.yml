@@ -1,0 +1,11 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: com.naturalist.EnforceArchitecture
+displayName: Naturalist architectural enforcement
+description: >-
+  Enforces the ADR-001 test-data-graph invariants: acquire TestEntitySources via
+  NaturalistDatabase#getNamed, obtain the test database from a @RegisterExtension
+  NaturalistTestExtension, and never cache a TestEntitySource in a field.
+recipeList:
+  - com.naturalist.rewrite.NoDirectTestEntitySourceConstruction
+  - com.naturalist.rewrite.NoCachedTestEntitySourceField
+  - com.naturalist.rewrite.AcquireDatabaseViaExtension
