@@ -195,6 +195,11 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>eol-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>eol-client-mock</artifactId>
                 <version>${project.version}</version>
             </dependency>

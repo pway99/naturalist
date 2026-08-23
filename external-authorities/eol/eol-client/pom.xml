@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>eol</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>eol-client</artifactId>
+    <name>eol :: eol-client</name>
+
+    <dependencies>
+        <!-- Temporary intermediate: EolClient extends the in-memory EolClientMock
+             until the real EOL HTTP client (OkHttp + the EOL search/pages APIs) lands.
+             This client-module-on-mock-module dependency is the same bounded, temporary
+             inversion the <Entity>RepositoryRdms modules use over their mocks; it is
+             severed when the real body replaces `extends EolClientMock`. See
+             docs/plans/2026-08-23-eol-client-design.md. -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>eol-client-mock</artifactId>
+        </dependency>
+    </dependencies>
+</project>

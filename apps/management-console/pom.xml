@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>eol-client-mock</artifactId>
+            <artifactId>eol-client</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>

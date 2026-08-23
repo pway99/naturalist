@@ -22,7 +22,7 @@ import java.util.Set;
  * identification flow never gates on the result.
  */
 @ResilienceExempt(reason = "in-memory fixture client; performs no I/O")
-public final class EolClientMock implements ExternalAuthority {
+public class EolClientMock implements ExternalAuthority {
 
     private static final Observer observer = Observer.forClass(EolClientMock.class);
 
