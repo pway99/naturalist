@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.openrewrite.java.Assertions.java;
 import static org.openrewrite.java.Assertions.srcMainJava;
 import static org.openrewrite.java.Assertions.srcTestJava;
@@ -442,6 +443,53 @@ class NoSelectInIterationTest implements RewriteTest {
                         }
                     }
                     """
+                )
+            )
+        );
+    }
+
+    @Test
+    void emitsAFindingsRowForALoopSelect() {
+        rewriteRun(
+            spec -> spec.dataTable(NoSelectInIteration.Findings.Row.class, rows -> {
+                assertThat(rows).hasSize(1);
+                NoSelectInIteration.Findings.Row row = rows.get(0);
+                assertThat(row.enclosingType()).isEqualTo("Q");
+                assertThat(row.enclosingMethod()).isEqualTo("load");
+                assertThat(row.select()).isEqualTo("getByName");
+                assertThat(row.iterationKind()).isEqualTo("for-each-loop");
+                assertThat(row.suggestedBatchedSibling()).isEqualTo("getByEntityNameSet");
+            }),
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(List<String> names) {
+                            for (String n : names) {
+                                repo.getByName(n);
+                            }
+                        }
+                    }
+                    """,
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(List<String> names) {
+                            for (String n : names) {
+                                %srepo.getByName(n);
+                            }
+                        }
+                    }
+                    """.formatted(MARK)
                 )
             )
         );

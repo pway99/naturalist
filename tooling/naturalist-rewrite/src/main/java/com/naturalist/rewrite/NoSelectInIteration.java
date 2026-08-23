@@ -1,7 +1,9 @@
 package com.naturalist.rewrite;
 
 import org.jspecify.annotations.Nullable;
+import org.openrewrite.Column;
 import org.openrewrite.Cursor;
+import org.openrewrite.DataTable;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
@@ -30,6 +32,31 @@ public class NoSelectInIteration extends Recipe {
     private static final String REPOSITORY = "com.naturalist.data.EntityRepository";
     private static final String QUERY = "com.naturalist.data.EntityQuery";
     private static final Set<String> WRITES = Set.of("insert", "update", "save");
+
+    private final transient Findings findings = new Findings(this);
+
+    public static class Findings extends DataTable<Findings.Row> {
+        public Findings(Recipe recipe) {
+            super(recipe,
+                "N+1 select findings",
+                "Repository or query selects invoked inside an iteration construct.");
+        }
+
+        public record Row(
+            @Column(displayName = "Source path",
+                    description = "Path of the file containing the finding.") String sourcePath,
+            @Column(displayName = "Enclosing type",
+                    description = "Simple name of the class holding the finding.") String enclosingType,
+            @Column(displayName = "Enclosing method",
+                    description = "Name of the method holding the finding.") String enclosingMethod,
+            @Column(displayName = "Select",
+                    description = "The repository/query method invoked per element.") String select,
+            @Column(displayName = "Iteration kind",
+                    description = "The loop or stream operation that fans the select out.") String iterationKind,
+            @Column(displayName = "Suggested batched sibling",
+                    description = "The batched method to call once instead.") String suggestedBatchedSibling) {
+        }
+    }
 
     /**
      * Per-element stream fan-out ops: any {@code Stream}/{@code IntStream}/{@code LongStream}/
@@ -100,7 +127,7 @@ public class NoSelectInIteration extends Recipe {
                 if (kind == null) {
                     return m;
                 }
-                return SearchResult.found(m, MESSAGE);
+                return recordAndMark(m, kind, m.getMethodType(), ctx);
             }
 
             @Override
@@ -112,9 +139,40 @@ public class NoSelectInIteration extends Recipe {
                 Cursor parent = nearestEnclosingInvocation(getCursor());
                 if (parent != null && parent.getValue() instanceof J.MethodInvocation fan
                         && matchesFanOut(fan)) {
-                    return SearchResult.found(m, MESSAGE);
+                    return recordAndMark(m, "stream:" + fan.getSimpleName(), m.getMethodType(), ctx);
                 }
                 return m;
+            }
+
+            private <T extends J> T recordAndMark(T site, String kind, JavaType.Method methodType,
+                                                    ExecutionContext ctx) {
+                findings.insertRow(ctx, new Findings.Row(
+                    sourcePath(), enclosingType(), enclosingMethod(),
+                    methodType.getName(), kind, suggestedSibling(methodType)));
+                return SearchResult.found(site, MESSAGE);
+            }
+
+            private String suggestedSibling(JavaType.Method methodType) {
+                JavaType.FullyQualified declaring = methodType.getDeclaringType();
+                if (declaring != null && TypeUtils.isAssignableTo(QUERY, declaring)) {
+                    return "findByNameSet";
+                }
+                return "getByEntityNameSet";
+            }
+
+            private String enclosingType() {
+                J.ClassDeclaration c = getCursor().firstEnclosing(J.ClassDeclaration.class);
+                return c == null ? "" : c.getSimpleName();
+            }
+
+            private String enclosingMethod() {
+                J.MethodDeclaration m = getCursor().firstEnclosing(J.MethodDeclaration.class);
+                return m == null ? "<initializer>" : m.getSimpleName();
+            }
+
+            private String sourcePath() {
+                JavaSourceFile sf = getCursor().firstEnclosing(JavaSourceFile.class);
+                return sf == null ? "" : sf.getSourcePath().toString();
             }
         };
         return Preconditions.check(
