@@ -63,7 +63,7 @@
                     <activeRecipes>
                         <recipe>com.naturalist.EnforceArchitecture</recipe>
                     </activeRecipes>
-                    <!-- failOnDryRunResults intentionally omitted until the backlog is cleared (Task 7). -->
+                    <failOnDryRunResults>true</failOnDryRunResults>
                 </configuration>
                 <dependencies>
                     <dependency>
