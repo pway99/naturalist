@@ -1,10 +1,7 @@
-package com.naturalist.garden.console;
+package com.naturalist.garden;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.PageRequest;
-import com.naturalist.garden.GardenTestContext;
-import com.naturalist.garden.PlantedZone;
-import com.naturalist.garden.Planting;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 

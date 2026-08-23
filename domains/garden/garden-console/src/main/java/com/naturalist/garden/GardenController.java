@@ -1,10 +1,6 @@
-package com.naturalist.garden.console;
+package com.naturalist.garden;
 
 import com.naturalist.data.PageRequest;
-import com.naturalist.garden.Planting;
-import com.naturalist.garden.PlantedZone;
-import com.naturalist.garden.PlantedZoneQuery;
-import com.naturalist.garden.PlantingQuery;
 import com.naturalist.zone.ZoneName;
 import com.naturalist.zone.subzone.SubZoneName;
 import org.springframework.stereotype.Controller;

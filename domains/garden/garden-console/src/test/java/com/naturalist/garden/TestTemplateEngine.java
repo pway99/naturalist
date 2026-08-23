@@ -1,4 +1,4 @@
-package com.naturalist.garden.console;
+package com.naturalist.garden;
 
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;
