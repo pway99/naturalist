@@ -49,11 +49,15 @@ public class NoDirectTestEntitySourceConstruction extends Recipe {
                 }
                 Expression db = nc.getArguments().get(0);
                 String simpleName = type.getClassName(); // simple name for top-level type
-                return JavaTemplate
+                J.MethodInvocation replacement = JavaTemplate
                         .builder("#{any(com.naturalist.data.NaturalistDatabase)}.getNamed(" + simpleName + ".class)")
                         .contextSensitive()
                         .build()
                         .apply(getCursor(), nc.getCoordinates().replace(), db);
+                // Structural change (J.NewClass -> J.MethodInvocation): normalize formatting of
+                // the replaced subtree explicitly rather than relying on JavaTemplate.apply()'s
+                // internal default.
+                return autoFormat(replacement, ctx, getCursor().getParentOrThrow());
             }
         };
     }

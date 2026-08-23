@@ -63,4 +63,35 @@ class NoDirectTestEntitySourceConstructionTest implements RewriteTest {
             java(NaturalistTypeStubs.FOO_SOURCE)   // no `after` => asserts unchanged
         );
     }
+
+    @Test
+    void markSourceConstructedWithUnexpectedArity() {
+        // BarTestEntitySource's constructor takes 2 arguments; the recipe must not attempt a
+        // rewrite it can't safely express (marker-not-corrupt floor) and instead flags it.
+        rewriteRun(
+            java(NaturalistTypeStubs.NATURALIST_DATABASE),
+            java(NaturalistTypeStubs.TEST_ENTITY_SOURCE),
+            java(NaturalistTypeStubs.BAR_SOURCE),
+            java(
+                """
+                import com.naturalist.data.BarTestEntitySource;
+                import com.naturalist.data.NaturalistDatabase;
+                class T {
+                    void m(NaturalistDatabase db) {
+                        BarTestEntitySource s = new BarTestEntitySource(db, "x");
+                    }
+                }
+                """,
+                """
+                import com.naturalist.data.BarTestEntitySource;
+                import com.naturalist.data.NaturalistDatabase;
+                class T {
+                    void m(NaturalistDatabase db) {
+                        BarTestEntitySource s = /*~~(unexpected TestEntitySource constructor arity; acquire via db.getNamed(...))~~>*/new BarTestEntitySource(db, "x");
+                    }
+                }
+                """
+            )
+        );
+    }
 }

@@ -33,4 +33,11 @@ final class NaturalistTypeStubs {
             public FooTestEntitySource(NaturalistDatabase database) { super(database); }
         }
         """;
+
+    static final String BAR_SOURCE = """
+        package com.naturalist.data;
+        public final class BarTestEntitySource extends TestEntitySource {
+            public BarTestEntitySource(NaturalistDatabase database, String label) { super(database); }
+        }
+        """;
 }
