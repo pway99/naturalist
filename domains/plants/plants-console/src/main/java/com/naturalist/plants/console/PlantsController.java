@@ -3,7 +3,6 @@ package com.naturalist.plants.console;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Plantae;
-import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.Page;
 import com.naturalist.data.Pages;
 import com.naturalist.data.PageRequest;
@@ -19,7 +18,6 @@ import com.naturalist.plants.PlantOrder;
 import com.naturalist.plants.PlantOrderName;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.PlantQuery;
-import com.naturalist.plants.PlantsTestContext;
 import com.naturalist.plants.console.render.PlantsParagraphCues;
 import com.naturalist.plants.cultivar.Cultivar;
 import com.naturalist.plants.cultivar.CultivarName;
@@ -75,14 +73,17 @@ public class PlantsController {
             new PlantImageStorageService(Path.of("data/images/plants"));
     private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
-    PlantsController(Resilience resilience) {
-        //TODO:: This will eventually be a spring managed bean
-        PlantsTestContext context = PlantsTestContext.create(NaturalistDatabase.create());
-        this.plantQuery = context.plantQuery();
-        this.cultivarQuery = context.cultivarQuery();
-        this.seedLineageQuery = context.seedLineageQuery();
-        this.plantProgramQuery = context.plantProgramQuery();
-        this.phytochemicalConstituentQuery = context.phytochemicalConstituentQuery();
+    PlantsController(PlantQuery plantQuery,
+                     CultivarQuery cultivarQuery,
+                     SeedLineageQuery seedLineageQuery,
+                     PlantProgramQuery plantProgramQuery,
+                     PhytochemicalConstituentQuery phytochemicalConstituentQuery,
+                     Resilience resilience) {
+        this.plantQuery = plantQuery;
+        this.cultivarQuery = cultivarQuery;
+        this.seedLineageQuery = seedLineageQuery;
+        this.plantProgramQuery = plantProgramQuery;
+        this.phytochemicalConstituentQuery = phytochemicalConstituentQuery;
         this.descriptionRenderer = new DescriptionRenderer(PlantsParagraphCues.CUES);
         this.resilience = resilience;
     }

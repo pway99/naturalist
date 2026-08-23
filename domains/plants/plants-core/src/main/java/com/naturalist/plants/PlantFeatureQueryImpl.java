@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  * {@link PlantFeatureView} — one {@link PlantFeatureView.RankGroup} per contributing rank,
  * ancestor-first, ordinal-ordered within a group. Mirrors {@code InsectFeatureQueryImpl}.
  */
+@DomainService
 class PlantFeatureQueryImpl implements PlantQuery.FeatureQuery {
 
     private final Observer observer = Observer.forClass(getClass());

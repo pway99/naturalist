@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.taxonomy.RankAncestry;
 
 import java.util.LinkedHashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
  * (species→genus→family→order) is encoded, as {@link #parentOf}. Mirrors
  * {@code InsectAncestryResolver}.
  */
+@DomainService
 class PlantAncestryResolver {
 
     private final PlantQuery.SpeciesQuery speciesQuery;

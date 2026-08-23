@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.cultivar.CultivarQuery;
 import com.naturalist.plants.management.PlantProgramQuery;
@@ -7,6 +8,7 @@ import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
 
 import java.util.Optional;
 
+@DomainService
 class PlantQueryImpl implements PlantQuery {
 
     private final SpeciesQuery plantEntityQuery;
