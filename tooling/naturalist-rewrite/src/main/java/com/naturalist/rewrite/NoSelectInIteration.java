@@ -46,6 +46,14 @@ public class NoSelectInIteration extends Recipe {
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         TreeVisitor<?, ExecutionContext> visitor = new JavaIsoVisitor<ExecutionContext>() {
 
+            /**
+             * This is a main-source invariant: test loops legitimately fan out selects for
+             * arrange/assert (see {@code doesNotFlagLoopSelectInTestSource}), so the N+1 gate
+             * must not fire there. Short-circuit on any source file whose {@link JavaSourceSet}
+             * marker name is not {@code "main"}; a file with no marker at all is treated as
+             * non-main (excluded), matching the conservative default (mirrors
+             * {@link NoCachedTestEntitySourceField}'s test-source guard, inverted).
+             */
             @Override
             public @Nullable J visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree instanceof JavaSourceFile) {
@@ -95,27 +103,54 @@ public class NoSelectInIteration extends Recipe {
      * Walk from the select site up to (not past) the enclosing method declaration. Returns a
      * short label for the enclosing iteration construct, or {@code null} if none is found in the
      * same lexical method scope. (Stream fan-out is added in Task 2.)
+     *
+     * <p>Only counts as "enclosing" when the select is reached through the loop's <em>body</em>
+     * — a select in the loop's header/control (a for-each iterable, a for-loop init/condition/
+     * update, a while/do-while condition) runs once per loop entry, not once per iteration, so it
+     * must not be flagged. {@code for (Foo f : repo.getByEntityNameSet(names)) {...}} — iterating
+     * a batched result — is the motivating clean case. A select reached via a header keeps
+     * ascending past that loop, since an outer loop's body may still enclose it. A select in a
+     * while/do-while condition is deliberately left unflagged as a fail-safe under-flag (covered
+     * by the runtime select-count gate) rather than special-cased.
      */
     static @Nullable String enclosingIterationKind(Cursor siteCursor) {
+        Object child = siteCursor.getValue();
         Cursor cursor = siteCursor.getParent();
         while (cursor != null) {
             Object value = cursor.getValue();
-            if (value instanceof J.ForEachLoop) {
-                return "for-each-loop";
-            }
-            if (value instanceof J.ForLoop) {
-                return "for-loop";
-            }
-            if (value instanceof J.WhileLoop) {
-                return "while-loop";
-            }
-            if (value instanceof J.DoWhileLoop) {
-                return "do-while-loop";
+            String kind = loopBodyKind(value, child);
+            if (kind != null) {
+                return kind;
             }
             if (value instanceof J.MethodDeclaration || value instanceof J.ClassDeclaration) {
                 return null;
             }
+            child = value;
             cursor = cursor.getParent();
+        }
+        return null;
+    }
+
+    /**
+     * Compares {@code child} against the loop's <em>padded</em> body ({@code
+     * l.getPadding().getBody()}, a {@code JRightPadded<Statement>}), not {@code l.getBody()}. The
+     * visitor pushes a cursor frame for that padding wrapper itself (see {@code
+     * JavaVisitor#visitRightPadded}) before descending into the unwrapped body statement, so the
+     * cursor value directly above a loop is the {@code JRightPadded} wrapper — comparing against
+     * the unwrapped {@code Statement} would never match and silently under-flag every loop body.
+     */
+    private static @Nullable String loopBodyKind(Object node, Object child) {
+        if (node instanceof J.ForEachLoop l && l.getPadding().getBody() == child) {
+            return "for-each-loop";
+        }
+        if (node instanceof J.ForLoop l && l.getPadding().getBody() == child) {
+            return "for-loop";
+        }
+        if (node instanceof J.WhileLoop l && l.getPadding().getBody() == child) {
+            return "while-loop";
+        }
+        if (node instanceof J.DoWhileLoop l && l.getPadding().getBody() == child) {
+            return "do-while-loop";
         }
         return null;
     }

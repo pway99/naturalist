@@ -96,6 +96,80 @@ class NoSelectInIterationTest implements RewriteTest {
     }
 
     @Test
+    void flagsSelectInForLoop() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(List<String> names) {
+                            for (int i = 0; i < names.size(); i++) {
+                                repo.getByName(names.get(i));
+                            }
+                        }
+                    }
+                    """,
+                    """
+                    package com.naturalist.data;
+                    import java.util.List;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(List<String> names) {
+                            for (int i = 0; i < names.size(); i++) {
+                                %srepo.getByName(names.get(i));
+                            }
+                        }
+                    }
+                    """.formatted(MARK)
+                )
+            )
+        );
+    }
+
+    @Test
+    void flagsSelectInDoWhileLoop() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(String n, boolean cond) {
+                            do {
+                                repo.getByName(n);
+                            } while (cond);
+                        }
+                    }
+                    """,
+                    """
+                    package com.naturalist.data;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(String n, boolean cond) {
+                            do {
+                                %srepo.getByName(n);
+                            } while (cond);
+                        }
+                    }
+                    """.formatted(MARK)
+                )
+            )
+        );
+    }
+
+    @Test
     void doesNotFlagBatchedSelectOutsideLoop() {
         rewriteRun(
             java(NaturalistTypeStubs.ENTITY_REPOSITORY),
@@ -113,6 +187,54 @@ class NoSelectInIterationTest implements RewriteTest {
                         }
                     }
                     """  // no `after` => unchanged
+                )
+            )
+        );
+    }
+
+    @Test
+    void doesNotFlagBatchedCallInForEachHeader() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.Set;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(Set<String> names) {
+                            for (String s : repo.getByEntityNameSet(names)) {
+                            }
+                        }
+                    }
+                    """  // no `after` => unchanged — batched select runs once, in the header
+                )
+            )
+        );
+    }
+
+    @Test
+    void doesNotFlagSelectInForLoopInit() {
+        rewriteRun(
+            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+            java(NaturalistTypeStubs.FOO_REPOSITORY),
+            srcMainJava(
+                java(
+                    """
+                    package com.naturalist.data;
+                    import java.util.Set;
+                    class Q {
+                        private final FooRepository repo;
+                        Q(FooRepository repo) { this.repo = repo; }
+                        void load(Set<String> names) {
+                            for (int i = repo.getByEntityNameSet(names).size(); i > 0; i--) {
+                            }
+                        }
+                    }
+                    """  // no `after` => unchanged — the init clause runs once, not per-iteration
                 )
             )
         );
