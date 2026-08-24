@@ -144,6 +144,9 @@ class InsectRepository {
             extends EntityRepository<InsectFamilyName, InsectFamily> {
 
         List<InsectFamily> getByOrderName(InsectOrderName orderName);
+
+        /** Batched sibling of {@link #getByOrderName} across a set of orders. */
+        List<InsectFamily> getByOrderNames(Set<InsectOrderName> orderNames);
     }
 
     protected interface GenusRepository

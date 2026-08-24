@@ -5,8 +5,13 @@ import com.naturalist.observation.OrganismImage;
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import com.naturalist.insects.InsectEntityCollections.ImageGallery;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -60,6 +65,71 @@ class InsectImageQueryImpl
         observer().arguments("forRankHierarchy", i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
         return ImageCollection.of(repository().getByParentNames(subtreeRanks(rankName)));
+    }
+
+    @Override
+    public ImageGallery forRankHierarchies(Set<InsectRankName> rankNames) {
+        observer().arguments("forRankHierarchies", i -> i.observableCollection(rankNames, "rankNames"))
+                .throwWhenInvalid();
+
+        // Attribute every rank in any root's subtree back to the root it descends from, expanding
+        // the whole forest one batched taxonomy query per level (not one subtree walk per root).
+        Map<InsectRankName, InsectRankName> rootOf = new LinkedHashMap<>();
+        for (InsectRankName root : rankNames) {
+            rootOf.put(root, root);
+        }
+
+        Set<InsectOrderName> orderRoots = ofType(rankNames, InsectOrderName.class);
+        if (!orderRoots.isEmpty()) {
+            for (InsectFamily family : familyQuery.forOrderNames(orderRoots).stream().toList()) {
+                rootOf.putIfAbsent(family.name(), rootOf.get(family.orderName()));
+            }
+        }
+
+        Set<InsectFamilyName> familyNames = ofType(rootOf.keySet(), InsectFamilyName.class);
+        if (!familyNames.isEmpty()) {
+            for (InsectGenus genus : genusQuery.forFamilyNames(familyNames).stream().toList()) {
+                InsectRankName root = rootOf.get(genus.familyName());
+                if (root != null) {
+                    rootOf.putIfAbsent(genus.name(), root);
+                }
+            }
+        }
+
+        Set<InsectGenusName> genusNames = ofType(rootOf.keySet(), InsectGenusName.class);
+        if (!genusNames.isEmpty()) {
+            for (InsectSpecies species : speciesQuery.forGenusNames(genusNames).stream().toList()) {
+                InsectRankName root = rootOf.get(species.genusName());
+                if (root != null) {
+                    rootOf.putIfAbsent(species.name(), root);
+                }
+            }
+        }
+
+        // Every requested root is a key (empty when it has no subtree images); one image fetch
+        // across the whole forest, each image routed to its root's bucket.
+        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> byRoot =
+                new LinkedHashMap<>();
+        for (InsectRankName root : rankNames) {
+            byRoot.put(root, new ArrayList<>());
+        }
+        if (!rootOf.isEmpty()) {
+            for (OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image
+                    : repository().getByParentNames(new LinkedHashSet<>(rootOf.keySet()))) {
+                InsectRankName root = rootOf.get(image.parentName());
+                if (root != null) {
+                    byRoot.get(root).add(image);
+                }
+            }
+        }
+        return ImageGallery.grouped(byRoot);
+    }
+
+    private static <T extends InsectRankName> Set<T> ofType(Set<InsectRankName> ranks, Class<T> type) {
+        return ranks.stream()
+                .filter(type::isInstance)
+                .map(type::cast)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**

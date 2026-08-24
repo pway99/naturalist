@@ -42,7 +42,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -555,12 +554,10 @@ public class InsectsController {
         Map<InsectOrderName, InsectOrder> orderByName = new LinkedHashMap<>();
         insectQuery.orders().findByNameSet(orderNameSet).stream()
                 .forEach(order -> orderByName.put(order.name(), order));
-        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByFamily = new LinkedHashMap<>();
-        for (var family : familyPage.content()) {
-            imagesByFamily.put(family.name(),
-                    insectQuery.images().forRankHierarchy(family.name()).stream().toList());
-        }
-        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByFamily);
+        java.util.LinkedHashSet<InsectRankName> familyRoots = familyPage.content().stream()
+                .map(family -> (InsectRankName) family.name())
+                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
+        InsectEntityCollections.ImageGallery gallery = insectQuery.images().forRankHierarchies(familyRoots);
         model.addAttribute("familyPage", familyPage);
         model.addAttribute("orderByName", orderByName);
         model.addAttribute("gallery", gallery);
@@ -607,12 +604,10 @@ public class InsectsController {
     String orders(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<InsectOrder> orderPage = insectQuery.orders()
                 .findPage(PageRequest.console(Math.max(0, page)));
-        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByOrder = new LinkedHashMap<>();
-        for (var order : orderPage.content()) {
-            imagesByOrder.put(order.name(),
-                    insectQuery.images().forRankHierarchy(order.name()).stream().toList());
-        }
-        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByOrder);
+        java.util.LinkedHashSet<InsectRankName> orderRoots = orderPage.content().stream()
+                .map(order -> (InsectRankName) order.name())
+                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
+        InsectEntityCollections.ImageGallery gallery = insectQuery.images().forRankHierarchies(orderRoots);
         model.addAttribute("orderPage", orderPage);
         model.addAttribute("gallery", gallery);
         model.addAttribute("ancestorIntros", classOnlyIntros());
@@ -662,12 +657,10 @@ public class InsectsController {
         Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
         insectQuery.families().findByNameSet(familyNameSet).stream()
                 .forEach(family -> familyByName.put(family.name(), family));
-        Map<InsectRankName, Collection<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByGenus = new LinkedHashMap<>();
-        for (var genus : genusPage.content()) {
-            imagesByGenus.put(genus.name(),
-                    insectQuery.images().forRankHierarchy(genus.name()).stream().toList());
-        }
-        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.grouped(imagesByGenus);
+        java.util.LinkedHashSet<InsectRankName> genusRoots = genusPage.content().stream()
+                .map(genus -> (InsectRankName) genus.name())
+                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
+        InsectEntityCollections.ImageGallery gallery = insectQuery.images().forRankHierarchies(genusRoots);
         model.addAttribute("genusPage", genusPage);
         model.addAttribute("familyByName", familyByName);
         model.addAttribute("gallery", gallery);

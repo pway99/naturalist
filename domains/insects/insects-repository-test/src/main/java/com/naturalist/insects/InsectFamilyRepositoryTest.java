@@ -101,6 +101,26 @@ interface InsectFamilyRepositoryTest
         assertThat(results).isEmpty();
     }
 
+    @Test
+    default void getByOrderNames_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByOrderNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("orderNames");
+    }
+
+    @Test
+    default void getByOrderNames_partialMatch_returnsOnlyKnownOrders() {
+        var results = repository().getByOrderNames(Set.of(
+                InsectOrderName.of("diptera"),
+                InsectOrderName.of("zygentoma")));
+        assertThat(results)
+                .extracting(InsectFamily::name)
+                .extracting(InsectFamilyName::value)
+                .contains("tachinidae");
+        assertThat(results).allSatisfy(f ->
+                assertThat(f.orderName()).isEqualTo(InsectOrderName.of("diptera")));
+    }
+
     private static Description description() {
         return new Description(
                 RandomValue.string(), RandomValue.string(),

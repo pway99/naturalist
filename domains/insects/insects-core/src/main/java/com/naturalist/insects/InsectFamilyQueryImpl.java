@@ -33,4 +33,12 @@ class InsectFamilyQueryImpl
                 .throwWhenInvalid();
         return FamilyCollection.of(repository().getByOrderName(orderName));
     }
+
+    @Override
+    public FamilyCollection forOrderNames(Set<InsectOrderName> orderNames) {
+        observer().arguments("forOrderNames",
+                        i -> i.entityNameCollection(orderNames, "orderNames"))
+                .throwWhenInvalid();
+        return FamilyCollection.of(repository().getByOrderNames(orderNames));
+    }
 }

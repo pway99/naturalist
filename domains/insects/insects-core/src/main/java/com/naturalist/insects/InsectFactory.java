@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.insects.InsectEntityCollections.ImageGallery;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
@@ -10,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Name-keyed, rank-polymorphic assembly of the full {@link Insect} read model.
@@ -150,27 +152,39 @@ class InsectFactory {
     }
 
     private List<InsectTaxonView> familyChildren(InsectOrderName orderName) {
-        return familyQuery.forOrderName(orderName).stream()
-                .map(f -> (InsectTaxonView) InsectFamilyView.of(
-                        f, imageQuery.forRankHierarchy(f.name())))
+        List<InsectFamily> families = familyQuery.forOrderName(orderName).stream().toList();
+        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(families, InsectFamily::name));
+        return families.stream()
+                .map(f -> (InsectTaxonView) InsectFamilyView.of(f, gallery.forEntity(f.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
 
     private List<InsectTaxonView> genusChildren(InsectFamilyName familyName) {
-        return genusQuery.forFamilyName(familyName).stream()
-                .map(g -> (InsectTaxonView) InsectGenusView.of(
-                        g, imageQuery.forRankHierarchy(g.name())))
+        List<InsectGenus> genera = genusQuery.forFamilyName(familyName).stream().toList();
+        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(genera, InsectGenus::name));
+        return genera.stream()
+                .map(g -> (InsectTaxonView) InsectGenusView.of(g, gallery.forEntity(g.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
 
     private List<InsectTaxonView> speciesChildren(InsectGenusName genusName) {
-        return speciesQuery.forGenusName(genusName).stream()
-                .map(s -> (InsectTaxonView) InsectSpeciesView.of(
-                        s, imageQuery.forParentName(s.name())))
+        List<InsectSpecies> species = speciesQuery.forGenusName(genusName).stream().toList();
+        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(species, InsectSpecies::name));
+        return species.stream()
+                .map(s -> (InsectTaxonView) InsectSpeciesView.of(s, gallery.forEntity(s.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
+    }
+
+    /** The child ranks as a set of {@link InsectRankName} roots for one batched image-gallery
+     *  query, replacing a per-child {@code forRankHierarchy}/{@code forParentName} fan-out. */
+    private static <T> Set<InsectRankName> rootSet(List<T> children, java.util.function.Function<T, ? extends InsectRankName> name) {
+        return children.stream()
+                .map(name)
+                .map(n -> (InsectRankName) n)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Insect observe(Insect insect) {

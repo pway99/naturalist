@@ -5,6 +5,7 @@ import com.naturalist.insects.InsectEntityCollections.FamilyCollection;
 import com.naturalist.insects.InsectEntityCollections.FunctionalRoleCollection;
 import com.naturalist.insects.InsectEntityCollections.GenusCollection;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import com.naturalist.insects.InsectEntityCollections.ImageGallery;
 import com.naturalist.insects.InsectEntityCollections.OrderCollection;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 
@@ -106,6 +107,21 @@ public interface InsectQuery {
          * families, genera, and species.
          */
         ImageCollection forRankHierarchy(InsectRankName rankName);
+
+        /**
+         * Batched sibling of {@link #forRankHierarchy(InsectRankName)}: for each root rank in
+         * {@code rankNames}, its subtree images, returned as an {@link ImageGallery} keyed by that
+         * root. Resolves every root's subtree in a fixed number of batched queries rather than one
+         * {@code forRankHierarchy} call per root — the fan-out the query-hygiene gate forbids when
+         * a caller renders a page of ranks each with its own gallery. Every requested root is
+         * present as a key, with an empty collection when it has no subtree images.
+         *
+         * <p>The roots are expected to be <em>mutually non-ancestral</em> — the sibling set a page
+         * or a parent's child cards produce (all one rank, or peers). When one root is an ancestor
+         * of another the shared subtree's attribution is unspecified; callers with that shape want
+         * {@link #forRankHierarchy(InsectRankName)} per root instead.
+         */
+        ImageGallery forRankHierarchies(Set<InsectRankName> rankNames);
     }
 
     interface ObservationQuery
@@ -129,6 +145,9 @@ public interface InsectQuery {
     interface FamilyQuery extends EntityQuery<InsectFamilyName, InsectFamily, FamilyCollection> {
 
         FamilyCollection forOrderName(InsectOrderName orderName);
+
+        /** Batched sibling of {@link #forOrderName(InsectOrderName)} across a set of orders. */
+        FamilyCollection forOrderNames(Set<InsectOrderName> orderNames);
     }
 
     interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenus, GenusCollection> {

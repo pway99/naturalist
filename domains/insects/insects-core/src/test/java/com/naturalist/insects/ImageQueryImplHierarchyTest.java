@@ -59,4 +59,29 @@ class ImageQueryImplHierarchyTest {
         var result = query.images().forRankHierarchy(subspeciesName);
         assertThat(result.stream().toList()).isEmpty();
     }
+
+    @Test
+    void forRankHierarchies_groupsEachRootSubtreeMatchingForRankHierarchy() {
+        // Two non-ancestral roots at different levels: a genus under Lepidoptera and an unrelated
+        // order. Each root's bucket must equal what forRankHierarchy returns for it alone.
+        InsectRankName battus = TestInsectsIdentifiers.InsectGenus.Battus.name;
+        InsectRankName hymenoptera = TestInsectsIdentifiers.InsectOrder.Hymenoptera.name;
+
+        var gallery = query.images().forRankHierarchies(java.util.Set.of(battus, hymenoptera));
+
+        assertThat(gallery.keys()).containsExactlyInAnyOrder(battus, hymenoptera);
+        assertThat(gallery.forEntity(battus).stream().toList())
+                .hasSameElementsAs(query.images().forRankHierarchy(battus).stream().toList());
+        assertThat(gallery.forEntity(hymenoptera).stream().toList())
+                .hasSameElementsAs(query.images().forRankHierarchy(hymenoptera).stream().toList());
+    }
+
+    @Test
+    void forRankHierarchies_unknownRoot_isPresentButEmpty() {
+        InsectRankName unknown = InsectGenusName.of("nonexistent-genus");
+        var gallery = query.images().forRankHierarchies(java.util.Set.of(unknown));
+
+        assertThat(gallery.keys()).containsExactly(unknown);
+        assertThat(gallery.forEntity(unknown).stream().toList()).isEmpty();
+    }
 }
