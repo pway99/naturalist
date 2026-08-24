@@ -35,4 +35,11 @@ class SoilPhysicalCharacteristicsQueryImpl
                 .throwWhenInvalid();
         return repository().getByLabAnalysisId(labAnalysisId);
     }
+
+    @Override
+    public SoilPhysicalCharacteristicsCollection forLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
+        observer().arguments("forLabAnalysisIds", i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+                .throwWhenInvalid();
+        return SoilPhysicalCharacteristicsCollection.of(repository().getByLabAnalysisIds(labAnalysisIds));
+    }
 }

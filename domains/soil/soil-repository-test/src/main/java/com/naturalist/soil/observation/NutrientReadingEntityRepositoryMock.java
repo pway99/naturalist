@@ -4,6 +4,7 @@ import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * In-memory {@link NutrientReadingRepository} backed by {@link NutrientReadingTestEntitySource}.
@@ -23,6 +24,16 @@ class NutrientReadingEntityRepositoryMock
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(reading -> labAnalysisId.equals(reading.labAnalysisId()))
+                .toList();
+    }
+
+    @Override
+    public List<NutrientReading> getByLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
+        observer().arguments("getByLabAnalysisIds",
+                        i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(reading -> labAnalysisIds.contains(reading.labAnalysisId()))
                 .toList();
     }
 

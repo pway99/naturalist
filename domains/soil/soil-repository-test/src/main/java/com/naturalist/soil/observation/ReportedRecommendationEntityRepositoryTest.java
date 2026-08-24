@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -86,6 +87,25 @@ interface ReportedRecommendationEntityRepositoryTest
 
         assertThat(result).hasSize(14);
         assertThat(result).filteredOn(r -> r.unit() == MeasurementUnit.TONS_PER_ACRE_FOOT).hasSize(2);
+    }
+
+    @Test
+    default void getByLabAnalysisIds_nullArgument() {
+        assertThatThrownBy(() -> repository().getByLabAnalysisIds(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("labAnalysisIds");
+    }
+
+    @Test
+    default void getByLabAnalysisIds_partialMatch_returnsOnlyKnownAnalyses() {
+        List<ReportedRecommendation> result = repository().getByLabAnalysisIds(Set.of(
+                TestSoilIdentifiers.SoilProfiles.Box1.LabAnalyses.labAnalysis,
+                TestSoilIdentifiers.SoilProfiles.NotFound.labAnalysis));
+
+        assertThat(result).hasSize(14);
+        assertThat(result).allSatisfy(r ->
+                assertThat(r.labAnalysisId())
+                        .isEqualTo(TestSoilIdentifiers.SoilProfiles.Box1.LabAnalyses.labAnalysis));
     }
 
     @Test

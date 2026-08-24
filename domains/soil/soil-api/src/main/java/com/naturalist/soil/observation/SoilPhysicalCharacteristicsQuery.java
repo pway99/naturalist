@@ -1,6 +1,7 @@
 package com.naturalist.soil.observation;
 
 import java.util.Optional;
+import java.util.Set;
 
 import com.naturalist.data.EntityQuery;
 
@@ -13,4 +14,7 @@ public interface SoilPhysicalCharacteristicsQuery
         SoilPhysicalCharacteristicsCollection> {
 
     Optional<SoilPhysicalCharacteristics> forLabAnalysisId(LabAnalysisId labAnalysisId);
+
+    /** Batched sibling of {@link #forLabAnalysisId} — the (0-or-1) row per analysis in one call. */
+    SoilPhysicalCharacteristicsCollection forLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds);
 }

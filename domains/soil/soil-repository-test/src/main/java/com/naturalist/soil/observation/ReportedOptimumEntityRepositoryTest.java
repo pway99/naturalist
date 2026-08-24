@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -82,6 +83,25 @@ interface ReportedOptimumEntityRepositoryTest extends EntityRepositoryTest<Repor
     default void getByLabAnalysisId_known_returnsEveryOptimumForThatAnalysis() {
         List<ReportedOptimum> result =
                 repository().getByLabAnalysisId(TestSoilIdentifiers.SoilProfiles.Box1.LabAnalyses.labAnalysis);
+
+        assertThat(result).hasSize(17);
+        assertThat(result).allSatisfy(optimum ->
+                assertThat(optimum.labAnalysisId())
+                        .isEqualTo(TestSoilIdentifiers.SoilProfiles.Box1.LabAnalyses.labAnalysis));
+    }
+
+    @Test
+    default void getByLabAnalysisIds_nullArgument() {
+        assertThatThrownBy(() -> repository().getByLabAnalysisIds(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContainingAll("labAnalysisIds");
+    }
+
+    @Test
+    default void getByLabAnalysisIds_partialMatch_returnsOnlyKnownAnalyses() {
+        List<ReportedOptimum> result = repository().getByLabAnalysisIds(Set.of(
+                TestSoilIdentifiers.SoilProfiles.Box1.LabAnalyses.labAnalysis,
+                TestSoilIdentifiers.SoilProfiles.NotFound.labAnalysis));
 
         assertThat(result).hasSize(17);
         assertThat(result).allSatisfy(optimum ->

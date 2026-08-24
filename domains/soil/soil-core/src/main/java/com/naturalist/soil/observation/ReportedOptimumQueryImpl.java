@@ -36,6 +36,13 @@ class ReportedOptimumQueryImpl
     }
 
     @Override
+    public ReportedOptimumCollection forLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
+        observer().arguments("forLabAnalysisIds", i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+                .throwWhenInvalid();
+        return ReportedOptimumCollection.of(repository().getByLabAnalysisIds(labAnalysisIds));
+    }
+
+    @Override
     public ReportedOptimumCollection forNutrientName(NutrientName nutrientName) {
         observer().arguments("forNutrientName", i -> i.entityName(nutrientName, "nutrientName"))
                 .throwWhenInvalid();

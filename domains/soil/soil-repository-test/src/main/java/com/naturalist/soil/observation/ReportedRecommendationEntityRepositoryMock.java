@@ -4,6 +4,7 @@ import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * In-memory {@link ReportedRecommendationRepository} backed by
@@ -25,6 +26,16 @@ class ReportedRecommendationEntityRepositoryMock
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(recommendation -> labAnalysisId.equals(recommendation.labAnalysisId()))
+                .toList();
+    }
+
+    @Override
+    public List<ReportedRecommendation> getByLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
+        observer().arguments("getByLabAnalysisIds",
+                        i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(recommendation -> labAnalysisIds.contains(recommendation.labAnalysisId()))
                 .toList();
     }
 

@@ -4,6 +4,7 @@ import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.soil.observation.LabAnalysis;
+import com.naturalist.soil.observation.LabAnalysisId;
 import com.naturalist.soil.observation.LabAnalysisInfo;
 import com.naturalist.soil.observation.LabAnalysisInfoQuery;
 import com.naturalist.soil.observation.MicroNutrients;
@@ -13,7 +14,11 @@ import com.naturalist.soil.observation.NutrientReading;
 import com.naturalist.soil.observation.NutrientReadingQuery;
 import com.naturalist.soil.observation.Nutrients;
 import com.naturalist.soil.observation.PrimaryNutrients;
+import com.naturalist.soil.observation.ReportedOptimum;
+import com.naturalist.soil.observation.ReportedOptimumCollection;
 import com.naturalist.soil.observation.ReportedOptimumQuery;
+import com.naturalist.soil.observation.ReportedRecommendation;
+import com.naturalist.soil.observation.ReportedRecommendationCollection;
 import com.naturalist.soil.observation.ReportedRecommendationQuery;
 import com.naturalist.soil.observation.SecondaryNutrients;
 import com.naturalist.soil.observation.SoilPhysicalCharacteristics;
@@ -22,6 +27,7 @@ import com.naturalist.soil.observation.SoilPhysicalCharacteristicsQuery;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -74,22 +80,45 @@ class SoilProfileFactory {
                 .map(info -> observe(new SoilProfile(info, assembleAnalyses(name))));
     }
 
+    /**
+     * Assembles every analysis of a profile with a fixed number of queries rather than four per
+     * analysis: collect the profile's lab-analysis ids, batch-fetch each observation type across
+     * that id set in one call, group the results by analysis, and compose each analysis from its
+     * bucket. The per-analysis {@code forLabAnalysisId} loop this replaces was the N+1 the runtime
+     * select gate flags on {@code SoilProfileQueryImpl.getBySoilProfileName}.
+     */
     private List<LabAnalysis> assembleAnalyses(SoilProfileName name) {
-        return labAnalysisInfoQuery.forSoilProfileName(name).stream()
-                .map(this::assembleAnalysis)
-                .toList();
-    }
+        List<LabAnalysisInfo> infos = labAnalysisInfoQuery.forSoilProfileName(name).stream().toList();
+        if (infos.isEmpty()) {
+            return List.of();
+        }
+        Set<LabAnalysisId> ids = infos.stream().map(LabAnalysisInfo::id).collect(Collectors.toSet());
 
-    private LabAnalysis assembleAnalysis(LabAnalysisInfo info) {
-        NutrientPanel panel = assemblePanel(nutrientReadingQuery.forLabAnalysisId(info.id()).stream().toList());
-        return new LabAnalysis(
-                info,
-                panel,
-                physicalCharacteristicsQuery.forLabAnalysisId(info.id()),
-                // Beside the panel, never inside it — the readings are measurement, these are the
-                // lab's targets for the submitted crop and the advice it gave about them.
-                reportedOptimumQuery.forLabAnalysisId(info.id()),
-                reportedRecommendationQuery.forLabAnalysisId(info.id()));
+        Map<LabAnalysisId, List<NutrientReading>> readingsByAnalysis =
+                nutrientReadingQuery.forLabAnalysisIds(ids).stream()
+                        .collect(Collectors.groupingBy(NutrientReading::labAnalysisId));
+        Map<LabAnalysisId, SoilPhysicalCharacteristics> physicalByAnalysis =
+                physicalCharacteristicsQuery.forLabAnalysisIds(ids).stream()
+                        .collect(Collectors.toMap(SoilPhysicalCharacteristics::labAnalysisId,
+                                Function.identity(), (a, b) -> a));
+        Map<LabAnalysisId, List<ReportedOptimum>> optimaByAnalysis =
+                reportedOptimumQuery.forLabAnalysisIds(ids).stream()
+                        .collect(Collectors.groupingBy(ReportedOptimum::labAnalysisId));
+        Map<LabAnalysisId, List<ReportedRecommendation>> recommendationsByAnalysis =
+                reportedRecommendationQuery.forLabAnalysisIds(ids).stream()
+                        .collect(Collectors.groupingBy(ReportedRecommendation::labAnalysisId));
+
+        return infos.stream()
+                .map(info -> new LabAnalysis(
+                        info,
+                        assemblePanel(readingsByAnalysis.getOrDefault(info.id(), List.of())),
+                        Optional.ofNullable(physicalByAnalysis.get(info.id())),
+                        // Beside the panel, never inside it — the readings are measurement, these are
+                        // the lab's targets for the submitted crop and the advice it gave about them.
+                        ReportedOptimumCollection.of(optimaByAnalysis.getOrDefault(info.id(), List.of())),
+                        ReportedRecommendationCollection.of(
+                                recommendationsByAnalysis.getOrDefault(info.id(), List.of()))))
+                .toList();
     }
 
     /**

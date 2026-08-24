@@ -36,6 +36,13 @@ class NutrientReadingQueryImpl
     }
 
     @Override
+    public NutrientReadingCollection forLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
+        observer().arguments("forLabAnalysisIds", i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+                .throwWhenInvalid();
+        return NutrientReadingCollection.of(repository().getByLabAnalysisIds(labAnalysisIds));
+    }
+
+    @Override
     public NutrientReadingCollection forNutrientName(NutrientName nutrientName) {
         observer().arguments("forNutrientName", i -> i.entityName(nutrientName, "nutrientName"))
                 .throwWhenInvalid();

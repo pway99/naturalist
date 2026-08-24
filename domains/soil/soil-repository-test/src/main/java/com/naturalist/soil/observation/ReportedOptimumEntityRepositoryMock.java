@@ -4,6 +4,7 @@ import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * In-memory {@link ReportedOptimumRepository} backed by {@link ReportedOptimumTestEntitySource}.
@@ -23,6 +24,16 @@ class ReportedOptimumEntityRepositoryMock
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(optimum -> labAnalysisId.equals(optimum.labAnalysisId()))
+                .toList();
+    }
+
+    @Override
+    public List<ReportedOptimum> getByLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
+        observer().arguments("getByLabAnalysisIds",
+                        i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(optimum -> labAnalysisIds.contains(optimum.labAnalysisId()))
                 .toList();
     }
 

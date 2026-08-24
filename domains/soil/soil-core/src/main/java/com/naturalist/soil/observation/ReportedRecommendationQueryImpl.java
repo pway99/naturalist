@@ -36,6 +36,13 @@ class ReportedRecommendationQueryImpl
     }
 
     @Override
+    public ReportedRecommendationCollection forLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
+        observer().arguments("forLabAnalysisIds", i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+                .throwWhenInvalid();
+        return ReportedRecommendationCollection.of(repository().getByLabAnalysisIds(labAnalysisIds));
+    }
+
+    @Override
     public ReportedRecommendationCollection forInputName(RecommendedInputName inputName) {
         observer().arguments("forInputName", i -> i.entityName(inputName, "inputName"))
                 .throwWhenInvalid();
