@@ -6,6 +6,7 @@ import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
+import java.util.Set;
 
 class CitationAssociationRepositoryMock
         extends AbstractTestEntityRepository<CitationAssociationId, CitationAssociation, CitationAssociationTestEntitySource>
@@ -32,6 +33,16 @@ class CitationAssociationRepositoryMock
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(a -> a.subject().equals(subject))
+                .toList();
+    }
+
+    @Override
+    public List<CitationAssociation> getBySubjects(Set<EntityRef> subjects) {
+        observer().arguments("getBySubjects",
+                        i -> i.observableCollection(subjects, "subjects"))
+                .throwWhenInvalid();
+        return testEntitySource().entityStream()
+                .filter(a -> subjects.contains(a.subject()))
                 .toList();
     }
 }

@@ -4,10 +4,13 @@ import com.naturalist.authority.CitationName;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.insects.InsectFamilyName;
 import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectsDomain;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -60,5 +63,27 @@ class CitationAssociationQueryImplTest {
         CitationAssociationCollection result = query.findBySubject(unknown);
 
         assertThat(result.isEmpty()).isTrue();
+    }
+
+    @Test
+    void findBySubjects_rejectsNull() {
+        assertThatThrownBy(() -> query.findBySubjects(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("subjects");
+    }
+
+    @Test
+    void findBySubjects_partialMatch_returnsOnlyKnownSubjects() {
+        EntityRef lepidoptera = new EntityRef(
+                new InsectsDomain(), InsectOrderName.of("lepidoptera"));
+        EntityRef papilionidae = new EntityRef(
+                new InsectsDomain(), InsectFamilyName.of("papilionidae"));
+        EntityRef unknown = new EntityRef(
+                new InsectsDomain(), InsectOrderName.of("zygentoma"));
+
+        CitationAssociationCollection result =
+                query.findBySubjects(Set.of(lepidoptera, papilionidae, unknown));
+
+        assertThat(result.size()).isEqualTo(2);
     }
 }

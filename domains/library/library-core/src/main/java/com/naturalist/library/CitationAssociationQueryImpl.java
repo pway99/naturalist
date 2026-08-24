@@ -5,6 +5,8 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 
+import java.util.Set;
+
 @DomainService
 class CitationAssociationQueryImpl implements CitationAssociationQuery {
 
@@ -30,5 +32,13 @@ class CitationAssociationQueryImpl implements CitationAssociationQuery {
                         .valueObject(subject, "subject"))
                 .throwWhenInvalid();
         return CitationAssociationCollection.of(repository.getBySubject(subject));
+    }
+
+    @Override
+    public CitationAssociationCollection findBySubjects(Set<EntityRef> subjects) {
+        observer.arguments("findBySubjects", i -> i
+                        .observableCollection(subjects, "subjects"))
+                .throwWhenInvalid();
+        return CitationAssociationCollection.of(repository.getBySubjects(subjects));
     }
 }

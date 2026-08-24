@@ -51,6 +51,12 @@ class InsectQueryImplTest {
                         com.naturalist.catalog.EntityRef subject) {
                     return com.naturalist.library.CitationAssociationCollection.empty();
                 }
+
+                @Override
+                public com.naturalist.library.CitationAssociationCollection findBySubjects(
+                        java.util.Set<com.naturalist.catalog.EntityRef> subjects) {
+                    return com.naturalist.library.CitationAssociationCollection.empty();
+                }
             };
     com.naturalist.library.CitationQuery libraryCitationQuery =
             new com.naturalist.library.CitationQuery() {

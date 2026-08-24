@@ -4,13 +4,16 @@ import com.naturalist.authority.Citation;
 import com.naturalist.authority.CitationName;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.library.CitationAssociation;
 import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.library.CitationQuery;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,12 +47,28 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
         observer.arguments("findByRankName", i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
 
-        List<PendingCitation> pending = ancestryResolver.inherited(rankName, rank ->
-                        citationAssociationQuery.findBySubject(new EntityRef(INSECTS, (EntityName) rank))
-                                .stream().toList())
-                .stream()
-                .map(at -> new PendingCitation(at.value().citationName(), at.sourceRank(), at.value().note()))
-                .toList();
+        // Resolve the whole ancestry's citation associations in ONE batched query rather than
+        // one findBySubject per ancestor rank — the per-rank loop inside inherited() was exactly
+        // the fan-out the N+1 select gate exists to catch.
+        Set<InsectRankName> ancestry = ancestryResolver.ancestry(rankName); // ancestor-first
+        Set<EntityRef> subjects = ancestry.stream()
+                .map(rank -> new EntityRef(INSECTS, (EntityName) rank))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        Map<InsectRankName, List<CitationAssociation>> associationsByRank =
+                citationAssociationQuery.findBySubjects(subjects).stream()
+                        .collect(Collectors.groupingBy(a -> (InsectRankName) a.subject().name()));
+
+        // Preserve inherited()'s subject-first ordering (the rank's own citations first, then
+        // ancestors ascending): walk the ancestry subject-first over the already-fetched batch.
+        List<InsectRankName> subjectFirst = new ArrayList<>(ancestry);
+        Collections.reverse(subjectFirst);
+        List<PendingCitation> pending = new ArrayList<>();
+        for (InsectRankName rank : subjectFirst) {
+            for (CitationAssociation association : associationsByRank.getOrDefault(rank, List.of())) {
+                pending.add(new PendingCitation(association.citationName(), rank, association.note()));
+            }
+        }
 
         if (pending.isEmpty()) {
             InsectCitationView view = new InsectCitationView(rankName, List.of());
