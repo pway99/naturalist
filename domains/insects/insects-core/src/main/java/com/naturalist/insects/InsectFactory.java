@@ -4,9 +4,12 @@ import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Name-keyed, rank-polymorphic assembly of the full {@link Insect} read model.
@@ -21,6 +24,13 @@ import java.util.Optional;
  *   <li>{@link InsectOrderName}    → order only</li>
  *   <li>{@link InsectSubspeciesName} → {@link Optional#empty()} (no entity exists yet)</li>
  * </ul>
+ *
+ * <p>The ancestor rank chain is resolved <em>once</em> per build — each ancestor entity is
+ * fetched a single time and its {@link InsectRankName} folded into the lineage set that
+ * {@link InsectCitationQueryImpl#findByAncestry} and {@link InsectFeatureQueryImpl#findByAncestry}
+ * both consume. Before this, the citation query, the feature query, and this factory each
+ * walked the chain independently, so every ancestor's {@code getByName} fired three times per
+ * page — the N+1 the runtime select gate flags.
  */
 class InsectFactory {
 
@@ -31,8 +41,8 @@ class InsectFactory {
     private final InsectQuery.FamilyQuery familyQuery;
     private final InsectQuery.OrderQuery orderQuery;
     private final InsectLifeStageQuery lifeStageQuery;
-    private final InsectQuery.CitationQuery citationQuery;
-    private final InsectQuery.FeatureQuery featureQuery;
+    private final InsectCitationQueryImpl citationQuery;
+    private final InsectFeatureQueryImpl featureQuery;
     private final InsectQuery.FunctionalRoleQuery roleQuery;
 
     InsectFactory(InsectQuery.SpeciesQuery speciesQuery,
@@ -41,8 +51,8 @@ class InsectFactory {
                   InsectQuery.FamilyQuery familyQuery,
                   InsectQuery.OrderQuery orderQuery,
                   InsectLifeStageQuery lifeStageQuery,
-                  InsectQuery.CitationQuery citationQuery,
-                  InsectQuery.FeatureQuery featureQuery,
+                  InsectCitationQueryImpl citationQuery,
+                  InsectFeatureQueryImpl featureQuery,
                   InsectQuery.FunctionalRoleQuery roleQuery) {
         observer.arguments("constructor", i -> i
                         .notNull(speciesQuery, "speciesQuery")
@@ -69,29 +79,74 @@ class InsectFactory {
     Optional<Insect> buildByName(InsectRankName name) {
         observer.arguments("buildByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return switch (name) {
-            case InsectSpeciesName sn -> speciesQuery.getByName(sn).map(s -> observe(
-                    resolveGenus(base(sn).withSpecies(InsectSpeciesView.of(s)).withChildren(List.of()),
-                            s.genusName())));
-            case InsectGenusName gn -> genusQuery.getByName(gn).map(g -> observe(
-                    resolveFamily(base(gn).withGenus(InsectGenusView.of(g)).withChildren(speciesChildren(gn)),
-                            g.familyName())));
-            case InsectFamilyName fn -> familyQuery.getByName(fn).map(f -> observe(
-                    resolveOrder(base(fn).withFamily(InsectFamilyView.of(f)).withChildren(genusChildren(fn)),
-                            f.orderName())));
-            case InsectOrderName on -> orderQuery.getByName(on).map(o -> observe(
-                    base(on).withOrder(InsectOrderView.of(o)).withChildren(familyChildren(on))));
+            case InsectSpeciesName sn -> speciesQuery.getByName(sn).map(species -> {
+                Optional<InsectGenus> genus = genusQuery.getByName(species.genusName());
+                Optional<InsectFamily> family = genus.flatMap(g -> familyQuery.getByName(g.familyName()));
+                Optional<InsectOrder> order = family.flatMap(f -> orderQuery.getByName(f.orderName()));
+                Set<InsectRankName> ancestry = lineage(sn,
+                        genus.map(InsectGenus::name), family.map(InsectFamily::name), order.map(InsectOrder::name));
+                Insect insect = base(sn, ancestry)
+                        .withSpecies(InsectSpeciesView.of(species))
+                        .withChildren(List.of());
+                if (genus.isPresent()) insect = insect.withGenus(InsectGenusView.of(genus.get()));
+                if (family.isPresent()) insect = insect.withFamily(InsectFamilyView.of(family.get()));
+                if (order.isPresent()) insect = insect.withOrder(InsectOrderView.of(order.get()));
+                return observe(insect);
+            });
+            case InsectGenusName gn -> genusQuery.getByName(gn).map(genus -> {
+                Optional<InsectFamily> family = familyQuery.getByName(genus.familyName());
+                Optional<InsectOrder> order = family.flatMap(f -> orderQuery.getByName(f.orderName()));
+                Set<InsectRankName> ancestry = lineage(gn,
+                        family.map(InsectFamily::name), order.map(InsectOrder::name));
+                Insect insect = base(gn, ancestry)
+                        .withGenus(InsectGenusView.of(genus))
+                        .withChildren(speciesChildren(gn));
+                if (family.isPresent()) insect = insect.withFamily(InsectFamilyView.of(family.get()));
+                if (order.isPresent()) insect = insect.withOrder(InsectOrderView.of(order.get()));
+                return observe(insect);
+            });
+            case InsectFamilyName fn -> familyQuery.getByName(fn).map(family -> {
+                Optional<InsectOrder> order = orderQuery.getByName(family.orderName());
+                Set<InsectRankName> ancestry = lineage(fn, order.map(InsectOrder::name));
+                Insect insect = base(fn, ancestry)
+                        .withFamily(InsectFamilyView.of(family))
+                        .withChildren(genusChildren(fn));
+                if (order.isPresent()) insect = insect.withOrder(InsectOrderView.of(order.get()));
+                return observe(insect);
+            });
+            case InsectOrderName on -> orderQuery.getByName(on).map(order -> observe(
+                    base(on, lineage(on)).withOrder(InsectOrderView.of(order)).withChildren(familyChildren(on))));
             case InsectSubspeciesName _ -> Optional.empty();
         };
     }
 
-    /** The rank-keyed attributes every Insect carries, whatever the rank. */
-    private Insect base(InsectRankName name) {
+    /** The rank-keyed attributes every Insect carries, whatever the rank. Citations and features
+     *  are resolved over the pre-computed {@code ancestry} so the chain is walked only once. */
+    private Insect base(InsectRankName name, Set<InsectRankName> ancestry) {
         return Insect.empty()
                 .withObservations(imageQuery.forParentName(name))
                 .withLifeStages(lifeStageQuery.lifeStages().forParentName(name))
-                .withCitations(citationQuery.findByRankName(name))
-                .withFeatures(featureQuery.findByRankName(name))
+                .withCitations(citationQuery.findByAncestry(name, ancestry))
+                .withFeatures(featureQuery.findByAncestry(name, ancestry))
                 .withRole(roleQuery.getByParentName(name).orElse(null));
+    }
+
+    /** The subject's lineage as an ancestor-first ordered set (order → … → subject), built from
+     *  the already-resolved ancestor names — mirrors {@link InsectAncestryResolver#ancestry}
+     *  without a second walk. The ancestors are supplied subject-upward; each present one is the
+     *  parent of the previous, so the chain stops at the first gap. */
+    @SafeVarargs
+    private Set<InsectRankName> lineage(InsectRankName subject, Optional<? extends InsectRankName>... ancestors) {
+        List<InsectRankName> subjectFirst = new ArrayList<>();
+        subjectFirst.add(subject);
+        for (Optional<? extends InsectRankName> ancestor : ancestors) {
+            ancestor.ifPresent(subjectFirst::add);
+        }
+        LinkedHashSet<InsectRankName> ancestorFirst = new LinkedHashSet<>();
+        for (int i = subjectFirst.size() - 1; i >= 0; i--) {
+            ancestorFirst.add(subjectFirst.get(i));
+        }
+        return ancestorFirst;
     }
 
     private List<InsectTaxonView> familyChildren(InsectOrderName orderName) {
@@ -116,28 +171,6 @@ class InsectFactory {
                         s, imageQuery.forParentName(s.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
                 .toList();
-    }
-
-    private Insect resolveGenus(Insect insect, InsectGenusName genusName) {
-        return genusQuery.getByName(genusName)
-                .map(genus -> resolveFamily(
-                        insect.withGenus(InsectGenusView.of(genus)),
-                        genus.familyName()))
-                .orElse(insect);
-    }
-
-    private Insect resolveFamily(Insect insect, InsectFamilyName familyName) {
-        return familyQuery.getByName(familyName)
-                .map(family -> resolveOrder(
-                        insect.withFamily(InsectFamilyView.of(family)),
-                        family.orderName()))
-                .orElse(insect);
-    }
-
-    private Insect resolveOrder(Insect insect, InsectOrderName orderName) {
-        return orderQuery.getByName(orderName)
-                .map(order -> insect.withOrder(InsectOrderView.of(order)))
-                .orElse(insect);
     }
 
     private Insect observe(Insect insect) {

@@ -46,11 +46,24 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
     public InsectCitationView findByRankName(InsectRankName rankName) {
         observer.arguments("findByRankName", i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
+        return findByAncestry(rankName, ancestryResolver.ancestry(rankName));
+    }
+
+    /**
+     * The citation view for {@code subject}, resolved over a <em>pre-computed</em> ancestor-first
+     * ancestry (order → … → subject) rather than re-walking the rank chain. The composed
+     * {@code InsectFactory} resolves the lineage once and hands it here so the whole read model
+     * costs a single ancestry walk; {@link #findByRankName} supplies the walk for direct callers.
+     */
+    InsectCitationView findByAncestry(InsectRankName subject, Set<InsectRankName> ancestry) {
+        observer.arguments("findByAncestry", i -> i
+                        .identifier(subject, "subject")
+                        .observableCollection(ancestry, "ancestry"))
+                .throwWhenInvalid();
 
         // Resolve the whole ancestry's citation associations in ONE batched query rather than
-        // one findBySubject per ancestor rank — the per-rank loop inside inherited() was exactly
-        // the fan-out the N+1 select gate exists to catch.
-        Set<InsectRankName> ancestry = ancestryResolver.ancestry(rankName); // ancestor-first
+        // one findBySubject per ancestor rank — the per-rank loop was exactly the fan-out the
+        // N+1 select gate exists to catch.
         Set<EntityRef> subjects = ancestry.stream()
                 .map(rank -> new EntityRef(INSECTS, (EntityName) rank))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -59,8 +72,8 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
                 citationAssociationQuery.findBySubjects(subjects).stream()
                         .collect(Collectors.groupingBy(a -> (InsectRankName) a.subject().name()));
 
-        // Preserve inherited()'s subject-first ordering (the rank's own citations first, then
-        // ancestors ascending): walk the ancestry subject-first over the already-fetched batch.
+        // Preserve subject-first ordering (the rank's own citations first, then ancestors
+        // ascending): walk the ancestry subject-first over the already-fetched batch.
         List<InsectRankName> subjectFirst = new ArrayList<>(ancestry);
         Collections.reverse(subjectFirst);
         List<PendingCitation> pending = new ArrayList<>();
@@ -71,7 +84,7 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
         }
 
         if (pending.isEmpty()) {
-            InsectCitationView view = new InsectCitationView(rankName, List.of());
+            InsectCitationView view = new InsectCitationView(subject, List.of());
             observer.observable(view, "citationView").observe(Level.WARN);
             return view;
         }
@@ -88,11 +101,11 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
             if (citation != null) {
                 citations.add(new InsectCitationView.RankedCitation(citation, p.attachedAt(), p.note()));
             } else {
-                observer.forMethod("findByRankName").entityName(p.citationName(), "unresolvedCitationName").observe(Level.WARN);
+                observer.forMethod("findByAncestry").entityName(p.citationName(), "unresolvedCitationName").observe(Level.WARN);
             }
         }
 
-        InsectCitationView view = new InsectCitationView(rankName, List.copyOf(citations));
+        InsectCitationView view = new InsectCitationView(subject, List.copyOf(citations));
         observer.observable(view, "citationView").observe(Level.WARN);
         return view;
     }

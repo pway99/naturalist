@@ -45,13 +45,13 @@ class InsectFactoryTest {
     CitationQuery libraryCitationQuery = libraryContext.citationQuery();
 
     InsectAncestryResolver ancestryResolver = new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
-    InsectQuery.CitationQuery citationQuery = new InsectCitationQueryImpl(
+    InsectCitationQueryImpl citationQuery = new InsectCitationQueryImpl(
             citationAssociationQuery, libraryCitationQuery, ancestryResolver);
 
     InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(nte);
     InsectFeatureAssignmentRepositoryMock assignmentRepository =
             new InsectFeatureAssignmentRepositoryMock(nte);
-    InsectQuery.FeatureQuery featureQuery = new InsectFeatureQueryImpl(
+    InsectFeatureQueryImpl featureQuery = new InsectFeatureQueryImpl(
             featureRepository, assignmentRepository, ancestryResolver);
 
     InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(nte);

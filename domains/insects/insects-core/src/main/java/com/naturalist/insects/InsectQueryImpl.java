@@ -56,13 +56,15 @@ class InsectQueryImpl implements InsectQuery {
         this.orderQuery = orderQuery;
         InsectAncestryResolver ancestryResolver =
                 new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
-        this.citationQuery = new InsectCitationQueryImpl(
+        InsectCitationQueryImpl citationQueryImpl = new InsectCitationQueryImpl(
                 citationAssociationQuery, libraryCitationQuery, ancestryResolver);
-        this.featureQuery = new InsectFeatureQueryImpl(
+        InsectFeatureQueryImpl featureQueryImpl = new InsectFeatureQueryImpl(
                 featureRepository, featureAssignmentRepository, ancestryResolver);
+        this.citationQuery = citationQueryImpl;
+        this.featureQuery = featureQueryImpl;
         this.insectFactory = new InsectFactory(
                 speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
-                insectLifeStageQuery, this.citationQuery, this.featureQuery,
+                insectLifeStageQuery, citationQueryImpl, featureQueryImpl,
                 this.functionalRoleQuery);
     }
 

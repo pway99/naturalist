@@ -44,8 +44,20 @@ class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
     public InsectFeatureView findByRankName(InsectRankName subject) {
         observer.arguments("findByRankName", i -> i.identifier(subject, "subject"))
                 .throwWhenInvalid();
+        return findByAncestry(subject, ancestryResolver.ancestry(subject));
+    }
 
-        Set<InsectRankName> ancestry = ancestryResolver.ancestry(subject); // ancestor-first, ordered
+    /**
+     * The feature view for {@code subject}, resolved over a <em>pre-computed</em> ancestor-first
+     * ancestry (order → … → subject) rather than re-walking the rank chain. The composed
+     * {@code InsectFactory} resolves the lineage once and hands it here so the whole read model
+     * costs a single ancestry walk; {@link #findByRankName} supplies the walk for direct callers.
+     */
+    InsectFeatureView findByAncestry(InsectRankName subject, Set<InsectRankName> ancestry) {
+        observer.arguments("findByAncestry", i -> i
+                        .identifier(subject, "subject")
+                        .observableCollection(ancestry, "ancestry"))
+                .throwWhenInvalid();
 
         // One batched fetch of every assignment across the whole ancestry.
         Map<InsectRankName, List<InsectFeatureAssignment>> byRank =
