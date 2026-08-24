@@ -157,5 +157,8 @@ This runs the `com.naturalist.EnforceArchitecture` OpenRewrite recipes
 pending fix or marker — the invariants ArchUnit cannot reach repo-wide (e.g. acquire
 `TestEntitySource` via `NaturalistDatabase#getNamed`, obtain the test database from a
 `@RegisterExtension NaturalistTestExtension` field, never cache a `TestEntitySource`
-in a field). Developers auto-apply the fixable ones with `mvn rewrite:run`. Design:
+in a field). It also includes `com.naturalist.EnforceQueryHygiene` (`NoSelectInIteration`,
+armed 2026-08-23), which fails on a repository/query select invoked inside a loop or a
+per-element stream op — the static N+1 backstop to the runtime select-count gate.
+Developers auto-apply the fixable ones with `mvn rewrite:run`. Design:
 [`docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md`](docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md).

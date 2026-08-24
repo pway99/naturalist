@@ -1,9 +1,15 @@
 # N+1 Runtime Gate — Genuine Findings for Remediation
 
 **Date:** 2026-08-23
-**Status:** the AspectJ runtime N+1 gate is **armed** (wired into `NaturalistTestExtension`).
-It deliberately reds the genuine N+1s below. Each is a **fixing-session task**: batch the
-fan-out, and the flagged tests go green. Work them on worktrees off `main`.
+**Status: RESOLVED 2026-08-23.** All four findings below are fixed (commits `55a0e9c5`,
+`96a5941a`, `e948054e`, `5f268944`); full `mvn verify` is green with zero
+`RepeatedSelectException`. The gate stays armed and now passes. See the "Resolution" section
+at the foot of this doc for what each fix did. The original findings are preserved below as
+the record.
+
+Historical framing: the AspectJ runtime N+1 gate is **armed** (wired into
+`NaturalistTestExtension`). It deliberately red the genuine N+1s below. Each was a
+**fixing-session task**: batch the fan-out, and the flagged tests go green.
 
 ## What the gate is
 
@@ -49,3 +55,24 @@ the lexical recipe cannot see.
   threads — it can miss an N+1, never false-fail.
 - Do not weaken the gate to make tests pass. The failing tests are the signal; fix the
   production fan-out.
+
+## Resolution (2026-08-23)
+
+All four were batched at the source — the gate was not weakened:
+
+1. **`InsectCitationQueryImpl.findByRankName`** (`55a0e9c5`) — added a batched
+   `CitationAssociationQuery.findBySubjects(Set<EntityRef>)` to the library domain (+ mock +
+   contract test); resolve the whole ancestry's subjects in one call, group by rank, preserve
+   subject-first ordering.
+2. **`InsectQueryImpl.getByName` / `InsectFactory`** (`96a5941a`) — the citation query, the
+   feature query, and the factory's own `resolveGenus/Family/Order` chain each walked the
+   ancestry independently (getByName ×3). The factory now resolves the lineage **once**, folds
+   the ancestor rank names into an ancestor-first set, and hands it to package-private
+   `InsectCitationQueryImpl/InsectFeatureQueryImpl.findByAncestry(subject, ancestry)`;
+   `findByRankName` still supplies the walk for direct callers.
+3. **`PlantQueryImpl.getByName` / `PlantFactory`** (`e948054e`) — same pattern (2 walks),
+   mirrored via `PlantFeatureQueryImpl.findByAncestry`.
+4. **`SoilProfileQueryImpl.getBySoilProfileName` / `SoilProfileFactory`** (`5f268944`) — added
+   a batched `forLabAnalysisIds(Set<LabAnalysisId>)` to all four observation query/repository
+   ports (+ mocks + contract tests); collect the profile's analysis ids once, batch each type,
+   group by analysis id. Four selects per profile instead of four per analysis.

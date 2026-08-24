@@ -67,8 +67,8 @@ genuinely un-batchable repeat with `@AllowRepeatedSelect(query=…, select=…)`
 method. See `docs/plans/2026-08-21-n-plus-one-select-gate-plan.md`.
 A static backstop `NoSelectInIteration` (composite `com.naturalist.EnforceQueryHygiene`)
 lives in `tooling/naturalist-rewrite`, flagging loop/stream fan-out of repository/query
-selects in main source; it is DEFINED but NOT YET ARMED (pending remediation of the N+1s
-the reckoning found).
+selects in main source; it is **ARMED** (2026-08-23) — folded into the `EnforceArchitecture`
+composite that the completeness gate runs, after all of the reckoning's findings were batched.
 
 ### field-notes  (`com.naturalist.fieldnotes`)
 

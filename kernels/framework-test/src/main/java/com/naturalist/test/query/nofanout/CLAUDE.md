@@ -76,11 +76,13 @@ inside one query invocation, a select was resolved once per element instead of b
 
 ## Current state (2026-08-23)
 
-**Armed on `main` (commit `53e6dc87`).** `main` is intentionally RED on 4 genuine N+1
-heads / 14 tests — insects `InsectQueryImpl.getByName` + `InsectCitationQueryImpl.findByRankName`,
-plants `PlantQueryImpl.getByName`, soil `SoilProfileQueryImpl.getBySoilProfileName`. The
-fixing work-list is `docs/plans/2026-08-23-n-plus-one-runtime-gate-findings.md`; fixing
-sessions batch each on worktrees off `main`.
+**Armed on `main` (commit `53e6dc87`), and GREEN.** The 4 genuine N+1 heads / 14 tests this
+gate deliberately red have all been batched at the source (commits `55a0e9c5`, `96a5941a`,
+`e948054e`, `5f268944`) — insects `InsectQueryImpl.getByName` + `InsectCitationQueryImpl.findByRankName`,
+plants `PlantQueryImpl.getByName`, soil `SoilProfileQueryImpl.getBySoilProfileName`. Full
+`mvn verify` passes with zero `RepeatedSelectException`. The remediation record (what each fix
+did) is in `docs/plans/2026-08-23-n-plus-one-runtime-gate-findings.md` (§ Resolution). The
+gate now guards against regressions rather than flagging a known backlog.
 
 ## Complement — the static gate
 
