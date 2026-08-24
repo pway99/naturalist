@@ -104,7 +104,7 @@ public class PlantsTestContext {
                 new PlantImageQueryImpl(new PlantImageRepositoryMock(db));
         PlantAncestryResolver ancestryResolver =
                 new PlantAncestryResolver(entityQuery, genusQuery, familyQuery);
-        PlantQuery.FeatureQuery featureQuery =
+        PlantFeatureQueryImpl featureQuery =
                 new PlantFeatureQueryImpl(new PlantFeatureRepositoryMock(db),
                         new PlantFeatureAssignmentRepositoryMock(db), ancestryResolver);
         return new PlantQueryImpl(entityQuery, orderQuery, familyQuery, genusQuery, roleQuery,

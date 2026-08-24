@@ -31,7 +31,7 @@ class PlantQueryImpl implements PlantQuery {
                    EcologicalRoleQuery plantEcologicalRoleEntityQuery,
                    ObservationQuery observationQuery,
                    ImageQuery imageQuery,
-                   FeatureQuery featureQuery,
+                   PlantFeatureQueryImpl featureQuery,
                    CultivarQuery cultivarQuery,
                    PlantProgramQuery programQuery,
                    PhytochemicalConstituentQuery constituentQuery) {

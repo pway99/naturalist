@@ -44,8 +44,20 @@ class PlantFeatureQueryImpl implements PlantQuery.FeatureQuery {
     @Override
     public PlantFeatureView findByRankName(PlantRankName subject) {
         observer.arguments("findByRankName", i -> i.identifier(subject, "subject")).throwWhenInvalid();
+        return findByAncestry(subject, ancestryResolver.ancestry(subject));
+    }
 
-        Set<PlantRankName> ancestry = ancestryResolver.ancestry(subject); // ancestor-first, ordered
+    /**
+     * The feature view for {@code subject}, resolved over a <em>pre-computed</em> ancestor-first
+     * ancestry (order → … → subject) rather than re-walking the rank chain. The composed
+     * {@code PlantFactory} resolves the lineage once and hands it here so the whole read model
+     * costs a single ancestry walk; {@link #findByRankName} supplies the walk for direct callers.
+     */
+    PlantFeatureView findByAncestry(PlantRankName subject, Set<PlantRankName> ancestry) {
+        observer.arguments("findByAncestry", i -> i
+                        .identifier(subject, "subject")
+                        .observableCollection(ancestry, "ancestry"))
+                .throwWhenInvalid();
 
         Map<PlantRankName, List<PlantFeatureAssignment>> byRank =
                 assignmentRepository.getByRankNames(ancestry).stream()

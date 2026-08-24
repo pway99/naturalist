@@ -39,7 +39,7 @@ class PlantFactoryTest {
         PlantQuery.OrderQuery orderQuery =
                 new PlantOrderQueryImpl(new PlantOrderRepositoryMock(nte));
         PlantAncestryResolver resolver = new PlantAncestryResolver(speciesQuery, genusQuery, familyQuery);
-        PlantQuery.FeatureQuery featureQuery = new PlantFeatureQueryImpl(
+        PlantFeatureQueryImpl featureQuery = new PlantFeatureQueryImpl(
                 new PlantFeatureRepositoryMock(nte), new PlantFeatureAssignmentRepositoryMock(nte), resolver);
         PlantQuery.EcologicalRoleQuery roleQuery =
                 new PlantEcologicalRoleQueryImpl(new PlantEcologicalRoleRepositoryMock(nte));
