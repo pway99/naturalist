@@ -27,6 +27,37 @@ class SelectCountRecorderTest {
     }
 
     @Test
+    void separateInvocationsOfTheSameHead_areNotMergedIntoAViolation() {
+        // A test (or caller) that invokes the SAME query method twice, each doing ONE select,
+        // is NOT an N+1: the fan-out rule is per head-of-DAG INVOCATION, not per-FQN-across-the-test.
+        // The two invocations must not sum to a phantom "getByParentName x2".
+        SelectCountRecorder.arm();
+        SelectCountRecorder.enterQuery("FooQueryImpl.forParentName");
+        SelectCountRecorder.recordSelect("FooRepositoryMock.getByParentName");
+        SelectCountRecorder.exitQuery();
+        SelectCountRecorder.enterQuery("FooQueryImpl.forParentName");
+        SelectCountRecorder.recordSelect("FooRepositoryMock.getByParentName");
+        SelectCountRecorder.exitQuery();
+
+        assertThat(SelectCountRecorder.snapshot())
+                .containsEntry("FooQueryImpl.forParentName", Map.of("FooRepositoryMock.getByParentName", 1));
+    }
+
+    @Test
+    void repeatedSelectWithinOneInvocation_isStillTallied() {
+        // Contrast with the above: a single invocation looping the select IS an N+1.
+        SelectCountRecorder.arm();
+        SelectCountRecorder.enterQuery("FooQueryImpl.findByRankName");
+        SelectCountRecorder.recordSelect("FooRepositoryMock.getBySubject");
+        SelectCountRecorder.recordSelect("FooRepositoryMock.getBySubject");
+        SelectCountRecorder.recordSelect("FooRepositoryMock.getBySubject");
+        SelectCountRecorder.exitQuery();
+
+        assertThat(SelectCountRecorder.snapshot())
+                .containsEntry("FooQueryImpl.findByRankName", Map.of("FooRepositoryMock.getBySubject", 3));
+    }
+
+    @Test
     void selectWithNoEnclosingQuery_isNotTallied() {
         SelectCountRecorder.arm();
         SelectCountRecorder.recordSelect("FooRepositoryMock.getByName"); // arrange/assert call — depth 0

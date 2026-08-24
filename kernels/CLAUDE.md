@@ -56,9 +56,15 @@ BeforeEachCallback`: registered as a static `@RegisterExtension` field, it reset
 registry before each test; main-wired code uses `NaturalistDatabase.create()` and carries
 no JUnit coupling.
 
-An in-progress N+1 select-count gate lives alongside in `com.naturalist.data.count`
-(recorder, aspect, `@AllowRepeatedSelect`); it is not yet wired into
-`NaturalistTestExtension`. See `docs/plans/2026-08-21-n-plus-one-select-gate-plan.md`.
+An N+1 select-count gate lives alongside in `com.naturalist.data.count` (AspectJ
+load-time-woven `SelectCountAspect` → `SelectCountRecorder` → `SelectGate`). It is
+**wired and ARMED** in `NaturalistTestExtension`: `beforeEach` arms the recorder,
+`afterEach` evaluates the per-test tally and throws `RepeatedSelectException` when one
+head-of-DAG query invocation repeats a repository select (an N+1). Gating is **per
+outermost query INVOCATION**, so a test that calls the same query N times (each doing one
+select) is not flagged — only a single invocation looping a select is. Whitelist a
+genuinely un-batchable repeat with `@AllowRepeatedSelect(query=…, select=…)` on the test
+method. See `docs/plans/2026-08-21-n-plus-one-select-gate-plan.md`.
 A static backstop `NoSelectInIteration` (composite `com.naturalist.EnforceQueryHygiene`)
 lives in `tooling/naturalist-rewrite`, flagging loop/stream fan-out of repository/query
 selects in main source; it is DEFINED but NOT YET ARMED (pending remediation of the N+1s
