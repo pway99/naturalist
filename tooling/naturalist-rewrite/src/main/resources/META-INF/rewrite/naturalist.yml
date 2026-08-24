@@ -9,6 +9,7 @@ recipeList:
   - com.naturalist.rewrite.NoDirectTestEntitySourceConstruction
   - com.naturalist.rewrite.NoCachedTestEntitySourceField
   - com.naturalist.rewrite.AcquireDatabaseViaExtension
+  - com.naturalist.EnforceQueryHygiene
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.naturalist.EnforceQueryHygiene
