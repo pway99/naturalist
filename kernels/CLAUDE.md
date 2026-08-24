@@ -56,7 +56,7 @@ BeforeEachCallback`: registered as a static `@RegisterExtension` field, it reset
 registry before each test; main-wired code uses `NaturalistDatabase.create()` and carries
 no JUnit coupling.
 
-An N+1 select-count gate lives alongside in `com.naturalist.data.count` (AspectJ
+An N+1 select-count gate lives alongside in `com.naturalist.test.query.nofanout` (AspectJ
 load-time-woven `SelectCountAspect` → `SelectCountRecorder` → `SelectGate`). It is
 **wired and ARMED** in `NaturalistTestExtension`: `beforeEach` arms the recorder,
 `afterEach` evaluates the per-test tally and throws `RepeatedSelectException` when one

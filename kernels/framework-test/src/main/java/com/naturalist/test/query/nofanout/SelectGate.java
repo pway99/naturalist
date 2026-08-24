@@ -1,11 +1,23 @@
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/** Applies the N+1 rule (any select called more than once within one head is a violation). */
+/**
+ * The rule evaluator for the N+1 (no-fan-out) gate. Given a {@link SelectCountRecorder#snapshot()}
+ * — {@code head query FQN -> (repository select FQN -> max-per-invocation count)} — it throws
+ * {@link RepeatedSelectException} naming every {@code (head, select)} whose count exceeds 1,
+ * i.e. a single query invocation that resolved a select more than once instead of batching it.
+ *
+ * <p>A repeat is suppressed when some {@link AllowRepeatedSelect} on the test method matches
+ * both the head and the select — by exact FQN, {@code .}-suffix, or simple name. One exception
+ * aggregates every violation in the test, so a failure lists all offending sites at once.
+ *
+ * <p>Pure and stateless: all counting happens in {@link SelectCountRecorder} on the aspect's
+ * thread; this only reads the snapshot the extension hands it.
+ */
 public final class SelectGate {
 
     private SelectGate() {

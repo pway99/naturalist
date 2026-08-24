@@ -1,4 +1,4 @@
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;

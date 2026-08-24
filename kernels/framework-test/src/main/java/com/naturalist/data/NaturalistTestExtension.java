@@ -1,8 +1,8 @@
 package com.naturalist.data;
 
-import com.naturalist.data.count.AllowRepeatedSelect;
-import com.naturalist.data.count.SelectCountRecorder;
-import com.naturalist.data.count.SelectGate;
+import com.naturalist.test.query.nofanout.AllowRepeatedSelect;
+import com.naturalist.test.query.nofanout.SelectCountRecorder;
+import com.naturalist.test.query.nofanout.SelectGate;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

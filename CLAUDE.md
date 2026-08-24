@@ -132,6 +132,16 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
   equality by value. This is a domain invariant for `Entity` records and is documented
   in each event/observation domain's own `CLAUDE.md`; it is no longer encoded in a
   separate kernel subtype.
+- **Never weaken a test, gate, or enforcement to make code pass — fix the code.** The
+  build-time invariants exist to be *satisfied*, not silenced: the N+1 no-fan-out gate
+  (`kernels/framework-test` → `com.naturalist.test.query.nofanout`, surfaced as
+  `RepeatedSelectException`), ArchUnit rules, and the `com.naturalist.Enforce*` OpenRewrite
+  recipes. When one fails it is reporting a real defect in *your* code — fix that. Do NOT
+  disable or relax the check, remove a test's `@RegisterExtension`, narrow an aspect
+  pointcut or `aop.xml` weave scope, delete/soften the failing assertion, or blanket-
+  suppress to clear a red build. Suppression (e.g. `@AllowRepeatedSelect`) is a last resort
+  for a *single, genuinely un-satisfiable* case — applied per-site, with a written
+  justification, never as a way to make a failing suite green.
 
 ## Completeness verification
 

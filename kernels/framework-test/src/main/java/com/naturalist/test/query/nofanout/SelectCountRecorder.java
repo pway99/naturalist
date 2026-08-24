@@ -1,4 +1,4 @@
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

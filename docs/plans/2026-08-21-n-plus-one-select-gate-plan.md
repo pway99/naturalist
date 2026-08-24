@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - **No Spring, no AspectJ, in core or the kernel's production classpath.** The `framework` kernel keeps its dependency budget (Jackson, Commons, Micrometer, JSpecify). All new dependencies (`aspectjweaver`, `aspectjrt`) are **test scope only**.
-- **All new instrument code lives in `kernels/framework-test`** (already every test module's dependency; already owns the extension). Package: `com.naturalist.data.count`.
+- **All new instrument code lives in `kernels/framework-test`** (already every test module's dependency; already owns the extension). Package: `com.naturalist.test.query.nofanout`.
 - **Typed identifiers / record conventions** from [domains/CLAUDE.md](../../domains/CLAUDE.md) do not apply to this instrument (it is test infrastructure, not a domain type), but its own state classes must be `final` and its statics thread-safe.
 - **AspectJ version:** use the latest release that supports `--release 25` (start with `1.9.25`; if load-time weaving warns about class-file format, bump to the newest available and re-verify).
 - **Git:** print commands; commit only when the user says so. Each task's commit step shows the command; do not run it unprompted. Trunk-based — branch, do not open a PR unless asked.
@@ -22,16 +22,16 @@
 
 ## File Structure
 
-- `kernels/framework-test/src/main/java/com/naturalist/data/count/SelectCountRecorder.java` — thread-local head stack + tally; static feeder API. **(Task 2)**
-- `kernels/framework-test/src/main/java/com/naturalist/data/count/RepeatedSelectException.java` — thrown on violation; extends `AssertionError`. **(Task 2)**
-- `kernels/framework-test/src/main/java/com/naturalist/data/count/AllowRepeatedSelect.java` — repeatable method annotation + `List` container. **(Task 2)**
-- `kernels/framework-test/src/main/java/com/naturalist/data/count/SelectGate.java` — pure evaluation of a tally snapshot against the rule + allowlist. **(Task 2)**
-- `kernels/framework-test/src/main/java/com/naturalist/data/count/SelectCountAspect.java` — `@Aspect`; two pointcuts feeding the recorder. **(Task 3)**
+- `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectCountRecorder.java` — thread-local head stack + tally; static feeder API. **(Task 2)**
+- `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/RepeatedSelectException.java` — thrown on violation; extends `AssertionError`. **(Task 2)**
+- `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/AllowRepeatedSelect.java` — repeatable method annotation + `List` container. **(Task 2)**
+- `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectGate.java` — pure evaluation of a tally snapshot against the rule + allowlist. **(Task 2)**
+- `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectCountAspect.java` — `@Aspect`; two pointcuts feeding the recorder. **(Task 3)**
 - `kernels/framework-test/src/main/resources/META-INF/aop.xml` — declares the aspect + weave scope. **(Task 3)**
 - `kernels/framework-test/src/main/java/com/naturalist/data/NaturalistTestExtension.java` — renamed from `NaturalistDatabaseExtension`; gains arm/evaluate. **(Task 1 rename, Task 4 wire)**
 - `pom.xml` (root) — `aspectj.version`, dependencyManagement entries, universal test-scope `aspectjweaver`, maven-dependency-plugin `properties` goal, surefire `argLine`. **(Task 3)**
 - `kernels/framework-test/pom.xml` — `aspectjrt` (compile) + `aspectjweaver` (test). **(Task 3)**
-- Test fixtures + tests in `kernels/framework-test/src/test/java/com/naturalist/data/count/`. **(Tasks 2–4)**
+- Test fixtures + tests in `kernels/framework-test/src/test/java/com/naturalist/test/query/nofanout/`. **(Tasks 2–4)**
 
 ---
 
@@ -116,12 +116,12 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 The stateful thread-local engine and the rule evaluation — no AspectJ yet. Directly unit-tested: this is the "stateful/lifecycle behaviour" carve-out that the [kernel testing convention](../../kernels/CLAUDE.md) explicitly says warrants a direct test, so it is *not* the forbidden "test infra for test infra."
 
 **Files:**
-- Create: `kernels/framework-test/src/main/java/com/naturalist/data/count/SelectCountRecorder.java`
-- Create: `kernels/framework-test/src/main/java/com/naturalist/data/count/RepeatedSelectException.java`
-- Create: `kernels/framework-test/src/main/java/com/naturalist/data/count/AllowRepeatedSelect.java`
-- Create: `kernels/framework-test/src/main/java/com/naturalist/data/count/SelectGate.java`
-- Test: `kernels/framework-test/src/test/java/com/naturalist/data/count/SelectCountRecorderTest.java`
-- Test: `kernels/framework-test/src/test/java/com/naturalist/data/count/SelectGateTest.java`
+- Create: `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectCountRecorder.java`
+- Create: `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/RepeatedSelectException.java`
+- Create: `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/AllowRepeatedSelect.java`
+- Create: `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectGate.java`
+- Test: `kernels/framework-test/src/test/java/com/naturalist/test/query/nofanout/SelectCountRecorderTest.java`
+- Test: `kernels/framework-test/src/test/java/com/naturalist/test/query/nofanout/SelectGateTest.java`
 
 **Interfaces:**
 - Produces:
@@ -135,7 +135,7 @@ The stateful thread-local engine and the rule evaluation — no AspectJ yet. Dir
 
 `SelectCountRecorderTest.java`:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -213,7 +213,7 @@ Expected: FAIL — `SelectCountRecorder` does not exist / does not compile.
 - [ ] **Step 3: Implement `SelectCountRecorder`**
 
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -295,7 +295,7 @@ Expected: PASS (5 tests).
 
 `RepeatedSelectException.java`:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 /** Raised by the N+1 select gate when a head-of-DAG query repeats a repository select. */
 public final class RepeatedSelectException extends AssertionError {
@@ -307,7 +307,7 @@ public final class RepeatedSelectException extends AssertionError {
 
 `AllowRepeatedSelect.java`:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
@@ -341,7 +341,7 @@ public @interface AllowRepeatedSelect {
 
 `SelectGateTest.java`:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import org.junit.jupiter.api.Test;
 
@@ -412,7 +412,7 @@ Expected: FAIL — `SelectGate` does not exist.
 - [ ] **Step 8: Implement `SelectGate`**
 
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -470,7 +470,7 @@ Expected: PASS.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add kernels/framework-test/src/main/java/com/naturalist/data/count kernels/framework-test/src/test/java/com/naturalist/data/count
+git add kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout kernels/framework-test/src/test/java/com/naturalist/test/query/nofanout
 git commit -m "feat(framework-test): N+1 gate counting core (recorder, gate, annotation)
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
@@ -483,12 +483,12 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 Wire the aspect that feeds the recorder, and the `-javaagent` load-time weaver, then prove end-to-end that a woven looping query is detected.
 
 **Files:**
-- Create: `kernels/framework-test/src/main/java/com/naturalist/data/count/SelectCountAspect.java`
+- Create: `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectCountAspect.java`
 - Create: `kernels/framework-test/src/main/resources/META-INF/aop.xml`
 - Modify: `pom.xml` (root) — `aspectj.version`, dependencyManagement, root `<dependencies>`, dependency-plugin, surefire
 - Modify: `kernels/framework-test/pom.xml` — `aspectjrt` (compile), `aspectjweaver` (test)
-- Test: `kernels/framework-test/src/test/java/com/naturalist/data/count/SelectGateWeavingTest.java`
-- Test fixtures: `FooRepository`, `FooRepositoryMock`, `FooQueryImpl` in `kernels/framework-test/src/test/java/com/naturalist/data/count/`
+- Test: `kernels/framework-test/src/test/java/com/naturalist/test/query/nofanout/SelectGateWeavingTest.java`
+- Test fixtures: `FooRepository`, `FooRepositoryMock`, `FooQueryImpl` in `kernels/framework-test/src/test/java/com/naturalist/test/query/nofanout/`
 
 **Interfaces:**
 - Consumes: `SelectCountRecorder`, `SelectGate`, `RepeatedSelectException` (Task 2).
@@ -580,7 +580,7 @@ The aspect source (`@Aspect`, `@Around`) needs `aspectjrt` at compile; the weave
 - [ ] **Step 4: Write the aspect**
 
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -628,7 +628,7 @@ public class SelectCountAspect {
 <!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "https://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
     <aspects>
-        <aspect name="com.naturalist.data.count.SelectCountAspect"/>
+        <aspect name="com.naturalist.test.query.nofanout.SelectCountAspect"/>
     </aspects>
     <weaver options="-Xlint:ignore">
         <include within="com.naturalist..*QueryImpl"/>
@@ -645,7 +645,7 @@ Fixtures (same package, test sources) — names chosen to match the pointcuts:
 
 `FooRepository.java`:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import java.util.List;
 
@@ -656,7 +656,7 @@ interface FooRepository {
 ```
 `FooRepositoryMock.java`:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import java.util.List;
 import java.util.Set;
@@ -668,7 +668,7 @@ class FooRepositoryMock implements FooRepository {
 ```
 `FooQueryImpl.java`:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import java.util.List;
 import java.util.Set;
@@ -690,7 +690,7 @@ class FooQueryImpl {
 ```
 `SelectGateWeavingTest.java`:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -765,7 +765,7 @@ Expected: PASS. (framework-test tests now run under the agent; the recorder is i
 - [ ] **Step 11: Commit**
 
 ```bash
-git add pom.xml kernels/framework-test/pom.xml kernels/framework-test/src/main/java/com/naturalist/data/count/SelectCountAspect.java kernels/framework-test/src/main/resources/META-INF/aop.xml kernels/framework-test/src/test/java/com/naturalist/data/count
+git add pom.xml kernels/framework-test/pom.xml kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectCountAspect.java kernels/framework-test/src/main/resources/META-INF/aop.xml kernels/framework-test/src/test/java/com/naturalist/test/query/nofanout
 git commit -m "feat(framework-test): AspectJ N+1 select aspect + load-time weaving
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
@@ -779,7 +779,7 @@ Fold arm/evaluate/disarm into the shared extension so every test class that regi
 
 **Files:**
 - Modify: `kernels/framework-test/src/main/java/com/naturalist/data/NaturalistTestExtension.java`
-- Test: `kernels/framework-test/src/test/java/com/naturalist/data/count/AllowRepeatedSelectWeavingTest.java`
+- Test: `kernels/framework-test/src/test/java/com/naturalist/test/query/nofanout/AllowRepeatedSelectWeavingTest.java`
 - Modify (triage, as needed): any domain `*QueryImpl` with a real N+1, or any test with a legitimate repeat (add `@AllowRepeatedSelect`).
 
 **Interfaces:**
@@ -790,7 +790,7 @@ Fold arm/evaluate/disarm into the shared extension so every test class that regi
 
 `AllowRepeatedSelectWeavingTest.java` — reuses the Task 3 fixtures; registers the real extension so `beforeEach`/`afterEach` drive the gate:
 ```java
-package com.naturalist.data.count;
+package com.naturalist.test.query.nofanout;
 
 import com.naturalist.data.NaturalistTestExtension;
 import org.junit.jupiter.api.Test;
@@ -834,9 +834,9 @@ Expected: FAIL — `NaturalistTestExtension` does not yet implement `AfterEachCa
 ```java
 package com.naturalist.data;
 
-import com.naturalist.data.count.AllowRepeatedSelect;
-import com.naturalist.data.count.SelectCountRecorder;
-import com.naturalist.data.count.SelectGate;
+import com.naturalist.test.query.nofanout.AllowRepeatedSelect;
+import com.naturalist.test.query.nofanout.SelectCountRecorder;
+import com.naturalist.test.query.nofanout.SelectGate;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
