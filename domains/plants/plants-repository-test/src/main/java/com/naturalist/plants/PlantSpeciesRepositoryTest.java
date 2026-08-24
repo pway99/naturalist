@@ -121,4 +121,25 @@ interface PlantSpeciesRepositoryTest
 
         assertThat(results).isEmpty();
     }
+
+    @Test
+    default void getByGenusNames_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByGenusNames(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("genusNames");
+    }
+
+    @Test
+    default void getByGenusNames_partialMatch_returnsOnlyKnownGenera() {
+        var results = repository().getByGenusNames(Set.of(
+                TestPlantsIdentifiers.PlantGenera.Trifolium.name,
+                TestPlantsIdentifiers.PlantGenera.NotFound.name));
+
+        assertThat(results)
+                .extracting(PlantSpecies::name)
+                .extracting(PlantSpeciesName::value)
+                .contains("trifolium-incarnatum", "trifolium-repens");
+        assertThat(results).allSatisfy(s ->
+                assertThat(s.genusName()).isEqualTo(TestPlantsIdentifiers.PlantGenera.Trifolium.name));
+    }
 }

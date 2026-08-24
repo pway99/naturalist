@@ -63,6 +63,9 @@ public interface PlantQuery {
          * family, then every species in each genus. Mirrors {@code InsectQuery.SpeciesQuery}.
          */
         SpeciesCollection forFamilyName(PlantFamilyName familyName);
+
+        /** Batched sibling of {@link #forGenusName(PlantGenusName)} across a set of genera. */
+        SpeciesCollection forGenusNames(Set<PlantGenusName> genusNames);
     }
 
     interface OrderQuery

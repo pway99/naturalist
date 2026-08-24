@@ -13,6 +13,9 @@ class PlantRepository {
     protected interface SpeciesRepository extends EntityRepository<PlantSpeciesName, PlantSpecies> {
 
         List<PlantSpecies> getByGenusName(PlantGenusName genusName);
+
+        /** Batched sibling of {@link #getByGenusName} across a set of genera. */
+        List<PlantSpecies> getByGenusNames(Set<PlantGenusName> genusNames);
     }
 
     protected interface OrderRepository

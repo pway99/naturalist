@@ -4,9 +4,9 @@ import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.plants.PlantEntityCollections.SpeciesCollection;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @DomainService
 class PlantSpeciesQueryImpl
@@ -40,9 +40,16 @@ class PlantSpeciesQueryImpl
     public SpeciesCollection forFamilyName(PlantFamilyName familyName) {
         observer().arguments("forFamilyName", i -> i.entityName(familyName, "familyName"))
                 .throwWhenInvalid();
-        List<PlantSpecies> species = genusQuery.forFamilyName(familyName).stream()
-                .flatMap(genus -> forGenusName(genus.name()).stream())
-                .toList();
-        return SpeciesCollection.of(species);
+        Set<PlantGenusName> genusNames = genusQuery.forFamilyName(familyName).stream()
+                .map(PlantGenus::name)
+                .collect(Collectors.toSet());
+        return forGenusNames(genusNames);
+    }
+
+    @Override
+    public SpeciesCollection forGenusNames(Set<PlantGenusName> genusNames) {
+        observer().arguments("forGenusNames", i -> i.entityNameCollection(genusNames, "genusNames"))
+                .throwWhenInvalid();
+        return SpeciesCollection.of(repository().getByGenusNames(genusNames));
     }
 }
