@@ -69,7 +69,7 @@ graph TD
     apps["apps/ — deployables"]
     adapters["adapters/ — vendor / heavy impls"]
     core["«domain»-core"]
-    repo["«domain»-repository-test / -rdms"]
+    rdms["«domain»-repository-rdms<br/>production persistence adapter"]
     api["«domain»-api"]
     identifiers["identifiers — typed cross-domain<br/>reference names (EntityName · EntityId)"]
     kernels["kernels/ — foundations"]
@@ -77,15 +77,19 @@ graph TD
 
     apps --> adapters
     apps --> core
-    apps --> repo
+    apps --> rdms
     adapters --> kernels
     core --> api
-    repo --> api
+    rdms --> api
     api --> identifiers
     api --> framework
     identifiers --> framework
     kernels --> framework
 ```
+
+The deployable path runs through `-repository-rdms`. The `-repository-test`
+adapter is a **test-scope** module: it satisfies the same repository contract but
+is never on the production classpath, so it does not appear in the graph above.
 
 Cross-domain references are typed names — an `InsectSpeciesName`, a `PlantSpeciesName` —
 held in the shared, dependency-light **`identifiers`** module. A domain names its
@@ -106,7 +110,7 @@ See [ADR-004 — Modular Monolith](docs/adr/ADR-004-modular-monolith.md).
 
 The architecture is not tidy for its own sake. It is optimized for the people
 and AI agents building on it, for the load it will carry in production, and to
-be run and *afforded* by a single developer.
+be run and *afforded* by a single engineer.
 
 - **Sub-minute builds.** Because the data layer is in-memory, the full
   `mvn verify` — every module, every behavioral contract, every invariant walk —
@@ -119,7 +123,7 @@ be run and *afforded* by a single developer.
   unpredictably as data and load grow. Composition cost lives in explicit
   application code, not a query planner — and the N+1 gate keeps it batched.
 - **Affordable to run solo — resilience as a cost control.** The system is meant
-  to be operated and paid for by one developer, where a surprise cloud or AI
+  to be operated and paid for by one engineer, where a surprise cloud or AI
   bill would be catastrophic. So every cross-boundary and vendor/LLM call is
   wrapped in **timeouts, circuit breakers, and declared rate limits**, and
   production adapters refuse to run on missing config rather than silently
@@ -128,7 +132,7 @@ be run and *afforded* by a single developer.
 - **Observed, not logged.** Every call site is observed through the framework's
   metering — and there is deliberately **no logging**: nothing to grep, no log
   pipeline to host or pay for. Failures surface as metrics that **alert the
-  developer directly**, and the metric pinpoints the exact **class, method, and
+  engineer directly**, and the metric pinpoints the exact **class, method, and
   variable** behind the violated runtime constraint — so the notification is the
   diagnosis, not just a signal to go digging. For a one-person operation, that
   keeps monitoring tractable — a failure announces itself, already located.
@@ -139,7 +143,7 @@ be run and *afforded* by a single developer.
   code rather than plausible-looking drift — and the repeated patterns mean an
   agent that has seen one domain can extend the next.
 - **The real-world model stays in the foreground.** The API is designed so a
-  developer writes about insects, soil, and the garden — not about persistence
+  engineer writes about insects, soil, and the garden — not about persistence
   wiring, serialization, or validation ceremony. Namespaces, read-model
   factories, and the invariant framework absorb the plumbing, leaving the
   domain itself as the thing you actually edit.
@@ -191,7 +195,6 @@ on the type itself.
 
 ### An identity model that earns its keys
 
-Identity took real work to get right — and it's one of the parts that works best.
 There are exactly **two strategies** behind one shared data-layer port: a
 natural-key **slug** (`EntityName`) and a surrogate **UUIDv7** (`EntityId`).
 
