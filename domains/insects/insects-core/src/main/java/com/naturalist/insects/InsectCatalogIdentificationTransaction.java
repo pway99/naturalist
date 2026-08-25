@@ -82,11 +82,12 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         //    yield the same field marks) is matched by InsectFeature's "value"
         //    unique constraint and its existing row is reused; insert() would
         //    throw UniqueConstraintException there and fail the whole
-        //    transaction. This is a same-string match only -- "dark (black)
-        //    pronotum..." and "dark/black pronotum..." are two different
-        //    strings and remain two separate rows. That is not dedup, it is
-        //    "don't fail on an exact repeat"; semantic near-duplicate merging
-        //    is a separate, unsolved problem.
+        //    transaction. This is a same-string match only -- two feature
+        //    strings that differ at all (e.g. punctuation variants) remain two
+        //    separate rows here. That is not dedup, it is "don't fail on an
+        //    exact repeat"; semantic near-duplicate merging is handled upstream
+        //    by InsectIdentificationCommand's reuse-aware resolution (feature
+        //    search + a clarification turn) before the transaction runs.
         //
         //    save()'s unique-constraint branch discards the id resolveFeatures()
         //    minted for a matched feature and reuses the existing row's id
