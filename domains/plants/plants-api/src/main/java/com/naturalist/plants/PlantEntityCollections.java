@@ -103,21 +103,6 @@ public interface PlantEntityCollections {
         }
     }
 
-    final class FeatureCollection extends BehavioralCollection<PlantFeature> {
-
-        FeatureCollection(Collection<PlantFeature> features) {
-            super(features);
-        }
-
-        public static FeatureCollection of(Collection<PlantFeature> features) {
-            return new FeatureCollection(features);
-        }
-
-        public static FeatureCollection empty() {
-            return new FeatureCollection(List.of());
-        }
-    }
-
     final class ObservationCollection extends BehavioralCollection<OrganismObservation<PlantObservationId, PlantRankName>> {
 
         ObservationCollection(Collection<OrganismObservation<PlantObservationId, PlantRankName>> observations) {
