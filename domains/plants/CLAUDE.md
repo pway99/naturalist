@@ -150,6 +150,29 @@ placement, not inheritance. There is deliberately **no `PlantClass` rank**; supr
 structure is clade content, never a fifth rung. `plants-api` depends on `clades` for this;
 it does **not** depend on `insects-api`. Design: `docs/plans/2026-08-16-plants-clades-design.md`.
 
+### Console clade trail (Tree-of-Life row)
+
+`plants-console` sources the Tree-of-Life trail from the shared library read
+model — `library.CladeQuery.getBySlug(slug)` → `CladeView` → `List<CladeStep>`,
+flattened `ancestry ++ subject` (root→subject) by `PlantsController.stepsFor` —
+the same read model `insects-console` uses. Plants needs no anchor/override map
+(insects' `InsectCladeAnchors`): the trail slug comes straight off the order's
+`placedIn`, because plant clades are supra-ordinal.
+
+Three differences from the insects clade UX are **intentional**, not drift, and
+follow from order-only clade placement — do not "reconcile" them:
+
+1. **Order-only placement** — every rank resolves its clade by walking up to its
+   order; insects places at every rank.
+2. **Kingdom-only anchor** — the rank breadcrumb is hand-anchored to a single
+   `Plantae` "Kingdom" segment; plants has no Class rank, so there is no
+   Kingdom/Phylum/Class derivation.
+3. **Orders-only clade groupings** — the clade detail page groups Orders only
+   (nothing is placed below Order); insects groups Orders/Families/Genera/Species.
+
+Not adopted from insects (deferred, out of scope): the "not yet placed" gap
+affordance and the ancestor-intro panels.
+
 **Three references attach at a rank rather than a specific one** —
 `PlantEcologicalRole.plantName`, `PlantProgram.plantName`, and
 `PhytochemicalConstituent.plantName` are all typed `PlantRankName` (a role, a
