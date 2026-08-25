@@ -11,7 +11,8 @@
 @import com.naturalist.observation.OrganismObservation
 @import com.naturalist.insects.BreadcrumbSegment
 @import com.naturalist.insects.CladeTrail
-@import com.naturalist.insects.InsectFeatureView
+@import com.naturalist.taxonomy.OrganismFeatureView
+@import com.naturalist.insects.InsectFeature
 @import com.naturalist.library.GlossaryLinker
 @import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
@@ -35,7 +36,7 @@
 @param boolean collected = false
 @param boolean lens = false
 @param Map<InsectImageId, OrganismObservation> observations = java.util.Map.of()
-@param InsectFeatureView features = null
+@param OrganismFeatureView<InsectRankName, InsectFeature> features = null
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}

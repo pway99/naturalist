@@ -1,8 +1,10 @@
-@import com.naturalist.insects.InsectFeatureView
+@import com.naturalist.taxonomy.OrganismFeatureView
+@import com.naturalist.insects.InsectFeature
+@import com.naturalist.insects.InsectRankName
 @import com.naturalist.insects.RankLabel
 @import com.naturalist.library.GlossaryLinker
 
-@param InsectFeatureView features = null
+@param OrganismFeatureView<InsectRankName, InsectFeature> features = null
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 
 @if(features != null && !features.groups().isEmpty())
