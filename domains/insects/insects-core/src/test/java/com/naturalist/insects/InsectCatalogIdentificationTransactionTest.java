@@ -5,6 +5,7 @@ import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
@@ -162,9 +163,10 @@ class InsectCatalogIdentificationTransactionTest {
     void executePersistsFeatures() {
         var featureId = InsectFeatureId.create();
         var feature = InsectFeature.of(featureId, "hovering flight");
-        var assignment = InsectFeatureAssignment.of(
-                InsectFeatureAssignmentId.create(), featureId,
-                SPECIES_NAME, 0);
+        OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> assignment =
+                OrganismFeatureAssignment.of(
+                        InsectFeatureAssignmentId.create(), featureId,
+                        SPECIES_NAME, 0);
         var id = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(species()), taxonomy(),
                 image(), observation(),

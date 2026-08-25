@@ -2,6 +2,8 @@ package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.taxonomy.LinealRank;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
+import com.naturalist.taxonomy.OrganismFeatureView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,17 +37,17 @@ class InsectFeatureQueryImplTest {
         // JSON seeds order-rank (lepidoptera) assignments; add a family-rank one.
         InsectFeature tailed = InsectFeature.of(InsectFeatureId.create(), "tailed hindwings");
         featureRepository.insert(tailed);
-        assignmentRepository.insert(new InsectFeatureAssignment(
+        assignmentRepository.insert(OrganismFeatureAssignment.of(
                 InsectFeatureAssignmentId.create(), tailed.id(),
                 InsectFamilyName.of("papilionidae"), 0));
 
-        InsectFeatureView view = featureQuery.findByRankName(
+        OrganismFeatureView<InsectRankName, InsectFeature> view = featureQuery.findByRankName(
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
         // Ancestor-first: the ORDER group precedes the FAMILY group.
         assertThat(view.groups()).isNotEmpty();
         assertThat(view.groups().getFirst().rank().rank()).isEqualTo(LinealRank.ORDER);
-        InsectFeatureView.RankGroup last = view.groups().getLast();
+        OrganismFeatureView.RankGroup<InsectRankName, InsectFeature> last = view.groups().getLast();
         assertThat(last.rank()).isEqualTo(InsectFamilyName.of("papilionidae"));
         assertThat(last.features()).extracting(InsectFeature::value)
                 .containsExactly("tailed hindwings");
@@ -53,7 +55,7 @@ class InsectFeatureQueryImplTest {
 
     @Test
     void findByRankName_ordersFeaturesWithinRankByOrdinal() {
-        InsectFeatureView view = featureQuery.findByRankName(InsectOrderName.of("lepidoptera"));
+        OrganismFeatureView<InsectRankName, InsectFeature> view = featureQuery.findByRankName(InsectOrderName.of("lepidoptera"));
         // Single ORDER group; its features are ordinal-ordered (seeded: ordinal 1
         // "complete metamorphosis", ordinal 2 "scaled wings").
         assertThat(view.groups()).hasSize(1);

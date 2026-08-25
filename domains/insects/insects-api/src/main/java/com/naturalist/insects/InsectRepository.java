@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 /**
  * Namespace for the insects bounded context's write-side repositories — the single
@@ -20,7 +21,7 @@ import com.naturalist.observation.OrganismObservation;
  *   <li>{@link FunctionalRoleRepository} — {@link InsectFunctionalRole} entities.</li>
  *   <li>{@link OrderRepository} — {@link InsectOrder} entities.</li>
  *   <li>{@link FeatureRepository} — {@link InsectFeature} entities.</li>
- *   <li>{@link FeatureAssignmentRepository} — {@link InsectFeatureAssignment} entities.</li>
+ *   <li>{@link FeatureAssignmentRepository} — {@link OrganismFeatureAssignment} entities.</li>
  * </ul>
  *
  * <p>This is a {@code class}, not an {@code interface}, so the nested repository
@@ -176,12 +177,13 @@ class InsectRepository {
     }
 
     protected interface FeatureAssignmentRepository
-            extends EntityRepository<InsectFeatureAssignmentId, InsectFeatureAssignment> {
+            extends EntityRepository<InsectFeatureAssignmentId,
+                                     OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
 
-        List<InsectFeatureAssignment> getByRankName(InsectRankName rankName);
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByRankName(InsectRankName rankName);
 
-        List<InsectFeatureAssignment> getByRankNames(Set<InsectRankName> rankNames);
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByRankNames(Set<InsectRankName> rankNames);
 
-        List<InsectFeatureAssignment> getByFeatureId(InsectFeatureId featureId);
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByFeatureId(InsectFeatureId featureId);
     }
 }

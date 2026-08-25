@@ -12,6 +12,7 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.textgeneration.NoOpTextGenerationService;
 import com.naturalist.vision.Image;
 import com.naturalist.vision.ImageMetadata;
@@ -170,7 +171,7 @@ class InsectIdentificationCommandTest {
         var persistedFeatureIds = featureSource.entityStream()
                 .map(InsectFeature::id)
                 .collect(java.util.stream.Collectors.toSet());
-        assertThat(assignmentSource.entityStream().map(InsectFeatureAssignment::featureId))
+        assertThat(assignmentSource.entityStream().map(OrganismFeatureAssignment::featureId))
                 .as("every assignment's featureId must resolve to a persisted InsectFeature -- "
                         + "no dangling FK left over from save()'s id reconciliation")
                 .allMatch(persistedFeatureIds::contains);

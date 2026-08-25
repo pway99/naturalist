@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.Transaction;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.taxonomy.TaxonomicClassification;
 
 import java.util.HashMap;
@@ -108,7 +109,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
                     assignment.featureId(), assignment.featureId());
             var toSave = resolvedFeatureId.equals(assignment.featureId())
                     ? assignment
-                    : new InsectFeatureAssignment(
+                    : OrganismFeatureAssignment.of(
                             assignment.id(), resolvedFeatureId, assignment.rankName(), assignment.ordinal());
             insectCommand.featureAssignments().save(toSave);
         }

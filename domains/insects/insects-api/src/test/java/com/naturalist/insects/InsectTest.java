@@ -10,6 +10,7 @@ import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Observer;
+import com.naturalist.taxonomy.OrganismFeatureView;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
@@ -415,7 +416,7 @@ class InsectTest {
     @Test
     void featuresDescent_reportsNestedViolations() {
         // A structurally invalid features view (null subject) surfaces under ".features".
-        InsectFeatureView badFeatures = new InsectFeatureView(null, List.of());
+        OrganismFeatureView<InsectRankName, InsectFeature> badFeatures = new OrganismFeatureView<>(null, List.of());
         Insect insect = Insect.empty().withFeatures(badFeatures);
         var mo = observer.forMethod("featuresDescent_reportsNestedViolations");
         assertThat(mo.observable(insect, "insect").violationNamesRemovingPrefix(mo.observationPoint()))

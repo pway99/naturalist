@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,13 +22,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * rank that does not yet carry an assignment for that feature.
  */
 interface InsectFeatureAssignmentEntityRepositoryTest
-        extends EntityRepositoryTest<InsectFeatureAssignmentId, InsectFeatureAssignment> {
+        extends EntityRepositoryTest<InsectFeatureAssignmentId,
+                OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
 
     @Override
     InsectRepository.FeatureAssignmentRepository repository();
 
     @Override
-    default TestEntitySource<InsectFeatureAssignmentId, InsectFeatureAssignment> source() {
+    default TestEntitySource<InsectFeatureAssignmentId,
+            OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> source() {
         return db.getNamed(InsectFeatureAssignmentTestEntitySource.class);
     }
 
@@ -45,10 +48,10 @@ interface InsectFeatureAssignmentEntityRepositoryTest
     }
 
     @Override
-    default InsectFeatureAssignment newEntity() {
+    default OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> newEntity() {
         // "complete metamorphosis" assigned to neuroptera — feature exists (FK passes),
         // neuroptera order exists, and the (featureId, rankName) pair is not yet assigned.
-        return new InsectFeatureAssignment(
+        return OrganismFeatureAssignment.of(
                 InsectFeatureAssignmentId.create(),
                 TestInsectsIdentifiers.InsectFeature.CompleteMetamorphosis.id,
                 InsectOrderName.of("neuroptera"),
@@ -56,8 +59,8 @@ interface InsectFeatureAssignmentEntityRepositoryTest
     }
 
     @Override
-    default InsectFeatureAssignment ghostEntity() {
-        return new InsectFeatureAssignment(
+    default OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> ghostEntity() {
+        return OrganismFeatureAssignment.of(
                 InsectFeatureAssignmentId.create(),
                 TestInsectsIdentifiers.InsectFeature.CompleteMetamorphosis.id,
                 InsectOrderName.of("neuroptera"),
@@ -65,10 +68,11 @@ interface InsectFeatureAssignmentEntityRepositoryTest
     }
 
     @Override
-    default InsectFeatureAssignment modifiedEntity(InsectFeatureAssignment original) {
+    default OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> modifiedEntity(
+            OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> original) {
         // Change feature to "scaled wings" and rank to blattodea — both exist in catalogs,
         // and neither pair is currently assigned.
-        return new InsectFeatureAssignment(
+        return OrganismFeatureAssignment.of(
                 original.id(),
                 TestInsectsIdentifiers.InsectFeature.ScaledWings.id,
                 TestInsectsIdentifiers.InsectOrder.Blattodea.name,

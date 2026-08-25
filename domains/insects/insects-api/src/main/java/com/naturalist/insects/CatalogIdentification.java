@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.ddd.Aggregate;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.Constraints;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.taxonomy.TaxonomicClassification;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public record CatalogIdentification(
         OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image,
         OrganismObservation<InsectObservationId, InsectRankName> observation,
         List<InsectFeature> newFeatures,
-        List<InsectFeatureAssignment> featureAssignments,
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> featureAssignments,
         Map<InsectRankName, Description> parentDescriptions
 ) implements Aggregate {
 

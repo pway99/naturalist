@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * The value space is deliberately <b>open</b> — there is no enum, sealed set, or
  * controlled registry. The same feature string may denote non-homologous characters in
  * different lineages (e.g. "reduced wings" is brachyptery in a beetle and aptery in an
- * ant). Ownership-by-rank via {@link InsectFeatureAssignment} carries the disambiguating
+ * ant). Ownership-by-rank via {@link com.naturalist.taxonomy.OrganismFeatureAssignment} carries the disambiguating
  * context; the typed value gives reliable <em>form</em> without asserting universal
  * <em>meaning</em>.
  */

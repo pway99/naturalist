@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.EntityCommand;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 /**
  * Namespace command for the insects bounded context — the single discoverable entry
@@ -90,9 +91,10 @@ public interface InsectCommand {
     }
 
     /**
-     * Entity-level command surface for {@link InsectFeatureAssignment}.
+     * Entity-level command surface for {@link OrganismFeatureAssignment}.
      */
     interface FeatureAssignmentCommand
-            extends EntityCommand<InsectFeatureAssignmentId, InsectFeatureAssignment> {
+            extends EntityCommand<InsectFeatureAssignmentId,
+                    OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
     }
 }

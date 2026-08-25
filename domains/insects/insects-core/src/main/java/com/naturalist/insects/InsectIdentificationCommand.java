@@ -16,6 +16,7 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.library.CitationAttribution;
 import com.naturalist.library.LibraryCommand;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
@@ -312,12 +313,12 @@ class InsectIdentificationCommand {
 
     private record FeatureResolution(
             List<InsectFeature> newFeatures,
-            List<InsectFeatureAssignment> assignments
+            List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> assignments
     ) {}
 
     private FeatureResolution resolveFeatures(List<RankFeatures> allRankFeatures) {
         var newFeatures = new ArrayList<InsectFeature>();
-        var assignments = new ArrayList<InsectFeatureAssignment>();
+        var assignments = new ArrayList<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>();
         // Track features we've already created in this invocation
         var createdFeatures = new HashMap<String, InsectFeatureId>();
 
@@ -336,7 +337,7 @@ class InsectIdentificationCommand {
                     createdFeatures.put(normalized, featureId);
                 }
 
-                assignments.add(InsectFeatureAssignment.of(
+                assignments.add(OrganismFeatureAssignment.of(
                         InsectFeatureAssignmentId.create(),
                         featureId, rankFeatures.rankName(), ordinal++));
             }

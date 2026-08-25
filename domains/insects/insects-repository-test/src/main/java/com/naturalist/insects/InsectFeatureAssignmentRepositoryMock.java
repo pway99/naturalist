@@ -2,12 +2,15 @@ package com.naturalist.insects;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 import java.util.List;
 import java.util.Set;
 
 class InsectFeatureAssignmentRepositoryMock
-        extends AbstractTestEntityRepository<InsectFeatureAssignmentId, InsectFeatureAssignment, InsectFeatureAssignmentTestEntitySource>
+        extends AbstractTestEntityRepository<InsectFeatureAssignmentId,
+                OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>,
+                InsectFeatureAssignmentTestEntitySource>
         implements InsectRepository.FeatureAssignmentRepository {
 
     InsectFeatureAssignmentRepositoryMock(NaturalistDatabase naturalistDatabase) {
@@ -15,7 +18,7 @@ class InsectFeatureAssignmentRepositoryMock
     }
 
     @Override
-    public List<InsectFeatureAssignment> getByRankName(InsectRankName rankName) {
+    public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByRankName(InsectRankName rankName) {
         observer().arguments("getByRankName",
                         i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
@@ -25,7 +28,7 @@ class InsectFeatureAssignmentRepositoryMock
     }
 
     @Override
-    public List<InsectFeatureAssignment> getByRankNames(Set<InsectRankName> rankNames) {
+    public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByRankNames(Set<InsectRankName> rankNames) {
         observer().arguments("getByRankNames",
                         i -> i.observableCollection(rankNames, "rankNames"))
                 .throwWhenInvalid();
@@ -35,7 +38,7 @@ class InsectFeatureAssignmentRepositoryMock
     }
 
     @Override
-    public List<InsectFeatureAssignment> getByFeatureId(InsectFeatureId featureId) {
+    public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByFeatureId(InsectFeatureId featureId) {
         observer().arguments("getByFeatureId",
                         i -> i.entityId(featureId, "featureId"))
                 .throwWhenInvalid();

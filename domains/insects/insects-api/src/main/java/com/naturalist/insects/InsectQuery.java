@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
+import com.naturalist.taxonomy.OrganismFeatureView;
 
 /**
  * Namespace query for the insects bounded context — the single discoverable entry point
@@ -181,17 +182,17 @@ public interface InsectQuery {
     interface FeatureQuery {
 
         /**
-         * Returns the lineage-composited, display-ready {@link InsectFeatureView} for the
+         * Returns the lineage-composited, display-ready feature view for the
          * given rank — the full conspicuous-to-diagnostic groups the organism inherits
-         * from its ancestry, one {@link InsectFeatureView.RankGroup} per contributing rank.
-         * Never {@code null}; {@link InsectFeatureView#groups()} is empty when no rank in
+         * from its ancestry, one {@link OrganismFeatureView.RankGroup} per contributing rank.
+         * Never {@code null}; {@link OrganismFeatureView#groups()} is empty when no rank in
          * the ancestry carries a feature assignment.
          */
-        InsectFeatureView findByRankName(InsectRankName subject);
+        OrganismFeatureView<InsectRankName, InsectFeature> findByRankName(InsectRankName subject);
 
         /**
          * Returns the ranks carrying the given feature — the reverse lookup ("which taxa
-         * have chewing mouthparts"). Joins through {@link InsectFeatureAssignment} by
+         * have chewing mouthparts"). Joins through {@link com.naturalist.taxonomy.OrganismFeatureAssignment} by
          * {@link InsectFeatureId}.
          */
         Set<InsectRankName> findByFeature(InsectFeatureId featureId);

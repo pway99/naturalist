@@ -1,23 +1,58 @@
 package com.naturalist.insects;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.data.ForeignKeyConstraint;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.data.TestDataHelper;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
+import com.naturalist.taxonomy.RankNameReconstructor;
 
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.function.Function;
 
 public class InsectFeatureAssignmentTestEntitySource
-        extends TestEntitySource<InsectFeatureAssignmentId, InsectFeatureAssignment> {
+        extends TestEntitySource<InsectFeatureAssignmentId,
+                OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
+
+    private final ObjectMapper mapper = TestDataHelper.newBaseMapper()
+            .setInjectableValues(new InjectableValues.Std()
+                    .addValue(RankNameReconstructor.class, (RankNameReconstructor) InsectRankName::of));
 
     public InsectFeatureAssignmentTestEntitySource(NaturalistDatabase database) {
         super(database);
-        loadFile("insects/insect-feature-assignments.json");
+        loadFile("insects/insect-feature-assignments.json", this::parse);
+    }
+
+    private List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> parse(String json) {
+        try {
+            JavaType t = mapper.getTypeFactory().constructParametricType(
+                    OrganismFeatureAssignment.class,
+                    InsectFeatureAssignmentId.class, InsectFeatureId.class, InsectRankName.class);
+            JavaType listT = mapper.getTypeFactory().constructCollectionType(List.class, t);
+            return mapper.readValue(json, listT);
+        } catch (JsonProcessingException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
-    protected List<UniqueConstraint<InsectFeatureAssignment>> uniqueConstraints() {
+    protected ObjectMapper mapper() {
+        return mapper;
+    }
+
+    @Override
+    protected Class<?> writableClass() {
+        return OrganismFeatureAssignment.class;
+    }
+
+    @Override
+    protected List<UniqueConstraint<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>> uniqueConstraints() {
         return List.of(
                 new UniqueConstraint<>() {
                     @Override
@@ -26,7 +61,7 @@ public class InsectFeatureAssignmentTestEntitySource
                     }
 
                     @Override
-                    public Function<InsectFeatureAssignment, ?> valueFunction() {
+                    public Function<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>, ?> valueFunction() {
                         return a -> a.featureId().value() + ":"
                                 + a.rankName().value();
                     }
@@ -34,11 +69,11 @@ public class InsectFeatureAssignmentTestEntitySource
     }
 
     @Override
-    protected List<ForeignKeyConstraint<InsectFeatureAssignment, ?>> foreignKeyConstraints() {
+    protected List<ForeignKeyConstraint<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>, ?>> foreignKeyConstraints() {
         return List.of(
                 ForeignKeyConstraint.of(
                         "featureId",
-                        InsectFeatureAssignment::featureId,
+                        OrganismFeatureAssignment::featureId,
                         InsectFeatureTestEntitySource.class),
                 ForeignKeyConstraint.of(
                         "rankName (order)",
@@ -69,7 +104,9 @@ public class InsectFeatureAssignmentTestEntitySource
      * of tripping the constraint — see {@code InsectCatalogIdentificationTransaction}.
      */
     @Override
-    protected InsectFeatureAssignment withKey(InsectFeatureAssignment a, InsectFeatureAssignmentId key) {
-        return new InsectFeatureAssignment(key, a.featureId(), a.rankName(), a.ordinal());
+    protected OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> withKey(
+            OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> a,
+            InsectFeatureAssignmentId key) {
+        return OrganismFeatureAssignment.of(key, a.featureId(), a.rankName(), a.ordinal());
     }
 }

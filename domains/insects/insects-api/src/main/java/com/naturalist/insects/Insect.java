@@ -4,6 +4,7 @@ import com.naturalist.ddd.ReadModel;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.observability.Constraints;
+import com.naturalist.taxonomy.OrganismFeatureView;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -86,7 +87,7 @@ public record Insect(
         @Nullable InsectSpeciesView species,
         LifeStageCollection lifeStages,
         @Nullable InsectCitationView citations,
-        @Nullable InsectFeatureView features,
+        @Nullable OrganismFeatureView<InsectRankName, InsectFeature> features,
         @Nullable InsectFunctionalRole role,
         /**
          * The entry rank's direct sub-taxa (order→families, family→genera,
@@ -179,7 +180,7 @@ public record Insect(
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withFeatures(@Nullable InsectFeatureView features) {
+    public Insect withFeatures(@Nullable OrganismFeatureView<InsectRankName, InsectFeature> features) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
