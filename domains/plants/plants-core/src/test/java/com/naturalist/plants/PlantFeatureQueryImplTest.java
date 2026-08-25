@@ -57,4 +57,19 @@ class PlantFeatureQueryImplTest {
         assertThat(catchThrowable(() -> featureQuery().findByRankName(null)))
                 .isInstanceOf(com.naturalist.exception.InvariantViolationException.class);
     }
+
+    @Test
+    void findByFeature_returnsRanksCarryingTheFeature() {
+        // "ray florets" (026cc…0001) is assigned at FAMILY asteraceae and GENUS helianthus.
+        assertThat(featureQuery().findByFeature(TestPlantsIdentifiers.PlantFeatures.RayFlorets))
+                .containsExactlyInAnyOrder(
+                        PlantFamilyName.of("asteraceae"),
+                        PlantGenusName.of("helianthus"));
+    }
+
+    @Test
+    void findByFeature_rejectsNull() {
+        assertThat(catchThrowable(() -> featureQuery().findByFeature(null)))
+                .isInstanceOf(com.naturalist.exception.InvariantViolationException.class);
+    }
 }

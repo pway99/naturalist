@@ -97,6 +97,13 @@ public interface PlantQuery {
          * ordinal-ordered within a group. Mirrors {@code InsectQuery.FeatureQuery.findByRankName}.
          */
         OrganismFeatureView<PlantRankName, PlantFeature> findByRankName(PlantRankName subject);
+
+        /**
+         * Returns the ranks carrying the given feature — the reverse lookup ("which taxa
+         * have ray florets"). Joins through {@link com.naturalist.taxonomy.OrganismFeatureAssignment}
+         * by {@link PlantFeatureId}. Mirrors {@code InsectQuery.FeatureQuery.findByFeature}.
+         */
+        Set<PlantRankName> findByFeature(PlantFeatureId featureId);
     }
 
     interface ImageQuery

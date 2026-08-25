@@ -77,4 +77,13 @@ class PlantFeatureQueryImpl implements PlantQuery.FeatureQuery {
         observer.observable(view, "featureView").observe(Level.WARN);
         return view;
     }
+
+    @Override
+    public Set<PlantRankName> findByFeature(PlantFeatureId featureId) {
+        observer.arguments("findByFeature", i -> i.entityId(featureId, "featureId")).throwWhenInvalid();
+
+        return assignmentRepository.getByFeatureId(featureId).stream()
+                .map(OrganismFeatureAssignment::rankName)
+                .collect(Collectors.toSet());
+    }
 }
