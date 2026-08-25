@@ -3,6 +3,7 @@ package com.naturalist.plants;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,13 +23,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * {@code InsectFeatureAssignmentEntityRepositoryTest}.
  */
 interface PlantFeatureAssignmentEntityRepositoryTest
-        extends EntityRepositoryTest<PlantFeatureAssignmentId, PlantFeatureAssignment> {
+        extends EntityRepositoryTest<PlantFeatureAssignmentId,
+                OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> {
 
     @Override
     PlantRepository.FeatureAssignmentRepository repository();
 
     @Override
-    default TestEntitySource<PlantFeatureAssignmentId, PlantFeatureAssignment> source() {
+    default TestEntitySource<PlantFeatureAssignmentId,
+            OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> source() {
         return db.getNamed(PlantFeatureAssignmentTestEntitySource.class);
     }
 
@@ -45,10 +48,10 @@ interface PlantFeatureAssignmentEntityRepositoryTest
     }
 
     @Override
-    default PlantFeatureAssignment newEntity() {
+    default OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName> newEntity() {
         // "ray florets" assigned to fabaceae — feature exists (FK passes), family
         // exists, and the (featureId, rankName) pair is not yet assigned.
-        return new PlantFeatureAssignment(
+        return OrganismFeatureAssignment.of(
                 PlantFeatureAssignmentId.create(),
                 TestPlantsIdentifiers.PlantFeatures.RayFlorets,
                 TestPlantsIdentifiers.PlantFamilies.Fabaceae.name,
@@ -56,8 +59,8 @@ interface PlantFeatureAssignmentEntityRepositoryTest
     }
 
     @Override
-    default PlantFeatureAssignment ghostEntity() {
-        return new PlantFeatureAssignment(
+    default OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName> ghostEntity() {
+        return OrganismFeatureAssignment.of(
                 PlantFeatureAssignmentId.create(),
                 TestPlantsIdentifiers.PlantFeatures.RayFlorets,
                 TestPlantsIdentifiers.PlantFamilies.Fabaceae.name,
@@ -65,10 +68,11 @@ interface PlantFeatureAssignmentEntityRepositoryTest
     }
 
     @Override
-    default PlantFeatureAssignment modifiedEntity(PlantFeatureAssignment original) {
+    default OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName> modifiedEntity(
+            OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName> original) {
         // Change feature to "opposite leaves" and rank to Rosaceae — both exist in
         // catalogs, and neither pair is currently assigned.
-        return new PlantFeatureAssignment(
+        return OrganismFeatureAssignment.of(
                 original.id(),
                 TestPlantsIdentifiers.PlantFeatures.OppositeLeaves,
                 TestPlantsIdentifiers.PlantFamilies.Rosaceae.name,

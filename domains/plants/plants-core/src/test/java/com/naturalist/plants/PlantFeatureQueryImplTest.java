@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.taxonomy.OrganismFeatureView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -28,7 +29,8 @@ class PlantFeatureQueryImplTest {
     void findByRankName_composesAncestryFirst_ordinalOrderedWithinGroup() {
         // Seeded: ORDER asterales=[composite inflorescence]; FAMILY asteraceae=[ray florets(0),
         // composite inflorescence(1)]; GENUS helianthus=[ray florets]. Ancestor-first.
-        PlantFeatureView view = featureQuery().findByRankName(PlantGenusName.of("helianthus"));
+        OrganismFeatureView<PlantRankName, PlantFeature> view =
+                featureQuery().findByRankName(PlantGenusName.of("helianthus"));
 
         assertThat(view.subject()).isEqualTo(PlantGenusName.of("helianthus"));
         assertThat(view.groups().stream().map(g -> g.rank()))
@@ -45,7 +47,8 @@ class PlantFeatureQueryImplTest {
     @Test
     void findByRankName_noAssignmentsInLineage_returnsEmptyGroups() {
         // piperales carries no feature assignments anywhere in its lineage.
-        PlantFeatureView view = featureQuery().findByRankName(PlantOrderName.of("piperales"));
+        OrganismFeatureView<PlantRankName, PlantFeature> view =
+                featureQuery().findByRankName(PlantOrderName.of("piperales"));
         assertThat(view.groups()).isEmpty();
     }
 

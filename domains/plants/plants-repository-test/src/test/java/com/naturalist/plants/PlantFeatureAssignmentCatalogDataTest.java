@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -24,7 +25,7 @@ class PlantFeatureAssignmentCatalogDataTest {
     @RegisterExtension
     private final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private List<PlantFeatureAssignment> assignments() {
+    private List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> assignments() {
         return nte.getNamed(PlantFeatureAssignmentTestEntitySource.class).entityStream().toList();
     }
 
@@ -39,7 +40,7 @@ class PlantFeatureAssignmentCatalogDataTest {
                 .collect(Collectors.toSet());
 
         List<PlantFeatureId> referenced = assignments().stream()
-                .map(PlantFeatureAssignment::featureId)
+                .map(OrganismFeatureAssignment::featureId)
                 .distinct()
                 .toList();
 

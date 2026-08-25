@@ -2,12 +2,15 @@ package com.naturalist.plants;
 
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 import java.util.List;
 import java.util.Set;
 
 class PlantFeatureAssignmentRepositoryMock
-        extends AbstractTestEntityRepository<PlantFeatureAssignmentId, PlantFeatureAssignment, PlantFeatureAssignmentTestEntitySource>
+        extends AbstractTestEntityRepository<PlantFeatureAssignmentId,
+                OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>,
+                PlantFeatureAssignmentTestEntitySource>
         implements PlantRepository.FeatureAssignmentRepository {
 
     PlantFeatureAssignmentRepositoryMock(NaturalistDatabase naturalistDatabase) {
@@ -15,7 +18,7 @@ class PlantFeatureAssignmentRepositoryMock
     }
 
     @Override
-    public List<PlantFeatureAssignment> getByRankName(PlantRankName rankName) {
+    public List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> getByRankName(PlantRankName rankName) {
         observer().arguments("getByRankName",
                         i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
@@ -25,7 +28,7 @@ class PlantFeatureAssignmentRepositoryMock
     }
 
     @Override
-    public List<PlantFeatureAssignment> getByRankNames(Set<PlantRankName> rankNames) {
+    public List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> getByRankNames(Set<PlantRankName> rankNames) {
         observer().arguments("getByRankNames",
                         i -> i.observableCollection(rankNames, "rankNames"))
                 .throwWhenInvalid();
@@ -35,7 +38,7 @@ class PlantFeatureAssignmentRepositoryMock
     }
 
     @Override
-    public List<PlantFeatureAssignment> getByFeatureId(PlantFeatureId featureId) {
+    public List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> getByFeatureId(PlantFeatureId featureId) {
         observer().arguments("getByFeatureId",
                         i -> i.entityId(featureId, "featureId"))
                 .throwWhenInvalid();

@@ -4,6 +4,7 @@ import com.naturalist.data.EntityQuery;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
+import com.naturalist.taxonomy.OrganismFeatureView;
 
 import java.util.Optional;
 import java.util.Set;
@@ -95,7 +96,7 @@ public interface PlantQuery {
          * assignments plus those inherited from its ancestors, grouped ancestor-first,
          * ordinal-ordered within a group. Mirrors {@code InsectQuery.FeatureQuery.findByRankName}.
          */
-        PlantFeatureView findByRankName(PlantRankName subject);
+        OrganismFeatureView<PlantRankName, PlantFeature> findByRankName(PlantRankName subject);
     }
 
     interface ImageQuery

@@ -3,22 +3,23 @@ package com.naturalist.plants;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
+import com.naturalist.taxonomy.FeatureViewAssembler;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
+import com.naturalist.taxonomy.OrganismFeatureView;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Lineage-composite feature resolution — walks the ancestry chain from the subject rank up
  * to the order, gathers feature assignments at each rank in one batched call, resolves the
- * {@link PlantFeature} entities in one batched call, and composes a display-ready
- * {@link PlantFeatureView} — one {@link PlantFeatureView.RankGroup} per contributing rank,
- * ancestor-first, ordinal-ordered within a group. Mirrors {@code InsectFeatureQueryImpl}.
+ * {@link PlantFeature} entities in one batched call, and delegates grouping to the kernel's
+ * {@link FeatureViewAssembler}, composing the result as a display-ready
+ * {@link OrganismFeatureView} — one {@link OrganismFeatureView.RankGroup} per contributing
+ * rank, ancestor-first, ordinal-ordered within a group. Mirrors {@code InsectFeatureQueryImpl}.
  */
 @DomainService
 class PlantFeatureQueryImpl implements PlantQuery.FeatureQuery {
@@ -42,7 +43,7 @@ class PlantFeatureQueryImpl implements PlantQuery.FeatureQuery {
     }
 
     @Override
-    public PlantFeatureView findByRankName(PlantRankName subject) {
+    public OrganismFeatureView<PlantRankName, PlantFeature> findByRankName(PlantRankName subject) {
         observer.arguments("findByRankName", i -> i.identifier(subject, "subject")).throwWhenInvalid();
         return findByAncestry(subject, ancestryResolver.ancestry(subject));
     }
@@ -53,40 +54,26 @@ class PlantFeatureQueryImpl implements PlantQuery.FeatureQuery {
      * {@code PlantFactory} resolves the lineage once and hands it here so the whole read model
      * costs a single ancestry walk; {@link #findByRankName} supplies the walk for direct callers.
      */
-    PlantFeatureView findByAncestry(PlantRankName subject, Set<PlantRankName> ancestry) {
+    OrganismFeatureView<PlantRankName, PlantFeature> findByAncestry(PlantRankName subject, Set<PlantRankName> ancestry) {
         observer.arguments("findByAncestry", i -> i
                         .identifier(subject, "subject")
                         .observableCollection(ancestry, "ancestry"))
                 .throwWhenInvalid();
 
-        Map<PlantRankName, List<PlantFeatureAssignment>> byRank =
-                assignmentRepository.getByRankNames(ancestry).stream()
-                        .collect(Collectors.groupingBy(PlantFeatureAssignment::rankName));
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> assignments =
+                assignmentRepository.getByRankNames(ancestry);   // batch 1
 
-        Set<PlantFeatureId> allIds = byRank.values().stream().flatMap(List::stream)
-                .map(PlantFeatureAssignment::featureId).collect(Collectors.toSet());
+        Set<PlantFeatureId> allIds = assignments.stream()
+                .map(OrganismFeatureAssignment::featureId).collect(Collectors.toSet());
         Map<PlantFeatureId, PlantFeature> resolved = new HashMap<>();
         if (!allIds.isEmpty()) {
-            for (PlantFeature f : featureRepository.getByEntityNameSet(allIds)) {
+            for (PlantFeature f : featureRepository.getByEntityNameSet(allIds)) {   // batch 2
                 resolved.put(f.id(), f);
             }
         }
 
-        List<PlantFeatureView.RankGroup> groups = new ArrayList<>();
-        for (PlantRankName rank : ancestry) {
-            List<PlantFeatureAssignment> atRank = byRank.getOrDefault(rank, List.of());
-            if (atRank.isEmpty()) continue;
-            List<PlantFeature> features = atRank.stream()
-                    .sorted(Comparator.comparingInt(PlantFeatureAssignment::ordinal))
-                    .map(x -> resolved.get(x.featureId()))
-                    .filter(Objects::nonNull)
-                    .toList();
-            if (!features.isEmpty()) {
-                groups.add(new PlantFeatureView.RankGroup(rank, features));
-            }
-        }
-
-        PlantFeatureView view = new PlantFeatureView(subject, List.copyOf(groups));
+        OrganismFeatureView<PlantRankName, PlantFeature> view =
+                FeatureViewAssembler.assemble(subject, ancestry, assignments, resolved);
         observer.observable(view, "featureView").observe(Level.WARN);
         return view;
     }

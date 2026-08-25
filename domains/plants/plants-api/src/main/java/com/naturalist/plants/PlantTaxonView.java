@@ -8,8 +8,9 @@ import com.naturalist.plants.PlantEntityCollections.ImageCollection;
  * its rank record composed with the photographic field record. Sealed across the four
  * botanical ranks that carry catalog entities. Identity is the root rank's typed
  * {@link PlantRankName}, returned polymorphically by {@link #name()}. Permits carry no
- * {@code features()} slot; features live on {@link Plant} as a {@code PlantFeatureView}
- * (later chunk). Mirrors {@code InsectTaxonView}.
+ * {@code features()} slot; features live on {@link Plant} as an
+ * {@code OrganismFeatureView<PlantRankName, PlantFeature>} (later chunk).
+ * Mirrors {@code InsectTaxonView}.
  */
 public sealed interface PlantTaxonView extends ReadModel
         permits PlantOrderView, PlantFamilyView, PlantGenusView, PlantSpeciesView {

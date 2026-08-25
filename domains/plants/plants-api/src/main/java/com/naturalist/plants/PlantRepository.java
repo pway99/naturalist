@@ -4,6 +4,7 @@ import com.naturalist.data.EntityRepository;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
+import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,12 +62,13 @@ class PlantRepository {
     }
 
     protected interface FeatureAssignmentRepository
-            extends EntityRepository<PlantFeatureAssignmentId, PlantFeatureAssignment> {
+            extends EntityRepository<PlantFeatureAssignmentId,
+                                     OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> {
 
-        List<PlantFeatureAssignment> getByRankName(PlantRankName rankName);
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> getByRankName(PlantRankName rankName);
 
-        List<PlantFeatureAssignment> getByRankNames(Set<PlantRankName> rankNames);
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> getByRankNames(Set<PlantRankName> rankNames);
 
-        List<PlantFeatureAssignment> getByFeatureId(PlantFeatureId featureId);
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> getByFeatureId(PlantFeatureId featureId);
     }
 }

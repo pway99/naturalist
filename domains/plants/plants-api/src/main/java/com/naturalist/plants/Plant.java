@@ -6,6 +6,7 @@ import com.naturalist.plants.PlantEntityCollections.ImageCollection;
 import com.naturalist.plants.cultivar.CultivarCollection;
 import com.naturalist.plants.management.PlantProgramCollection;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentCollection;
+import com.naturalist.taxonomy.OrganismFeatureView;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public record Plant(
         @Nullable PlantFamilyView family,
         @Nullable PlantGenusView genus,
         @Nullable PlantSpeciesView species,
-        @Nullable PlantFeatureView features,
+        @Nullable OrganismFeatureView<PlantRankName, PlantFeature> features,
         /**
          * Direct sub-taxa of the identified rank, each wrapped as its rank's {@link PlantTaxonView}
          * permit with EMPTY {@code images()} — plants render no child thumbnails (a future
@@ -106,7 +107,7 @@ public record Plant(
                 cultivars, programs, constituents);
     }
 
-    public Plant withFeatures(@Nullable PlantFeatureView features) {
+    public Plant withFeatures(@Nullable OrganismFeatureView<PlantRankName, PlantFeature> features) {
         return new Plant(order, family, genus, species, features, children, role, images,
                 cultivars, programs, constituents);
     }

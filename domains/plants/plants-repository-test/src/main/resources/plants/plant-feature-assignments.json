@@ -1,43 +1,65 @@
-[ {
-  "id" : "026dd000-0000-7000-8000-000000000001",
-  "featureId" : "026cc000-0000-7000-8000-000000000001",
-  "rank" : "FAMILY",
-  "rankName" : "asteraceae",
-  "ordinal" : 0
-}, {
-  "id" : "026dd000-0000-7000-8000-000000000002",
-  "featureId" : "026cc000-0000-7000-8000-000000000002",
-  "rank" : "FAMILY",
-  "rankName" : "lamiaceae",
-  "ordinal" : 0
-}, {
-  "id" : "026dd000-0000-7000-8000-000000000003",
-  "featureId" : "026cc000-0000-7000-8000-000000000003",
-  "rank" : "FAMILY",
-  "rankName" : "asteraceae",
-  "ordinal" : 1
-}, {
-  "id" : "026dd000-0000-7000-8000-000000000004",
-  "featureId" : "026cc000-0000-7000-8000-000000000003",
-  "rank" : "ORDER",
-  "rankName" : "asterales",
-  "ordinal" : 0
-}, {
-  "id" : "026dd000-0000-7000-8000-000000000005",
-  "featureId" : "026cc000-0000-7000-8000-000000000004",
-  "rank" : "FAMILY",
-  "rankName" : "fabaceae",
-  "ordinal" : 0
-}, {
-  "id" : "026dd000-0000-7000-8000-000000000006",
-  "featureId" : "026cc000-0000-7000-8000-000000000001",
-  "rank" : "GENUS",
-  "rankName" : "helianthus",
-  "ordinal" : 0
-}, {
-  "id" : "026dd000-0000-7000-8000-000000000007",
-  "featureId" : "026cc000-0000-7000-8000-000000000002",
-  "rank" : "GENUS",
-  "rankName" : "salvia",
-  "ordinal" : 0
-} ]
+[
+  {
+    "id": "026dd000-0000-7000-8000-000000000001",
+    "featureId": "026cc000-0000-7000-8000-000000000001",
+    "rankName": {
+      "rank": "FAMILY",
+      "value": "asteraceae"
+    },
+    "ordinal": 0
+  },
+  {
+    "id": "026dd000-0000-7000-8000-000000000002",
+    "featureId": "026cc000-0000-7000-8000-000000000002",
+    "rankName": {
+      "rank": "FAMILY",
+      "value": "lamiaceae"
+    },
+    "ordinal": 0
+  },
+  {
+    "id": "026dd000-0000-7000-8000-000000000003",
+    "featureId": "026cc000-0000-7000-8000-000000000003",
+    "rankName": {
+      "rank": "FAMILY",
+      "value": "asteraceae"
+    },
+    "ordinal": 1
+  },
+  {
+    "id": "026dd000-0000-7000-8000-000000000004",
+    "featureId": "026cc000-0000-7000-8000-000000000003",
+    "rankName": {
+      "rank": "ORDER",
+      "value": "asterales"
+    },
+    "ordinal": 0
+  },
+  {
+    "id": "026dd000-0000-7000-8000-000000000005",
+    "featureId": "026cc000-0000-7000-8000-000000000004",
+    "rankName": {
+      "rank": "FAMILY",
+      "value": "fabaceae"
+    },
+    "ordinal": 0
+  },
+  {
+    "id": "026dd000-0000-7000-8000-000000000006",
+    "featureId": "026cc000-0000-7000-8000-000000000001",
+    "rankName": {
+      "rank": "GENUS",
+      "value": "helianthus"
+    },
+    "ordinal": 0
+  },
+  {
+    "id": "026dd000-0000-7000-8000-000000000007",
+    "featureId": "026cc000-0000-7000-8000-000000000002",
+    "rankName": {
+      "rank": "GENUS",
+      "value": "salvia"
+    },
+    "ordinal": 0
+  }
+]

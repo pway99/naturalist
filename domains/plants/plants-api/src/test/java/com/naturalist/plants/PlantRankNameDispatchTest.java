@@ -25,7 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@code OrganismImage} no longer appears here: its {@code parentName} moved off
  * {@code @JsonSubTypes} onto the shared {@code RankName} {@code {"rank","value"}} codec
  * (registered {@code RankNameReconstructor}), so it is not a {@code @JsonSubTypes}
- * dispatch consumer. The three records below still are.
+ * dispatch consumer. The feature assignment left for the same reason — it is now the
+ * generic {@code OrganismFeatureAssignment} carrying {@code rankName} through that same
+ * {@code {"rank","value"}} codec. The three records below still are.
  * <p>
  * {@code Planting} in the garden domain declares the same dispatch and is covered by its
  * own copy of this test — plants-api cannot see garden-api.
@@ -35,8 +37,7 @@ class PlantRankNameDispatchTest {
     private static final List<Class<?>> CONSUMERS = List.of(
             PlantEcologicalRole.class,
             PlantProgram.class,
-            PhytochemicalConstituent.class,
-            PlantFeatureAssignment.class);
+            PhytochemicalConstituent.class);
 
     @Test
     void everyConsumerDispatchesOverEveryPermit() {

@@ -45,7 +45,8 @@ class PlantTest {
 
     @Test
     void withFeatures_carriesFeatureView() {
-        PlantFeatureView fv = new PlantFeatureView(PlantOrderName.of("asterales"), java.util.List.of());
+        com.naturalist.taxonomy.OrganismFeatureView<PlantRankName, PlantFeature> fv =
+                new com.naturalist.taxonomy.OrganismFeatureView<>(PlantOrderName.of("asterales"), java.util.List.of());
         Plant plant = Plant.empty().withFeatures(fv);
         assertThat(plant.features()).isEqualTo(fv);
     }
