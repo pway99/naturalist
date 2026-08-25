@@ -1,5 +1,4 @@
 @import com.naturalist.plants.PlantFamily
-@import com.naturalist.plants.PlantGenusView
 @import com.naturalist.plants.PlantTaxonView
 @import java.util.List
 @import com.naturalist.plants.BreadcrumbSegment
@@ -65,7 +64,7 @@
         @else
             <div class="entity-grid">
                 @for(var child : children)
-                    @if(child instanceof PlantGenusView gv)
+                    @if(child instanceof PlantTaxonView.GenusView gv)
                         !{var g = gv.genus();}
                         !{var genusCommonName = g.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(g.genus().value());}
                         <article>

@@ -1,6 +1,5 @@
 @import com.naturalist.plants.PlantFamily
 @import com.naturalist.plants.PlantGenus
-@import com.naturalist.plants.PlantSpeciesView
 @import com.naturalist.plants.PlantTaxonView
 @import com.naturalist.plants.BreadcrumbSegment
 @import com.naturalist.library.CladeStep
@@ -76,7 +75,7 @@
         @else
             <div class="entity-grid">
                 @for(var child : children)
-                    @if(child instanceof PlantSpeciesView sv)
+                    @if(child instanceof PlantTaxonView.SpeciesView sv)
                         !{var s = sv.species();}
                         !{var speciesLabel = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(genus.genus().value() + " " + s.epithet().value());}
                         <article>

@@ -80,14 +80,14 @@ class PlantFactory {
                 Set<PlantRankName> ancestry = lineage(sn,
                         genus.map(PlantGenus::name), family.map(PlantFamily::name), order.map(PlantOrder::name));
                 Plant plant = base(sn, ancestry)
-                        .withSpecies(PlantSpeciesView.of(species))
+                        .withSpecies(PlantTaxonView.SpeciesView.of(species))
                         .withChildren(List.of())
                         .withCultivars(cultivarQuery.forPlantName(sn))
                         .withPrograms(programQuery.forPlantName(sn))
                         .withConstituents(constituentQuery.forPlantName(sn));
-                if (genus.isPresent()) plant = plant.withGenus(PlantGenusView.of(genus.get()));
-                if (family.isPresent()) plant = plant.withFamily(PlantFamilyView.of(family.get()));
-                if (order.isPresent()) plant = plant.withOrder(PlantOrderView.of(order.get()));
+                if (genus.isPresent()) plant = plant.withGenus(PlantTaxonView.GenusView.of(genus.get()));
+                if (family.isPresent()) plant = plant.withFamily(PlantTaxonView.FamilyView.of(family.get()));
+                if (order.isPresent()) plant = plant.withOrder(PlantTaxonView.OrderView.of(order.get()));
                 return observe(plant);
             });
             case PlantGenusName gn -> genusQuery.getByName(gn).map(genus -> {
@@ -96,23 +96,23 @@ class PlantFactory {
                 Set<PlantRankName> ancestry = lineage(gn,
                         family.map(PlantFamily::name), order.map(PlantOrder::name));
                 Plant plant = base(gn, ancestry)
-                        .withGenus(PlantGenusView.of(genus))
+                        .withGenus(PlantTaxonView.GenusView.of(genus))
                         .withChildren(speciesChildren(gn));
-                if (family.isPresent()) plant = plant.withFamily(PlantFamilyView.of(family.get()));
-                if (order.isPresent()) plant = plant.withOrder(PlantOrderView.of(order.get()));
+                if (family.isPresent()) plant = plant.withFamily(PlantTaxonView.FamilyView.of(family.get()));
+                if (order.isPresent()) plant = plant.withOrder(PlantTaxonView.OrderView.of(order.get()));
                 return observe(plant);
             });
             case PlantFamilyName fn -> familyQuery.getByName(fn).map(family -> {
                 Optional<PlantOrder> order = orderQuery.getByName(family.orderName());
                 Set<PlantRankName> ancestry = lineage(fn, order.map(PlantOrder::name));
                 Plant plant = base(fn, ancestry)
-                        .withFamily(PlantFamilyView.of(family))
+                        .withFamily(PlantTaxonView.FamilyView.of(family))
                         .withChildren(genusChildren(fn));
-                if (order.isPresent()) plant = plant.withOrder(PlantOrderView.of(order.get()));
+                if (order.isPresent()) plant = plant.withOrder(PlantTaxonView.OrderView.of(order.get()));
                 return observe(plant);
             });
             case PlantOrderName on -> orderQuery.getByName(on).map(order -> observe(
-                    base(on, lineage(on)).withOrder(PlantOrderView.of(order)).withChildren(familyChildren(on))));
+                    base(on, lineage(on)).withOrder(PlantTaxonView.OrderView.of(order)).withChildren(familyChildren(on))));
         };
     }
 
@@ -145,21 +145,21 @@ class PlantFactory {
 
     private java.util.List<PlantTaxonView> familyChildren(PlantOrderName orderName) {
         return familyQuery.forOrderName(orderName).stream()
-                .map(f -> (PlantTaxonView) PlantFamilyView.of(f))
+                .map(f -> (PlantTaxonView) PlantTaxonView.FamilyView.of(f))
                 .sorted(java.util.Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
 
     private java.util.List<PlantTaxonView> genusChildren(PlantFamilyName familyName) {
         return genusQuery.forFamilyName(familyName).stream()
-                .map(g -> (PlantTaxonView) PlantGenusView.of(g))
+                .map(g -> (PlantTaxonView) PlantTaxonView.GenusView.of(g))
                 .sorted(java.util.Comparator.comparing(v -> v.name().value()))
                 .toList();
     }
 
     private java.util.List<PlantTaxonView> speciesChildren(PlantGenusName genusName) {
         return speciesQuery.forGenusName(genusName).stream()
-                .map(s -> (PlantTaxonView) PlantSpeciesView.of(s))
+                .map(s -> (PlantTaxonView) PlantTaxonView.SpeciesView.of(s))
                 .sorted(java.util.Comparator.comparing(v -> v.name().value()))
                 .toList();
     }

@@ -26,7 +26,7 @@ class PlantTest {
                 com.naturalist.taxonomy.TaxonomicGenus.of("Thymus"),
                 new com.naturalist.fieldnotes.Description("a", "b", "c", "d"),
                 java.util.Set.of());
-        Plant plant = Plant.empty().withGenus(PlantGenusView.of(thymus));
+        Plant plant = Plant.empty().withGenus(PlantTaxonView.GenusView.of(thymus));
         MethodObserver mo = observer.forMethod("childRankWithoutAncestor");
         assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".plant.genus:family");
@@ -39,7 +39,7 @@ class PlantTest {
                 com.naturalist.taxonomy.TaxonomicOrder.of("Lamiales"),
                 new com.naturalist.fieldnotes.Description("a", "b", "c", "d"),
                 java.util.Set.of(), null);
-        Plant plant = Plant.empty().withOrder(PlantOrderView.of(order));
+        Plant plant = Plant.empty().withOrder(PlantTaxonView.OrderView.of(order));
         assertThat(plant.identifiedTo()).contains(PlantOrderName.of("lamiales"));
     }
 
@@ -65,7 +65,7 @@ class PlantTest {
                 com.naturalist.taxonomy.TaxonomicOrder.of("Asterales"),
                 new com.naturalist.fieldnotes.Description("a", "b", "c", "d"),
                 java.util.Set.of(), null);
-        Plant plant = Plant.empty().withChildren(java.util.List.of(PlantOrderView.of(order)));
+        Plant plant = Plant.empty().withChildren(java.util.List.of(PlantTaxonView.OrderView.of(order)));
         assertThat(plant.children()).hasSize(1);
     }
 

@@ -1,4 +1,3 @@
-@import com.naturalist.plants.PlantFamilyView
 @import com.naturalist.plants.PlantTaxonView
 @import com.naturalist.plants.PlantOrder
 @import java.util.List
@@ -62,7 +61,7 @@
         @else
             <div class="entity-grid">
                 @for(var child : children)
-                    @if(child instanceof PlantFamilyView fv)
+                    @if(child instanceof PlantTaxonView.FamilyView fv)
                         !{var f = fv.family();}
                         !{var familyCommonName = f.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(f.family().value());}
                         <article>

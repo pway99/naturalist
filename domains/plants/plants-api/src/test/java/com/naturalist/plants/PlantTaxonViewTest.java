@@ -21,7 +21,7 @@ class PlantTaxonViewTest {
 
     @Test
     void familyView_of_exposesNameAndFk_andHasNoViolations() {
-        PlantFamilyView view = PlantFamilyView.of(asteraceae());
+        PlantTaxonView.FamilyView view = PlantTaxonView.FamilyView.of(asteraceae());
         assertThat(view.name()).isEqualTo(PlantFamilyName.of("asteraceae"));
         assertThat(view.orderName()).isEqualTo(PlantOrderName.of("asterales"));
         assertThat(view.images().isEmpty()).isTrue();
@@ -30,8 +30,8 @@ class PlantTaxonViewTest {
 
     @Test
     void familyView_belongsToOrder_matchesFk_andToleratesNull() {
-        PlantFamilyView family = PlantFamilyView.of(asteraceae());
-        PlantOrderView asterales = PlantOrderView.of(new PlantOrder(
+        PlantTaxonView.FamilyView family = PlantTaxonView.FamilyView.of(asteraceae());
+        PlantTaxonView.OrderView asterales = PlantTaxonView.OrderView.of(new PlantOrder(
                 PlantOrderName.of("asterales"),
                 com.naturalist.taxonomy.TaxonomicOrder.of("Asterales"),
                 new com.naturalist.fieldnotes.Description("a", "b", "c", "d"),
@@ -43,12 +43,12 @@ class PlantTaxonViewTest {
 
     @Test
     void dispatchesAcrossSealedPermits() {
-        PlantTaxonView view = PlantFamilyView.of(asteraceae());
+        PlantTaxonView view = PlantTaxonView.FamilyView.of(asteraceae());
         String tag = switch (view) {
-            case PlantOrderView v -> "order:" + v.order().name().value();
-            case PlantFamilyView v -> "family:" + v.family().name().value();
-            case PlantGenusView v -> "genus:" + v.genus().name().value();
-            case PlantSpeciesView v -> "species:" + v.species().name().value();
+            case PlantTaxonView.OrderView v -> "order:" + v.order().name().value();
+            case PlantTaxonView.FamilyView v -> "family:" + v.family().name().value();
+            case PlantTaxonView.GenusView v -> "genus:" + v.genus().name().value();
+            case PlantTaxonView.SpeciesView v -> "species:" + v.species().name().value();
         };
         assertThat(tag).isEqualTo("family:asteraceae");
     }

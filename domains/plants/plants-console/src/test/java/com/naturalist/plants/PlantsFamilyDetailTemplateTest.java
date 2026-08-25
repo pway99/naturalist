@@ -30,7 +30,7 @@ class PlantsFamilyDetailTemplateTest {
                 .entityStream().toList()) {
             List<PlantTaxonView> children = allGenera.stream()
                     .filter(g -> family.name().equals(g.familyName()))
-                    .map(g -> (PlantTaxonView) PlantGenusView.of(g))
+                    .map(g -> (PlantTaxonView) PlantTaxonView.GenusView.of(g))
                     .toList();
             StringOutput output = new StringOutput();
             template.render("plants/families/detail.jte",
@@ -50,7 +50,7 @@ class PlantsFamilyDetailTemplateTest {
                 .orElseThrow();
         List<PlantTaxonView> children = nte.getNamed(PlantGenusTestEntitySource.class).entityStream()
                 .filter(g -> lamiaceae.name().equals(g.familyName()))
-                .map(g -> (PlantTaxonView) PlantGenusView.of(g))
+                .map(g -> (PlantTaxonView) PlantTaxonView.GenusView.of(g))
                 .toList();
 
         StringOutput output = new StringOutput();

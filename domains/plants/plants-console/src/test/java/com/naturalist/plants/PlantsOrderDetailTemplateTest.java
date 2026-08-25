@@ -29,7 +29,7 @@ class PlantsOrderDetailTemplateTest {
                 .entityStream().toList()) {
             List<PlantTaxonView> children = allFamilies.stream()
                     .filter(f -> order.name().equals(f.orderName()))
-                    .map(f -> (PlantTaxonView) PlantFamilyView.of(f))
+                    .map(f -> (PlantTaxonView) PlantTaxonView.FamilyView.of(f))
                     .toList();
             StringOutput output = new StringOutput();
             template.render("plants/orders/detail.jte",
@@ -49,7 +49,7 @@ class PlantsOrderDetailTemplateTest {
                 .orElseThrow();
         List<PlantTaxonView> children = nte.getNamed(PlantFamilyTestEntitySource.class).entityStream()
                 .filter(f -> lamiales.name().equals(f.orderName()))
-                .map(f -> (PlantTaxonView) PlantFamilyView.of(f))
+                .map(f -> (PlantTaxonView) PlantTaxonView.FamilyView.of(f))
                 .toList();
 
         StringOutput output = new StringOutput();

@@ -3,6 +3,10 @@ package com.naturalist.plants;
 import com.naturalist.ddd.ReadModel;
 import com.naturalist.observability.Constraints;
 import com.naturalist.plants.PlantEntityCollections.ImageCollection;
+import com.naturalist.plants.PlantTaxonView.FamilyView;
+import com.naturalist.plants.PlantTaxonView.GenusView;
+import com.naturalist.plants.PlantTaxonView.OrderView;
+import com.naturalist.plants.PlantTaxonView.SpeciesView;
 import com.naturalist.plants.cultivar.CultivarCollection;
 import com.naturalist.plants.management.PlantProgramCollection;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentCollection;
@@ -16,8 +20,8 @@ import java.util.function.Consumer;
 /**
  * The Plant read model — in-memory composition of everything known about a plant at
  * whatever identification depth was reached. Chunk 1 carries only the rank chain
- * ({@code @Nullable} {@link PlantOrderView}/{@link PlantFamilyView}/{@link PlantGenusView}/
- * {@link PlantSpeciesView}), populated top-down to the resolved depth. Features, children,
+ * ({@code @Nullable} {@link OrderView}/{@link FamilyView}/{@link GenusView}/
+ * {@link SpeciesView}), populated top-down to the resolved depth. Features, children,
  * role, images, and species extras fold in over later chunks (see the design of record).
  * Mirrors {@code Insect}.
  *
@@ -25,10 +29,10 @@ import java.util.function.Consumer;
  * consumer asks an {@link com.naturalist.observability.Observer} to walk them.
  */
 public record Plant(
-        @Nullable PlantOrderView order,
-        @Nullable PlantFamilyView family,
-        @Nullable PlantGenusView genus,
-        @Nullable PlantSpeciesView species,
+        @Nullable OrderView order,
+        @Nullable FamilyView family,
+        @Nullable GenusView genus,
+        @Nullable SpeciesView species,
         @Nullable OrganismFeatureView<PlantRankName, PlantFeature> features,
         /**
          * Direct sub-taxa of the identified rank, each wrapped as its rank's {@link PlantTaxonView}
@@ -87,22 +91,22 @@ public record Plant(
         return species == null ? Optional.empty() : Optional.of(species.name());
     }
 
-    public Plant withOrder(@Nullable PlantOrderView order) {
+    public Plant withOrder(@Nullable OrderView order) {
         return new Plant(order, family, genus, species, features, children, role, images,
                 cultivars, programs, constituents);
     }
 
-    public Plant withFamily(@Nullable PlantFamilyView family) {
+    public Plant withFamily(@Nullable FamilyView family) {
         return new Plant(order, family, genus, species, features, children, role, images,
                 cultivars, programs, constituents);
     }
 
-    public Plant withGenus(@Nullable PlantGenusView genus) {
+    public Plant withGenus(@Nullable GenusView genus) {
         return new Plant(order, family, genus, species, features, children, role, images,
                 cultivars, programs, constituents);
     }
 
-    public Plant withSpecies(@Nullable PlantSpeciesView species) {
+    public Plant withSpecies(@Nullable SpeciesView species) {
         return new Plant(order, family, genus, species, features, children, role, images,
                 cultivars, programs, constituents);
     }

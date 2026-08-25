@@ -68,7 +68,7 @@ class PlantsGenusDetailTemplateTest {
                 .orElseThrow();
         List<PlantTaxonView> children = nte.getNamed(PlantSpeciesTestEntitySource.class).entityStream()
                 .filter(s -> trifolium.name().equals(s.genusName()))
-                .map(s -> (PlantTaxonView) PlantSpeciesView.of(s))
+                .map(s -> (PlantTaxonView) PlantTaxonView.SpeciesView.of(s))
                 .toList();
 
         Map<String, Object> params = new HashMap<>();

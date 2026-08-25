@@ -112,7 +112,7 @@ class PlantFactoryTest {
         Plant plant = factory().buildByName(PlantOrderName.of("asterales")).orElseThrow();
         assertThat(plant.children()).isNotEmpty();
         assertThat(plant.children()).allSatisfy(c ->
-                assertThat(c).isInstanceOf(PlantFamilyView.class));
+                assertThat(c).isInstanceOf(PlantTaxonView.FamilyView.class));
     }
 
     @Test
