@@ -15,15 +15,20 @@ Carries `InsectImageId id`, accessor `id()`. Parent reference is an
 id-shaped FK column.
 
 **InsectTaxonView** — Sealed `ReadModel` over the four Linnaean ranks that carry
-catalog entities: `InsectSpeciesView`, `InsectGenusView`, `InsectFamilyView`,
-`InsectOrderView`. Each permit composes its rank entity with the `ImageCollection`
-of photographs attached at that rank — a read-side projection, not a consistency
-boundary. Identity is the root's typed `InsectRankName`, returned polymorphically
-by `name()`. No standalone query — used only as the rank-chain and child-card
-building blocks assembled inside the `Insect` read model, by `InsectFactory`.
-Permits carry no `features()` slot; features live on `Insect` as an
-`OrganismFeatureView<InsectRankName, InsectFeature>`. `InsectSubspeciesName` is permitted on `InsectRankName` but
-yields `Optional.empty()` (no subspecies entity exists yet).
+catalog entities. Its four permits are **nested records inside the interface** —
+`InsectTaxonView.SpeciesView`, `.GenusView`, `.FamilyView`, `.OrderView` — so the
+`permits` clause is inferred from the compilation unit rather than written out.
+The domain prefix is dropped per ADR-020 (the namespace carries it); the `View`
+role suffix is kept, distinguishing e.g. `InsectTaxonView.SpeciesView` (the
+projection) from `InsectSpecies` (the entity it wraps). Each permit composes its
+rank entity with the `ImageCollection` of photographs attached at that rank — a
+read-side projection, not a consistency boundary. Identity is the root's typed
+`InsectRankName`, returned polymorphically by `name()`. No standalone query — used
+only as the rank-chain and child-card building blocks assembled inside the `Insect`
+read model, by `InsectFactory`. Permits carry no `features()` slot; features live on
+`Insect` as an `OrganismFeatureView<InsectRankName, InsectFeature>`.
+`InsectSubspeciesName` is permitted on `InsectRankName` but yields `Optional.empty()`
+(no subspecies entity exists yet).
 
 ## The Naturalist's Collection
 

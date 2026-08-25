@@ -7,7 +7,6 @@
 @import com.naturalist.insects.InsectRankName
 @import com.naturalist.insects.InsectImageId
 @import com.naturalist.insects.InsectOrder
-@import com.naturalist.insects.InsectSpeciesView
 @import com.naturalist.insects.InsectTaxonView
 @import com.naturalist.insects.AncestorIntro
 @import com.naturalist.insects.BreadcrumbSegment
@@ -74,7 +73,7 @@
         @else
             <div class="entity-grid">
                 @for(var child : children)
-                    @if(child instanceof InsectSpeciesView sv)
+                    @if(child instanceof InsectTaxonView.SpeciesView sv)
                         !{var s = sv.species();}
                         !{var speciesCommonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
                         <article>

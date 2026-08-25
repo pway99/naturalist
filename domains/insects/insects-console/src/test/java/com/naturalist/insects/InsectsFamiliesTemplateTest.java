@@ -9,7 +9,6 @@ import com.naturalist.insects.InsectEntityCollections;
 import com.naturalist.insects.InsectFamily;
 import com.naturalist.insects.InsectGenus;
 import com.naturalist.insects.InsectGenusTestEntitySource;
-import com.naturalist.insects.InsectGenusView;
 import com.naturalist.insects.InsectImageId;
 import com.naturalist.insects.InsectObservationId;
 import com.naturalist.insects.InsectRankName;
@@ -134,7 +133,7 @@ class InsectsFamiliesTemplateTest {
         InsectFamily family = nte.getNamed(InsectFamilyTestEntitySource.class)
                 .getByName(anyGenus.familyName()).orElseThrow();
         InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
-        InsectTaxonView genusChild = InsectGenusView.of(
+        InsectTaxonView genusChild = InsectTaxonView.GenusView.of(
                 anyGenus,
                 InsectEntityCollections.ImageCollection.empty());
         StringOutput output = new StringOutput();

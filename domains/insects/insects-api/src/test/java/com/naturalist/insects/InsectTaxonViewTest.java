@@ -20,7 +20,7 @@ class InsectTaxonViewTest {
     @Test
     void speciesViewIsValid() {
         var mo = observer.forMethod("speciesViewIsValid");
-        InsectSpeciesView view = InsectSpeciesView.of(validSpecies());
+        InsectTaxonView.SpeciesView view = InsectTaxonView.SpeciesView.of(validSpecies());
 
         InvariantObservation result = mo.observable(view, "agg");
 
@@ -31,7 +31,7 @@ class InsectTaxonViewTest {
     @Test
     void speciesViewIsNotValid() {
         var mo = observer.forMethod("speciesViewIsNotValid");
-        InsectSpeciesView view = new InsectSpeciesView(null, null);
+        InsectTaxonView.SpeciesView view = new InsectTaxonView.SpeciesView(null, null);
 
         InvariantObservation result = mo.observable(view, "agg");
 
@@ -42,7 +42,7 @@ class InsectTaxonViewTest {
     @Test
     void genusViewIsValid() {
         var mo = observer.forMethod("genusViewIsValid");
-        InsectGenusView view = InsectGenusView.of(validGenus());
+        InsectTaxonView.GenusView view = InsectTaxonView.GenusView.of(validGenus());
 
         InvariantObservation result = mo.observable(view, "agg");
 
@@ -53,7 +53,7 @@ class InsectTaxonViewTest {
     @Test
     void genusViewIsNotValid() {
         var mo = observer.forMethod("genusViewIsNotValid");
-        InsectGenusView view = new InsectGenusView(null, null);
+        InsectTaxonView.GenusView view = new InsectTaxonView.GenusView(null, null);
 
         InvariantObservation result = mo.observable(view, "agg");
 
@@ -64,7 +64,7 @@ class InsectTaxonViewTest {
     @Test
     void familyViewIsValid() {
         var mo = observer.forMethod("familyViewIsValid");
-        InsectFamilyView view = InsectFamilyView.of(validFamily());
+        InsectTaxonView.FamilyView view = InsectTaxonView.FamilyView.of(validFamily());
 
         InvariantObservation result = mo.observable(view, "agg");
 
@@ -75,7 +75,7 @@ class InsectTaxonViewTest {
     @Test
     void familyViewIsNotValid() {
         var mo = observer.forMethod("familyViewIsNotValid");
-        InsectFamilyView view = new InsectFamilyView(null, null);
+        InsectTaxonView.FamilyView view = new InsectTaxonView.FamilyView(null, null);
 
         InvariantObservation result = mo.observable(view, "agg");
 
@@ -86,7 +86,7 @@ class InsectTaxonViewTest {
     @Test
     void orderViewIsValid() {
         var mo = observer.forMethod("orderViewIsValid");
-        InsectOrderView view = InsectOrderView.of(validOrder());
+        InsectTaxonView.OrderView view = InsectTaxonView.OrderView.of(validOrder());
 
         InvariantObservation result = mo.observable(view, "agg");
 
@@ -96,7 +96,7 @@ class InsectTaxonViewTest {
     @Test
     void orderViewIsNotValid() {
         var mo = observer.forMethod("orderViewIsNotValid");
-        InsectOrderView view = new InsectOrderView(null, null);
+        InsectTaxonView.OrderView view = new InsectTaxonView.OrderView(null, null);
 
         InvariantObservation result = mo.observable(view, "agg");
 

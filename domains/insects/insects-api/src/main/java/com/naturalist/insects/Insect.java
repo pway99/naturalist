@@ -2,6 +2,10 @@ package com.naturalist.insects;
 
 import com.naturalist.ddd.ReadModel;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import com.naturalist.insects.InsectTaxonView.FamilyView;
+import com.naturalist.insects.InsectTaxonView.GenusView;
+import com.naturalist.insects.InsectTaxonView.OrderView;
+import com.naturalist.insects.InsectTaxonView.SpeciesView;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.OrganismFeatureView;
@@ -21,9 +25,9 @@ import java.util.function.Consumer;
  *   <li>{@link ImageCollection observations} — the photographic working set
  *       driving identification (catalog-read use case loads the rank's images;
  *       workflow use case loads the naturalist's gathered photos).</li>
- *   <li>The rank chain — {@code @Nullable} {@link InsectOrderView},
- *       {@link InsectFamilyView}, {@link InsectGenusView},
- *       {@link InsectSpeciesView}. Populated to whatever depth
+ *   <li>The rank chain — {@code @Nullable} {@link OrderView},
+ *       {@link FamilyView}, {@link GenusView},
+ *       {@link SpeciesView}. Populated to whatever depth
  *       identification has reached, monotonically filled from the top down.</li>
  *   <li>{@link LifeStageCollection lifeStages} — the
  *       {@link com.naturalist.insects.lifestage.LifeStage} records attached to
@@ -42,7 +46,7 @@ import java.util.function.Consumer;
  * monotonic-fill violations, etc.) are reported by {@link #invariants()} when
  * a consumer asks the {@link com.naturalist.observability.Observer} to walk
  * them. This is the project's standard pattern (see {@code domains/CLAUDE.md}
- * and {@code InsectSpeciesView} for reference). Consumers are responsible
+ * and {@code SpeciesView} for reference). Consumers are responsible
  * for observing at boundaries before acting on a read model.
  *
  * <p>Structural invariants declared by {@link #invariants()}:
@@ -81,10 +85,10 @@ import java.util.function.Consumer;
  */
 public record Insect(
         ImageCollection observations,
-        @Nullable InsectOrderView order,
-        @Nullable InsectFamilyView family,
-        @Nullable InsectGenusView genus,
-        @Nullable InsectSpeciesView species,
+        @Nullable OrderView order,
+        @Nullable FamilyView family,
+        @Nullable GenusView genus,
+        @Nullable SpeciesView species,
         LifeStageCollection lifeStages,
         @Nullable InsectCitationView citations,
         @Nullable OrganismFeatureView<InsectRankName, InsectFeature> features,
@@ -156,19 +160,19 @@ public record Insect(
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withOrder(@Nullable InsectOrderView order) {
+    public Insect withOrder(@Nullable OrderView order) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withFamily(@Nullable InsectFamilyView family) {
+    public Insect withFamily(@Nullable FamilyView family) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withGenus(@Nullable InsectGenusView genus) {
+    public Insect withGenus(@Nullable GenusView genus) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withSpecies(@Nullable InsectSpeciesView species) {
+    public Insect withSpecies(@Nullable SpeciesView species) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 

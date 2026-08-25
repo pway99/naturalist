@@ -58,7 +58,7 @@ class InsectsOrdersTemplateTest {
                 .findFirst().orElseThrow();
         InsectOrder order = nte.getNamed(InsectOrderTestEntitySource.class)
                 .getByName(anyFamily.orderName()).orElseThrow();
-        InsectTaxonView familyChild = InsectFamilyView.of(
+        InsectTaxonView familyChild = InsectTaxonView.FamilyView.of(
                 anyFamily,
                 InsectEntityCollections.ImageCollection.empty());
         StringOutput output = new StringOutput();

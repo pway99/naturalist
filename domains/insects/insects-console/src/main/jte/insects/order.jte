@@ -1,6 +1,5 @@
 @import com.naturalist.observation.OrganismObservation
 @import com.naturalist.insects.InsectCitationView
-@import com.naturalist.insects.InsectFamilyView
 @import com.naturalist.observation.OrganismImage
 @import com.naturalist.insects.InsectObservationId
 @import com.naturalist.insects.InsectRankName
@@ -70,7 +69,7 @@
         @else
             <div class="entity-grid">
                 @for(var child : children)
-                    @if(child instanceof InsectFamilyView fv)
+                    @if(child instanceof InsectTaxonView.FamilyView fv)
                         !{var f = fv.family();}
                         !{var familyCommonName = f.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(f.name().value());}
                         <article>
