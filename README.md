@@ -39,25 +39,24 @@ violated.
 
 ## Architecture at a glance
 
-```
-apps/                  composition roots — the deployable artifacts
-adapters/              ports-and-adapters with heavy / vendor dependencies
-external-authorities/  integrations with external data authorities (e.g. EOL)
-kernels/               cross-cutting foundations (no domain knowledge)
-domains/               bounded contexts — one module set per domain
-tooling/               OpenRewrite architectural-enforcement recipes
-```
+| Tree | What lives there |
+|------|------------------|
+| `apps/` | composition roots — the deployable artifacts |
+| `adapters/` | ports-and-adapters with heavy / vendor dependencies |
+| `external-authorities/` | integrations with external data authorities (e.g. EOL) |
+| `kernels/` | cross-cutting foundations (no domain knowledge) |
+| `domains/` | bounded contexts — one module set per domain |
+| `tooling/` | OpenRewrite architectural-enforcement recipes |
 
 Each domain is split into coordinated Maven modules:
 
-```
-<domain>-api             public surface: entities, typed ids, query/command ports
-<domain>-core            adapters: query impls, aggregate factories, services
-<domain>-repository-test in-memory adapter + the behavioral contract every
-                         adapter must satisfy
-<domain>-repository-rdms production persistence adapter (see note below)
-<domain>-console         JTE view fragments contributed to the console
-```
+| Module | Role |
+|--------|------|
+| `<domain>-api` | public surface: entities, typed ids, query/command ports |
+| `<domain>-core` | adapters: query impls, aggregate factories, services |
+| `<domain>-repository-test` | in-memory adapter + the behavioral contract every adapter must satisfy |
+| `<domain>-repository-rdms` | production persistence adapter (see note below) |
+| `<domain>-console` | JTE view fragments contributed to the console |
 
 The whole system is structured as a strict **directed acyclic graph** — every
 dependency points one way, and a cycle cannot compile (enforced by Java module
