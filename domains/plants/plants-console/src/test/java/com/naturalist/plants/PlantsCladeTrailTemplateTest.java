@@ -19,7 +19,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PlantsCladeTrailTemplateTest {
 
-    /** Real lineage as {@link CladeStep}s, mirroring what the controller reads off CladeQuery. */
+    /**
+     * Real lineage as {@link CladeStep}s. {@code rank} is left {@link Optional#empty()}
+     * here — unlike the runtime {@code CladeViewFactory}, which populates it — because
+     * the template never reads it; only slug and displayName drive the rendered row.
+     */
     private static List<CladeStep> steps(Clade tip) {
         return CladeTraversal.ancestry(tip).reversed().stream()
                 .map(c -> new CladeStep(c.slug(), c.displayName(), Optional.empty()))
@@ -63,6 +67,9 @@ class PlantsCladeTrailTemplateTest {
         TestTemplateEngine.create().render(
                 "plants/cladeTrail.jte", Map.of("cladeTrail", MAGNOLIID_TRAIL), output);
 
+        // Plants carry no Class rank (design D1). Rather than silently skipping it,
+        // the trail links a learner to the four-level "What is a class?" concept, so
+        // the supra-ordinal gap becomes a teaching moment rather than a blank.
         assertThat(output.toString()).contains("href=\"/concepts/class\"");
     }
 
