@@ -451,11 +451,17 @@ class InsectIdentificationCommand {
 
         // Existing catalog features by normalized value -- built ONCE from a single batched
         // corpus pass (never a per-feature select), so reuse targets resolve to their
-        // existing id inside the loop below without tripping the N+1 gate.
+        // existing id inside the loop below without tripping the N+1 gate. Skipped entirely
+        // when there is nothing to reuse -- the no-candidate path stays a zero-corpus-query
+        // identify, exactly as it was before the reuse feature.
         Map<String, InsectFeatureId> existingByValue;
-        try (var corpus = insectQuery.features().corpus()) {
-            existingByValue = corpus.collect(Collectors.toMap(
-                    InsectFeature::value, InsectFeature::id, (a, b) -> a));
+        if (reuse.isEmpty()) {
+            existingByValue = Map.of();
+        } else {
+            try (var corpus = insectQuery.features().corpus()) {
+                existingByValue = corpus.collect(Collectors.toMap(
+                        InsectFeature::value, InsectFeature::id, (a, b) -> a));
+            }
         }
 
         for (var rankFeatures : allRankFeatures) {

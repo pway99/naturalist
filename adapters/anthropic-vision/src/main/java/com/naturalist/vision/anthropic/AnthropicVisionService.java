@@ -173,6 +173,9 @@ public class AnthropicVisionService implements VisionService {
         @Override
         public VisionExchange respond(String toolResultJson, ToolSchema nextTool) {
             // Replay the assistant's tool_use, then answer it with the user's tool_result.
+            // Only the tool_use block is replayed (no sibling text): forced toolChoice
+            // always yields a lone tool_use block, so nothing is lost -- revisit if
+            // toolChoice ever becomes non-forced.
             var assistantMessage = MessageParam.builder()
                     .role(MessageParam.Role.ASSISTANT)
                     .contentOfBlockParams(List.of(ContentBlockParam.ofToolUse(block.toParam())))
