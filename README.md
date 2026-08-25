@@ -1,250 +1,315 @@
-# The Amateur Naturalist
+# Backyard Naturalist
 
-A modular-monolith domain application for cataloging and observing the natural
-systems at Oak Vista — insects, plants, soil chemistry, climate, sensors —
-built deliberately as a long-form study in Domain-Driven Design, hexagonal
-architecture, observability, and resilience as first-order concerns.
+A modular-monolith application for cataloging the living systems of a
+small managed landscape — insects, plants, soil chemistry, garden,
+sensors — built as a long-form study in **Domain-Driven Design, hexagonal
+architecture, and structural enforcement**.
 
-> **Portfolio note.** This codebase is intentionally a demonstration of
+> **Portfolio note.** This codebase is deliberately a demonstration of
 > structural choices: how a real domain is bounded, how identity is typed,
-> how cross-boundary calls are governed, and how vendor concerns are kept
-> out of the core. The decisions are recorded as ADRs; the code matches.
+> how cross-boundary calls are governed, and how vendor concerns are kept out
+> of the core. Every load-bearing decision is recorded as an
+> [ADR](docs/adr/README.md), and the architecture is enforced by the build —
+> not by convention.
 
 ---
 
-## What it is
+## The idea in one minute
 
-Oak Vista is a small managed landscape with diverse organisms, soil chemistry,
-microclimates, and ongoing field observations. The application is the
-naturalist's instrument:
+A naturalist works a real site — *Oak Vista*, near Chico, California — with
+a garden, diverse organisms, soil chemistry, and ongoing field observations. This
+application is the instrument: photograph an insect, have it identified to the
+most specific rank the evidence supports, and file it in a catalog that
+composes taxonomy, ecology, chemistry, and habitat into one navigable surface.
 
-- A **domain catalog** for insects, plants, chemistry compounds, fungi,
-  microbes, molluscs, vertebrates, worms, sensors, soil, climate, and
-  geographic zones.
-- A **field-notes layer** (the *Durrell principle* — explain anything at four
-  levels of understanding, from preschool to university) attached to every
-  named entity.
-- A **management console** (Spring Boot + JTE) that composes every active
-  domain into a single navigable surface.
+The focus is as much on the engineering discipline as on the subject matter. The
+system is one deployable artifact today, but every domain is module-isolated and
+references its peers only by typed names, so the shape is built to split. The
+rules that make that possible are checked at compile time and by the test
+suite, so the documented architecture and the running code cannot drift apart.
 
-The system runs as one deployable today. The shape is built to split — each
-domain is module-isolated and references peers only by typed names.
+**What's built:** a vision-assisted insect identification pipeline, an
+eleven-domain catalog, a four-level "explain-it-at-any-level" description on
+every entity, a Spring Boot management console, and a build-time enforcement
+layer — module DAG, N+1 query gate, resilience-coverage gate, and **ArchUnit +
+OpenRewrite** architectural rules — that fails the build when an invariant is
+violated.
 
 ---
 
 ## Architecture at a glance
 
 ```
-apps/                     composition roots (deployable artifacts)
-  management-console/       Spring Boot fat jar — composes every active domain
-
-adapters/                 ports-and-adapters with heavy/vendor deps
-  resilience-resilience4j/  Resilience facade  → Resilience4j
-  spring-runtime/           @DomainService marker → Spring bean discovery
-  spring-test-data/         framework-test → Spring beans (pre-RDBMS)
-
-kernels/                  cross-cutting foundations
-  framework/                NamedEntity, Entity, ValueObject, Aggregate,
-                            BehavioralCollection, Observable, Resilience facade
-  framework-test/           TestEntitySource, NaturalistDatabase, contract harness
-  field-notes/              Description (four-level Durrell description)
-  taxonomy/                 Linnaean classification (organism domains)
-  catalog/ + catalog-inmem/ cross-domain reference resolution
-
-domains/                  bounded contexts — one module set per domain
-  <domain>/<domain>-api          public surface (entities, queries, ports)
-  <domain>/<domain>-core         adapters: query impls, aggregate factories
-  <domain>/<domain>-repository-test    in-memory adapter + behavioral contract
-  <domain>/<domain>-console      JTE templates contributed to the console
-  identifiers/                   typed EntityName / EntityId subclasses only
+apps/                  composition roots — the deployable artifacts
+adapters/              ports-and-adapters with heavy / vendor dependencies
+external-authorities/  integrations with external data authorities (e.g. EOL)
+kernels/               cross-cutting foundations (no domain knowledge)
+domains/               bounded contexts — one module set per domain
+tooling/               OpenRewrite architectural-enforcement recipes
 ```
 
-The DAG is strict and acyclic, enforced by Java module visibility (and verified
-by ArchUnit at build time):
+Each domain is split into coordinated Maven modules:
 
 ```
-apps/*           → adapters/*, domains/*, kernels/*
-adapters/*       → kernels/*           (no domain, no app)
-<domain>-core    → <domain>-api, kernels/*  (and other domains' api only)
-<domain>-api     → kernels/framework, identifiers, field-notes [, taxonomy]
-kernels/*        → framework + a tiny third-party allowlist
+<domain>-api             public surface: entities, typed ids, query/command ports
+<domain>-core            adapters: query impls, aggregate factories, services
+<domain>-repository-test in-memory adapter + the behavioral contract every
+                         adapter must satisfy
+<domain>-repository-rdms production persistence adapter (see note below)
+<domain>-console         JTE view fragments contributed to the console
 ```
 
-See [ADR-004 — Modular Monolith](docs/adr/ADR-004-modular-monolith.md) and
-[`domains/CLAUDE.md`](domains/CLAUDE.md).
+The whole system is structured as a strict **directed acyclic graph** — every
+dependency points one way, and a cycle cannot compile (enforced by Java module
+visibility, verified by ArchUnit). `framework` sits at the bottom; nothing
+depends on an app.
+
+```mermaid
+graph TD
+    apps["apps/ — deployables"]
+    adapters["adapters/ — vendor / heavy impls"]
+    core["«domain»-core"]
+    repo["«domain»-repository-test / -rdms"]
+    api["«domain»-api"]
+    identifiers["identifiers — typed cross-domain<br/>reference names (EntityName · EntityId)"]
+    kernels["kernels/ — foundations"]
+    framework["framework · field-notes<br/>[· taxonomy · clades]"]
+
+    apps --> adapters
+    apps --> core
+    apps --> repo
+    adapters --> kernels
+    core --> api
+    repo --> api
+    api --> identifiers
+    api --> framework
+    identifiers --> framework
+    kernels --> framework
+```
+
+Cross-domain references are typed names — an `InsectSpeciesName`, a `PlantSpeciesName` —
+held in the shared, dependency-light **`identifiers`** module. A domain names its
+peers through it without depending on their implementations, and it is where a
+reference that would otherwise close a dependency cycle is broken instead. Domain
+`-core` may also depend on another domain's `-api` — never its `-core`.
+See [ADR-004 — Modular Monolith](docs/adr/ADR-004-modular-monolith.md).
+
+> **Current state of persistence.** The `-repository-rdms` modules exist and
+> satisfy the same behavioral contract as the in-memory adapter, but today they
+> **delegate to the in-memory mock** — a deliberate, temporary state while the
+> application is built out behind a stable port. Swapping in real RDBMS storage
+> is a change behind the port, invisible to every consumer.
 
 ---
 
-## Design pillars
+## Built to move fast — and to scale
 
-### 1. Domain-Driven Design with structural enforcement
+The architecture is not tidy for its own sake. It is optimized for the people
+and AI agents building on it, for the load it will carry in production, and to
+be run and *afforded* by a single developer.
 
-Every domain class implements exactly one of five framework supertypes —
-`NamedEntity`, `Entity`, `Aggregate`, `ValueObject`, `BehavioralCollection`.
-The chosen interface dictates identity rules, equality, and lifecycle. There
-is no escape hatch.
+- **Sub-minute builds.** Because the data layer is in-memory, the full
+  `mvn verify` — every module, every behavioral contract, every invariant walk —
+  completes in **under a minute**. The feedback loop stays tight enough to run
+  constantly, which is what makes strict enforcement livable rather than a tax.
+- **Designed to scale.** Keeping repositories as simple entity caches and
+  composing results with **batched, set-based selects** in memory scales more
+  predictably than complex relational joins. A batched lookup against a key-value
+  cache has near-constant, sharding-friendly cost; a multi-join query degrades
+  unpredictably as data and load grow. Composition cost lives in explicit
+  application code, not a query planner — and the N+1 gate keeps it batched.
+- **Affordable to run solo — resilience as a cost control.** The system is meant
+  to be operated and paid for by one developer, where a surprise cloud or AI
+  bill would be catastrophic. So every cross-boundary and vendor/LLM call is
+  wrapped in **timeouts, circuit breakers, and declared rate limits**, and
+  production adapters refuse to run on missing config rather than silently
+  falling back. A wedged provider, a runaway loop, or an unbounded model spend is
+  contained by design, not discovered on an invoice.
+- **Observed, not logged.** Every call site is observed through the framework's
+  metering — and there is deliberately **no logging**: nothing to grep, no log
+  pipeline to host or pay for. Failures surface as metrics that **alert the
+  developer directly**, and the metric pinpoints the exact **class, method, and
+  variable** behind the violated runtime constraint — so the notification is the
+  diagnosis, not just a signal to go digging. For a one-person operation, that
+  keeps monitoring tractable — a failure announces itself, already located.
+- **Strong types are guardrails for AI agents.** Typed identifiers, the
+  one-of-five supertype rule, and the enforced module DAG give a coding agent
+  unambiguous rails. The compiler and the enforcement layer flag a wrong turn
+  immediately, so agents are steered toward consistent, correct-by-construction
+  code rather than plausible-looking drift — and the repeated patterns mean an
+  agent that has seen one domain can extend the next.
+- **The real-world model stays in the foreground.** The API is designed so a
+  developer writes about insects, soil, and the garden — not about persistence
+  wiring, serialization, or validation ceremony. Namespaces, read-model
+  factories, and the invariant framework absorb the plumbing, leaving the
+  domain itself as the thing you actually edit.
 
-Per-domain `CLAUDE.md` files capture the ubiquitous language and invariants
-of each context (see [`domains/chemistry/CLAUDE.md`](domains/chemistry/CLAUDE.md),
-[`domains/plants/CLAUDE.md`](domains/plants/CLAUDE.md),
-[`domains/insects/CLAUDE.md`](domains/insects/CLAUDE.md)).
+---
 
-### 2. Typed identity, never raw strings or UUIDs
+## What makes it interesting
 
-Two identity branches share a common data-layer port (ADR-022):
+Three ideas carry most of the engineering weight; they are the ones worth
+reading first.
 
-- `NamedEntity<NAME extends EntityName>` — kebab-case slug as natural key,
-  the stable cross-domain reference (ADR-001).
-- `Entity<ID extends EntityId>` — surrogate **UUIDv7** identity, validated
-  `version() == 7` at construction. `UUID.randomUUID()` is forbidden in
-  domain and adapter code; only the kernel generator may produce ids.
+### Hexagonal — and strongly typed end to end
 
-`EntityName` and `EntityId` subclasses live in their own
-`domains/identifiers/` module — narrow, dependency-light, shared across the
-DAG. A `String` or raw `UUID` crossing a boundary is a review blocker.
+The core carries **zero vendor dependencies**: kernels and domain code know
+nothing of Spring, Resilience4j, or any database. Everything heavy or
+vendor-specific sits behind a kernel facade or a port in `adapters/`, so an
+implementation swaps without a consumer noticing. The data layer is the proof:
+today every repository is an in-memory cache, and a **single behavioral
+contract** — defined once as a `@Test` interface and implemented by both the
+in-memory adapter and the future RDBMS one — guarantees their equivalence by
+construction, so the swap to a real database is invisible to every consumer.
+Types are precise the whole way down — a raw `String` or `UUID` at a boundary is
+a review blocker — so the ports stay narrow: the discipline that lets the system
+scale, and lets an AI agent extend it with less guesswork.
 
-### 3. Hexagonal architecture (ports and adapters)
+```mermaid
+graph LR
+    core["«domain»-core<br/>(consumer)"] --> port["«domain»-api<br/>repository port"]
+    port --> inmem["in-memory adapter<br/>— today"]
+    port --> rdms["RDBMS adapter<br/>— same contract"]
+```
 
-Core code (`kernels/`, `<domain>-api`, `<domain>-core`) is free of vendor
-dependencies. Heavy or vendor-specific implementations live under
-[`adapters/`](adapters/CLAUDE.md):
+→ [ADR-001 (repositories)](docs/adr/ADR-001-repository-architecture.md),
+[ADR-002 (contract)](docs/adr/ADR-002-repository-behavioral-contract.md)
 
-- **`Resilience` facade** is in the kernel; **Resilience4j** is in
-  `adapters/resilience-resilience4j/`. No domain code imports Resilience4j.
-- **`@DomainService` marker** is in the kernel; **Spring bean discovery**
-  is in `adapters/spring-runtime/`. No domain code imports Spring
-  (ADR-025).
-- **In-memory data** is wired today via `framework-test`; the production
-  RDBMS adapter is the next-planned member, swappable behind the same
-  port without touching consumers.
+### Observability is structural, not bolted on
 
-### 4. Resilience as a first-order concern
+Every domain type declares `invariants()` — a pure predicate graph the framework
+walks at method boundaries, on repository inserts, on query results, and on
+event processing. A single walk returns the **complete** set of violations in
+one pass (no debugging which constraint tripped first), and emits Micrometer
+meters with stable, normalized names. Cardinality lives in the **tags, not the
+metric names**, so the meter set stays bounded no matter how much data flows —
+the class, method, and variable behind a violation ride tags on a small, fixed
+set of meters. No domain class ever imports Micrometer. Validation, monitoring,
+and a type's structural self-description collapse into one declaration that lives
+on the type itself.
+→ [ADR-017](docs/adr/ADR-017-observability-monitoring-and-validation.md)
 
-Every cross-boundary call site declares its strategy ([ADR-026](docs/adr/ADR-026-resilience-first-order-concern.md)):
+### An identity model that earns its keys
 
-- `@Resilient(name = "...")` — class- or method-level, configured at the
-  composition root.
-- Programmatic facade — `resilience.timeout("name").execute(() -> ...)`.
-- `@ResilienceExempt(reason = "...")` — only for in-process,
-  side-effect-free, non-timeout-subject calls.
+Identity took real work to get right — and it's one of the parts that works best.
+There are exactly **two strategies** behind one shared data-layer port: a
+natural-key **slug** (`EntityName`) and a surrogate **UUIDv7** (`EntityId`).
 
-Production adapters throw `UnconfiguredResilienceException` on missing
-config — silent fall-back is forbidden. An ArchUnit gate fails the build
-when a class on a known cross-boundary path declares neither annotation.
-Policy and reviewer checklist: [`docs/resilience-policy.md`](docs/resilience-policy.md).
+The slug is the stable, cross-domain reference — `battus-philenor`, `lepidoptera`
+— and it is sound precisely because taxonomy has an **external naming authority**:
+scientific names are already stable, unique, and curated by the world outside
+this system, so the slug is a genuine natural key, not one invented for
+convenience. Where no such authority exists, the **UUIDv7** strategy takes over —
+time-ordered, generated at construction, and never crossing a domain boundary by
+value. That two-sidedness is the whole point: natural keys where an authority
+earns them, surrogate keys everywhere else. Every cross-domain reference travels
+as one of these typed names, so domains couple by identity alone and never by a
+cross-domain join — which is what keeps a single deployable honestly ready to
+split.
 
-### 5. Observability as structure, not cross-cutting
+```mermaid
+graph TD
+    slug["EntityName — natural-key slug<br/>battus-philenor · lepidoptera"] --> port["one shared data-layer port"]
+    uuid["EntityId — surrogate UUIDv7<br/>time-ordered, generated on construction"] --> port
+    authority(["external naming authority<br/>(scientific names)"]) -. justifies .-> slug
+```
 
-Every domain type implements `Observable` and declares `invariants()` —
-a pure predicate graph the framework walks at method boundaries, on
-repository inserts, on query results, on event processing
-([ADR-017](docs/adr/ADR-017-observability-monitoring-and-validation.md)).
+→ [ADR-022 (identity model)](docs/adr/rationale/ADR-022-entity-identity-unified.md),
+[ADR-001 (references by name)](docs/adr/ADR-001-repository-architecture.md)
 
-A single graph walk produces an `InvariantObservation` with the full set
-of failing constraints in one pass — no iterative discovery. Two
-Micrometer meters are emitted with stable, normalized names: a
-high-cardinality opt-in `naturalist.observation` and a low-cardinality
-always-on `naturalist.invariant.violation`. Domain code never touches
-Micrometer types directly.
+### And the rest is enforced too
 
-### 6. Command/Query Separation at the API surface
+| Decision | In short |
+|----------|----------|
+| **[One of five framework supertypes](kernels/framework/README.md)** | Every domain class is exactly one of `NamedEntity`, `Entity`, `Aggregate`, `ReadModel`, `ValueObject` (or a `BehavioralCollection`). The choice dictates identity, equality, and lifecycle. No escape hatch. |
+| **[Resilience is declared, not assumed](docs/adr/ADR-026-resilience-first-order-concern.md)** | Every cross-boundary call site declares a strategy or an explicit exemption; a build-time gate fails when one declares neither, and production adapters refuse to run on missing config. |
+| **[Command/Query separation at the surface](docs/adr/ADR-020-namespace-interface-pattern.md)** | Read and write paths are distinct types, organized into three coordinated namespaces per domain, with visibility (`class` vs `interface`) chosen to hide repository contracts and expose the consumer surface. |
+| **[Small, reviewable PRs](docs/adr/ADR-019-pull-request-size-and-review-fatigue.md)** | One concern per PR, targeting a diff a reviewer can hold in working memory — so domain-model mistakes get caught, not waved through. |
 
-Read paths and write paths are distinct types ([ADR-006](docs/adr/ADR-006-command-query-separation.md),
-[ADR-010](docs/adr/ADR-010-query-design-contract.md)). Each domain api
-exposes three coordinated namespaces ([ADR-020](docs/adr/ADR-020-namespace-interface-pattern.md)):
+---
 
-| Outer                       | Java type   | Visibility      | Purpose                                  |
-|-----------------------------|-------------|-----------------|------------------------------------------|
-| `<Domain>Repository`        | `class`     | package-private | repository contracts for adapters        |
-| `<Domain>Query`             | `interface` | public          | the consumer read surface                |
-| `<Domain>EntityCollections` | `interface` | public          | typed multi-result return shapes         |
+## Module map
 
-Queries are *thin* — observe arguments, dispatch, delegate. Aggregate
-assembly is owned by package-private factories in `<domain>-core` and
-never surfaces in the api module.
+The specifics live with the code. Each module below has its own README.
 
-### 7. Records, no Lombok
+### Domains
 
-Entity / Aggregate / ValueObject are Java records ([ADR-003](docs/adr/ADR-003-java-records-no-lombok.md)).
-`BehavioralCollection` is the single deliberate exception — a `final class`
-with package-private construction so domain-specific filtering returns
-the same concrete type ([ADR-011](docs/adr/ADR-011-behavioral-collections.md)).
-Static factories (`of(...)`, `empty()`, `from(...)`) are the public
-instantiation API ([ADR-012](docs/adr/ADR-012-static-factory-construction.md)).
+| Domain | What it models |
+|--------|----------------|
+| [insects](domains/insects/README.md) | Reference organism domain — Linnaean hierarchy, vision-assisted identification, field observations, features, life stages |
+| [plants](domains/plants/README.md) | Botanical catalog mirroring the insects evidence stack — ranks, images, features, roles |
+| [chemistry](domains/chemistry/README.md) | Compounds, elements, and chemical properties referenced across domains |
+| [soil](domains/soil/README.md) | Soil chemistry, exchangeable-cation optima, amendment history |
+| [garden](domains/garden/README.md) | Plantings and planted zones — the cultivated layer over the wild catalog |
+| [naturalists](domains/naturalists/README.md) | The observers themselves — identity, authentication, attribution |
+| [library](domains/library/README.md) | Citations and external-authority references binding claims to sources |
+| [sensors](domains/sensors/README.md) | Environmental sensor definitions and readings |
+| [climate](domains/climate/README.md) | Microclimate thresholds and observations |
+| [apiary](domains/apiary/README.md) | Beekeeping records |
+| [zone](domains/zone/README.md) | Geographic zones and site structure |
 
-### 8. Behavioral repository contracts
+Skeletal organism domains awaiting activation — [arachnids](domains/arachnids/README.md),
+[fungi](domains/fungi/README.md), [microbes](domains/microbes/README.md),
+[molluscs](domains/molluscs/README.md), [vertebrates](domains/vertebrates/README.md),
+[worms](domains/worms/README.md), [weather](domains/weather/README.md) — carry the
+same blueprint and are documented as planned.
 
-Repository behavior is defined once, in `<domain>-repository-test`, as a
-`@Test default` interface every adapter implements ([ADR-002](docs/adr/ADR-002-repository-behavioral-contract.md)).
-Three cases per select method (argument validation, empty result, expected
-result); writes add constraint and not-found cases. The in-memory adapter
-and the production RDBMS adapter satisfy the same contract — by
-construction, not by convention.
+Alongside the bounded contexts, the `domains/identifiers` module holds the typed
+`EntityName`/`EntityId` reference names for every domain — the shared, narrow seam
+through which domains reference one another by name (see the
+[dependency graph](#architecture-at-a-glance) above).
 
-### 9. Cross-domain references, no cross-domain joins
+### Kernels
 
-Cross-domain references travel as `EntityName` slugs. Cross-domain joins
-are prohibited; cross-domain FK enforcement is deferred to the RDBMS
-layer (ADR-001, ADR-022). The catalog kernel
-([`kernels/catalog/`](kernels/catalog/)) resolves slugs across registered
-contributions and providers, validates uniqueness at startup, and fans
-out reads in-process via `kernels/catalog-inmem/`.
+| Kernel | What it provides |
+|--------|------------------|
+| [framework](kernels/framework/README.md) | The DDD building blocks — supertypes, typed identity, observability, the resilience facade, the DI marker |
+| [framework-test](kernels/framework-test/README.md) | Test infrastructure — `TestEntitySource`, the in-memory database, the behavioral-contract harness, the N+1 gate |
+| [field-notes](kernels/field-notes/README.md) | The Durrell four-level `Description` attached to every describable entity |
+| [taxonomy](kernels/taxonomy/README.md) | Linnaean classification and cross-rank ancestry for organism domains |
+| [clades](kernels/clades/README.md) | The evolutionary tree of life as a sealed, curated vocabulary |
+| [catalog](kernels/catalog/README.md) + [catalog-inmem](kernels/catalog-inmem/README.md) | Cross-domain reference resolution by slug, with an in-process fan-out adapter |
+| [observation](kernels/observation/README.md) | Generic organism observation and image records shared across organism domains |
+| [authority](kernels/authority/README.md) | The external-authority seam (e.g. Encyclopedia of Life) behind a port |
+| [habitat](kernels/habitat/README.md) + [biogeography](kernels/biogeography/README.md) | Habitat profiles and bioregion vocabularies |
+| [measurements](kernels/measurements/README.md) | Typed quantities and units used across the catalog |
+| [feature-search](kernels/feature-search/README.md) | Reuse-aware feature matching for identification |
+| [vision](kernels/vision/README.md) + [text-generation](kernels/text-generation/README.md) | LLM-backed ports for image identification and description generation |
 
-### 10. Pull-request size discipline
+### Adapters & apps
 
-One concern per PR; target ≤ 400 lines of meaningful diff ([ADR-019](docs/adr/ADR-019-pull-request-size-and-review-fatigue.md)).
-The goal is reviewable changes a reviewer can hold in working memory —
-not small PRs for their own sake.
+| Module | Role |
+|--------|------|
+| [management-console](apps/management-console/README.md) | Spring Boot fat jar — composes every active domain into one UI |
+| [resilience-resilience4j](adapters/resilience-resilience4j/) | Vendor adapter for the kernel `Resilience` facade |
+| [spring-runtime](adapters/spring-runtime/) | Turns the `@DomainService` marker into Spring bean discovery |
+| [anthropic-vision](adapters/anthropic-vision/) + [anthropic-text-generation](adapters/anthropic-text-generation/) | LLM adapters behind the `vision` and `text-generation` ports |
 
 ---
 
 ## Tech stack
 
 - **Java 25**, no Lombok, JSpecify nullability annotations.
-- **Maven multi-module** — strict module DAG; Java visibility is the
-  primary boundary, ArchUnit the build-time backstop.
-- **Spring Boot 3.5** — composition root only, behind the
-  `spring-runtime` adapter and the `@DomainService` marker.
-- **JTE** for server-rendered templates in the management console.
-- **Micrometer** for metrics — emitted only via the kernel's `Metric`
-  builder; domain code never imports Micrometer types.
+- **Maven multi-module** — strict module DAG; Java visibility is the primary
+  boundary, ArchUnit the build-time backstop.
+- **Spring Boot 3.5** — composition root only, behind the `spring-runtime`
+  adapter and the `@DomainService` marker.
+- **JTE** for server-rendered console templates.
+- **Micrometer** for metrics, emitted only via the kernel's builder.
 - **Resilience4j** behind the kernel's `Resilience` facade.
-- **Jackson 2.19** for record-native serialization.
-
----
-
-## Repository tour
-
-| Where you might want to read first                                     | Why                                                       |
-|------------------------------------------------------------------------|-----------------------------------------------------------|
-| [`docs/adr/`](docs/adr/README.md)                                      | The recorded design decisions                             |
-| [`kernels/framework/`](kernels/framework/)                             | Domain supertypes, identity, observability, resilience    |
-| [`domains/chemistry/chemistry-api/`](domains/chemistry/chemistry-api/) | Reference implementation: `Compound`, `CompoundCollection`|
-| [`domains/insects/insects-api/`](domains/insects/insects-api/)         | Reference implementation: namespace + aggregate factory   |
-| [`apps/management-console/`](apps/management-console/README.md)       | The composing app — Spring config, resilience wiring      |
-| [`adapters/resilience-resilience4j/`](adapters/resilience-resilience4j/) | Vendor adapter for the kernel `Resilience` facade        |
-| [`docs/briefings/`](docs/briefings/README.md)                          | Short context briefings for each major domain             |
+- **Jackson** for record-native serialization.
+- **OpenRewrite + ArchUnit** for repo-wide architectural enforcement.
 
 ---
 
 ## Documentation index
 
-- [Architecture Decision Records](docs/adr/README.md) — design rationale,
-  open and accepted decisions.
+- [Architecture Decision Records](docs/adr/README.md) — the recorded design rationale.
 - [`CLAUDE.md`](CLAUDE.md) — top-level conventions and identity model.
-- [`kernels/CLAUDE.md`](kernels/CLAUDE.md) — framework, observability,
-  behavioral collections.
-- [`domains/CLAUDE.md`](domains/CLAUDE.md) — record conventions, query
-  rules, repository architecture, namespace patterns, PR size.
-- [`adapters/CLAUDE.md`](adapters/CLAUDE.md) — placement rules for
-  vendor-specific implementations.
-- [`apps/CLAUDE.md`](apps/CLAUDE.md) — composition-root discipline.
-- [`docs/resilience-policy.md`](docs/resilience-policy.md) — cross-boundary
-  resilience policy and reviewer checklist.
-- [`docs/measurement-standards.md`](docs/measurement-standards.md) —
-  units used across the domain catalog.
-- [Management Console README](apps/management-console/README.md) —
-  running the console, login, theming, layout.
+- [`docs/briefings/`](docs/briefings/README.md) — short context briefings per domain.
+- [`docs/resilience-policy.md`](docs/resilience-policy.md) — cross-boundary resilience policy.
+- [`docs/measurement-standards.md`](docs/measurement-standards.md) — units across the catalog.
+- [Management Console README](apps/management-console/README.md) — running the console, login, theming.
 
 ---
 
