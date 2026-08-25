@@ -1,7 +1,9 @@
-@import com.naturalist.plants.PlantFeatureView
+@import com.naturalist.taxonomy.OrganismFeatureView
+@import com.naturalist.plants.PlantFeature
 @import com.naturalist.plants.PlantRankLabel
+@import com.naturalist.plants.PlantRankName
 
-@param PlantFeatureView features = null
+@param OrganismFeatureView<PlantRankName, PlantFeature> features = null
 
 @if(features != null && !features.groups().isEmpty())
     <section class="field-marks">

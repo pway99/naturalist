@@ -4,7 +4,8 @@
 @import java.util.List
 @import com.naturalist.plants.BreadcrumbSegment
 @import com.naturalist.library.CladeStep
-@import com.naturalist.plants.PlantFeatureView
+@import com.naturalist.taxonomy.OrganismFeatureView
+@import com.naturalist.plants.PlantFeature
 @import com.naturalist.observation.OrganismImage
 @import com.naturalist.plants.PlantImageId
 @import com.naturalist.plants.PlantObservationId
@@ -18,7 +19,7 @@
 @param String descriptionUniversity = ""
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
 @param List<CladeStep> cladeTrail = java.util.List.of()
-@param PlantFeatureView features = null
+@param OrganismFeatureView<PlantRankName, PlantFeature> features = null
 @param List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> images = java.util.List.of()
 
 !{var commonName = family.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(family.family().value());}
