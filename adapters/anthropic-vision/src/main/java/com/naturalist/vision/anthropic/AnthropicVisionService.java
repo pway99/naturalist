@@ -8,10 +8,12 @@ import com.anthropic.models.messages.CacheControlEphemeral;
 import com.anthropic.models.messages.ContentBlockParam;
 import com.anthropic.models.messages.ImageBlockParam;
 import com.anthropic.models.messages.MessageCreateParams;
+import com.anthropic.models.messages.MessageParam;
 import com.anthropic.models.messages.TextBlockParam;
 import com.anthropic.models.messages.Tool;
 import com.anthropic.models.messages.ToolChoice;
 import com.anthropic.models.messages.ToolChoiceTool;
+import com.anthropic.models.messages.ToolResultBlockParam;
 import com.anthropic.models.messages.ToolUseBlock;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,8 +22,10 @@ import com.naturalist.resilience.Resilient;
 import com.naturalist.vision.Image;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
+import com.naturalist.vision.VisionExchange;
 import com.naturalist.vision.VisionService;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +70,7 @@ public class AnthropicVisionService implements VisionService {
     }
 
     @Override
-    public ToolResult identify(Image image, ToolSchema tool, String systemPrompt) {
+    public VisionExchange identify(Image image, ToolSchema tool, String systemPrompt) {
         // 1. Base64-encode the image bytes
         var base64Data = Base64.getEncoder().encodeToString(image.bytes());
 
@@ -89,10 +93,7 @@ public class AnthropicVisionService implements VisionService {
                         .text(userText)
                         .build());
 
-        // 5. Build the tool definition from the ToolSchema
-        var toolDef = buildTool(tool);
-
-        // 6. Build the system prompt block with cache_control for prompt caching.
+        // 5. Build the system prompt block with cache_control for prompt caching.
         //    The system prompt and tool schema are cache-stable across calls;
         //    only the image varies, so caching the system prefix reduces cost on
         //    repeated identifications.
@@ -101,12 +102,31 @@ public class AnthropicVisionService implements VisionService {
                 .cacheControl(CacheControlEphemeral.builder().build())
                 .build();
 
-        // 7. Send the request, forcing the model to use the named tool
+        // 6. Seed the conversation with the user's image message and issue turn 1.
+        var userMessage = MessageParam.builder()
+                .role(MessageParam.Role.USER)
+                .contentOfBlockParams(List.of(imageBlock, textBlock))
+                .build();
+
+        return issueRequest(List.of(userMessage), tool, systemBlock);
+    }
+
+    /**
+     * Issues one turn: forces {@code tool}, sends {@code messages} (with the cached
+     * {@code systemBlock}), and wraps the outcome in a {@link VisionExchange} that can
+     * continue the conversation. Only {@code client.messages().create(...)} is bounded
+     * by the resilience timeout; block extraction stays on the calling thread.
+     */
+    private VisionExchange issueRequest(
+            List<MessageParam> messages, ToolSchema tool, TextBlockParam systemBlock) {
+
+        var toolDef = buildTool(tool);
+
         var params = MessageCreateParams.builder()
                 .model(config.model())
                 .maxTokens(config.maxTokens())
                 .systemOfTextBlockParams(List.of(systemBlock))
-                .addUserMessageOfBlockParams(List.of(imageBlock, textBlock))
+                .messages(messages)
                 .addTool(toolDef)
                 .toolChoice(ToolChoice.ofTool(
                         ToolChoiceTool.builder()
@@ -116,7 +136,6 @@ public class AnthropicVisionService implements VisionService {
 
         var message = resilience.timeout(STRATEGY).execute(() -> client.messages().create(params));
 
-        // 8. Extract the tool_use block from the response
         var toolUseBlock = message.content().stream()
                 .flatMap(block -> block.toolUse().stream())
                 .findFirst()
@@ -124,10 +143,55 @@ public class AnthropicVisionService implements VisionService {
                         "Vision identification response contained no tool_use block. " +
                         "stop_reason=" + message.stopReason()));
 
-        // 9. Serialize the raw input JsonValue to a JSON string
-        var argumentsJson = serializeInput(toolUseBlock);
+        return new AnthropicVisionExchange(messages, systemBlock, toolUseBlock);
+    }
 
-        return new ToolResult(toolUseBlock.name(), argumentsJson);
+    /**
+     * A tool-use conversation over the accumulated {@link MessageParam} list and the
+     * latest assistant {@link ToolUseBlock}. {@link #respond} appends the assistant
+     * tool_use and the user tool_result (keyed by the tool_use id) and re-issues the
+     * request, threading the growing message list into the next exchange.
+     */
+    private final class AnthropicVisionExchange implements VisionExchange {
+
+        private final List<MessageParam> messages;
+        private final TextBlockParam systemBlock;
+        private final ToolUseBlock block;
+
+        AnthropicVisionExchange(
+                List<MessageParam> messages, TextBlockParam systemBlock, ToolUseBlock block) {
+            this.messages = messages;
+            this.systemBlock = systemBlock;
+            this.block = block;
+        }
+
+        @Override
+        public ToolResult result() {
+            return new ToolResult(block.name(), serializeInput(block));
+        }
+
+        @Override
+        public VisionExchange respond(String toolResultJson, ToolSchema nextTool) {
+            // Replay the assistant's tool_use, then answer it with the user's tool_result.
+            var assistantMessage = MessageParam.builder()
+                    .role(MessageParam.Role.ASSISTANT)
+                    .contentOfBlockParams(List.of(ContentBlockParam.ofToolUse(block.toParam())))
+                    .build();
+            var toolResultBlock = ToolResultBlockParam.builder()
+                    .toolUseId(block.id())
+                    .content(toolResultJson)
+                    .build();
+            var userMessage = MessageParam.builder()
+                    .role(MessageParam.Role.USER)
+                    .contentOfBlockParams(List.of(ContentBlockParam.ofToolResult(toolResultBlock)))
+                    .build();
+
+            var extended = new ArrayList<MessageParam>(messages);
+            extended.add(assistantMessage);
+            extended.add(userMessage);
+
+            return issueRequest(List.copyOf(extended), nextTool, systemBlock);
+        }
     }
 
     // -------------------------------------------------------------------------

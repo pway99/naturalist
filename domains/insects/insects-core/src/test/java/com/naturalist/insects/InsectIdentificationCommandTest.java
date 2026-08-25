@@ -17,6 +17,8 @@ import com.naturalist.textgeneration.NoOpTextGenerationService;
 import com.naturalist.vision.Image;
 import com.naturalist.vision.ImageMetadata;
 import com.naturalist.vision.ToolResult;
+import com.naturalist.vision.ToolSchema;
+import com.naturalist.vision.VisionExchange;
 import com.naturalist.vision.VisionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -59,7 +61,22 @@ class InsectIdentificationCommandTest {
     InsectQuery query = context.insectQuery();
 
     private final VisionService stubService = (image, tool, prompt) ->
-            new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
+            fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
+
+    /**
+     * A single-turn {@link VisionExchange} whose {@link VisionExchange#result()} is fixed.
+     * These tests never run a second turn, so {@link VisionExchange#respond} fails loudly.
+     */
+    private static VisionExchange fixedExchange(String toolName, String argumentsJson) {
+        return new VisionExchange() {
+            @Override public ToolResult result() {
+                return new ToolResult(toolName, argumentsJson);
+            }
+            @Override public VisionExchange respond(String toolResultJson, ToolSchema nextTool) {
+                throw new AssertionError("no second turn expected in this test");
+            }
+        };
+    }
 
     /**
      * Stub authority that confirms any entity name it is asked about.
@@ -219,7 +236,7 @@ class InsectIdentificationCommandTest {
                 "\"alternatives\": \"[{\\\"name\\\": \\\"Oncopeltus fasciatus\\\", "
                         + "\\\"commonName\\\": \\\"Large Milkweed Bug\\\", \\\"confidence\\\": 0.12}]\"");
         VisionService withAlternatives = (image, tool, prompt) ->
-                new ToolResult("propose_insect_species", jsonWithAlternatives);
+                fixedExchange("propose_insect_species", jsonWithAlternatives);
         var cmd = buildCommand(withAlternatives);
         var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));
 
@@ -243,7 +260,7 @@ class InsectIdentificationCommandTest {
         var promptCapture = new String[1];
         VisionService capturing = (image, tool, prompt) -> {
             promptCapture[0] = prompt;
-            return new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
+            return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
         };
         var cmd = buildCommand(capturing);
         var image = new Image(
@@ -261,7 +278,7 @@ class InsectIdentificationCommandTest {
         var promptCapture = new String[1];
         VisionService capturing = (image, tool, prompt) -> {
             promptCapture[0] = prompt;
-            return new ToolResult("propose_insect_species", SAMPLE_RESULT_JSON);
+            return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
         };
         var cmd = buildCommand(capturing);
         var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));

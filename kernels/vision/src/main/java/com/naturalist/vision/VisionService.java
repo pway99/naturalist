@@ -8,5 +8,10 @@ package com.naturalist.vision;
  */
 public interface VisionService {
 
-    ToolResult identify(Image image, ToolSchema tool, String systemPrompt);
+    /**
+     * Runs one identification turn and returns the multi-turn {@link VisionExchange}.
+     * Single-turn callers read {@link VisionExchange#result()}; a caller wanting a
+     * second turn continues via {@link VisionExchange#respond}.
+     */
+    VisionExchange identify(Image image, ToolSchema tool, String systemPrompt);
 }

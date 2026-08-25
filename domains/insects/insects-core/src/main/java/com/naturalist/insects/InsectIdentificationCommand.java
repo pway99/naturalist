@@ -159,8 +159,8 @@ class InsectIdentificationCommand {
     private InsectIdentificationResult identifyViaVision(Image image) {
         var toolSchema = buildToolSchema();
         var systemPrompt = buildSystemPrompt(image.metadata().location());
-        var result = visionService.identify(image, toolSchema, systemPrompt);
-        return parseResult(result);
+        var exchange = visionService.identify(image, toolSchema, systemPrompt);
+        return parseResult(exchange.result());
     }
 
     // ----- authority enrichment (best-effort) -----
