@@ -4,6 +4,7 @@ import com.naturalist.ddd.EntityId;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +29,7 @@ public final class FeatureViewAssembler {
             List<? extends OrganismFeatureAssignment<?, FID, RANK>> assignments,
             Map<FID, FEATURE> resolved) {
 
-        Map<RANK, List<OrganismFeatureAssignment<?, FID, RANK>>> byRank = new java.util.HashMap<>();
+        Map<RANK, List<OrganismFeatureAssignment<?, FID, RANK>>> byRank = new HashMap<>();
         for (OrganismFeatureAssignment<?, FID, RANK> a : assignments) {
             byRank.computeIfAbsent(a.rankName(), k -> new ArrayList<>()).add(a);
         }

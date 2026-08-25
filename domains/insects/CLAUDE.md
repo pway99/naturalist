@@ -21,8 +21,8 @@ of photographs attached at that rank — a read-side projection, not a consisten
 boundary. Identity is the root's typed `InsectRankName`, returned polymorphically
 by `name()`. No standalone query — used only as the rank-chain and child-card
 building blocks assembled inside the `Insect` read model, by `InsectFactory`.
-Permits carry no `features()` slot; features live on `Insect` as
-`InsectFeatureView`. `InsectSubspeciesName` is permitted on `InsectRankName` but
+Permits carry no `features()` slot; features live on `Insect` as an
+`OrganismFeatureView<InsectRankName, InsectFeature>`. `InsectSubspeciesName` is permitted on `InsectRankName` but
 yields `Optional.empty()` (no subspecies entity exists yet).
 
 ## The Naturalist's Collection
@@ -76,12 +76,13 @@ shared through a type.
 Rank-polymorphic identification means most vision identifications land at ORDER or
 FAMILY, not SPECIES. The four rank pages therefore carry the same evidence surfaces:
 
-**`features.jte`** — renders `insect.features()`, an `InsectFeatureView`
+**`features.jte`** — renders `insect.features()`, an
+`OrganismFeatureView<InsectRankName, InsectFeature>`
 (lineage-composite, ancestor-first, ordinal-ordered within a rank) composed directly
 into the `Insect` read model. `InsectFactory` populates it via
 `.withFeatures(featureQuery.findByRankName(name))`, symmetric with `.withCitations(...)`;
 each rank handler reads it straight off the `Insect` it already resolved — no separate
-per-page fetch. `InsectFeatureView.groups()` are `RankGroup`s (rank + ordinal-ordered
+per-page fetch. `OrganismFeatureView.groups()` are `RankGroup`s (rank + ordinal-ordered
 `InsectFeature`s); the template formats each group's rank label with `RankLabel.of(...)`.
 
 **`observationGallery.jte`** — photo, `%` confidence, "Why this ID?" evidence

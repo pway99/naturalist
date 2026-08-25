@@ -73,7 +73,7 @@ public interface EntityRepository<NAME, ENTITY extends Named<NAME>> {
      * itself in cases 1 and 3, but a different value in case 2: the one carrying
      * the retained key. A caller that built a dependent record referencing
      * {@code entity}'s own (possibly-discarded) key before calling {@code save}
-     * — e.g. an {@code InsectFeatureAssignment} referencing an {@code InsectFeature}'s
+     * — e.g. an {@code OrganismFeatureAssignment} referencing an {@code InsectFeature}'s
      * id — must rebuild that reference from the returned value, not the original
      * argument, or it ends up pointing at a key that was never actually written.
      */
