@@ -10,6 +10,9 @@ import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.featuresearch.FeatureCorpus;
+import com.naturalist.featuresearch.FeatureSearch;
+import com.naturalist.featuresearch.InMemoryFeatureSearch;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
@@ -102,6 +105,17 @@ class InsectIdentificationCommandTest {
         }
     };
 
+    /**
+     * Builds the same in-memory search the console composition root wires, but backed
+     * by this test's {@link #query} so the corpus reflects
+     * {@link InsectFeatureTestEntitySource} data plus whatever the test itself persists.
+     */
+    private FeatureSearch<InsectFeatureId> buildFeatureSearch() {
+        return new InMemoryFeatureSearch<>(() ->
+                query.features().corpus()
+                        .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
+    }
+
     private InsectIdentificationCommand buildCommand(VisionService vision) {
         var libraryContext = LibraryTestContext.create(nte);
         return new InsectIdentificationCommand(
@@ -110,6 +124,7 @@ class InsectIdentificationCommandTest {
                 STUB_AUTHORITY,
                 libraryContext.libraryCommand(),
                 query,
+                buildFeatureSearch(),
                 context.catalogIdentificationTransaction());
     }
 
@@ -203,6 +218,7 @@ class InsectIdentificationCommandTest {
                 STUB_AUTHORITY,
                 libraryContext.libraryCommand(),
                 query,
+                buildFeatureSearch(),
                 context.catalogIdentificationTransaction());
 
         // Pre-seed the deterministic citation slug the command derives for the

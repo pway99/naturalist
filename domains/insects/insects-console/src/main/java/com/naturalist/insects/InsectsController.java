@@ -10,6 +10,9 @@ import com.naturalist.data.FileName;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.data.Pages;
+import com.naturalist.featuresearch.FeatureCorpus;
+import com.naturalist.featuresearch.FeatureSearch;
+import com.naturalist.featuresearch.InMemoryFeatureSearch;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.insects.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
@@ -116,9 +119,16 @@ public class InsectsController {
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
         var catalogIdentificationTransaction =
                 new InsectCatalogIdentificationTransaction(insectCommand, insectQuery);
+        // Not-yet-real dev/test adapter built inline at the composition root, mirroring
+        // NoOpTextGenerationService above -- production wires an injected Solr-backed
+        // FeatureSearch bean here instead.
+        FeatureSearch<InsectFeatureId> featureSearch =
+                new InMemoryFeatureSearch<>(() ->
+                        insectQuery.features().corpus()
+                                .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
         this.identificationCommand = new InsectIdentificationCommand(
                 visionService, new NoOpTextGenerationService(), eolAuthority,
-                libraryCommand, insectQuery, catalogIdentificationTransaction);
+                libraryCommand, insectQuery, featureSearch, catalogIdentificationTransaction);
         this.addPhotoCommand = new InsectAddPhotoCommand(
                 new InsectAddPhotoTransaction(insectCommand));
     }

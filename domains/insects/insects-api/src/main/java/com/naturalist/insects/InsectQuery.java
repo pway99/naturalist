@@ -196,5 +196,8 @@ public interface InsectQuery {
          * {@link InsectFeatureId}.
          */
         Set<InsectRankName> findByFeature(InsectFeatureId featureId);
+
+        /** Every catalogued feature, streamed for search-corpus assembly (paged; never fans out). */
+        java.util.stream.Stream<InsectFeature> corpus();
     }
 }

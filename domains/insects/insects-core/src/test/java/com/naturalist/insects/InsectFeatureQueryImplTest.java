@@ -7,6 +7,8 @@ import com.naturalist.taxonomy.OrganismFeatureView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -69,5 +71,22 @@ class InsectFeatureQueryImplTest {
     void findByRankName_rejectsNull() {
         assertThat(catchThrowable(() -> featureQuery.findByRankName(null)))
                 .isInstanceOf(com.naturalist.exception.InvariantViolationException.class);
+    }
+
+    /**
+     * {@code corpus()} feeds the search-corpus assembly (Task 3 of the reuse-aware
+     * identification effort) -- a single paged stream over the whole feature catalog,
+     * not a per-rank fetch. Proves the mock's inherited {@code getPage} paging works
+     * and the gate-safe {@code Pages.stream} plumbing returns every catalogued feature.
+     */
+    @Test
+    void corpus_streamsEveryCataloguedFeature() {
+        InsectFeature extra = InsectFeature.of(InsectFeatureId.create(), "compound eyes");
+        featureRepository.insert(extra);
+
+        List<InsectFeature> corpus = featureQuery.corpus().toList();
+
+        assertThat(corpus).extracting(InsectFeature::value)
+                .contains("complete metamorphosis", "scaled wings", "compound eyes");
     }
 }

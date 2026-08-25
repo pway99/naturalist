@@ -11,6 +11,7 @@ import com.naturalist.authority.OnlineSource;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.data.FileName;
+import com.naturalist.featuresearch.FeatureSearch;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.library.CitationAttribution;
@@ -65,6 +66,8 @@ class InsectIdentificationCommand {
     private final ExternalAuthority externalAuthority;
     private final LibraryCommand libraryCommand;
     private final InsectQuery insectQuery;
+    // Wired but not yet used -- reuse-aware dedup lands in the next task.
+    private final FeatureSearch<InsectFeatureId> featureSearch;
     private final InsectCatalogIdentificationTransaction transaction;
 
     InsectIdentificationCommand(VisionService visionService,
@@ -72,12 +75,14 @@ class InsectIdentificationCommand {
                                         ExternalAuthority externalAuthority,
                                         LibraryCommand libraryCommand,
                                         InsectQuery insectQuery,
+                                        FeatureSearch<InsectFeatureId> featureSearch,
                                         InsectCatalogIdentificationTransaction transaction) {
         this.visionService = visionService;
         this.textGenerationService = textGenerationService;
         this.externalAuthority = externalAuthority;
         this.libraryCommand = libraryCommand;
         this.insectQuery = insectQuery;
+        this.featureSearch = featureSearch;
         this.transaction = transaction;
     }
 

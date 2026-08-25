@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.data.Pages;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Lineage-composite feature resolution — the feature analog of
@@ -89,5 +91,10 @@ class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
         return assignmentRepository.getByFeatureId(featureId).stream()
                 .map(OrganismFeatureAssignment::rankName)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Stream<InsectFeature> corpus() {
+        return Pages.stream(1000, featureRepository::getPage);
     }
 }
