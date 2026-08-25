@@ -39,20 +39,34 @@
 
 ---
 
-## Task 1: Migrate the clade trail templates to `CladeStep`
+## Task 1: Migrate the clade trail templates and their tests to `CladeStep`
 
-Templates first: change the two clade-trail templates and their tests to consume `List<CladeStep>`, keeping every existing rendering assertion. This task leaves the controller still passing `List<Clade>` — so its own render at runtime is momentarily mismatched, but the module's **template tests** (which supply their own model) compile and pass in isolation. Task 2 aligns the controller. The two tasks land in one branch; do not ship Task 1 alone.
+Templates first: change the two clade-trail templates and **all** their template tests to consume `List<CladeStep>`, and add the `library-api` dependency the tests need. This task leaves the controller still passing `List<Clade>` at runtime — a momentary mismatch resolved in Task 2 — but every plants-console **test** (template tests supply their own model; `PlantBreadcrumbTest` is untouched and its static `cladeTrailFor` call still compiles because the controller is unchanged) compiles and passes. The two tasks land in one branch; do not ship Task 1 alone.
 
 **Files:**
+- Modify: `domains/plants/plants-console/pom.xml` — add `library-api` dependency.
 - Modify: `domains/plants/plants-console/src/main/jte/plants/cladeTrail.jte`
 - Modify: `domains/plants/plants-console/src/main/jte/plants/nav.jte`
 - Test: `domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsCladeTrailTemplateTest.java`
+- Test: `domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsCladeDetailTemplateTest.java`
+- Test: `domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsOrderListTemplateTest.java`
 
 **Interfaces:**
-- Consumes: `com.naturalist.library.CladeStep(String cladeSlug, String displayName, Optional<LinealRank> rank)` — from `library-api` (added to the pom in Task 2; for this task the test compiles against it because `library-api` is already on the reactor and will be added to the module pom in Task 2 — **do Task 2's pom step first if the test cannot resolve the import**; see note below).
-- Produces: `cladeTrail.jte` and `nav.jte` accepting `@param List<CladeStep> cladeTrail`.
+- Consumes: `com.naturalist.library.CladeStep(String cladeSlug, String displayName, Optional<LinealRank> rank)` — from `library-api`, added to the module pom in this task's Step 0.
+- Produces: `cladeTrail.jte` and `nav.jte` accepting `@param List<CladeStep> cladeTrail`; all three cladeTrail-feeding template tests supply `List<CladeStep>`.
 
-> **Ordering note:** `CladeStep` lives in `library-api`, which this module does not yet depend on. If your editor/compiler cannot resolve `com.naturalist.library.CladeStep` while doing Task 1, apply **Task 2, Step 1 (add the pom dependency) first**, then return here. The tasks are split by concern (templates vs controller) but share the one pom edit; either order compiles as long as the pom edit precedes the first `CladeStep` reference.
+- [ ] **Step 0: Add the `library-api` dependency**
+
+In `domains/plants/plants-console/pom.xml`, add (alphabetically, after `catalog-inmem` and before `plants-api`):
+
+```xml
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-api</artifactId>
+        </dependency>
+```
+
+No `<version>` — it is inherited from the root `dependencyManagement` (insects-console already depends on it). The controller does not use it yet (Task 2 does); the template tests below do.
 
 - [ ] **Step 1: Rewrite the cladeTrail template test to feed `List<CladeStep>`**
 
@@ -198,51 +212,18 @@ In `plants/nav.jte`, add the import and retype the param; leave `current` as `Cl
 
 The `@template.plants.cladeTrail(cladeTrail = cladeTrail, current = current)` call is unchanged.
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [ ] **Step 4b: Retype the `cladeTrail` param in the eight page templates that forward it to `nav.jte`**
 
-Run: `mvn -q test -pl domains/plants/plants-console -am -Dtest=PlantsCladeTrailTemplateTest`
-Expected: PASS (all four tests).
+Eight page templates each declare `@param List<Clade> cladeTrail = java.util.List.of()` and forward it straight to `@template.plants.nav(...)`. Because `nav.jte`'s param is now `List<CladeStep>`, every one of these must retype too or the module fails to compile:
 
-- [ ] **Step 6: Commit**
+- `plants/detail.jte`, `plants/list.jte`, `plants/genera/detail.jte`, `plants/orders/detail.jte`, `plants/orders/list.jte`, `plants/families/detail.jte`, `plants/families/list.jte` — in each, `Clade` is used **only** on its `@import com.naturalist.clades.Clade` line and the `cladeTrail` param line. So make two edits: replace `@import com.naturalist.clades.Clade` with `@import com.naturalist.library.CladeStep`, and change `@param List<Clade> cladeTrail = java.util.List.of()` to `@param List<CladeStep> cladeTrail = java.util.List.of()`.
+- `plants/clades/detail.jte` — this one uses `Clade` throughout (clade cards, `current`, child clades). **Keep** its `@import com.naturalist.clades.Clade`, **add** `@import com.naturalist.library.CladeStep`, and change only `@param List<Clade> cladeTrail = java.util.List.of()` to `@param List<CladeStep> cladeTrail = java.util.List.of()`.
 
-```bash
-git add domains/plants/plants-console/src/main/jte/plants/cladeTrail.jte \
-        domains/plants/plants-console/src/main/jte/plants/nav.jte \
-        domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsCladeTrailTemplateTest.java
-git commit -m "refactor(plants): clade-trail templates consume library CladeStep"
-```
+General rule if you touch any other template: retype the `cladeTrail` param to `List<CladeStep>`, ensure `com.naturalist.library.CladeStep` is imported, and drop the `com.naturalist.clades.Clade` import only if no other `Clade` reference remains in that file.
 
----
+- [ ] **Step 5: Update `PlantsCladeDetailTemplateTest` to build `List<CladeStep>`**
 
-## Task 2: Source the controller trail from `CladeQuery`
-
-**Files:**
-- Modify: `domains/plants/plants-console/pom.xml`
-- Modify: `domains/plants/plants-console/src/main/java/com/naturalist/plants/PlantsController.java`
-- Test: `domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsCladeDetailTemplateTest.java`
-- Test: `domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsOrderListTemplateTest.java`
-- Test: `domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantBreadcrumbTest.java`
-
-**Interfaces:**
-- Consumes: `CladeQuery.getBySlug(String) : Optional<CladeView>`; `CladeView.subject() : CladeStep`, `CladeView.ancestry() : List<CladeStep>`.
-- Produces: `PlantsController` model attribute `"cladeTrail"` is now `List<CladeStep>` on every rank, list, and clade page; private `stepsFor(Clade) : List<CladeStep>`; `cladeTrailFor` and `catalogCladeRoot` return `List<CladeStep>` (both private **instance** methods now).
-
-- [ ] **Step 1: Add the `library-api` dependency**
-
-In `domains/plants/plants-console/pom.xml`, add (alphabetically, after `catalog-inmem` and before `plants-api`):
-
-```xml
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>library-api</artifactId>
-        </dependency>
-```
-
-No `<version>` — it is inherited from the root `dependencyManagement` (insects-console already depends on it).
-
-- [ ] **Step 2: Update the two remaining template tests to build `List<CladeStep>`**
-
-In `PlantsCladeDetailTemplateTest.java`, add imports `com.naturalist.library.CladeStep` and `java.util.Optional`, and replace the trail construction (currently line ~33):
+Add imports `com.naturalist.library.CladeStep` and `java.util.Optional`, and replace the trail construction (currently line ~33):
 
 ```java
         List<CladeStep> trail = CladeTraversal.ancestry(new Superasterids()).reversed().stream()
@@ -252,7 +233,9 @@ In `PlantsCladeDetailTemplateTest.java`, add imports `com.naturalist.library.Cla
 
 (Keep the existing `Clade`, `CladeTraversal`, `Superasterids`, `Asterids` imports — they build the source lineage. The `Map.of("cladeTrail", trail)` call is unchanged.)
 
-In `PlantsOrderListTemplateTest.java`, add imports `com.naturalist.library.CladeStep` and `java.util.Optional`, and replace the inline `cladeTrail` model value (currently `List.of(new Plantae(), new Angiosperms())`) with:
+- [ ] **Step 6: Update `PlantsOrderListTemplateTest` to build `List<CladeStep>`**
+
+Add imports `com.naturalist.library.CladeStep` and `java.util.Optional`, and replace the inline `cladeTrail` model value (currently `List.of(new Plantae(), new Angiosperms())`) with:
 
 ```java
                         "cladeTrail", java.util.List.of(new Plantae(), new Angiosperms()).stream()
@@ -260,11 +243,42 @@ In `PlantsOrderListTemplateTest.java`, add imports `com.naturalist.library.Clade
                                 .toList()),
 ```
 
-- [ ] **Step 3: Remove the static `cladeTrailFor` test**
+- [ ] **Step 7: Run the full plants-console suite to verify it passes**
 
-In `PlantBreadcrumbTest.java`, delete the `cladeTrail_forSpecies_walksUpToTheOrdersPlacement` test method (it called `PlantsController.cladeTrailFor(plant)` statically; that method becomes a private instance method in Step 4, and its rendering is now covered by `PlantsCladeTrailTemplateTest`'s root→subject slug assertion). The two `breadcrumbFor` tests stay.
+Run: `mvn -q verify -pl domains/plants/plants-console -am`
+Expected: PASS. All template tests consume `List<CladeStep>`; `PlantBreadcrumbTest` still passes (controller unchanged, its static `cladeTrailFor` call still returns `List<Clade>`).
 
-- [ ] **Step 4: Wire `CladeQuery` into the controller and rewrite the three producers**
+- [ ] **Step 8: Commit**
+
+```bash
+git add domains/plants/plants-console/pom.xml \
+        domains/plants/plants-console/src/main/jte/plants/cladeTrail.jte \
+        domains/plants/plants-console/src/main/jte/plants/nav.jte \
+        domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsCladeTrailTemplateTest.java \
+        domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsCladeDetailTemplateTest.java \
+        domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantsOrderListTemplateTest.java
+git commit -m "refactor(plants): clade-trail templates consume library CladeStep"
+```
+
+---
+
+## Task 2: Source the controller trail from `CladeQuery`
+
+**Files:**
+- Modify: `domains/plants/plants-console/src/main/java/com/naturalist/plants/PlantsController.java`
+- Test: `domains/plants/plants-console/src/test/java/com/naturalist/plants/PlantBreadcrumbTest.java`
+
+**Interfaces:**
+- Consumes: `CladeQuery.getBySlug(String) : Optional<CladeView>`; `CladeView.subject() : CladeStep`, `CladeView.ancestry() : List<CladeStep>`. `library-api` is already a module dependency (added in Task 1, Step 0).
+- Produces: `PlantsController` model attribute `"cladeTrail"` is now `List<CladeStep>` on every rank, list, and clade page; private `stepsFor(Clade) : List<CladeStep>`; `cladeTrailFor` and `catalogCladeRoot` return `List<CladeStep>` (both private **instance** methods now).
+
+> **Prerequisite from Task 1:** the pom `library-api` dependency and the `List<CladeStep>` migrations of `PlantsCladeTrailTemplateTest`, `PlantsCladeDetailTemplateTest`, and `PlantsOrderListTemplateTest` are already done. This task touches only `PlantsController.java` and `PlantBreadcrumbTest.java`.
+
+- [ ] **Step 1: Remove the static `cladeTrailFor` test**
+
+In `PlantBreadcrumbTest.java`, delete the `cladeTrail_forSpecies_walksUpToTheOrdersPlacement` test method (it called `PlantsController.cladeTrailFor(plant)` statically; that method becomes a private instance method in Step 2, and its rendering is now covered by `PlantsCladeTrailTemplateTest`'s root→subject slug assertion). The two `breadcrumbFor` tests stay.
+
+- [ ] **Step 2: Wire `CladeQuery` into the controller and rewrite the three producers**
 
 In `PlantsController.java`:
 
@@ -350,12 +364,12 @@ In the `cladeDetail` handler, replace the clade-trail line:
 
 (was `model.addAttribute("cladeTrail", CladeTraversal.ancestry(clade).reversed());`). The `Clade.of(slug)` guard, `isAnimal` redirect, `ordersPlacedAt`, and `PlantCladeTree.narrower` for `childClades` are all unchanged. `CladeTraversal` remains imported — `lowestCommonAncestor` still uses it.
 
-- [ ] **Step 5: Build and run the full plants-console suite**
+- [ ] **Step 3: Build and run the full plants-console suite**
 
 Run: `mvn -q verify -pl domains/plants/plants-console -am`
 Expected: PASS. All template tests (`PlantsCladeTrailTemplateTest`, `PlantsCladeDetailTemplateTest`, `PlantsOrderListTemplateTest`, `PlantsFamily/Genus/Order*`, `PlantsDetailTemplateTest`), `PlantBreadcrumbTest` (two methods), and `PlantDetailGraphTest` compile and pass.
 
-- [ ] **Step 6: Run the architectural-enforcement gate**
+- [ ] **Step 4: Run the architectural-enforcement gate**
 
 Run:
 ```bash
@@ -363,7 +377,7 @@ mvn install -DskipTests && mvn rewrite:dryRun -Drewrite.failOnDryRunResults=true
 ```
 Expected: BUILD SUCCESS with no pending rewrite results (no N+1 / query-hygiene / architecture markers introduced). If the app-context boot test in `apps/management-console` runs here, it must still pass — the `CladeQuery` bean already exists in that context (insects consumes it), so `PlantsController`'s new param resolves.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add domains/plants/plants-console/pom.xml \
