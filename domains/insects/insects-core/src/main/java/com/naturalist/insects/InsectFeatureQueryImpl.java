@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.FeatureViewAssembler;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
  * {@link OrganismFeatureView.RankGroup} per contributing rank, ancestor-first,
  * ordinal-ordered within a group.
  */
+@DomainService
 class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
 
     private final Observer observer = Observer.forClass(getClass());

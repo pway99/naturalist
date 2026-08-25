@@ -55,12 +55,16 @@ class InsectsTestContextInternal {
 
         LibraryTestContext libraryContext = LibraryTestContext.create(db);
 
+        InsectAncestryResolver ancestryResolver =
+                new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
+        InsectCitationQueryImpl citationQuery = new InsectCitationQueryImpl(
+                libraryContext.citationAssociationQuery(), libraryContext.citationQuery(), ancestryResolver);
+        InsectFeatureQueryImpl featureQuery = new InsectFeatureQueryImpl(
+                repository.featureRepository, repository.featureAssignmentRepository, ancestryResolver);
         this.insectQuery = new InsectQueryImpl(
                 speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
-                orderQuery, libraryContext.citationAssociationQuery(),
-                libraryContext.citationQuery(), noOpLifeStageQuery(),
-                repository.featureRepository, repository.featureAssignmentRepository,
-                observationQuery);
+                orderQuery, citationQuery, featureQuery,
+                noOpLifeStageQuery(), observationQuery);
 
         InsectCommand.SpeciesCommand speciesCommand = new InsectSpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new InsectImageCommandImpl(repository.imageRepository);

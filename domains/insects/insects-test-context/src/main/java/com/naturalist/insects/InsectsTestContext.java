@@ -62,12 +62,16 @@ public class InsectsTestContext {
         CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
         CitationQuery libraryCitationQuery = libraryContext.citationQuery();
         this.insectLifeStageQuery = InsectLifeStageTestContext.createQuery(db);
+        InsectAncestryResolver ancestryResolver =
+                new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
+        InsectCitationQueryImpl citationQuery = new InsectCitationQueryImpl(
+                citationAssociationQuery, libraryCitationQuery, ancestryResolver);
+        InsectFeatureQueryImpl featureQuery = new InsectFeatureQueryImpl(
+                repository.featureRepository, repository.featureAssignmentRepository, ancestryResolver);
         this.insectQuery = new InsectQueryImpl(
                 speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
-                orderQuery, citationAssociationQuery, libraryCitationQuery,
-                this.insectLifeStageQuery,
-                repository.featureRepository, repository.featureAssignmentRepository,
-                observationQuery);
+                orderQuery, citationQuery, featureQuery,
+                this.insectLifeStageQuery, observationQuery);
         InsectCommand.SpeciesCommand speciesCommand = new InsectSpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new InsectImageCommandImpl(repository.imageRepository);
         InsectCommand.ObservationCommand observationCommand =

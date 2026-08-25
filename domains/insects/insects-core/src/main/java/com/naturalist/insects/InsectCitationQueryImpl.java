@@ -4,6 +4,7 @@ import com.naturalist.authority.Citation;
 import com.naturalist.authority.CitationName;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.library.CitationAssociation;
 import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.library.CitationQuery;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@DomainService
 class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
 
     private static final InsectsDomain INSECTS = new InsectsDomain();

@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.taxonomy.RankAncestry;
 
 import java.util.LinkedHashSet;
@@ -13,6 +14,7 @@ import java.util.function.Function;
  * (species→genus→family→order) is encoded, as {@link #parentOf}. Shared by
  * {@link InsectCitationQueryImpl} and {@link InsectFeatureQueryImpl}.
  */
+@DomainService
 class InsectAncestryResolver {
 
     private final InsectQuery.SpeciesQuery speciesQuery;
