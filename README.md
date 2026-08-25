@@ -66,14 +66,14 @@ depends on an app.
 
 ```mermaid
 graph TD
-    apps["apps/ — deployables"]
-    adapters["adapters/ — vendor / heavy impls"]
+    apps["apps/<br/>deployables"]
+    adapters["adapters/<br/>vendor · heavy impls"]
     core["«domain»-core"]
-    rdms["«domain»-repository-rdms<br/>production persistence adapter"]
+    rdms["«domain»-repository-rdms<br/>production adapter"]
     api["«domain»-api"]
-    identifiers["identifiers — typed cross-domain<br/>reference names (EntityName · EntityId)"]
-    kernels["kernels/ — foundations"]
-    framework["framework · field-notes<br/>[· taxonomy · clades]"]
+    identifiers["identifiers<br/>EntityName · EntityId"]
+    kernels["kernels/<br/>foundations"]
+    framework["framework · field-notes<br/>taxonomy · clades"]
 
     apps --> adapters
     apps --> core
