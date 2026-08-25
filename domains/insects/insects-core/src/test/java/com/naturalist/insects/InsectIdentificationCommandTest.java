@@ -82,6 +82,24 @@ class InsectIdentificationCommandTest {
     }
 
     /**
+     * A stateful two-turn {@link VisionExchange}: {@link VisionExchange#result()} is the
+     * scripted turn-1 identification; {@link VisionExchange#respond} (the reuse-resolution
+     * turn) returns a fixed turn-2 exchange whose {@code resolve_features} result is
+     * {@code turn2ResolveJson}. The returned exchange's own {@code respond} throws, so only
+     * two turns are ever possible.
+     */
+    private static VisionExchange twoTurn(String turn1Json, String turn2ResolveJson) {
+        return new VisionExchange() {
+            @Override public ToolResult result() {
+                return new ToolResult("propose_insect_species", turn1Json);
+            }
+            @Override public VisionExchange respond(String toolResultJson, ToolSchema nextTool) {
+                return fixedExchange("resolve_features", turn2ResolveJson);
+            }
+        };
+    }
+
+    /**
      * Stub authority that confirms any entity name it is asked about.
      */
     private static final ExternalAuthority STUB_AUTHORITY = new ExternalAuthority() {
@@ -182,11 +200,18 @@ class InsectIdentificationCommandTest {
      */
     @Test
     void identify_reIdentifyingSameRankWithSameFeatures_doesNotGrowCatalogOrDangleFeatureIds() {
+        // The FIRST identify mints the sample's three feature values, so the SECOND identify
+        // finds them as exact-match candidates and (correctly) runs turn 2. This stub scripts
+        // an EMPTY turn-2 resolution -- the model reuses nothing -- so every value falls
+        // through to mint + save(), exactly the exact-string save()-reconciliation path this
+        // test documents. (Turn 2 is never reached on the first, clean-corpus call.)
+        var twoTurnCmd = buildCommand((img, tool, prompt) ->
+                twoTurn(SAMPLE_RESULT_JSON, "{\"resolutions\":[]}"));
         var image = new Image(
                 new byte[]{1, 2, 3}, "image/jpeg",
                 new ImageMetadata("Chico, CA", null));
 
-        command.identify(image, FileName.of("IMG_0006.jpg"), NaturalistName.of("pat"), null);
+        twoTurnCmd.identify(image, FileName.of("IMG_0006.jpg"), NaturalistName.of("pat"), null);
 
         var featureSource = nte.getNamed(InsectFeatureTestEntitySource.class);
         var assignmentSource = nte.getNamed(InsectFeatureAssignmentTestEntitySource.class);
@@ -195,7 +220,7 @@ class InsectIdentificationCommandTest {
         assertThat(featureCountAfterFirst).isGreaterThanOrEqualTo(3);
 
         // Same stub -> vision reports the exact same three feature strings again.
-        command.identify(image, FileName.of("IMG_0007.jpg"), NaturalistName.of("pat"), null);
+        twoTurnCmd.identify(image, FileName.of("IMG_0007.jpg"), NaturalistName.of("pat"), null);
 
         assertThat(featureSource.entityStream().count()).isEqualTo(featureCountAfterFirst);
         assertThat(assignmentSource.entityStream().count()).isEqualTo(assignmentCountAfterFirst);
@@ -207,6 +232,99 @@ class InsectIdentificationCommandTest {
                 .as("every assignment's featureId must resolve to a persisted InsectFeature -- "
                         + "no dangling FK left over from save()'s id reconciliation")
                 .allMatch(persistedFeatureIds::contains);
+    }
+
+    // ----- reuse-aware feature resolution (search + optional turn 2) -----
+
+    /**
+     * (a) No proposed feature resembles any existing feature, so no turn-2 candidates
+     * exist and {@code respond} is never called (the single-turn {@link #stubService}
+     * throws if it were). All three sample feature values are minted fresh — the
+     * byte-for-byte pre-reuse behavior.
+     */
+    @Test
+    void identify_noSimilarCandidates_mintsAllFeaturesNew_singleTurn() {
+        var featureSource = nte.getNamed(InsectFeatureTestEntitySource.class);
+        long before = featureSource.entityStream().count();
+
+        var image = new Image(new byte[]{1, 2, 3}, "image/jpeg",
+                new ImageMetadata("Chico, CA", null));
+        command.identify(image, FileName.of("IMG_0008.jpg"), NaturalistName.of("pat"), null);
+
+        assertThat(featureSource.entityStream().count()).isEqualTo(before + 3);
+        assertThat(featureSource.entityStream().map(InsectFeature::value).toList())
+                .contains("hovering flight", "yellow-black banding", "large compound eyes");
+    }
+
+    /**
+     * (b) The model resolves a proposed value to an existing (near-variant) feature: the
+     * assignment for that value links to the EXISTING feature id and NO new feature row is
+     * minted for it. The seeded {@code "hovering flight pattern"} is a Jaccard near-variant
+     * of the sample's {@code "hovering flight"}, so the search surfaces it and turn 2 runs;
+     * the scripted resolution reuses it. The other two sample values (no candidates) still
+     * mint, so the catalog grows by exactly two, not three.
+     */
+    @Test
+    void identify_resolvedToExisting_reusesIdWithoutMintingNewRow() {
+        var featureSource = nte.getNamed(InsectFeatureTestEntitySource.class);
+        var existingId = InsectFeatureId.create();
+        featureSource.insert(InsectFeature.of(existingId, "hovering flight pattern"));
+        long before = featureSource.entityStream().count();
+
+        var turn2 = """
+                {"resolutions":[
+                  {"proposed":"hovering flight","decision":"reuse","existingValue":"hovering flight pattern"}
+                ]}
+                """;
+        var exchange = twoTurn(SAMPLE_RESULT_JSON, turn2);
+        var cmd = buildCommand((image, tool, prompt) -> exchange);
+
+        var image = new Image(new byte[]{1, 2, 3}, "image/jpeg",
+                new ImageMetadata("Chico, CA", null));
+        cmd.identify(image, FileName.of("IMG_0009.jpg"), NaturalistName.of("pat"), null);
+
+        // Only the two non-reused sample values were minted; "hovering flight" reused the seed.
+        assertThat(featureSource.entityStream().count()).isEqualTo(before + 2);
+        assertThat(featureSource.entityStream().map(InsectFeature::value).toList())
+                .doesNotContain("hovering flight")
+                .contains("hovering flight pattern");
+
+        // The persisted assignment for the reused value points at the EXISTING seeded id.
+        var assignmentSource = nte.getNamed(InsectFeatureAssignmentTestEntitySource.class);
+        var speciesRank = InsectSpeciesName.of("testus-fabricatus");
+        assertThat(assignmentSource.entityStream()
+                .filter(a -> a.rankName().equals(speciesRank))
+                .map(OrganismFeatureAssignment::featureId)
+                .toList())
+                .contains(existingId);
+    }
+
+    /**
+     * (c) Candidates exist (turn 2 runs) but the model marks the proposed value {@code new};
+     * it is minted fresh and the seeded near-variant is left untouched.
+     */
+    @Test
+    void identify_resolvedNew_mintsFreshFeature() {
+        var featureSource = nte.getNamed(InsectFeatureTestEntitySource.class);
+        featureSource.insert(InsectFeature.of(InsectFeatureId.create(), "hovering flight pattern"));
+        long before = featureSource.entityStream().count();
+
+        var turn2 = """
+                {"resolutions":[
+                  {"proposed":"hovering flight","decision":"new","existingValue":null}
+                ]}
+                """;
+        var exchange = twoTurn(SAMPLE_RESULT_JSON, turn2);
+        var cmd = buildCommand((image, tool, prompt) -> exchange);
+
+        var image = new Image(new byte[]{1, 2, 3}, "image/jpeg",
+                new ImageMetadata("Chico, CA", null));
+        cmd.identify(image, FileName.of("IMG_0010.jpg"), NaturalistName.of("pat"), null);
+
+        // All three sample values minted fresh; the seeded near-variant untouched.
+        assertThat(featureSource.entityStream().count()).isEqualTo(before + 3);
+        assertThat(featureSource.entityStream().map(InsectFeature::value).toList())
+                .contains("hovering flight", "hovering flight pattern");
     }
 
     @Test

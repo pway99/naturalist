@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.observation.Identification;
@@ -66,7 +67,7 @@ class InsectIdentificationCommand {
     private final ExternalAuthority externalAuthority;
     private final LibraryCommand libraryCommand;
     private final InsectQuery insectQuery;
-    // Wired but not yet used -- reuse-aware dedup lands in the next task.
+    // Surfaces similar existing features for the turn-2 reuse-or-new resolution.
     private final FeatureSearch<InsectFeatureId> featureSearch;
     private final InsectCatalogIdentificationTransaction transaction;
 
@@ -100,8 +101,9 @@ class InsectIdentificationCommand {
     public InsectRankName identify(Image image, FileName storedFileName,
                                     NaturalistName naturalist,
                                     @Nullable String notes) {
-        // 1. VISION -- external call
-        var visionResult = identifyViaVision(image);
+        // 1. VISION -- external call (turn 1 propose, optional turn 2 reuse-resolve)
+        var visionOutcome = identifyViaVision(image);
+        var visionResult = visionOutcome.proposed();
         var identifiedEntity = visionResult.identifiedEntity();
         var taxonomy = visionResult.taxonomy();
         var rankName = identifiedEntity.rankName();
@@ -124,7 +126,7 @@ class InsectIdentificationCommand {
         var combined = new ArrayList<RankFeatures>();
         combined.add(identifiedRankFeatures);
         combined.addAll(parentFeatures);
-        var featureResolution = resolveFeatures(combined);
+        var featureResolution = resolveFeatures(combined, visionOutcome.reuse());
 
         // 5. CITATION PREPARATION + LIBRARY WRITES -- cross-domain, best-effort
         writeCitations(authorityRefs);
@@ -161,11 +163,123 @@ class InsectIdentificationCommand {
 
     // ----- vision identification -----
 
-    private InsectIdentificationResult identifyViaVision(Image image) {
+    /**
+     * Turn 1's proposed identification plus the reuse decisions from turn 2. When no
+     * proposed feature had a similar existing candidate, {@code reuse} is empty and turn 2
+     * was skipped entirely — the byte-for-byte pre-reuse behavior.
+     */
+    private record VisionOutcome(InsectIdentificationResult proposed, Map<String, String> reuse) {}
+
+    /**
+     * Runs vision turn 1 (propose), searches each proposed feature value for similar
+     * existing features, and — only when at least one value has candidates — runs turn 2
+     * to let the model resolve each proposed value to an existing feature (reuse) or new.
+     */
+    private VisionOutcome identifyViaVision(Image image) {
         var toolSchema = buildToolSchema();
         var systemPrompt = buildSystemPrompt(image.metadata().location());
         var exchange = visionService.identify(image, toolSchema, systemPrompt);
-        return parseResult(exchange.result());
+        var proposed = parseResult(exchange.result());
+
+        // Similarity search over the proposed (turn-1) feature values. Each findSimilar
+        // is one batched corpus pass; per-invocation N+1 gating keeps the loop safe.
+        var candidatesByProposed = new LinkedHashMap<String, List<String>>();
+        for (var value : proposed.features()) {
+            var normalized = value.trim().toLowerCase();
+            if (normalized.isBlank() || candidatesByProposed.containsKey(normalized)) continue;
+            var candidates = featureSearch.findSimilar(value, 5).stream()
+                    .map(FeatureSearch.FeatureMatch::value)
+                    .toList();
+            if (!candidates.isEmpty()) {
+                candidatesByProposed.put(normalized, candidates);
+            }
+        }
+
+        // Turn 2 only when at least one proposed value has candidates; otherwise the
+        // no-match path is exactly the old single-turn behavior.
+        Map<String, String> reuse = Map.of();
+        if (!candidatesByProposed.isEmpty()) {
+            var turn2 = exchange.respond(
+                    buildCandidatesJson(candidatesByProposed), buildResolveToolSchema());
+            reuse = parseResolution(turn2.result());
+        }
+        return new VisionOutcome(proposed, reuse);
+    }
+
+    /**
+     * Serializes the proposed values that have candidates as the turn-2 tool result:
+     * {@code {"features":[{"proposed":"<value>","candidates":["<existing value>",...]},...]}}.
+     */
+    private String buildCandidatesJson(Map<String, List<String>> candidatesByProposed) {
+        var features = new ArrayList<Map<String, Object>>();
+        candidatesByProposed.forEach((proposed, candidates) ->
+                features.add(Map.of("proposed", proposed, "candidates", candidates)));
+        try {
+            return MAPPER.writeValueAsString(Map.of("features", features));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize feature candidates for turn 2", e);
+        }
+    }
+
+    /**
+     * The turn-2 tool: per proposed value, the model returns a decision to
+     * {@code reuse} an existing feature (naming which) or mint a {@code new} one.
+     */
+    private ToolSchema buildResolveToolSchema() {
+        var schema = """
+                {
+                  "type": "object",
+                  "required": ["resolutions"],
+                  "properties": {
+                    "resolutions": {
+                      "type": "array",
+                      "description": "One entry per proposed feature value you were given candidates for.",
+                      "items": {
+                        "type": "object",
+                        "required": ["proposed", "decision"],
+                        "properties": {
+                          "proposed":      { "type": "string", "description": "The proposed feature value, echoed back verbatim" },
+                          "decision":      { "type": "string", "enum": ["reuse", "new"], "description": "reuse an existing feature ONLY when it is genuinely the same morphological trait; otherwise new" },
+                          "existingValue": { "type": ["string", "null"], "description": "When decision is reuse, the exact existing candidate value to reuse; null when new" }
+                        }
+                      }
+                    }
+                  }
+                }
+                """;
+        return new ToolSchema("resolve_features",
+                "Resolve each proposed feature to an existing feature (reuse) or a new one. "
+                        + "Reuse an existing feature ONLY when it denotes the same trait; when in "
+                        + "doubt, choose new.",
+                schema);
+    }
+
+    /**
+     * Parses the turn-2 resolution into {@code proposed-normalized-value → existing-value}
+     * for {@code reuse} decisions only. Values the model marked {@code new} (or left without
+     * an {@code existingValue}) are absent from the map, so they mint as before.
+     */
+    private Map<String, String> parseResolution(ToolResult result) {
+        var reuse = new HashMap<String, String>();
+        try {
+            var node = MAPPER.readTree(result.argumentsJson());
+            var resolutions = node.get("resolutions");
+            if (resolutions == null || !resolutions.isArray()) return Map.of();
+            for (var r : resolutions) {
+                if (!r.hasNonNull("proposed") || !r.hasNonNull("decision")) continue;
+                if (!"reuse".equals(r.get("decision").asText())) continue;
+                if (!r.hasNonNull("existingValue")) continue;
+                var proposed = r.get("proposed").asText().trim().toLowerCase();
+                var existing = r.get("existingValue").asText().trim().toLowerCase();
+                if (!proposed.isBlank() && !existing.isBlank()) {
+                    reuse.put(proposed, existing);
+                }
+            }
+        } catch (Exception e) {
+            // A malformed resolution degrades to "mint everything new" -- never gates.
+            return Map.of();
+        }
+        return reuse;
     }
 
     // ----- authority enrichment (best-effort) -----
@@ -321,11 +435,28 @@ class InsectIdentificationCommand {
             List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> assignments
     ) {}
 
-    private FeatureResolution resolveFeatures(List<RankFeatures> allRankFeatures) {
+    /**
+     * Resolves each proposed/enriched feature value to an {@link InsectFeatureId} and builds
+     * its rank assignment. When {@code reuse} maps a normalized value to an existing feature
+     * value present in the catalog, that value contributes <b>no</b> new {@link InsectFeature}
+     * — its assignment points at the existing id. Everything else mints a fresh feature, deduped
+     * within the call by {@code createdFeatures}.
+     */
+    private FeatureResolution resolveFeatures(List<RankFeatures> allRankFeatures,
+                                              Map<String, String> reuse) {
         var newFeatures = new ArrayList<InsectFeature>();
         var assignments = new ArrayList<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>();
         // Track features we've already created in this invocation
         var createdFeatures = new HashMap<String, InsectFeatureId>();
+
+        // Existing catalog features by normalized value -- built ONCE from a single batched
+        // corpus pass (never a per-feature select), so reuse targets resolve to their
+        // existing id inside the loop below without tripping the N+1 gate.
+        Map<String, InsectFeatureId> existingByValue;
+        try (var corpus = insectQuery.features().corpus()) {
+            existingByValue = corpus.collect(Collectors.toMap(
+                    InsectFeature::value, InsectFeature::id, (a, b) -> a));
+        }
 
         for (var rankFeatures : allRankFeatures) {
             int ordinal = 0;
@@ -334,7 +465,12 @@ class InsectIdentificationCommand {
                 if (normalized.isBlank()) continue;
 
                 InsectFeatureId featureId;
-                if (createdFeatures.containsKey(normalized)) {
+                var reuseTarget = reuse.get(normalized);
+                if (reuseTarget != null && existingByValue.containsKey(reuseTarget)) {
+                    // Model resolved this proposed value to an existing feature: reuse its
+                    // id, mint no new feature. The assignment still links this rank to it.
+                    featureId = existingByValue.get(reuseTarget);
+                } else if (createdFeatures.containsKey(normalized)) {
                     featureId = createdFeatures.get(normalized);
                 } else {
                     featureId = InsectFeatureId.create();
