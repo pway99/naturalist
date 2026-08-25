@@ -3,13 +3,13 @@
 @import java.util.Map
 @import com.naturalist.data.Page
 @import com.naturalist.plants.BreadcrumbSegment
-@import com.naturalist.clades.Clade
+@import com.naturalist.library.CladeStep
 @import java.util.List
 
 @param Page<PlantSpecies> plantsPage
 @param Map<String, PlantEcologicalRole> ecologicalRoles = java.util.Map.of()
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
-@param List<Clade> cladeTrail = java.util.List.of()
+@param List<CladeStep> cladeTrail = java.util.List.of()
 
 @template.layout.page(title = "Plant Species", content = @`
     @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)

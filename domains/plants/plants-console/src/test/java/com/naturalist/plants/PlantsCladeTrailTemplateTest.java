@@ -3,22 +3,38 @@ package com.naturalist.plants;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Magnoliids;
+import com.naturalist.library.CladeStep;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Smoke test for {@code plants/cladeTrail.jte} — the phylogenetic tree-of-life row.
+ * Smoke test for {@code plants/cladeTrail.jte} — the phylogenetic tree-of-life row,
+ * now fed the shared library read model's {@link CladeStep}s (root→subject).
  */
 class PlantsCladeTrailTemplateTest {
 
+    /** Real lineage as {@link CladeStep}s, mirroring what the controller reads off CladeQuery. */
+    private static List<CladeStep> steps(Clade tip) {
+        return CladeTraversal.ancestry(tip).reversed().stream()
+                .map(c -> new CladeStep(c.slug(), c.displayName(), Optional.empty()))
+                .toList();
+    }
+
     // Piperales → magnoliids; the trail runs root→subject, Eukaryota → … → Magnoliids.
-    private static final List<Clade> MAGNOLIID_TRAIL =
-            CladeTraversal.ancestry(new Magnoliids()).reversed();
+    private static final List<CladeStep> MAGNOLIID_TRAIL = steps(new Magnoliids());
+
+    @Test
+    void trailRunsRootToSubjectEndingAtMagnoliids() {
+        assertThat(MAGNOLIID_TRAIL).extracting(CladeStep::cladeSlug)
+                .startsWith("eukaryota", "plantae")
+                .endsWith("magnoliids");
+    }
 
     @Test
     void rendersInConsoleLineageWithHoverDropdownsAndTheEukaryotaCrossover() {
@@ -47,9 +63,6 @@ class PlantsCladeTrailTemplateTest {
         TestTemplateEngine.create().render(
                 "plants/cladeTrail.jte", Map.of("cladeTrail", MAGNOLIID_TRAIL), output);
 
-        // Plants carry no Class rank (design D1). Rather than silently skipping it,
-        // the trail links a learner to the four-level "What is a class?" concept, so
-        // the supra-ordinal gap becomes a teaching moment rather than a blank.
         assertThat(output.toString()).contains("href=\"/concepts/class\"");
     }
 
@@ -57,7 +70,7 @@ class PlantsCladeTrailTemplateTest {
     void emptyTrailRendersNothing() {
         StringOutput output = new StringOutput();
         TestTemplateEngine.create().render(
-                "plants/cladeTrail.jte", Map.of("cladeTrail", List.of()), output);
+                "plants/cladeTrail.jte", Map.of("cladeTrail", List.<CladeStep>of()), output);
 
         assertThat(output.toString()).doesNotContain("Tree of life");
     }

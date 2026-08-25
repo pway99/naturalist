@@ -5,12 +5,14 @@ import com.naturalist.clades.Plantae;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
+import com.naturalist.library.CladeStep;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,7 +54,9 @@ class PlantsOrderListTemplateTest {
         TestTemplateEngine.create().render(
                 "plants/orders/list.jte",
                 Map.of("ordersPage", ordersPage,
-                        "cladeTrail", List.of(new Plantae(), new Angiosperms())),
+                        "cladeTrail", java.util.List.of(new Plantae(), new Angiosperms()).stream()
+                                .map(c -> new CladeStep(c.slug(), c.displayName(), Optional.empty()))
+                                .toList()),
                 output);
 
         assertThat(output.toString())

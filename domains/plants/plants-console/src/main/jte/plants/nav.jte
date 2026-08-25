@@ -1,9 +1,10 @@
 @import com.naturalist.plants.BreadcrumbSegment
 @import com.naturalist.clades.Clade
+@import com.naturalist.library.CladeStep
 @import java.util.List
 
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
-@param List<Clade> cladeTrail = java.util.List.of()
+@param List<CladeStep> cladeTrail = java.util.List.of()
 @param Clade current = null
 
 <%-- Two-row context bar mirroring insects/nav.jte: the phylogenetic tree-of-life

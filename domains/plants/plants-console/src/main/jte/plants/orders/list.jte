@@ -1,12 +1,12 @@
 @import com.naturalist.data.Page
 @import com.naturalist.plants.PlantOrder
 @import com.naturalist.plants.BreadcrumbSegment
-@import com.naturalist.clades.Clade
+@import com.naturalist.library.CladeStep
 @import java.util.List
 
 @param Page<PlantOrder> ordersPage
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
-@param List<Clade> cladeTrail = java.util.List.of()
+@param List<CladeStep> cladeTrail = java.util.List.of()
 
 @template.layout.page(title = "Plant Orders", content = @`
     @template.plants.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)

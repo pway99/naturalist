@@ -5,12 +5,14 @@ import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Superasterids;
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.library.CladeStep;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +32,9 @@ class PlantsCladeDetailTemplateTest {
         PlantOrder caryophyllales = nte.getNamed(PlantOrderTestEntitySource.class).entityStream()
                 .filter(o -> o.name().value().equals("caryophyllales"))
                 .findFirst().orElseThrow();
-        List<Clade> trail = CladeTraversal.ancestry(new Superasterids()).reversed();
+        List<CladeStep> trail = CladeTraversal.ancestry(new Superasterids()).reversed().stream()
+                .map(c -> new CladeStep(c.slug(), c.displayName(), Optional.empty()))
+                .toList();
 
         StringOutput output = new StringOutput();
         TestTemplateEngine.create().render("plants/clades/detail.jte", Map.of(

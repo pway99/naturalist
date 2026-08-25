@@ -1,4 +1,5 @@
 @import com.naturalist.clades.Clade
+@import com.naturalist.library.CladeStep
 @import com.naturalist.plants.PlantOrder
 @import com.naturalist.plants.BreadcrumbSegment
 @import com.naturalist.plants.PlantCladeTree
@@ -8,7 +9,7 @@
 @param List<PlantOrder> orders = java.util.List.of()
 @param List<Clade> childClades = java.util.List.of()
 @param List<BreadcrumbSegment> breadcrumb = java.util.List.of()
-@param List<Clade> cladeTrail = java.util.List.of()
+@param List<CladeStep> cladeTrail = java.util.List.of()
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""

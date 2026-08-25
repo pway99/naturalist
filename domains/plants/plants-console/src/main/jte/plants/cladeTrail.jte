@@ -1,8 +1,9 @@
 @import com.naturalist.clades.Clade
+@import com.naturalist.library.CladeStep
 @import com.naturalist.plants.PlantCladeTree
 @import java.util.List
 
-@param List<Clade> cladeTrail = java.util.List.of()
+@param List<CladeStep> cladeTrail = java.util.List.of()
 @param Clade current = null
 
 <%-- The phylogenetic tree-of-life row: a lineage of clade links, distinct from the
@@ -21,12 +22,12 @@
                 <span class="clade-trail-sep" aria-hidden="true">›</span>
             @endif
             !{var node = cladeTrail.get(i);}
-            !{var narrower = PlantCladeTree.narrower(node);}
+            !{var narrower = PlantCladeTree.narrower(Clade.of(node.cladeSlug()));}
             <span class="clade-node">
-                @if(current != null && node.slug().equals(current.slug()))
+                @if(current != null && node.cladeSlug().equals(current.slug()))
                     <span class="clade-trail-node clade-trail-current"><strong>${node.displayName()}</strong></span>
                 @else
-                    <a class="clade-trail-node" href="${PlantCladeTree.pageUrl(node)}">${node.displayName()}</a>
+                    <a class="clade-trail-node" href="${PlantCladeTree.pageUrl(Clade.of(node.cladeSlug()))}">${node.displayName()}</a>
                 @endif
                 @if(!narrower.isEmpty())
                     <span class="clade-node-caret" aria-hidden="true">▾</span>
