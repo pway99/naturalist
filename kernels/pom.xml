@@ -31,6 +31,7 @@
         <module>catalog-inmem</module>
         <module>clades</module>
         <module>biogeography</module>
+        <module>feature-search</module>
         <module>field-notes</module>
         <module>taxonomy</module>
         <module>observation</module>
