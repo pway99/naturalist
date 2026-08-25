@@ -35,12 +35,4 @@ class PlantBreadcrumbTest {
         assertThat(crumbs).extracting(BreadcrumbSegment::label).containsExactly("Plantae", "Lamiales");
         assertThat(crumbs.get(1).currentPage()).isTrue();
     }
-
-    @Test
-    void cladeTrail_forSpecies_walksUpToTheOrdersPlacement() {
-        var plant = context.plantQuery().getByName(
-                PlantSpeciesName.of("aristolochia-californica")).orElseThrow();
-        // Same as the order's placedIn ancestry (species resolves via its order).
-        assertThat(PlantsController.cladeTrailFor(plant)).isNotEmpty();
-    }
 }

@@ -8,6 +8,9 @@ import com.naturalist.data.Pages;
 import com.naturalist.data.PageRequest;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
+import com.naturalist.library.CladeQuery;
+import com.naturalist.library.CladeStep;
+import com.naturalist.library.CladeView;
 import com.naturalist.plants.render.PlantsParagraphCues;
 import com.naturalist.plants.cultivar.Cultivar;
 import com.naturalist.plants.cultivar.CultivarName;
@@ -57,6 +60,7 @@ public class PlantsController {
     private final SeedLineageQuery seedLineageQuery;
     private final PlantProgramQuery plantProgramQuery;
     private final PhytochemicalConstituentQuery phytochemicalConstituentQuery;
+    private final CladeQuery cladeQuery;
     private final DescriptionRenderer descriptionRenderer;
     private final Resilience resilience;
     private final PlantImageStorageService imageStorageService =
@@ -68,12 +72,14 @@ public class PlantsController {
                      SeedLineageQuery seedLineageQuery,
                      PlantProgramQuery plantProgramQuery,
                      PhytochemicalConstituentQuery phytochemicalConstituentQuery,
+                     CladeQuery cladeQuery,
                      Resilience resilience) {
         this.plantQuery = plantQuery;
         this.cultivarQuery = cultivarQuery;
         this.seedLineageQuery = seedLineageQuery;
         this.plantProgramQuery = plantProgramQuery;
         this.phytochemicalConstituentQuery = phytochemicalConstituentQuery;
+        this.cladeQuery = cladeQuery;
         this.descriptionRenderer = new DescriptionRenderer(PlantsParagraphCues.CUES);
         this.resilience = resilience;
     }
@@ -158,16 +164,22 @@ public class PlantsController {
      * back up to Plantae). The row runs to Eukaryota, the shared root, so the naturalist
      * can cross into the animal kingdom there.
      */
-    private List<Clade> catalogCladeRoot() {
+    private List<CladeStep> catalogCladeRoot() {
         List<Clade> orderClades = Pages.stream(1000, plantQuery.orders()::findPage)
                 .map(PlantOrder::placedIn)
                 .filter(clade -> clade != null)
                 .toList();
         Clade sharedAncestor = lowestCommonAncestor(orderClades);
-        if (sharedAncestor == null) {
-            return List.of(new Plantae());
-        }
-        return CladeTraversal.ancestry(sharedAncestor).reversed();
+        return stepsFor(sharedAncestor == null ? new Plantae() : sharedAncestor);
+    }
+
+    /** Root→subject clade steps for a clade, sourced from the shared library read model. */
+    private List<CladeStep> stepsFor(Clade clade) {
+        CladeView view = cladeQuery.getBySlug(clade.slug()).orElseThrow(
+                () -> new IllegalStateException("no clade view for slug " + clade.slug()));
+        var steps = new ArrayList<CladeStep>(view.ancestry());
+        steps.add(view.subject());
+        return steps;
     }
 
     /**
@@ -247,7 +259,7 @@ public class PlantsController {
      * (present for every rank via the resolved ancestry); empty when the order carries no
      * placement. Plant clades are supra-ordinal, so lower ranks resolve through the order.
      */
-    static List<Clade> cladeTrailFor(Plant plant) {
+    private List<CladeStep> cladeTrailFor(Plant plant) {
         if (plant.order() == null) {
             return List.of();
         }
@@ -255,7 +267,7 @@ public class PlantsController {
         if (placedIn == null) {
             return List.of();
         }
-        return CladeTraversal.ancestry(placedIn).reversed();
+        return stepsFor(placedIn);
     }
 
     // ── Rank pages ────────────────────────────────────────────────────────
@@ -313,7 +325,7 @@ public class PlantsController {
         model.addAttribute("orders", ordersPlacedAt(clade));
         model.addAttribute("childClades", PlantCladeTree.narrower(clade));
         model.addAttribute("breadcrumb", plantaeRoot());
-        model.addAttribute("cladeTrail", CladeTraversal.ancestry(clade).reversed());
+        model.addAttribute("cladeTrail", stepsFor(clade));
         addDescription(model, clade.description());
         return "plants/clades/detail";
     }
