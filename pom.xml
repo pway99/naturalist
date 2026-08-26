@@ -567,6 +567,27 @@
                 <artifactId>soil-test-context</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- USAGE -->
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>usage-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>usage-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>usage-repository-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>usage-repository-rdms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- VERTEBRATES -->
             <dependency>
                 <groupId>com.naturalist</groupId>
