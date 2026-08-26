@@ -30,6 +30,7 @@ import java.net.URI;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InsectIdentificationCommandTest {
 
@@ -137,6 +138,7 @@ class InsectIdentificationCommandTest {
     private InsectIdentificationCommand buildCommand(VisionService vision) {
         var libraryContext = LibraryTestContext.create(nte);
         return new InsectIdentificationCommand(
+                com.naturalist.usage.IdentificationBudget.noOp(),
                 vision,
                 new NoOpTextGenerationService(),
                 STUB_AUTHORITY,
@@ -331,6 +333,7 @@ class InsectIdentificationCommandTest {
     void identify_persistsCitationAssociationWhenCitationAlreadyExists() {
         var libraryContext = LibraryTestContext.create(nte);
         var cmd = new InsectIdentificationCommand(
+                com.naturalist.usage.IdentificationBudget.noOp(),
                 stubService,
                 new NoOpTextGenerationService(),
                 STUB_AUTHORITY,
@@ -421,5 +424,39 @@ class InsectIdentificationCommandTest {
                 NaturalistName.of("pat"), null);
 
         assertThat(promptCapture[0]).doesNotContain("Location context:");
+    }
+
+    @Test
+    void identify_reserves_budget_before_calling_vision() {
+        var visionCalled = new java.util.concurrent.atomic.AtomicBoolean(false);
+        VisionService trackingVision = (image, tool, prompt) -> {
+            visionCalled.set(true);
+            return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
+        };
+        com.naturalist.usage.IdentificationBudget exceededBudget = naturalist -> {
+            throw new com.naturalist.usage.BudgetExceededException(
+                    com.naturalist.usage.LimitKind.MONTHLY,
+                    java.time.Instant.parse("2026-09-01T00:00:00Z"));
+        };
+        var libraryContext = LibraryTestContext.create(nte);
+        var cmd = new InsectIdentificationCommand(
+                exceededBudget,
+                trackingVision,
+                new NoOpTextGenerationService(),
+                STUB_AUTHORITY,
+                libraryContext.libraryCommand(),
+                query,
+                buildFeatureSearch(),
+                context.catalogIdentificationTransaction());
+
+        var image = new Image(
+                new byte[]{1, 2, 3}, "image/jpeg",
+                new ImageMetadata("Chico, CA", null));
+
+        assertThatThrownBy(() -> cmd.identify(
+                image, FileName.of("IMG_0011.jpg"), NaturalistName.of("pat"), null))
+                .isInstanceOf(com.naturalist.usage.BudgetExceededException.class);
+
+        assertThat(visionCalled.get()).isFalse();
     }
 }

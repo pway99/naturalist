@@ -62,6 +62,7 @@ class InsectIdentificationCommand {
     private static final AuthoritySource VISION_SUGGESTED =
             new AuthoritySource("ref", "Suggested Reference");
 
+    private final com.naturalist.usage.IdentificationBudget budget;
     private final VisionService visionService;
     private final TextGenerationService textGenerationService;
     private final ExternalAuthority externalAuthority;
@@ -71,13 +72,15 @@ class InsectIdentificationCommand {
     private final FeatureSearch<InsectFeatureId> featureSearch;
     private final InsectCatalogIdentificationTransaction transaction;
 
-    InsectIdentificationCommand(VisionService visionService,
+    InsectIdentificationCommand(com.naturalist.usage.IdentificationBudget budget,
+                                        VisionService visionService,
                                         TextGenerationService textGenerationService,
                                         ExternalAuthority externalAuthority,
                                         LibraryCommand libraryCommand,
                                         InsectQuery insectQuery,
                                         FeatureSearch<InsectFeatureId> featureSearch,
                                         InsectCatalogIdentificationTransaction transaction) {
+        this.budget = budget;
         this.visionService = visionService;
         this.textGenerationService = textGenerationService;
         this.externalAuthority = externalAuthority;
@@ -101,6 +104,9 @@ class InsectIdentificationCommand {
     public InsectRankName identify(Image image, FileName storedFileName,
                                     NaturalistName naturalist,
                                     @Nullable String notes) {
+        // 0. BUDGET RESERVATION -- throws BudgetExceededException before any vision spend
+        budget.reserve(naturalist);
+
         // 1. VISION -- external call (turn 1 propose, optional turn 2 reuse-resolve)
         var visionOutcome = identifyViaVision(image);
         var visionResult = visionOutcome.proposed();
