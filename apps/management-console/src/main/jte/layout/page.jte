@@ -21,7 +21,7 @@
     <script src="/js/nav-menu.js" defer></script>
 </head>
 <body>
-<%-- Persistent, hard-to-miss banner when UsageMonitor reports an unacknowledged
+<%-- Persistent, hard-to-miss banner when UsageQuery reports an unacknowledged
      identification-usage alert. Read the same way as the other header attributes
      below — a plain request attribute via RequestContextHolder, set by
      NaturalistHeaderInterceptor for every request — so this stays free of the

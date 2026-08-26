@@ -18,7 +18,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class UsageBudgetServiceTest {
+/**
+ * Relocated from {@code UsageBudgetServiceTest} when the combined
+ * {@code UsageBudgetService} was split into {@link UsageQueryImpl} (reads, gated
+ * by the N+1 select gate) and {@link UsageCommandImpl} (writes). Every scenario
+ * here exercises {@link UsageCommandImpl#reserve}; the ones that also assert on
+ * usage state read it back through {@link UsageQueryImpl} — the CQS split doesn't
+ * change the behavior these tests pin, only which port each half of a test talks
+ * to.
+ */
+class UsageCommandImplTest {
 
     private final Clock clock =
             Clock.fixed(Instant.parse("2026-08-25T10:00:00Z"), ZoneOffset.UTC);
@@ -30,13 +39,13 @@ class UsageBudgetServiceTest {
     void per_user_daily_quota_blocks_after_limit() {
         UsageCoreTestContext context = UsageCoreTestContext.create(
                 nte, new UsageLimits(2, 9999, 9999, 9999, 80), clock);
-        UsageBudgetService service = context.service();
+        UsageCommand command = context.command();
         NaturalistName pat = NaturalistName.of("pat");
 
-        service.reserve(pat);
-        service.reserve(pat);
+        command.reserve(pat);
+        command.reserve(pat);
 
-        assertThatThrownBy(() -> service.reserve(pat))
+        assertThatThrownBy(() -> command.reserve(pat))
                 .isInstanceOf(BudgetExceededException.class)
                 .extracting(ex -> ((BudgetExceededException) ex).limitKind())
                 .isEqualTo(LimitKind.PER_USER);
@@ -46,12 +55,12 @@ class UsageBudgetServiceTest {
     void global_daily_cap_blocks_across_users() {
         UsageCoreTestContext context = UsageCoreTestContext.create(
                 nte, new UsageLimits(9999, 9999, 2, 9999, 80), clock);
-        UsageBudgetService service = context.service();
+        UsageCommand command = context.command();
 
-        service.reserve(NaturalistName.of("naturalist-a"));
-        service.reserve(NaturalistName.of("naturalist-b"));
+        command.reserve(NaturalistName.of("naturalist-a"));
+        command.reserve(NaturalistName.of("naturalist-b"));
 
-        assertThatThrownBy(() -> service.reserve(NaturalistName.of("naturalist-c")))
+        assertThatThrownBy(() -> command.reserve(NaturalistName.of("naturalist-c")))
                 .isInstanceOf(BudgetExceededException.class)
                 .extracting(ex -> ((BudgetExceededException) ex).limitKind())
                 .isEqualTo(LimitKind.DAILY);
@@ -61,27 +70,27 @@ class UsageBudgetServiceTest {
     void rejected_reserve_does_not_consume_other_counters() {
         UsageCoreTestContext context = UsageCoreTestContext.create(
                 nte, new UsageLimits(1, 9999, 9999, 9999, 80), clock);
-        UsageBudgetService service = context.service();
+        UsageCommand command = context.command();
         NaturalistName pat = NaturalistName.of("pat");
 
-        service.reserve(pat);
-        assertThatThrownBy(() -> service.reserve(pat)).isInstanceOf(BudgetExceededException.class);
+        command.reserve(pat);
+        assertThatThrownBy(() -> command.reserve(pat)).isInstanceOf(BudgetExceededException.class);
 
-        assertThat(service.snapshot().dailyUsed()).isEqualTo(1);
+        assertThat(context.query().snapshot().dailyUsed()).isEqualTo(1);
     }
 
     @Test
     void warning_and_hard_stop_alerts_recorded_once() {
         UsageCoreTestContext context = UsageCoreTestContext.create(
                 nte, new UsageLimits(9999, 9999, 9999, 5, 80), clock);
-        UsageBudgetService service = context.service();
+        UsageCommand command = context.command();
 
         for (int i = 0; i < 5; i++) {
-            service.reserve(NaturalistName.of("monthly-user-" + i));
+            command.reserve(NaturalistName.of("monthly-user-" + i));
         }
         for (int i = 0; i < 3; i++) {
             NaturalistName extra = NaturalistName.of("monthly-extra-" + i);
-            assertThatThrownBy(() -> service.reserve(extra))
+            assertThatThrownBy(() -> command.reserve(extra))
                     .isInstanceOf(BudgetExceededException.class);
         }
 
@@ -94,7 +103,7 @@ class UsageBudgetServiceTest {
     void concurrent_reserves_do_not_overshoot() throws InterruptedException {
         UsageCoreTestContext context = UsageCoreTestContext.create(
                 nte, new UsageLimits(99, 9999, 100, 9999, 80), clock);
-        UsageBudgetService service = context.service();
+        UsageCommand command = context.command();
 
         int threadCount = 16;
         int totalAttempts = 500;
@@ -106,7 +115,7 @@ class UsageBudgetServiceTest {
             NaturalistName naturalist = NaturalistName.of("concurrent-user-" + i);
             pool.submit(() -> {
                 try {
-                    service.reserve(naturalist);
+                    command.reserve(naturalist);
                     succeeded.incrementAndGet();
                 } catch (BudgetExceededException expected) {
                     // expected once the global daily cap is reached

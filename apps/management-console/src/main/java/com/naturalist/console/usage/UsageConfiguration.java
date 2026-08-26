@@ -10,8 +10,9 @@ import java.time.Clock;
 
 /**
  * Provides the two beans {@code usage-core}'s {@code @DomainService}
- * {@code UsageBudgetService} needs beyond its repositories: the configured
- * {@link UsageLimits} and a {@link Clock}. The service itself and the three
+ * {@code UsageQueryImpl}/{@code UsageCommandImpl}/{@code IdentificationBudgetImpl}
+ * need beyond their repositories: the configured {@link UsageLimits} and a
+ * {@link Clock}. Those adapters themselves and the three
  * {@code usage-repository-rdms} repositories are discovered automatically
  * by {@code DomainServiceScan} (see {@code CatalogConfiguration}) — they are
  * deliberately not declared as {@code @Bean}s here.

@@ -1,6 +1,6 @@
 package com.naturalist.console.auth;
 
-import com.naturalist.usage.UsageMonitor;
+import com.naturalist.usage.UsageQuery;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -30,10 +30,10 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
     /** Request-attribute key driving the console-wide unacknowledged-alert banner. */
     static final String USAGE_ALERTS_PENDING = "usageAlertsPending";
 
-    private final UsageMonitor usageMonitor;
+    private final UsageQuery usageQuery;
 
-    NaturalistHeaderInterceptor(UsageMonitor usageMonitor) {
-        this.usageMonitor = usageMonitor;
+    NaturalistHeaderInterceptor(UsageQuery usageQuery) {
+        this.usageQuery = usageQuery;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
         // Admin-only: don't leak operational alert state to anonymous or non-ADMIN
         // visitors, and don't even pay for activeAlerts() on their behalf.
         request.setAttribute(USAGE_ALERTS_PENDING,
-                CurrentNaturalistView.isAdmin() && !usageMonitor.activeAlerts().isEmpty());
+                CurrentNaturalistView.isAdmin() && !usageQuery.activeAlerts().isEmpty());
         request.setAttribute("insectSection", request.getRequestURI().startsWith("/insects"));
         var session = request.getSession(false);
         request.setAttribute("collectionLens",

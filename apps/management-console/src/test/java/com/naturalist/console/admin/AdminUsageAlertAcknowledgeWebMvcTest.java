@@ -3,7 +3,7 @@ package com.naturalist.console.admin;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.usage.UsageAlert;
-import com.naturalist.usage.UsageMonitor;
+import com.naturalist.usage.UsageQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ class AdminUsageAlertAcknowledgeWebMvcTest {
     IdentificationBudget budget;
 
     @Autowired
-    UsageMonitor monitor;
+    UsageQuery monitor;
 
     MockMvc mockMvc;
 

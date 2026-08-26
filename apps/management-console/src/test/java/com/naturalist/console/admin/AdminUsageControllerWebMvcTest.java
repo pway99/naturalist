@@ -3,7 +3,7 @@ package com.naturalist.console.admin;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.usage.UsageAlertId;
-import com.naturalist.usage.UsageMonitor;
+import com.naturalist.usage.UsageQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * End-to-end render + auth assertions for {@code /admin/usage} (admin
  * console cost-controls C1). Mirrors
  * {@link AdminResilienceControllerWebMvcTest}, exercising the real,
- * repository-backed {@link UsageMonitor} bean rather than a stub: the
- * single {@code UsageBudgetService} implements both {@link
- * IdentificationBudget} and {@code UsageMonitor}, so a Mockito bean
- * override of one interface replaces the shared bean the insects
- * console also depends on for the other, which fails app-context
+ * repository-backed {@link UsageQuery} bean rather than a stub: {@link
+ * IdentificationBudget} and {@code UsageQuery} are backed by the same
+ * shared repository state (via {@code UsageCommand}), so a Mockito bean
+ * override of one would desync it from the other, which fails app-context
  * startup. Instead, the "known monthly number" assertion drives the
  * real {@link IdentificationBudget#reserve} against a naturalist name
  * unique to this test, then reads it back off the rendered page — the
@@ -51,7 +50,7 @@ class AdminUsageControllerWebMvcTest {
     IdentificationBudget budget;
 
     @Autowired
-    UsageMonitor monitor;
+    UsageQuery monitor;
 
     MockMvc mockMvc;
 
@@ -124,7 +123,7 @@ class AdminUsageControllerWebMvcTest {
 
     /**
      * Fix round 2, MINOR finding: a syntactically valid UUID that does not
-     * name an existing alert reaches {@code UsageBudgetService#acknowledge}'s
+     * name an existing alert reaches {@code UsageCommandImpl#acknowledge}'s
      * {@code getByName(id).orElseThrow()} and previously surfaced as an
      * unhandled {@link java.util.NoSuchElementException} → 500. The
      * controller's guard now also catches the absent-alert case and bounces

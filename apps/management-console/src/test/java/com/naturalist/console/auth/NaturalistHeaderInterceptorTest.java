@@ -3,7 +3,7 @@ package com.naturalist.console.auth;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.usage.UsageAlert;
 import com.naturalist.usage.UsageAlertId;
-import com.naturalist.usage.UsageMonitor;
+import com.naturalist.usage.UsageQuery;
 import com.naturalist.usage.UsageSnapshot;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NaturalistHeaderInterceptorTest {
 
     /** No unacknowledged alerts — every existing assertion in this class predates the banner. */
-    private static final UsageMonitor NO_ALERTS = new UsageMonitor() {
+    private static final UsageQuery NO_ALERTS = new UsageQuery() {
         @Override
         public UsageSnapshot snapshot() {
             throw new UnsupportedOperationException();
@@ -32,12 +32,7 @@ class NaturalistHeaderInterceptorTest {
         }
 
         @Override
-        public void acknowledge(UsageAlertId id) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public List<UsageAlert> claimUnsentAlerts() {
+        public UsageQuery.ReserveCounts reserveCounts(NaturalistName naturalist) {
             throw new UnsupportedOperationException();
         }
     };
@@ -114,7 +109,7 @@ class NaturalistHeaderInterceptorTest {
 
     /**
      * The banner must not leak operational alert state — or even call {@link
-     * UsageMonitor#activeAlerts()} — for a visitor who isn't ROLE_ADMIN. Uses
+     * UsageQuery#activeAlerts()} — for a visitor who isn't ROLE_ADMIN. Uses
      * a monitor that fails the test if {@code activeAlerts()} is invoked at
      * all, proving the interceptor short-circuits on the role check first.
      */
@@ -148,8 +143,8 @@ class NaturalistHeaderInterceptorTest {
                         "naturalist", "n/a", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
     }
 
-    private static UsageMonitor oneAlert() {
-        return new UsageMonitor() {
+    private static UsageQuery oneAlert() {
+        return new UsageQuery() {
             @Override
             public UsageSnapshot snapshot() {
                 throw new UnsupportedOperationException();
@@ -170,19 +165,14 @@ class NaturalistHeaderInterceptorTest {
             }
 
             @Override
-            public void acknowledge(UsageAlertId id) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<UsageAlert> claimUnsentAlerts() {
+            public UsageQuery.ReserveCounts reserveCounts(NaturalistName naturalist) {
                 throw new UnsupportedOperationException();
             }
         };
     }
 
-    private static UsageMonitor explodesIfActiveAlertsCalled() {
-        return new UsageMonitor() {
+    private static UsageQuery explodesIfActiveAlertsCalled() {
+        return new UsageQuery() {
             @Override
             public UsageSnapshot snapshot() {
                 throw new UnsupportedOperationException();
@@ -196,12 +186,7 @@ class NaturalistHeaderInterceptorTest {
             }
 
             @Override
-            public void acknowledge(UsageAlertId id) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<UsageAlert> claimUnsentAlerts() {
+            public UsageQuery.ReserveCounts reserveCounts(NaturalistName naturalist) {
                 throw new UnsupportedOperationException();
             }
         };

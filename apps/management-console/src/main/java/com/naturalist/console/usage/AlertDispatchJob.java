@@ -1,13 +1,13 @@
 package com.naturalist.console.usage;
 
-import com.naturalist.usage.UsageMonitor;
+import com.naturalist.usage.UsageCommand;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
  * Periodically claims unsent {@code UsageAlert}s and emails each (task D2).
  *
- * <p>{@link UsageMonitor#claimUnsentAlerts()} atomically marks the returned
+ * <p>{@link UsageCommand#claimUnsentAlerts()} atomically marks the returned
  * alerts {@code emailed=true} in the same call that returns them, so a
  * second tick sees an empty list for anything already claimed here — the
  * "email once" guarantee lives entirely in that port, not in this job. A
@@ -18,17 +18,17 @@ import org.springframework.stereotype.Component;
 @Component
 class AlertDispatchJob {
 
-    private final UsageMonitor monitor;
+    private final UsageCommand command;
     private final AlertEmailer emailer;
 
-    AlertDispatchJob(UsageMonitor monitor, AlertEmailer emailer) {
-        this.monitor = monitor;
+    AlertDispatchJob(UsageCommand command, AlertEmailer emailer) {
+        this.command = command;
         this.emailer = emailer;
     }
 
     @Scheduled(fixedDelayString = "${naturalist.usage.dispatch-interval-ms:60000}")
     void dispatch() {
-        for (var alert : monitor.claimUnsentAlerts()) {
+        for (var alert : command.claimUnsentAlerts()) {
             emailer.send(alert);
         }
     }

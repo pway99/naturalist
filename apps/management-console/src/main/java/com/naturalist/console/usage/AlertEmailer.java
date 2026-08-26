@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * <p>Delivery failures (a misconfigured host, a bounced address, a transient
  * network error) are swallowed rather than propagated or logged — this
  * codebase has no logging infrastructure, and the persisted {@link UsageAlert}
- * row (see {@code UsageMonitor#activeAlerts()}) is the durable record of the
+ * row (see {@code UsageQuery#activeAlerts()}) is the durable record of the
  * alert regardless of whether the email made it out. Task D2's scheduled job
  * is the only caller; it must never fail a batch because one address bounced.
  */

@@ -1,12 +1,12 @@
 package com.naturalist.console.usage;
 
+import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.usage.AlertKind;
 import com.naturalist.usage.AlertScope;
 import com.naturalist.usage.UsageAlert;
 import com.naturalist.usage.UsageAlertId;
+import com.naturalist.usage.UsageCommand;
 import com.naturalist.usage.UsageCounterName;
-import com.naturalist.usage.UsageMonitor;
-import com.naturalist.usage.UsageSnapshot;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeansException;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Plain unit test (no Spring context) for {@link AlertDispatchJob} — proves
- * the "email once" guarantee: {@link UsageMonitor#claimUnsentAlerts()}
+ * the "email once" guarantee: {@link UsageCommand#claimUnsentAlerts()}
  * returns the pending alert on the first call and an empty list on every
  * call after, so {@link AlertEmailer#send} must fire exactly once across
  * two {@code dispatch()} invocations regardless of how often the scheduler
@@ -46,12 +46,12 @@ class AlertDispatchJobTest {
 
     @Test
     void emailsClaimedAlertExactlyOnceAcrossRepeatedDispatches() {
-        ClaimOnceMonitor monitor = new ClaimOnceMonitor(List.of(ALERT));
+        ClaimOnceCommand command = new ClaimOnceCommand(List.of(ALERT));
         CountingMailSender sender = new CountingMailSender();
         AlertEmailer emailer = new AlertEmailer(
                 providerReturning(sender),
                 new UsageProperties(10, 3, 50, 650, 80, "alerts@example.com"));
-        AlertDispatchJob job = new AlertDispatchJob(monitor, emailer);
+        AlertDispatchJob job = new AlertDispatchJob(command, emailer);
 
         job.dispatch();
         job.dispatch();
@@ -73,22 +73,17 @@ class AlertDispatchJobTest {
         };
     }
 
-    /** Returns the given alerts once, then an empty list forever after — mirrors the atomic claim-and-mark contract of {@code UsageMonitor#claimUnsentAlerts()}. */
-    private static final class ClaimOnceMonitor implements UsageMonitor {
+    /** Returns the given alerts once, then an empty list forever after — mirrors the atomic claim-and-mark contract of {@code UsageCommand#claimUnsentAlerts()}. */
+    private static final class ClaimOnceCommand implements UsageCommand {
 
         private List<UsageAlert> nextClaim;
 
-        ClaimOnceMonitor(List<UsageAlert> firstClaim) {
+        ClaimOnceCommand(List<UsageAlert> firstClaim) {
             this.nextClaim = firstClaim;
         }
 
         @Override
-        public UsageSnapshot snapshot() {
-            throw new UnsupportedOperationException("not used by AlertDispatchJob");
-        }
-
-        @Override
-        public List<UsageAlert> activeAlerts() {
+        public void reserve(NaturalistName naturalist) {
             throw new UnsupportedOperationException("not used by AlertDispatchJob");
         }
 
