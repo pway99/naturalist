@@ -2,6 +2,7 @@ package com.naturalist.console.auth;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -32,6 +33,25 @@ public final class CurrentNaturalistView {
         return auth != null
                 && auth.isAuthenticated()
                 && !(auth instanceof AnonymousAuthenticationToken);
+    }
+
+    /**
+     * Whether the current request is authenticated with {@code ROLE_ADMIN} — the same
+     * authority {@link com.naturalist.console.SecurityConfiguration}'s {@code
+     * .requestMatchers("/admin/**").hasRole("ADMIN")} gate checks. Anonymous and
+     * {@code ROLE_NATURALIST}-only sessions are not admin.
+     */
+    public static boolean isAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+            return false;
+        }
+        for (GrantedAuthority authority : auth.getAuthorities()) {
+            if ("ROLE_ADMIN".equals(authority.getAuthority())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** The CSRF token for the current request, or {@code null} outside a request. */

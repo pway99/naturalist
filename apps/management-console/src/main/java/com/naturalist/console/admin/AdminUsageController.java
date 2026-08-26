@@ -58,7 +58,15 @@ public class AdminUsageController {
 
     @PostMapping("/admin/usage/alerts/{id}/ack")
     String acknowledge(@PathVariable String id) {
-        usageMonitor.acknowledge(UsageAlertId.of(UUID.fromString(id)));
+        UUID value;
+        try {
+            value = UUID.fromString(id);
+        } catch (IllegalArgumentException malformed) {
+            // Malformed path segment (not a UUID at all) — no alert to acknowledge;
+            // bounce back to the dashboard instead of a 500.
+            return "redirect:/admin/usage";
+        }
+        usageMonitor.acknowledge(UsageAlertId.of(value));
         return "redirect:/admin/usage";
     }
 

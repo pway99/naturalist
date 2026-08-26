@@ -12,11 +12,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -100,5 +103,21 @@ class AdminUsageControllerWebMvcTest {
                 .andExpect(content().contentTypeCompatibleWith("application/json"))
                 .andExpect(jsonPath("$.usage.monthlyLimit").value(limits.monthlyLimit()))
                 .andExpect(jsonPath("$.alerts").isArray());
+    }
+
+    /**
+     * Fix round 1, MINOR finding: a malformed {@code {id}} path segment must
+     * not blow up as an unhandled {@link IllegalArgumentException} → 500.
+     * {@code AdminUsageController#acknowledge} now catches the
+     * {@code UUID.fromString} parse failure and bounces back to the
+     * dashboard instead.
+     */
+    @Test
+    void acknowledge_malformedId_redirectsInsteadOf500() throws Exception {
+        mockMvc.perform(post("/admin/usage/alerts/{id}/ack", "not-a-uuid")
+                        .with(user("naturalist").roles("ADMIN"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/usage"));
     }
 }

@@ -45,6 +45,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * "identification"}, a bare UUID) via the kernel's {@code @JsonValue}
  * unwrapping, not as the id/name-validity envelope Jackson would otherwise
  * emit.
+ *
+ * <p>The banner-gating assertions (fix round 1) reuse this same single
+ * alert rather than reserving a second time in their own test method: with
+ * {@code global-monthly=2} the WARNING dedup key only fires once per period,
+ * so a second {@code reserve()} call anywhere in this class (Spring caches
+ * one {@code ApplicationContext}, and so one counter/alert store, per test
+ * class) would not produce a second alert to check — see the checked-in
+ * history of this file for the failure that taught us that.
  */
 @SpringBootTest
 @TestPropertySource(properties = {
@@ -91,6 +99,26 @@ class AdminUsageAlertAcknowledgeWebMvcTest {
                 .andExpect(jsonPath("$.alerts[0].counter").value("identification"))
                 .andExpect(jsonPath("$.alerts[0].id").value(id));
 
+        // Fix round 1: the console-wide banner (NaturalistHeaderInterceptor +
+        // CurrentNaturalistView.isAdmin()) must render for ADMIN while this
+        // alert is pending, and must NOT render for a non-ADMIN authenticated
+        // visitor or an anonymous one — checked here, before the ack below
+        // removes the only alert this isolated context has.
+        String adminHome = mockMvc.perform(get("/").with(user("naturalist").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(adminHome).contains("usage-alert-banner");
+
+        String naturalistHome = mockMvc.perform(get("/").with(user("alice").roles("NATURALIST")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(naturalistHome).doesNotContain("usage-alert-banner");
+
+        String anonymousHome = mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(anonymousHome).doesNotContain("usage-alert-banner");
+
         mockMvc.perform(post("/admin/usage/alerts/{id}/ack", id)
                         .with(user("naturalist").roles("ADMIN"))
                         .with(csrf()))
@@ -100,5 +128,11 @@ class AdminUsageAlertAcknowledgeWebMvcTest {
         assertThat(monitor.activeAlerts())
                 .extracting(a -> a.id().value())
                 .doesNotContain(alert.id().value());
+
+        // The banner should clear once the only pending alert is acknowledged.
+        String adminHomeAfterAck = mockMvc.perform(get("/").with(user("naturalist").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(adminHomeAfterAck).doesNotContain("usage-alert-banner");
     }
 }

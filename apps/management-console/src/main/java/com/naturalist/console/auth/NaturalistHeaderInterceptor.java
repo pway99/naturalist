@@ -52,7 +52,10 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
             request.setAttribute(CSRF_PARAM, csrf.getParameterName());
             request.setAttribute(CSRF_TOKEN, csrf.getToken());
         }
-        request.setAttribute(USAGE_ALERTS_PENDING, !usageMonitor.activeAlerts().isEmpty());
+        // Admin-only: don't leak operational alert state to anonymous or non-ADMIN
+        // visitors, and don't even pay for activeAlerts() on their behalf.
+        request.setAttribute(USAGE_ALERTS_PENDING,
+                CurrentNaturalistView.isAdmin() && !usageMonitor.activeAlerts().isEmpty());
         request.setAttribute("insectSection", request.getRequestURI().startsWith("/insects"));
         var session = request.getSession(false);
         request.setAttribute("collectionLens",

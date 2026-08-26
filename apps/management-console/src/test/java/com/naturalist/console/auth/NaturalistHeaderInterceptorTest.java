@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
@@ -94,14 +95,61 @@ class NaturalistHeaderInterceptorTest {
 
     @Test
     void usageAlertsPending_false_whenNoActiveAlerts() {
+        setAdminAuthentication();
         var request = new MockHttpServletRequest();
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
         assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(false);
     }
 
     @Test
-    void usageAlertsPending_true_whenAnActiveAlertExists() {
-        UsageMonitor oneAlert = new UsageMonitor() {
+    void usageAlertsPending_true_whenAdminAndAnActiveAlertExists() {
+        setAdminAuthentication();
+        var request = new MockHttpServletRequest();
+
+        new NaturalistHeaderInterceptor(oneAlert())
+                .preHandle(request, new MockHttpServletResponse(), new Object());
+
+        assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(true);
+    }
+
+    /**
+     * The banner must not leak operational alert state — or even call {@link
+     * UsageMonitor#activeAlerts()} — for a visitor who isn't ROLE_ADMIN. Uses
+     * a monitor that fails the test if {@code activeAlerts()} is invoked at
+     * all, proving the interceptor short-circuits on the role check first.
+     */
+    @Test
+    void usageAlertsPending_false_forAnonymous_evenWithAlertsPending() {
+        var request = new MockHttpServletRequest();
+
+        new NaturalistHeaderInterceptor(explodesIfActiveAlertsCalled())
+                .preHandle(request, new MockHttpServletResponse(), new Object());
+
+        assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(false);
+    }
+
+    @Test
+    void usageAlertsPending_false_forNaturalistRole_evenWithAlertsPending() {
+        var principal = new NaturalistPrincipal(
+                NaturalistName.of("patrick-way"), "Patrick", "{bcrypt}x");
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(principal, "n/a", principal.getAuthorities()));
+        var request = new MockHttpServletRequest();
+
+        new NaturalistHeaderInterceptor(explodesIfActiveAlertsCalled())
+                .preHandle(request, new MockHttpServletResponse(), new Object());
+
+        assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(false);
+    }
+
+    private static void setAdminAuthentication() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        "naturalist", "n/a", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
+    }
+
+    private static UsageMonitor oneAlert() {
+        return new UsageMonitor() {
             @Override
             public UsageSnapshot snapshot() {
                 throw new UnsupportedOperationException();
@@ -131,11 +179,31 @@ class NaturalistHeaderInterceptorTest {
                 throw new UnsupportedOperationException();
             }
         };
-        var request = new MockHttpServletRequest();
+    }
 
-        new NaturalistHeaderInterceptor(oneAlert)
-                .preHandle(request, new MockHttpServletResponse(), new Object());
+    private static UsageMonitor explodesIfActiveAlertsCalled() {
+        return new UsageMonitor() {
+            @Override
+            public UsageSnapshot snapshot() {
+                throw new UnsupportedOperationException();
+            }
 
-        assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(true);
+            @Override
+            public List<UsageAlert> activeAlerts() {
+                throw new AssertionError(
+                        "activeAlerts() must not be called for a non-ADMIN request — the interceptor "
+                                + "should short-circuit on the role check first");
+            }
+
+            @Override
+            public void acknowledge(UsageAlertId id) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<UsageAlert> claimUnsentAlerts() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }
