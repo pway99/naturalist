@@ -453,6 +453,7 @@ public class InsectsController {
 
     @GetMapping("/identify")
     String identifyForm(@RequestParam(name = "identified", required = false) String identified,
+                        @RequestParam(name = "limit", required = false) String limit,
                         HttpServletRequest request, Model model) {
         Object csrf = request.getAttribute(CSRF_REQUEST_ATTRIBUTE);
         if (csrf != null) {
@@ -460,6 +461,9 @@ public class InsectsController {
         }
         if (identified != null && !identified.isBlank()) {
             model.addAttribute("identified", identified);
+        }
+        if (limit != null && !limit.isBlank()) {
+            model.addAttribute("limit", limit);
         }
         return "insects/identify";
     }
@@ -487,10 +491,13 @@ public class InsectsController {
                 imageBytes, "image/jpeg",
                 new com.naturalist.vision.ImageMetadata(location, capturedInstant));
 
-        var rankName = identificationCommand.identify(
-                image, storedFileName, me.get(), notes);
-
-        return "redirect:/insects/" + rankName.value();
+        try {
+            var rankName = identificationCommand.identify(
+                    image, storedFileName, me.get(), notes);
+            return "redirect:/insects/" + rankName.value();
+        } catch (com.naturalist.usage.BudgetExceededException over) {
+            return "redirect:/insects/identify?limit=" + over.limitKind();
+        }
     }
 
     @GetMapping("/species")

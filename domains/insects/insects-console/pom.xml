@@ -86,6 +86,24 @@
             <artifactId>insects-repository-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- TEST: constructing InsectsController directly (over-budget redirect test)
+             needs the in-memory query/command surfaces for insects + library. -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>insects-test-context</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-test-context</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>gg.jte</groupId>
             <artifactId>jte</artifactId>

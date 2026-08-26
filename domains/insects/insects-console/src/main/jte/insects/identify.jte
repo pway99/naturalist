@@ -2,6 +2,7 @@
 
 @param CsrfToken _csrf = null
 @param String identified = null
+@param String limit = null
 
 !{var csrfName = _csrf != null ? _csrf.getParameterName() : "";}
 !{var csrfValue = _csrf != null ? _csrf.getToken() : "";}
@@ -14,6 +15,15 @@
             @if(identified != null)
                 <p class="success-message">Identified as <strong>${identified}</strong>.
                    The species has been added to the catalog with your observation and photo.</p>
+            @endif
+            @if(limit != null)
+                @if("PER_USER".equals(limit))
+                    <p role="alert">You've reached your daily identification limit.
+                       It resets tomorrow -- try again then.</p>
+                @else
+                    <p role="alert">Identification is temporarily unavailable due to high demand.
+                       Please try again later.</p>
+                @endif
             @endif
             <p>Upload a photo and Claude will suggest an identification.
                You can verify the result against authoritative references.</p>
