@@ -8,21 +8,20 @@ import org.jspecify.annotations.Nullable;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Write-side adapter for {@link UsageCommand} — the mutation half of what was a
  * single combined {@code UsageBudgetService}. {@link #reserve(NaturalistName)}
- * consults {@link UsageQuery#reserveCounts(NaturalistName)} (now a gated read, see
- * {@link UsageQueryImpl}) for the four limit counts, applies the same
- * all-or-nothing check, then re-resolves the same period's tally rows itself to
- * upsert their counts and to record threshold alerts (deduplicated).
+ * consults {@link UsageQuery#reserveState(NaturalistName)} (the ONE gated,
+ * batched read — see {@link UsageQueryImpl}) for the four relevant tally rows,
+ * applies the same all-or-nothing check against their counts, then upserts those
+ * SAME rows and records threshold alerts (deduplicated). There is no second read:
+ * the rows {@code reserveState} returns are exactly what the upsert writes back.
  *
  * <p><b>Every method here is {@code synchronized} on this instance.</b> The reserve
  * algorithm is check-then-increment across several repository round trips
- * (including the {@code query.reserveCounts} call), so the synchronization
+ * (including the {@code query.reserveState} call), so the synchronization
  * boundary — not the in-memory mock or a future RDBMS adapter — is what prevents
  * two concurrent callers from both observing {@code count == limit - 1} and both
  * incrementing past the limit. {@code acknowledge} and {@code claimUnsentAlerts}
@@ -69,12 +68,17 @@ class UsageCommandImpl implements UsageCommand {
                 .throwWhenInvalid();
 
         UsagePeriods periods = UsagePeriods.now(clock);
-        UsageQuery.ReserveCounts counts = query.reserveCounts(naturalist);
+        UsageQuery.ReserveState state = query.reserveState(naturalist);
 
-        int monthlyCount = counts.globalMonthly();
-        int dailyCount = counts.globalDaily();
-        int rateCount = counts.globalRate();
-        int userCount = counts.userDaily();
+        Optional<UsageTally> monthlyTally = state.globalMonthly();
+        Optional<UsageTally> dailyTally = state.globalDaily();
+        Optional<UsageTally> rateTally = state.globalRate();
+        Optional<UsageTally> userTally = state.userDaily();
+
+        int monthlyCount = monthlyTally.map(UsageTally::count).orElse(0);
+        int dailyCount = dailyTally.map(UsageTally::count).orElse(0);
+        int rateCount = rateTally.map(UsageTally::count).orElse(0);
+        int userCount = userTally.map(UsageTally::count).orElse(0);
 
         if (monthlyCount >= limits.globalMonthly()) {
             recordAlert(AlertKind.HARD_STOP, AlertScope.MONTHLY, periods.monthlySlug, monthlyCount, limits.globalMonthly());
@@ -91,16 +95,9 @@ class UsageCommandImpl implements UsageCommand {
             throw new BudgetExceededException(LimitKind.PER_USER, periods.startOfNextDay());
         }
 
-        // Re-resolve the actual tally rows (not just their counts) to upsert in place.
-        // Safe to read again here: this whole method is synchronized, so no write has
-        // happened since query.reserveCounts() observed the same state above.
-        List<UsageTally> found = tallies.findByCounterAndPeriods(
-                counter, Set.of(periods.monthlySlug, periods.dailySlug, periods.rateSlug), naturalist);
-        Optional<UsageTally> monthlyTally = findTally(found, null, periods.monthlySlug);
-        Optional<UsageTally> dailyTally = findTally(found, null, periods.dailySlug);
-        Optional<UsageTally> rateTally = findTally(found, null, periods.rateSlug);
-        Optional<UsageTally> userTally = findTally(found, naturalist, periods.dailySlug);
-
+        // Upsert the SAME rows reserveState() returned — no second read. Safe: this
+        // whole method is synchronized, so no write has happened since reserveState()
+        // observed this state above.
         upsert(monthlyTally, null, periods.monthlySlug, monthlyCount + 1);
         checkWarning(monthlyCount + 1, limits.globalMonthly(), AlertScope.MONTHLY, periods.monthlySlug);
 
@@ -110,12 +107,6 @@ class UsageCommandImpl implements UsageCommand {
         upsert(rateTally, null, periods.rateSlug, rateCount + 1);
 
         upsert(userTally, naturalist, periods.dailySlug, userCount + 1);
-    }
-
-    private static Optional<UsageTally> findTally(List<UsageTally> found, @Nullable NaturalistName naturalist, String period) {
-        return found.stream()
-                .filter(t -> Objects.equals(t.naturalist(), naturalist) && t.period().equals(period))
-                .findFirst();
     }
 
     private void upsert(Optional<UsageTally> existing, @Nullable NaturalistName naturalist, String period, int newCount) {

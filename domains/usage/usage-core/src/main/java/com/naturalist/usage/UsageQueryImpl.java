@@ -22,7 +22,7 @@ import java.util.Set;
  *
  * <p>Deliberately holds no lock. {@link UsageCommandImpl#reserve} is the only
  * caller that needs read-then-write atomicity, and it gets that by invoking
- * {@link #reserveCounts(NaturalistName)} from within its own {@code synchronized}
+ * {@link #reserveState(NaturalistName)} from within its own {@code synchronized}
  * critical section — see that class's javadoc.
  */
 @DomainService
@@ -76,20 +76,19 @@ class UsageQueryImpl implements UsageQuery {
     }
 
     @Override
-    public ReserveCounts reserveCounts(NaturalistName naturalist) {
-        observer.arguments("reserveCounts", i -> i.identifier(naturalist, "naturalist"))
+    public ReserveState reserveState(NaturalistName naturalist) {
+        observer.arguments("reserveState", i -> i.identifier(naturalist, "naturalist"))
                 .throwWhenInvalid();
 
         UsagePeriods periods = UsagePeriods.now(clock);
         List<UsageTally> found = tallies.findByCounterAndPeriods(
                 counter, Set.of(periods.monthlySlug, periods.dailySlug, periods.rateSlug), naturalist);
 
-        int monthlyCount = findTally(found, null, periods.monthlySlug).map(UsageTally::count).orElse(0);
-        int dailyCount = findTally(found, null, periods.dailySlug).map(UsageTally::count).orElse(0);
-        int rateCount = findTally(found, null, periods.rateSlug).map(UsageTally::count).orElse(0);
-        int userCount = findTally(found, naturalist, periods.dailySlug).map(UsageTally::count).orElse(0);
-
-        return new ReserveCounts(monthlyCount, dailyCount, rateCount, userCount);
+        return new ReserveState(
+                findTally(found, null, periods.monthlySlug),
+                findTally(found, null, periods.dailySlug),
+                findTally(found, null, periods.rateSlug),
+                findTally(found, naturalist, periods.dailySlug));
     }
 
     private static Optional<UsageTally> findTally(List<UsageTally> found, @Nullable NaturalistName naturalist, String period) {

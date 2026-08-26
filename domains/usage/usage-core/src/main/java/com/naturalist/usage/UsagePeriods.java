@@ -14,7 +14,7 @@ import java.time.temporal.ChronoUnit;
  * (needs the slugs to shape a batched tally read) and {@link UsageCommandImpl}
  * (needs both the slugs and the reset instants for {@link BudgetExceededException}).
  * Captured once per call from the injected {@link Clock} via {@link #now(Clock)} so a
- * single {@code reserve}/{@code reserveCounts}/{@code snapshot} invocation observes
+ * single {@code reserve}/{@code reserveState}/{@code snapshot} invocation observes
  * one consistent instant rather than re-deriving day/month/minute at each use.
  *
  * <p><b>The {@link Clock} is expected to be UTC-zoned.</b> Period buckets

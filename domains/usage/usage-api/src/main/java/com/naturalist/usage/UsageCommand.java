@@ -16,7 +16,7 @@ import java.util.List;
  * <p>{@link #reserve}, {@link #acknowledge}, and {@link #claimUnsentAlerts} are
  * {@code synchronized} on the adapter instance: the reserve algorithm is
  * check-then-increment across several repository round trips (including a gated
- * {@link UsageQuery#reserveCounts} call), so the synchronization boundary — not the
+ * {@link UsageQuery#reserveState} call), so the synchronization boundary — not the
  * in-memory mock or a future RDBMS adapter — is what prevents two concurrent
  * callers from both observing {@code count == limit - 1} and both incrementing past
  * the limit.

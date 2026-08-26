@@ -32,7 +32,7 @@ class NaturalistHeaderInterceptorTest {
         }
 
         @Override
-        public UsageQuery.ReserveCounts reserveCounts(NaturalistName naturalist) {
+        public UsageQuery.ReserveState reserveState(NaturalistName naturalist) {
             throw new UnsupportedOperationException();
         }
     };
@@ -165,7 +165,7 @@ class NaturalistHeaderInterceptorTest {
             }
 
             @Override
-            public UsageQuery.ReserveCounts reserveCounts(NaturalistName naturalist) {
+            public UsageQuery.ReserveState reserveState(NaturalistName naturalist) {
                 throw new UnsupportedOperationException();
             }
         };
@@ -186,7 +186,7 @@ class NaturalistHeaderInterceptorTest {
             }
 
             @Override
-            public UsageQuery.ReserveCounts reserveCounts(NaturalistName naturalist) {
+            public UsageQuery.ReserveState reserveState(NaturalistName naturalist) {
                 throw new UnsupportedOperationException();
             }
         };
