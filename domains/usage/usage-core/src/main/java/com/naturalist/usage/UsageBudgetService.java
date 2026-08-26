@@ -31,6 +31,17 @@ import java.util.Optional;
  * synchronization boundary — not the in-memory mock or a future RDBMS
  * adapter — is what prevents two concurrent callers from both observing
  * {@code count == limit - 1} and both incrementing past the limit.
+ *
+ * <p><b>The injected {@link Clock} is expected to be UTC-zoned.</b> Period
+ * buckets ({@code dailySlug}, {@code monthlySlug}, {@code rateSlug}) are
+ * derived via {@code LocalDate}/{@code YearMonth}/{@code LocalDateTime}
+ * {@code .now(clock)}, and every {@code BudgetExceededException}'s
+ * {@code resetAt} is then computed by anchoring those values to
+ * {@link ZoneOffset#UTC} ({@code startOfNextDay}/{@code startOfNextMonth}/
+ * {@code startOfNextMinute}). A non-UTC clock would shift which wall-clock
+ * moment a bucket rolls over at, desynchronizing the reset boundary from the
+ * bucket it was derived from. The production bean supplies
+ * {@code Clock.systemUTC()}.
  */
 @DomainService
 class UsageBudgetService implements IdentificationBudget, UsageMonitor {

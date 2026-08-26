@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
@@ -61,12 +62,15 @@ public class AdminUsageController {
         UUID value;
         try {
             value = UUID.fromString(id);
-        } catch (IllegalArgumentException malformed) {
-            // Malformed path segment (not a UUID at all) — no alert to acknowledge;
-            // bounce back to the dashboard instead of a 500.
+            usageMonitor.acknowledge(UsageAlertId.of(value));
+        } catch (IllegalArgumentException | NoSuchElementException notAcknowledgeable) {
+            // Either the path segment isn't a UUID at all, or it is a
+            // syntactically valid UUID that doesn't name an existing alert
+            // (UsageBudgetService#acknowledge does getByName(id).orElseThrow()).
+            // Neither is an alert to acknowledge — bounce back to the
+            // dashboard instead of a 500.
             return "redirect:/admin/usage";
         }
-        usageMonitor.acknowledge(UsageAlertId.of(value));
         return "redirect:/admin/usage";
     }
 

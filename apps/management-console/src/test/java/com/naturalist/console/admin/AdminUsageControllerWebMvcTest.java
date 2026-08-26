@@ -2,6 +2,7 @@ package com.naturalist.console.admin;
 
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.usage.IdentificationBudget;
+import com.naturalist.usage.UsageAlertId;
 import com.naturalist.usage.UsageMonitor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,6 +116,28 @@ class AdminUsageControllerWebMvcTest {
     @Test
     void acknowledge_malformedId_redirectsInsteadOf500() throws Exception {
         mockMvc.perform(post("/admin/usage/alerts/{id}/ack", "not-a-uuid")
+                        .with(user("naturalist").roles("ADMIN"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/usage"));
+    }
+
+    /**
+     * Fix round 2, MINOR finding: a syntactically valid UUID that does not
+     * name an existing alert reaches {@code UsageBudgetService#acknowledge}'s
+     * {@code getByName(id).orElseThrow()} and previously surfaced as an
+     * unhandled {@link java.util.NoSuchElementException} → 500. The
+     * controller's guard now also catches the absent-alert case and bounces
+     * back to the dashboard, same as the malformed-id case above.
+     */
+    @Test
+    void acknowledge_unknownId_redirectsInsteadOf500() throws Exception {
+        // A real UUIDv7 (via the kernel generator, not UUID.randomUUID()) so the
+        // request exercises the "valid id, no matching alert" branch specifically,
+        // rather than tripping any upstream version check.
+        String unknownButValidUuid = UsageAlertId.create().value().toString();
+
+        mockMvc.perform(post("/admin/usage/alerts/{id}/ack", unknownButValidUuid)
                         .with(user("naturalist").roles("ADMIN"))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
