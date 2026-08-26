@@ -1,5 +1,6 @@
 package com.naturalist.console.auth;
 
+import com.naturalist.usage.UsageMonitor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -26,6 +27,15 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
     /** Request-attribute key read by insects-console (same literal, by convention). */
     static final String CURRENT_NATURALIST_NAME = "naturalist.currentNaturalistName";
 
+    /** Request-attribute key driving the console-wide unacknowledged-alert banner. */
+    static final String USAGE_ALERTS_PENDING = "usageAlertsPending";
+
+    private final UsageMonitor usageMonitor;
+
+    NaturalistHeaderInterceptor(UsageMonitor usageMonitor) {
+        this.usageMonitor = usageMonitor;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         boolean authenticated = CurrentNaturalistView.isAuthenticated();
@@ -42,6 +52,7 @@ public class NaturalistHeaderInterceptor implements HandlerInterceptor {
             request.setAttribute(CSRF_PARAM, csrf.getParameterName());
             request.setAttribute(CSRF_TOKEN, csrf.getToken());
         }
+        request.setAttribute(USAGE_ALERTS_PENDING, !usageMonitor.activeAlerts().isEmpty());
         request.setAttribute("insectSection", request.getRequestURI().startsWith("/insects"));
         var session = request.getSession(false);
         request.setAttribute("collectionLens",

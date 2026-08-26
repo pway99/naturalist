@@ -1366,6 +1366,73 @@ figure.compound-depiction img {
     padding: 0.15rem 0;
 }
 
+/* /admin/usage gauges — deferred from C1, shipped in C3. Three states
+   (state name = the class suffix AdminUsageController computes) so the
+   dashboard reads at a glance: green = comfortably under the warning
+   threshold, amber = at/above warning, red = at/over the hard limit. */
+.admin-usage-gauges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.75rem 0 1.25rem;
+}
+
+.admin-usage-gauge {
+    flex: 1 1 10rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.35rem;
+    border: 1px solid var(--sepia-rule);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.admin-usage-gauge-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.admin-usage-gauge-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.admin-usage-gauge-green {
+    background: #DCE8D4;
+    border-color: #5B7553;
+    color: #33472C;
+}
+
+.admin-usage-gauge-amber {
+    background: #F3E1B0;
+    border-color: #B8860B;
+    color: #5A4310;
+}
+
+.admin-usage-gauge-red {
+    background: #F0CFC7;
+    border-color: #A0392B;
+    color: #6B1F14;
+}
+
+/* Console-wide unacknowledged-alert banner (page.jte, all pages). Sits above
+   the header so it's impossible to miss and unmistakably distinct from the
+   parchment page surface underneath it. */
+.usage-alert-banner {
+    background: #A0392B;
+    color: #FAF3EA;
+    text-align: center;
+    padding: 0.6rem 1rem;
+}
+
+.usage-alert-banner a {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
 /* Search page */
 .search-form {
     display: grid;

@@ -8,6 +8,13 @@
 @param List<Gauge> gauges
 
 @template.layout.page(title = "Usage", content = @`
+    <%-- Read the same CSRF request attributes NaturalistHeaderInterceptor
+         already publishes for the header's own POST forms (see page.jte),
+         so the acknowledge form below doesn't need a dedicated model
+         attribute wired through AdminUsageController. --%>
+    !{var _usageAttrs = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();}
+    !{var _usageCsrfParam = _usageAttrs == null ? null : (String) _usageAttrs.getAttribute("naturalistCsrfParam", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
+    !{var _usageCsrfToken = _usageAttrs == null ? null : (String) _usageAttrs.getAttribute("naturalistCsrfToken", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
     @template.admin.nav(current = "usage")
     <section class="admin-usage">
         <h1>Usage</h1>
@@ -64,6 +71,12 @@
                             <span>${alert.period()}</span>
                             <p>${alert.message()}</p>
                             <time>${alert.at().toString()}</time>
+                            <form method="post" action="/admin/usage/alerts/${alert.id().value().toString()}/ack" class="admin-usage-ack-form">
+                                @if(_usageCsrfParam != null)
+                                    <input type="hidden" name="${_usageCsrfParam}" value="${_usageCsrfToken}">
+                                @endif
+                                <button type="submit">Acknowledge</button>
+                            </form>
                         </li>
                     @endfor
                 </ul>

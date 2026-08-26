@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=29">
+    <link rel="stylesheet" href="/css/naturalist.css?v=30">
     <script src="/js/htmx.min.js" defer></script>
     <%-- Rotates stacked images on .card-image[data-rotate] tiles across all
          catalog cards. No-op on pages without rotating cards. --%>
@@ -21,6 +21,17 @@
     <script src="/js/nav-menu.js" defer></script>
 </head>
 <body>
+<%-- Persistent, hard-to-miss banner when UsageMonitor reports an unacknowledged
+     identification-usage alert. Read the same way as the other header attributes
+     below — a plain request attribute via RequestContextHolder, set by
+     NaturalistHeaderInterceptor for every request — so this stays free of the
+     app-package / Spring-Security types the rest of page.jte must avoid. --%>
+!{var _bannerAttrs = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();}
+@if(_bannerAttrs != null && Boolean.TRUE.equals(_bannerAttrs.getAttribute("usageAlertsPending", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST)))
+    <div class="usage-alert-banner" role="alert">
+        <a href="/admin/usage">⚠ Identification usage alerts need attention</a>
+    </div>
+@endif
 <header class="site-header">
     <div class="container site-header-bar">
         <a class="site-brand" href="/">The Amateur Naturalist</a>

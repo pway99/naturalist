@@ -2,15 +2,19 @@ package com.naturalist.console.admin;
 
 import com.naturalist.console.usage.UsageProperties;
 import com.naturalist.usage.UsageAlert;
+import com.naturalist.usage.UsageAlertId;
 import com.naturalist.usage.UsageMonitor;
 import com.naturalist.usage.UsagePolicy;
 import com.naturalist.usage.UsageSnapshot;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Renders {@code /admin/usage} — the identification-budget monitoring
@@ -50,6 +54,12 @@ public class AdminUsageController {
     @ResponseBody
     UsageReport report() {
         return new UsageReport(usageMonitor.snapshot(), usageMonitor.activeAlerts());
+    }
+
+    @PostMapping("/admin/usage/alerts/{id}/ack")
+    String acknowledge(@PathVariable String id) {
+        usageMonitor.acknowledge(UsageAlertId.of(UUID.fromString(id)));
+        return "redirect:/admin/usage";
     }
 
     private static Gauge gauge(String label, int used, int limit, int warningPercent) {
