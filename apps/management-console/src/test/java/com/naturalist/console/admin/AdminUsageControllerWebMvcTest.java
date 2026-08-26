@@ -16,6 +16,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -88,5 +89,16 @@ class AdminUsageControllerWebMvcTest {
                 .as("the per-user row for the naturalist this test reserved against")
                 .contains(TEST_NATURALIST.value())
                 .contains(">2<");
+    }
+
+    @Test
+    void admin_usageJson_returnsSnapshotAndAlerts() throws Exception {
+        var limits = monitor.snapshot();
+
+        mockMvc.perform(get("/admin/usage.json").with(user("naturalist").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(jsonPath("$.usage.monthlyLimit").value(limits.monthlyLimit()))
+                .andExpect(jsonPath("$.alerts").isArray());
     }
 }

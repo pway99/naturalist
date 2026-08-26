@@ -8,6 +8,7 @@ import com.naturalist.usage.UsageSnapshot;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -45,6 +46,12 @@ public class AdminUsageController {
         return "admin/usage";
     }
 
+    @GetMapping(value = "/admin/usage.json", produces = "application/json")
+    @ResponseBody
+    UsageReport report() {
+        return new UsageReport(usageMonitor.snapshot(), usageMonitor.activeAlerts());
+    }
+
     private static Gauge gauge(String label, int used, int limit, int warningPercent) {
         String state;
         if (used >= limit) {
@@ -58,5 +65,8 @@ public class AdminUsageController {
     }
 
     public record Gauge(String label, int used, int limit, String state) {
+    }
+
+    public record UsageReport(UsageSnapshot usage, List<UsageAlert> alerts) {
     }
 }
