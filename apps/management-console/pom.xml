@@ -120,6 +120,14 @@
             <groupId>com.naturalist</groupId>
             <artifactId>soil-repository-rdms</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>usage-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>usage-repository-rdms</artifactId>
+        </dependency>
 
         <!-- NATURALISTS -->
         <dependency>

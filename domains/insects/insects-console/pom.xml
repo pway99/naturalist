@@ -56,6 +56,10 @@
             <artifactId>text-generation</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>usage-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>

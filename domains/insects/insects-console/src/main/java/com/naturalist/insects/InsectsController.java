@@ -107,7 +107,8 @@ public class InsectsController {
                       CladeQuery cladeQuery,
                       com.naturalist.library.GlossaryTermQuery glossaryTermQuery,
                       com.naturalist.library.LibraryCommand libraryCommand,
-                      com.naturalist.authority.ExternalAuthority eolAuthority) {
+                      com.naturalist.authority.ExternalAuthority eolAuthority,
+                      com.naturalist.usage.IdentificationBudget budget) {
         this.insectQuery = insectQuery;
         this.insectCommand = insectCommand;
         this.insectLifeStageQuery = insectLifeStageQuery;
@@ -127,7 +128,7 @@ public class InsectsController {
                         insectQuery.features().corpus()
                                 .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
         this.identificationCommand = new InsectIdentificationCommand(
-                visionService, new NoOpTextGenerationService(), eolAuthority,
+                budget, visionService, new NoOpTextGenerationService(), eolAuthority,
                 libraryCommand, insectQuery, featureSearch, catalogIdentificationTransaction);
         this.addPhotoCommand = new InsectAddPhotoCommand(
                 new InsectAddPhotoTransaction(insectCommand));

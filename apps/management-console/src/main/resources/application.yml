@@ -6,3 +6,12 @@ gg:
   jte:
     development-mode: true
     template-suffix: .jte
+
+naturalist:
+  usage:
+    per-user-daily: 10
+    global-rate-per-minute: 3
+    global-daily: 50
+    global-monthly: 650
+    warning-percent: 80
+    alert-email: patway99@gmail.com

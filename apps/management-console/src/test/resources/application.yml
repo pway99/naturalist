@@ -11,3 +11,10 @@ naturalist:
   admin:
     username: test-admin
     password: test-password
+  usage:
+    per-user-daily: 10
+    global-rate-per-minute: 3
+    global-daily: 50
+    global-monthly: 650
+    warning-percent: 80
+    alert-email: test@example.com
