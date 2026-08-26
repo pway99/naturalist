@@ -4,6 +4,7 @@ import com.naturalist.usage.UsageLimits;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.Clock;
 
@@ -14,9 +15,16 @@ import java.time.Clock;
  * {@code usage-repository-rdms} repositories are discovered automatically
  * by {@code DomainServiceScan} (see {@code CatalogConfiguration}) — they are
  * deliberately not declared as {@code @Bean}s here.
+ *
+ * <p>{@link EnableScheduling} is the app's first use of Spring scheduling —
+ * added here rather than on the application class because the only
+ * scheduled job so far ({@link AlertDispatchJob}) is usage-domain-specific.
+ * It registers the default {@code TaskScheduler} that drives
+ * {@code @Scheduled} methods; it does not itself run anything.
  */
 @Configuration
 @EnableConfigurationProperties(UsageProperties.class)
+@EnableScheduling
 class UsageConfiguration {
 
     @Bean
