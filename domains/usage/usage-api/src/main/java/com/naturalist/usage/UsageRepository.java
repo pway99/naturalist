@@ -6,6 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Namespace for the usage bounded context's write-side repositories — the single
@@ -37,8 +38,17 @@ class UsageRepository {
     protected interface TallyRepository
             extends EntityRepository<UsageTallyId, UsageTally> {
 
-        /** Business key: one tally per (counter, naturalist, period). {@code naturalist} is null for a global tally. */
-        Optional<UsageTally> findBusinessKey(UsageCounterName counter, @Nullable NaturalistName naturalist, String period);
+        /**
+         * Batched read: every tally for {@code counter} whose {@code period} is in
+         * {@code periods} AND is either a global tally ({@code naturalist() == null})
+         * or belongs to the given {@code naturalist}. One select in place of one
+         * {@code findBusinessKey} call per period. When {@code naturalist} is null,
+         * only global tallies are returned (a global tally never equals a null
+         * naturalist under {@code equals}, so passing null here can never match a
+         * per-user row).
+         */
+        List<UsageTally> findByCounterAndPeriods(
+                UsageCounterName counter, Set<String> periods, @Nullable NaturalistName naturalist);
     }
 
     protected interface AlertRepository

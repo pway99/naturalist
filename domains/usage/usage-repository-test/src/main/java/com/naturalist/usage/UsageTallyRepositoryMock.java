@@ -5,8 +5,8 @@ import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.naturalist.NaturalistName;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
 
 class UsageTallyRepositoryMock
         extends AbstractTestEntityRepository<UsageTallyId, UsageTally, UsageTallyTestEntitySource>
@@ -17,14 +17,16 @@ class UsageTallyRepositoryMock
     }
 
     @Override
-    public Optional<UsageTally> findBusinessKey(
-            UsageCounterName counter, @Nullable NaturalistName naturalist, String period) {
-        observer().arguments("findBusinessKey", i -> i.identifier(counter, "counter").notBlank(period, "period"))
+    public List<UsageTally> findByCounterAndPeriods(
+            UsageCounterName counter, Set<String> periods, @Nullable NaturalistName naturalist) {
+        observer().arguments("findByCounterAndPeriods", i -> i
+                        .identifier(counter, "counter")
+                        .notNull(periods, "periods"))
                 .throwWhenInvalid();
         return testEntitySource().entityStream()
                 .filter(t -> t.counter().equals(counter)
-                        && Objects.equals(t.naturalist(), naturalist)
-                        && t.period().equals(period))
-                .findFirst();
+                        && periods.contains(t.period())
+                        && (t.naturalist() == null || t.naturalist().equals(naturalist)))
+                .toList();
     }
 }

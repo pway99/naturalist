@@ -16,7 +16,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * {@code usage-core}'s single load-bearing service — the reserve-side write
@@ -84,10 +86,13 @@ class UsageBudgetService implements IdentificationBudget, UsageMonitor {
         String monthlySlug = "monthly-" + month;
         String rateSlug = "rate-" + minute.format(RATE_FORMAT);
 
-        Optional<UsageTally> monthlyTally = tallies.findBusinessKey(counter, null, monthlySlug);
-        Optional<UsageTally> dailyTally = tallies.findBusinessKey(counter, null, dailySlug);
-        Optional<UsageTally> rateTally = tallies.findBusinessKey(counter, null, rateSlug);
-        Optional<UsageTally> userTally = tallies.findBusinessKey(counter, naturalist, dailySlug);
+        List<UsageTally> found = tallies.findByCounterAndPeriods(
+                counter, Set.of(monthlySlug, dailySlug, rateSlug), naturalist);
+
+        Optional<UsageTally> monthlyTally = findTally(found, null, monthlySlug);
+        Optional<UsageTally> dailyTally = findTally(found, null, dailySlug);
+        Optional<UsageTally> rateTally = findTally(found, null, rateSlug);
+        Optional<UsageTally> userTally = findTally(found, naturalist, dailySlug);
 
         int monthlyCount = monthlyTally.map(UsageTally::count).orElse(0);
         int dailyCount = dailyTally.map(UsageTally::count).orElse(0);
@@ -118,6 +123,12 @@ class UsageBudgetService implements IdentificationBudget, UsageMonitor {
         upsert(rateTally, null, rateSlug, rateCount + 1);
 
         upsert(userTally, naturalist, dailySlug, userCount + 1);
+    }
+
+    private static Optional<UsageTally> findTally(List<UsageTally> found, @Nullable NaturalistName naturalist, String period) {
+        return found.stream()
+                .filter(t -> Objects.equals(t.naturalist(), naturalist) && t.period().equals(period))
+                .findFirst();
     }
 
     private void upsert(Optional<UsageTally> existing, @Nullable NaturalistName naturalist, String period, int newCount) {
@@ -165,9 +176,11 @@ class UsageBudgetService implements IdentificationBudget, UsageMonitor {
         String monthlySlug = "monthly-" + month;
         String rateSlug = "rate-" + minute.format(RATE_FORMAT);
 
-        int dailyUsed = tallies.findBusinessKey(counter, null, dailySlug).map(UsageTally::count).orElse(0);
-        int monthlyUsed = tallies.findBusinessKey(counter, null, monthlySlug).map(UsageTally::count).orElse(0);
-        int rateUsed = tallies.findBusinessKey(counter, null, rateSlug).map(UsageTally::count).orElse(0);
+        List<UsageTally> globals = tallies.findByCounterAndPeriods(
+                counter, Set.of(dailySlug, monthlySlug, rateSlug), null);
+        int dailyUsed = findTally(globals, null, dailySlug).map(UsageTally::count).orElse(0);
+        int monthlyUsed = findTally(globals, null, monthlySlug).map(UsageTally::count).orElse(0);
+        int rateUsed = findTally(globals, null, rateSlug).map(UsageTally::count).orElse(0);
 
         List<UsageSnapshot.UserUsage> users = Pages.stream(1000, tallies::getPage)
                 .filter(t -> t.counter().equals(counter) && t.naturalist() != null && t.period().equals(dailySlug))

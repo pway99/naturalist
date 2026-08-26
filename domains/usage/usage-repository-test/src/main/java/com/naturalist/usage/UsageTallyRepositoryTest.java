@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,57 +90,70 @@ interface UsageTallyRepositoryTest extends EntityRepositoryTest<UsageTallyId, Us
     }
 
     // =========================================================================
-    // findBusinessKey
+    // findByCounterAndPeriods
     // =========================================================================
 
     @Test
-    default void findBusinessKey_nullCounter_throwsInvariantViolationException() {
-        assertThatThrownBy(() -> repository().findBusinessKey(null, KnownNaturalist, "daily-2026-08-25"))
+    default void findByCounterAndPeriods_nullCounter_throwsInvariantViolationException() {
+        assertThatThrownBy(() -> repository().findByCounterAndPeriods(
+                null, Set.of("daily-2026-08-25"), KnownNaturalist))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("counter");
     }
 
     @Test
-    default void findBusinessKey_nullPeriod_throwsInvariantViolationException() {
-        assertThatThrownBy(() -> repository().findBusinessKey(
-                TestUsageIdentifiers.UsageCounters.Identification, KnownNaturalist, null))
+    default void findByCounterAndPeriods_nullPeriods_throwsInvariantViolationException() {
+        assertThatThrownBy(() -> repository().findByCounterAndPeriods(
+                TestUsageIdentifiers.UsageCounters.Identification, null, KnownNaturalist))
                 .isInstanceOf(InvariantViolationException.class)
-                .hasMessageContaining("period");
+                .hasMessageContaining("periods");
     }
 
     @Test
-    default void findBusinessKey_noMatch_returnsEmpty() {
-        Optional<UsageTally> result = repository().findBusinessKey(
-                TestUsageIdentifiers.UsageCounters.Identification, KnownNaturalist, "daily-2099-01-01");
+    default void findByCounterAndPeriods_noMatch_returnsEmpty() {
+        List<UsageTally> result = repository().findByCounterAndPeriods(
+                TestUsageIdentifiers.UsageCounters.Identification, Set.of("daily-2099-01-01"), KnownNaturalist);
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    default void findBusinessKey_knownPerUserTally_returnsIt() {
-        Optional<UsageTally> result = repository().findBusinessKey(
-                TestUsageIdentifiers.UsageCounters.Identification, KnownNaturalist, "daily-2026-08-25");
-
-        assertThat(result).isPresent();
-        assertThat(result.get().id()).isEqualTo(KnownTally1Id);
-    }
-
-    @Test
-    default void findBusinessKey_nullNaturalistMatchesGlobalTally() {
-        Optional<UsageTally> result = repository().findBusinessKey(
-                TestUsageIdentifiers.UsageCounters.Identification, null, "rate-2026-08-25-14-30");
-
-        assertThat(result).isPresent();
-        assertThat(result.get().id()).isEqualTo(KnownTally2Id);
-    }
-
-    @Test
-    default void findBusinessKey_naturalistMismatch_returnsEmpty() {
-        Optional<UsageTally> result = repository().findBusinessKey(
+    default void findByCounterAndPeriods_returnsGlobalsAndNaturalistRows_excludesOthers() {
+        NaturalistName otherNaturalist = NaturalistName.of("a-different-naturalist");
+        // Same period as KnownTally1, but a different naturalist — must not come back.
+        source().insert(new UsageTally(
+                UsageTallyId.create(),
                 TestUsageIdentifiers.UsageCounters.Identification,
-                NaturalistName.of("a-different-naturalist"),
-                "daily-2026-08-25");
+                otherNaturalist,
+                "daily-2026-08-25",
+                9));
+        // KnownNaturalist's own row, but for a period outside the requested set — must not come back.
+        source().insert(new UsageTally(
+                UsageTallyId.create(),
+                TestUsageIdentifiers.UsageCounters.Identification,
+                KnownNaturalist,
+                "monthly-2026-08",
+                2));
 
-        assertThat(result).isEmpty();
+        List<UsageTally> result = repository().findByCounterAndPeriods(
+                TestUsageIdentifiers.UsageCounters.Identification,
+                Set.of("daily-2026-08-25", "rate-2026-08-25-14-30"),
+                KnownNaturalist);
+
+        assertThat(result)
+                .extracting(UsageTally::id)
+                .containsExactlyInAnyOrder(KnownTally1Id, KnownTally2Id);
+    }
+
+    @Test
+    default void findByCounterAndPeriods_nullNaturalist_returnsGlobalsOnly() {
+        List<UsageTally> result = repository().findByCounterAndPeriods(
+                TestUsageIdentifiers.UsageCounters.Identification,
+                Set.of("daily-2026-08-25", "rate-2026-08-25-14-30"),
+                null);
+
+        assertThat(result)
+                .extracting(UsageTally::id)
+                .containsExactly(KnownTally2Id);
     }
 }
