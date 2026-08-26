@@ -16,4 +16,9 @@
     @else
         <a href="/admin/catalog">Catalog</a>
     @endif
+    @if(current.equals("usage"))
+        <a href="/admin/usage" aria-current="page">Usage</a>
+    @else
+        <a href="/admin/usage">Usage</a>
+    @endif
 </nav>
