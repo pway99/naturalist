@@ -4,16 +4,16 @@ import com.naturalist.ddd.ReadModel;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Constraints;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
  * Read port over the current identification-usage picture — the CQS query half of
  * what was a single combined read/write service. Aggregate display state
  * ({@link #snapshot()}), the alert list ({@link #activeAlerts()}), and the batched
- * tally rows {@link UsageCommand#reserve} needs to evaluate its all-or-nothing
- * check and to upsert ({@link #reserveState(NaturalistName)}).
+ * per-rule usage counts {@link UsageCommand#reserve} needs to evaluate its
+ * all-or-nothing check ({@link #reserveState(UsageCounterName, NaturalistName, Instant)}).
  *
  * <p>The adapter ({@code UsageQueryImpl} in {@code usage-core}) is named and shaped
  * like {@code InsectQueryImpl} specifically so it is recognised as a head-of-DAG
@@ -29,29 +29,35 @@ public interface UsageQuery {
     List<UsageAlert> activeAlerts();
 
     /**
-     * The four tally rows {@link UsageCommand#reserve} checks and upserts — global
-     * monthly, global daily, global rate, and this naturalist's per-user daily —
-     * resolved in ONE batched {@code findByCounterAndPeriods} read rather than one
-     * lookup per limit. Returning the rows themselves (not just their counts) lets
-     * the caller upsert against them without a second, ungated read.
+     * Every active rule for {@code counter}, each paired with the number of
+     * {@link UsageEvent}s that count against it as of {@code now} — resolved in
+     * ONE batched {@link UsageRepository.EventRepository#findByCounterSince} read
+     * rather than one lookup per rule. Returning the rules themselves (not just
+     * their counts) lets {@link UsageCommand#reserve} evaluate and (for alerting)
+     * report against them without a second, ungated read.
      */
-    ReserveState reserveState(NaturalistName naturalist);
+    ReserveState reserveState(UsageCounterName counter, NaturalistName naturalist, Instant now);
 
     /**
-     * Read model shaping {@link #reserveState}: the current tally row for each of
-     * the four limits {@link UsageCommand#reserve} evaluates, in the same order.
-     * Empty when no reservation has been made yet for that period.
+     * Read model shaping {@link #reserveState}: the current usage count for every
+     * active rule on the counter, in no particular order.
      */
-    record ReserveState(Optional<UsageTally> globalMonthly, Optional<UsageTally> globalDaily,
-                         Optional<UsageTally> globalRate, Optional<UsageTally> userDaily) implements ReadModel {
+    record ReserveState(List<CounterUsage> counters) implements ReadModel {
+
+        @Override
+        public Consumer<? extends Constraints> invariants() {
+            return i -> i.observableCollection(counters, "counters");
+        }
+    }
+
+    /** One rule paired with how many events currently count against it. */
+    record CounterUsage(UsageCounter rule, int used) implements ReadModel {
 
         @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i
-                    .namedEntityOrNull(globalMonthly.orElse(null), "globalMonthly")
-                    .namedEntityOrNull(globalDaily.orElse(null), "globalDaily")
-                    .namedEntityOrNull(globalRate.orElse(null), "globalRate")
-                    .namedEntityOrNull(userDaily.orElse(null), "userDaily");
+                    .notNull(rule, "rule")
+                    .atLeast(used, 0, "used");
         }
     }
 }

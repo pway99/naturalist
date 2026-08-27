@@ -45,11 +45,17 @@ import com.naturalist.observation.OrganismObservation;
 import com.naturalist.observation.Identification;
 
 /**
- * Orchestrates the full insect identification flow: vision identification
- * → authority enrichment (best-effort) → parent rank enrichment → feature
- * resolution → citation creation → transactional persistence. All external
- * calls (vision, authority lookup, content fetch, text generation) complete
- * before the transaction boundary. The transaction does pure DB writes.
+ * Orchestrates the full insect identification flow: rate gate → budget
+ * reservation → vision identification → authority enrichment (best-effort)
+ * → parent rank enrichment → feature resolution → citation creation →
+ * transactional persistence. All external calls (vision, authority lookup,
+ * content fetch, text generation) complete before the transaction boundary.
+ * The transaction does pure DB writes.
+ *
+ * <p>The {@code vision.identification} rate limit is acquired here, one
+ * permit per identification call — not inside the vision adapter, and not
+ * per vision turn — and strictly before {@link com.naturalist.usage.IdentificationBudget#reserve}
+ * so a rate-rejected call never burns budget.
  *
  * <p>Authority lookups enrich the identification with citations and
  * grounded descriptions but never gate it — the vision result is
@@ -62,6 +68,7 @@ class InsectIdentificationCommand {
     private static final AuthoritySource VISION_SUGGESTED =
             new AuthoritySource("ref", "Suggested Reference");
 
+    private final com.naturalist.resilience.RateLimiter rateLimiter;
     private final com.naturalist.usage.IdentificationBudget budget;
     private final VisionService visionService;
     private final TextGenerationService textGenerationService;
@@ -72,7 +79,8 @@ class InsectIdentificationCommand {
     private final FeatureSearch<InsectFeatureId> featureSearch;
     private final InsectCatalogIdentificationTransaction transaction;
 
-    InsectIdentificationCommand(com.naturalist.usage.IdentificationBudget budget,
+    InsectIdentificationCommand(com.naturalist.resilience.RateLimiter rateLimiter,
+                                        com.naturalist.usage.IdentificationBudget budget,
                                         VisionService visionService,
                                         TextGenerationService textGenerationService,
                                         ExternalAuthority externalAuthority,
@@ -80,6 +88,7 @@ class InsectIdentificationCommand {
                                         InsectQuery insectQuery,
                                         FeatureSearch<InsectFeatureId> featureSearch,
                                         InsectCatalogIdentificationTransaction transaction) {
+        this.rateLimiter = java.util.Objects.requireNonNull(rateLimiter, "rateLimiter");
         this.budget = budget;
         this.visionService = visionService;
         this.textGenerationService = textGenerationService;
@@ -104,7 +113,12 @@ class InsectIdentificationCommand {
     public InsectRankName identify(Image image, FileName storedFileName,
                                     NaturalistName naturalist,
                                     @Nullable String notes) {
-        // 0. BUDGET RESERVATION -- throws BudgetExceededException before any vision spend
+        // 0a. RATE GATE -- one permit per identification (not per vision turn); throws
+        // RateLimitExceededException before any budget reservation or vision spend, so a
+        // rate-rejected call burns no budget.
+        rateLimiter.execute(() -> { });
+
+        // 0b. BUDGET RESERVATION -- throws BudgetExceededException before any vision spend
         budget.reserve(naturalist);
 
         // 1. VISION -- external call (turn 1 propose, optional turn 2 reuse-resolve)

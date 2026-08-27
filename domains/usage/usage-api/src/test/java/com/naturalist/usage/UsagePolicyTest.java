@@ -25,6 +25,6 @@ class UsagePolicyTest {
         assertThat(UsagePolicy.scopeOf(LimitKind.DAILY)).isEqualTo(AlertScope.DAILY);
         assertThat(UsagePolicy.scopeOf(LimitKind.MONTHLY)).isEqualTo(AlertScope.MONTHLY);
         assertThrows(IllegalArgumentException.class, () -> UsagePolicy.scopeOf(LimitKind.PER_USER));
-        assertThrows(IllegalArgumentException.class, () -> UsagePolicy.scopeOf(LimitKind.RATE));
+        assertThrows(IllegalArgumentException.class, () -> UsagePolicy.scopeOf(LimitKind.CREDITS));
     }
 }

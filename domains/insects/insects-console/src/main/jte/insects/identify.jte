@@ -20,6 +20,9 @@
                 @if("PER_USER".equals(limit))
                     <p role="alert">You've reached your daily identification limit.
                        It resets tomorrow -- try again then.</p>
+                @elseif("RATE".equals(limit))
+                    <p role="alert">Too many identification requests right now.
+                       Please wait a moment and try again.</p>
                 @else
                     <p role="alert">Identification is temporarily unavailable due to high demand.
                        Please try again later.</p>

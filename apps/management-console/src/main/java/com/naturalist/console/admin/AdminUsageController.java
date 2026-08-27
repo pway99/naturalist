@@ -48,8 +48,7 @@ public class AdminUsageController {
         model.addAttribute("alerts", usageQuery.activeAlerts());
         model.addAttribute("gauges", List.of(
                 gauge("Daily", snapshot.dailyUsed(), snapshot.dailyLimit(), warningPercent),
-                gauge("Monthly", snapshot.monthlyUsed(), snapshot.monthlyLimit(), warningPercent),
-                gauge("Rate (per minute)", snapshot.rateUsed(), snapshot.ratePerMinute(), warningPercent)
+                gauge("Monthly", snapshot.monthlyUsed(), snapshot.monthlyLimit(), warningPercent)
         ));
         return "admin/usage";
     }

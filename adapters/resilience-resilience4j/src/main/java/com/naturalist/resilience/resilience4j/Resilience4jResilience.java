@@ -5,10 +5,12 @@ import com.naturalist.observability.Observer;
 import com.naturalist.resilience.*;
 import com.naturalist.resilience.ResilienceConfig.BulkheadConfig;
 import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
+import com.naturalist.resilience.ResilienceConfig.RateLimiterConfig;
 import com.naturalist.resilience.ResilienceConfig.RetryConfig;
 import com.naturalist.resilience.ResilienceConfig.TimeoutConfig;
 import io.github.resilience4j.bulkhead.BulkheadRegistry;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 import io.github.resilience4j.retry.RetryRegistry;
 import io.github.resilience4j.timelimiter.TimeLimiterConfig;
 import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
@@ -37,6 +39,7 @@ public final class Resilience4jResilience implements Resilience {
     private final Map<String, Timeout> timeouts;
     private final Map<String, CircuitBreaker> breakers;
     private final Map<String, Bulkhead> bulkheads;
+    private final Map<String, RateLimiter> rateLimiters;
 
     public Resilience4jResilience(List<ResilienceConfig> configs) {
         Observer observer = Observer.forClass(Resilience4jResilience.class);
@@ -52,11 +55,13 @@ public final class Resilience4jResilience implements Resilience {
         TimeLimiterRegistry timeLimiterRegistry = TimeLimiterRegistry.ofDefaults();
         CircuitBreakerRegistry breakerRegistry = CircuitBreakerRegistry.ofDefaults();
         BulkheadRegistry bulkheadRegistry = BulkheadRegistry.ofDefaults();
+        RateLimiterRegistry rateLimiterRegistry = RateLimiterRegistry.ofDefaults();
 
         Map<String, Retry> retryMap = new HashMap<>();
         Map<String, Timeout> timeoutMap = new HashMap<>();
         Map<String, CircuitBreaker> breakerMap = new HashMap<>();
         Map<String, Bulkhead> bulkheadMap = new HashMap<>();
+        Map<String, RateLimiter> rateLimiterMap = new HashMap<>();
 
         for (ResilienceConfig config : configs) {
             switch (config) {
@@ -72,6 +77,9 @@ public final class Resilience4jResilience implements Resilience {
                 case BulkheadConfig c -> bulkheadMap.put(
                         c.name(),
                         new Resilience4jBulkhead(bulkheadRegistry.bulkhead(c.name(), toR4j(c))));
+                case RateLimiterConfig c -> rateLimiterMap.put(
+                        c.name(),
+                        new Resilience4jRateLimiter(rateLimiterRegistry.rateLimiter(c.name(), toR4j(c))));
             }
         }
 
@@ -79,6 +87,7 @@ public final class Resilience4jResilience implements Resilience {
         this.timeouts = Map.copyOf(timeoutMap);
         this.breakers = Map.copyOf(breakerMap);
         this.bulkheads = Map.copyOf(bulkheadMap);
+        this.rateLimiters = Map.copyOf(rateLimiterMap);
     }
 
     @Override
@@ -110,6 +119,13 @@ public final class Resilience4jResilience implements Resilience {
     }
 
     @Override
+    public RateLimiter rateLimiter(String name) {
+        RateLimiter r = rateLimiters.get(name);
+        if (r == null) throw new UnconfiguredResilienceException("rate-limiter", name);
+        return r;
+    }
+
+    @Override
     public Set<String> retryNames() {
         return retries.keySet();
     }
@@ -127,6 +143,11 @@ public final class Resilience4jResilience implements Resilience {
     @Override
     public Set<String> bulkheadNames() {
         return bulkheads.keySet();
+    }
+
+    @Override
+    public Set<String> rateLimiterNames() {
+        return rateLimiters.keySet();
     }
 
     static io.github.resilience4j.retry.RetryConfig toR4j(RetryConfig c) {
@@ -157,6 +178,14 @@ public final class Resilience4jResilience implements Resilience {
         return io.github.resilience4j.bulkhead.BulkheadConfig.custom()
                 .maxConcurrentCalls(c.maxConcurrentCalls())
                 .maxWaitDuration(c.maxWaitDuration())
+                .build();
+    }
+
+    static io.github.resilience4j.ratelimiter.RateLimiterConfig toR4j(RateLimiterConfig c) {
+        return io.github.resilience4j.ratelimiter.RateLimiterConfig.custom()
+                .limitForPeriod(c.limitForPeriod())
+                .limitRefreshPeriod(c.limitRefreshPeriod())
+                .timeoutDuration(c.timeoutDuration())
                 .build();
     }
 }

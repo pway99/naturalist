@@ -61,6 +61,15 @@ class UnconfiguredLookupTest {
     }
 
     @Test
+    void rateLimiter_unknownName_throws() {
+        Resilience adapter = new Resilience4jResilience(List.of());
+
+        assertThatThrownBy(() -> adapter.rateLimiter("missing"))
+                .isInstanceOf(UnconfiguredResilienceException.class)
+                .hasMessageContaining("rate-limiter");
+    }
+
+    @Test
     void wrongPrimitiveOnConfiguredName_throws() {
         Resilience adapter = new Resilience4jResilience(List.of(
                 new RetryConfig("partial", 1, Duration.ofMillis(1))));

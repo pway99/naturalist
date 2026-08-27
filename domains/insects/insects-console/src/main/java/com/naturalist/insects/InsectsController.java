@@ -128,6 +128,7 @@ public class InsectsController {
                         insectQuery.features().corpus()
                                 .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
         this.identificationCommand = new InsectIdentificationCommand(
+                resilience.rateLimiter("vision.identification"),
                 budget, visionService, new NoOpTextGenerationService(), eolAuthority,
                 libraryCommand, insectQuery, featureSearch, catalogIdentificationTransaction);
         this.addPhotoCommand = new InsectAddPhotoCommand(
@@ -497,6 +498,13 @@ public class InsectsController {
             return "redirect:/insects/" + rankName.value();
         } catch (com.naturalist.usage.BudgetExceededException over) {
             return "redirect:/insects/identify?limit=" + over.limitKind();
+        } catch (com.naturalist.resilience.RateLimitExceededException rateLimited) {
+            // vision.identification's rate limiter (acquired by InsectIdentificationCommand,
+            // one permit per identification, before budget reservation) rejected the spend --
+            // "RATE" is a UI-only query-param string, not a usage.LimitKind (that enum
+            // dropped RATE by design; rate limiting lives entirely in Resilience). The kernel
+            // RateLimitExceededException keeps resilience4j confined to the adapter.
+            return "redirect:/insects/identify?limit=RATE";
         }
     }
 

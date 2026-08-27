@@ -1,6 +1,5 @@
 package com.naturalist.usage;
 
-import com.naturalist.data.ForeignKeyConstraint;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.data.UniqueConstraint;
@@ -34,11 +33,7 @@ public class UsageAlertTestEntitySource extends TestEntitySource<UsageAlertId, U
         });
     }
 
-    @Override
-    protected List<ForeignKeyConstraint<UsageAlert, ?>> foreignKeyConstraints() {
-        return List.of(ForeignKeyConstraint.of(
-                "counter",
-                UsageAlert::counter,
-                UsageCounterTestEntitySource.class));
-    }
+    // No foreignKeyConstraints() override: UsageAlert#counter() names a counter
+    // *activity*, not a single UsageCounter row — see UsageEventTestEntitySource's
+    // doc comment for the full rationale.
 }

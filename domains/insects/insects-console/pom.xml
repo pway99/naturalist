@@ -72,7 +72,6 @@
             <artifactId>jakarta.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <!-- TEST: the JTE template tests build fixtures via NaturalistTestExtension +
              getNamed, so they need the extension (framework-test) and the domain's
              *TestEntitySource classes (insects-repository-test) on the test classpath. -->

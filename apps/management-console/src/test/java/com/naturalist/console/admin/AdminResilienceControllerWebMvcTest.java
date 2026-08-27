@@ -27,9 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * <p>The registered set comes from
  * {@link com.naturalist.console.resilience.ResilienceConfiguration} —
- * {@code catalog.fanout} (timeout + circuit breaker) and
- * {@code image.conversion} (timeout only). Retry and bulkhead are
- * unused today and render the empty state.
+ * {@code catalog.fanout} (timeout + circuit breaker),
+ * {@code image.conversion} (timeout only), and
+ * {@code vision.identification} (timeout + rate limiter). Retry and
+ * bulkhead are unused today and render the empty state.
  */
 @SpringBootTest
 class AdminResilienceControllerWebMvcTest {
@@ -72,24 +73,29 @@ class AdminResilienceControllerWebMvcTest {
         var timeoutAt = html.indexOf(">Timeout</h2>");
         var breakerAt = html.indexOf(">Circuit Breaker</h2>");
         var bulkheadAt = html.indexOf(">Bulkhead</h2>");
+        var rateLimiterAt = html.indexOf(">Rate Limiter</h2>");
 
         assertThat(retryAt).as("Retry heading").isGreaterThan(-1);
         assertThat(timeoutAt).as("Timeout heading").isGreaterThan(retryAt);
         assertThat(breakerAt).as("Circuit Breaker heading").isGreaterThan(timeoutAt);
         assertThat(bulkheadAt).as("Bulkhead heading").isGreaterThan(breakerAt);
+        assertThat(rateLimiterAt).as("Rate Limiter heading").isGreaterThan(bulkheadAt);
 
         var retrySection = html.substring(retryAt, timeoutAt);
         var timeoutSection = html.substring(timeoutAt, breakerAt);
         var breakerSection = html.substring(breakerAt, bulkheadAt);
-        var bulkheadSection = html.substring(bulkheadAt);
+        var bulkheadSection = html.substring(bulkheadAt, rateLimiterAt);
+        var rateLimiterSection = html.substring(rateLimiterAt);
 
         assertThat(retrySection).contains("None registered.");
         assertThat(timeoutSection)
                 .contains("catalog.fanout")
-                .contains("image.conversion");
+                .contains("image.conversion")
+                .contains("vision.identification");
         assertThat(breakerSection)
                 .contains("catalog.fanout")
                 .doesNotContain("image.conversion");
         assertThat(bulkheadSection).contains("None registered.");
+        assertThat(rateLimiterSection).contains("vision.identification");
     }
 }

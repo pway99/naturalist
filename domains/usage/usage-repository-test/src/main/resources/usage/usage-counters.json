@@ -1,5 +1,29 @@
 [
   {
-    "name": "identification"
+    "id": "019dbdb9-0d01-7eee-0d01-0d010d010d01",
+    "counterName": "identification",
+    "scope": "PER_USER",
+    "windowKind": "CALENDAR_DAY",
+    "since": null,
+    "limit": 10,
+    "active": true
+  },
+  {
+    "id": "019dbdb9-0d02-7eee-0d02-0d020d020d02",
+    "counterName": "identification",
+    "scope": "GLOBAL",
+    "windowKind": "CALENDAR_DAY",
+    "since": null,
+    "limit": 50,
+    "active": true
+  },
+  {
+    "id": "019dbdb9-0d03-7eee-0d03-0d030d030d03",
+    "counterName": "identification",
+    "scope": "GLOBAL",
+    "windowKind": "SINCE",
+    "since": "2026-08-01T00:00:00Z",
+    "limit": 650,
+    "active": true
   }
 ]

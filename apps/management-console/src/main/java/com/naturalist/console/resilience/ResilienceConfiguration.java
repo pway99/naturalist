@@ -3,6 +3,7 @@ package com.naturalist.console.resilience;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.ResilienceConfig;
 import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
+import com.naturalist.resilience.ResilienceConfig.RateLimiterConfig;
 import com.naturalist.resilience.ResilienceConfig.TimeoutConfig;
 import com.naturalist.resilience.resilience4j.Resilience4jResilience;
 import org.springframework.boot.ApplicationRunner;
@@ -32,7 +33,15 @@ import java.util.List;
  *       call in {@code AnthropicVisionService}. Declared {@code upload = true}
  *       and given the full {@link ResilienceConfig#MAX_UPLOAD_TIMEOUT}: the
  *       request ships base64 image bytes, which is precisely the narrow class
- *       that ceiling exists for.</li>
+ *       that ceiling exists for. Also carries a {@code RateLimiterConfig}
+ *       capping the strategy at three requests per minute with a zero
+ *       timeout. The permit is acquired once per identification by
+ *       {@code InsectIdentificationCommand} — before the vision call, not
+ *       inside {@code AnthropicVisionService}, and not once per vision turn
+ *       — so "3/min" genuinely means three identifications per minute. A
+ *       caller over the limit is rejected immediately with the kernel
+ *       {@code RateLimitExceededException}, never the vendor
+ *       {@code RequestNotPermitted}, rather than queued.</li>
  * </ul>
  *
  * <h2>Status — the marker is not load-bearing</h2>
@@ -84,6 +93,11 @@ public class ResilienceConfiguration {
     @Bean
     TimeoutConfig visionIdentificationTimeout() {
         return new TimeoutConfig("vision.identification", ResilienceConfig.MAX_UPLOAD_TIMEOUT, true);
+    }
+
+    @Bean
+    RateLimiterConfig visionRateLimit() {
+        return new RateLimiterConfig("vision.identification", 3, Duration.ofMinutes(1), Duration.ZERO);
     }
 
     @Bean

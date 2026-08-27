@@ -10,24 +10,32 @@ import java.time.Clock;
  * package-private mock repositories from {@code usage-repository-test} within
  * the shared {@code com.naturalist.usage} namespace, then exposes the production
  * {@link UsageQueryImpl} / {@link UsageCommandImpl} pair plus the mocks a test
- * needs to assert against directly (alert dedup, tally state).
+ * needs to assert against directly (alert dedup, seeded counter rules, raw events).
  */
 class UsageCoreTestContext {
 
     private final UsageQuery query;
     private final UsageCommand command;
-    private final UsageRepository.TallyRepository tallyRepository;
-    private final UsageRepository.AlertRepository alertRepository;
+    private final UsageRepository.CounterRepository counters;
+    private final UsageRepository.EventRepository events;
+    private final UsageRepository.AlertRepository alerts;
 
-    private UsageCoreTestContext(NaturalistDatabase db, UsageLimits limits, Clock clock) {
-        this.tallyRepository = new UsageTallyRepositoryMock(db);
-        this.alertRepository = new UsageAlertRepositoryMock(db);
-        this.query = new UsageQueryImpl(limits, clock, tallyRepository, alertRepository);
-        this.command = new UsageCommandImpl(query, limits, clock, tallyRepository, alertRepository);
+    private UsageCoreTestContext(NaturalistDatabase db, EntitlementLookup entitlements,
+                                  int warningPercent, Clock clock) {
+        this.counters = new UsageCounterRepositoryMock(db);
+        this.events = new UsageEventRepositoryMock(db);
+        this.alerts = new UsageAlertRepositoryMock(db);
+        this.query = new UsageQueryImpl(new WarningPercent(warningPercent), clock, counters, events, alerts);
+        this.command = new UsageCommandImpl(query, entitlements, new WarningPercent(warningPercent), clock, events, alerts);
     }
 
-    static UsageCoreTestContext create(NaturalistDatabase db, UsageLimits limits, Clock clock) {
-        return new UsageCoreTestContext(db, limits, clock);
+    static UsageCoreTestContext create(NaturalistDatabase db, int warningPercent, Clock clock) {
+        return new UsageCoreTestContext(db, EntitlementLookup.none(), warningPercent, clock);
+    }
+
+    static UsageCoreTestContext create(NaturalistDatabase db, EntitlementLookup entitlements,
+                                        int warningPercent, Clock clock) {
+        return new UsageCoreTestContext(db, entitlements, warningPercent, clock);
     }
 
     UsageQuery query() {
@@ -38,11 +46,15 @@ class UsageCoreTestContext {
         return command;
     }
 
-    UsageRepository.TallyRepository tallyRepository() {
-        return tallyRepository;
+    UsageRepository.CounterRepository counters() {
+        return counters;
     }
 
-    UsageRepository.AlertRepository alertRepository() {
-        return alertRepository;
+    UsageRepository.EventRepository events() {
+        return events;
+    }
+
+    UsageRepository.AlertRepository alerts() {
+        return alerts;
     }
 }

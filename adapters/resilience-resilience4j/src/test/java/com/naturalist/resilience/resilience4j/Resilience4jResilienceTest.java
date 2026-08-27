@@ -3,6 +3,7 @@ package com.naturalist.resilience.resilience4j;
 import com.naturalist.resilience.*;
 import com.naturalist.resilience.ResilienceConfig.BulkheadConfig;
 import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
+import com.naturalist.resilience.ResilienceConfig.RateLimiterConfig;
 import com.naturalist.resilience.ResilienceConfig.RetryConfig;
 import com.naturalist.resilience.ResilienceConfig.TimeoutConfig;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
@@ -120,12 +121,14 @@ class Resilience4jResilienceTest {
                         100.0f,
                         Duration.ofSeconds(60),
                         4),
-                new BulkheadConfig("narrow", 1, Duration.ZERO)));
+                new BulkheadConfig("narrow", 1, Duration.ZERO),
+                new RateLimiterConfig("throttled", 2, Duration.ofSeconds(1), Duration.ZERO)));
 
         assertThat(resilience.retryNames()).containsExactly("flaky");
         assertThat(resilience.timeoutNames()).containsExactlyInAnyOrder("slow", "snappy");
         assertThat(resilience.circuitBreakerNames()).containsExactly("trippy");
         assertThat(resilience.bulkheadNames()).containsExactly("narrow");
+        assertThat(resilience.rateLimiterNames()).containsExactly("throttled");
     }
 
     @Test
@@ -136,6 +139,21 @@ class Resilience4jResilienceTest {
         assertThat(resilience.timeoutNames()).isEmpty();
         assertThat(resilience.circuitBreakerNames()).isEmpty();
         assertThat(resilience.bulkheadNames()).isEmpty();
+        assertThat(resilience.rateLimiterNames()).isEmpty();
+    }
+
+    @Test
+    void rateLimiter_permitsUpToLimitThenRejects() {
+        Resilience resilience = new Resilience4jResilience(List.of(
+                new RateLimiterConfig("throttled", 2, Duration.ofSeconds(1), Duration.ZERO)));
+
+        RateLimiter rateLimiter = resilience.rateLimiter("throttled");
+
+        assertThat(rateLimiter.execute(() -> "first")).isEqualTo("first");
+        assertThat(rateLimiter.execute(() -> "second")).isEqualTo("second");
+
+        assertThatThrownBy(() -> rateLimiter.execute(() -> "third"))
+                .isInstanceOf(RateLimitExceededException.class);
     }
 
     @Test

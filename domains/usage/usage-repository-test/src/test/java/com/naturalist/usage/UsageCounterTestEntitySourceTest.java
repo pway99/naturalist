@@ -8,37 +8,42 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UsageCounterTestEntitySourceTest
-        extends TestEntitySourceTest<UsageCounterName, UsageCounter, UsageCounterTestEntitySource> {
+        extends TestEntitySourceTest<UsageCounterId, UsageCounter, UsageCounterTestEntitySource> {
 
     /**
-     * Only one real counter is seeded so far ({@code identification}) — see
-     * {@code usage/usage-counters.json}. Mirrors the Oak Vista override precedent
-     * in {@link TestEntitySourceTest#minimumEntities()}.
+     * Three rules are seeded — see {@code usage/usage-counters.json}.
      */
     @Override
     protected int minimumEntities() {
-        return 1;
+        return 3;
     }
 
     @RegisterExtension
     final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     @Test
-    void seededIdentificationCounterLoads() {
+    void seededPerUserDailyRuleLoads() {
         UsageCounterTestEntitySource source = nte.getNamed(UsageCounterTestEntitySource.class);
 
-        assertThat(source.getByName(TestUsageIdentifiers.UsageCounters.Identification))
-                .contains(new UsageCounter(TestUsageIdentifiers.UsageCounters.Identification));
+        assertThat(source.getByName(TestUsageIdentifiers.UsageCounters.PerUserDailyId))
+                .contains(new UsageCounter(
+                        TestUsageIdentifiers.UsageCounters.PerUserDailyId,
+                        TestUsageIdentifiers.UsageCounters.Identification,
+                        UsageScope.PER_USER,
+                        WindowKind.CALENDAR_DAY,
+                        null,
+                        10,
+                        true));
     }
 
     @Test
-    void insertedCounterIsRetrievable() {
+    void seededGlobalMonthlyRuleLoadsWithSinceWindow() {
         UsageCounterTestEntitySource source = nte.getNamed(UsageCounterTestEntitySource.class);
-        UsageCounter counter = new UsageCounter(TestUsageIdentifiers.UsageCounters.InsectIdentification);
 
-        source.insert(counter);
+        UsageCounter monthly = source.getByName(TestUsageIdentifiers.UsageCounters.GlobalMonthlyId).orElseThrow();
 
-        assertThat(source.getByName(TestUsageIdentifiers.UsageCounters.InsectIdentification))
-                .contains(counter);
+        assertThat(monthly.windowKind()).isEqualTo(WindowKind.SINCE);
+        assertThat(monthly.since()).isNotNull();
+        assertThat(monthly.limit()).isEqualTo(650);
     }
 }

@@ -34,7 +34,8 @@ public class AdminResilienceController {
                 new Group("Retry", sorted(resilience.retryNames())),
                 new Group("Timeout", sorted(resilience.timeoutNames())),
                 new Group("Circuit Breaker", sorted(resilience.circuitBreakerNames())),
-                new Group("Bulkhead", sorted(resilience.bulkheadNames()))
+                new Group("Bulkhead", sorted(resilience.bulkheadNames())),
+                new Group("Rate Limiter", sorted(resilience.rateLimiterNames()))
         ));
         return "admin/resilience";
     }

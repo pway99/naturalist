@@ -41,11 +41,15 @@ import java.util.Map;
  * Refuses to construct if the key is absent.
  *
  * <h2>Resilience</h2>
- * The HTTP call is bounded by the {@value #STRATEGY} timeout, applied through
- * the {@link Resilience} facade. Only {@code client.messages().create(...)} is
- * wrapped — base64 encoding, tool-schema construction, and response parsing
- * stay on the calling thread, so the adapter's worker-thread hop covers the
- * network call and nothing else.
+ * The HTTP call is bounded by the {@value #STRATEGY} timeout, applied through the
+ * {@link Resilience} facade. Only {@code client.messages().create(...)} is wrapped —
+ * base64 encoding, tool-schema construction, and response parsing stay on the calling
+ * thread, so the adapter's worker-thread hop covers the network call and nothing else.
+ *
+ * <p>The {@value #STRATEGY} rate limit is enforced by the caller
+ * ({@code InsectIdentificationCommand}), one permit per identification, before this
+ * service is ever invoked — not here, and not per vision turn. This adapter no longer
+ * wraps the call in a rate limiter.
  */
 @Resilient(name = AnthropicVisionService.STRATEGY)
 public class AnthropicVisionService implements VisionService {

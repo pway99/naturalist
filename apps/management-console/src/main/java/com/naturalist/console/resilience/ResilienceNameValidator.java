@@ -37,7 +37,7 @@ import java.util.TreeSet;
  * <ul>
  *   <li>That the registered <em>primitives</em> match the call site's intent.
  *       A name registered with only a {@code TimeoutConfig} satisfies this gate
- *       even where a circuit breaker was wanted; the four
+ *       even where a circuit breaker was wanted; the five
  *       {@code Resilience.*Names()} sets rendered at {@code /admin/resilience}
  *       are where that judgement is made.</li>
  *   <li>Classes that are not beans — those are the
@@ -129,6 +129,7 @@ final class ResilienceNameValidator implements ApplicationRunner {
         names.addAll(resilience.timeoutNames());
         names.addAll(resilience.circuitBreakerNames());
         names.addAll(resilience.bulkheadNames());
+        names.addAll(resilience.rateLimiterNames());
         return names;
     }
 

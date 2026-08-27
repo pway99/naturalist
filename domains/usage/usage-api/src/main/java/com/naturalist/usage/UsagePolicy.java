@@ -17,7 +17,7 @@ public final class UsagePolicy {
         return switch (limitKind) {
             case DAILY -> AlertScope.DAILY;
             case MONTHLY -> AlertScope.MONTHLY;
-            case PER_USER, RATE -> throw new IllegalArgumentException(
+            case PER_USER, CREDITS -> throw new IllegalArgumentException(
                     "No alert scope for limit kind: " + limitKind);
         };
     }

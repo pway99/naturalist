@@ -48,6 +48,14 @@ public sealed interface ResilienceConfig extends Observable {
      */
     Duration MAX_OPEN_WAIT = Duration.ofHours(1);
 
+    /**
+     * Hard ceiling for a rate limiter's refresh period. A minute is already
+     * long enough for any legitimate per-minute-or-tighter quota; anything
+     * longer belongs on a coarser, out-of-band budget rather than a
+     * request-path rate limiter.
+     */
+    Duration MAX_LIMIT_REFRESH_PERIOD = Duration.ofMinutes(1);
+
     String name();
 
     record RetryConfig(String name, int maxAttempts, Duration backoff)
@@ -116,6 +124,26 @@ public sealed interface ResilienceConfig extends Observable {
                     .inRange(maxConcurrentCalls, 1, 10_000, "maxConcurrentCalls")
                     .notNull(maxWaitDuration, "maxWaitDuration")
                     .inRange(maxWaitDuration, Duration.ZERO, Duration.ofMinutes(1), "maxWaitDuration");
+        }
+    }
+
+    /**
+     * Caps calls to {@code limitForPeriod} within each {@code limitRefreshPeriod}
+     * window. A call that arrives after the window's budget is exhausted waits
+     * up to {@code timeoutDuration} for the next window before the adapter
+     * rejects it.
+     */
+    record RateLimiterConfig(String name, int limitForPeriod, Duration limitRefreshPeriod, Duration timeoutDuration)
+            implements ResilienceConfig {
+        @Override
+        public Consumer<? extends Constraints> invariants() {
+            return (Constraints c) -> c
+                    .notBlank(name, "name")
+                    .inRange(limitForPeriod, 1, 10_000, "limitForPeriod")
+                    .notNull(limitRefreshPeriod, "limitRefreshPeriod")
+                    .inRange(limitRefreshPeriod, Duration.ofMillis(1), MAX_LIMIT_REFRESH_PERIOD, "limitRefreshPeriod")
+                    .notNull(timeoutDuration, "timeoutDuration")
+                    .inRange(timeoutDuration, Duration.ZERO, Duration.ofMinutes(1), "timeoutDuration");
         }
     }
 }

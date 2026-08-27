@@ -44,6 +44,12 @@ class ResilienceConfigurationTest {
     }
 
     @Test
+    void resolvesVisionIdentificationRateLimiter() {
+        assertThat(resilience.rateLimiter("vision.identification")).isNotNull();
+        assertThat(resilience.rateLimiterNames()).contains("vision.identification");
+    }
+
+    @Test
     void rejectsUnconfiguredName() {
         assertThatThrownBy(() -> resilience.retry("does.not.exist"))
                 .isInstanceOf(UnconfiguredResilienceException.class);

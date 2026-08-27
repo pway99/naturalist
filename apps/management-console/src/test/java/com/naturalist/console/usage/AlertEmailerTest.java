@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class AlertEmailerTest {
 
     private static final UsageProperties PROPERTIES =
-            new UsageProperties(10, 3, 50, 650, 80, "alerts@example.com");
+            new UsageProperties(80, "alerts@example.com");
 
     private static final UsageAlert ALERT = new UsageAlert(
             UsageAlertId.create(),

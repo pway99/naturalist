@@ -3,6 +3,7 @@ package com.naturalist.resilience.resilience4j;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.resilience.ResilienceConfig.BulkheadConfig;
 import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
+import com.naturalist.resilience.ResilienceConfig.RateLimiterConfig;
 import com.naturalist.resilience.ResilienceConfig.RetryConfig;
 import com.naturalist.resilience.ResilienceConfig.TimeoutConfig;
 import org.junit.jupiter.api.Test;
@@ -177,6 +178,54 @@ class ResilienceConfigInvariantsTest {
                 new BulkheadConfig("narrow", 1, Duration.ofDays(1)))))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("maxWaitDuration");
+    }
+
+    @Test
+    void adapter_rejectsRateLimiterConfigWithZeroLimitForPeriod() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new RateLimiterConfig("throttled", 0, Duration.ofSeconds(1), Duration.ZERO))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("limitForPeriod");
+    }
+
+    @Test
+    void adapter_rejectsRateLimiterConfigWithNegativeLimitForPeriod() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new RateLimiterConfig("throttled", -1, Duration.ofSeconds(1), Duration.ZERO))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("limitForPeriod");
+    }
+
+    @Test
+    void adapter_rejectsRateLimiterConfigWithNullRefreshPeriod() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new RateLimiterConfig("throttled", 2, null, Duration.ZERO))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("limitRefreshPeriod");
+    }
+
+    @Test
+    void adapter_rejectsRateLimiterConfigWithRefreshPeriodAboveOneMinute() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new RateLimiterConfig("throttled", 2, Duration.ofMinutes(5), Duration.ZERO))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("limitRefreshPeriod");
+    }
+
+    @Test
+    void adapter_rejectsRateLimiterConfigWithNullTimeoutDuration() {
+        assertThatThrownBy(() -> new Resilience4jResilience(List.of(
+                new RateLimiterConfig("throttled", 2, Duration.ofSeconds(1), null))))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("timeoutDuration");
+    }
+
+    @Test
+    void adapter_acceptsValidRateLimiterConfig() {
+        Resilience4jResilience adapter = new Resilience4jResilience(List.of(
+                new RateLimiterConfig("throttled", 2, Duration.ofSeconds(1), Duration.ZERO)));
+
+        assertThat(adapter.rateLimiter("throttled")).isNotNull();
     }
 
     @Test

@@ -32,7 +32,8 @@ class NaturalistHeaderInterceptorTest {
         }
 
         @Override
-        public UsageQuery.ReserveState reserveState(NaturalistName naturalist) {
+        public UsageQuery.ReserveState reserveState(
+                com.naturalist.usage.UsageCounterName counter, NaturalistName naturalist, java.time.Instant now) {
             throw new UnsupportedOperationException();
         }
     };
@@ -165,7 +166,8 @@ class NaturalistHeaderInterceptorTest {
             }
 
             @Override
-            public UsageQuery.ReserveState reserveState(NaturalistName naturalist) {
+            public UsageQuery.ReserveState reserveState(
+                    com.naturalist.usage.UsageCounterName counter, NaturalistName naturalist, java.time.Instant now) {
                 throw new UnsupportedOperationException();
             }
         };
@@ -186,7 +188,8 @@ class NaturalistHeaderInterceptorTest {
             }
 
             @Override
-            public UsageQuery.ReserveState reserveState(NaturalistName naturalist) {
+            public UsageQuery.ReserveState reserveState(
+                    com.naturalist.usage.UsageCounterName counter, NaturalistName naturalist, java.time.Instant now) {
                 throw new UnsupportedOperationException();
             }
         };

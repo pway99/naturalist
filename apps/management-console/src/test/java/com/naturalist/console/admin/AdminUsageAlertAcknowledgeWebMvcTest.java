@@ -31,13 +31,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * against a REAL alert, which requires crossing a threshold. Rather than
  * hammering the module's shared, real-configured {@link IdentificationBudget}
  * (see the javadoc on {@link AdminUsageControllerWebMvcTest}), this class
- * gets its own isolated Spring context via {@code @TestPropertySource}: a
- * tiny {@code global-monthly=2} / {@code warning-percent=50} limit makes the
- * very first {@link IdentificationBudget#reserve} cross the monthly WARNING
- * threshold ({@code ceil(2*50/100)=1}) deterministically, without disturbing
- * any other test class's counters — a different property set means Spring
- * caches this class an entirely separate {@code ApplicationContext} (and so
- * a fresh in-memory {@code NaturalistDatabase}).
+ * gets its own isolated Spring context via {@code @TestPropertySource}: the
+ * event-log redesign moved the actual budget limits out of application
+ * properties and into the seeded {@code UsageCounter} rules in {@code
+ * usage-counters.json} (fixed at {@code PER_USER}/daily=10, {@code
+ * GLOBAL}/daily=50, {@code GLOBAL}/monthly=650 — see that file), so a limit
+ * can no longer be shrunk per test via a property override. Instead this
+ * class overrides only {@code warning-percent}, the one budget knob still
+ * property-driven: {@code warning-percent=1} makes the very first
+ * {@link IdentificationBudget#reserve} cross the GLOBAL DAILY WARNING
+ * threshold ({@code ceil(50*1/100)=1}) deterministically — the monthly rule
+ * (limit 650) cannot be made to cross on a single call with an integer
+ * percent, since the smallest achievable non-zero threshold there is {@code
+ * ceil(650*1/100)=7}. A different property set still means Spring caches
+ * this class an entirely separate {@code ApplicationContext} (and so a
+ * fresh in-memory {@code NaturalistDatabase}), so this class's counters
+ * stay isolated from every other test class exactly as before.
  *
  * <p>The {@code /admin/usage.json} assertions also fold in the C2
  * runtime-serialization check: {@link UsageAlert#counter()} and
@@ -47,20 +56,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * emit.
  *
  * <p>The banner-gating assertions (fix round 1) reuse this same single
- * alert rather than reserving a second time in their own test method: with
- * {@code global-monthly=2} the WARNING dedup key only fires once per period,
- * so a second {@code reserve()} call anywhere in this class (Spring caches
- * one {@code ApplicationContext}, and so one counter/alert store, per test
- * class) would not produce a second alert to check — see the checked-in
- * history of this file for the failure that taught us that.
+ * alert rather than reserving a second time in their own test method: the
+ * WARNING dedup key only fires once per period, so a second {@code
+ * reserve()} call anywhere in this class (Spring caches one {@code
+ * ApplicationContext}, and so one counter/alert store, per test class)
+ * would not produce a second alert to check — see the checked-in history of
+ * this file for the failure that taught us that.
  */
 @SpringBootTest
 @TestPropertySource(properties = {
-        "naturalist.usage.global-monthly=2",
-        "naturalist.usage.warning-percent=50",
-        "naturalist.usage.global-daily=99",
-        "naturalist.usage.per-user-daily=99",
-        "naturalist.usage.global-rate-per-minute=99"
+        "naturalist.usage.warning-percent=1"
 })
 class AdminUsageAlertAcknowledgeWebMvcTest {
 

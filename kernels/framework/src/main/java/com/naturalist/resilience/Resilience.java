@@ -3,7 +3,7 @@ package com.naturalist.resilience;
 import java.util.Set;
 
 /**
- * Facade over the four resilience primitives the project standardises on.
+ * Facade over the five resilience primitives the project standardises on.
  * Domain {@code *-core} code references this interface only — never a concrete
  * Resilience4j (or other vendor) type. The default {@link #noOp()} runs every
  * supplier unprotected and is suitable for unit tests and composition roots
@@ -19,7 +19,7 @@ import java.util.Set;
  * the composition root's job, not a runtime concern at every call site.
  *
  * <h2>Diagnostics surface</h2>
- * The four {@code *Names()} methods publish the set of strategy names the
+ * The five {@code *Names()} methods publish the set of strategy names the
  * implementation has registered for each primitive. The admin console reads
  * them to render the {@code /admin/resilience} view; a typo on either the
  * configuration side or the {@code @Resilient(name = ...)} call site is then
@@ -36,6 +36,8 @@ public interface Resilience {
 
     Bulkhead bulkhead(String name);
 
+    RateLimiter rateLimiter(String name);
+
     Set<String> retryNames();
 
     Set<String> timeoutNames();
@@ -43,6 +45,8 @@ public interface Resilience {
     Set<String> circuitBreakerNames();
 
     Set<String> bulkheadNames();
+
+    Set<String> rateLimiterNames();
 
     /**
      * A no-op {@code Resilience} that runs every supplier unprotected. Returned

@@ -4,9 +4,9 @@ import com.naturalist.data.EntityRepository;
 import com.naturalist.naturalist.NaturalistName;
 import org.jspecify.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Namespace for the usage bounded context's write-side repositories — the single
@@ -15,8 +15,8 @@ import java.util.Set;
  * <p>Nested repositories scope to a single entity each:
  * <ul>
  *   <li>{@link CounterRepository} — {@link UsageCounter} entities.</li>
- *   <li>{@link TallyRepository} — {@link UsageTally} entities.</li>
  *   <li>{@link AlertRepository} — {@link UsageAlert} entities.</li>
+ *   <li>{@link EventRepository} — {@link UsageEvent} entities.</li>
  * </ul>
  *
  * <p>This is a {@code class}, not an {@code interface}, so the nested repository
@@ -32,23 +32,10 @@ class UsageRepository {
     }
 
     protected interface CounterRepository
-            extends EntityRepository<UsageCounterName, UsageCounter> {
-    }
+            extends EntityRepository<UsageCounterId, UsageCounter> {
 
-    protected interface TallyRepository
-            extends EntityRepository<UsageTallyId, UsageTally> {
-
-        /**
-         * Batched read: every tally for {@code counter} whose {@code period} is in
-         * {@code periods} AND is either a global tally ({@code naturalist() == null})
-         * or belongs to the given {@code naturalist}. One select in place of one
-         * {@code findBusinessKey} call per period. When {@code naturalist} is null,
-         * only global tallies are returned (a global tally never equals a null
-         * naturalist under {@code equals}, so passing null here can never match a
-         * per-user row).
-         */
-        List<UsageTally> findByCounterAndPeriods(
-                UsageCounterName counter, Set<String> periods, @Nullable NaturalistName naturalist);
+        /** Every rule (active or inactive) for the given counter activity. */
+        List<UsageCounter> findByCounterName(UsageCounterName counterName);
     }
 
     protected interface AlertRepository
@@ -62,5 +49,17 @@ class UsageRepository {
 
         /** Alerts not yet emailed. */
         List<UsageAlert> getUnsent();
+    }
+
+    protected interface EventRepository extends EntityRepository<UsageEventId, UsageEvent> {
+
+        /**
+         * Every event for {@code counter} at or after {@code since}. {@code naturalist == null}
+         * returns all matching events (global); non-null scopes to that naturalist only.
+         * {@code since} is inclusive.
+         */
+        List<UsageEvent> findByCounterSince(UsageCounterName counter,
+                                            @Nullable NaturalistName naturalist,
+                                            Instant since);
     }
 }

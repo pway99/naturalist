@@ -2,67 +2,99 @@ package com.naturalist.usage;
 
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
-import org.junit.jupiter.api.BeforeEach;
+import com.naturalist.exception.InvariantViolationException;
+import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link UsageRepository.CounterRepository}. Inherits the
  * {@link EntityRepositoryTest} cases (ADR-002).
  *
- * <p>{@code usage/usage-counters.json} seeds only the one real counter
- * ({@code identification}) — the set-based query cases need a second, distinct known
- * name, so {@link TestUsageIdentifiers.UsageCounters#InsectIdentification} (documented
- * there as "fictitious but valid ... for set-based lookup tests") is inserted into the
- * backing {@link #source()} before each test, mirroring the round-trip-insert pattern
- * {@code UsageCounterTestEntitySourceTest#insertedCounterIsRetrievable} already
- * established for that same constant.
+ * <p>{@code usage/usage-counters.json} seeds three rules, all for the
+ * {@code identification} counter activity: a per-user daily rule, a global daily
+ * rule, and a global monthly ({@link WindowKind#SINCE}) rule.
  */
-interface UsageCounterRepositoryTest extends EntityRepositoryTest<UsageCounterName, UsageCounter> {
+interface UsageCounterRepositoryTest extends EntityRepositoryTest<UsageCounterId, UsageCounter> {
 
     @Override
     UsageRepository.CounterRepository repository();
 
     @Override
-    default TestEntitySource<UsageCounterName, UsageCounter> source() {
+    default TestEntitySource<UsageCounterId, UsageCounter> source() {
         return db.getNamed(UsageCounterTestEntitySource.class);
     }
 
-    @BeforeEach
-    default void seedSecondKnownCounter() {
-        source().insert(new UsageCounter(TestUsageIdentifiers.UsageCounters.InsectIdentification));
+    @Override
+    default UsageCounterId notFoundName() {
+        return TestUsageIdentifiers.UsageCounters.NotFound.id;
     }
 
     @Override
-    default UsageCounterName notFoundName() {
-        return TestUsageIdentifiers.UsageCounters.NotFound.name;
-    }
-
-    @Override
-    default List<UsageCounterName> knownEntityNames() {
+    default List<UsageCounterId> knownEntityNames() {
         return List.of(
-                TestUsageIdentifiers.UsageCounters.Identification,
-                TestUsageIdentifiers.UsageCounters.InsectIdentification);
+                TestUsageIdentifiers.UsageCounters.PerUserDailyId,
+                TestUsageIdentifiers.UsageCounters.GlobalDailyId,
+                TestUsageIdentifiers.UsageCounters.GlobalMonthlyId);
     }
 
     @Override
     default UsageCounter newEntity() {
-        return new UsageCounter(UsageCounterName.of("test-new-counter"));
+        return new UsageCounter(
+                UsageCounterId.create(),
+                TestUsageIdentifiers.UsageCounters.Identification,
+                UsageScope.PER_USER,
+                WindowKind.SINCE,
+                Instant.parse("2026-08-01T00:00:00Z"),
+                100,
+                true);
     }
 
     @Override
     default UsageCounter ghostEntity() {
-        return new UsageCounter(UsageCounterName.of("test-ghost-counter"));
+        return new UsageCounter(
+                TestUsageIdentifiers.UsageCounters.NotFound.id,
+                TestUsageIdentifiers.UsageCounters.Identification,
+                UsageScope.PER_USER,
+                WindowKind.CALENDAR_DAY,
+                null,
+                5,
+                true);
     }
 
-    /**
-     * {@link UsageCounter} carries only its own {@code name} — no other mutable
-     * field exists to vary, so the "modified" entity is structurally identical to
-     * {@code original}. The update contract case still exercises the write path
-     * (an update-in-place round trip), it just cannot assert on a changed value.
-     */
     @Override
     default UsageCounter modifiedEntity(UsageCounter original) {
-        return original;
+        return original.withLimit(original.limit() + 5).withActive(!original.active());
+    }
+
+    // =========================================================================
+    // findByCounterName
+    // =========================================================================
+
+    @Test
+    default void findByCounterName_nullArgument_throwsInvariantViolationException() {
+        assertThatThrownBy(() -> repository().findByCounterName(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("counterName");
+    }
+
+    @Test
+    default void findByCounterName_unknownName_returnsEmpty() {
+        List<UsageCounter> result = repository().findByCounterName(
+                TestUsageIdentifiers.UsageCounters.InsectIdentification);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    default void findByCounterName_knownName_returnsAllRulesForThatActivity() {
+        List<UsageCounter> result = repository().findByCounterName(
+                TestUsageIdentifiers.UsageCounters.Identification);
+
+        assertThat(result).hasSize(3);
     }
 }

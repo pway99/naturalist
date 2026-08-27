@@ -41,6 +41,11 @@ final class NoOpResilience implements Resilience {
     }
 
     @Override
+    public RateLimiter rateLimiter(String name) {
+        return RateLimiterDelegate.INSTANCE;
+    }
+
+    @Override
     public Set<String> retryNames() {
         return Set.of();
     }
@@ -57,6 +62,11 @@ final class NoOpResilience implements Resilience {
 
     @Override
     public Set<String> bulkheadNames() {
+        return Set.of();
+    }
+
+    @Override
+    public Set<String> rateLimiterNames() {
         return Set.of();
     }
 
@@ -103,6 +113,20 @@ final class NoOpResilience implements Resilience {
     }
 
     private enum BulkheadDelegate implements Bulkhead {
+        INSTANCE;
+
+        @Override
+        public <T> T execute(Supplier<T> supplier) {
+            return supplier.get();
+        }
+
+        @Override
+        public void execute(Runnable runnable) {
+            runnable.run();
+        }
+    }
+
+    private enum RateLimiterDelegate implements RateLimiter {
         INSTANCE;
 
         @Override

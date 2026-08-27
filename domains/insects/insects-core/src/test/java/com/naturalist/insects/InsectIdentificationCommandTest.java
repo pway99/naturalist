@@ -15,6 +15,8 @@ import com.naturalist.featuresearch.FeatureSearch;
 import com.naturalist.featuresearch.InMemoryFeatureSearch;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.resilience.RateLimitExceededException;
+import com.naturalist.resilience.RateLimiter;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.textgeneration.NoOpTextGenerationService;
 import com.naturalist.vision.Image;
@@ -138,6 +140,7 @@ class InsectIdentificationCommandTest {
     private InsectIdentificationCommand buildCommand(VisionService vision) {
         var libraryContext = LibraryTestContext.create(nte);
         return new InsectIdentificationCommand(
+                com.naturalist.resilience.Resilience.noOp().rateLimiter("x"),
                 com.naturalist.usage.IdentificationBudget.noOp(),
                 vision,
                 new NoOpTextGenerationService(),
@@ -333,6 +336,7 @@ class InsectIdentificationCommandTest {
     void identify_persistsCitationAssociationWhenCitationAlreadyExists() {
         var libraryContext = LibraryTestContext.create(nte);
         var cmd = new InsectIdentificationCommand(
+                com.naturalist.resilience.Resilience.noOp().rateLimiter("x"),
                 com.naturalist.usage.IdentificationBudget.noOp(),
                 stubService,
                 new NoOpTextGenerationService(),
@@ -440,6 +444,7 @@ class InsectIdentificationCommandTest {
         };
         var libraryContext = LibraryTestContext.create(nte);
         var cmd = new InsectIdentificationCommand(
+                com.naturalist.resilience.Resilience.noOp().rateLimiter("x"),
                 exceededBudget,
                 trackingVision,
                 new NoOpTextGenerationService(),
@@ -458,5 +463,83 @@ class InsectIdentificationCommandTest {
                 .isInstanceOf(com.naturalist.usage.BudgetExceededException.class);
 
         assertThat(visionCalled.get()).isFalse();
+    }
+
+    /**
+     * Proves the rate gate runs BEFORE budget reservation: a {@link RateLimiter}
+     * that throws on its second permit (the second {@code identify} call within
+     * this test) makes {@code identify} throw
+     * {@link RateLimitExceededException} and neither reserves budget (no
+     * {@code UsageEvent} is inserted -- verified indirectly via the tracking
+     * {@code IdentificationBudget} never being called) nor calls vision. Mirrors
+     * {@link #identify_reserves_budget_before_calling_vision}'s structure, one
+     * gate earlier in the pipeline.
+     */
+    @Test
+    void identify_rateGateRuns_beforeBudgetReservation_andBeforeVision() {
+        var visionCalled = new java.util.concurrent.atomic.AtomicBoolean(false);
+        VisionService trackingVision = (image, tool, prompt) -> {
+            visionCalled.set(true);
+            return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
+        };
+        var budgetReserveCalls = new java.util.concurrent.atomic.AtomicInteger(0);
+        com.naturalist.usage.IdentificationBudget trackingBudget = naturalist ->
+                budgetReserveCalls.incrementAndGet();
+
+        var permitCalls = new java.util.concurrent.atomic.AtomicInteger(0);
+        RateLimiter rejectOnSecondCall = new RateLimiter() {
+            @Override
+            public <T> T execute(java.util.function.Supplier<T> supplier) {
+                if (permitCalls.incrementAndGet() >= 2) {
+                    throw new RateLimitExceededException(
+                            "Rate limit exceeded for strategy 'vision.identification'",
+                            "vision.identification");
+                }
+                return supplier.get();
+            }
+
+            @Override
+            public void execute(Runnable runnable) {
+                execute(() -> {
+                    runnable.run();
+                    return null;
+                });
+            }
+        };
+
+        var libraryContext = LibraryTestContext.create(nte);
+        var cmd = new InsectIdentificationCommand(
+                rejectOnSecondCall,
+                trackingBudget,
+                trackingVision,
+                new NoOpTextGenerationService(),
+                STUB_AUTHORITY,
+                libraryContext.libraryCommand(),
+                query,
+                buildFeatureSearch(),
+                context.catalogIdentificationTransaction());
+
+        var image = new Image(
+                new byte[]{1, 2, 3}, "image/jpeg",
+                new ImageMetadata("Chico, CA", null));
+
+        // First call: the rate limiter permits it through -- budget reserves and vision runs.
+        cmd.identify(image, FileName.of("IMG_0012.jpg"), NaturalistName.of("pat"), null);
+        assertThat(budgetReserveCalls.get()).isEqualTo(1);
+        assertThat(visionCalled.get()).isTrue();
+
+        // Second call: the rate limiter rejects -- budget is never reserved and vision
+        // is never called again.
+        visionCalled.set(false);
+        assertThatThrownBy(() -> cmd.identify(
+                image, FileName.of("IMG_0013.jpg"), NaturalistName.of("pat"), null))
+                .isInstanceOf(RateLimitExceededException.class);
+
+        assertThat(budgetReserveCalls.get())
+                .as("budget.reserve() must not run once the rate limiter rejects")
+                .isEqualTo(1);
+        assertThat(visionCalled.get())
+                .as("vision must not be called once the rate limiter rejects")
+                .isFalse();
     }
 }

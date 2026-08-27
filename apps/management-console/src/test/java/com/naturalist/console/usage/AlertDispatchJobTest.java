@@ -50,7 +50,7 @@ class AlertDispatchJobTest {
         CountingMailSender sender = new CountingMailSender();
         AlertEmailer emailer = new AlertEmailer(
                 providerReturning(sender),
-                new UsageProperties(10, 3, 50, 650, 80, "alerts@example.com"));
+                new UsageProperties(80, "alerts@example.com"));
         AlertDispatchJob job = new AlertDispatchJob(command, emailer);
 
         job.dispatch();

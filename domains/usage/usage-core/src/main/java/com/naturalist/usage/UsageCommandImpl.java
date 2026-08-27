@@ -3,132 +3,114 @@ package com.naturalist.usage;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Observer;
-import org.jspecify.annotations.Nullable;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Write-side adapter for {@link UsageCommand} — the mutation half of what was a
- * single combined {@code UsageBudgetService}. {@link #reserve(NaturalistName)}
- * consults {@link UsageQuery#reserveState(NaturalistName)} (the ONE gated,
- * batched read — see {@link UsageQueryImpl}) for the four relevant tally rows,
- * applies the same all-or-nothing check against their counts, then upserts those
- * SAME rows and records threshold alerts (deduplicated). There is no second read:
- * the rows {@code reserveState} returns are exactly what the upsert writes back.
+ * single combined {@code UsageBudgetService}, now over an append-only event log
+ * rather than upserted tally rows. {@link #reserve(NaturalistName)} consults
+ * {@link UsageQuery#reserveState} (the ONE gated, batched read — see
+ * {@link UsageQueryImpl}) for every active rule on the {@code identification}
+ * counter, applies the same all-or-nothing check against each rule's count,
+ * then — if every rule passes — inserts one {@link UsageEvent}. There is no
+ * upsert: the event just inserted is exactly what the next read counts.
+ *
+ * <p>An {@link EntitlementLookup#isEntitled entitled} naturalist bypasses the
+ * public-bucket rules entirely (today: nobody, via {@link EntitlementLookup#none()}
+ * — the seam exists for a future credit-balance check).
  *
  * <p><b>Every method here is {@code synchronized} on this instance.</b> The reserve
- * algorithm is check-then-increment across several repository round trips
+ * algorithm is check-then-insert across several repository round trips
  * (including the {@code query.reserveState} call), so the synchronization
  * boundary — not the in-memory mock or a future RDBMS adapter — is what prevents
- * two concurrent callers from both observing {@code count == limit - 1} and both
- * incrementing past the limit. {@code acknowledge} and {@code claimUnsentAlerts}
+ * two concurrent callers from both observing {@code used == limit - 1} and both
+ * inserting past the limit. {@code acknowledge} and {@code claimUnsentAlerts}
  * are synchronized alongside it for the same reason the original combined service
  * synchronized every method: they share the same alert-repository state
  * {@code reserve}'s warning/hard-stop dedup writes to.
  *
  * <p><b>The injected {@link Clock} is expected to be UTC-zoned</b> — see
- * {@link UsagePeriods} for why.
+ * {@link UsageWindows} for why.
  */
 @DomainService
 class UsageCommandImpl implements UsageCommand {
 
+    private static final UsageCounterName COUNTER = UsageCounterName.of("identification");
+
     private final Observer observer = Observer.forClass(getClass());
     private final UsageQuery query;
-    private final UsageLimits limits;
+    private final EntitlementLookup entitlements;
+    private final int warningPercent;
     private final Clock clock;
-    private final UsageRepository.TallyRepository tallies;
+    private final UsageRepository.EventRepository events;
     private final UsageRepository.AlertRepository alerts;
-    private final UsageCounterName counter = UsageCounterName.of("identification");
 
     UsageCommandImpl(UsageQuery query,
-                      UsageLimits limits,
+                      EntitlementLookup entitlements,
+                      WarningPercent warningPercent,
                       Clock clock,
-                      UsageRepository.TallyRepository tallies,
+                      UsageRepository.EventRepository events,
                       UsageRepository.AlertRepository alerts) {
         observer.arguments("constructor", i -> i
                         .notNull(query, "query")
-                        .notNull(limits, "limits")
+                        .notNull(entitlements, "entitlements")
+                        .notNull(warningPercent, "warningPercent")
                         .notNull(clock, "clock")
-                        .notNull(tallies, "tallies")
+                        .notNull(events, "events")
                         .notNull(alerts, "alerts"))
                 .throwWhenInvalid();
         this.query = query;
-        this.limits = limits;
+        this.entitlements = entitlements;
+        this.warningPercent = warningPercent.value();
         this.clock = clock;
-        this.tallies = tallies;
+        this.events = events;
         this.alerts = alerts;
     }
 
     @Override
     public synchronized void reserve(NaturalistName naturalist) {
-        observer.arguments("reserve", i -> i.identifier(naturalist, "naturalist"))
-                .throwWhenInvalid();
+        observer.arguments("reserve", i -> i.identifier(naturalist, "naturalist")).throwWhenInvalid();
+        Instant now = clock.instant();
 
-        UsagePeriods periods = UsagePeriods.now(clock);
-        UsageQuery.ReserveState state = query.reserveState(naturalist);
-
-        Optional<UsageTally> monthlyTally = state.globalMonthly();
-        Optional<UsageTally> dailyTally = state.globalDaily();
-        Optional<UsageTally> rateTally = state.globalRate();
-        Optional<UsageTally> userTally = state.userDaily();
-
-        int monthlyCount = monthlyTally.map(UsageTally::count).orElse(0);
-        int dailyCount = dailyTally.map(UsageTally::count).orElse(0);
-        int rateCount = rateTally.map(UsageTally::count).orElse(0);
-        int userCount = userTally.map(UsageTally::count).orElse(0);
-
-        if (monthlyCount >= limits.globalMonthly()) {
-            recordAlert(AlertKind.HARD_STOP, AlertScope.MONTHLY, periods.monthlySlug, monthlyCount, limits.globalMonthly());
-            throw new BudgetExceededException(LimitKind.MONTHLY, periods.startOfNextMonth());
+        if (!entitlements.isEntitled(naturalist)) {                 // PUBLIC bucket
+            UsageQuery.ReserveState state = query.reserveState(COUNTER, naturalist, now);
+            for (UsageQuery.CounterUsage cu : state.counters()) {
+                UsageCounter rule = cu.rule();
+                if (cu.used() >= rule.limit()) {
+                    if (rule.scope() == UsageScope.GLOBAL) {
+                        recordAlert(AlertKind.HARD_STOP, rule, cu.used(), now);
+                    }
+                    throw new BudgetExceededException(limitKindOf(rule), UsageWindows.resetAt(rule, now));
+                }
+                if (rule.scope() == UsageScope.GLOBAL
+                        && cu.used() + 1 == UsagePolicy.warningThreshold(rule.limit(), warningPercent)) {
+                    recordAlert(AlertKind.WARNING, rule, cu.used() + 1, now);
+                }
+            }
         }
-        if (dailyCount >= limits.globalDaily()) {
-            recordAlert(AlertKind.HARD_STOP, AlertScope.DAILY, periods.dailySlug, dailyCount, limits.globalDaily());
-            throw new BudgetExceededException(LimitKind.DAILY, periods.startOfNextDay());
-        }
-        if (rateCount >= limits.globalRatePerMinute()) {
-            throw new BudgetExceededException(LimitKind.RATE, periods.startOfNextMinute());
-        }
-        if (userCount >= limits.perUserDaily()) {
-            throw new BudgetExceededException(LimitKind.PER_USER, periods.startOfNextDay());
-        }
-
-        // Upsert the SAME rows reserveState() returned — no second read. Safe: this
-        // whole method is synchronized, so no write has happened since reserveState()
-        // observed this state above.
-        upsert(monthlyTally, null, periods.monthlySlug, monthlyCount + 1);
-        checkWarning(monthlyCount + 1, limits.globalMonthly(), AlertScope.MONTHLY, periods.monthlySlug);
-
-        upsert(dailyTally, null, periods.dailySlug, dailyCount + 1);
-        checkWarning(dailyCount + 1, limits.globalDaily(), AlertScope.DAILY, periods.dailySlug);
-
-        upsert(rateTally, null, periods.rateSlug, rateCount + 1);
-
-        upsert(userTally, naturalist, periods.dailySlug, userCount + 1);
+        // ENTITLED bucket falls straight through (future: credit-balance check).
+        events.insert(new UsageEvent(UsageEventId.create(), COUNTER, naturalist, now));
     }
 
-    private void upsert(Optional<UsageTally> existing, @Nullable NaturalistName naturalist, String period, int newCount) {
-        if (existing.isPresent()) {
-            tallies.save(existing.get().withCount(newCount));
-        } else {
-            tallies.insert(new UsageTally(UsageTallyId.create(), counter, naturalist, period, newCount));
+    private static LimitKind limitKindOf(UsageCounter rule) {
+        if (rule.scope() == UsageScope.PER_USER) {
+            return LimitKind.PER_USER;
         }
+        return rule.windowKind() == WindowKind.CALENDAR_DAY ? LimitKind.DAILY : LimitKind.MONTHLY;
     }
 
-    private void checkWarning(int newCount, int limit, AlertScope scope, String period) {
-        if (newCount == UsagePolicy.warningThreshold(limit, limits.warningPercent())) {
-            recordAlert(AlertKind.WARNING, scope, period, newCount, limit);
-        }
-    }
-
-    private void recordAlert(AlertKind kind, AlertScope scope, String period, int used, int limit) {
-        if (alerts.findDedupKey(counter, scope, kind, period).isEmpty()) {
+    private void recordAlert(AlertKind kind, UsageCounter rule, int used, Instant now) {
+        AlertScope scope = UsageWindows.alertScope(rule);
+        String period = UsageWindows.alertPeriod(rule, now);
+        if (alerts.findDedupKey(COUNTER, scope, kind, period).isEmpty()) {
             alerts.insert(new UsageAlert(
-                    UsageAlertId.create(), counter, scope, kind, period,
-                    UsagePolicy.alertMessage(scope, kind, used, limit),
-                    clock.instant(), false, false));
+                    UsageAlertId.create(), COUNTER, scope, kind, period,
+                    UsagePolicy.alertMessage(scope, kind, used, rule.limit()),
+                    now, false, false));
         }
     }
 
