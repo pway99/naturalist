@@ -35,6 +35,8 @@
         <module>field-notes</module>
         <module>taxonomy</module>
         <module>observation</module>
+        <module>persistence</module>
+        <module>persistence-test</module>
         <module>text-generation</module>
         <module>vision</module>
         <module>habitat</module>

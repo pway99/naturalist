@@ -1,0 +1,26 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: naturalist_test
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      NATURALIST_TEST_JDBC_URL: jdbc:postgresql://localhost:5432/naturalist_test
+      NATURALIST_TEST_DB_USER: postgres
+      NATURALIST_TEST_DB_PASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '25' }
+      - run: mvn -q -DskipTests install
+      - run: java -jar apps/test-db-seeder/target/test-db-seeder-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+      - run: mvn -q verify

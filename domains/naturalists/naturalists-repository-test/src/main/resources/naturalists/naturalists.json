@@ -30,5 +30,13 @@
     "role": "KEEPER",
     "stage": "PRACTITIONER",
     "notes": "Assists with hive inspections and Varroa monitoring on the apiary."
+  },
+  {
+    "name": "sam-rivers",
+    "givenName": "Sam",
+    "familyName": "Rivers",
+    "role": "VISITOR",
+    "stage": "WONDER",
+    "notes": null
   }
 ]

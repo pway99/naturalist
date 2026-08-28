@@ -213,6 +213,19 @@ public class Constraints {
     }
 
     /**
+     * Asserts the string's length does not exceed {@code max} (inclusive), matching a
+     * {@code VARCHAR(max)} column. Null values pass — pair with {@link #notNull} when
+     * presence is also required.
+     */
+    public Constraints maxLength(String value, int max, String name) {
+        return maxLength(value, Function.identity(), max, name);
+    }
+
+    public <T> Constraints maxLength(T t, Function<T, String> valueFunction, int max, String name) {
+        return add(new StringLengthLessThanConstraint<>(t, valueFunction, max, name));
+    }
+
+    /**
      * Asserts that the extracted string matches the project's standard kebab-case
      * slug format — the same rule {@link com.naturalist.ddd.EntityName} subclasses
      * apply to their own {@code value} string. Use for value objects that wrap a

@@ -1,0 +1,49 @@
+package com.naturalist.naturalist;
+
+import com.naturalist.observability.Constraints;
+import com.naturalist.persistence.Dbo;
+import com.naturalist.persistence.DboSchema;
+
+import java.util.function.Consumer;
+
+@DboSchema(table = "naturalist", primaryKey = "id", unique = {"name"})
+final class NaturalistDbo implements Dbo {
+    Long id;              // null before insert; DB identity fills it
+    String name;
+    String given_name;
+    String family_name;   // nullable
+    String role;
+    String stage;
+    String notes;         // nullable
+
+    static NaturalistDbo from(Naturalist n) {
+        NaturalistDbo d = new NaturalistDbo();
+        d.name = n.name().value();
+        d.given_name = n.givenName();
+        d.family_name = n.familyName();
+        d.role = n.role().name();
+        d.stage = n.stage().name();
+        d.notes = n.notes();
+        return d;
+    }
+
+    Naturalist toEntity() {
+        return new Naturalist(
+                NaturalistName.of(name),
+                given_name,
+                family_name,
+                NaturalistRole.valueOf(role),
+                EcologicalStage.valueOf(stage),
+                notes);
+    }
+
+    @Override
+    public Consumer<? extends Constraints> invariants() {
+        return c -> c
+                .notNull(name, "name").kebabFormat(name, "name").maxLength(name, 64, "name")
+                .notNull(given_name, "given_name").maxLength(given_name, 100, "given_name")
+                .maxLength(family_name, 100, "family_name")
+                .notNull(role, "role").maxLength(role, 32, "role")
+                .notNull(stage, "stage").maxLength(stage, 32, "stage");
+    }
+}

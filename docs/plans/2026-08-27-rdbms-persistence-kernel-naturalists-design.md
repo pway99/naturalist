@@ -277,7 +277,9 @@ then delegating to its mapper and translating DBO ⇄ entity:
     and `name` auto-map onto `NaturalistCredentialDbo`.
   - `insert`: `INSERT INTO naturalist_credential (naturalist_id, password_hash)
     SELECT id, #{password_hash} FROM naturalist WHERE name = #{name}` — resolves the id
-    inline; the FK enforces the naturalist exists.
+    inline. The mapper returns the affected-row count; the adapter throws when it is `0`
+    (an empty `INSERT … SELECT` writes nothing rather than raising, so the FK alone does
+    not catch a missing naturalist).
 - **`getPage(PageRequest)`** honors the paging contract: `LIMIT n+1` + a thin has-next
   probe (project `paged_queries_gate` convention), ordered by `name`.
 - **`save`** is update-if-present-else-insert on the key. Neither naturalist table has a
@@ -306,9 +308,13 @@ WHERE n.name = #{name};
 
 Properties this gives us:
 
-- **Referential integrity is enforced, not assumed.** A missing referent makes the
-  subselect yield no row, so the `NOT NULL`/FK fails at the database — the check the
-  in-memory source cannot make.
+- **Referential integrity is enforced, not assumed** — by two mechanisms. The FK rejects
+  any *directly-supplied* bad id. But a name-resolving `INSERT … SELECT … WHERE name = ?`
+  whose source set is empty writes **zero rows silently** (Postgres does not raise — no row
+  is ever attempted), so the adapter also **checks the affected-row count and throws** when
+  the referent is absent. Together they give the guarantee the in-memory source cannot: a
+  credential can never point at a naturalist that isn't there. (The naïve assumption that
+  the empty `INSERT … SELECT` alone trips the FK is wrong — hence the explicit count check.)
 - **Renames stay local.** Because references resolve through `naturalist.name` to the id, a
   rename updates one column; nothing that points at the id moves.
 - **It is the same shape cross-domain.** A future `insects.field_observation` resolves its
@@ -363,9 +369,14 @@ you change seed JSON or DDL; run it as one explicit CI step. It:
    `name→id` `INSERT … SELECT` resolves FKs for free. Entities are replayed in `@Fk`
    dependency order (naturalists before credentials), then **committed**.
 3. **Iterates every registered domain's seed contribution.** Each `*-repository-rdbms`
-   contributes its `(TestEntitySource, EntityRepository, schema.sql)` as a bean the seeder
-   discovers; the monolithic DB is filled by every contribution in one run. This slice
-   registers only naturalists.
+   exposes a public seed entrypoint (e.g. `NaturalistRdbmsSeed.seed(dataSource, naturalists,
+   credentials)`) that replays **pre-loaded entity collections** through its package-private
+   adapters; the seeder **app** — not the production rdbms module — is what loads those
+   collections from the JSON-backed `TestEntitySource`s. This keeps the DAG clean: the
+   production `*-repository-rdbms` module never compile-depends on `*-repository-test`
+   (that fixture dependency lives only in `apps/test-db-seeder`, a composition root). The
+   monolithic DB is filled by every contribution in one run. This slice registers only
+   naturalists.
 
 Because the seeder replays through the real `insert()` path, it is also the first bulk
 exercise of the ACL — a data problem (an over-long value, a broken FK) surfaces here with a

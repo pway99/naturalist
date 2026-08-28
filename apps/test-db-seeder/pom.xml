@@ -1,0 +1,45 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>naturalist-apps</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>test-db-seeder</artifactId>
+    <name>apps :: test-db-seeder</name>
+    <dependencies>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>persistence-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>naturalists-repository-rdbms</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>naturalists-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <configuration>
+                    <archive><manifest><mainClass>com.naturalist.seeder.TestDbSeeder</mainClass></manifest></archive>
+                    <descriptorRefs><descriptorRef>jar-with-dependencies</descriptorRef></descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution><id>make-jar</id><phase>package</phase>
+                        <goals><goal>single</goal></goals></execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

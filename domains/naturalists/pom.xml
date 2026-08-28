@@ -18,6 +18,7 @@
         <module>naturalists-api</module>
         <module>naturalists-core</module>
         <module>naturalists-repository-test</module>
+        <module>naturalists-repository-rdbms</module>
     </modules>
 
 </project>

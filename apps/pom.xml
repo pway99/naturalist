@@ -17,6 +17,7 @@
 
     <modules>
         <module>management-console</module>
+        <module>test-db-seeder</module>
     </modules>
 
 </project>
