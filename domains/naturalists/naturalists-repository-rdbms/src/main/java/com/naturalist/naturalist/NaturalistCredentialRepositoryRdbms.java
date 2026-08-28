@@ -57,11 +57,8 @@ class NaturalistCredentialRepositoryRdbms
     @Override
     protected void doInsert(NaturalistCredential entity) {
         // naturalist_id is resolved inline by the mapper's INSERT … SELECT; DBO carries name.
+        // from(...) validates the DBO (incl. password_hash width) and throws if invalid.
         NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(entity, -1L);
-        // validation asserts password_hash width; naturalist_id is filled by SQL, so skip its notNull here
-        observer().arguments("doInsert", i -> i
-                .notBlank(dbo.password_hash, "password_hash")
-                .maxLength(dbo.password_hash, 80, "password_hash")).throwWhenInvalid();
         int inserted;
         try {
             inserted = mapper.insert(dbo);
@@ -82,10 +79,7 @@ class NaturalistCredentialRepositoryRdbms
 
     @Override
     protected void doUpdate(NaturalistCredential entity) {
-        NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(entity, -1L);
-        observer().arguments("doUpdate", i -> i
-                .notBlank(dbo.password_hash, "password_hash")
-                .maxLength(dbo.password_hash, 80, "password_hash")).throwWhenInvalid();
+        NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(entity, -1L);   // from(...) validates + throws
         if (mapper.updateByName(dbo) == 0) {
             throw new EntityNotFoundException(entity);
         }

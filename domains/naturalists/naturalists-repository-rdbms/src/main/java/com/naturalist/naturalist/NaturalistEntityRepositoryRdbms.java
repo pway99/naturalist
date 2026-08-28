@@ -56,8 +56,7 @@ class NaturalistEntityRepositoryRdbms
 
     @Override
     protected void doInsert(Naturalist entity) {
-        NaturalistDbo dbo = NaturalistDbo.from(entity);
-        observer().arguments("doInsert", i -> i.observable(dbo, "dbo")).throwWhenInvalid();
+        NaturalistDbo dbo = NaturalistDbo.from(entity);   // from(...) validates the DBO and throws if invalid
         try {
             mapper.insert(dbo);
         } catch (RuntimeException e) {
@@ -70,8 +69,7 @@ class NaturalistEntityRepositoryRdbms
 
     @Override
     protected void doUpdate(Naturalist entity) {
-        NaturalistDbo dbo = NaturalistDbo.from(entity);
-        observer().arguments("doUpdate", i -> i.observable(dbo, "dbo")).throwWhenInvalid();
+        NaturalistDbo dbo = NaturalistDbo.from(entity);   // from(...) validates the DBO and throws if invalid
         if (mapper.updateByName(dbo) == 0) {
             throw new EntityNotFoundException(entity);
         }

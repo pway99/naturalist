@@ -1,6 +1,7 @@
 package com.naturalist.naturalist;
 
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
 import com.naturalist.persistence.DboSchema;
 import com.naturalist.persistence.Fk;
@@ -19,6 +20,9 @@ final class NaturalistCredentialDbo implements Dbo {
         d.naturalist_id = naturalistId;
         d.password_hash = c.passwordHash();
         d.name = c.name().value();
+        Observer.forClass(NaturalistCredentialDbo.class)
+                .arguments("from", i -> i.observable(d, "dbo"))
+                .throwWhenInvalid();
         return d;
     }
 

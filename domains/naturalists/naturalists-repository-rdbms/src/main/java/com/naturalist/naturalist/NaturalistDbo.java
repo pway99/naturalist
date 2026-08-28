@@ -1,6 +1,7 @@
 package com.naturalist.naturalist;
 
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
 import com.naturalist.persistence.DboSchema;
 
@@ -24,6 +25,9 @@ final class NaturalistDbo implements Dbo {
         d.role = n.role().name();
         d.stage = n.stage().name();
         d.notes = n.notes();
+        Observer.forClass(NaturalistDbo.class)
+                .arguments("from", i -> i.observable(d, "dbo"))
+                .throwWhenInvalid();
         return d;
     }
 

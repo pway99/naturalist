@@ -1,9 +1,11 @@
 package com.naturalist.naturalist;
 
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class NaturalistDboTest {
 
@@ -28,5 +30,14 @@ class NaturalistDboTest {
         var violations = Observer.forClass(NaturalistDboTest.class)
                 .arguments("t", i -> i.observable(dbo, "dbo")).violations();
         assertThat(violations).isNotEmpty();
+    }
+
+    @Test void from_throwsWhenAValueExceedsItsColumnWidth() {
+        // givenName is unconstrained on the entity but the DBO/column caps it at 100 —
+        // from(...) must fail here, one step before the database would truncate/reject.
+        Naturalist n = new Naturalist(NaturalistName.of("amir-hassan"), "G".repeat(101), null,
+                NaturalistRole.KEEPER, EcologicalStage.NATURALIST, null);
+        assertThatThrownBy(() -> NaturalistDbo.from(n))
+                .isInstanceOf(InvariantViolationException.class);
     }
 }
