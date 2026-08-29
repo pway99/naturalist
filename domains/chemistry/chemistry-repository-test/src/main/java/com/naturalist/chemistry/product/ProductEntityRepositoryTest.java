@@ -46,10 +46,12 @@ interface ProductEntityRepositoryTest
 
     @Override
     default Product newEntity() {
+        // thymol is a real catalogued compound — satisfies the RDBMS adapter's
+        // product_compound FK (the mock ignores it); the mock is unaffected.
         return new Product(
                 ProductName.of(RandomValue.string()),
                 RandomValue.string(),
-                Set.of(CompoundName.of(RandomValue.string())),
+                Set.of(TestChemistryIdentifiers.Compounds.Thymol.name),
                 Map.of(RandomValue.string(), RandomValue.string()));
     }
 
@@ -67,7 +69,7 @@ interface ProductEntityRepositoryTest
         return new Product(
                 original.name(),
                 RandomValue.string(),
-                Set.of(CompoundName.of(RandomValue.string())),
+                Set.of(TestChemistryIdentifiers.Compounds.Thymol.name),
                 Map.of(RandomValue.string(), RandomValue.string()));
     }
 

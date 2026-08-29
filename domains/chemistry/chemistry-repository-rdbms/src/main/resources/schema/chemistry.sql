@@ -13,7 +13,7 @@ CREATE TABLE element (
     name          VARCHAR(64) NOT NULL UNIQUE,
     symbol        VARCHAR(8)  NOT NULL,
     atomic_weight NUMERIC     NOT NULL,
-    ionic_form    VARCHAR(16) NOT NULL,
+    ionic_form    VARCHAR(64),
     ionic_charge  INTEGER     NOT NULL
 );
 

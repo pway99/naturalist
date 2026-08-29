@@ -8,6 +8,8 @@ import com.naturalist.persistence.Fk;
 
 import java.util.UUID;
 import java.util.function.Consumer;
+// id is unwrapped to its String form (like EntityName -> String): MyBatis has no UUID type
+// handler, and the ACL forbids adding one, so the mapper casts the text to uuid in SQL (::uuid).
 
 /**
  * Persistence view of {@link CompoundDepiction} — the first surrogate-key entity to persist:
@@ -20,14 +22,14 @@ import java.util.function.Consumer;
            foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
            entity = CompoundDepiction.class)
 final class CompoundDepictionDbo implements Dbo {
-    UUID id;
+    String id;            // the DepictionId's UUID as text; the mapper casts it to uuid (::uuid)
     String compoundName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String smiles;
     String note;
 
     static CompoundDepictionDbo from(CompoundDepiction depiction) {
         CompoundDepictionDbo d = new CompoundDepictionDbo();
-        d.id = depiction.id().value();
+        d.id = depiction.id().value().toString();
         d.compoundName = depiction.compoundName().value();
         d.smiles = depiction.smiles();
         d.note = depiction.note();
@@ -39,7 +41,7 @@ final class CompoundDepictionDbo implements Dbo {
 
     CompoundDepiction toEntity() {
         return new CompoundDepiction(
-                DepictionId.of(id),
+                DepictionId.of(UUID.fromString(id)),
                 CompoundName.of(compoundName),
                 smiles,
                 note);
@@ -48,7 +50,7 @@ final class CompoundDepictionDbo implements Dbo {
     @Override
     public Consumer<? extends Constraints> invariants() {
         return c -> c
-                .notNull(id, "id")
+                .notBlank(id, "id")
                 .notNull(compoundName, "compoundName").kebabFormat(compoundName, "compoundName")
                 .notBlank(smiles, "smiles").maxLength(smiles, 512, "smiles")
                 .notBlank(note, "note");

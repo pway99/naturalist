@@ -82,7 +82,7 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>chemistry-repository-rdms</artifactId>
+            <artifactId>chemistry-repository-rdbms</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>

@@ -52,7 +52,7 @@ final class ElementDbo implements Dbo {
                 .notNull(name, "name").kebabFormat(name, "name").maxLength(name, 64, "name")
                 .notBlank(symbol, "symbol").maxLength(symbol, 8, "symbol")
                 .notNull(atomicWeight, "atomicWeight")
-                .notBlank(ionicForm, "ionicForm").maxLength(ionicForm, 16, "ionicForm")
+                .maxLength(ionicForm, 64, "ionicForm")   // nullable — not every element has an ionic form
                 .notNull(ionicCharge, "ionicCharge");
     }
 }
