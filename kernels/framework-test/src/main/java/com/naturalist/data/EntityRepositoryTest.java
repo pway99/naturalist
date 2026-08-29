@@ -184,7 +184,10 @@ public interface EntityRepositoryTest<
         List<ENTITY> result = repository().getByEntityNameSet(names);
 
         assertThat(result).hasSize(2);
-        assertEntityListEquals(result, expected);
+        // Order-insensitive: getByEntityNameSet takes a Set and returns matches in no defined
+        // order — the in-memory oracle itself returns them in unstable HashMap-iteration order,
+        // so an RDBMS adapter's index/physical order is an equally valid result.
+        assertEntityListEqualsInAnyOrder(result, expected);
     }
 
     // =========================================================================
