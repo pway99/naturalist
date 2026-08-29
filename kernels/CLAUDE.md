@@ -65,6 +65,13 @@ outermost query INVOCATION**, so a test that calls the same query N times (each 
 select) is not flagged — only a single invocation looping a select is. Whitelist a
 genuinely un-batchable repeat with `@AllowRepeatedSelect(query=…, select=…)` on the test
 method. See `docs/plans/2026-08-21-n-plus-one-select-gate-plan.md`.
+An RDBMS sibling of this gate lives in `kernels/persistence-test`
+(`com.naturalist.persistence.test.nofanout`): `RepositoryHeadAspect` (AspectJ head marker on
+`AbstractEntityRepository+`) + `MapperSelectInterceptor` (MyBatis `Executor.query` plugin) →
+`MapperSelectRecorder` → the same reused `SelectGate`. It is **wired and ARMED** in
+`RdbmsTestExtension` and fails an rdbms `*IT` when one repository method fires the same mapper
+`@Select` more than once. Same escape hatch (`@AllowRepeatedSelect`), same non-negotiable
+(never weaken it). See `docs/plans/2026-08-29-rdbms-mapper-select-fanout-gate-design.md`.
 A static backstop `NoSelectInIteration` (composite `com.naturalist.EnforceQueryHygiene`)
 lives in `tooling/naturalist-rewrite`, flagging loop/stream fan-out of repository/query
 selects in main source; it is **ARMED** (2026-08-23) — folded into the `EnforceArchitecture`
