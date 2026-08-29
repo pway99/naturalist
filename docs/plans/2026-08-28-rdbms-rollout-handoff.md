@@ -5,7 +5,28 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 
 ## Status
 
-- **Done (local `main`, unpushed):** naturalists, chemistry.
+- **Done (local `main`, unpushed):** naturalists, chemistry, **library**.
+- **library — COMPLETE 2026-08-28 (committed to local `main`, unpushed):** all four entities
+  (`Concept`, `GlossaryTerm`, `Citation`, `CitationAssociation`) converted in
+  `domains/library/library-repository-rdbms`; `library-repository-rdms` **deleted**. 90 rdbms ITs
+  (drift + 4 contracts) + 82 app tests + the full architecture gate all green.
+  - **EntityRef resolver — landed as Option A.** Port `EntityRefResolver` (`rankOf(EntityRef)` +
+    `resolve(domain,rank,name)`) in **`library-api`**; production impl
+    `InsectsEntityRefResolver` (`@DomainService`, **public**) in **`insects-core`** (which already deps
+    `library-api`), so the app auto-wires it — zero app config. Both directions need domain knowledge
+    (the rank discriminator lives in the concrete `EntityName` subtype), so the port carries both.
+    The seeder and the contract IT construct `new InsectsEntityRefResolver()` directly (seeder deps
+    `insects-core`; the rdbms module deps it **test-scope only**). When a second subject domain
+    appears, grow it into a composite behind the port (mirroring `EntityRefLinker`).
+  - **CitationAssociation storage:** `id UUID` PK; `citation_id BIGINT` within-library FK
+    (nested-select on write, JOIN on read); `subject_domain/subject_rank/subject_name` flat, **no FK**
+    (target is cross-domain); `note` nullable. `getBySubjects` batches via a Postgres row-value `IN`
+    over `CitationSubjectKey` (one query, N+1-safe). No composite unique — the UUID PK covers the
+    contract's duplicate-insert test and keeps the drift IT fully authoritative (`DboSchemaValidator`
+    only validates single-column uniques).
+  - **`Citation` note:** the sealed `authority.Citation` (permit `OnlineSource`) persists via a `kind`
+    discriminator + exhaustive switch; `Instant lastModified` → `TIMESTAMPTZ` (instant-preserving
+    across the separate seeder/test JVMs).
 - **Read first:** [`docs/rdbms-key-management.md`](../rdbms-key-management.md) — the key/FK conventions.
 - **Copy this template:** `domains/chemistry/chemistry-repository-rdbms/` (4 entities incl. an
   aggregate + a surrogate-UUID entity). Minimal template: `domains/naturalists/naturalists-repository-rdbms/`.
@@ -17,9 +38,8 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 ## DAG order (do dependencies first — cross-domain data refs become FKs only once both sides are on RDBMS)
 
 ```
-naturalists ✓   chemistry ✓
-library  — no deps                → READY (chosen next)
-plants   — deps chemistry✓, naturalists✓   → READY
+naturalists ✓   chemistry ✓   library ✓
+plants   — deps chemistry✓, naturalists✓   → READY (chosen next)
 insects  — deps library, plants, naturalists✓
 garden   — deps plants (+ zone*)   [plant_name is a polymorphic rank ref → stays slug even after plants; zone* is a skeleton]
 soil     — deps chemistry✓, garden, weather*, zone*

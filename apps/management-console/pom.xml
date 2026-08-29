@@ -106,7 +106,7 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>library-repository-rdms</artifactId>
+            <artifactId>library-repository-rdbms</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
