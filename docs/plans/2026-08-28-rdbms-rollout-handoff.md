@@ -5,7 +5,31 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 
 ## Status
 
-- **Done (local `main`, unpushed):** naturalists, chemistry, **library**.
+- **Done (local `main`, unpushed):** naturalists, chemistry, library, **plants**.
+- **plants — COMPLETE 2026-08-29 (committed to local `main`, unpushed):** all 13 persisted entities
+  converted in `domains/plants/plants-repository-rdbms`; `plants-repository-rdms` **deleted**. 280 rdbms
+  ITs (drift + 12 contracts) + 82 app tests + the full architecture gate green. Notable design points:
+  - **Rank chain** (order→family→genus→species) = real numeric upward FKs (nested-select on write, JOIN
+    on read). `commonNames`/`nativeBioregions` are child tables (batched assembly, no N+1).
+  - **Evidence stack** (`OrganismObservation`/`OrganismImage` kernel generics) persisted for the first
+    time — no prior template. Polymorphic `PlantRankName` subject/parent stored as a `(rank, slug)` pair
+    and rebuilt IN-MODULE via `PlantRankName.of(slug, LinealRank)` (no resolver — plants-api owns it,
+    unlike library's cross-domain CitationAssociation). Nullable `Identification` flattens to a column
+    group + a `plant_observation_candidate` child table.
+  - **Cross-rank refs** (ecological role, program, phytochemistry `plantName`) → `(plant_rank, plant_name)`
+    slug pair, NO FK. **Cross-domain/cross-kernel refs** (phyto `compound_name`, observation `observed_by`,
+    species `native_bioregion`, order `placed_in`) → plain slug columns, NO FK (each domain's schema.sql
+    builds in an isolated scratch schema, so a cross-schema FK would break its drift IT).
+  - **`PhytochemicalRole`** gained a `kind()`/`ofKind(String)` pair in plants-api (mirroring chemistry's
+    `StructuralType`) to persist its sealed permits as a child-table discriminator.
+  - **Kernel tweak:** `@DboSchema.entity()` bound relaxed `Class<? extends Named<?>>` → `Class<? extends
+    Named>` (raw) so kernel-generic entities (OrganismObservation/Image/FeatureAssignment) can name their
+    raw class literal — a parameterized class literal is illegal in Java. `entity()` is inert doc the
+    validator ignores; all existing concrete usages stay valid. **Insects will need the same for its own
+    evidence stack.**
+  - **Gap (pre-existing, carried forward):** `PlantEcologicalRole` has NO `EntityRepositoryTest` contract
+    in the domain (only a mock + a catalog-data test), so its rdbms adapter ships without a contract IT —
+    seeding smoke-tests its insert + role child table. Author a contract later if wanted.
 - **library — COMPLETE 2026-08-28 (committed to local `main`, unpushed):** all four entities
   (`Concept`, `GlossaryTerm`, `Citation`, `CitationAssociation`) converted in
   `domains/library/library-repository-rdbms`; `library-repository-rdms` **deleted**. 90 rdbms ITs
@@ -38,9 +62,8 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 ## DAG order (do dependencies first — cross-domain data refs become FKs only once both sides are on RDBMS)
 
 ```
-naturalists ✓   chemistry ✓   library ✓
-plants   — deps chemistry✓, naturalists✓   → READY (chosen next)
-insects  — deps library, plants, naturalists✓
+naturalists ✓   chemistry ✓   library ✓   plants ✓
+insects  — deps library✓, plants✓, naturalists✓   → READY (chosen next)
 garden   — deps plants (+ zone*)   [plant_name is a polymorphic rank ref → stays slug even after plants; zone* is a skeleton]
 soil     — deps chemistry✓, garden, weather*, zone*
 usage    — deps naturalists✓  (but BLOCKED by its in-flight event-log redesign)

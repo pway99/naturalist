@@ -13,7 +13,7 @@ import java.util.Set;
  * tables before reseeding.
  *
  * <p>With no arguments, seeds every domain. Pass domain names ({@code naturalists}, {@code chemistry},
- * {@code library}) to seed only those — e.g. {@code -Dexec.args="library"} to reseed library alone.
+ * {@code library}, {@code plants}) to seed only those — e.g. {@code -Dexec.args="plants"} to reseed plants alone.
  */
 public final class TestDbSeeder {
 
@@ -30,6 +30,7 @@ public final class TestDbSeeder {
         if (only.isEmpty() || only.contains("naturalists")) NaturalistSeeding.seed(dataSource, database);
         if (only.isEmpty() || only.contains("chemistry")) ChemistrySeeding.seed(dataSource, database);
         if (only.isEmpty() || only.contains("library")) LibrarySeeding.seed(dataSource, database);
+        if (only.isEmpty() || only.contains("plants")) PlantsSeeding.seed(dataSource, database);
 
         System.out.println("Seed complete" + (only.isEmpty() ? "" : " (" + String.join(", ", only) + ")") + ".");
     }

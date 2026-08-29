@@ -18,7 +18,7 @@
         <module>plants-api</module>
         <module>plants-core</module>
         <module>plants-repository-test</module>
-        <module>plants-repository-rdms</module>
+        <module>plants-repository-rdbms</module>
         <module>plants-test-context</module>
         <module>plants-console</module>
     </modules>

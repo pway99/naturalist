@@ -510,7 +510,7 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
-                <artifactId>plants-repository-rdms</artifactId>
+                <artifactId>plants-repository-rdbms</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

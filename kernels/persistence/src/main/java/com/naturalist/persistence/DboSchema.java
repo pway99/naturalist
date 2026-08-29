@@ -13,7 +13,11 @@ import java.lang.annotation.Target;
 public @interface DboSchema {
     String table();
     String primaryKey();
-    Class<? extends Named<?>> entity();
+    // Raw `Named` bound (not `Named<?>`) so a kernel-generic entity — OrganismObservation,
+    // OrganismImage, OrganismFeatureAssignment — can be named by its raw class literal (a
+    // parameterized class literal is illegal in Java). Inert documentation; the validator ignores it.
+    @SuppressWarnings("rawtypes")
+    Class<? extends Named> entity();
     String[] unique() default {};
     Fk[] foreignKeys() default {};
 }

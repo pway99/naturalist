@@ -90,6 +90,68 @@ public sealed interface PhytochemicalRole extends ValueObject {
         };
     }
 
+    /**
+     * The stable discriminator name for this permit — the same token used by the Jackson
+     * {@code @JsonSubTypes} registration. Each permit maps to its case exhaustively;
+     * {@link #ofKind(String)} is its inverse. Persistence adapters use the pair to store a role
+     * set as a child table of discriminator strings, mirroring {@code chemistry.StructuralType}.
+     */
+    default String kind() {
+        return switch (this) {
+            case HerbivoreDeterrent x -> "HERBIVORE_DETERRENT";
+            case InsectDeterrent x -> "INSECT_DETERRENT";
+            case AntiFungal x -> "ANTI_FUNGAL";
+            case AntiMicrobial x -> "ANTI_MICROBIAL";
+            case Allelopathic x -> "ALLELOPATHIC";
+            case InducedVolatileSignal x -> "INDUCED_VOLATILE_SIGNAL";
+            case PollinatorAttractant x -> "POLLINATOR_ATTRACTANT";
+            case SeedDisperserAttractant x -> "SEED_DISPERSER_ATTRACTANT";
+            case MycorrhizalSignal x -> "MYCORRHIZAL_SIGNAL";
+            case UVProtectant x -> "UV_PROTECTANT";
+            case StressTolerance x -> "STRESS_TOLERANCE";
+            case HeavyMetalChelator x -> "HEAVY_METAL_CHELATOR";
+            case Pharmaceutical x -> "PHARMACEUTICAL";
+            case Nutraceutical x -> "NUTRACEUTICAL";
+            case DyeSource x -> "DYE_SOURCE";
+            case FragranceSource x -> "FRAGRANCE_SOURCE";
+            case FlavorSource x -> "FLAVOR_SOURCE";
+            case FiberSource x -> "FIBER_SOURCE";
+            case InsecticideSource x -> "INSECTICIDE_SOURCE";
+            case IndustrialFeedstock x -> "INDUSTRIAL_FEEDSTOCK";
+            case HumanToxin x -> "HUMAN_TOXIN";
+            case LivestockToxin x -> "LIVESTOCK_TOXIN";
+        };
+    }
+
+    /** Inverse of {@link #kind()} — reconstructs the stateless permit from its discriminator. */
+    static PhytochemicalRole ofKind(String kind) {
+        return switch (kind) {
+            case "HERBIVORE_DETERRENT" -> new HerbivoreDeterrent();
+            case "INSECT_DETERRENT" -> new InsectDeterrent();
+            case "ANTI_FUNGAL" -> new AntiFungal();
+            case "ANTI_MICROBIAL" -> new AntiMicrobial();
+            case "ALLELOPATHIC" -> new Allelopathic();
+            case "INDUCED_VOLATILE_SIGNAL" -> new InducedVolatileSignal();
+            case "POLLINATOR_ATTRACTANT" -> new PollinatorAttractant();
+            case "SEED_DISPERSER_ATTRACTANT" -> new SeedDisperserAttractant();
+            case "MYCORRHIZAL_SIGNAL" -> new MycorrhizalSignal();
+            case "UV_PROTECTANT" -> new UVProtectant();
+            case "STRESS_TOLERANCE" -> new StressTolerance();
+            case "HEAVY_METAL_CHELATOR" -> new HeavyMetalChelator();
+            case "PHARMACEUTICAL" -> new Pharmaceutical();
+            case "NUTRACEUTICAL" -> new Nutraceutical();
+            case "DYE_SOURCE" -> new DyeSource();
+            case "FRAGRANCE_SOURCE" -> new FragranceSource();
+            case "FLAVOR_SOURCE" -> new FlavorSource();
+            case "FIBER_SOURCE" -> new FiberSource();
+            case "INSECTICIDE_SOURCE" -> new InsecticideSource();
+            case "INDUSTRIAL_FEEDSTOCK" -> new IndustrialFeedstock();
+            case "HUMAN_TOXIN" -> new HumanToxin();
+            case "LIVESTOCK_TOXIN" -> new LivestockToxin();
+            default -> throw new IllegalArgumentException("Unknown phytochemical role kind: " + kind);
+        };
+    }
+
     // ── Defense ──────────────────────────────────────────────────────────
 
     /**
