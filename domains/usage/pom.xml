@@ -17,8 +17,10 @@
     <modules>
         <module>usage-api</module>
         <module>usage-core</module>
+        <module>usage-console</module>
         <module>usage-repository-test</module>
         <module>usage-repository-rdms</module>
+        <module>usage-test-context</module>
     </modules>
 
 </project>

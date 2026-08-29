@@ -1,12 +1,5 @@
-package com.naturalist.console.admin;
+package com.naturalist.usage;
 
-import com.naturalist.console.usage.UsageProperties;
-import com.naturalist.usage.UsageAlert;
-import com.naturalist.usage.UsageAlertId;
-import com.naturalist.usage.UsageCommand;
-import com.naturalist.usage.UsagePolicy;
-import com.naturalist.usage.UsageQuery;
-import com.naturalist.usage.UsageSnapshot;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,36 +12,40 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
- * Renders {@code /admin/usage} — the identification-budget monitoring
- * surface for task C1 of the identification cost controls effort. Mirrors
- * {@link AdminResilienceController}: a thin read of the kernel-facing ports
- * ({@link UsageQuery} for display, {@link UsageCommand} for acknowledge) plus
- * the configured warning threshold, with every display decision (gauge colour)
- * computed here so the template stays logic-free.
+ * Renders {@code /admin/usage} — the identification-budget monitoring surface. A
+ * thin read of the usage ports ({@link UsageQuery} for display, {@link UsageCommand}
+ * for acknowledge) plus the configured {@link WarningPercent}, with every display
+ * decision (gauge colour) computed here so the template stays logic-free.
+ *
+ * <p>Lives in {@code usage-console} and depends only on {@code usage-api}: it takes
+ * the warning threshold as the injected {@link WarningPercent} value object (the app's
+ * {@code UsageConfiguration} supplies that bean) rather than the app-level
+ * {@code UsageProperties}, so the console never reaches into the composition root. The
+ * {@code /admin/usage} route is secured app-side; this controller carries no security.
  */
 @Controller
-public class AdminUsageController {
+public class UsageController {
 
     private final UsageQuery usageQuery;
     private final UsageCommand usageCommand;
-    private final UsageProperties usageProperties;
+    private final WarningPercent warningPercent;
 
-    AdminUsageController(UsageQuery usageQuery, UsageCommand usageCommand, UsageProperties usageProperties) {
+    UsageController(UsageQuery usageQuery, UsageCommand usageCommand, WarningPercent warningPercent) {
         this.usageQuery = usageQuery;
         this.usageCommand = usageCommand;
-        this.usageProperties = usageProperties;
+        this.warningPercent = warningPercent;
     }
 
     @GetMapping("/admin/usage")
     String usage(Model model) {
         UsageSnapshot snapshot = usageQuery.snapshot();
-        int warningPercent = usageProperties.warningPercent();
+        int warning = warningPercent.value();
 
         model.addAttribute("snapshot", snapshot);
         model.addAttribute("alerts", usageQuery.activeAlerts());
         model.addAttribute("gauges", List.of(
-                gauge("Daily", snapshot.dailyUsed(), snapshot.dailyLimit(), warningPercent),
-                gauge("Monthly", snapshot.monthlyUsed(), snapshot.monthlyLimit(), warningPercent)
+                gauge("Daily", snapshot.dailyUsed(), snapshot.dailyLimit(), warning),
+                gauge("Monthly", snapshot.monthlyUsed(), snapshot.monthlyLimit(), warning)
         ));
         return "admin/usage";
     }

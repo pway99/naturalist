@@ -1,4 +1,4 @@
-@import com.naturalist.console.admin.AdminUsageController.Gauge
+@import com.naturalist.usage.UsageController.Gauge
 @import com.naturalist.usage.UsageAlert
 @import com.naturalist.usage.UsageSnapshot
 @import java.util.List
@@ -11,7 +11,7 @@
     <%-- Read the same CSRF request attributes NaturalistHeaderInterceptor
          already publishes for the header's own POST forms (see page.jte),
          so the acknowledge form below doesn't need a dedicated model
-         attribute wired through AdminUsageController. --%>
+         attribute wired through UsageController. --%>
     !{var _usageAttrs = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();}
     !{var _usageCsrfParam = _usageAttrs == null ? null : (String) _usageAttrs.getAttribute("naturalistCsrfParam", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
     !{var _usageCsrfToken = _usageAttrs == null ? null : (String) _usageAttrs.getAttribute("naturalistCsrfToken", org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);}
