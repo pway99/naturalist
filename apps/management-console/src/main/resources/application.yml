@@ -33,6 +33,18 @@ mybatis:
     map-underscore-to-camel-case: true
 
 naturalist:
+  # naturalist.admin.username / naturalist.admin.password are REQUIRED and are deliberately
+  # NOT declared here. Supply them at deploy time:
+  #
+  #   java -jar management-console.jar \
+  #     --naturalist.admin.username=… --naturalist.admin.password=…
+  #
+  # Do not add them to this file, not even as ${ENV_VAR} placeholders. An unresolved
+  # placeholder binds as the literal string "${ENV_VAR}", which is non-blank — so
+  # AdminProperties accepts it and the app boots with a fixed, predictable credential pair
+  # baked into the artifact. Verified: with the placeholders present the jar starts with no
+  # credentials supplied; with the keys absent it aborts with
+  # "naturalist.admin.username must be set and non-blank", which is the intended behaviour.
   usage:
     warning-percent: 80
     alert-email: patway99@gmail.com
