@@ -5,7 +5,31 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 
 ## Status
 
-- **Done (local `main`, unpushed):** naturalists, chemistry, library, **plants**.
+- **Done (local `main`, unpushed):** naturalists, chemistry, library, plants, **insects**.
+- **insects — COMPLETE 2026-08-29 (committed to local `main`, unpushed):** all 10 persisted entities
+  converted in `domains/insects/insects-repository-rdbms`; `insects-repository-rdms` **deleted**. 238 rdbms
+  ITs (drift + 11 contracts) + 82 app tests + full architecture gate green. The reference domain, the
+  largest. Rank chain / evidence stack / feature stack mirror plants (with `placed_in` on EVERY rank and
+  96-char cross-rank slugs for subspecies). Two hard entities:
+  - **`InsectSpecies`** — an aggregate with 7 nullable owned VOs (`ChemicalDefense`, `Voltinism`,
+    `HabitatProfile`, `HabitatRequirements`, `GardenConnections`, `BeneficialProfile`,
+    `EcologicalSignificance`) flattened to a column null-group + 5 child tables. Each VO reconstructs iff a
+    presence signal holds (a required leaf non-null, or "any field non-null" / "a child row exists" for the
+    all-nullable VOs). Only `battus-philenor` carries non-null VOs in seed; every other species is all-null
+    and must round-trip as absent — so the presence checks are load-bearing.
+  - **`InsectLifeStage`** — a sealed 4-permit `NamedEntity` (egg/larva/pupa/adult) persisted single-table by
+    a `stage_kind` discriminator, with 6 child tables (phenology windows, habitat zones/layers, larva host
+    plants + parasitoid hosts, adult nectar sources). `PupaStage.DiapauseRegulation` (a stateful sealed VO)
+    flattens to `diapause_kind` + two generic permit fields via an adapter-side switch (no api change, unlike
+    plants' PhytochemicalRole).
+  - **`InsectFunctionalRole`** is a UUID entity here (a value type in chemistry) — `parent_name` UNIQUE +
+    guild child table.
+  - **Shared-contract fix:** `InsectSpeciesRepositoryTest`'s `newEntity`/`ghost`/`modifiedEntity` used an
+    unseeded placeholder genus `carabus`; the real genus FK bit (mock had none). Changed to the seeded
+    `empoasca` (chemistry-precedent fix; mock unaffected, each IT rolls back so no cross-test interference).
+  - **`;`-in-comment trap (again):** the seeder/drift split DDL on `;`, so two inline `-- ...;...` comments in
+    `insect_life_stage` broke the CREATE. Never put a semicolon inside a `.sql` comment.
+  - All 10 entities HAVE a contract test (unlike plants' PlantEcologicalRole gap).
 - **plants — COMPLETE 2026-08-29 (committed to local `main`, unpushed):** all 13 persisted entities
   converted in `domains/plants/plants-repository-rdbms`; `plants-repository-rdms` **deleted**. 280 rdbms
   ITs (drift + 12 contracts) + 82 app tests + the full architecture gate green. Notable design points:
@@ -62,8 +86,7 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 ## DAG order (do dependencies first — cross-domain data refs become FKs only once both sides are on RDBMS)
 
 ```
-naturalists ✓   chemistry ✓   library ✓   plants ✓
-insects  — deps library✓, plants✓, naturalists✓   → READY (chosen next)
+naturalists ✓   chemistry ✓   library ✓   plants ✓   insects ✓
 garden   — deps plants (+ zone*)   [plant_name is a polymorphic rank ref → stays slug even after plants; zone* is a skeleton]
 soil     — deps chemistry✓, garden, weather*, zone*
 usage    — deps naturalists✓  (but BLOCKED by its in-flight event-log redesign)

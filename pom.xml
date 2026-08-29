@@ -400,7 +400,7 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
-                <artifactId>insects-repository-rdms</artifactId>
+                <artifactId>insects-repository-rdbms</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

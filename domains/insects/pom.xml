@@ -19,7 +19,7 @@
         <module>insects-console</module>
         <module>insects-core</module>
         <module>insects-repository-test</module>
-        <module>insects-repository-rdms</module>
+        <module>insects-repository-rdbms</module>
         <module>insects-test-context</module>
     </modules>
 

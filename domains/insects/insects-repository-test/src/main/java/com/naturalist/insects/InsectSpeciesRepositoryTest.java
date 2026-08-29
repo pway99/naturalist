@@ -48,7 +48,7 @@ interface InsectSpeciesRepositoryTest
     default InsectSpecies newEntity() {
         return new InsectSpecies(
                 InsectSpeciesName.of("test-species-xx"),
-                InsectGenusName.of("carabus"),
+                InsectGenusName.of("empoasca"),
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
@@ -62,7 +62,7 @@ interface InsectSpeciesRepositoryTest
     default InsectSpecies ghostEntity() {
         return new InsectSpecies(
                 InsectSpeciesName.of("test-ghost-xx"),
-                InsectGenusName.of("carabus"),
+                InsectGenusName.of("empoasca"),
                 TaxonomicSpecies.of("ghost"),
                 description(),
                 Set.of(),
@@ -76,7 +76,7 @@ interface InsectSpeciesRepositoryTest
     default InsectSpecies modifiedEntity(InsectSpecies original) {
         return new InsectSpecies(
                 original.name(),
-                InsectGenusName.of("carabus"),
+                InsectGenusName.of("empoasca"),
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),

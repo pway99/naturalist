@@ -98,7 +98,7 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>insects-repository-rdms</artifactId>
+            <artifactId>insects-repository-rdbms</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
