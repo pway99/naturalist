@@ -1,11 +1,13 @@
 package com.naturalist.plants.cultivar;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.PlantSpeciesName;
 
 import java.util.List;
 
+@MockDomainService
 class PlantCultivarRepositoryMock
         extends AbstractTestEntityRepository<CultivarName, Cultivar, PlantCultivarTestEntitySource>
         implements CultivarRepository {

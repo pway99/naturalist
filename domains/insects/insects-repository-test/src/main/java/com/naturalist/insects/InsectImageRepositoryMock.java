@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.data.MockDomainService;
 import com.naturalist.observation.OrganismImage;
 
 import com.naturalist.data.AbstractTestEntityRepository;
@@ -8,6 +9,7 @@ import com.naturalist.data.NaturalistDatabase;
 import java.util.List;
 import java.util.Set;
 
+@MockDomainService
 class InsectImageRepositoryMock
         extends AbstractTestEntityRepository<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, InsectImageTestEntitySource>
         implements InsectRepository.ImageRepository {

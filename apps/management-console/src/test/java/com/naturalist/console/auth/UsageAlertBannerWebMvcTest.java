@@ -34,8 +34,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * <p>{@code warning-percent=1} makes the first {@link IdentificationBudget#reserve}
  * cross the GLOBAL DAILY warning threshold ({@code ceil(50*1/100)=1}), producing exactly
- * one alert; the distinct property set gives this class its own cached context (and a
- * fresh in-memory database), isolating its counters from other tests.
+ * one alert; the distinct property set gives this class its own cached context, isolating
+ * its counters from other tests.
+ *
+ * <p>This is the only app-level test that <em>writes</em> — {@code reserve} appends a usage event
+ * and raises an alert — which for a while made it the one test able to corrupt the standing
+ * {@code naturalist_test} Postgres, since a {@code @SpringBootTest} commits by default and usage
+ * events and alerts carry no persistent seed (so those tables must be empty for
+ * {@code usage-repository-rdbms}'s ITs, which read whole tables). It writes to the in-memory
+ * {@code @MockDomainService} doubles now: this module keeps the rdbms jars off its test
+ * classpath entirely, so there is no database to corrupt and {@code activeAlerts()} is
+ * deterministic across re-runs.
  */
 @SpringBootTest
 @TestPropertySource(properties = {

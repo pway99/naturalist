@@ -1,6 +1,7 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Set;
  * In-memory {@link SoilPhysicalCharacteristicsRepository} backed by
  * {@link SoilPhysicalCharacteristicsTestEntitySource}.
  */
+@MockDomainService
 class SoilPhysicalCharacteristicsEntityRepositoryMock
         extends AbstractTestEntityRepository<SoilPhysicalCharacteristicsId, SoilPhysicalCharacteristics, SoilPhysicalCharacteristicsTestEntitySource>
         implements SoilPhysicalCharacteristicsRepository {

@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.naturalist.NaturalistName;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import com.naturalist.observation.OrganismObservation;
 
+@MockDomainService
 class InsectObservationRepositoryMock
         extends AbstractTestEntityRepository<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>, InsectObservationTestEntitySource>
         implements InsectRepository.ObservationRepository {

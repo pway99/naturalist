@@ -1,12 +1,14 @@
 package com.naturalist.usage;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+@MockDomainService
 class UsageAlertRepositoryMock
         extends AbstractTestEntityRepository<UsageAlertId, UsageAlert, UsageAlertTestEntitySource>
         implements UsageRepository.AlertRepository {

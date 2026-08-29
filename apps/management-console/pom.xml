@@ -160,6 +160,59 @@
         </dependency>
 
         <!-- TEST -->
+
+        <!-- In-memory @MockDomainService doubles. Test scope only: they replace the rdbms
+             adapters so app-level tests never touch the standing naturalist_test Postgres
+             (see MockDataConfiguration). -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>chemistry-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>garden-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>insects-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>naturalists-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>plants-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>soil-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>usage-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -193,6 +246,24 @@
                 <configuration>
                     <useManifestOnlyJar>false</useManifestOnlyJar>
                     <useSystemClassLoader>true</useSystemClassLoader>
+                    <!-- The classpath governs which persistence an app-level test sees.
+                         Maven has no scope meaning "runtime but not test" — every scope that
+                         reaches runtime also reaches test — so the rdbms adapters would
+                         otherwise sit on the test classpath and DomainServiceScan would find
+                         them. Dropping the jars here is what makes their absence a fact rather
+                         than a flag: no profile to forget, no property to mis-set. The mock
+                         half arrives the same way, as test-scoped *-repository-test jars.
+                         Guarded by MockPersistenceWiringTest. -->
+                    <classpathDependencyExcludes>
+                        <exclude>com.naturalist:chemistry-repository-rdbms</exclude>
+                        <exclude>com.naturalist:garden-repository-rdbms</exclude>
+                        <exclude>com.naturalist:insects-repository-rdbms</exclude>
+                        <exclude>com.naturalist:library-repository-rdbms</exclude>
+                        <exclude>com.naturalist:naturalists-repository-rdbms</exclude>
+                        <exclude>com.naturalist:plants-repository-rdbms</exclude>
+                        <exclude>com.naturalist:soil-repository-rdbms</exclude>
+                        <exclude>com.naturalist:usage-repository-rdbms</exclude>
+                    </classpathDependencyExcludes>
                 </configuration>
             </plugin>
             <plugin>

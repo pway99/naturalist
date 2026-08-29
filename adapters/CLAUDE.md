@@ -53,14 +53,35 @@ A module belongs in `adapters/` when **all** of the following are true:
   `@DomainService` marker is auto-discovered. A new domain adding the
   marker requires no change to either the scan or the assembly factory.
 
-- `spring-test-data/` — Spring-side composition adapter that publishes
-  the `framework-test` `NaturalistDatabase` as a singleton bean. Holds
-  Spring out of `kernels/framework-test` and the `<domain>-repository-test`
-  modules. The adapter is on the classpath only while the app is
-  pre-RDBMS; once the production data adapter lands, this module is
-  excluded from the deployment artifact, the class disappears from the
-  classpath, and the bean simply does not exist — no profile checks
-  needed at consumer sites.
+  The scan takes no exclusion configuration. What it registers is
+  decided entirely by what is on the classpath — an app that wants a
+  different adapter set changes its dependencies, not a property. See
+  `spring-test-data` for how the console's tests use that to swap in
+  mock persistence.
+
+- `spring-test-data/` — Spring-side composition adapter for in-memory
+  persistence. Publishes the `framework-test` `NaturalistDatabase` as a
+  singleton bean (`TestDataConfiguration`), and ships
+  `MockDomainServiceScan` + `MockDataConfiguration`, which register every
+  `com.naturalist.data.@MockDomainService` double as a bean. Holds Spring
+  out of `kernels/framework-test` and the `<domain>-repository-test`
+  modules.
+
+  **The classpath governs — there is no profile and no property.**
+  `MockDataConfiguration` carries no condition at all: the component scan
+  registers it whenever the jar is present, and apps depend on this
+  module at `<scope>test</scope>`, so it is simply absent from a
+  deployment. A profile that is merely forgotten silently boots a test
+  against production persistence; an absent jar cannot be forgotten into
+  existence.
+
+  The mirror half lives in the consuming app's POM. Maven has no scope
+  meaning "runtime but not test" — every scope reaching runtime also
+  reaches test — so an app that must ship the rdbms adapters drops them
+  from the **test** classpath with Surefire
+  `classpathDependencyExcludes`. Both halves are then classpath facts
+  declared in one file. `apps/management-console` is the reference
+  wiring; `MockPersistenceWiringTest` boots the context and guards it.
 
 Future members anticipated by the runtime architecture refactor plan
 (`docs/plans/runtime-architecture-refactor.md`):

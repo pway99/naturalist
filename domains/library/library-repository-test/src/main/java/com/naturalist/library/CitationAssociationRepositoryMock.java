@@ -3,11 +3,13 @@ package com.naturalist.library;
 import com.naturalist.authority.CitationName;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
 import java.util.Set;
 
+@MockDomainService
 class CitationAssociationRepositoryMock
         extends AbstractTestEntityRepository<CitationAssociationId, CitationAssociation, CitationAssociationTestEntitySource>
         implements CitationAssociationRepository {

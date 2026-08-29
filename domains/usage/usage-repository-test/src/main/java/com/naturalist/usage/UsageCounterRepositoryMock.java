@@ -1,10 +1,12 @@
 package com.naturalist.usage;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
 
+@MockDomainService
 class UsageCounterRepositoryMock
         extends AbstractTestEntityRepository<UsageCounterId, UsageCounter, UsageCounterTestEntitySource>
         implements UsageRepository.CounterRepository {

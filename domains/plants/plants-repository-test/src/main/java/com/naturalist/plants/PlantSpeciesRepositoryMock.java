@@ -1,11 +1,13 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
 import java.util.Set;
 
+@MockDomainService
 class PlantSpeciesRepositoryMock
         extends AbstractTestEntityRepository<PlantSpeciesName, PlantSpecies, PlantSpeciesTestEntitySource>
         implements PlantRepository.SpeciesRepository {

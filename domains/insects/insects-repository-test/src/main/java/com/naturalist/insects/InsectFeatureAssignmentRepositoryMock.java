@@ -1,12 +1,14 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 import java.util.List;
 import java.util.Set;
 
+@MockDomainService
 class InsectFeatureAssignmentRepositoryMock
         extends AbstractTestEntityRepository<InsectFeatureAssignmentId,
                 OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>,

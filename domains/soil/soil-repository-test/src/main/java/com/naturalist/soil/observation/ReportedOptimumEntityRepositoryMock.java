@@ -1,6 +1,7 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Set;
 /**
  * In-memory {@link ReportedOptimumRepository} backed by {@link ReportedOptimumTestEntitySource}.
  */
+@MockDomainService
 class ReportedOptimumEntityRepositoryMock
         extends AbstractTestEntityRepository<ReportedOptimumId, ReportedOptimum, ReportedOptimumTestEntitySource>
         implements ReportedOptimumRepository {

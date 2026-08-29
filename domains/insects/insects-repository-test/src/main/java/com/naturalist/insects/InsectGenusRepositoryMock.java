@@ -1,11 +1,13 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
 import java.util.Set;
 
+@MockDomainService
 class InsectGenusRepositoryMock
         extends AbstractTestEntityRepository<InsectGenusName, InsectGenus, InsectGenusTestEntitySource>
         implements InsectRepository.GenusRepository {

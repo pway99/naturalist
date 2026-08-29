@@ -1,6 +1,7 @@
 package com.naturalist.garden;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.zone.ZoneName;
@@ -11,6 +12,7 @@ import java.util.List;
 /**
  * In-memory {@link PlantingRepository} backed by {@link PlantingTestEntitySource}.
  */
+@MockDomainService
 class PlantingEntityRepositoryMock
         extends AbstractTestEntityRepository<PlantingId, Planting, PlantingTestEntitySource>
         implements PlantingRepository {

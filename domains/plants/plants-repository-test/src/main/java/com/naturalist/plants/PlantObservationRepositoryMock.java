@@ -1,6 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.OrganismObservation;
@@ -8,6 +9,7 @@ import com.naturalist.observation.OrganismObservation;
 import java.util.List;
 import java.util.Set;
 
+@MockDomainService
 class PlantObservationRepositoryMock
         extends AbstractTestEntityRepository<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>, PlantObservationTestEntitySource>
         implements PlantRepository.ObservationRepository {

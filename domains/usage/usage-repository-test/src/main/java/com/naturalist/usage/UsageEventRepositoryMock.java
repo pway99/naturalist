@@ -1,6 +1,7 @@
 package com.naturalist.usage;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.naturalist.NaturalistName;
 import org.jspecify.annotations.Nullable;
@@ -8,6 +9,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 import java.util.List;
 
+@MockDomainService
 class UsageEventRepositoryMock
         extends AbstractTestEntityRepository<UsageEventId, UsageEvent, UsageEventTestEntitySource>
         implements UsageRepository.EventRepository {

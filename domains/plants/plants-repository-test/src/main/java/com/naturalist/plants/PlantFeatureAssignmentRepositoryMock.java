@@ -1,12 +1,14 @@
 package com.naturalist.plants;
 
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 import java.util.List;
 import java.util.Set;
 
+@MockDomainService
 class PlantFeatureAssignmentRepositoryMock
         extends AbstractTestEntityRepository<PlantFeatureAssignmentId,
                 OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>,

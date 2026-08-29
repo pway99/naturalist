@@ -1,25 +1,19 @@
 spring:
   application:
     name: naturalist-console
-  # @SpringBootTests boot the full context, which now includes the rdbms naturalist
-  # @DomainService adapter — so the test JVM needs the same Postgres the app uses.
-  # Points at the standing, seeded naturalist_test database. NOTE: this makes
-  # `mvn test` for this module require Postgres up; decoupling these tests from the
-  # production scan (console-restructuring Slice 1) is the clean fix that restores a
-  # DB-free `mvn test`.
-  datasource:
-    url: jdbc:postgresql://localhost:5432/naturalist_test
-    username: postgres
-    password: postgres
-
-gg:
-  jte:
-    development-mode: true
-    template-suffix: .jte
-
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
+  # No datasource stanza: app-level tests run on the in-memory @MockDomainService doubles.
+  # Which persistence a test sees is decided by the classpath, in this module's POM — the
+  # *-repository-rdbms jars are dropped from the test classpath by Surefire's
+  # classpathDependencyExcludes, and the mocks arrive as the test-scoped spring-test-data jar.
+  # There is no profile and no toggle here; see MockDataConfiguration.
+  #
+  # The one thing still worth saying out loud: with no datasource configured, Spring Boot would
+  # otherwise try to *invent* one (Hikari is on the classpath transitively) and fail with
+  # "Failed to determine a suitable driver class". Declining to fabricate a DataSource is not a
+  # choice between implementations, so it belongs here rather than in the classpath.
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 naturalist:
   admin:
@@ -28,3 +22,8 @@ naturalist:
   usage:
     warning-percent: 80
     alert-email: test@example.com
+
+gg:
+  jte:
+    development-mode: true
+    template-suffix: .jte

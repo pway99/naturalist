@@ -2,10 +2,12 @@ package com.naturalist.chemistry.product;
 
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractTestEntityRepository;
+import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.util.List;
 
+@MockDomainService
 class ProductEntityRepositoryMock
         extends AbstractTestEntityRepository<ProductName, Product, ProductTestEntitySource>
         implements ProductRepository {
