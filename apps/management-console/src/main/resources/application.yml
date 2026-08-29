@@ -1,6 +1,12 @@
 spring:
   application:
     name: naturalist-console
+  # Naturalist persistence runs on the RDBMS adapter (Postgres + MyBatis). Points at
+  # the standing local test database for now; production wiring is a later effort.
+  datasource:
+    url: jdbc:postgresql://localhost:5432/naturalist_test
+    username: postgres
+    password: postgres
   # Uncomment to enable outbound usage-alert email (task D1's AlertEmailer is a
   # no-op until a JavaMailSender bean exists — i.e. until this block is active).
   # mail:
@@ -19,6 +25,12 @@ gg:
   jte:
     development-mode: true
     template-suffix: .jte
+
+# DBO fields are snake_case and identical to their columns — auto-map straight across,
+# never camelCase (mirrors MyBatisSupport's setMapUnderscoreToCamelCase(false)).
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: false
 
 naturalist:
   usage:

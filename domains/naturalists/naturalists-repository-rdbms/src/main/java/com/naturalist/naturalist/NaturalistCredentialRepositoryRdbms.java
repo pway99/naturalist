@@ -5,12 +5,14 @@ import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@DomainService
 class NaturalistCredentialRepositoryRdbms
         extends AbstractEntityRepository<NaturalistName, NaturalistCredential>
         implements NaturalistRepository.CredentialRepository {

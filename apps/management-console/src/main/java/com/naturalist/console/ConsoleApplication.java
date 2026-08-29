@@ -1,8 +1,14 @@
 package com.naturalist.console;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+// Register the rdbms adapters' package-private @Mapper interfaces as beans so the
+// scanned @DomainService repositories can be constructed. Filtered to @Mapper so the
+// shared com.naturalist.naturalist package's non-mapper interfaces are not swept in.
+@MapperScan(basePackages = "com.naturalist.naturalist", annotationClass = Mapper.class)
 @SpringBootApplication(scanBasePackages = "com.naturalist")
 public class ConsoleApplication {
 

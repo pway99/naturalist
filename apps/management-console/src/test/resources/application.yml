@@ -1,11 +1,25 @@
 spring:
   application:
     name: naturalist-console
+  # @SpringBootTests boot the full context, which now includes the rdbms naturalist
+  # @DomainService adapter — so the test JVM needs the same Postgres the app uses.
+  # Points at the standing, seeded naturalist_test database. NOTE: this makes
+  # `mvn test` for this module require Postgres up; decoupling these tests from the
+  # production scan (console-restructuring Slice 1) is the clean fix that restores a
+  # DB-free `mvn test`.
+  datasource:
+    url: jdbc:postgresql://localhost:5432/naturalist_test
+    username: postgres
+    password: postgres
 
 gg:
   jte:
     development-mode: true
     template-suffix: .jte
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: false
 
 naturalist:
   admin:

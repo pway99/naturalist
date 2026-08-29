@@ -39,6 +39,7 @@
         <archunit.version>1.4.2</archunit.version>
         <aspectj.version>1.9.25</aspectj.version>
         <mybatis-version>3.5.16</mybatis-version>
+        <mybatis-spring-boot-starter-version>3.0.4</mybatis-spring-boot-starter-version>
         <postgresql-version>42.7.4</postgresql-version>
         <hikaricp-version>5.1.0</hikaricp-version>
     </properties>
@@ -131,6 +132,11 @@
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
                 <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis-spring-boot-starter-version}</version>
             </dependency>
 
             <!-- KERNELS -->

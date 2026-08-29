@@ -148,7 +148,15 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>naturalists-repository-test</artifactId>
+            <artifactId>naturalists-repository-rdbms</artifactId>
+        </dependency>
+
+        <!-- Spring/MyBatis bridge: autoconfigures the DataSource + SqlSessionFactory
+             from application.yml so the scanned rdbms @DomainService adapters resolve
+             their package-private mappers (registered via @MapperScan). -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- TEST -->
@@ -167,6 +175,7 @@
             <artifactId>archunit-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
