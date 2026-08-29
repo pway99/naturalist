@@ -17,7 +17,7 @@ public final class MyBatisSupport {
     public static SqlSessionFactory sessionFactory(DataSource dataSource, Class<?>... mappers) {
         Environment environment = new Environment("naturalist", new JdbcTransactionFactory(), dataSource);
         Configuration configuration = new Configuration(environment);
-        configuration.setMapUnderscoreToCamelCase(false);
+        configuration.setMapUnderscoreToCamelCase(true);
         for (Class<?> mapper : mappers) {
             configuration.addMapper(mapper);
         }

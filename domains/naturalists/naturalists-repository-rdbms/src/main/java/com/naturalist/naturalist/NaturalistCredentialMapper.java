@@ -46,12 +46,12 @@ interface NaturalistCredentialMapper {
 
     @Insert("""
         INSERT INTO naturalist_credential (naturalist_id, password_hash)
-        SELECT id, #{password_hash} FROM naturalist WHERE name = #{name}
+        SELECT id, #{passwordHash} FROM naturalist WHERE name = #{name}
         """)
     int insert(NaturalistCredentialDbo dbo);
 
     @Update("""
-        UPDATE naturalist_credential SET password_hash = #{password_hash}
+        UPDATE naturalist_credential SET password_hash = #{passwordHash}
         WHERE naturalist_id = (SELECT id FROM naturalist WHERE name = #{name})
         """)
     int updateByName(NaturalistCredentialDbo dbo);

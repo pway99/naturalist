@@ -44,13 +44,13 @@ interface NaturalistMapper {
 
     @Insert("""
         INSERT INTO naturalist (name, given_name, family_name, role, stage, notes)
-        VALUES (#{name}, #{given_name}, #{family_name}, #{role}, #{stage}, #{notes})
+        VALUES (#{name}, #{givenName}, #{familyName}, #{role}, #{stage}, #{notes})
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(NaturalistDbo dbo);
 
     @Update("""
-        UPDATE naturalist SET given_name = #{given_name}, family_name = #{family_name},
+        UPDATE naturalist SET given_name = #{givenName}, family_name = #{familyName},
                role = #{role}, stage = #{stage}, notes = #{notes}
         WHERE name = #{name}
         """)

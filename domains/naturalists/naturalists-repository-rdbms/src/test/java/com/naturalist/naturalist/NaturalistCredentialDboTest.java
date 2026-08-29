@@ -11,7 +11,7 @@ class NaturalistCredentialDboTest {
         NaturalistCredential c = new NaturalistCredential(
                 NaturalistName.of("amir-hassan"), "{bcrypt}$2a$10$abc");
         NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(c, 7L);
-        assertThat(dbo.naturalist_id).isEqualTo(7L);
+        assertThat(dbo.naturalistId).isEqualTo(7L);
         assertThat(dbo.toEntity()).usingRecursiveComparison().isEqualTo(c);
     }
 
@@ -19,7 +19,7 @@ class NaturalistCredentialDboTest {
         NaturalistCredential c = new NaturalistCredential(
                 NaturalistName.of("amir-hassan"), "{bcrypt}$2a$10$abc");
         NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(c, 7L);
-        dbo.password_hash = "x".repeat(81); // exceeds VARCHAR(80)
+        dbo.passwordHash = "x".repeat(81); // exceeds VARCHAR(80)
         var violations = Observer.forClass(NaturalistCredentialDboTest.class)
                 .arguments("t", i -> i.observable(dbo, "dbo")).violations();
         assertThat(violations).isNotEmpty();

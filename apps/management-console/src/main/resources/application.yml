@@ -26,11 +26,11 @@ gg:
     development-mode: true
     template-suffix: .jte
 
-# DBO fields are snake_case and identical to their columns — auto-map straight across,
-# never camelCase (mirrors MyBatisSupport's setMapUnderscoreToCamelCase(false)).
+# DBO fields are camelCase; MyBatis translates snake_case columns across on read
+# (mirrors MyBatisSupport's setMapUnderscoreToCamelCase(true)). Writes name columns explicitly.
 mybatis:
   configuration:
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
 
 naturalist:
   usage:

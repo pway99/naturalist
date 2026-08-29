@@ -19,7 +19,7 @@ gg:
 
 mybatis:
   configuration:
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
 
 naturalist:
   admin:
