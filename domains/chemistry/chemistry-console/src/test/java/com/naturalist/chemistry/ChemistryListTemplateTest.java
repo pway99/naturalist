@@ -1,5 +1,7 @@
 package com.naturalist.chemistry;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundTestEntitySource;
 import com.naturalist.data.NaturalistTestExtension;
@@ -29,7 +31,7 @@ class ChemistryListTemplateTest {
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "chemistry/list.jte",
                 Map.of("compoundsPage", compoundsPage),
                 output);

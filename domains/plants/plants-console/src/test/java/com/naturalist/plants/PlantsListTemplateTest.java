@@ -1,5 +1,7 @@
 package com.naturalist.plants;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
@@ -27,7 +29,7 @@ class PlantsListTemplateTest {
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "plants/list.jte",
                 Map.of("plantsPage", plantsPage),
                 output);

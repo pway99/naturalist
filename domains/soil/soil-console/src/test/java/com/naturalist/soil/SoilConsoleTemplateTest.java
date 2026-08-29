@@ -1,5 +1,7 @@
 package com.naturalist.soil;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
@@ -57,7 +59,7 @@ class SoilConsoleTemplateTest {
                 .toList();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("soil/list.jte", Map.of("profiles", profiles), output);
+        ConsoleSliceTemplates.create().render("soil/list.jte", Map.of("profiles", profiles), output);
 
         String html = output.toString();
         assertThat(html).contains("box1");
@@ -73,7 +75,7 @@ class SoilConsoleTemplateTest {
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("soil/profile.jte",
+        ConsoleSliceTemplates.create().render("soil/profile.jte",
                 Map.of("profile", box1, "glossaryLinker", glossaryLinker), output);
 
         String html = output.toString();
@@ -111,7 +113,7 @@ class SoilConsoleTemplateTest {
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("soil/profile.jte",
+        ConsoleSliceTemplates.create().render("soil/profile.jte",
                 Map.of("profile", box1, "glossaryLinker", GlossaryLinker.none()), output);
 
         String html = output.toString();
@@ -131,7 +133,7 @@ class SoilConsoleTemplateTest {
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("soil/profile.jte",
+        ConsoleSliceTemplates.create().render("soil/profile.jte",
                 Map.of("profile", box1, "glossaryLinker", glossaryLinker), output);
 
         String html = output.toString();
@@ -157,7 +159,7 @@ class SoilConsoleTemplateTest {
                         ? "/chemistry/elements/" + n.value() : null);
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("soil/profile.jte",
+        ConsoleSliceTemplates.create().render("soil/profile.jte",
                 Map.of("profile", box1, "glossaryLinker", GlossaryLinker.none(),
                         "chemistryLinks", links), output);
 
@@ -176,7 +178,7 @@ class SoilConsoleTemplateTest {
                 .getBySoilProfileName(SoilProfileName.of("box1")).orElseThrow();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("soil/profile.jte",
+        ConsoleSliceTemplates.create().render("soil/profile.jte",
                 Map.of("profile", box1, "glossaryLinker", GlossaryLinker.none()), output);
 
         String html = output.toString();
@@ -193,7 +195,7 @@ class SoilConsoleTemplateTest {
     void profile_rendersUnreportedNutrientDistinctlyFromReportedZero() {
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("soil/profile.jte",
+        ConsoleSliceTemplates.create().render("soil/profile.jte",
                 Map.of("profile", shortPanelProfile(), "glossaryLinker", GlossaryLinker.none()), output);
 
         String html = output.toString();

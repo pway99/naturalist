@@ -69,9 +69,8 @@
 
         <!-- TEST -->
         <dependency>
-            <groupId>gg.jte</groupId>
-            <artifactId>jte</artifactId>
-            <version>${jte.version}</version>
+            <groupId>com.naturalist</groupId>
+            <artifactId>spring-console-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

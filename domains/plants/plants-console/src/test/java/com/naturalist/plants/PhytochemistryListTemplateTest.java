@@ -1,5 +1,7 @@
 package com.naturalist.plants;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
@@ -29,7 +31,7 @@ class PhytochemistryListTemplateTest {
                 .getNamed(PlantPhytochemicalConstituentTestEntitySource.class).pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("plants/phytochemistry/list.jte",
+        ConsoleSliceTemplates.create().render("plants/phytochemistry/list.jte",
                 Map.of("constituentsPage", constituentsPage), output);
 
         assertThat(output.toString()).isNotBlank();

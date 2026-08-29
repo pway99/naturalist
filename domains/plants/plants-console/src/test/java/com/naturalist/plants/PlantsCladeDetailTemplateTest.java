@@ -1,5 +1,7 @@
 package com.naturalist.plants;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.clades.Asterids;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
@@ -37,7 +39,7 @@ class PlantsCladeDetailTemplateTest {
                 .toList();
 
         StringOutput output = new StringOutput();
-        TestTemplateEngine.create().render("plants/clades/detail.jte", Map.of(
+        ConsoleSliceTemplates.create().render("plants/clades/detail.jte", Map.of(
                 "clade", new Superasterids(),
                 "orders", List.of(caryophyllales),
                 "childClades", List.of(new Asterids()),

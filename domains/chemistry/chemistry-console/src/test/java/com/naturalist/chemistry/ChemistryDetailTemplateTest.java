@@ -1,5 +1,7 @@
 package com.naturalist.chemistry;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.chemistry.compound.Compound;
 import com.naturalist.chemistry.compound.CompoundTestEntitySource;
 import com.naturalist.data.NaturalistTestExtension;
@@ -24,7 +26,7 @@ class ChemistryDetailTemplateTest {
 
     @Test
     void detail_rendersEveryCompoundWithoutError() {
-        var template = TestTemplateEngine.create();
+        var template = ConsoleSliceTemplates.create();
         for (Compound compound : nte.getNamed(CompoundTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("chemistry/detail.jte", Map.of("compound", compound), output);
@@ -41,7 +43,7 @@ class ChemistryDetailTemplateTest {
                 .findFirst().orElseThrow();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("chemistry/detail.jte",
+        ConsoleSliceTemplates.create().render("chemistry/detail.jte",
                 Map.of("compound", gypsum,
                         "linkableElements", Set.of("calcium", "sulfur", "oxygen", "hydrogen")),
                 output);
@@ -60,7 +62,7 @@ class ChemistryDetailTemplateTest {
         StringOutput output = new StringOutput();
 
         // Only calcium is catalogued: sulfur, oxygen and hydrogen must not become links.
-        TestTemplateEngine.create().render("chemistry/detail.jte",
+        ConsoleSliceTemplates.create().render("chemistry/detail.jte",
                 Map.of("compound", gypsum, "linkableElements", Set.of("calcium")),
                 output);
 

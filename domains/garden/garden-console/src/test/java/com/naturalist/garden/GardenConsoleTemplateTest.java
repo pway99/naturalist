@@ -1,5 +1,7 @@
 package com.naturalist.garden;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import gg.jte.output.StringOutput;
@@ -25,7 +27,7 @@ class GardenConsoleTemplateTest {
 
     private static String render(String template, Map<String, Object> params) {
         StringOutput output = new StringOutput();
-        TestTemplateEngine.create().render(template, params, output);
+        ConsoleSliceTemplates.create().render(template, params, output);
         return output.toString();
     }
 

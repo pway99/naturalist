@@ -1,5 +1,7 @@
 package com.naturalist.plants;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.clades.Angiosperms;
 import com.naturalist.clades.Plantae;
 import com.naturalist.data.NaturalistTestExtension;
@@ -32,7 +34,7 @@ class PlantsOrderListTemplateTest {
                 .pageOf(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "plants/orders/list.jte",
                 Map.of("ordersPage", ordersPage),
                 output);
@@ -51,7 +53,7 @@ class PlantsOrderListTemplateTest {
 
         // The kingdom-level landing descends to the deepest clade shared by every
         // catalogued order — for a catalogue of flowering plants, Plantae › Angiosperms.
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "plants/orders/list.jte",
                 Map.of("ordersPage", ordersPage,
                         "cladeTrail", java.util.List.of(new Plantae(), new Angiosperms()).stream()

@@ -1,5 +1,7 @@
 package com.naturalist.chemistry;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.element.Element;
 import com.naturalist.chemistry.element.ElementName;
@@ -26,7 +28,7 @@ class ChemistryElementsTemplateTest {
         var page = context.elementQuery().findPage(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("chemistry/elements/list.jte",
+        ConsoleSliceTemplates.create().render("chemistry/elements/list.jte",
                 Map.of("elementsPage", page), output);
 
         String html = output.toString();
@@ -41,7 +43,7 @@ class ChemistryElementsTemplateTest {
         for (Element element : context.elementQuery()
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content()) {
             StringOutput output = new StringOutput();
-            TestTemplateEngine.create().render("chemistry/elements/detail.jte",
+            ConsoleSliceTemplates.create().render("chemistry/elements/detail.jte",
                     Map.of("element", element), output);
             assertThat(output.toString())
                     .as("rendered output for %s", element.name().value())
@@ -54,7 +56,7 @@ class ChemistryElementsTemplateTest {
         Element calcium = context.elementQuery().getByName(ElementName.of("calcium")).orElseThrow();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("chemistry/elements/detail.jte",
+        ConsoleSliceTemplates.create().render("chemistry/elements/detail.jte",
                 Map.of("element", calcium), output);
 
         String html = output.toString();
@@ -68,7 +70,7 @@ class ChemistryElementsTemplateTest {
         Element boron = context.elementQuery().getByName(ElementName.of("boron")).orElseThrow();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render("chemistry/elements/detail.jte",
+        ConsoleSliceTemplates.create().render("chemistry/elements/detail.jte",
                 Map.of("element", boron), output);
 
         String html = output.toString();

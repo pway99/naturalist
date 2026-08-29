@@ -1,5 +1,7 @@
 package com.naturalist.plants;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Magnoliids;
@@ -43,7 +45,7 @@ class PlantsCladeTrailTemplateTest {
     @Test
     void rendersInConsoleLineageWithHoverDropdownsAndTheEukaryotaCrossover() {
         StringOutput output = new StringOutput();
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "plants/cladeTrail.jte", Map.of("cladeTrail", MAGNOLIID_TRAIL), output);
 
         String html = output.toString();
@@ -64,7 +66,7 @@ class PlantsCladeTrailTemplateTest {
     @Test
     void surfacesTheMissingClassAsALearningLink() {
         StringOutput output = new StringOutput();
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "plants/cladeTrail.jte", Map.of("cladeTrail", MAGNOLIID_TRAIL), output);
 
         // Plants carry no Class rank (design D1). Rather than silently skipping it,
@@ -76,7 +78,7 @@ class PlantsCladeTrailTemplateTest {
     @Test
     void emptyTrailRendersNothing() {
         StringOutput output = new StringOutput();
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "plants/cladeTrail.jte", Map.of("cladeTrail", List.<CladeStep>of()), output);
 
         assertThat(output.toString()).doesNotContain("Tree of life");
