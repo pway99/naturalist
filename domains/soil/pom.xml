@@ -17,7 +17,7 @@
         <module>soil-api</module>
         <module>soil-core</module>
         <module>soil-repository-test</module>
-        <module>soil-repository-rdms</module>
+        <module>soil-repository-rdbms</module>
         <module>soil-test-context</module>
         <module>soil-console</module>
     </modules>

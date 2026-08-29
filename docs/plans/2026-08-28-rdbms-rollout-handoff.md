@@ -5,7 +5,23 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 
 ## Status
 
-- **Done (local `main`, unpushed):** naturalists, chemistry, library, plants, insects, **garden**.
+- **Done (local `main`, unpushed):** naturalists, chemistry, library, plants, insects, garden, **soil**.
+- **soil — COMPLETE 2026-08-29 (committed to local `main`, unpushed):** all 6 persisted entities
+  (`SoilProfileInfo` + the 5 `observation/` types) converted in `domains/soil/soil-repository-rdbms`;
+  `soil-repository-rdms` **deleted**. 156 rdbms ITs (drift + 6 contracts) + 82 app tests + gate green.
+  - **Soft-ref decision (deviation from the within-domain-FK default):** soil's `TestEntitySource`s declare
+    NO `foreignKeyConstraints()` and the contracts insert observations against random/non-existent parent ids,
+    so `soil_profile_name` (slug) and every `lab_analysis_id` (UUID) are **plain columns, NO FK** — matching
+    the domain's soft-reference model and avoiding contract churn. Composite logical keys
+    (`(nutrient_name/input_name, lab_analysis_id)`, and `lab_analysis_id` unique on physical) are DDL-only
+    UNIQUEs (not in `@DboSchema.unique`).
+  - **Two sealed VOs flattened adapter-side** (neither has kind()/ofKind): `OptimumRange` (4 permits) →
+    `range_shape` + nullable `range_min`/`range_max`; `RecommendedAmount` (3 permits) → `amount_kind` +
+    nullable `amount_value`. A `Quantity(0)` (amount_value 0) round-trips distinctly from `None`
+    (amount_value null) via the discriminator — the domain explicitly requires this.
+  - **Measurements** (SoilPH, CEC, EC, SAR, …) unwrap to a single `BigDecimal` and store as **unconstrained
+    NUMERIC** so scale round-trips exactly for `.equals()` comparison. Mixed key styles: `SoilProfileInfo` is
+    BIGINT-id NamedEntity; the 5 observation entities are UUID `Entity`. Built by one subagent + hand schema.
 - **garden — COMPLETE 2026-08-29 (committed to local `main`, unpushed):** its one persisted entity
   (`Planting`, `Entity<PlantingId>`) converted in `domains/garden/garden-repository-rdbms`;
   `garden-repository-rdms` **deleted**. 33 rdbms ITs + 82 app tests + gate green. Simplest domain: a single
@@ -93,8 +109,8 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 ## DAG order (do dependencies first — cross-domain data refs become FKs only once both sides are on RDBMS)
 
 ```
-naturalists ✓   chemistry ✓   library ✓   plants ✓   insects ✓   garden ✓
-soil     — deps chemistry✓, garden✓, weather*, zone*   → READY (chosen next)
+naturalists ✓   chemistry ✓   library ✓   plants ✓   insects ✓   garden ✓   soil ✓
+usage    — deps naturalists✓   BUT BLOCKED by its in-flight event-log redesign (confirm with user before converting)
 garden   — deps plants (+ zone*)   [plant_name is a polymorphic rank ref → stays slug even after plants; zone* is a skeleton]
 soil     — deps chemistry✓, garden, weather*, zone*
 usage    — deps naturalists✓  (but BLOCKED by its in-flight event-log redesign)

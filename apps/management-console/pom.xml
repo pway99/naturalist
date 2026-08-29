@@ -122,7 +122,7 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>soil-repository-rdms</artifactId>
+            <artifactId>soil-repository-rdbms</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>

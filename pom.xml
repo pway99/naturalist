@@ -588,7 +588,7 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
-                <artifactId>soil-repository-rdms</artifactId>
+                <artifactId>soil-repository-rdbms</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
