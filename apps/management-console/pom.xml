@@ -70,9 +70,32 @@
             <groupId>com.naturalist</groupId>
             <artifactId>spring-runtime</artifactId>
         </dependency>
+        <!-- COMPILE SCOPE ON PURPOSE — do not "clean this up" to test scope.
+             Ships the NaturalistDatabase bean, which production needs today: EolClientMock
+             (kernels/authority, awaiting Phase 4's real client) is a @DomainService on the
+             production classpath and constructor-injects it. Test-scoping this packages a jar
+             that dies on boot with "required a bean of type NaturalistDatabase".
+             It also ships MockDomainServiceScan, which is harmless here: the scan finds
+             @MockDomainService classes only if a *-repository-test jar is present, and those are
+             test-scoped below. Presence of the mocks — not this jar — is what decides whether a
+             context runs on doubles. -->
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>spring-test-data</artifactId>
+        </dependency>
+        <!-- COMPILE SCOPE ON PURPOSE — do not "clean this up" to test scope.
+             framework-test looks like test infra leaking into the deployable, and the reactor
+             pom's scope-less managed entry does force it to compile even as a transitive of a
+             test-scoped dependency. But the app genuinely needs it at runtime: EolClientMock
+             (kernels/authority) is a @DomainService on the production classpath and extends
+             TestEntitySource, so DomainServiceScan instantiates it at startup. Marking this
+             test-scoped packages a jar that dies with NoClassDefFoundError:
+             com/naturalist/data/TestEntitySource on boot.
+             This resolves itself with Phase 4 of the external-authority seam — a real EOL client
+             replacing the mock — not with scope surgery here. -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework-test</artifactId>
         </dependency>
 
         <!-- DOMAIN CONSOLE MODULES -->
@@ -162,8 +185,8 @@
         <!-- TEST -->
 
         <!-- In-memory @MockDomainService doubles. Test scope only: they replace the rdbms
-             adapters so app-level tests never touch the standing naturalist_test Postgres
-             (see MockDataConfiguration). -->
+             adapters under the `mock-data` profile so app-level tests never touch the standing
+             naturalist_test Postgres (see MockDataConfiguration). -->
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>chemistry-repository-test</artifactId>
@@ -252,7 +275,7 @@
                          otherwise sit on the test classpath and DomainServiceScan would find
                          them. Dropping the jars here is what makes their absence a fact rather
                          than a flag: no profile to forget, no property to mis-set. The mock
-                         half arrives the same way, as test-scoped *-repository-test jars.
+                         half arrives the same way, as the test-scoped spring-test-data jar.
                          Guarded by MockPersistenceWiringTest. -->
                     <classpathDependencyExcludes>
                         <exclude>com.naturalist:chemistry-repository-rdbms</exclude>
@@ -273,6 +296,19 @@
                 <configuration>
                     <mainClass>com.naturalist.console.ConsoleApplication</mainClass>
                 </configuration>
+                <!-- Bind `repackage` explicitly. It is NOT implicit here: the goal is bound to
+                     the package phase by spring-boot-starter-parent's pluginManagement, and this
+                     reactor's parent is `naturalist`, not that. Without this execution `mvn
+                     package` produced a plain jar with no BOOT-INF/ and no launcher — importable
+                     as a library, not runnable with `java -jar`. `spring-boot:run` never noticed,
+                     which is why the gap survived: it builds a classpath from the reactor rather
+                     than from the artifact. -->
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <goals><goal>repackage</goal></goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
