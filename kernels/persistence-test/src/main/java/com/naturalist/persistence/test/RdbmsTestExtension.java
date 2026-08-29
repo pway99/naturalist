@@ -1,11 +1,17 @@
 package com.naturalist.persistence.test;
 
 import com.naturalist.persistence.MyBatisSupport;
+import com.naturalist.persistence.test.nofanout.MapperSelectInterceptor;
+import com.naturalist.persistence.test.nofanout.MapperSelectRecorder;
+import com.naturalist.test.query.nofanout.AllowRepeatedSelect;
+import com.naturalist.test.query.nofanout.SelectGate;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+
+import java.util.Arrays;
 
 /**
  * Binds one MyBatis {@link SqlSession} per test (autocommit off) and rolls it back after,
@@ -16,6 +22,11 @@ public final class RdbmsTestExtension implements BeforeEachCallback, AfterEachCa
 
     private static final SqlSessionFactory FACTORY =
             MyBatisSupport.sessionFactory(RdbmsDataSource.shared());
+
+    static {
+        // Test-only: feeds the mapper-select fan-out gate. Never registered by production MyBatisSupport.
+        FACTORY.getConfiguration().addInterceptor(new MapperSelectInterceptor());
+    }
 
     private final ThreadLocal<SqlSession> current = new ThreadLocal<>();
 
@@ -28,17 +39,25 @@ public final class RdbmsTestExtension implements BeforeEachCallback, AfterEachCa
     @Override
     public void beforeEach(ExtensionContext context) {
         current.set(FACTORY.openSession(false)); // autocommit off
+        MapperSelectRecorder.arm();
     }
 
     @Override
     public void afterEach(ExtensionContext context) {
-        SqlSession session = current.get();
-        if (session != null) {
-            try {
-                session.rollback();
-            } finally {
-                session.close();
-                current.remove();
+        try {
+            AllowRepeatedSelect[] allowlist =
+                    context.getRequiredTestMethod().getAnnotationsByType(AllowRepeatedSelect.class);
+            SelectGate.evaluate(MapperSelectRecorder.snapshot(), Arrays.asList(allowlist));
+        } finally {
+            MapperSelectRecorder.disarm();
+            SqlSession session = current.get();
+            if (session != null) {
+                try {
+                    session.rollback();
+                } finally {
+                    session.close();
+                    current.remove();
+                }
             }
         }
     }
