@@ -192,7 +192,10 @@ insects domain.
 ## Repository Architecture
 
 See [ADR-001](../docs/adr/ADR-001-repository-architecture.md) and
-[ADR-002](../docs/adr/ADR-002-repository-behavioral-contract.md).
+[ADR-002](../docs/adr/ADR-002-repository-behavioral-contract.md). For the RDBMS adapter layer
+— how natural-key (`NamedEntity` slug) and sequence-based (`BIGINT IDENTITY`) keys map to
+PK/FK/columns, how cross-references resolve (names in the DBO, ids in the DB), and the
+surrogate-UUID case — see [`docs/rdbms-key-management.md`](../docs/rdbms-key-management.md).
 
 Quick-reference constraints:
 
