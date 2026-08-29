@@ -12,15 +12,13 @@ import java.util.function.Consumer;
            foreignKeys = @Fk(columns = "naturalist_id", references = "naturalist(id)"),
            entity = NaturalistCredential.class)
 final class NaturalistCredentialDbo implements Dbo {
-    Long naturalistId;   // resolved from naturalist.name at insert time
+    String name;          // the naturalist's slug: JOIN projection (read) / nested-select key (write)
     String passwordHash;
-    String name;          // read-only projection (aliased n.name); null on the write path
 
-    static NaturalistCredentialDbo from(NaturalistCredential c, long naturalistId) {
+    static NaturalistCredentialDbo from(NaturalistCredential c) {
         NaturalistCredentialDbo d = new NaturalistCredentialDbo();
-        d.naturalistId = naturalistId;
-        d.passwordHash = c.passwordHash();
         d.name = c.name().value();
+        d.passwordHash = c.passwordHash();
         Observer.forClass(NaturalistCredentialDbo.class)
                 .arguments("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
@@ -34,7 +32,7 @@ final class NaturalistCredentialDbo implements Dbo {
     @Override
     public Consumer<? extends Constraints> invariants() {
         return c -> c
-                .notNull(naturalistId, "naturalistId")
+                .notNull(name, "name").kebabFormat(name, "name")
                 .notBlank(passwordHash, "passwordHash").maxLength(passwordHash, 80, "passwordHash");
     }
 }

@@ -60,7 +60,7 @@ class NaturalistCredentialRepositoryRdbms
     protected void doInsert(NaturalistCredential entity) {
         // naturalist_id is resolved inline by the mapper's INSERT … SELECT; DBO carries name.
         // from(...) validates the DBO (incl. password_hash width) and throws if invalid.
-        NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(entity, -1L);
+        NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(entity);
         int inserted;
         try {
             inserted = mapper.insert(dbo);
@@ -81,7 +81,7 @@ class NaturalistCredentialRepositoryRdbms
 
     @Override
     protected void doUpdate(NaturalistCredential entity) {
-        NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(entity, -1L);   // from(...) validates + throws
+        NaturalistCredentialDbo dbo = NaturalistCredentialDbo.from(entity);   // from(...) validates + throws
         if (mapper.updateByName(dbo) == 0) {
             throw new EntityNotFoundException(entity);
         }
