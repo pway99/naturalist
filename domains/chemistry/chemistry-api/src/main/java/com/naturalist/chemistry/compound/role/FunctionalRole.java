@@ -45,6 +45,34 @@ public sealed interface FunctionalRole extends ValueObject {
         };
     }
 
+    /**
+     * The stable discriminator string for this role — the same token the Jackson
+     * {@code @JsonSubTypes} mapping uses. Exhaustive over the permits (compiler-guarded);
+     * {@link #ofKind(String)} is its inverse. Persistence adapters use the pair to store
+     * and rebuild a role as a plain column, no Jackson.
+     */
+    default String kind() {
+        return switch (this) {
+            case Chelator x -> "CHELATOR";
+            case Fumigant x -> "FUMIGANT";
+            case BiologicalCatalyst x -> "BIOLOGICAL_CATALYST";
+            case Fertilizer x -> "FERTILIZER";
+            case Acaricide x -> "ACARICIDE";
+        };
+    }
+
+    /** Reconstructs a role from its {@link #kind()} discriminator. Inverse of {@code kind()}. */
+    static FunctionalRole ofKind(String kind) {
+        return switch (kind) {
+            case "CHELATOR" -> new Chelator();
+            case "FUMIGANT" -> new Fumigant();
+            case "BIOLOGICAL_CATALYST" -> new BiologicalCatalyst();
+            case "FERTILIZER" -> new Fertilizer();
+            case "ACARICIDE" -> new Acaricide();
+            default -> throw new IllegalArgumentException("Unknown FunctionalRole kind: " + kind);
+        };
+    }
+
     record Chelator() implements FunctionalRole {
     }
 

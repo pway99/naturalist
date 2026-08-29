@@ -43,6 +43,13 @@ public final class RdbmsTestExtension implements BeforeEachCallback, AfterEachCa
         }
     }
 
+    /** The JDBC connection backing the current test's rolled-back transaction. */
+    public java.sql.Connection connection() {
+        SqlSession session = current.get();
+        if (session == null) throw new IllegalStateException("No active test session; use @RegisterExtension");
+        return session.getConnection();
+    }
+
     /** Returns a mapper bound to the current test's rolled-back transaction. */
     public <M> M mapper(Class<M> mapperType) {
         synchronized (FACTORY) {

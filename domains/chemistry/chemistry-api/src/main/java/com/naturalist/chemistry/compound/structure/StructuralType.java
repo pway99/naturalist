@@ -176,6 +176,79 @@ public sealed interface StructuralType extends ValueObject {
         };
     }
 
+    /**
+     * The stable discriminator string for this permit — the same token the Jackson
+     * {@code @JsonSubTypes} mapping uses ({@code "MONOTERPENE"}, {@code "INDOLE_ALKALOID"},
+     * …). Exhaustive over the sealed permits, so a new permit will not compile without a
+     * corresponding case; {@link #ofKind(String)} is its inverse. Persistence adapters use
+     * the pair to store and rebuild a structural type as a plain column, no Jackson.
+     */
+    default String kind() {
+        return switch (this) {
+            case Element x -> "ELEMENT";
+            case Inorganic x -> "INORGANIC";
+            case IndoleAlkaloid x -> "INDOLE_ALKALOID";
+            case TropaneAlkaloid x -> "TROPANE_ALKALOID";
+            case PurineAlkaloid x -> "PURINE_ALKALOID";
+            case PyrrolizidineAlkaloid x -> "PYRROLIZIDINE_ALKALOID";
+            case QuinolineAlkaloid x -> "QUINOLINE_ALKALOID";
+            case IsoquinolineAlkaloid x -> "ISOQUINOLINE_ALKALOID";
+            case OtherAlkaloid x -> "OTHER_ALKALOID";
+            case Monoterpene x -> "MONOTERPENE";
+            case Sesquiterpene x -> "SESQUITERPENE";
+            case Diterpene x -> "DITERPENE";
+            case Triterpene x -> "TRITERPENE";
+            case Tetraterpene x -> "TETRATERPENE";
+            case SimplePhenolic x -> "SIMPLE_PHENOLIC";
+            case Flavonoid x -> "FLAVONOID";
+            case Anthocyanin x -> "ANTHOCYANIN";
+            case Tannin x -> "TANNIN";
+            case CardiacGlycoside x -> "CARDIAC_GLYCOSIDE";
+            case CyanogenicGlycoside x -> "CYANOGENIC_GLYCOSIDE";
+            case Saponin x -> "SAPONIN";
+            case OtherGlycoside x -> "OTHER_GLYCOSIDE";
+            case Glucosinolate x -> "GLUCOSINOLATE";
+            case OrganicAcid x -> "ORGANIC_ACID";
+            case FattyAcidLipid x -> "FATTY_ACID_LIPID";
+            case Polysaccharide x -> "POLYSACCHARIDE";
+            case OtherOrganic x -> "OTHER_ORGANIC";
+        };
+    }
+
+    /** Reconstructs a permit from its {@link #kind()} discriminator. Inverse of {@code kind()}. */
+    static StructuralType ofKind(String kind) {
+        return switch (kind) {
+            case "ELEMENT" -> new Element();
+            case "INORGANIC" -> new Inorganic();
+            case "INDOLE_ALKALOID" -> new IndoleAlkaloid();
+            case "TROPANE_ALKALOID" -> new TropaneAlkaloid();
+            case "PURINE_ALKALOID" -> new PurineAlkaloid();
+            case "PYRROLIZIDINE_ALKALOID" -> new PyrrolizidineAlkaloid();
+            case "QUINOLINE_ALKALOID" -> new QuinolineAlkaloid();
+            case "ISOQUINOLINE_ALKALOID" -> new IsoquinolineAlkaloid();
+            case "OTHER_ALKALOID" -> new OtherAlkaloid();
+            case "MONOTERPENE" -> new Monoterpene();
+            case "SESQUITERPENE" -> new Sesquiterpene();
+            case "DITERPENE" -> new Diterpene();
+            case "TRITERPENE" -> new Triterpene();
+            case "TETRATERPENE" -> new Tetraterpene();
+            case "SIMPLE_PHENOLIC" -> new SimplePhenolic();
+            case "FLAVONOID" -> new Flavonoid();
+            case "ANTHOCYANIN" -> new Anthocyanin();
+            case "TANNIN" -> new Tannin();
+            case "CARDIAC_GLYCOSIDE" -> new CardiacGlycoside();
+            case "CYANOGENIC_GLYCOSIDE" -> new CyanogenicGlycoside();
+            case "SAPONIN" -> new Saponin();
+            case "OTHER_GLYCOSIDE" -> new OtherGlycoside();
+            case "GLUCOSINOLATE" -> new Glucosinolate();
+            case "ORGANIC_ACID" -> new OrganicAcid();
+            case "FATTY_ACID_LIPID" -> new FattyAcidLipid();
+            case "POLYSACCHARIDE" -> new Polysaccharide();
+            case "OTHER_ORGANIC" -> new OtherOrganic();
+            default -> throw new IllegalArgumentException("Unknown StructuralType kind: " + kind);
+        };
+    }
+
     // ── Non-organic — explicit "axis does not apply" permits ───────────
 
     /**

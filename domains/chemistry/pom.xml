@@ -19,6 +19,7 @@
         <module>chemistry-core</module>
         <module>chemistry-repository-test</module>
         <module>chemistry-repository-rdms</module>
+        <module>chemistry-repository-rdbms</module>
         <module>chemistry-test-context</module>
     </modules>
 
