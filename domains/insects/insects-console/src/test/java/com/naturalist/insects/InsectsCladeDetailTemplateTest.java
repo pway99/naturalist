@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.clades.Holometabola;
 import com.naturalist.clades.Lepidoptera;
 import com.naturalist.library.CladeStep;
@@ -26,7 +28,7 @@ class InsectsCladeDetailTemplateTest {
                 new CladeStep("holometabola", "Holometabola", Optional.empty())), null);
 
         StringOutput output = new StringOutput();
-        TestTemplateEngine.create().render("insects/clades/detail.jte", Map.of(
+        ConsoleSliceTemplates.create().render("insects/clades/detail.jte", Map.of(
                 "clade", new Holometabola(),
                 "orders", List.of(new CladeTaxonCard("/insects/orders/lepidoptera", "Lepidoptera")),
                 "species", List.of(new CladeTaxonCard("/insects/battus-philenor", "Battus philenor")),

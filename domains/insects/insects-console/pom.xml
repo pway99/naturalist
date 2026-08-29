@@ -72,22 +72,25 @@
             <artifactId>jakarta.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- TEST: the JTE template tests build fixtures via NaturalistTestExtension +
-             getNamed, so they need the extension (framework-test) and the domain's
-             *TestEntitySource classes (insects-repository-test) on the test classpath. -->
+        <!-- TEST: the shared console-slice toolchain. One dependency pulls the JTE
+             engine + Spring view resolver (ConsoleSliceTemplates /
+             ConsoleSliceRenderConfiguration), spring-boot-starter-test, spring-webmvc,
+             and framework-test transitively, so the template-render tests and the
+             @WebMvcTest slices share one stack instead of re-listing it. No
+             spring-security: the console reads the current naturalist from a request
+             attribute, never SecurityContext. -->
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>framework-test</artifactId>
+            <artifactId>spring-console-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- TEST: domain fixtures + wired in-memory query/command surfaces the tests
+             build the controller and render templates against. -->
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>insects-repository-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- TEST: constructing InsectsController directly (over-budget redirect test)
-             needs the in-memory query/command surfaces for insects + library. -->
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>insects-test-context</artifactId>
@@ -96,41 +99,6 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>library-test-context</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>gg.jte</groupId>
-            <artifactId>jte</artifactId>
-            <version>${jte.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- TEST: @WebMvcTest slices for InsectsController (MockMvc, JUnit, AssertJ).
-             Deliberately no spring-security here: the console reads the current
-             naturalist from a request attribute, never SecurityContext. -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- TEST: the servlet MVC stack the @WebMvcTest slice runs on (DispatcherServlet,
-             MockMvc, ViewResolver). The module's own code needs only spring-web. -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- TEST: gg.jte's Spring MVC JteViewResolver, so the slice renders full
-             pages (app layout + insects templates) via the filesystem engine. -->
-        <dependency>
-            <groupId>gg.jte</groupId>
-            <artifactId>jte-spring-boot-starter-3</artifactId>
-            <version>${jte.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

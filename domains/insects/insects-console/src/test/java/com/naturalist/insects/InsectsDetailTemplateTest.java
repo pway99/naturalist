@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.insects.InsectFamily;
 import com.naturalist.insects.InsectFamilyTestEntitySource;
@@ -43,7 +45,7 @@ class InsectsDetailTemplateTest {
         InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/detail.jte",
                 Map.of(
                         "species", anySpecies,

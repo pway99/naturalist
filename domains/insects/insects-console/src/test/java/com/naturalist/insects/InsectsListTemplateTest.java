@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
@@ -42,7 +44,7 @@ class InsectsListTemplateTest {
                         .collect(Collectors.groupingBy(image -> (InsectSpeciesName) image.parentName()));
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/list.jte",
                 Map.of(
                         "speciesPage", speciesPage,

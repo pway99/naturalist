@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.library.CladeStep;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,7 @@ class InsectsCladeTrailTemplateTest {
                 new CladeStep("insecta", "Insecta", Optional.empty())), null);
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/cladeTrail.jte", Map.of("trail", trail), output);
 
         String html = output.toString();
@@ -45,7 +47,7 @@ class InsectsCladeTrailTemplateTest {
                 new CladeStep("insecta", "Insecta", Optional.empty())), "Coleoptera");
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/cladeTrail.jte", Map.of("trail", trail), output);
 
         String html = output.toString();

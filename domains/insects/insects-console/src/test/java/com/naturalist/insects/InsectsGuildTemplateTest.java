@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.insects.FunctionalGuild;
 import com.naturalist.insects.InsectFunctionalRole;
@@ -33,7 +35,7 @@ class InsectsGuildTemplateTest {
                         .toList();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/guild.jte",
                 Map.of(
                         "selectedGuild", selected,

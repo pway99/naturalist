@@ -1,4 +1,4 @@
-package com.naturalist.insects;
+package com.naturalist.spring.console;
 
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;
@@ -6,31 +6,64 @@ import gg.jte.TemplateEngine;
 import gg.jte.TemplateNotFoundException;
 import gg.jte.resolve.DirectoryCodeResolver;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
-final class TestTemplateEngine {
+/**
+ * Builds a filesystem-backed JTE {@link TemplateEngine} spanning every console's
+ * templates, for use in console tests — template-render tests and
+ * {@code @WebMvcTest} slices alike. Mirrors the app's runtime {@code JteConfiguration}:
+ * it discovers {@code apps/<app>/src/main/jte} (the shared layout) and
+ * {@code domains/<domain>/<domain>-console/src/main/jte} (each domain's templates)
+ * from the project source tree, so a domain template that extends the app layout
+ * resolves both. App-shell roots come first, so a layout template is never
+ * shadowed by a domain of the same name. Templates compile on the fly — no
+ * precompiled classes required.
+ *
+ * <p>Replaces the per-console {@code TestTemplateEngine} copies: a console test
+ * calls {@link #create()} instead of maintaining its own resolver.
+ */
+public final class ConsoleSliceTemplates {
 
-    private static final String[] TEMPLATE_ROOTS = {
-            "apps/management-console/src/main/jte",
-            "domains/insects/insects-console/src/main/jte",
-    };
-
-    private TestTemplateEngine() {
+    private ConsoleSliceTemplates() {
     }
 
-    static TemplateEngine create() {
+    public static TemplateEngine create() {
         Path projectRoot = findProjectRoot();
         List<DirectoryCodeResolver> resolvers = new ArrayList<>();
-        for (String root : TEMPLATE_ROOTS) {
-            Path path = projectRoot.resolve(root);
-            if (Files.isDirectory(path)) {
-                resolvers.add(new DirectoryCodeResolver(path));
+        addJteRootsUnder(projectRoot.resolve("apps"), resolvers);
+        Path domainsDir = projectRoot.resolve("domains");
+        if (Files.isDirectory(domainsDir)) {
+            for (Path domain : childDirectories(domainsDir)) {
+                addJteRootsUnder(domain, resolvers);
             }
         }
-        return TemplateEngine.create(new CompositeCodeResolver(resolvers), ContentType.Html);
+        return TemplateEngine.create(new CompositeCodeResolver(List.copyOf(resolvers)), ContentType.Html);
+    }
+
+    private static void addJteRootsUnder(Path parent, List<DirectoryCodeResolver> resolvers) {
+        if (!Files.isDirectory(parent)) {
+            return;
+        }
+        for (Path child : childDirectories(parent)) {
+            Path jte = child.resolve("src/main/jte");
+            if (Files.isDirectory(jte)) {
+                resolvers.add(new DirectoryCodeResolver(jte));
+            }
+        }
+    }
+
+    private static List<Path> childDirectories(Path dir) {
+        try (Stream<Path> stream = Files.list(dir)) {
+            return stream.filter(Files::isDirectory).sorted().toList();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private static Path findProjectRoot() {

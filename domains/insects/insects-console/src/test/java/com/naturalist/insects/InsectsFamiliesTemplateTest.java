@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.spring.console.ConsoleSliceTemplates;
+
 import com.naturalist.observation.OrganismImage;
 
 import com.naturalist.data.NaturalistTestExtension;
@@ -44,7 +46,7 @@ class InsectsFamiliesTemplateTest {
         }
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/families.jte",
                 Map.of("familyPage", familyPage,
                        "orderByName", orderByName),
@@ -61,7 +63,7 @@ class InsectsFamiliesTemplateTest {
         InsectOrder order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/family.jte",
                 Map.of(
                         "family", anyFamily,
@@ -104,7 +106,7 @@ class InsectsFamiliesTemplateTest {
                 identification);
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/family.jte",
                 Map.of(
                         "family", anyFamily,
@@ -138,7 +140,7 @@ class InsectsFamiliesTemplateTest {
                 InsectEntityCollections.ImageCollection.empty());
         StringOutput output = new StringOutput();
 
-        TestTemplateEngine.create().render(
+        ConsoleSliceTemplates.create().render(
                 "insects/family.jte",
                 Map.of(
                         "family", family,

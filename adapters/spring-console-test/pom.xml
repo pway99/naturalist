@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>naturalist-adapters</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>spring-console-test</artifactId>
+    <name>adapters :: spring-console-test</name>
+
+    <description>
+        Spring-side test-support adapter for the per-domain *-console modules.
+        Provides the filesystem JTE engine (ConsoleSliceTemplates) that spans the
+        shared app layout plus every console's templates, and the reusable
+        @WebMvcTest render wiring (ConsoleSliceRenderConfiguration). A console
+        depends on this at test scope and inherits the whole slice-test toolchain
+        transitively -- spring-boot-starter-test, spring-webmvc, jte, the jte
+        Spring view resolver, and framework-test -- so it declares one test
+        dependency instead of copying the engine and re-listing the stack. Lives
+        behind the adapter boundary so no kernel, api, or core gains Spring.
+    </description>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- Compile scope on purpose: a console depends on this module at test scope,
+         so every dependency below reaches the console's tests transitively. The
+         module has no production consumers, so the test toolchain never leaks. -->
+    <dependencies>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>gg.jte</groupId>
+            <artifactId>jte</artifactId>
+            <version>${jte.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>gg.jte</groupId>
+            <artifactId>jte-spring-boot-starter-3</artifactId>
+            <version>${jte.version}</version>
+        </dependency>
+    </dependencies>
+</project>

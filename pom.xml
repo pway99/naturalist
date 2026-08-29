@@ -263,6 +263,11 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>spring-console-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>spring-runtime</artifactId>
                 <version>${project.version}</version>
             </dependency>
