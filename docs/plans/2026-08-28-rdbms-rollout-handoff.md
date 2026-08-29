@@ -5,7 +5,14 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 
 ## Status
 
-- **Done (local `main`, unpushed):** naturalists, chemistry, library, plants, **insects**.
+- **Done (local `main`, unpushed):** naturalists, chemistry, library, plants, insects, **garden**.
+- **garden — COMPLETE 2026-08-29 (committed to local `main`, unpushed):** its one persisted entity
+  (`Planting`, `Entity<PlantingId>`) converted in `domains/garden/garden-repository-rdbms`;
+  `garden-repository-rdms` **deleted**. 33 rdbms ITs + 82 app tests + gate green. Simplest domain: a single
+  flat table, **zero FKs** — `plantName` is a nullable polymorphic `PlantRankName` (stays `(plant_rank,
+  plant_name)` slug even though plants is converted; matched on BOTH columns so ranks don't collide),
+  `zone_name`/`sub_zone_name` are zone-skeleton slugs, `cultivar_name` a cross-domain plants slug. `LocalDate`
+  → `DATE` (MyBatis built-in handler). `PlantedZone` is a read model (not persisted).
 - **insects — COMPLETE 2026-08-29 (committed to local `main`, unpushed):** all 10 persisted entities
   converted in `domains/insects/insects-repository-rdbms`; `insects-repository-rdms` **deleted**. 238 rdbms
   ITs (drift + 11 contracts) + 82 app tests + full architecture gate green. The reference domain, the
@@ -86,7 +93,8 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 ## DAG order (do dependencies first — cross-domain data refs become FKs only once both sides are on RDBMS)
 
 ```
-naturalists ✓   chemistry ✓   library ✓   plants ✓   insects ✓
+naturalists ✓   chemistry ✓   library ✓   plants ✓   insects ✓   garden ✓
+soil     — deps chemistry✓, garden✓, weather*, zone*   → READY (chosen next)
 garden   — deps plants (+ zone*)   [plant_name is a polymorphic rank ref → stays slug even after plants; zone* is a skeleton]
 soil     — deps chemistry✓, garden, weather*, zone*
 usage    — deps naturalists✓  (but BLOCKED by its in-flight event-log redesign)

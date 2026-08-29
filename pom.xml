@@ -557,7 +557,7 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
-                <artifactId>garden-repository-rdms</artifactId>
+                <artifactId>garden-repository-rdbms</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

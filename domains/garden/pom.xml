@@ -17,7 +17,7 @@
         <module>garden-api</module>
         <module>garden-core</module>
         <module>garden-repository-test</module>
-        <module>garden-repository-rdms</module>
+        <module>garden-repository-rdbms</module>
         <module>garden-test-context</module>
         <module>garden-console</module>
     </modules>
