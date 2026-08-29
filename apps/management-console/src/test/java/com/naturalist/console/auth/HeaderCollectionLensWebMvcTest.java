@@ -1,7 +1,6 @@
-package com.naturalist.console.insects;
+package com.naturalist.console.auth;
 
 import com.naturalist.naturalist.NaturalistName;
-import com.naturalist.console.auth.NaturalistPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * The shared page header ({@code layout/page.jte}) shows the "My collection" lens
+ * toggle only for a signed-in naturalist on an insects page, and hides it off the
+ * insects section and for admins. This is an app-level header test, not an
+ * {@code InsectsController} test: the form is rendered by the app shell, gated on
+ * the {@code insectSection} / naturalist request attributes that
+ * {@link NaturalistHeaderInterceptor} publishes, and one case exercises the
+ * non-insects home page. It therefore stays in the composition root (full
+ * {@code @SpringBootTest} with the real security filter chain) rather than moving
+ * to a security-free {@code insects-console} slice.
+ */
 @SpringBootTest
-class CollectionToggleWebMvcTest {
+class HeaderCollectionLensWebMvcTest {
 
     @Autowired
     WebApplicationContext context;
@@ -57,19 +67,5 @@ class CollectionToggleWebMvcTest {
         mockMvc.perform(get("/insects/species").with(user("test-admin").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not(containsString("action=\"/insects/collection-lens\""))));
-    }
-
-    @Test
-    void emptyCollection_showsNudge() throws Exception {
-        // A synthetic naturalist that no other test records observations for, so the
-        // empty-collection assertion is order-independent (unlike a seeded naturalist,
-        // whose observations other tests mutate in the shared app context).
-        var empty = new NaturalistPrincipal(NaturalistName.of("empty-collector"), " Empty", "{bcrypt}x");
-        var emptyAuth = new UsernamePasswordAuthenticationToken(empty, "n/a", empty.getAuthorities());
-        mockMvc.perform(get("/insects/species")
-                        .sessionAttr("insects.collectionLens", true)
-                        .with(authentication(emptyAuth)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("No insects in your collection yet")));
     }
 }

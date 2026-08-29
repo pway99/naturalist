@@ -7,17 +7,18 @@ import com.naturalist.usage.BudgetExceededException;
 import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.usage.LimitKind;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Comparator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,23 +82,34 @@ class InsectsControllerOverBudgetTest {
 
     // InsectsController hard-codes its image storage directory to
     // "data/images/insects" relative to the working directory (not injectable);
-    // identify() writes the uploaded image to disk before the budget check
-    // fires, so this test cleans up the one file (and now-empty directories)
-    // it creates rather than leaving stray untracked files in the worktree.
+    // identify() writes the uploaded image to disk (under a generated UUID name)
+    // before the budget check fires. Rather than nuke the shared directory —
+    // which other slice tests in this module write into concurrently across the
+    // suite — snapshot its contents before the test and delete only the files
+    // this test added, leaving the directory and every other test's files intact.
+    private static final Path IMAGE_DIR = Path.of("data/images/insects");
+    private Set<Path> imagesBefore;
+
+    @BeforeEach
+    void snapshotStoredImages() throws IOException {
+        imagesBefore = storedImages();
+    }
+
     @AfterEach
     void cleanUpStoredImage() throws IOException {
-        var dataDir = Path.of("data");
-        if (!Files.exists(dataDir)) {
-            return;
+        for (Path stored : storedImages()) {
+            if (!imagesBefore.contains(stored)) {
+                Files.deleteIfExists(stored);
+            }
         }
-        try (var paths = Files.walk(dataDir)) {
-            paths.sorted(Comparator.reverseOrder()).forEach(p -> {
-                try {
-                    Files.delete(p);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
+    }
+
+    private static Set<Path> storedImages() throws IOException {
+        if (!Files.isDirectory(IMAGE_DIR)) {
+            return Set.of();
+        }
+        try (var paths = Files.list(IMAGE_DIR)) {
+            return paths.collect(Collectors.toSet());
         }
     }
 }

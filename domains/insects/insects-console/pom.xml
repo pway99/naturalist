@@ -109,6 +109,30 @@
             <version>${jte.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- TEST: @WebMvcTest slices for InsectsController (MockMvc, JUnit, AssertJ).
+             Deliberately no spring-security here: the console reads the current
+             naturalist from a request attribute, never SecurityContext. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- TEST: the servlet MVC stack the @WebMvcTest slice runs on (DispatcherServlet,
+             MockMvc, ViewResolver). The module's own code needs only spring-web. -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- TEST: gg.jte's Spring MVC JteViewResolver, so the slice renders full
+             pages (app layout + insects templates) via the filesystem engine. -->
+        <dependency>
+            <groupId>gg.jte</groupId>
+            <artifactId>jte-spring-boot-starter-3</artifactId>
+            <version>${jte.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

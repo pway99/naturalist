@@ -44,6 +44,10 @@ class ImageStorageService {
         var uuidName = EntityId.newUUID().toString() + extension;
         var target = storageDir.resolve(uuidName);
         try {
+            // Ensure the directory each write: the constructor creates it eagerly, but a
+            // long-lived service must not fail a store if the directory is removed later
+            // (ops disk cleanup in production; a sibling test's teardown in the suite).
+            Files.createDirectories(storageDir);
             Files.write(target, imageBytes);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to store image: " + target, e);
