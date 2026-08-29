@@ -56,7 +56,7 @@ class CultivarEntityRepositoryRdbms
         if (request.lookahead() > 0 && immediateMore) {
             int window = request.lookahead() * pageSize + 1;
             int beyond = mapper.countInWindow(request.offset() + pageSize, window);
-            pagesAheadKnown = Math.min(request.lookahead(), beyond / pageSize);
+            pagesAheadKnown = Math.min(request.lookahead(), (beyond + pageSize - 1) / pageSize);
             moreBeyondLookahead = beyond > request.lookahead() * pageSize;
         } else if (request.lookahead() > 0) {
             moreBeyondLookahead = false;
