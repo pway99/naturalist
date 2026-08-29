@@ -170,7 +170,7 @@ interface UsageAlertRepositoryTest extends EntityRepositoryTest<UsageAlertId, Us
     @Test
     default void getUnacknowledged_isOrderedNewestFirst() {
         UsageAlertId laterId = UsageAlertId.create();
-        source().insert(new UsageAlert(
+        repository().insert(new UsageAlert(
                 laterId,
                 TestUsageIdentifiers.UsageCounters.Identification,
                 AlertScope.DAILY,
@@ -188,7 +188,7 @@ interface UsageAlertRepositoryTest extends EntityRepositoryTest<UsageAlertId, Us
 
     @Test
     default void getUnacknowledged_noneUnacknowledged_returnsEmpty() {
-        source().update(source().getByName(KnownAlert1Id).orElseThrow().withAcknowledged(true));
+        repository().save(repository().getByName(KnownAlert1Id).orElseThrow().withAcknowledged(true));
 
         List<UsageAlert> result = repository().getUnacknowledged();
 
@@ -210,7 +210,7 @@ interface UsageAlertRepositoryTest extends EntityRepositoryTest<UsageAlertId, Us
 
     @Test
     default void getUnsent_noneUnsent_returnsEmpty() {
-        source().update(source().getByName(KnownAlert1Id).orElseThrow().withEmailed(true));
+        repository().save(repository().getByName(KnownAlert1Id).orElseThrow().withEmailed(true));
 
         List<UsageAlert> result = repository().getUnsent();
 

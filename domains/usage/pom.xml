@@ -19,7 +19,7 @@
         <module>usage-core</module>
         <module>usage-console</module>
         <module>usage-repository-test</module>
-        <module>usage-repository-rdms</module>
+        <module>usage-repository-rdbms</module>
         <module>usage-test-context</module>
     </modules>
 

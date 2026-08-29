@@ -5,7 +5,20 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 
 ## Status
 
-- **Done (local `main`, unpushed):** naturalists, chemistry, library, plants, insects, garden, **soil**.
+- **ROLLOUT COMPLETE — all 8 domains on real Postgres+MyBatis. No `-repository-rdms` module remains.**
+  naturalists, chemistry, library, plants, insects, garden, soil (all committed + pushed), and **usage**.
+- **usage — COMPLETE 2026-08-29 (committed to local `main`):** all 3 persisted entities (`UsageEvent`,
+  `UsageCounter`, `UsageAlert`, all flat surrogate-UUID) converted in `domains/usage/usage-repository-rdbms`;
+  `usage-repository-rdms` **deleted**. 81 rdbms ITs + full `mvn verify` + gate green. No FKs (counter/naturalist
+  refs are soft slugs); composite logical keys are DDL-only UNIQUEs; `limit` → `limit_value` column (reserved).
+  - **Contract quirk:** the usage event/alert contracts insert fixtures via `@BeforeEach` into `source()`
+    (empty JSON) rather than JSON-loading — the mock's source==repo, but the rdbms repo is DB-backed. The
+    event/alert ITs override the seed `@BeforeEach` to also mirror `source().entityStream()` into the
+    rolled-back DB session. Three alert tests that mutated `source()` MID-body were changed to use
+    `repository()` (mock-safe: its repo and source share a store). Counters are JSON-seeded (standard IT).
+  - **Cross-cutting bugfix (separate commit):** all rdbms page adapters used floor division for
+    `pagesAheadKnown`; the usage counter (3 rows, pageSize 2) exposed the partial-trailing-page `hasNext` bug.
+    Fixed to ceil across all 42 adapters to match the `TestEntitySource.pageOf` oracle.
 - **soil — COMPLETE 2026-08-29 (committed to local `main`, unpushed):** all 6 persisted entities
   (`SoilProfileInfo` + the 5 `observation/` types) converted in `domains/soil/soil-repository-rdbms`;
   `soil-repository-rdms` **deleted**. 156 rdbms ITs (drift + 6 contracts) + 82 app tests + gate green.
@@ -110,7 +123,7 @@ intermediate to a real `-rdbms` adapter (Postgres + MyBatis ACL), following the 
 
 ```
 naturalists ✓   chemistry ✓   library ✓   plants ✓   insects ✓   garden ✓   soil ✓
-usage    — deps naturalists✓   BUT BLOCKED by its in-flight event-log redesign (confirm with user before converting)
+usage ✓  — converted 2026-08-29 (user opted in despite the event-log redesign)
 garden   — deps plants (+ zone*)   [plant_name is a polymorphic rank ref → stays slug even after plants; zone* is a skeleton]
 soil     — deps chemistry✓, garden, weather*, zone*
 usage    — deps naturalists✓  (but BLOCKED by its in-flight event-log redesign)

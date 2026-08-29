@@ -134,7 +134,7 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>usage-repository-rdms</artifactId>
+            <artifactId>usage-repository-rdbms</artifactId>
         </dependency>
 
         <!-- NATURALISTS -->

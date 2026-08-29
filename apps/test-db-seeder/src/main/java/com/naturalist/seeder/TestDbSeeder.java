@@ -34,6 +34,7 @@ public final class TestDbSeeder {
         if (only.isEmpty() || only.contains("insects")) InsectsSeeding.seed(dataSource, database);
         if (only.isEmpty() || only.contains("garden")) GardenSeeding.seed(dataSource, database);
         if (only.isEmpty() || only.contains("soil")) SoilSeeding.seed(dataSource, database);
+        if (only.isEmpty() || only.contains("usage")) UsageSeeding.seed(dataSource, database);
 
         System.out.println("Seed complete" + (only.isEmpty() ? "" : " (" + String.join(", ", only) + ")") + ".");
     }
