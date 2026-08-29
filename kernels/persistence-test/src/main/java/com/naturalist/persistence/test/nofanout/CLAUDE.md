@@ -59,3 +59,9 @@ blanket-`@AllowRepeatedSelect`. If you believe the gate is wrong, raise it with 
   (id extraction), `RepositoryHeadWeavingTest` (weaving + head scoping). Real end-to-end
   coverage is the domain `*IT` suites against the standing Postgres. Per the framework-test
   "no test infra for test infra" rule, do not add more scaffolding.
+- **Known blind spots** (shared with the in-memory gate, both by-design): a select is counted
+  only inside a repository-method head, so scaffolding that drives a raw mapper via
+  `RdbmsTestExtension.mapper(...)` is (correctly) invisible; cross-thread fan-out
+  (`parallelStream`/executor) is **under-counted, never miscounted** because the head stack is
+  ThreadLocal; and only `Executor.query` is intercepted, not `Executor.queryCursor`. No current
+  adapter uses a cursor or fans out across threads.
