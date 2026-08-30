@@ -118,6 +118,15 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
+## PL-13 — Parent-rank enrichment is gated behind an authority lookup that never hits
+
+**Raised:** 2026-08-30.
+**Where:** Surfaced debugging the `stagmomantis-californica` identification failure. `InsectIdentificationCommand.generateEnrichment` already asks `TextGenerationService` for exactly the right thing per new parent rank — all four Durrell levels plus diagnostic features ordered conspicuous-to-diagnostic. But `enrichIfNew` calls it only when `externalAuthority.lookup(rankName)` returns a reference, and `ExternalAuthority` is still `EolClient extends EolClientMock`, whose fixture holds four entries — `battus-philenor`, `hippodamia-convergens`, `danaus-plexippus`, `apis-mellifera` — all **species**. `enrichIfNew` is only ever called for order/family/genus, so the lookup misses every time, the model is never called, and every new parent rank is written with `FALLBACK_DESCRIPTION` ("Identified via vision -- description pending."). The gate's intent is real, not accidental: the enrichment system prompt says "Do not invent facts -- only reshape what the source says", so descriptions are meant to be authority-grounded. Two identical placeholder constants exist — `FALLBACK_DESCRIPTION` on the command (the one that fires) and `PLACEHOLDER` on `InsectCatalogIdentificationTransaction` (reachable only when a caller supplies no `parentDescriptions`, i.e. tests).
+**Blocking:** No. Identification succeeds; parent ranks are simply catalogued with placeholder text and no features.
+**Resolution path:** Three candidates, considered 2026-08-30, none chosen. (a) *Ungate* — call the model for every new parent rank, passing authority content when available and none when not; smallest change, keeps descriptions taxon-level, vision path untouched, but abandons the grounding rule. (b) *Fold into the vision call* — ask the vision agent for the full lineage in one call; fewest model calls, but rank resolution is idempotent and first-writer-wins, so whichever photo first reaches a new order permanently authors that order's description from a single specimen. (c) *Build Phase 4* — the real EOL HTTP client (design: `docs/plans/2026-08-23-eol-client-design.md`), which makes the gate pass as designed but is the largest piece and still falls back for taxa EOL lacks. Whichever wins should also collapse the duplicate placeholder constants.
+
+---
+
 ## Conventions
 
 - New entries get the next `PL-N` ID; numbers are never reused.
