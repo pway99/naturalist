@@ -28,20 +28,72 @@
         <module>tooling</module>
     </modules>
 
+    <!--
+      Single source of truth for every third-party version in the reactor. Sub-aggregators
+      (kernels, adapters, tooling) and leaf modules declare NO versions of their own — they
+      reference these properties, so a bump happens in exactly one place.
+
+      Versions marked "Boot-managed" are deliberately pinned to whatever
+      spring-boot-dependencies:${spring-boot.version} manages, not to the newest release on
+      Maven Central. Only some modules import the Boot BOM; the rest name the artifact
+      directly, and pinning to the BOM's choice keeps both halves of the reactor on one
+      version instead of letting nearest-wins resolution pick per-module.
+    -->
     <properties>
         <java.version>25</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-boot.version>3.5.0</spring-boot.version>
-        <jte.version>3.2.1</jte.version>
-        <cdk.version>2.12</cdk.version>
-        <archunit.version>1.4.2</archunit.version>
-        <aspectj.version>1.9.25</aspectj.version>
-        <mybatis-version>3.5.16</mybatis-version>
-        <mybatis-spring-boot-starter-version>3.0.4</mybatis-spring-boot-starter-version>
-        <postgresql-version>42.7.4</postgresql-version>
-        <hikaricp-version>5.1.0</hikaricp-version>
+
+        <!-- Spring -->
+        <spring-boot.version>4.1.1</spring-boot.version>
+        <!-- Boot-managed: the Spring Framework line behind spring-boot ${spring-boot.version}. -->
+        <spring-context-version>7.0.9</spring-context-version>
+
+        <!-- Persistence -->
+        <mybatis-version>3.5.19</mybatis-version>
+        <mybatis-spring-boot-starter-version>4.1.0</mybatis-spring-boot-starter-version>
+        <postgresql-version>42.7.13</postgresql-version>       <!-- Boot-managed -->
+        <hikaricp-version>7.0.2</hikaricp-version>             <!-- Boot-managed -->
+
+        <!-- Serialization: the Jackson 2 line, consumed through the jackson-bom import in
+             dependencyManagement below. Do NOT use this as a per-artifact <version>: since
+             2.20 Jackson releases jackson-annotations on its own track (2.21, no patch
+             component) while core/databind go to 2.21.x, so one flat property cannot name
+             them all. Boot-managed. -->
+        <jackson-version>2.21.5</jackson-version>
+
+        <!-- Web / templating -->
+        <jte.version>3.2.4</jte.version>
+
+        <!-- Cross-cutting libraries -->
+        <micrometer-version>1.17.1</micrometer-version>        <!-- Boot-managed -->
+        <aspectj.version>1.9.25.1</aspectj.version>            <!-- Boot-managed -->
+        <resilience4j-version>2.4.0</resilience4j-version>
+        <jspecify-version>1.0.1</jspecify-version>             <!-- Boot-managed -->
+        <commons-lang3-version>3.20.0</commons-lang3-version>  <!-- Boot-managed -->
+        <commons-collections4-version>4.6.0</commons-collections4-version>
+        <jakarta-transaction-version>2.0.1</jakarta-transaction-version>  <!-- Boot-managed -->
+        <uuid-creator-version>6.1.1</uuid-creator-version>
+
+        <!-- Domain-specific third party -->
+        <cdk.version>2.13</cdk.version>
+        <anthropic-sdk-version>2.59.0</anthropic-sdk-version>
+
+        <!-- Test -->
+        <junit-version>6.0.3</junit-version>                   <!-- Boot-managed -->
+        <assertj-version>3.27.7</assertj-version>              <!-- Boot-managed -->
+        <archunit.version>1.5.0</archunit.version>
+
+        <!-- Build tooling. openrewrite is pinned to recipe-bom 3.37.0, NOT the newer 3.38.0:
+             that release imports org.openrewrite:rewrite-bom:8.91.0, which was never published
+             to Maven Central (404), so 3.38.0 is unresolvable. Revisit when 3.39.x lands. -->
+        <rewrite-recipe-bom.version>3.37.0</rewrite-recipe-bom.version>
+        <rewrite-maven-plugin.version>6.46.1</rewrite-maven-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
     </properties>
 
     <build>
@@ -62,7 +114,7 @@
             <plugin>
                 <groupId>org.openrewrite.maven</groupId>
                 <artifactId>rewrite-maven-plugin</artifactId>
-                <version>6.45.0</version>
+                <version>${rewrite-maven-plugin.version}</version>
                 <configuration>
                     <activeRecipes>
                         <recipe>com.naturalist.EnforceArchitecture</recipe>
@@ -83,7 +135,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <release>${java.version}</release>
                     </configuration>
@@ -91,7 +143,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.2</version>
+                    <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <!-- The sun-misc-unsafe-memory-access=allow flag silences the JEP-498
                              warning aspectjweaver's load-time weaver triggers on JDK 25 (it calls
@@ -103,7 +155,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.5.2</version>
+                    <version>${maven-failsafe-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -113,6 +165,13 @@
         <dependencies>
 
             <!-- THIRD PARTY -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.openscience.cdk</groupId>
                 <artifactId>cdk-bundle</artifactId>

@@ -15,14 +15,6 @@
 
     <name>amateur-naturalist :: adapters</name>
 
-    <properties>
-        <junit-version>6.0.3</junit-version>
-        <assertj-version>3.26.0</assertj-version>
-        <resilience4j-version>2.2.0</resilience4j-version>
-        <spring-context-version>6.2.7</spring-context-version>
-        <anthropic-sdk-version>2.48.0</anthropic-sdk-version>
-    </properties>
-
     <modules>
         <module>anthropic-text-generation</module>
         <module>anthropic-vision</module>

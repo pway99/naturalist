@@ -132,6 +132,24 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
   equality by value. This is a domain invariant for `Entity` records and is documented
   in each event/observation domain's own `CLAUDE.md`; it is no longer encoded in a
   separate kernel subtype.
+- **Every third-party version lives in the root `pom.xml` `<properties>` — and nowhere else.**
+  Sub-aggregators (`kernels/`, `adapters/`, `tooling/`) declare no `<properties>` block of
+  their own, and leaf poms reference `${...}` only. A version literal outside the root pom is
+  a defect: it drifts, and it makes "what are we on?" unanswerable without a repo-wide grep.
+  Check with:
+
+  ```bash
+  grep -rn "<version>" --include=pom.xml . | grep -v 1.0.0-SNAPSHOT | grep -v '\${'
+  ```
+
+  This must return nothing outside the root pom. Two corollaries. First, when a library is
+  managed by `spring-boot-dependencies:${spring-boot.version}`, pin the property to *that*
+  version rather than the newest release on Maven Central — only some modules import the Boot
+  BOM, and matching it keeps both halves of the reactor on one version instead of letting
+  nearest-wins resolution pick per-module. Mark those properties `<!-- Boot-managed -->`.
+  Second, prefer importing a library's own BOM in root `dependencyManagement` when its
+  artifacts version independently (Jackson does: since 2.20 `jackson-annotations` releases on
+  its own track, so no single flat property can name the whole set).
 - **Never weaken a test, gate, or enforcement to make code pass — fix the code.** The
   build-time invariants exist to be *satisfied*, not silenced: the N+1 no-fan-out gate
   (`kernels/framework-test` → `com.naturalist.test.query.nofanout`, surfaced as
