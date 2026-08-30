@@ -11,9 +11,16 @@ spring:
   # otherwise try to *invent* one (Hikari is on the classpath transitively) and fail with
   # "Failed to determine a suitable driver class". Declining to fabricate a DataSource is not a
   # choice between implementations, so it belongs here rather than in the classpath.
+  #
+  # NOTE the package: Spring Boot 4 moved the JDBC auto-configuration out of the monolithic
+  # spring-boot-autoconfigure jar into the spring-boot-jdbc module, renaming
+  # org.springframework.boot.autoconfigure.jdbc.* to org.springframework.boot.jdbc.autoconfigure.*.
+  # An exclude naming a class that is not on the classpath is silently ignored, so the stale
+  # name did not error — it just stopped excluding, and every @SpringBootTest here died on
+  # "Failed to determine a suitable driver class".
   autoconfigure:
     exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 
 naturalist:
   admin:
