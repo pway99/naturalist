@@ -112,5 +112,6 @@ UNION ALL SELECT name,        name, true,  'chemistry', 'compound' FROM compound
 UNION ALL SELECT common_name, name, false, 'chemistry', 'compound' FROM compound;
 
 CREATE INDEX IF NOT EXISTS element_name_trgm    ON element  USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS element_symbol_trgm  ON element  USING gin (lower(symbol) public.gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS compound_name_trgm   ON compound USING gin (lower(name) public.gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS compound_common_trgm ON compound USING gin (lower(common_name) public.gin_trgm_ops);

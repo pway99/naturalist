@@ -310,3 +310,13 @@ CREATE INDEX IF NOT EXISTS insect_family_name_trgm  ON insect_family  USING gin 
 CREATE INDEX IF NOT EXISTS insect_genus_name_trgm   ON insect_genus   USING gin (lower(name) public.gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS insect_species_name_trgm ON insect_species USING gin (lower(name) public.gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS insect_species_cn_trgm   ON insect_species_common_name USING gin (lower(label) public.gin_trgm_ops);
+-- The token view also searches each rank's scientific name, the species epithet, and every rank's
+-- common-name labels, so those columns need their own trigram indexes too (search matches
+-- `lower(token) LIKE '%q%'`, so each index is on `lower(<col>)`).
+CREATE INDEX IF NOT EXISTS insect_order_taxo_trgm    ON insect_order   USING gin (lower(taxonomic_order)  public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_family_taxo_trgm   ON insect_family  USING gin (lower(taxonomic_family) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_genus_taxo_trgm    ON insect_genus   USING gin (lower(taxonomic_genus)  public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_species_epithet_trgm ON insect_species USING gin (lower(epithet)        public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_order_cn_trgm      ON insect_order_common_name  USING gin (lower(label) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_family_cn_trgm     ON insect_family_common_name USING gin (lower(label) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_genus_cn_trgm      ON insect_genus_common_name  USING gin (lower(label) public.gin_trgm_ops);

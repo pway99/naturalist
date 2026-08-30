@@ -19,7 +19,7 @@ interface CatalogSearchMapper {
                END AS kind,
                similarity(lower(token), lower(#{q})) AS sim
         FROM catalog_search_token
-        WHERE token ILIKE '%' || #{q} || '%'
+        WHERE lower(token) LIKE '%' || lower(#{q}) || '%'
         """)
     List<CatalogTokenRow> search(@Param("q") String q);
 
