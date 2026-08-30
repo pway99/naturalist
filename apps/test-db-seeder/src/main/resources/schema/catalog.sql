@@ -8,4 +8,5 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 DROP VIEW IF EXISTS catalog_search_token;
 CREATE VIEW catalog_search_token AS
           SELECT token, slug, is_slug, domain, entity_type FROM insect_catalog_token
-UNION ALL SELECT token, slug, is_slug, domain, entity_type FROM plant_catalog_token;
+UNION ALL SELECT token, slug, is_slug, domain, entity_type FROM plant_catalog_token
+UNION ALL SELECT token, slug, is_slug, domain, entity_type FROM chemistry_catalog_token;

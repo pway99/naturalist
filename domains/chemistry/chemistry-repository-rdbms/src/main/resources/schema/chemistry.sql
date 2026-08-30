@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 DROP TABLE IF EXISTS product_property;
 DROP TABLE IF EXISTS product_compound;
 DROP TABLE IF EXISTS product;
@@ -5,8 +7,8 @@ DROP TABLE IF EXISTS compound_depiction;
 DROP TABLE IF EXISTS compound_property;
 DROP TABLE IF EXISTS compound_constituent_element;
 DROP TABLE IF EXISTS compound_functional_role;
-DROP TABLE IF EXISTS compound;
-DROP TABLE IF EXISTS element;
+DROP TABLE IF EXISTS compound CASCADE;
+DROP TABLE IF EXISTS element CASCADE;
 
 CREATE TABLE element (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -99,3 +101,16 @@ CREATE TABLE product_property (
     property_value TEXT        NOT NULL,
     PRIMARY KEY (product_id, property_key)
 );
+
+-- Cross-domain catalog search fan-in contribution (see kernels/catalog-rdbms). Chemistry is
+-- FLAT — no rank hierarchy, no common-name child tables — element and compound carry their
+-- own tokens as direct columns, so this view needs no joins.
+CREATE OR REPLACE VIEW chemistry_catalog_token AS
+      SELECT name AS token, name AS slug, true AS is_slug, 'chemistry' AS domain, 'element' AS entity_type FROM element
+UNION ALL SELECT symbol,      name, false, 'chemistry', 'element'  FROM element
+UNION ALL SELECT name,        name, true,  'chemistry', 'compound' FROM compound
+UNION ALL SELECT common_name, name, false, 'chemistry', 'compound' FROM compound;
+
+CREATE INDEX IF NOT EXISTS element_name_trgm    ON element  USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS compound_name_trgm   ON compound USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS compound_common_trgm ON compound USING gin (lower(common_name) public.gin_trgm_ops);

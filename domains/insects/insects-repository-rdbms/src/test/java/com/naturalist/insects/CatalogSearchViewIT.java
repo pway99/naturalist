@@ -14,7 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code apps/test-db-seeder}'s {@code CatalogSeeding}, applied last by {@code TestDbSeeder}) rather
  * than any insects-owned schema. It lives here — not in {@code apps/test-db-seeder} — because that
  * module has no failsafe/IT harness (see task-3-brief Step 1); {@code insects-repository-rdbms}
- * already carries {@code RdbmsTestExtension} and is the sole participant unioned into the view so far.
+ * already carries {@code RdbmsTestExtension}. Plants and chemistry now union their own per-domain
+ * views into the same fan-in view (see {@code RdbmsCatalogPlantsIT} and
+ * {@code RdbmsCatalogChemistryIT} in {@code kernels/catalog-rdbms}); this IT only asserts the
+ * insects slice.
  */
 class CatalogSearchViewIT {
 
