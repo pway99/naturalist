@@ -5,14 +5,11 @@ import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
-import com.naturalist.resilience.CircuitBreaker;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
-import com.naturalist.resilience.Timeout;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -51,13 +48,10 @@ final class InMemoryCatalog implements Catalog {
 
     private static final Pattern TOKEN_SPLIT = Pattern.compile("[\\s\\p{Punct}]+");
 
-    private static final String CATALOG_FANOUT = "catalog.fanout";
-
     private final Map<String, Set<EntityRef>> tokenIndex;
     private final Set<String> slugTokens;
     private final Map<String, EntityRef> refBySlug;
-    private final Map<Class<? extends EntityName>, List<EntityReferences<?>>> providersByType;
-    private final Resilience resilience;
+    private final ReferenceRouting routing;
 
     InMemoryCatalog(List<CatalogContribution> contributions,
                     List<EntityReferences<?>> providers,
@@ -87,27 +81,17 @@ final class InMemoryCatalog implements Catalog {
         this.tokenIndex = freezeIndex(index);
         this.slugTokens = Set.copyOf(slugs);
         this.refBySlug = Map.copyOf(bySlug);
-        this.providersByType = indexProviders(providers);
-        this.resilience = resilience;
+        for (EntityReferences<?> provider : providers) {
+            observer.arguments("constructor", i -> i.notNull(provider, "provider"))
+                    .throwWhenInvalid();
+        }
+        this.routing = new ReferenceRouting(providers, resilience);
     }
 
     @Override
     public Optional<EntityRef> findBySlug(String slug) {
         if (slug == null || slug.isBlank()) return Optional.empty();
         return Optional.ofNullable(refBySlug.get(slug.trim().toLowerCase()));
-    }
-
-    private static Map<Class<? extends EntityName>, List<EntityReferences<?>>> indexProviders(
-            List<EntityReferences<?>> providers) {
-        Map<Class<? extends EntityName>, List<EntityReferences<?>>> indexed = new LinkedHashMap<>();
-        for (EntityReferences<?> provider : providers) {
-            observer.arguments("constructor", i -> i.notNull(provider, "provider"))
-                    .throwWhenInvalid();
-            indexed.computeIfAbsent(provider.referenceType(), k -> new ArrayList<>()).add(provider);
-        }
-        Map<Class<? extends EntityName>, List<EntityReferences<?>>> immutable = new LinkedHashMap<>();
-        indexed.forEach((k, v) -> immutable.put(k, List.copyOf(v)));
-        return Collections.unmodifiableMap(immutable);
     }
 
     private static void addAll(Map<String, Set<EntityRef>> index, String token, EntityRef target) {
@@ -217,48 +201,12 @@ final class InMemoryCatalog implements Catalog {
 
     @Override
     public Set<DomainId> domainsReferencing(Class<? extends EntityName> referenceType) {
-        if (referenceType == null) {
-            return Set.of();
-        }
-        return providersByType.getOrDefault(referenceType, List.of()).stream()
-                .map(EntityReferences::domain)
-                .collect(Collectors.toUnmodifiableSet());
+        return routing.domainsReferencing(referenceType);
     }
 
     @Override
-    @Resilient(name = CATALOG_FANOUT)
+    @Resilient(name = ReferenceRouting.CATALOG_FANOUT)
     public Map<DomainId, List<EntityRef>> findReferencesTo(EntityName target) {
-        if (target == null) {
-            return Map.of();
-        }
-        List<EntityReferences<?>> handlers = providersByType.getOrDefault(target.getClass(), List.of());
-        Timeout timeout = resilience.timeout(CATALOG_FANOUT);
-        CircuitBreaker breaker = resilience.circuitBreaker(CATALOG_FANOUT);
-        Map<DomainId, List<EntityRef>> grouped = new LinkedHashMap<>();
-        for (EntityReferences<?> handler : handlers) {
-            List<EntityRef> refs = invokeQuietly(handler, target, timeout, breaker);
-            if (!refs.isEmpty()) {
-                grouped.computeIfAbsent(handler.domain(), k -> new ArrayList<>()).addAll(refs);
-            }
-        }
-        Map<DomainId, List<EntityRef>> immutable = new LinkedHashMap<>();
-        grouped.forEach((k, v) -> immutable.put(k, List.copyOf(v)));
-        return Collections.unmodifiableMap(immutable);
-    }
-
-    private static List<EntityRef> invokeQuietly(EntityReferences<?> handler,
-                                                 EntityName target,
-                                                 Timeout timeout,
-                                                 CircuitBreaker breaker) {
-        try {
-            return breaker.execute(() -> timeout.execute(() -> invoke(handler, target).toList()));
-        } catch (RuntimeException ignored) {
-            return List.of();
-        }
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Stream<EntityRef> invoke(EntityReferences<?> handler, EntityName target) {
-        return ((EntityReferences) handler).referencesTo(handler.referenceType().cast(target));
+        return routing.findReferencesTo(target);
     }
 }

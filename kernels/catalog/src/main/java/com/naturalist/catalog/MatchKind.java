@@ -32,5 +32,12 @@ public enum MatchKind {
      * weaker signal than an exact match — useful when a reader is still
      * typing or remembers only the leading letters of a name.
      */
-    PREFIX
+    PREFIX,
+
+    /**
+     * The query matched a token by substring / trigram similarity rather than a prefix — the
+     * weakest signal, used by fuzzy-capable adapters (e.g. the Postgres pg_trgm adapter) to power
+     * type-ahead. Ordered last.
+     */
+    FUZZY
 }
