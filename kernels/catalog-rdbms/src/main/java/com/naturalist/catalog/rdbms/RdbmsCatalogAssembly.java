@@ -2,6 +2,7 @@ package com.naturalist.catalog.rdbms;
 
 import com.naturalist.catalog.*;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.observability.Observer;
 import com.naturalist.resilience.Resilience;
 
 import java.util.*;
@@ -10,6 +11,8 @@ import java.util.function.Function;
 /** Composition-root entry point for the Postgres-backed {@link Catalog}. */
 public final class RdbmsCatalogAssembly {
 
+    private static final Observer observer = Observer.forClass(RdbmsCatalogAssembly.class);
+
     private RdbmsCatalogAssembly() {}
 
     public static Catalog from(CatalogSearchMapper mapper,
@@ -17,6 +20,13 @@ public final class RdbmsCatalogAssembly {
                                Map<String, Function<String, EntityName>> nameReconstructors,
                                List<EntityReferences<?>> providers,
                                Resilience resilience) {
+        observer.arguments("from", i -> i
+                        .notNull(mapper, "mapper")
+                        .notNull(domains, "domains")
+                        .notNull(nameReconstructors, "nameReconstructors")
+                        .notNull(providers, "providers")
+                        .notNull(resilience, "resilience"))
+                .throwWhenInvalid();
         Map<String, DomainId> bySlug = new LinkedHashMap<>();
         for (DomainId d : domains) {
             DomainId prev = bySlug.putIfAbsent(d.value(), d);

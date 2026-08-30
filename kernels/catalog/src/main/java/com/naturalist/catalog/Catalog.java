@@ -40,13 +40,36 @@ public interface Catalog {
     /**
      * Run a search against the assembled token index.
      * <p>
-     * <b>Matching rules:</b>
+     * <b>Contract common to every adapter:</b>
      * <ul>
      *   <li>Case-insensitive throughout — {@code "ARISTOLOCHIA"},
      *       {@code "Aristolochia"}, and {@code "aristolochia"} are
      *       equivalent. Genus capitalisation is a presentation concern
      *       (the renderer italicises {@code Genus species} correctly);
      *       the search is liberal in what it accepts.</li>
+     *   <li>Hit ordering inside the returned {@link SearchResults} is
+     *       primarily by {@link MatchKind#ordinal()}, so exact matches
+     *       always precede weaker ones regardless of adapter; ties within
+     *       a kind are broken by an adapter-defined secondary order (see
+     *       below).</li>
+     *   <li>{@code null} or blank input returns an empty
+     *       {@link SearchResults} without firing an
+     *       {@link UnresolvedSearchObservation} — the empty input is
+     *       not a search. Empty is a first-class state either way.</li>
+     *   <li>A non-empty input that resolves to no hits returns an empty
+     *       {@link SearchResults} <em>and</em> fires one
+     *       {@link UnresolvedSearchObservation} so observers can record
+     *       the catalog's growth signal — except inputs an adapter treats
+     *       as too short to search at all (see below), which return empty
+     *       silently, the same as blank input.</li>
+     * </ul>
+     * <p>
+     * <b>Matching semantics, ordering tie-breaks, and the
+     * minimum-length threshold for firing {@link UnresolvedSearchObservation}
+     * are adapter-defined</b> — the interface fixes only the invariants
+     * above. The reference adapter, {@code InMemoryCatalog}
+     * (kernel {@code catalog-inmem}), behaves as follows:
+     * <ul>
      *   <li>The query is split on whitespace and ASCII punctuation; each
      *       token is looked up independently and the results are merged.
      *       {@code "A. californica"} therefore matches against both
@@ -59,18 +82,22 @@ public interface Catalog {
      *   <li>Multiple tokens may match the same entity; the result
      *       deduplicates per {@code (EntityRef, MatchKind)} so each
      *       entity surfaces at most once per kind.</li>
-     *   <li>Hit ordering inside the returned {@link SearchResults} is by
-     *       {@link MatchKind#ordinal()} then by the slug's natural
-     *       ordering, for deterministic rendering.</li>
-     *   <li>{@code null} or blank input returns an empty
-     *       {@link SearchResults} without firing an
-     *       {@link UnresolvedSearchObservation} — the empty input is
-     *       not a search.</li>
-     *   <li>A non-empty input that resolves to no hits returns an empty
-     *       {@link SearchResults} <em>and</em> fires one
-     *       {@link UnresolvedSearchObservation} so observers can record
-     *       the catalog's growth signal.</li>
+     *   <li>Ties within a {@link MatchKind} are broken by the slug's
+     *       natural ordering, for deterministic rendering.</li>
+     *   <li>Any non-blank input (down to a single character) is eligible
+     *       to fire {@link UnresolvedSearchObservation} on a miss.</li>
      * </ul>
+     * The Postgres adapter ({@code RdbmsCatalog}, kernel
+     * {@code catalog-rdbms}) instead matches the whole trimmed query as a
+     * single substring against the indexed tokens (SQL {@code ILIKE
+     * '%query%'}), breaks ties within a {@link MatchKind} by a
+     * {@code pg_trgm} trigram similarity score (descending) before falling
+     * back to the slug's natural ordering, and treats input shorter than
+     * two characters as too short to search: it returns an empty
+     * {@link SearchResults} without firing {@link UnresolvedSearchObservation},
+     * the same as blank input. It does not split the query into tokens —
+     * multi-word search is a deliberately deferred product decision for
+     * that adapter, not a bug.
      *
      * @param text the search input; may be {@code null}
      * @return the matching hits in the documented order, never null
