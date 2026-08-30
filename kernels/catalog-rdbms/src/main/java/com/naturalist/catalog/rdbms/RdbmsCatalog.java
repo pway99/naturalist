@@ -75,7 +75,7 @@ final class RdbmsCatalog implements Catalog {
     @Override
     public Optional<EntityRef> findBySlug(String slug) {
         if (slug == null || slug.isBlank()) return Optional.empty();
-        return Optional.ofNullable(mapper.findBySlug(slug.trim())).map(this::toRef).filter(Objects::nonNull);
+        return Optional.ofNullable(mapper.findBySlug(slug.trim())).map(this::toRef);
     }
 
     @Override
@@ -94,8 +94,9 @@ final class RdbmsCatalog implements Catalog {
         Function<String, EntityName> fn = reconstructors.get(row.entityType);
         if (domain == null || fn == null) {
             observer.arguments("toRef", i -> i
-                    .notNull(domain, "domain[" + row.domain + "]")
-                    .notNull(fn, "reconstructor[" + row.entityType + "]"));
+                            .notNull(domain, "domain[" + row.domain + "]")
+                            .notNull(fn, "reconstructor[" + row.entityType + "]"))
+                    .observe(Level.WARN);
             return null; // defensive; startup validation should prevent this
         }
         return new EntityRef(domain, fn.apply(row.slug));

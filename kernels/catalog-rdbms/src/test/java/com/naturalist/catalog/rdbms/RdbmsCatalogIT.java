@@ -63,4 +63,39 @@ class RdbmsCatalogIT {
     void blankInputIsEmptyAndFiresNoObservation() {
         assertTrue(catalog().search("   ").isEmpty());
     }
+
+    @Test
+    void assemblyThrowsWhenRegistryIsMissingAnEntityTypeTheViewEmits() {
+        // Omits "insect-order", which the live seeded view does emit (see
+        // CatalogSearchMapperIT#distinctDomainTypesCoversInsects) — the
+        // startup validation pass must reject this registry before any
+        // query can silently drop rows.
+        Map<String, Function<String, EntityName>> incomplete = Map.of(
+                "insect-family",  InsectFamilyName::of,
+                "insect-genus",   InsectGenusName::of,
+                "insect-species", InsectSpeciesName::of);
+
+        assertThrows(IllegalStateException.class, () -> RdbmsCatalogAssembly.from(
+                rdbms.mapper(CatalogSearchMapper.class),
+                List.of(new TestInsects()), incomplete, List.of(), Resilience.noOp()));
+    }
+
+    @Test
+    void assemblyThrowsOnDuplicateDomainSlug() {
+        record RogueInsects() implements DomainId {
+            @Override
+            public String value() {
+                return "insects";
+            }
+        }
+        Map<String, Function<String, EntityName>> reconstructors = Map.of(
+                "insect-order",   InsectOrderName::of,
+                "insect-family",  InsectFamilyName::of,
+                "insect-genus",   InsectGenusName::of,
+                "insect-species", InsectSpeciesName::of);
+
+        assertThrows(IllegalArgumentException.class, () -> RdbmsCatalogAssembly.from(
+                rdbms.mapper(CatalogSearchMapper.class),
+                List.of(new TestInsects(), new RogueInsects()), reconstructors, List.of(), Resilience.noOp()));
+    }
 }
