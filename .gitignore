@@ -35,8 +35,8 @@ build/
 ### JTE ###
 jte-classes/
 
-### Local git worktrees ###
-.worktrees/
+### Run configuration
+.run/
 
 ### Mac OS ###
 .DS_Store
