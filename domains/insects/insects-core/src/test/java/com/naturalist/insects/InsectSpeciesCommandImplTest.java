@@ -57,7 +57,7 @@ class InsectSpeciesCommandImplTest
     public InsectSpecies newEntity() {
         return new InsectSpecies(
                 InsectSpeciesName.of("test-command-species-xx"),
-                InsectGenusName.of("carabus"),
+                TestInsectsIdentifiers.InsectGenus.Chrysoperla.name,
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),
@@ -71,7 +71,7 @@ class InsectSpeciesCommandImplTest
     public InsectSpecies ghostEntity() {
         return new InsectSpecies(
                 InsectSpeciesName.of("test-command-ghost-xx"),
-                InsectGenusName.of("carabus"),
+                TestInsectsIdentifiers.InsectGenus.Chrysoperla.name,
                 TaxonomicSpecies.of("ghost"),
                 description(),
                 Set.of(),
@@ -85,7 +85,7 @@ class InsectSpeciesCommandImplTest
     public InsectSpecies modifiedEntity(InsectSpecies original) {
         return new InsectSpecies(
                 original.name(),
-                InsectGenusName.of("carabus"),
+                TestInsectsIdentifiers.InsectGenus.Chrysoperla.name,
                 TaxonomicSpecies.of("nemoralis"),
                 description(),
                 Set.of(),

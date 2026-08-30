@@ -160,6 +160,44 @@ class InsectCatalogIdentificationTransactionTest {
     }
 
     @Test
+    void executePersistsGenusLevelIdentificationWhoseFamilyIsNew() {
+        // The genus carries an upward FK to a family that is not yet catalogued.
+        // Resolving parent ranks after inserting the identified entity leaves that
+        // FK unresolved at insert time — rejected by the in-memory source's foreign
+        // key constraint and, in Postgres, by the genus insert's nested SELECT on
+        // insect_family matching no row (zero rows inserted → EntityNotFoundException).
+        var genusName = InsectGenusName.of("fictus");
+        var familyName = InsectFamilyName.of("nonexistentidae");
+        var orderName = InsectOrderName.of("neuroptera"); // real seeded order
+        var obsId = InsectObservationId.create();
+        var genus = new InsectGenus(
+                genusName, familyName, TaxonomicGenus.of("Fictus"), description(),
+                Set.of(CommonName.of("Fictitious Lacewings")), null);
+        var taxonomy = new TaxonomicClassification(
+                TaxonomicOrder.of("Neuroptera"), TaxonomicFamily.of("Nonexistentidae"),
+                TaxonomicGenus.of("Fictus"), null);
+        var image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+                InsectImageId.create(), genusName, Instant.now(),
+                FileName.of("IMG_0020.jpg"), obsId);
+        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
+                obsId, NaturalistName.of("pat"), genusName,
+                Instant.now(), null, null, null);
+        var id = new CatalogIdentification(
+                new IdentifiedRankEntity.Genus(genus), taxonomy,
+                image, observation, List.of(), List.of(), Map.of());
+
+        transaction.execute(id);
+
+        assertThat(query.orders().getByName(orderName)).isPresent();
+        assertThat(query.families().getByName(familyName)).isPresent();
+        var persistedGenus = query.genera().getByName(genusName);
+        assertThat(persistedGenus).isPresent();
+        // The identified genus keeps its real description — parent resolution
+        // never reaches the identified rank, so no PLACEHOLDER can shadow it.
+        assertThat(persistedGenus.get().description()).isEqualTo(description());
+    }
+
+    @Test
     void executePersistsFeatures() {
         var featureId = InsectFeatureId.create();
         var feature = InsectFeature.of(featureId, "hovering flight");

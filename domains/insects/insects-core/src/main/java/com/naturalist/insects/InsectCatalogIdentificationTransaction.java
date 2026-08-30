@@ -55,22 +55,16 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         var identifiedEntity = identification.identifiedEntity();
         var parentDescriptions = identification.parentDescriptions();
 
-        // 1. Insert identified rank entity if new — before parent resolution
-        //    so the identified entity's real description is never shadowed
-        //    by a placeholder parent-resolve insert
-        insertIdentifiedEntity(identifiedEntity);
+        // 1. Resolve the parent ranks ABOVE the identified rank, top-down
+        //    (order → family → genus), so the upward FK the identified entity
+        //    carries already resolves when step 2 inserts it.
+        resolveParentRanks(identifiedEntity, taxonomy, parentDescriptions);
 
-        // 2. Resolve parent ranks (order → family → genus) — only those
-        //    ABOVE the identified rank. The identified rank itself was
-        //    already inserted in step 1; resolve methods are idempotent
-        //    so a duplicate hit is harmless.
-        var orderName = resolveOrder(taxonomy, parentDescriptions);
-        if (taxonomy.family() != null) {
-            var familyName = resolveFamily(taxonomy, orderName, parentDescriptions);
-            if (taxonomy.genus() != null) {
-                resolveGenus(taxonomy, familyName, parentDescriptions);
-            }
-        }
+        // 2. Insert identified rank entity if new. Step 1 never touches the
+        //    identified rank itself, so this insert — the only one carrying
+        //    the identification's real description — can never be shadowed by
+        //    a PLACEHOLDER parent-resolve row.
+        insertIdentifiedEntity(identifiedEntity);
 
         // 3. Insert image and observation
         insectCommand.images().insert(identification.image());
@@ -113,6 +107,44 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
                     : OrganismFeatureAssignment.of(
                             assignment.id(), resolvedFeatureId, assignment.rankName(), assignment.ordinal());
             insectCommand.featureAssignments().save(toSave);
+        }
+    }
+
+    /**
+     * Ensures every rank strictly above the identified rank exists, inserted
+     * top-down so each resolve's own upward FK is already satisfied when it runs.
+     *
+     * <p>Which ranks count as parents is decided by the <em>identified rank</em>,
+     * not by which taxonomy components happen to be populated. A family-level
+     * identification carries a non-null {@code taxonomy.family()} — it <em>is</em>
+     * the family — and resolving that here would write a {@link #PLACEHOLDER}
+     * -described row that {@link #insertIdentifiedEntity} would then skip over,
+     * shadowing the real description. The switch is exhaustive over
+     * {@link IdentifiedRankEntity}, so a new rank permit must decide its parents
+     * here rather than silently inheriting the wrong set.
+     */
+    private void resolveParentRanks(IdentifiedRankEntity identifiedEntity,
+                                    TaxonomicClassification taxonomy,
+                                    Map<InsectRankName, Description> parentDescriptions) {
+        switch (identifiedEntity) {
+            case IdentifiedRankEntity.Order ignored -> {
+                // nothing above order
+            }
+            case IdentifiedRankEntity.Family ignored ->
+                    resolveOrder(taxonomy, parentDescriptions);
+            case IdentifiedRankEntity.Genus ignored ->
+                    resolveFamily(taxonomy, resolveOrder(taxonomy, parentDescriptions), parentDescriptions);
+            case IdentifiedRankEntity.Species ignored -> {
+                var orderName = resolveOrder(taxonomy, parentDescriptions);
+                var familyName = resolveFamily(taxonomy, orderName, parentDescriptions);
+                // A species identification always carries its genus (the species'
+                // own genusName is derived from it upstream). Absent it there is no
+                // genus to resolve, and the species insert below reports the
+                // unresolved FK by name rather than failing here.
+                if (taxonomy.genus() != null) {
+                    resolveGenus(taxonomy, familyName, parentDescriptions);
+                }
+            }
         }
     }
 
