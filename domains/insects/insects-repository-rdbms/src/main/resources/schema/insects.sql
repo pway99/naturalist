@@ -3,6 +3,8 @@
 -- attachments (rank + slug pairs, up to 96 chars to hold a subspecies slug) carry no FK. Cross-domain
 -- and cross-kernel refs (observed_by naturalist, host/nectar plant slugs) are plain slug columns, no FK.
 
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 DROP TABLE IF EXISTS insect_life_stage_nectar_source;
 DROP TABLE IF EXISTS insect_life_stage_parasitoid_host;
 DROP TABLE IF EXISTS insect_life_stage_host_plant;
@@ -21,14 +23,14 @@ DROP TABLE IF EXISTS insect_species_supporting_plant;
 DROP TABLE IF EXISTS insect_species_habitat_layer;
 DROP TABLE IF EXISTS insect_species_habitat_zone;
 DROP TABLE IF EXISTS insect_species_protected_stage;
-DROP TABLE IF EXISTS insect_species_common_name;
-DROP TABLE IF EXISTS insect_species;
-DROP TABLE IF EXISTS insect_genus_common_name;
-DROP TABLE IF EXISTS insect_genus;
-DROP TABLE IF EXISTS insect_family_common_name;
-DROP TABLE IF EXISTS insect_family;
-DROP TABLE IF EXISTS insect_order_common_name;
-DROP TABLE IF EXISTS insect_order;
+DROP TABLE IF EXISTS insect_species_common_name CASCADE;
+DROP TABLE IF EXISTS insect_species CASCADE;
+DROP TABLE IF EXISTS insect_genus_common_name CASCADE;
+DROP TABLE IF EXISTS insect_genus CASCADE;
+DROP TABLE IF EXISTS insect_family_common_name CASCADE;
+DROP TABLE IF EXISTS insect_family CASCADE;
+DROP TABLE IF EXISTS insect_order_common_name CASCADE;
+DROP TABLE IF EXISTS insect_order CASCADE;
 
 -- ── Rank chain ────────────────────────────────────────────────────────────────────────────
 CREATE TABLE insect_order (
@@ -284,3 +286,37 @@ CREATE TABLE insect_life_stage_nectar_source (
     plant_name    VARCHAR(96) NOT NULL,                 -- cross-domain plants slug, no FK
     PRIMARY KEY (life_stage_id, ordinal)
 );
+
+-- ── Cross-domain catalog search: token view + trigram indexes ──────────────────────────────
+CREATE OR REPLACE VIEW insect_catalog_token AS
+      SELECT o.name AS token, o.name AS slug, true  AS is_slug, 'insects' AS domain, 'insect-order'   AS entity_type FROM insect_order o
+UNION ALL SELECT o.taxonomic_order, o.name, false, 'insects', 'insect-order'   FROM insect_order o
+UNION ALL SELECT cn.label, o.name, false, 'insects', 'insect-order'   FROM insect_order_common_name  cn JOIN insect_order  o ON cn.order_id  = o.id
+UNION ALL SELECT f.name, f.name, true,  'insects', 'insect-family'  FROM insect_family f
+UNION ALL SELECT f.taxonomic_family, f.name, false, 'insects', 'insect-family'  FROM insect_family f
+UNION ALL SELECT cn.label, f.name, false, 'insects', 'insect-family'  FROM insect_family_common_name cn JOIN insect_family f ON cn.family_id = f.id
+UNION ALL SELECT g.name, g.name, true,  'insects', 'insect-genus'   FROM insect_genus g
+UNION ALL SELECT g.taxonomic_genus, g.name, false, 'insects', 'insect-genus'   FROM insect_genus g
+UNION ALL SELECT cn.label, g.name, false, 'insects', 'insect-genus'   FROM insect_genus_common_name  cn JOIN insect_genus  g ON cn.genus_id  = g.id
+UNION ALL SELECT s.name, s.name, true,  'insects', 'insect-species' FROM insect_species s
+UNION ALL SELECT s.epithet, s.name, false, 'insects', 'insect-species' FROM insect_species s
+UNION ALL SELECT cn.label, s.name, false, 'insects', 'insect-species' FROM insect_species_common_name cn JOIN insect_species s ON cn.species_id = s.id;
+
+-- Operator class is schema-qualified (public.gin_trgm_ops) rather than relying on search_path:
+-- InsectsSchemaDriftIT applies this DDL with search_path restricted to an isolated scratch
+-- schema, and pg_trgm (installed once, database-wide) lives in "public".
+CREATE INDEX IF NOT EXISTS insect_order_name_trgm   ON insect_order   USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_family_name_trgm  ON insect_family  USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_genus_name_trgm   ON insect_genus   USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_species_name_trgm ON insect_species USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_species_cn_trgm   ON insect_species_common_name USING gin (lower(label) public.gin_trgm_ops);
+-- The token view also searches each rank's scientific name, the species epithet, and every rank's
+-- common-name labels, so those columns need their own trigram indexes too (search matches
+-- `lower(token) LIKE '%q%'`, so each index is on `lower(<col>)`).
+CREATE INDEX IF NOT EXISTS insect_order_taxo_trgm    ON insect_order   USING gin (lower(taxonomic_order)  public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_family_taxo_trgm   ON insect_family  USING gin (lower(taxonomic_family) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_genus_taxo_trgm    ON insect_genus   USING gin (lower(taxonomic_genus)  public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_species_epithet_trgm ON insect_species USING gin (lower(epithet)        public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_order_cn_trgm      ON insect_order_common_name  USING gin (lower(label) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_family_cn_trgm     ON insect_family_common_name USING gin (lower(label) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS insect_genus_cn_trgm      ON insect_genus_common_name  USING gin (lower(label) public.gin_trgm_ops);

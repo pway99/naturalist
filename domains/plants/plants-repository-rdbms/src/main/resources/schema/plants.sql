@@ -3,6 +3,8 @@
 -- over four rank tables). Cross-domain and cross-kernel refs (compound_name, observed_by,
 -- bioregion, placed_in) are plain slug columns with NO FK.
 
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 DROP TABLE IF EXISTS phytochemical_constituent_tissue;
 DROP TABLE IF EXISTS phytochemical_constituent_role;
 DROP TABLE IF EXISTS phytochemical_constituent;
@@ -17,14 +19,14 @@ DROP TABLE IF EXISTS plant_feature;
 DROP TABLE IF EXISTS plant_ecological_role_role;
 DROP TABLE IF EXISTS plant_ecological_role;
 DROP TABLE IF EXISTS plant_species_native_bioregion;
-DROP TABLE IF EXISTS plant_species_common_name;
-DROP TABLE IF EXISTS plant_species;
-DROP TABLE IF EXISTS plant_genus_common_name;
-DROP TABLE IF EXISTS plant_genus;
-DROP TABLE IF EXISTS plant_family_common_name;
-DROP TABLE IF EXISTS plant_family;
-DROP TABLE IF EXISTS plant_order_common_name;
-DROP TABLE IF EXISTS plant_order;
+DROP TABLE IF EXISTS plant_species_common_name CASCADE;
+DROP TABLE IF EXISTS plant_species CASCADE;
+DROP TABLE IF EXISTS plant_genus_common_name CASCADE;
+DROP TABLE IF EXISTS plant_genus CASCADE;
+DROP TABLE IF EXISTS plant_family_common_name CASCADE;
+DROP TABLE IF EXISTS plant_family CASCADE;
+DROP TABLE IF EXISTS plant_order_common_name CASCADE;
+DROP TABLE IF EXISTS plant_order CASCADE;
 
 -- ── Rank chain ────────────────────────────────────────────────────────────────────────────
 CREATE TABLE plant_order (
@@ -229,3 +231,37 @@ CREATE TABLE phytochemical_constituent_tissue (
     tissue         VARCHAR(32) NOT NULL,
     PRIMARY KEY (constituent_id, tissue)
 );
+
+-- ── Cross-domain catalog search: token view + trigram indexes ──────────────────────────────
+CREATE OR REPLACE VIEW plant_catalog_token AS
+      SELECT o.name AS token, o.name AS slug, true  AS is_slug, 'plants' AS domain, 'plant-order'   AS entity_type FROM plant_order o
+UNION ALL SELECT o.taxonomic_order, o.name, false, 'plants', 'plant-order'   FROM plant_order o
+UNION ALL SELECT cn.label, o.name, false, 'plants', 'plant-order'   FROM plant_order_common_name  cn JOIN plant_order  o ON cn.order_id  = o.id
+UNION ALL SELECT f.name, f.name, true,  'plants', 'plant-family'  FROM plant_family f
+UNION ALL SELECT f.taxonomic_family, f.name, false, 'plants', 'plant-family'  FROM plant_family f
+UNION ALL SELECT cn.label, f.name, false, 'plants', 'plant-family'  FROM plant_family_common_name cn JOIN plant_family f ON cn.family_id = f.id
+UNION ALL SELECT g.name, g.name, true,  'plants', 'plant-genus'   FROM plant_genus g
+UNION ALL SELECT g.taxonomic_genus, g.name, false, 'plants', 'plant-genus'   FROM plant_genus g
+UNION ALL SELECT cn.label, g.name, false, 'plants', 'plant-genus'   FROM plant_genus_common_name  cn JOIN plant_genus  g ON cn.genus_id  = g.id
+UNION ALL SELECT s.name, s.name, true,  'plants', 'plant-species' FROM plant_species s
+UNION ALL SELECT s.epithet, s.name, false, 'plants', 'plant-species' FROM plant_species s
+UNION ALL SELECT cn.label, s.name, false, 'plants', 'plant-species' FROM plant_species_common_name cn JOIN plant_species s ON cn.species_id = s.id;
+
+-- Operator class is schema-qualified (public.gin_trgm_ops) rather than relying on search_path:
+-- the schema-drift IT applies this DDL with search_path restricted to an isolated scratch
+-- schema, and pg_trgm (installed once, database-wide) lives in "public".
+CREATE INDEX IF NOT EXISTS plant_order_name_trgm   ON plant_order   USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_family_name_trgm  ON plant_family  USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_genus_name_trgm   ON plant_genus   USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_species_name_trgm ON plant_species USING gin (lower(name) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_species_cn_trgm   ON plant_species_common_name USING gin (lower(label) public.gin_trgm_ops);
+-- The token view also searches each rank's scientific name, the species epithet, and every rank's
+-- common-name labels, so those columns need their own trigram indexes too (search matches
+-- `lower(token) LIKE '%q%'`, so each index is on `lower(<col>)`).
+CREATE INDEX IF NOT EXISTS plant_order_taxo_trgm    ON plant_order   USING gin (lower(taxonomic_order)  public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_family_taxo_trgm   ON plant_family  USING gin (lower(taxonomic_family) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_genus_taxo_trgm    ON plant_genus   USING gin (lower(taxonomic_genus)  public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_species_epithet_trgm ON plant_species USING gin (lower(epithet)        public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_order_cn_trgm      ON plant_order_common_name  USING gin (lower(label) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_family_cn_trgm     ON plant_family_common_name USING gin (lower(label) public.gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS plant_genus_cn_trgm      ON plant_genus_common_name  USING gin (lower(label) public.gin_trgm_ops);

@@ -29,6 +29,7 @@
         <module>authority</module>
         <module>catalog</module>
         <module>catalog-inmem</module>
+        <module>catalog-rdbms</module>
         <module>clades</module>
         <module>biogeography</module>
         <module>feature-search</module>

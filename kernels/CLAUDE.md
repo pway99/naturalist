@@ -175,10 +175,26 @@ framework's existing third-party set) — that is why it lives in `kernels/`
 rather than in `adapters/`. Production catalog backends with heavy
 infrastructure dependencies (Solr) belong under `adapters/` per ADR-024.
 
-`InMemoryCatalog` carries `@Resilient(name = "catalog.fanout")` and wraps
-each provider invocation with `resilience.circuitBreaker(...)` over
-`resilience.timeout(...)`, so a wedged or failing provider degrades only
-that domain's slice of the response (ADR-026).
+Inverse-direction fan-out (`domainsReferencing`/`findReferencesTo`) is
+storage-independent and lives in `ReferenceRouting` (kernel `catalog`), which
+wraps each provider invocation with `resilience.circuitBreaker(...)` over
+`resilience.timeout(...)` under the `catalog.fanout` name, so a wedged or
+failing provider degrades only that domain's slice of the response
+(ADR-026). Both `InMemoryCatalog` and `RdbmsCatalog` delegate to the same
+`ReferenceRouting` instance and each keeps `@Resilient(name =
+"catalog.fanout")` on its own `findReferencesTo` override.
+
+### catalog-rdbms  (`com.naturalist.catalog.rdbms`)
+
+Postgres/MyBatis adapter for `Catalog`: per-domain `<domain>_catalog_token`
+SQL views unioned into `catalog_search_token`, queried by `RdbmsCatalog` with
+`pg_trgm` fuzzy/type-ahead search. `RdbmsCatalogAssembly` is the
+composition-root factory (mirrors `CatalogAssembly` in `catalog-inmem`) and
+validates that every `(domain, entity_type)` the view can emit resolves
+against the registered `DomainId`s and `EntityName` reconstructors. Its
+matching semantics differ deliberately from the in-memory reference adapter
+— see the adapter-defined section of `Catalog#search`'s Javadoc
+(`kernels/catalog`).
 
 ## DAG Position
 
@@ -308,7 +324,7 @@ constraint. Adding a kernel-level test would re-verify edges that
 
 **Scope of this convention.** Applies to all kernels: `framework`, `framework-test`,
 `field-notes`, `taxonomy`, `clades`, `biogeography`, `catalog`, `catalog-inmem`,
-`habitat`, `measurements`. The `framework-test` kernel additionally carries the
+`catalog-rdbms`, `habitat`, `measurements`. The `framework-test` kernel additionally carries the
 "no test infra for test infra" rule — don't add unit tests for code that exists
 only to support other tests; rely on manual smoke + the consuming `*-repository-test`
 modules.
