@@ -4,6 +4,7 @@ import com.naturalist.account.AccountEntityCollections.AccountCollection;
 import com.naturalist.data.AbstractEntityQuery;
 import com.naturalist.infrastructure.DomainService;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -25,5 +26,12 @@ class AccountQueryImpl
         observer().arguments("findByNameSet", i -> i.identifierSet(names, "names"))
                 .throwWhenInvalid();
         return AccountCollection.of(repository().getByEntityNameSet(names));
+    }
+
+    @Override
+    public Optional<Account> getByEmail(String email) {
+        observer().arguments("getByEmail", i -> i.notBlank(email, "email"))
+                .throwWhenInvalid();
+        return repository().getByEmail(email);
     }
 }
