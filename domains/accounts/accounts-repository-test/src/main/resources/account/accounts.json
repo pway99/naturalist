@@ -1,0 +1,42 @@
+[
+  {
+    "name": "acct-018f3a2e9b71",
+    "email": "gerald.durrell@oakvista.example",
+    "passwordHash": "{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+    "emailVerified": true,
+    "access": "VISION",
+    "status": "ACTIVE"
+  },
+  {
+    "name": "acct-018f3a2ec4d2",
+    "email": "delia.owens@oakvista.example",
+    "passwordHash": "{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+    "emailVerified": true,
+    "access": "VISION",
+    "status": "ACTIVE"
+  },
+  {
+    "name": "acct-018f3a2ef533",
+    "email": "young-naturalist@oakvista.example",
+    "passwordHash": "{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+    "emailVerified": false,
+    "access": "BROWSE_ONLY",
+    "status": "ACTIVE"
+  },
+  {
+    "name": "acct-018f3b01a2c4",
+    "email": "pending.visitor@oakvista.example",
+    "passwordHash": "{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+    "emailVerified": true,
+    "access": "BROWSE_ONLY",
+    "status": "ACTIVE"
+  },
+  {
+    "name": "acct-018f3b01d8e5",
+    "email": "banned.user@oakvista.example",
+    "passwordHash": "{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+    "emailVerified": true,
+    "access": "VISION",
+    "status": "SUSPENDED"
+  }
+]

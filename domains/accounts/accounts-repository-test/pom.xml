@@ -3,19 +3,22 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>com.naturalist</groupId>
-        <artifactId>domains</artifactId>
+        <artifactId>accounts</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>accounts</artifactId>
-    <packaging>pom</packaging>
-    <name>domains :: accounts</name>
+    <artifactId>accounts-repository-test</artifactId>
 
-    <modules>
-        <module>accounts-api</module>
-        <module>accounts-repository-test</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>accounts-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework-test</artifactId>
+        </dependency>
+    </dependencies>
 </project>
