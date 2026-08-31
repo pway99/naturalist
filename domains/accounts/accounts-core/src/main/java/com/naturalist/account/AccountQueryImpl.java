@@ -30,7 +30,7 @@ class AccountQueryImpl
 
     @Override
     public Optional<Account> getByEmail(String email) {
-        observer().arguments("getByEmail", i -> i.notBlank(email, "email"))
+        observer().arguments("getByEmail", i -> i.email(email, "email"))
                 .throwWhenInvalid();
         return repository().getByEmail(email);
     }

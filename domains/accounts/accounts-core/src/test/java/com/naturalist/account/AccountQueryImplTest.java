@@ -64,4 +64,11 @@ class AccountQueryImplTest
     void getByEmail_returnsEmptyForUnknown() {
         assertThat(query.getByEmail("nobody@nowhere.example")).isEmpty();
     }
+
+    @Test
+    void getByEmail_rejectsMalformedEmail() {
+        assertThatThrownBy(() -> query.getByEmail("not-an-email"))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("email");
+    }
 }

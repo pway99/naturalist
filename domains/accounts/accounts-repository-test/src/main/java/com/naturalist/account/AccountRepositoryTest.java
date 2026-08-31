@@ -93,4 +93,11 @@ interface AccountRepositoryTest extends EntityRepositoryTest<AccountName, Accoun
     default void getByEmail_returnsEmptyForUnknownEmail() {
         assertThat(repository().getByEmail("nobody@nowhere.example")).isEmpty();
     }
+
+    @Test
+    default void getByEmail_rejectsMalformedEmail() {
+        assertThatThrownBy(() -> repository().getByEmail("not-an-email"))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("email");
+    }
 }
