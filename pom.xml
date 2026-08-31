@@ -556,6 +556,12 @@
                 <artifactId>naturalists-repository-rdbms</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- ACCOUNTS -->
+            <dependency>
+                <groupId>com.naturalist</groupId>
+                <artifactId>accounts-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- PLANTS -->
             <dependency>
                 <groupId>com.naturalist</groupId>
