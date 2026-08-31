@@ -43,7 +43,8 @@ class HeaderCollectionLensWebMvcTest {
     }
 
     private static UsernamePasswordAuthenticationToken patrick() {
-        var p = new NaturalistPrincipal(NaturalistName.of("patrick-way"), "Patrick", "{bcrypt}x");
+        var p = new NaturalistPrincipal(NaturalistName.of("patrick-way"), "Patrick",
+                "gerald.durrell@oakvista.example", "{bcrypt}x", false, true);
         return new UsernamePasswordAuthenticationToken(p, "n/a", p.getAuthorities());
     }
 

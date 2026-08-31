@@ -27,8 +27,4 @@ class NaturalistRepository {
          */
         Optional<Naturalist> getByAccount(AccountName account);
     }
-
-    protected interface CredentialRepository
-            extends EntityRepository<NaturalistName, NaturalistCredential> {
-    }
 }

@@ -24,7 +24,8 @@ class CurrentNaturalistTest {
     @Test
     void displayName_forNaturalistPrincipal_returnsGivenName() {
         authenticateAs(new NaturalistPrincipal(
-                NaturalistName.of("patrick-way"), "Patrick", "{bcrypt}x"));
+                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
+                "{bcrypt}x", false, true));
 
         assertThat(CurrentNaturalistView.displayName()).isEqualTo("Patrick");
         assertThat(CurrentNaturalistView.isAuthenticated()).isTrue();
@@ -39,7 +40,8 @@ class CurrentNaturalistTest {
     @Test
     void currentNaturalistName_forNaturalistPrincipal_isPresent() {
         authenticateAs(new NaturalistPrincipal(
-                NaturalistName.of("patrick-way"), "Patrick", "{bcrypt}x"));
+                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
+                "{bcrypt}x", false, true));
 
         CurrentNaturalist seam = new SecurityContextCurrentNaturalist(name -> java.util.Optional.empty());
         assertThat(seam.name()).contains(NaturalistName.of("patrick-way"));

@@ -48,7 +48,8 @@ class NaturalistHeaderInterceptorTest {
     @Test
     void publishesNaturalistSlug_forNaturalistPrincipal() {
         var principal = new NaturalistPrincipal(
-                NaturalistName.of("patrick-way"), "Patrick", "{bcrypt}x");
+                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
+                "{bcrypt}x", false, true);
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(principal, "n/a", principal.getAuthorities()));
         var request = new MockHttpServletRequest();
@@ -127,7 +128,8 @@ class NaturalistHeaderInterceptorTest {
     @Test
     void usageAlertsPending_false_forNaturalistRole_evenWithAlertsPending() {
         var principal = new NaturalistPrincipal(
-                NaturalistName.of("patrick-way"), "Patrick", "{bcrypt}x");
+                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
+                "{bcrypt}x", false, true);
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(principal, "n/a", principal.getAuthorities()));
         var request = new MockHttpServletRequest();
