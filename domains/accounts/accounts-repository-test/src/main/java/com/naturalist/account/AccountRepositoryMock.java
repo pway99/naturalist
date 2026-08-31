@@ -7,14 +7,14 @@ import com.naturalist.data.NaturalistDatabase;
 import java.util.Optional;
 
 /**
- * In-memory {@link AccountRepository} backed by {@link AccountTestEntitySource}. Marked
- * {@link MockDomainService} so the Spring runtime bridge registers it under the
- * {@code mock-data} profile (ADR-025). Mirrors {@code NaturalistEntityRepositoryMock}.
+ * In-memory {@link AccountRepository.AccountEntityRepository} backed by
+ * {@link AccountTestEntitySource}. Marked {@link MockDomainService} so the Spring runtime
+ * bridge registers it under the {@code mock-data} profile (ADR-025).
  */
 @MockDomainService
 class AccountRepositoryMock
         extends AbstractTestEntityRepository<AccountName, Account, AccountTestEntitySource>
-        implements AccountRepository {
+        implements AccountRepository.AccountEntityRepository {
 
     AccountRepositoryMock(NaturalistDatabase naturalistDatabase) {
         super(naturalistDatabase);

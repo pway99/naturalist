@@ -5,21 +5,27 @@ import com.naturalist.data.EntityRepository;
 import java.util.Optional;
 
 /**
- * Write-side repository for {@link Account}. Package-private per ADR-020: adapters in the
- * same package (the in-memory mock, the future RDBMS adapter) implement it, while foreign
- * packages reach accounts only through the public query/command surface.
- *
- * <p>Collapsed to a top-level interface under the ADR-020 N=1 rule — {@code accounts} holds
- * a single entity today. Promote to a {@code AccountRepository} namespace {@code class} with
- * a nested {@code AccountEntityRepository} when a second entity (the verification token)
- * joins the package.
+ * Namespace for the accounts sub-context's write-side repositories (ADR-020). A
+ * {@code class}, not an {@code interface}, so nested repository contracts stay
+ * {@code protected} — hidden from foreign packages while permitting same-package adapter
+ * implementations. Promoted from the earlier N=1 top-level interface when the verification
+ * token joined the package. Non-instantiable. Mirrors {@code NaturalistRepository}.
  */
-interface AccountRepository extends EntityRepository<AccountName, Account> {
+class AccountRepository {
 
-    /**
-     * Resolves an account by its login {@code email} (a {@code @UniqueValue}, so at most one
-     * match). The primary lookup for authentication — {@code NaturalistUserDetailsService}
-     * resolves the signed-in account by the address typed at login.
-     */
-    Optional<Account> getByEmail(String email);
+    private AccountRepository() {
+    }
+
+    protected interface AccountEntityRepository extends EntityRepository<AccountName, Account> {
+
+        /**
+         * Resolves an account by its login {@code email} (a {@code @UniqueValue}, so at most
+         * one match). The primary lookup for authentication.
+         */
+        Optional<Account> getByEmail(String email);
+    }
+
+    protected interface VerificationTokenRepository
+            extends EntityRepository<EmailVerificationTokenId, EmailVerificationToken> {
+    }
 }

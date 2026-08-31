@@ -14,10 +14,10 @@ import java.util.Set;
  */
 @DomainService
 class AccountQueryImpl
-        extends AbstractEntityQuery<AccountName, Account, AccountCollection, AccountRepository>
+        extends AbstractEntityQuery<AccountName, Account, AccountCollection, AccountRepository.AccountEntityRepository>
         implements AccountQuery {
 
-    AccountQueryImpl(AccountRepository repository) {
+    AccountQueryImpl(AccountRepository.AccountEntityRepository repository) {
         super(repository);
     }
 
