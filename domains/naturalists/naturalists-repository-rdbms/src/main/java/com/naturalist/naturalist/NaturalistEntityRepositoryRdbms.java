@@ -1,11 +1,13 @@
 package com.naturalist.naturalist;
 
+import com.naturalist.account.AccountName;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
+import com.naturalist.observability.Observer;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -85,5 +87,13 @@ class NaturalistEntityRepositoryRdbms
             doInsert(entity);
         }
         return entity;
+    }
+
+    @Override
+    public Optional<Naturalist> getByAccount(AccountName account) {
+        Observer.forClass(NaturalistEntityRepositoryRdbms.class)
+                .arguments("getByAccount", i -> i.entityName(account, "account"))
+                .throwWhenInvalid();
+        return Optional.ofNullable(mapper.selectByAccount(account.value())).map(NaturalistDbo::toEntity);
     }
 }
