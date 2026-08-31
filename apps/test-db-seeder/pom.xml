@@ -26,6 +26,16 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>accounts-repository-rdbms</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>accounts-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>chemistry-repository-rdbms</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
