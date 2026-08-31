@@ -48,3 +48,5 @@ naturalist:
   usage:
     warning-percent: 80
     alert-email: patway99@gmail.com
+  access:
+    grant-policy: self-serve
