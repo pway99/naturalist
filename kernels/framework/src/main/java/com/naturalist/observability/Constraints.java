@@ -243,6 +243,25 @@ public class Constraints {
         return add(new KebabFormatConstraint<>(t, valueFunction, name));
     }
 
+    /**
+     * Asserts that the extracted string is a plausibly well-formed email address:
+     * a single {@code @}, a non-empty local part, a dotted domain, no whitespace,
+     * and no longer than 254 characters. This is a pragmatic sanity check for a
+     * login or contact field, not RFC-perfect validation — the authoritative proof
+     * of an address is a delivered message.
+     *
+     * <p>Null and empty values fail (the diagnostic distinguishes them), so a single
+     * {@code email} constraint covers presence and format. Normalisation
+     * (lower-casing, trimming) is a command-layer concern, not an invariant.
+     */
+    public Constraints email(String value, String name) {
+        return email(value, Function.identity(), name);
+    }
+
+    public <T> Constraints email(T t, Function<T, String> valueFunction, String name) {
+        return add(new EmailFormatConstraint<>(t, valueFunction, name));
+    }
+
     public <R> Constraints notNull(R value, String name) {
         return notNull(value, Function.identity(), name);
     }

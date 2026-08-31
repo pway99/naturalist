@@ -36,6 +36,7 @@
         <module>vertebrates</module>
         <module>microbes</module>
         <module>naturalists</module>
+        <module>accounts</module>
         <module>usage</module>
     </modules>
 
