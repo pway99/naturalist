@@ -41,6 +41,9 @@ interface NaturalistMapper {
         """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
+    @Select("SELECT " + COLUMNS + " FROM naturalist WHERE account_name = #{account} LIMIT 1")
+    NaturalistDbo selectByAccount(String account);
+
     @Insert("""
         INSERT INTO naturalist (name, account_name, public_handle, given_name, family_name, role, stage, notes)
         VALUES (#{name}, #{accountName}, #{publicHandle}, #{givenName}, #{familyName}, #{role}, #{stage}, #{notes})
