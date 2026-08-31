@@ -12,8 +12,3 @@ CREATE TABLE naturalist (
     stage         VARCHAR(32)  NOT NULL,
     notes         TEXT
 );
-
-CREATE TABLE naturalist_credential (
-    naturalist_id BIGINT PRIMARY KEY REFERENCES naturalist(id),
-    password_hash VARCHAR(80) NOT NULL
-);

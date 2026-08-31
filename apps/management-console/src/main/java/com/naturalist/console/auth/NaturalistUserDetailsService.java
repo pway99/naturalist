@@ -1,8 +1,11 @@
 package com.naturalist.console.auth;
 
+import com.naturalist.account.Account;
+import com.naturalist.account.AccessLevel;
+import com.naturalist.account.AccountQuery;
+import com.naturalist.account.AccountStatus;
 import com.naturalist.console.admin.AdminProperties;
-import com.naturalist.naturalist.NaturalistName;
-import com.naturalist.naturalist.NaturalistCredentialQuery;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistQuery;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +16,8 @@ import org.springframework.stereotype.Service;
 
 /**
  * Authenticates the config admin first (unchanged {@link AdminProperties} path,
- * {@code ROLE_ADMIN}); otherwise resolves a {@link com.naturalist.naturalist.NaturalistCredential}
- * by slug and builds a {@link NaturalistPrincipal} ({@code ROLE_NATURALIST}). This class
+ * {@code ROLE_ADMIN}); otherwise resolves an {@link Account} by login email and
+ * builds a {@link NaturalistPrincipal} ({@code ROLE_NATURALIST}). This class
  * and {@link CurrentNaturalist}/{@link CurrentNaturalistView} are the only places that
  * turn a username into a naturalist identity (design: seam discipline).
  */
@@ -24,16 +27,16 @@ class NaturalistUserDetailsService implements UserDetailsService {
     private final AdminProperties admin;
     private final PasswordEncoder passwordEncoder;
     private final NaturalistQuery naturalistQuery;
-    private final NaturalistCredentialQuery credentialQuery;
+    private final AccountQuery accountQuery;
 
     NaturalistUserDetailsService(AdminProperties admin,
                                  PasswordEncoder passwordEncoder,
                                  NaturalistQuery naturalistQuery,
-                                 NaturalistCredentialQuery credentialQuery) {
+                                 AccountQuery accountQuery) {
         this.admin = admin;
         this.passwordEncoder = passwordEncoder;
         this.naturalistQuery = naturalistQuery;
-        this.credentialQuery = credentialQuery;
+        this.accountQuery = accountQuery;
     }
 
     @Override
@@ -44,17 +47,21 @@ class NaturalistUserDetailsService implements UserDetailsService {
                     .roles("ADMIN")
                     .build();
         }
-
-        NaturalistName name = NaturalistName.of(username);
-        if (name.isNotValid()) {
-            throw new UsernameNotFoundException(username);
+        Account account;
+        try {
+            account = accountQuery.getByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException(username));
+        } catch (InvariantViolationException malformedEmail) {
+            throw new UsernameNotFoundException(username);   // a malformed login is "not found", not a 500
         }
-
-        var credential = credentialQuery.getByName(name)
+        var naturalist = naturalistQuery.byAccount(account.name())
                 .orElseThrow(() -> new UsernameNotFoundException(username));
-        var naturalist = naturalistQuery.getByName(name)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
-
-        return new NaturalistPrincipal(name, naturalist.givenName(), credential.passwordHash());
+        return new NaturalistPrincipal(
+                naturalist.name(),
+                naturalist.givenName(),
+                account.email(),
+                account.passwordHash(),
+                account.access() == AccessLevel.VISION,
+                account.status() != AccountStatus.SUSPENDED);
     }
 }

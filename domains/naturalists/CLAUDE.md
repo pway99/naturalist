@@ -2,16 +2,18 @@
 
 A `Naturalist` (`NamedEntity<NaturalistName>`) is a person at Oak Vista — an
 ecological actor (role, ecological stage), **not** an account. Authentication
-credentials live in a **separate** record, `NaturalistCredential`
-(`NamedEntity<NaturalistName>`, keyed 1:1 by the same slug), so the ecological
-record never carries a password.
+lives in the separate `accounts` domain: `Account` (keyed by the opaque
+`AccountName`, login by `email`) is linked to a `Naturalist` via the
+`Naturalist.account` field, so the ecological record never carries a password.
 
-- `NaturalistCredential.passwordHash` is an encoded (`{bcrypt}$2a$…`) hash from the
-  console's `PasswordEncoder`, never plaintext. Invariant: `entityName(name)` +
-  `notBlank(passwordHash)`.
-- Read ports: `NaturalistQuery`, `NaturalistCredentialQuery` (both `EntityQuery`).
-- Login username = the `NaturalistName` slug. Session identity is exposed to the
-  console through the `CurrentNaturalist` seam in `management-console`
-  (`com.naturalist.console.auth`); domain code does not depend on Spring Security.
+- Read ports: `NaturalistQuery` (`byAccount(AccountName)` is the reverse
+  lookup used by login) and `AccountQuery` (`getByEmail(String)`) in the
+  `accounts` domain.
+- Login username = the account `email`. `NaturalistUserDetailsService`
+  (`management-console`) resolves the `Account` by email, then the linked
+  `Naturalist` by `AccountName`, and builds the `NaturalistPrincipal`. Session
+  identity is exposed to the console through the `CurrentNaturalist` seam
+  (`com.naturalist.console.auth`); domain code does not depend on Spring
+  Security.
 
-See `docs/plans/2026-07-06-naturalist-auth-design.md`.
+See `docs/plans/2026-08-30-accounts-auth-redesign-design.md`.
