@@ -1,6 +1,7 @@
 package com.naturalist.account;
 
 import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.UniqueValue;
 import com.naturalist.observability.Constraints;
 
 import java.util.function.Consumer;
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
  */
 public record Account(
         AccountName name,
-        String email,
+        @UniqueValue String email,
         String passwordHash,
         boolean emailVerified,
         AccessLevel access,
