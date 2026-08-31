@@ -27,5 +27,11 @@ class AccountRepository {
 
     protected interface VerificationTokenRepository
             extends EntityRepository<EmailVerificationTokenId, EmailVerificationToken> {
+
+        /**
+         * Resolves a token by its stored hash (the deterministic hash of a presented raw
+         * token). At most one match — the verification/reset lookup.
+         */
+        Optional<EmailVerificationToken> getByTokenHash(String tokenHash);
     }
 }
