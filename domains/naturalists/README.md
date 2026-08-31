@@ -59,6 +59,30 @@ convention. No domain code depends on Spring Security.
 
 ---
 
+## Planned direction (not yet built)
+
+A broader authentication/authorization redesign is designed but not yet
+implemented — see
+[`docs/plans/2026-08-30-accounts-auth-redesign-design.md`](../../docs/plans/2026-08-30-accounts-auth-redesign-design.md).
+Two parts of it touch this domain:
+
+- **Auth moves to a dedicated `accounts` context.** `NaturalistCredential` is
+  slated to be absorbed by an `Account` there; login moves to email (decoupled
+  from `NaturalistName`), and `Naturalist` gains an `AccountName` link plus a
+  **renameable public handle** distinct from the stable `NaturalistName` key.
+
+- **Young naturalists — POSTPONED.** The design carves out teacher-provisioned
+  student accounts: an admin grants an account a *teacher* capability; teachers
+  create a `Classroom` with a join code; middle-school students **self-join with
+  no email** (the teacher's code and sponsorship are the trust anchor) and get
+  vision identification funded by a teacher-owned classroom budget pool. This maps
+  onto the existing `NaturalistRole.STUDENT`/`TEACHER` and `EcologicalStage`
+  vocabulary. **It is intentionally deferred** — captured here and in the design
+  doc's "Young naturalists" section, but not on the near-term build path, and
+  gated on a COPPA/child-privacy review before any minor is onboarded.
+
+---
+
 ## Learn more
 
 - [`CLAUDE.md`](CLAUDE.md) — the identity/credential split and its invariants.
