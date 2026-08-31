@@ -130,10 +130,13 @@ is an `Entity` and does carry its own `EmailVerificationTokenId`, which stays in
 
 ### Registration orchestration (app layer)
 
-Lives in `management-console` (`RegistrationService`): mint via
-`accountCommand.register(email, encoder.encode(password))` → get `AccountName` →
+Lives in `management-console` as a `RegistrationTransaction` (Command/Query/Transaction
+naming — never a `*Service`): `@Transactional`, it mints via
+`accountCommand.register(email, encoder.encode(password))` → gets `AccountName` →
 `naturalistCommand.create(mintedNaturalistName, accountName, publicHandle, VISITOR,
-stage)`. Two domains, composed at the root — no cross-domain core dependency.
+stage)`. Two domains, composed at the root — no cross-domain core dependency. The
+`@Transactional` boundary here spans both writes; `AccountCommand`'s own methods are
+independently `@Transactional` and join it via `REQUIRED` propagation.
 
 ## Authorization & security chain
 

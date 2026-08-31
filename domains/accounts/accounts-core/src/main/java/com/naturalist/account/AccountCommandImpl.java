@@ -2,6 +2,7 @@ package com.naturalist.account;
 
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
+import jakarta.transaction.Transactional;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -10,9 +11,14 @@ import java.time.Instant;
 /**
  * Plain {@code @DomainService} write command (ADR-010 style; mirrors {@code UsageCommandImpl}).
  * Time comes from an injected {@link Clock} and secrets from an injected {@link SecureTokens}, so
- * expiry and token behaviour are deterministically testable. Register writes an account then a
- * token; atomicity across the two is the RDBMS adapter's transaction boundary (the in-memory mock
- * needs none).
+ * expiry and token behaviour are deterministically testable.
+ *
+ * <p>{@code register} and {@code verifyEmail} each write more than one entity, so both carry
+ * {@link Transactional @jakarta.transaction.Transactional} — the same annotation the framework's
+ * {@code Transaction} base uses. Under {@code @DomainService} the runtime adapter applies the
+ * transaction manager, so the coordinated writes commit or roll back as a unit; the in-memory mock
+ * is non-transactional, which is correct for unit tests. The app's {@code RegistrationTransaction}
+ * remains the outer boundary that also spans the cross-domain {@code Naturalist} write.
  */
 @DomainService
 class AccountCommandImpl implements AccountCommand {
@@ -47,6 +53,7 @@ class AccountCommandImpl implements AccountCommand {
     }
 
     @Override
+    @Transactional
     public Registration register(String email, String passwordHash) {
         observer.arguments("register", i -> i
                         .email(email, "email")
@@ -74,6 +81,7 @@ class AccountCommandImpl implements AccountCommand {
     }
 
     @Override
+    @Transactional
     public void verifyEmail(String rawToken) {
         observer.arguments("verifyEmail", i -> i.notBlank(rawToken, "rawToken"))
                 .throwWhenInvalid();
