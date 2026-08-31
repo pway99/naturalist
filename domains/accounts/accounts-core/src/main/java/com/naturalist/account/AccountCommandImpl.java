@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * Plain {@code @DomainService} write command (ADR-010 style; mirrors {@code UsageCommandImpl}).
@@ -24,6 +25,7 @@ import java.time.Instant;
 class AccountCommandImpl implements AccountCommand {
 
     private static final Duration VERIFICATION_TTL = Duration.ofHours(24);
+    private static final Duration RESET_TTL = Duration.ofHours(1);
 
     private final Observer observer = Observer.forClass(getClass());
 
@@ -104,5 +106,63 @@ class AccountCommandImpl implements AccountCommand {
             verified = verified.withAccess(AccessLevel.VISION);
         }
         accounts.update(verified);
+    }
+
+    @Override
+    public void grantVision(AccountName account) {
+        observer.arguments("grantVision", i -> i.entityName(account, "account")).throwWhenInvalid();
+        Account existing = accounts.getByName(account)
+                .orElseThrow(() -> new AccountNotFoundException(account));
+        accounts.update(existing.withAccess(AccessLevel.VISION));
+    }
+
+    @Override
+    public void revokeVision(AccountName account) {
+        observer.arguments("revokeVision", i -> i.entityName(account, "account")).throwWhenInvalid();
+        Account existing = accounts.getByName(account)
+                .orElseThrow(() -> new AccountNotFoundException(account));
+        accounts.update(existing.withAccess(AccessLevel.BROWSE_ONLY));
+    }
+
+    @Override
+    public Optional<String> beginPasswordReset(String email) {
+        observer.arguments("beginPasswordReset", i -> i.email(email, "email")).throwWhenInvalid();
+        Optional<Account> account = accounts.getByEmail(email);
+        if (account.isEmpty()) {
+            return Optional.empty();
+        }
+        SecureTokens.MintedToken minted = secureTokens.mint();
+        tokens.insert(new EmailVerificationToken(
+                EmailVerificationTokenId.create(),
+                account.get().name(),
+                minted.hash(),
+                TokenPurpose.RESET_PASSWORD,
+                clock.instant().plus(RESET_TTL),
+                null));
+        return Optional.of(minted.rawValue());
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(String rawToken, String newPasswordHash) {
+        observer.arguments("resetPassword", i -> i
+                        .notBlank(rawToken, "rawToken")
+                        .notBlank(newPasswordHash, "newPasswordHash"))
+                .throwWhenInvalid();
+
+        EmailVerificationToken token = tokens.getByTokenHash(secureTokens.hash(rawToken))
+                .orElseThrow(() -> new InvalidTokenException("invalid token"));
+
+        Instant now = clock.instant();
+        if (token.purpose() != TokenPurpose.RESET_PASSWORD
+                || token.consumedAt() != null
+                || now.isAfter(token.expiresAt())) {
+            throw new InvalidTokenException("invalid token");
+        }
+        tokens.update(token.withConsumedAt(now));
+
+        Account account = accounts.getByName(token.account())
+                .orElseThrow(() -> new InvalidTokenException("invalid token"));
+        accounts.update(account.withPasswordHash(newPasswordHash));
     }
 }
