@@ -16,6 +16,7 @@
 
     <modules>
         <module>accounts-api</module>
+        <module>accounts-core</module>
         <module>accounts-repository-test</module>
     </modules>
 </project>

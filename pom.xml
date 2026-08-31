@@ -564,6 +564,11 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>accounts-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>accounts-repository-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
