@@ -24,7 +24,7 @@ interface AccountRepositoryTest extends EntityRepositoryTest<AccountName, Accoun
     AccountName NOT_FOUND = AccountName.of("acct-nobody-here");
 
     @Override
-    AccountRepository repository();
+    AccountRepository.AccountEntityRepository repository();
 
     @Override
     default TestEntitySource<AccountName, Account> source() {
