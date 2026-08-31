@@ -1,0 +1,42 @@
+[
+  {
+    "id": "018f3a2e-9b71-7a01-8b01-000000000001",
+    "account": "acct-018f3a2ef533",
+    "tokenHash": "sha256:1a2b3c4d5e6f70819a2b3c4d5e6f7081",
+    "purpose": "VERIFY_EMAIL",
+    "expiresAt": "2026-09-30T00:00:00Z",
+    "consumedAt": null
+  },
+  {
+    "id": "018f3a2e-9b71-7a01-8b01-000000000002",
+    "account": "acct-018f3a2e9b71",
+    "tokenHash": "sha256:2b3c4d5e6f708192a3b4c5d6e7f80912",
+    "purpose": "VERIFY_EMAIL",
+    "expiresAt": "2026-08-20T00:00:00Z",
+    "consumedAt": "2026-08-19T14:05:00Z"
+  },
+  {
+    "id": "018f3a2e-9b71-7a01-8b01-000000000003",
+    "account": "acct-018f3a2ec4d2",
+    "tokenHash": "sha256:3c4d5e6f708192a3b4c5d6e7f8091203",
+    "purpose": "RESET_PASSWORD",
+    "expiresAt": "2026-09-30T01:00:00Z",
+    "consumedAt": null
+  },
+  {
+    "id": "018f3a2e-9b71-7a01-8b01-000000000004",
+    "account": "acct-018f3b01a2c4",
+    "tokenHash": "sha256:4d5e6f708192a3b4c5d6e7f809120344",
+    "purpose": "RESET_PASSWORD",
+    "expiresAt": "2026-08-25T00:00:00Z",
+    "consumedAt": "2026-08-24T09:30:00Z"
+  },
+  {
+    "id": "018f3a2e-9b71-7a01-8b01-000000000005",
+    "account": "acct-018f3b01d8e5",
+    "tokenHash": "sha256:5e6f708192a3b4c5d6e7f80912034455",
+    "purpose": "VERIFY_EMAIL",
+    "expiresAt": "2026-08-01T00:00:00Z",
+    "consumedAt": null
+  }
+]
