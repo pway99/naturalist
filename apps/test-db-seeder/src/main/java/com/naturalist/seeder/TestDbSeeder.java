@@ -12,8 +12,9 @@ import java.util.Set;
  * data) so one can be run or fixed in isolation. Idempotent: every domain drops + recreates its
  * tables before reseeding.
  *
- * <p>With no arguments, seeds every domain. Pass domain names ({@code naturalists}, {@code chemistry},
- * {@code library}, {@code plants}, {@code insects}) to seed only those — e.g. {@code -Dexec.args="insects"}.
+ * <p>With no arguments, seeds every domain. Pass domain names ({@code naturalists}, {@code accounts},
+ * {@code chemistry}, {@code library}, {@code plants}, {@code insects}) to seed only those —
+ * e.g. {@code -Dexec.args="insects"}.
  */
 public final class TestDbSeeder {
 
@@ -28,6 +29,7 @@ public final class TestDbSeeder {
         NaturalistDatabase database = NaturalistDatabase.create();
 
         if (only.isEmpty() || only.contains("naturalists")) NaturalistSeeding.seed(dataSource, database);
+        if (only.isEmpty() || only.contains("accounts")) AccountSeeding.seed(dataSource, database);
         if (only.isEmpty() || only.contains("chemistry")) ChemistrySeeding.seed(dataSource, database);
         if (only.isEmpty() || only.contains("library")) LibrarySeeding.seed(dataSource, database);
         if (only.isEmpty() || only.contains("plants")) PlantsSeeding.seed(dataSource, database);
