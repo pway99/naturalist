@@ -1,6 +1,5 @@
 package com.naturalist.account;
 
-import com.naturalist.account.AccountName;
 import com.naturalist.ddd.NamedEntity;
 import com.naturalist.observability.Constraints;
 
@@ -43,7 +42,7 @@ public record Account(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
-                .notBlank(email, "email")
+                .email(email, "email")
                 .notBlank(passwordHash, "passwordHash")
                 .notNull(access, "access")
                 .notNull(status, "status");
