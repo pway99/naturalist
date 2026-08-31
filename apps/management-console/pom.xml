@@ -174,6 +174,20 @@
             <artifactId>naturalists-repository-rdbms</artifactId>
         </dependency>
 
+        <!-- ACCOUNTS -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>accounts-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>accounts-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>accounts-repository-rdbms</artifactId>
+        </dependency>
+
         <!-- Spring/MyBatis bridge: autoconfigures the DataSource + SqlSessionFactory
              from application.yml so the scanned rdbms @DomainService adapters resolve
              their package-private mappers (registered via @MapperScan). -->
@@ -187,6 +201,12 @@
         <!-- In-memory @MockDomainService doubles. Test scope only: they replace the rdbms
              adapters under the `mock-data` profile so app-level tests never touch the standing
              naturalist_test Postgres (see MockDataConfiguration). -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>accounts-repository-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>chemistry-repository-test</artifactId>
@@ -278,6 +298,7 @@
                          half arrives the same way, as the test-scoped spring-test-data jar.
                          Guarded by MockPersistenceWiringTest. -->
                     <classpathDependencyExcludes>
+                        <exclude>com.naturalist:accounts-repository-rdbms</exclude>
                         <exclude>com.naturalist:chemistry-repository-rdbms</exclude>
                         <exclude>com.naturalist:garden-repository-rdbms</exclude>
                         <exclude>com.naturalist:insects-repository-rdbms</exclude>
