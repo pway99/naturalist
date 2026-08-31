@@ -1,51 +1,36 @@
 package com.naturalist.console.usage;
 
+import com.naturalist.notification.EmailMessage;
+import com.naturalist.notification.EmailSender;
 import com.naturalist.usage.UsageAlert;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 /**
- * Best-effort, guarded email sender for {@link UsageAlert}s (task D1).
+ * Sends {@link UsageAlert}s through the shared {@link EmailSender} seam (task D1). Transport
+ * presence/absence and delivery-failure handling now live in the port's implementations
+ * (log-only when no transport is configured; swallow transport failures when it is), so this
+ * collaborator is a thin translator from an alert to an {@link EmailMessage}.
  *
- * <p>SMTP is optional infrastructure: most environments (dev, CI, and any
- * deployment without {@code spring.mail.*} configured) have no
- * {@link JavaMailSender} bean at all. {@link #send} resolves the sender via
- * {@link ObjectProvider#getIfAvailable()} and no-ops when it is absent,
- * rather than requiring every environment to configure SMTP just to boot.
- *
- * <p>Delivery failures (a misconfigured host, a bounced address, a transient
- * network error) are swallowed rather than propagated or logged — this
- * codebase has no logging infrastructure, and the persisted {@link UsageAlert}
- * row (see {@code UsageQuery#activeAlerts()}) is the durable record of the
- * alert regardless of whether the email made it out. Task D2's scheduled job
- * is the only caller; it must never fail a batch because one address bounced.
+ * <p>The persisted {@link UsageAlert} row (see {@code UsageQuery#activeAlerts()}) remains the
+ * durable record of the alert regardless of whether the email is delivered — task D2's
+ * scheduled job, the only caller, must never fail a batch because one address bounced, and
+ * the best-effort {@code EmailSender} contract guarantees {@link #send} cannot throw.
  */
 @Component
 class AlertEmailer {
 
-    private final ObjectProvider<JavaMailSender> mailProvider;
+    private final EmailSender emailSender;
     private final UsageProperties properties;
 
-    AlertEmailer(ObjectProvider<JavaMailSender> mailProvider, UsageProperties properties) {
-        this.mailProvider = mailProvider;
+    AlertEmailer(EmailSender emailSender, UsageProperties properties) {
+        this.emailSender = emailSender;
         this.properties = properties;
     }
 
     void send(UsageAlert alert) {
-        JavaMailSender sender = mailProvider.getIfAvailable();
-        if (sender == null) {
-            return;
-        }
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(properties.alertEmail());
-            message.setSubject("[naturalist] " + alert.kind() + " " + alert.scope());
-            message.setText(alert.message());
-            sender.send(message);
-        } catch (Exception ignored) {
-            // Best-effort: the persisted alert row is the record; see class javadoc.
-        }
+        emailSender.send(new EmailMessage(
+                properties.alertEmail(),
+                "[naturalist] " + alert.kind() + " " + alert.scope(),
+                alert.message()));
     }
 }

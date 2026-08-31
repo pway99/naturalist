@@ -18,6 +18,7 @@
     <modules>
         <module>anthropic-text-generation</module>
         <module>anthropic-vision</module>
+        <module>mail-spring</module>
         <module>resilience-resilience4j</module>
         <module>spring-console-test</module>
         <module>spring-runtime</module>

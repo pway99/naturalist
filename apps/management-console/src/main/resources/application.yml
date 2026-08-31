@@ -50,3 +50,7 @@ naturalist:
     alert-email: patway99@gmail.com
   access:
     grant-policy: self-serve
+  email:
+    # Envelope sender for outbound mail (verification / reset links, usage alerts).
+    # Override per deployment once a real sending domain (with SPF/DKIM) is set up.
+    from: no-reply@naturalist.local
