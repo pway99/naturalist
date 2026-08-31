@@ -2,6 +2,8 @@ package com.naturalist.account;
 
 import com.naturalist.data.EntityRepository;
 
+import java.util.Optional;
+
 /**
  * Write-side repository for {@link Account}. Package-private per ADR-020: adapters in the
  * same package (the in-memory mock, the future RDBMS adapter) implement it, while foreign
@@ -13,4 +15,11 @@ import com.naturalist.data.EntityRepository;
  * joins the package.
  */
 interface AccountRepository extends EntityRepository<AccountName, Account> {
+
+    /**
+     * Resolves an account by its login {@code email} (a {@code @UniqueValue}, so at most one
+     * match). The primary lookup for authentication — {@code NaturalistUserDetailsService}
+     * resolves the signed-in account by the address typed at login.
+     */
+    Optional<Account> getByEmail(String email);
 }

@@ -3,14 +3,19 @@ package com.naturalist.account;
 import com.naturalist.RandomValue;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
+import com.naturalist.exception.InvariantViolationException;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Behavioral contract for {@link AccountRepository}. Inherits the
  * {@link EntityRepositoryTest} cases (ADR-002) and supplies the identity hooks and
- * entity-construction helpers specific to {@link Account}. The known constants match the
- * fixtures in {@code account/accounts.json}.
+ * entity-construction helpers specific to {@link Account}, plus the {@code getByEmail}
+ * finder cases. The known constants match the fixtures in {@code account/accounts.json}.
  */
 interface AccountRepositoryTest extends EntityRepositoryTest<AccountName, Account> {
 
@@ -67,5 +72,32 @@ interface AccountRepositoryTest extends EntityRepositoryTest<AccountName, Accoun
                 true,
                 AccessLevel.VISION,
                 AccountStatus.SUSPENDED);
+    }
+
+    @Test
+    default void getByEmail_rejectsNull() {
+        assertThatThrownBy(() -> repository().getByEmail(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("email");
+    }
+
+    @Test
+    default void getByEmail_returnsAccountWithMatchingEmail() {
+        var result = repository().getByEmail("gerald.durrell@oakvista.example");
+
+        assertThat(result).isPresent();
+        assertThat(result.get().name()).isEqualTo(DURRELL);
+    }
+
+    @Test
+    default void getByEmail_returnsEmptyForUnknownEmail() {
+        assertThat(repository().getByEmail("nobody@nowhere.example")).isEmpty();
+    }
+
+    @Test
+    default void getByEmail_rejectsMalformedEmail() {
+        assertThatThrownBy(() -> repository().getByEmail("not-an-email"))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("email");
     }
 }
