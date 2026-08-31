@@ -1,6 +1,7 @@
 package com.naturalist.naturalist;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.naturalist.ddd.EntityId;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -21,6 +22,15 @@ public final class NaturalistName extends EntityName {
     @JsonCreator
     public static NaturalistName of(String value) {
         return new NaturalistName(value);
+    }
+
+    /**
+     * Mints a fresh opaque handle — {@code "nat-"} plus a UUIDv7 (hex, no hyphens), so it is
+     * a valid kebab slug that carries no personal information. Uses the kernel generator;
+     * never {@code UUID.randomUUID()}.
+     */
+    public static NaturalistName create() {
+        return new NaturalistName("nat-" + EntityId.newUUID().toString().replace("-", ""));
     }
 
     @Override

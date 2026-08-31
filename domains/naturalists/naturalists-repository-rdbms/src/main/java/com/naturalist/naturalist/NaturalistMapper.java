@@ -13,15 +13,14 @@ import java.util.List;
 @Mapper
 interface NaturalistMapper {
 
-    @Select("""
-        SELECT id, name, given_name, family_name, role, stage, notes
-        FROM naturalist WHERE name = #{name}
-        """)
+    String COLUMNS = "id, name, account_name, public_handle, given_name, family_name, role, stage, notes";
+
+    @Select("SELECT " + COLUMNS + " FROM naturalist WHERE name = #{name}")
     NaturalistDbo selectByName(String name);
 
     @Select("""
         <script>
-        SELECT id, name, given_name, family_name, role, stage, notes
+        SELECT id, name, account_name, public_handle, given_name, family_name, role, stage, notes
         FROM naturalist
         WHERE name IN
         <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
@@ -30,7 +29,7 @@ interface NaturalistMapper {
     List<NaturalistDbo> selectByNameSet(@Param("names") Collection<String> names);
 
     @Select("""
-        SELECT id, name, given_name, family_name, role, stage, notes
+        SELECT id, name, account_name, public_handle, given_name, family_name, role, stage, notes
         FROM naturalist ORDER BY name LIMIT #{limit} OFFSET #{offset}
         """)
     List<NaturalistDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
@@ -43,15 +42,15 @@ interface NaturalistMapper {
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Insert("""
-        INSERT INTO naturalist (name, given_name, family_name, role, stage, notes)
-        VALUES (#{name}, #{givenName}, #{familyName}, #{role}, #{stage}, #{notes})
+        INSERT INTO naturalist (name, account_name, public_handle, given_name, family_name, role, stage, notes)
+        VALUES (#{name}, #{accountName}, #{publicHandle}, #{givenName}, #{familyName}, #{role}, #{stage}, #{notes})
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(NaturalistDbo dbo);
 
     @Update("""
-        UPDATE naturalist SET given_name = #{givenName}, family_name = #{familyName},
-               role = #{role}, stage = #{stage}, notes = #{notes}
+        UPDATE naturalist SET public_handle = #{publicHandle}, given_name = #{givenName},
+               family_name = #{familyName}, role = #{role}, stage = #{stage}, notes = #{notes}
         WHERE name = #{name}
         """)
     int updateByName(NaturalistDbo dbo);

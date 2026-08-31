@@ -1,6 +1,7 @@
 package com.naturalist.naturalist;
 
 import com.naturalist.RandomValue;
+import com.naturalist.account.AccountName;
 import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 
@@ -39,6 +40,8 @@ interface NaturalistEntityRepositoryTest
     default Naturalist newEntity() {
         return new Naturalist(
                 NaturalistName.of(RandomValue.string()),
+                AccountName.of("acct-" + RandomValue.string()),
+                "Handle" + RandomValue.string(),
                 "Given" + RandomValue.string(),
                 "Family" + RandomValue.string(),
                 NaturalistRole.VISITOR,
@@ -50,6 +53,8 @@ interface NaturalistEntityRepositoryTest
     default Naturalist ghostEntity() {
         return new Naturalist(
                 NaturalistName.of(RandomValue.string()),
+                AccountName.of("acct-" + RandomValue.string()),
+                "Handle" + RandomValue.string(),
                 "Given" + RandomValue.string(),
                 null,
                 NaturalistRole.VISITOR,
@@ -61,6 +66,8 @@ interface NaturalistEntityRepositoryTest
     default Naturalist modifiedEntity(Naturalist original) {
         return new Naturalist(
                 original.name(),
+                original.account(),
+                "ChangedHandle" + RandomValue.string(),
                 "Changed" + RandomValue.string(),
                 "Changed" + RandomValue.string(),
                 NaturalistRole.KEEPER,
