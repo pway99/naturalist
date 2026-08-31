@@ -20,5 +20,17 @@
             <groupId>com.naturalist</groupId>
             <artifactId>framework</artifactId>
         </dependency>
+
+        <!-- TEST DEPENDENCIES -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>naturalists-repository-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

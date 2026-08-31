@@ -1,5 +1,6 @@
 package com.naturalist.naturalist;
 
+import com.naturalist.account.AccountName;
 import com.naturalist.observability.Constraints;
 import com.naturalist.observability.Observer;
 import com.naturalist.persistence.Dbo;
@@ -7,10 +8,12 @@ import com.naturalist.persistence.DboSchema;
 
 import java.util.function.Consumer;
 
-@DboSchema(table = "naturalist", primaryKey = "id", unique = {"name"}, entity = Naturalist.class)
+@DboSchema(table = "naturalist", primaryKey = "id", unique = {"name", "public_handle"}, entity = Naturalist.class)
 final class NaturalistDbo implements Dbo {
     Long id;              // null before insert; DB identity fills it
     String name;
+    String accountName;
+    String publicHandle;
     String givenName;
     String familyName;   // nullable
     String role;
@@ -20,6 +23,8 @@ final class NaturalistDbo implements Dbo {
     static NaturalistDbo from(Naturalist n) {
         NaturalistDbo d = new NaturalistDbo();
         d.name = n.name().value();
+        d.accountName = n.account().value();
+        d.publicHandle = n.publicHandle();
         d.givenName = n.givenName();
         d.familyName = n.familyName();
         d.role = n.role().name();
@@ -34,6 +39,8 @@ final class NaturalistDbo implements Dbo {
     Naturalist toEntity() {
         return new Naturalist(
                 NaturalistName.of(name),
+                AccountName.of(accountName),
+                publicHandle,
                 givenName,
                 familyName,
                 NaturalistRole.valueOf(role),
@@ -45,6 +52,9 @@ final class NaturalistDbo implements Dbo {
     public Consumer<? extends Constraints> invariants() {
         return c -> c
                 .notNull(name, "name").kebabFormat(name, "name").maxLength(name, 64, "name")
+                .notNull(accountName, "accountName").kebabFormat(accountName, "accountName")
+                .maxLength(accountName, 64, "accountName")
+                .notBlank(publicHandle, "publicHandle").maxLength(publicHandle, 64, "publicHandle")
                 .notNull(givenName, "givenName").maxLength(givenName, 100, "givenName")
                 .maxLength(familyName, 100, "familyName")
                 .notNull(role, "role").maxLength(role, 32, "role")

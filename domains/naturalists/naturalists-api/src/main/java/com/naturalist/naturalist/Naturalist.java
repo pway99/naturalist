@@ -1,6 +1,8 @@
 package com.naturalist.naturalist;
 
+import com.naturalist.account.AccountName;
 import com.naturalist.ddd.NamedEntity;
+import com.naturalist.ddd.UniqueValue;
 import com.naturalist.observability.Constraints;
 import org.jspecify.annotations.Nullable;
 
@@ -22,10 +24,15 @@ import java.util.function.Consumer;
  * <p>
  * {@code givenName} and {@code familyName} are plain strings for display. The
  * {@link NaturalistName} slug is the stable identity used in all cross-domain
- * references and JSON catalogs.
+ * references and JSON catalogs — it is opaque and never renamed. {@code account}
+ * links this ecological record to its authentication identity in the {@code accounts}
+ * domain; {@code publicHandle} is the renameable human "known-as" handle shown in the
+ * console, distinct from the opaque {@link NaturalistName} key.
  */
 public record Naturalist(
         NaturalistName name,
+        AccountName account,
+        @UniqueValue String publicHandle,
         String givenName,
         @Nullable String familyName,
         NaturalistRole role,
@@ -67,10 +74,17 @@ public record Naturalist(
         return familyName != null ? givenName + " " + familyName : givenName;
     }
 
+    /** The one renameable field — the public "known-as" handle. */
+    public Naturalist withPublicHandle(String publicHandle) {
+        return new Naturalist(name, account, publicHandle, givenName, familyName, role, stage, notes);
+    }
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityName(name, "name")
+                .entityName(account, "account")
+                .notBlank(publicHandle, "publicHandle")
                 .notNull(givenName, "givenName")
                 .notNull(role, "role")
                 .notNull(stage, "stage");

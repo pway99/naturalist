@@ -1,6 +1,8 @@
 [
   {
     "name": "patrick-way",
+    "account": "acct-018f3a2e9b71",
+    "publicHandle": "Patrick Way",
     "givenName": "Patrick",
     "familyName": "Way",
     "role": "CARETAKER",
@@ -9,6 +11,8 @@
   },
   {
     "name": "delia-durrell",
+    "account": "acct-018f3a2ec4d2",
+    "publicHandle": "Delia Durrell",
     "givenName": "Delia",
     "familyName": "Durrell",
     "role": "TEACHER",
@@ -17,6 +21,8 @@
   },
   {
     "name": "flora-mendez",
+    "account": "acct-018f3a2ef533",
+    "publicHandle": "Flora Mendez",
     "givenName": "Flora",
     "familyName": "Mendez",
     "role": "STUDENT",
@@ -25,6 +31,8 @@
   },
   {
     "name": "amir-hassan",
+    "account": "acct-018f3b01a2c4",
+    "publicHandle": "Amir Hassan",
     "givenName": "Amir",
     "familyName": "Hassan",
     "role": "KEEPER",
@@ -33,6 +41,8 @@
   },
   {
     "name": "sam-rivers",
+    "account": "acct-018f3b01d8e5",
+    "publicHandle": "Sam Rivers",
     "givenName": "Sam",
     "familyName": "Rivers",
     "role": "VISITOR",
