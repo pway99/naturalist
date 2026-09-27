@@ -47,6 +47,7 @@ jte-classes/
 
 ### Claude Code runtime ###
 .claude/scheduled_tasks.lock
+.claude/history.jsonl
 
 ### Scratch / transient exports ###
 temp/
