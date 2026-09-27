@@ -13,9 +13,9 @@
 
     <licenses>
         <license>
-            <name>Proprietary</name>
-            <comments>Copyright (c) 2026 Patrick Way. All Rights Reserved.</comments>
-            <distribution>manual</distribution>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
         </license>
     </licenses>
 

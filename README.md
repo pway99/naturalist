@@ -317,5 +317,5 @@ through which domains reference one another by name (see the
 
 ## License
 
-Proprietary — Copyright (c) 2026 Patrick Way. All rights reserved.
-See [`LICENSE`](LICENSE).
+Copyright 2026 Patrick Way. Licensed under the
+[Apache License, Version 2.0](LICENSE).
