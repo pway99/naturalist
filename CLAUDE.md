@@ -86,20 +86,34 @@ bootstrap                   →  application
 <domain>-repository-test    →  <domain>-api
 <domain>-repository-rdms    →  <domain>-api
 <domain>-core               →  <domain>-api
-<domain>-api                →  framework, identifiers, field-notes
-<organism>-api              →  framework, identifiers, field-notes, taxonomy, clades
+<domain>-api                →  framework, identifiers, field-notes, and any kernel on
+                               the rule-1 allow-list below
+<organism>-api              →  the same, plus taxonomy and clades
 identifiers                 →  framework
 field-notes                 →  framework
 taxonomy                    →  framework
+habitat                     →  framework
+measurements                →  framework
+authority                   →  framework
 clades                      →  framework, field-notes
+biogeography                →  framework, field-notes
+catalog                     →  framework, identifiers
+observation                 →  framework, identifiers, taxonomy
 framework                   →  Jackson, Commons, Micrometer, JSpecify only
 framework-test              →  framework
 ```
 
 Rules:
 
-1. api modules depend only on `framework`, `identifiers`, `field-notes`, (organism only)
-   `taxonomy` and `clades`. Nothing else.
+1. api modules depend only on `framework`, `identifiers` and `field-notes`, plus — as
+   the domain needs them — `taxonomy`, `clades`, `observation`, `habitat`,
+   `biogeography`, `measurements`, `catalog` and `authority`. Nothing else: never
+   another domain's api, core, repository-test or repository-rdms. Who uses what today:
+   `taxonomy` in arachnids, insects, library, microbes, plants and worms; `clades` in
+   insects, library and plants; `observation` in insects and plants; `habitat` in
+   insects; `biogeography` in plants; `measurements` in sensors, soil, weather and
+   zone; `catalog` in chemistry, insects, library and plants; `authority` in insects,
+   library and `eol-api`.
 2. core may import another domain's **api** only — never its core, repository-test, or
    repository-rdms.
 3. repository modules depend only on their own api (+ framework).
