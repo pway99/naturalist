@@ -1,3 +1,4 @@
 {
-  "model": "opus"
+  "model": "opus",
+  "env": { "KANAME_ENGINE_HOME": "/Users/pat/dev/kaname/kaname-engine" }
 }
