@@ -9,6 +9,7 @@ import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.notification.EmailMessage;
 import com.naturalist.notification.EmailSender;
 import com.naturalist.observability.Constraint;
+import com.naturalist.resilience.RateLimitExceededException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -104,6 +105,13 @@ class RegistrationController {
         } catch (InvariantViolationException invalid) {
             // The transaction observed the form's fields and named the failing ones; render those.
             return reRender(model, request, invalidDetailsMessage(invalid),
+                    email, publicHandle, givenName, familyName);
+        } catch (RateLimitExceededException tooMany) {
+            // auth.register's global ceiling (observed by the transaction as withinRate).
+            response.setStatus(429);
+            response.setHeader("Retry-After", "60");
+            return reRender(model, request,
+                    "Too many sign-ups right now — please try again in a minute.",
                     email, publicHandle, givenName, familyName);
         }
 

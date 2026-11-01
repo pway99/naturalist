@@ -42,6 +42,18 @@ import java.util.List;
  *       caller over the limit is rejected immediately with the kernel
  *       {@code RateLimitExceededException}, never the vendor
  *       {@code RequestNotPermitted}, rather than queued.</li>
+ *   <li><b>{@code auth.login}</b> — a global ceiling of 300 {@code POST /login}
+ *       attempts per minute, taken by {@code LoginRateLimitFilter} ahead of the
+ *       password check, so a credential-stuffing run cannot burn one BCrypt round
+ *       per guess without bound. Rejections are {@code 429} and observed as
+ *       {@code withinRate}; the targeted response to one abuser is
+ *       {@code AccountCommand.suspend}, not this limiter.</li>
+ *   <li><b>{@code auth.register}</b> — a global ceiling of ten sign-ups per
+ *       minute, taken by {@code RegistrationTransaction} before any validation
+ *       or encoding: every registration emails an address nobody has proven they
+ *       own, so an unbounded endpoint is a mail-bombing primitive. Both auth
+ *       limiters are name-scoped (global), the kernel {@code RateLimiter} having
+ *       no key; a per-client variant is the planned follow-up.</li>
  * </ul>
  *
  * <h2>Status — the marker is not load-bearing</h2>
@@ -108,5 +120,21 @@ public class ResilienceConfiguration {
     @Bean
     ApplicationRunner resilienceNameValidator(ApplicationContext context, Resilience resilience) {
         return new ResilienceNameValidator(context, resilience);
+    }
+
+    @Bean
+    ResilienceConfig.RateLimiterConfig authLoginRateLimit() {
+        // Global ceiling on authentication attempts: caps the BCrypt CPU a credential-stuffing run
+        // can burn and bounds the badCredentials metric's worst case. Sized so real users never
+        // see it; the targeted response to one abuser is AccountCommand.suspend, not this.
+        return new RateLimiterConfig("auth.login", 300, Duration.ofMinutes(1), Duration.ZERO);
+    }
+
+    @Bean
+    ResilienceConfig.RateLimiterConfig authRegisterRateLimit() {
+        // Global ceiling on sign-ups: each registration sends an email to an address nobody has
+        // proven they own, so an unbounded /register is a mail-bombing primitive against third
+        // parties. Ten a minute is far above any honest rate for this audience.
+        return new RateLimiterConfig("auth.register", 10, Duration.ofMinutes(1), Duration.ZERO);
     }
 }

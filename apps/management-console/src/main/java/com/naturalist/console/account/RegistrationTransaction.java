@@ -7,7 +7,13 @@ import com.naturalist.naturalist.EcologicalStage;
 import com.naturalist.naturalist.NaturalistCommand;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.naturalist.NaturalistRole;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
+import com.naturalist.resilience.RateLimitExceededException;
+import com.naturalist.resilience.RateLimiter;
+import com.naturalist.resilience.Resilience;
+import com.naturalist.resilience.Resilient;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,7 +48,12 @@ import java.nio.charset.StandardCharsets;
  * hiccup never rolls back a good registration.
  */
 @Component
+@Resilient(name = RegistrationTransaction.RATE_STRATEGY)
 class RegistrationTransaction {
+
+    /** Global sign-up ceiling (see {@code ResilienceConfiguration}): registration sends email to
+     *  an unproven address, so an unbounded endpoint is a mail-bombing primitive. */
+    static final String RATE_STRATEGY = "auth.register";
 
     /** Server-side floor for a self-chosen password; the form's {@code minlength} mirrors it. */
     static final int MIN_PASSWORD_LENGTH = 8;
@@ -64,13 +75,16 @@ class RegistrationTransaction {
     private final AccountCommand accountCommand;
     private final NaturalistCommand naturalistCommand;
     private final PasswordEncoder passwordEncoder;
+    private final RateLimiter registrations;
 
     RegistrationTransaction(AccountCommand accountCommand,
                             NaturalistCommand naturalistCommand,
-                            PasswordEncoder passwordEncoder) {
+                            PasswordEncoder passwordEncoder,
+                            Resilience resilience) {
         this.accountCommand = accountCommand;
         this.naturalistCommand = naturalistCommand;
         this.passwordEncoder = passwordEncoder;
+        this.registrations = resilience.rateLimiter(RATE_STRATEGY);
     }
 
     /**
@@ -87,7 +101,17 @@ class RegistrationTransaction {
     @Transactional
     Result register(EmailAddress email, String rawPassword, String publicHandle,
                     String givenName, @Nullable String familyName) {
-        observer.arguments("register", i -> i
+        MethodObserver register = observer.forMethod("register");
+
+        // The permit is taken before any validation or BCrypt work: an attacker's attempts,
+        // valid or not, are what the ceiling exists to bound.
+        boolean permitted = acquirePermit();
+        register.arguments(i -> i.isTrue(permitted, "withinRate")).observe(Level.WARN);
+        if (!permitted) {
+            throw new RateLimitExceededException("registration rate limit exceeded", RATE_STRATEGY);
+        }
+
+        register.arguments(i -> i
                         .emailAddress(email, "email")
                         .notBlank(rawPassword, "password")
                         .whenNotNull(rawPassword, c -> c
@@ -104,6 +128,15 @@ class RegistrationTransaction {
                 registration.account(), publicHandle, givenName, familyName,
                 SELF_REGISTERED_ROLE, SELF_REGISTERED_STAGE, null);
         return new Result(registration.account(), naturalist, email, registration.rawToken());
+    }
+
+    private boolean acquirePermit() {
+        try {
+            registrations.execute(() -> { });
+            return true;
+        } catch (RateLimitExceededException rejected) {
+            return false;
+        }
     }
 
     /** The outcome of {@link #register}: the minted handles, the login email, and the raw
