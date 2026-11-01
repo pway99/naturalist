@@ -39,6 +39,8 @@ final class PlantsSeeding {
         PlantEcologicalRoleSeeder.seed(dataSource, database);
         PlantObservationSeeder.seed(dataSource, database);
         PlantImageSeeder.seed(dataSource, database);
+        Seeding.copySeedPhotos("plants", database.getNamed(com.naturalist.plants.PlantImageTestEntitySource.class)
+                .entityStream().map(image -> image.resourceName()).toList());
         CultivarSeeder.seed(dataSource, database);
         SeedLineageSeeder.seed(dataSource, database);
         PlantProgramSeeder.seed(dataSource, database);

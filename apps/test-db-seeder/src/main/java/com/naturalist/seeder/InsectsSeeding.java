@@ -35,6 +35,8 @@ final class InsectsSeeding {
         InsectFunctionalRoleSeeder.seed(dataSource, database);
         InsectObservationSeeder.seed(dataSource, database);
         InsectImageSeeder.seed(dataSource, database);
+        Seeding.copySeedPhotos("insects", database.getNamed(com.naturalist.insects.InsectImageTestEntitySource.class)
+                .entityStream().map(image -> image.resourceName()).toList());
         InsectLifeStageSeeder.seed(dataSource, database);
     }
 }
