@@ -114,8 +114,7 @@ class AccountCommandImpl implements AccountCommand {
         EmailVerificationToken token = redeemableToken("verifyEmail", rawToken, TokenPurpose.VERIFY_EMAIL, now);
         tokens.update(token.withConsumedAt(now));
 
-        Account account = knownAccount("verifyEmail", token.account())
-                .orElseThrow(() -> new InvalidTokenException("invalid token"));
+        Account account = activeAccount("verifyEmail", token.account());
         Account verified = account.withEmailVerified(true);
         if (policy.grantsVisionOnVerification()) {
             verified = verified.withAccess(AccessLevel.VISION);
@@ -181,8 +180,7 @@ class AccountCommandImpl implements AccountCommand {
         EmailVerificationToken token = redeemableToken("resetPassword", rawToken, TokenPurpose.RESET_PASSWORD, now);
         tokens.update(token.withConsumedAt(now));
 
-        Account account = knownAccount("resetPassword", token.account())
-                .orElseThrow(() -> new InvalidTokenException("invalid token"));
+        Account account = activeAccount("resetPassword", token.account());
         Account reset = account.withPasswordHash(newPasswordHash);
         accounts.update(reset);
         observer.forMethod("resetPassword").namedEntity(reset, "passwordReset").observe(Level.WARN);
@@ -210,6 +208,24 @@ class AccountCommandImpl implements AccountCommand {
             throw new InvalidTokenException("invalid token");
         }
         return token;
+    }
+
+    /**
+     * The token's owner, which must exist and be {@code ACTIVE} to redeem it — a suspended
+     * account may not verify its way into VISION or reset its way back in. Observed as
+     * {@code accountKnown} and {@code accountActive}; either failing is the same unchanged
+     * {@link InvalidTokenException} to the caller.
+     */
+    private Account activeAccount(String method, AccountName name) {
+        Account account = knownAccount(method, name)
+                .orElseThrow(() -> new InvalidTokenException("invalid token"));
+        InvariantObservation decision = observer.forMethod(method)
+                .arguments(i -> i.isTrue(account.status() == AccountStatus.ACTIVE, "accountActive"))
+                .observe(Level.WARN);
+        if (!decision.violations().isEmpty()) {
+            throw new InvalidTokenException("invalid token");
+        }
+        return account;
     }
 
     /** Looks an account up by name, observing a miss as {@code accountKnown}; the caller picks the exception. */

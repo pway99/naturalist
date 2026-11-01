@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.naturalist.observability.constraints.EmailFormatConstraint;
 
+import java.util.Locale;
 import java.util.function.Function;
 
 /**
@@ -30,9 +31,17 @@ import java.util.function.Function;
  * {@code "to": "ada@example.com"}, never an envelope object.
  */
 public record EmailAddress(String value) implements NamedValue<String> {
+    /**
+     * The canonical address for {@code value}: stripped of surrounding whitespace and
+     * lower-cased. Email lookups are exact-match ({@code WHERE email = ?}), so without one
+     * canonical form {@code Ada@Example.com} and {@code ada@example.com} are two accounts, a
+     * login must repeat the registration's casing, and duplicate detection is bypassed by a
+     * capital letter. Lower-casing the local part too is a deliberate, conventional
+     * over-approximation (RFC 5321 allows case-sensitive local parts; no real provider does).
+     */
     @JsonCreator
     public static EmailAddress of(String value) {
-        return new EmailAddress(value);
+        return new EmailAddress(value == null ? null : value.strip().toLowerCase(Locale.ROOT));
     }
 
     @Override

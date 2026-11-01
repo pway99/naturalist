@@ -3,6 +3,7 @@ package com.naturalist.console.account;
 import com.naturalist.account.AccountCommand;
 import com.naturalist.account.DuplicateEmailException;
 import com.naturalist.account.InvalidTokenException;
+import com.naturalist.console.email.EmailProperties;
 import com.naturalist.ddd.EmailAddress;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.notification.EmailMessage;
@@ -26,7 +27,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ class RegistrationController {
 
     private final RegistrationTransaction registration;
     private final EmailSender emailSender;
+    private final EmailProperties emailProperties;
     private final UserDetailsService userDetailsService;
     private final AccountCommand accountCommand;
     private final SecurityContextRepository securityContextRepository =
@@ -61,10 +63,12 @@ class RegistrationController {
 
     RegistrationController(RegistrationTransaction registration,
                            EmailSender emailSender,
+                           EmailProperties emailProperties,
                            UserDetailsService userDetailsService,
                            AccountCommand accountCommand) {
         this.registration = registration;
         this.emailSender = emailSender;
+        this.emailProperties = emailProperties;
         this.userDetailsService = userDetailsService;
         this.accountCommand = accountCommand;
     }
@@ -103,7 +107,9 @@ class RegistrationController {
                     email, publicHandle, givenName, familyName);
         }
 
-        String verifyUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+        // Built from the configured public origin, never from the request: a Host-header-derived
+        // link would let a forged host in the registration request land in the victim's inbox.
+        String verifyUrl = UriComponentsBuilder.fromUriString(emailProperties.publicUrl())
                 .path("/verify").queryParam("token", result.rawToken()).toUriString();
         emailSender.send(new EmailMessage(
                 result.email(),
@@ -213,6 +219,8 @@ class RegistrationController {
             String field = violation.name();
             if (field.endsWith("password.length")) {
                 needed.add("a password of at least " + RegistrationTransaction.MIN_PASSWORD_LENGTH + " characters");
+            } else if (field.endsWith("password.bytes")) {
+                needed.add("a password of at most " + RegistrationTransaction.MAX_PASSWORD_BYTES + " characters");
             } else if (field.endsWith(".password")) {
                 needed.add("a password");
             } else if (field.endsWith(".email")) {

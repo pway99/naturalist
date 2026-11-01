@@ -3,6 +3,9 @@ package com.naturalist.notification.spring;
 import com.naturalist.ddd.EmailAddress;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.notification.EmailMessage;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -41,10 +44,21 @@ class SmtpEmailSenderTest {
     }
 
     @Test
-    void swallowsTransportFailure() {
+    void swallowsTransportFailure_butObservesIt() {
         SmtpEmailSender sender = new SmtpEmailSender(new FailingMailSender(), "no-reply@naturalist.local");
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            assertThatCode(() -> sender.send(MESSAGE)).doesNotThrowAnyException();
 
-        assertThatCode(() -> sender.send(MESSAGE)).doesNotThrowAnyException();
+            // Swallowed for the caller, visible to the operator.
+            Counter undelivered = meters.find("naturalist.invariant.violation")
+                    .tag("name", "SmtpEmailSender.send.delivered").counter();
+            assertThat(undelivered).isNotNull();
+            assertThat(undelivered.count()).isEqualTo(1);
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
     }
 
     /** Captures the single {@link SimpleMailMessage} passed to {@code send}. */

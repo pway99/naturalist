@@ -54,3 +54,7 @@ naturalist:
     # Envelope sender for outbound mail (verification / reset links, usage alerts).
     # Override per deployment once a real sending domain (with SPF/DKIM) is set up.
     from: no-reply@naturalist.local
+    # The ONLY origin emailed links are built from — never the request's Host header, which an
+    # attacker controls. Set to the deployment's real origin (https://…, no trailing slash);
+    # the default makes a forgotten setting fail safe (dead links), not dangerous (their links).
+    public-url: http://localhost:8080

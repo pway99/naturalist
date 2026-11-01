@@ -29,6 +29,10 @@ naturalist:
   usage:
     warning-percent: 80
     alert-email: test@example.com
+  email:
+    # Deliberately NOT the MockMvc host (localhost): the registration test proves the emailed
+    # link comes from this setting and not from the request.
+    public-url: http://naturalist.test
 
 gg:
   jte:

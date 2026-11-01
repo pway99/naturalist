@@ -102,10 +102,11 @@ class RegistrationFlowWebMvcTest {
         assertThat(naturalist.publicHandle()).isEqualTo("ada-lovelace");
         assertThat(naturalist.givenName()).isEqualTo("Ada");
 
-        // The verification link was emailed.
+        // The verification link was emailed — from the configured public origin, not the
+        // request's Host (MockMvc's is localhost): a forged Host must never reach the inbox.
         assertThat(emailSender.sent).hasSize(1);
         assertThat(emailSender.sent.getFirst().to().value()).isEqualTo(email);
-        assertThat(emailSender.sent.getFirst().body()).contains("/verify?token=");
+        assertThat(emailSender.sent.getFirst().body()).contains("http://naturalist.test/verify?token=");
     }
 
     @Test
@@ -162,6 +163,33 @@ class RegistrationFlowWebMvcTest {
 
         assertThat(accountQuery.getByEmail("short@example.com")).isEmpty();
         assertThat(emailSender.sent).isEmpty();
+    }
+
+    @Test
+    void register_overlongPassword_reRendersFormWithError_not500() throws Exception {
+        // BCrypt rejects > 72 bytes with an IllegalArgumentException; the transaction must
+        // observe the ceiling and refuse first, so the user sees the form, not an error page.
+        mockMvc.perform(post("/register").with(csrf())
+                        .param("email", "long@example.com").param("password", "x".repeat(80))
+                        .param("publicHandle", "long-pw").param("givenName", "Longy"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", containsString("72")))
+                .andExpect(unauthenticated());
+
+        assertThat(accountQuery.getByEmail("long@example.com")).isEmpty();
+        assertThat(emailSender.sent).isEmpty();
+    }
+
+    @Test
+    void register_mixedCaseEmail_isStoredCanonicallyAndLogsInEitherWay() throws Exception {
+        mockMvc.perform(post("/register").with(csrf())
+                        .param("email", "  Mixed.Case@Example.COM ").param("password", "a fine passphrase")
+                        .param("publicHandle", "mixed-case").param("givenName", "Mixed"))
+                .andExpect(redirectedUrl("/register?registered"))
+                .andExpect(authenticated().withUsername("mixed.case@example.com"));
+
+        assertThat(accountQuery.getByEmail("mixed.case@example.com")).isPresent();
+        assertThat(emailSender.sent.getFirst().to().value()).isEqualTo("mixed.case@example.com");
     }
 
     @Test

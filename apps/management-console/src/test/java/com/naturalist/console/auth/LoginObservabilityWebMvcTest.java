@@ -54,6 +54,18 @@ class LoginObservabilityWebMvcTest {
         assertThat(violations("AuthenticationEventObserver.onApplicationEvent.authenticationFailed")).isEqualTo(1);
         assertThat(violations("AuthenticationEventObserver.onApplicationEvent.badCredentials")).isEqualTo(1);
         assertThat(violations("AuthenticationEventObserver.onApplicationEvent.suspendedAccountAttempt")).isZero();
+        assertThat(violations("AuthenticationEventObserver.onApplicationEvent.adminAuthenticationFailed")).isZero();
+    }
+
+    @Test
+    void login_adminWrongPassword_isObservedAsAdminAuthenticationFailed() throws Exception {
+        mockMvc.perform(post("/login").with(csrf())
+                        .param("username", "test-admin").param("password", "guess"))
+                .andExpect(redirectedUrl("/login?error"));
+
+        // The one credential whose guessing rate deserves its own alert.
+        assertThat(violations("AuthenticationEventObserver.onApplicationEvent.adminAuthenticationFailed")).isEqualTo(1);
+        assertThat(violations("AuthenticationEventObserver.onApplicationEvent.badCredentials")).isEqualTo(1);
     }
 
     @Test

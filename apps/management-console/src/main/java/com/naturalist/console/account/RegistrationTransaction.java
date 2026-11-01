@@ -13,6 +13,8 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Composes public self-registration across two domains at the app root — the one place
  * allowed to know both (a domain core never depends on another domain's core). One
@@ -44,6 +46,13 @@ class RegistrationTransaction {
 
     /** Server-side floor for a self-chosen password; the form's {@code minlength} mirrors it. */
     static final int MIN_PASSWORD_LENGTH = 8;
+
+    /**
+     * Server-side ceiling, in UTF-8 bytes: BCrypt rejects anything longer with an
+     * {@code IllegalArgumentException}, which uncaught is a 500 on the registration form.
+     * Observed as a constraint so it is a 4xx with a metric instead.
+     */
+    static final int MAX_PASSWORD_BYTES = 72;
 
     /** A brand-new self-registrant is an ecological visitor, newly curious — not a child
      *  ({@code WONDER}) nor an established practitioner. */
@@ -82,7 +91,9 @@ class RegistrationTransaction {
                         .emailAddress(email, "email")
                         .notBlank(rawPassword, "password")
                         .whenNotNull(rawPassword, c -> c
-                                .atLeast(rawPassword.length(), MIN_PASSWORD_LENGTH, "password.length"))
+                                .atLeast(rawPassword.length(), MIN_PASSWORD_LENGTH, "password.length")
+                                .atMost(rawPassword.getBytes(StandardCharsets.UTF_8).length,
+                                        MAX_PASSWORD_BYTES, "password.bytes"))
                         .notBlank(publicHandle, "publicHandle")
                         .notBlank(givenName, "givenName"))
                 .throwWhenInvalid();

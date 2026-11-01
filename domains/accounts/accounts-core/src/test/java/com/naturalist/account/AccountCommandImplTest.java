@@ -304,4 +304,17 @@ class AccountCommandImplTest {
 
         assertThat(violations("beginPasswordReset.emailRegistered")).isEqualTo(1);
     }
+
+    @Test
+    void verifyEmail_suspendedAccount_isRejectedAndObserved() {
+        AccountCommand cmd = command(AccountPolicy.selfServe());
+        AccountCommand.Registration reg = cmd.register("banned@example.org", "hash");
+        Account account = accounts.getByEmail("banned@example.org").orElseThrow();
+        accounts.update(account.withStatus(AccountStatus.SUSPENDED));
+
+        assertThatThrownBy(() -> cmd.verifyEmail(reg.rawToken())).isInstanceOf(InvalidTokenException.class);
+
+        assertThat(violations("verifyEmail.accountActive")).isEqualTo(1);
+        assertThat(accounts.getByEmail("banned@example.org").orElseThrow().access()).isEqualTo(AccessLevel.BROWSE_ONLY);
+    }
 }

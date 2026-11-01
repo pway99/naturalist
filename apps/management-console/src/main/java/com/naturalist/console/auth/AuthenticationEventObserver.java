@@ -1,5 +1,6 @@
 package com.naturalist.console.auth;
 
+import com.naturalist.console.admin.AdminProperties;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import org.springframework.context.ApplicationListener;
@@ -24,20 +25,29 @@ import org.springframework.stereotype.Component;
  * the attack signal — {@code badCredentials} (password guessing),
  * {@code suspendedAccountAttempt} (a banned account trying to get back in),
  * {@code disabledAccountAttempt}, {@code expiredAccountAttempt},
- * {@code expiredCredentialsAttempt}, and the umbrella {@code authenticationFailed} — while the
- * same names with {@code valid=true} are the successful-login baseline those rates stand out
- * against. The provider hides "user not found" from the caller as bad credentials; whether the
- * email existed at all is observed upstream by {@link NaturalistUserDetailsService}, so the two
+ * {@code expiredCredentialsAttempt}, the umbrella {@code authenticationFailed}, and
+ * {@code adminAuthenticationFailed} — a failure against the one static config-admin
+ * credential, which deserves its own alert threshold — while the same names with
+ * {@code valid=true} are the successful-login baseline those rates stand out against. The
+ * provider hides "user not found" from the caller as bad credentials; whether the email
+ * existed at all is observed upstream by {@link NaturalistUserDetailsService}, so the two
  * together separate email enumeration from password guessing.
  *
  * <p>Interactive success events (a duplicate of the success already counted) and logout events
  * are not attempts and are skipped, so the baseline counts each attempt once. No principal or
- * address is tagged — that is cardinality and PII a metric must not carry; <em>who</em> is a
- * question for an audit log, a separate decision.
+ * address is tagged — that is cardinality and PII a metric must not carry; the admin flag is a
+ * two-valued fact, not an identity. <em>Who</em> is a question for an audit log, a separate
+ * decision.
  */
 @Component
 class AuthenticationEventObserver implements ApplicationListener<AbstractAuthenticationEvent> {
+
     private final Observer observer = Observer.forClass(getClass(), Observer.MonitoringMode.ALWAYS);
+    private final AdminProperties admin;
+
+    AuthenticationEventObserver(AdminProperties admin) {
+        this.admin = admin;
+    }
 
     @Override
     public void onApplicationEvent(AbstractAuthenticationEvent event) {
@@ -46,14 +56,17 @@ class AuthenticationEventObserver implements ApplicationListener<AbstractAuthent
             // LogoutSuccessEvent is not an attempt. Neither belongs in the attempt baseline.
             return;
         }
+        boolean failed = event instanceof AbstractAuthenticationFailureEvent;
+        boolean targetsAdmin = admin.username().equals(event.getAuthentication().getName());
         observer.forMethod("onApplicationEvent")
                 .arguments(i -> i
-                        .isFalse(event instanceof AbstractAuthenticationFailureEvent, "authenticationFailed")
+                        .isFalse(failed, "authenticationFailed")
                         .isFalse(event instanceof AuthenticationFailureBadCredentialsEvent, "badCredentials")
                         .isFalse(event instanceof AuthenticationFailureLockedEvent, "suspendedAccountAttempt")
                         .isFalse(event instanceof AuthenticationFailureDisabledEvent, "disabledAccountAttempt")
                         .isFalse(event instanceof AuthenticationFailureExpiredEvent, "expiredAccountAttempt")
-                        .isFalse(event instanceof AuthenticationFailureCredentialsExpiredEvent, "expiredCredentialsAttempt"))
+                        .isFalse(event instanceof AuthenticationFailureCredentialsExpiredEvent, "expiredCredentialsAttempt")
+                        .isFalse(failed && targetsAdmin, "adminAuthenticationFailed"))
                 .observe(Level.WARN);
     }
 }

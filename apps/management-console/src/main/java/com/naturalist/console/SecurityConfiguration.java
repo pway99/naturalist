@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
 
 @Configuration
 @EnableWebSecurity
@@ -43,6 +44,10 @@ class SecurityConfiguration {
                         // the operational domains — requires a signed-in naturalist.
                         .anyRequest().authenticated()
                 )
+                // The single-use /verify token travels in a GET query string; never let a
+                // browser forward it to a third party in a Referer header.
+                .headers(headers -> headers
+                        .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.NO_REFERRER)))
                 .formLogin(form -> form
                         .loginPage("/login")
                         .failureUrl("/login?error")

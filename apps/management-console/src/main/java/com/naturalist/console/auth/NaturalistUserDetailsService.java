@@ -5,6 +5,7 @@ import com.naturalist.account.AccessLevel;
 import com.naturalist.account.AccountQuery;
 import com.naturalist.account.AccountStatus;
 import com.naturalist.console.admin.AdminProperties;
+import com.naturalist.ddd.EmailAddress;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.Naturalist;
 import com.naturalist.naturalist.NaturalistQuery;
@@ -75,7 +76,8 @@ class NaturalistUserDetailsService implements UserDetailsService {
         Optional<Account> account = Optional.empty();
         boolean wellFormed = true;
         try {
-            account = accountQuery.getByEmail(username);
+            // Canonical form — registration stored the address through the same EmailAddress.of.
+            account = accountQuery.getByEmail(EmailAddress.of(username).value());
         } catch (InvariantViolationException malformedEmail) {
             wellFormed = false;   // a malformed login is "not found", not a 500
         }
