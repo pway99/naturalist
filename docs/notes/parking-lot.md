@@ -136,6 +136,15 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
+## PL-15 — "Username" conflates the login credential with how naturalists refer to each other
+
+**Raised:** 2026-10-31.
+**Where:** Since the accounts redesign, authentication is by email: `NaturalistUserDetailsService.loadUserByUsername(String username)` resolves `accountQuery.getByEmail(EmailAddress.of(username).value())`, `NaturalistPrincipal.getUsername()` returns the email, `RegistrationController.autoLogin(String email, …)` calls `loadUserByUsername(email)`, and `domains/naturalists/CLAUDE.md` + `README.md` say "login username = the account `email`". The word *username* now means two things. In Spring Security's `UserDetailsService` contract it is the credential identifier — there it genuinely is the email, and the parameter name is Spring's, not ours. But a naturalist also has a name other people use: the stable `NaturalistName` slug (the cross-domain reference, ADR-001) and the renameable `publicHandle` (slice 3). Those are what naturalists use to refer to each other, what `FieldObservation.observedBy` and the collection lens key on, and what a citation or an attribution should show — and none of them is an email. The design doc's D8 already anticipates a further split (`loginName` = email for adults or a class-scoped username for email-less students), which would make "username" mean a third thing.
+**Blocking:** No. Authentication works; the ambiguity is in naming and in the surface we show people. The risk is drift: a template or seam that reads `getUsername()` expecting a handle gets an email, and emails (PII) leak into a page or a reference where a handle belonged.
+**Resolution path:** Separate the vocabulary and then audit the seams against it. (1) Settle the three words: **login identifier** (email today; `loginName` once D8 lands — the only thing the `UserDetailsService` contract and the login form see), **`NaturalistName`** (stable slug; references, FKs, URLs), **`publicHandle`** (what people see and type for each other; renameable). (2) Audit every `getUsername()` / `getName()` reader behind the `CurrentNaturalist` seam — `NaturalistHeaderInterceptor`, the templates' current-naturalist view, `AuthenticationEventObserver.targetsAdmin`, `RegistrationController.reDeriveAuthorities` — and make each one read the kind of name it means through `NaturalistPrincipal` accessors (`naturalistName()`, `publicHandle()`, `email()`) rather than the Spring string. (3) Rename the local in `loadUserByUsername` to `loginIdentifier` (the parameter name is Spring's; the body's vocabulary is ours) and fix the `naturalists` docs to say "login identifier", reserving "username" for nothing. (4) Decide whether the login form's field label says *email* (it should, today). Reference twin for the handle/slug split: the naturalists `publicHandle` rename command.
+
+---
+
 ## Conventions
 
 - New entries get the next `PL-N` ID; numbers are never reused.
