@@ -32,6 +32,16 @@ processing. Structural, not cross-cutting.
 **Scoped paths.** Fully-qualified dotted path: `CompoundQuery.getByName.c.compoundInfo.formula`.
 Used as metric tag and exception message path.
 
+**Decisions, not just arguments.** A business rule an operation decides (an email already
+registered, a token already consumed, a login against a suspended account) is observed as a
+predicate-named constraint — `isTrue(existing.isEmpty(), "emailUnregistered")`,
+`isFalse(token.isConsumed(), "isConsumed")` — via `observer.forMethod(m).arguments(...).observe(WARN)`
+*before* the exception the operation already throws; the thrown message never changes. The
+`name` is the predicate method a reviewer can open, so the metric tag reads as the reason.
+Security-critical classes (accounts, authentication, registration) run `MonitoringMode.ALWAYS`
+so the same names with `valid=true` give the baseline the violations stand out against;
+`observe(level)` tags those valid rows `INFO` regardless of the level chosen for violations.
+
 **Graph walk.** Single pass. Tree rooted at observed object. `ObservableConstraint` wraps
 child `Entity`/`Aggregate`/`ValueObject` and the walker descends. Result is a
 `Set<Constraint<?>>` in deterministic `LinkedHashSet` order, partitioned by
@@ -70,4 +80,5 @@ dots, consecutive dots collapse, null/blank → `"unknown"`). Tag values preserv
 | `MonitoringMode`                                                             | `com.naturalist.observability`             | `ON_FAILURE` (default) / `ALWAYS`                |
 | `ObservableConstraint`                                                       | `com.naturalist.observability.constraints` | Composite for Entity/Aggregate/VO                |
 | `NotNullConstraint`, `NotBlankConstraint`                                    | constraints                                | Primitive checks                                 |
+| `IsTrueConstraint`, `IsFalseConstraint`                                      | constraints                                | Predicate-named decisions (`isTrue`/`isFalse`)   |
 | `PersistenceIdConstraints`, `EntityNameConstraints`, `NamedValueConstraints` | constraints                                | Typed validation                                 |

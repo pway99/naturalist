@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>naturalist-adapters</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>mail-spring</artifactId>
+    <name>adapters :: mail-spring</name>
+
+    <description>
+        Outbound-email adapter: implements the kernel EmailSender port over Spring's
+        MailSender (SMTP transport). The only module that imports org.springframework.mail.*
+        to send mail. Wired to a JavaMailSender at the app composition root; when no mail
+        transport is configured the app falls back to the kernel's LoggingEmailSender, so
+        enabling SMTP in production is a config-only change.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring-context-version}</version>
+        </dependency>
+
+        <!-- TEST DEPENDENCIES -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

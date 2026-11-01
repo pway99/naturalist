@@ -250,6 +250,21 @@ from outside the parent (e.g. `namedEntity(this, FooAggregate::fooInfo, "fooInfo
 Do not use the by-function form when the direct-value form suffices — the functional indirection adds no value when
 `this` can never be null.
 
+**Predicate constraints** — `isTrue(boolean, name)` / `isFalse(boolean, name)` — carry a complex condition under the
+name of the method that computes it (`isTrue(family.belongsToOrder(order), "familyBelongsToOrder")`,
+`isFalse(token.isConsumed(), "isConsumed")`), so the metric tag names something a reviewer can open. Use them for
+cross-field invariants and for an operation's *decisions*: observe the decision at `WARN` via
+`observer.forMethod(m).arguments(...).observe(Level.WARN)` before throwing the exception the operation already throws.
+Security-critical classes (`accounts-core`, console authentication, registration) construct their `Observer` in
+`MonitoringMode.ALWAYS` so valid decisions are counted too (as the `INFO` baseline); everything else stays `ON_FAILURE`.
+
+**One `MethodObserver` per method.** A method that observes more than once — its arguments, then a decision, then the
+entity it wrote — obtains `MethodObserver m = observer.forMethod("name")` once and routes every observation through it
+(`m.arguments(...)`, `m.namedEntity(...)`, `m.observable(...)`); helpers that observe on the caller's behalf take the
+`MethodObserver`, never the method name. Spelling the name as a string at each site (`observer.arguments("x", …)` here,
+`observer.forMethod("x")` there, `helper("x", …)`) is an anti-pattern: the sites drift apart on rename and the metric
+ends up scoped to a method that no longer exists. Reference: `AccountCommandImpl`.
+
 `Observer` validates entities at insertion points — `TestEntitySource.insert()` calls
 `observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid()`. Insertion is an
 argument-validation site: the producer refuses bad input at its boundary. For method-body observation of *produced*

@@ -40,4 +40,16 @@ public record EmailVerificationToken(
                 .notNull(purpose, "purpose")
                 .notNull(expiresAt, "expiresAt");
     }
+
+    public boolean hasPurpose(TokenPurpose expected) {
+        return purpose == expected;
+    }
+
+    public boolean isConsumed() {
+        return consumedAt != null;
+    }
+
+    public boolean isExpired(Instant now) {
+        return now.isAfter(expiresAt);
+    }
 }

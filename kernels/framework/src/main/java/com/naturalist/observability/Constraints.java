@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.lang.String;
 
 
 public class Constraints {
@@ -262,6 +263,22 @@ public class Constraints {
         return add(new EmailFormatConstraint<>(t, valueFunction, name));
     }
 
+    /**
+     * The typed form of {@link #email(String, String)} for an {@link EmailAddress}
+     * component. Observes the same {@code EmailFormatConstraint} directly — rather than
+     * reaching the address through the generic {@link #namedValue} path — so the metric
+     * tag reads {@code constraint=EmailFormatConstraint} and the diagnostic names the
+     * actual failure (null, empty, too long, malformed), exactly as a raw-string
+     * {@code email} check does. A null address fails as a null carrier.
+     */
+    public Constraints emailAddress(EmailAddress address, String name) {
+        return add(new EmailFormatConstraint<>(address, EmailAddress::value, name));
+    }
+
+    public <T> Constraints emailAddress(T t, Function<T, EmailAddress> valueFunction, String name) {
+        return add(new EmailFormatConstraint<>(t, valueFunction.andThen(EmailAddress::value), name));
+    }
+
     public <R> Constraints notNull(R value, String name) {
         return notNull(value, Function.identity(), name);
     }
@@ -332,6 +349,17 @@ public class Constraints {
      */
     public Constraints isTrue(boolean value, String name) {
         return add(new IsTrueConstraint(value, name));
+    }
+
+    /**
+     * The negated twin of {@link #isTrue}: fires a violation under {@code name} when
+     * {@code value} is {@code true}. Exists so the name can stay the predicate method's own
+     * name when that predicate reads positively — {@code isFalse(token.isConsumed(), "isConsumed")}
+     * tags the metric with the method a reviewer can open, where
+     * {@code isTrue(!token.isConsumed(), "notConsumed")} would have to invent one.
+     */
+    public Constraints isFalse(boolean value, String name) {
+        return add(new IsFalseConstraint(value, name));
     }
 
     /**

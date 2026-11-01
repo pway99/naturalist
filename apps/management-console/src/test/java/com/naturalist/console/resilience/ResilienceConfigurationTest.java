@@ -54,4 +54,16 @@ class ResilienceConfigurationTest {
         assertThatThrownBy(() -> resilience.retry("does.not.exist"))
                 .isInstanceOf(UnconfiguredResilienceException.class);
     }
+
+    @Test
+    void resolvesAuthLoginRateLimiter() {
+        assertThat(resilience.rateLimiter("auth.login")).isNotNull();
+        assertThat(resilience.rateLimiterNames()).contains("auth.login");
+    }
+
+    @Test
+    void resolvesAuthRegisterRateLimiter() {
+        assertThat(resilience.rateLimiter("auth.register")).isNotNull();
+        assertThat(resilience.rateLimiterNames()).contains("auth.register");
+    }
 }
