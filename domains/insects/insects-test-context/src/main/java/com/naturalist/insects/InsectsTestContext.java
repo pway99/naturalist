@@ -88,7 +88,8 @@ public class InsectsTestContext {
                 speciesCommand, imageCommand, observationCommand,
                 orderCommand, familyCommand, genusCommand,
                 featureCommand, featureAssignmentCommand);
-        this.insectCommand = new InsectCommandImpl(this.entityCommands);
+        this.insectCommand = new InsectCommandImpl(this.entityCommands,
+                new InsectSightingCommandImpl(observationCommand, observationQuery));
         this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
                 this.entityCommands, this.insectQuery);
         this.addPhotoTransaction = new InsectAddPhotoTransaction(this.entityCommands);

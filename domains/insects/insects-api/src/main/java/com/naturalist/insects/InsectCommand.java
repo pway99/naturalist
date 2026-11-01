@@ -1,9 +1,11 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.EntityCommand;
+import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Namespace command for the insects bounded context — the single discoverable entry
@@ -46,6 +48,26 @@ public interface InsectCommand {
     FeatureCommand features();
 
     FeatureAssignmentCommand featureAssignments();
+
+    SightingCommand sightings();
+
+    /**
+     * Use-case command: a naturalist's field sightings of an insect.
+     */
+    interface SightingCommand {
+
+        /**
+         * Records that {@code naturalist} observed {@code subject} now; blank notes are stored as null.
+         */
+        InsectObservationId record(InsectRankName subject, NaturalistName naturalist, @Nullable String notes);
+
+        /**
+         * Replaces the field notes of the viewer's own observation; a missing observation or one
+         * recorded by someone else is refused silently (no exception, no change) so the id alone
+         * reveals nothing. Blank notes clear the field.
+         */
+        void updateNotes(InsectObservationId observationId, NaturalistName viewer, @Nullable String notes);
+    }
 
     /**
      * Entity-level command surface for {@link InsectSpecies}.

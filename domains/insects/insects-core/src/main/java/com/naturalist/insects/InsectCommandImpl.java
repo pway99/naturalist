@@ -8,11 +8,20 @@ class InsectCommandImpl implements InsectCommand {
 
     private final InsectEntityCommands commands;
 
-    InsectCommandImpl(InsectEntityCommands commands) {
+    private final SightingCommand sightings;
+
+    InsectCommandImpl(InsectEntityCommands commands, SightingCommand sightings) {
         Observer.forClass(InsectCommandImpl.class).arguments("constructor", i -> i
-                        .notNull(commands, "commands"))
+                        .notNull(commands, "commands")
+                        .notNull(sightings, "sightings"))
                 .throwWhenInvalid();
         this.commands = commands;
+        this.sightings = sightings;
+    }
+
+    @Override
+    public SightingCommand sightings() {
+        return sightings;
     }
 
     @Override
