@@ -268,4 +268,17 @@ class ResilienceComplianceTest {
             }
         };
     }
+
+    /**
+     * {@code ImageStore} implementations — every store and read crosses a storage boundary
+     * (a filesystem today, an object store tomorrow) and must be time-bounded.
+     */
+    @ArchTest
+    static final ArchRule imageStoreImplementationsDeclareResilience = classes()
+            .that().implement(com.naturalist.observation.ImageStore.class)
+            .and().areNotInterfaces()
+            .and().doNotHaveModifier(JavaModifier.ABSTRACT)
+            .should(declareResilience())
+            .because("an ImageStore crosses a storage boundary — "
+                    + "see docs/resilience-policy.md");
 }

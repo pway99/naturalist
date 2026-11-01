@@ -117,4 +117,15 @@ class FilesystemImageStoreTest {
         assertThat(read).isPresent();
         assertThat(read.get().mediaType()).isEqualTo("application/octet-stream");
     }
+
+    @Test
+    void read_sniffsMediaTypeFromBytes() throws IOException {
+        Files.createDirectories(root.resolve("insects"));
+        Files.write(root.resolve("insects/mislabelled.png"), JPEG);
+
+        Optional<StoredImage> read = store.read("insects", FileName.of("mislabelled.png"));
+
+        assertThat(read).isPresent();
+        assertThat(read.get().mediaType()).isEqualTo("image/jpeg");
+    }
 }

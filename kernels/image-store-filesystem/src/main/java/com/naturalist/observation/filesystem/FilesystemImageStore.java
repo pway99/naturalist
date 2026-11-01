@@ -69,7 +69,7 @@ public final class FilesystemImageStore implements ImageStore {
             return Optional.empty();
         }
         byte[] bytes = resilience.timeout(STRATEGY).execute(() -> readBytes(space, name, file));
-        return Optional.ofNullable(bytes).map(b -> new StoredImage(b, mediaType(name)));
+        return Optional.ofNullable(bytes).map(b -> new StoredImage(b, servedMediaType(b, name)));
     }
 
     private byte[] readBytes(String space, FileName name, Path file) {
@@ -98,5 +98,14 @@ public final class FilesystemImageStore implements ImageStore {
             case "WEBP" -> "image/webp";
             default -> "application/octet-stream";
         };
+    }
+
+    /**
+     * The media type the bytes sniff as (JPEG, PNG or WebP magic); the file name's extension
+     * only when the bytes are not a recognised image, and {@code application/octet-stream} last.
+     */
+    private static String servedMediaType(byte[] bytes, FileName name) {
+        String sniffed = ImageUpload.of(bytes).mediaType();
+        return sniffed != null ? sniffed : mediaType(name);
     }
 }
