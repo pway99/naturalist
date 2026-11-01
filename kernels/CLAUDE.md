@@ -184,6 +184,17 @@ failing provider degrades only that domain's slice of the response
 `ReferenceRouting` instance and each keeps `@Resilient(name =
 "catalog.fanout")` on its own `findReferencesTo` override.
 
+### observation `ImageStore` / image-store-filesystem  (`com.naturalist.observation`, `com.naturalist.observation.filesystem`)
+
+`observation` also owns the `ImageStore` port (`store(space, ImageUpload)` /
+`read(space, FileName)`), the `ImageUpload` value (sniffs JPEG/PNG/WebP by magic
+bytes, capped at `MAX_BYTES`) and the `StoredImage` read result. `store` mints the
+file name itself (UUIDv7 + sniffed extension) and never trusts a client name.
+`kernels/image-store-filesystem` is the reference implementation, `FilesystemImageStore`,
+over a directory root with a classpath fallback (`<space>/images/<name>`) for seed
+photos. It has no vendor dependency, so it lives in `kernels/` like `catalog-inmem`;
+every `Files.*` call runs under `resilience.timeout("image.store")`.
+
 ### catalog-rdbms  (`com.naturalist.catalog.rdbms`)
 
 Postgres/MyBatis adapter for `Catalog`: per-domain `<domain>_catalog_token`
@@ -339,7 +350,7 @@ constraint. Adding a kernel-level test would re-verify edges that
 
 **Scope of this convention.** Applies to all kernels: `framework`, `framework-test`,
 `field-notes`, `taxonomy`, `clades`, `biogeography`, `catalog`, `catalog-inmem`,
-`catalog-rdbms`, `habitat`, `measurements`. The `framework-test` kernel additionally carries the
+`catalog-rdbms`, `habitat`, `image-store-filesystem`, `measurements`, `observation`. The `framework-test` kernel additionally carries the
 "no test infra for test infra" rule — don't add unit tests for code that exists
 only to support other tests; rely on manual smoke + the consuming `*-repository-test`
 modules.

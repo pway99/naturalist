@@ -69,6 +69,7 @@ kernels/
   clades/             — Clade sealed type (evolutionary tree of life, trait-bearing nodes)
   catalog/            — cross-domain reference resolution (DomainId, Catalog)
   catalog-inmem/      — in-memory reference adapter for catalog
+  image-store-filesystem/ — ImageStore over a directory root with classpath fallback for seed photos
 domains/
   identifiers/        — typed names (EntityName subclasses) and typed ids
                         (EntityId subclasses) only
