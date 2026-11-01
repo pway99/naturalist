@@ -82,6 +82,8 @@ class InsectsControllerTestConfig {
                 library.libraryCommand(),
                 null,                       // ExternalAuthority -- unused
                 IdentificationBudget.noOp(),
-                IMAGE_STORE);
+                IMAGE_STORE,
+                insects.catalogIdentificationTransaction(),
+                insects.addPhotoTransaction());
     }
 }

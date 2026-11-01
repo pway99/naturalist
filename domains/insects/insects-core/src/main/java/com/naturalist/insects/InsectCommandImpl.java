@@ -6,77 +6,52 @@ import com.naturalist.observability.Observer;
 @DomainService
 class InsectCommandImpl implements InsectCommand {
 
-    private final SpeciesCommand speciesCommand;
-    private final ImageCommand imageCommand;
-    private final ObservationCommand observationCommand;
-    private final OrderCommand orderCommand;
-    private final FamilyCommand familyCommand;
-    private final GenusCommand genusCommand;
-    private final FeatureCommand featureCommand;
-    private final FeatureAssignmentCommand featureAssignmentCommand;
+    private final InsectEntityCommands commands;
 
-    InsectCommandImpl(SpeciesCommand speciesCommand, ImageCommand imageCommand,
-                       ObservationCommand observationCommand,
-                       OrderCommand orderCommand, FamilyCommand familyCommand,
-                       GenusCommand genusCommand, FeatureCommand featureCommand,
-                       FeatureAssignmentCommand featureAssignmentCommand) {
+    InsectCommandImpl(InsectEntityCommands commands) {
         Observer.forClass(InsectCommandImpl.class).arguments("constructor", i -> i
-                        .notNull(speciesCommand, "speciesCommand")
-                        .notNull(imageCommand, "imageCommand")
-                        .notNull(observationCommand, "observationCommand")
-                        .notNull(orderCommand, "orderCommand")
-                        .notNull(familyCommand, "familyCommand")
-                        .notNull(genusCommand, "genusCommand")
-                        .notNull(featureCommand, "featureCommand")
-                        .notNull(featureAssignmentCommand, "featureAssignmentCommand"))
+                        .notNull(commands, "commands"))
                 .throwWhenInvalid();
-        this.speciesCommand = speciesCommand;
-        this.imageCommand = imageCommand;
-        this.observationCommand = observationCommand;
-        this.orderCommand = orderCommand;
-        this.familyCommand = familyCommand;
-        this.genusCommand = genusCommand;
-        this.featureCommand = featureCommand;
-        this.featureAssignmentCommand = featureAssignmentCommand;
+        this.commands = commands;
     }
 
     @Override
     public SpeciesCommand species() {
-        return speciesCommand;
+        return commands.species();
     }
 
     @Override
     public ImageCommand images() {
-        return imageCommand;
+        return commands.images();
     }
 
     @Override
     public ObservationCommand observations() {
-        return observationCommand;
+        return commands.observations();
     }
 
     @Override
     public OrderCommand orders() {
-        return orderCommand;
+        return commands.orders();
     }
 
     @Override
     public FamilyCommand families() {
-        return familyCommand;
+        return commands.families();
     }
 
     @Override
     public GenusCommand genera() {
-        return genusCommand;
+        return commands.genera();
     }
 
     @Override
     public FeatureCommand features() {
-        return featureCommand;
+        return commands.features();
     }
 
     @Override
     public FeatureAssignmentCommand featureAssignments() {
-        return featureAssignmentCommand;
+        return commands.featureAssignments();
     }
 }

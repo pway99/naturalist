@@ -103,7 +103,9 @@ public class InsectsController {
                       com.naturalist.library.LibraryCommand libraryCommand,
                       com.naturalist.authority.ExternalAuthority eolAuthority,
                       com.naturalist.usage.IdentificationBudget budget,
-                      ImageStore imageStore) {
+                      ImageStore imageStore,
+                      InsectCatalogIdentificationTransaction catalogIdentificationTransaction,
+                      InsectAddPhotoTransaction addPhotoTransaction) {
         this.insectQuery = insectQuery;
         this.insectCommand = insectCommand;
         this.insectLifeStageQuery = insectLifeStageQuery;
@@ -113,8 +115,6 @@ public class InsectsController {
         this.imageStore = imageStore;
         this.glossaryLinker = GlossaryLinker.of(glossaryTermQuery
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
-        var catalogIdentificationTransaction =
-                new InsectCatalogIdentificationTransaction(insectCommand, insectQuery);
         // Not-yet-real dev/test adapter built inline at the composition root, mirroring
         // NoOpTextGenerationService above -- production wires an injected Solr-backed
         // FeatureSearch bean here instead.
@@ -126,8 +126,7 @@ public class InsectsController {
                 resilience.rateLimiter("vision.identification"),
                 budget, visionService, new NoOpTextGenerationService(), eolAuthority,
                 libraryCommand, insectQuery, featureSearch, catalogIdentificationTransaction);
-        this.addPhotoCommand = new InsectAddPhotoCommand(
-                new InsectAddPhotoTransaction(insectCommand));
+        this.addPhotoCommand = new InsectAddPhotoCommand(addPhotoTransaction);
     }
 
     /**

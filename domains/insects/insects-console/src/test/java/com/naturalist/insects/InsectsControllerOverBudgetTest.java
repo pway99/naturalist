@@ -68,7 +68,9 @@ class InsectsControllerOverBudgetTest {
                 libraryContext.libraryCommand(),
                 null, // ExternalAuthority -- never called; budget.reserve() throws first
                 EXCEEDED_BUDGET,
-                new FilesystemImageStore(imageRoot, Resilience.noOp()));
+                new FilesystemImageStore(imageRoot, Resilience.noOp()),
+                context.catalogIdentificationTransaction(),
+                context.addPhotoTransaction());
     }
 
     @Test

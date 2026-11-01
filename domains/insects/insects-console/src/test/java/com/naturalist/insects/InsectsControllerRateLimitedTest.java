@@ -158,7 +158,9 @@ class InsectsControllerRateLimitedTest {
                 libraryContext.libraryCommand(),
                 null, // ExternalAuthority -- never called; the rate gate throws first
                 IdentificationBudget.noOp(),
-                new FilesystemImageStore(imageRoot, Resilience.noOp()));
+                new FilesystemImageStore(imageRoot, Resilience.noOp()),
+                context.catalogIdentificationTransaction(),
+                context.addPhotoTransaction());
     }
 
     @Test

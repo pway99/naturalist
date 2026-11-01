@@ -33,6 +33,7 @@ import com.naturalist.library.LibraryTestContext;
 public class InsectsTestContext {
     private final InsectQuery insectQuery;
     private final InsectCommand insectCommand;
+    private final InsectEntityCommands entityCommands;
     private final InsectLifeStageQuery insectLifeStageQuery;
     private final InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
     private final InsectAddPhotoTransaction addPhotoTransaction;
@@ -83,13 +84,14 @@ public class InsectsTestContext {
                 new InsectFeatureCommandImpl(repository.featureRepository);
         InsectCommand.FeatureAssignmentCommand featureAssignmentCommand =
                 new InsectFeatureAssignmentCommandImpl(repository.featureAssignmentRepository);
-        this.insectCommand = new InsectCommandImpl(
+        this.entityCommands = new InsectEntityCommands(
                 speciesCommand, imageCommand, observationCommand,
                 orderCommand, familyCommand, genusCommand,
                 featureCommand, featureAssignmentCommand);
+        this.insectCommand = new InsectCommandImpl(this.entityCommands);
         this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
-                this.insectCommand, this.insectQuery);
-        this.addPhotoTransaction = new InsectAddPhotoTransaction(this.insectCommand);
+                this.entityCommands, this.insectQuery);
+        this.addPhotoTransaction = new InsectAddPhotoTransaction(this.entityCommands);
     }
 
     public static InsectsTestContext create(NaturalistDatabase db) {
@@ -102,6 +104,10 @@ public class InsectsTestContext {
 
     public InsectCommand insectCommand() {
         return insectCommand;
+    }
+
+    public InsectEntityCommands entityCommands() {
+        return entityCommands;
     }
 
     public InsectLifeStageQuery insectLifeStageQuery() {

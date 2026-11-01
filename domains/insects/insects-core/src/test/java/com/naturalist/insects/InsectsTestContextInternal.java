@@ -27,6 +27,7 @@ class InsectsTestContextInternal {
 
     private final InsectQuery insectQuery;
     private final InsectCommand insectCommand;
+    private final InsectEntityCommands entityCommands;
     private final InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
     private final InsectAddPhotoTransaction addPhotoTransaction;
 
@@ -77,14 +78,15 @@ class InsectsTestContextInternal {
                 new InsectFeatureCommandImpl(repository.featureRepository);
         InsectCommand.FeatureAssignmentCommand featureAssignmentCommand =
                 new InsectFeatureAssignmentCommandImpl(repository.featureAssignmentRepository);
-        this.insectCommand = new InsectCommandImpl(
+        this.entityCommands = new InsectEntityCommands(
                 speciesCommand, imageCommand, observationCommand,
                 orderCommand, familyCommand, genusCommand,
                 featureCommand, featureAssignmentCommand);
+        this.insectCommand = new InsectCommandImpl(this.entityCommands);
 
         this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
-                this.insectCommand, this.insectQuery);
-        this.addPhotoTransaction = new InsectAddPhotoTransaction(this.insectCommand);
+                this.entityCommands, this.insectQuery);
+        this.addPhotoTransaction = new InsectAddPhotoTransaction(this.entityCommands);
     }
 
     static InsectsTestContextInternal create(NaturalistDatabase db) {
@@ -97,6 +99,10 @@ class InsectsTestContextInternal {
 
     InsectCommand insectCommand() {
         return insectCommand;
+    }
+
+    InsectEntityCommands entityCommands() {
+        return entityCommands;
     }
 
     InsectCatalogIdentificationTransaction catalogIdentificationTransaction() {

@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.Transaction;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.infrastructure.DomainService;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.taxonomy.TaxonomicClassification;
 
@@ -32,7 +33,12 @@ import java.util.Set;
  * failing the whole transaction on its unique {@code value} constraint. This
  * is exact-string matching only, not semantic deduplication — see the
  * step-4 comment in {@link #doExecute} for what it does and does not cover.
+ *
+ * <p>Writes through the {@link InsectEntityCommands} bundle, not
+ * {@link InsectCommand}, so use cases composed into the command namespace can
+ * depend on this transaction without a constructor cycle.
  */
+@DomainService
 class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentification> {
 
     private static final Description PLACEHOLDER = new Description(
@@ -41,11 +47,11 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
             "Identified via vision — description pending.",
             "Identified via vision — description pending.");
 
-    private final InsectCommand insectCommand;
+    private final InsectEntityCommands commands;
     private final InsectQuery insectQuery;
 
-    InsectCatalogIdentificationTransaction(InsectCommand insectCommand, InsectQuery insectQuery) {
-        this.insectCommand = insectCommand;
+    InsectCatalogIdentificationTransaction(InsectEntityCommands commands, InsectQuery insectQuery) {
+        this.commands = commands;
         this.insectQuery = insectQuery;
     }
 
@@ -67,8 +73,8 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         insertIdentifiedEntity(identifiedEntity);
 
         // 3. Insert image and observation
-        insectCommand.images().insert(identification.image());
-        insectCommand.observations().insert(identification.observation());
+        commands.images().insert(identification.image());
+        commands.observations().insert(identification.observation());
 
         // 4. Save features and assignments -- save(), not insert(). A feature
         //    string that already exists in the catalog (very likely on a
@@ -96,7 +102,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         //    to the existing feature.
         var resolvedFeatureIds = new HashMap<InsectFeatureId, InsectFeatureId>();
         for (var feature : identification.newFeatures()) {
-            var persisted = insectCommand.features().save(feature);
+            var persisted = commands.features().save(feature);
             resolvedFeatureIds.put(feature.id(), persisted.id());
         }
         for (var assignment : identification.featureAssignments()) {
@@ -106,7 +112,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
                     ? assignment
                     : OrganismFeatureAssignment.of(
                             assignment.id(), resolvedFeatureId, assignment.rankName(), assignment.ordinal());
-            insectCommand.featureAssignments().save(toSave);
+            commands.featureAssignments().save(toSave);
         }
     }
 
@@ -152,22 +158,22 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         switch (entity) {
             case IdentifiedRankEntity.Species(var species) -> {
                 if (insectQuery.species().getByName(species.name()).isEmpty()) {
-                    insectCommand.species().insert(species);
+                    commands.species().insert(species);
                 }
             }
             case IdentifiedRankEntity.Genus(var genus) -> {
                 if (insectQuery.genera().getByName(genus.name()).isEmpty()) {
-                    insectCommand.genera().insert(genus);
+                    commands.genera().insert(genus);
                 }
             }
             case IdentifiedRankEntity.Family(var family) -> {
                 if (insectQuery.families().getByName(family.name()).isEmpty()) {
-                    insectCommand.families().insert(family);
+                    commands.families().insert(family);
                 }
             }
             case IdentifiedRankEntity.Order(var order) -> {
                 if (insectQuery.orders().getByName(order.name()).isEmpty()) {
-                    insectCommand.orders().insert(order);
+                    commands.orders().insert(order);
                 }
             }
         }
@@ -179,7 +185,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         var orderName = InsectOrderName.of(orderSlug);
         if (insectQuery.orders().getByName(orderName).isEmpty()) {
             var description = parentDescriptions.getOrDefault(orderName, PLACEHOLDER);
-            insectCommand.orders().insert(new InsectOrder(
+            commands.orders().insert(new InsectOrder(
                     orderName, taxonomy.order(), description, Set.of(), null));
         }
         return orderName;
@@ -192,7 +198,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         var familyName = InsectFamilyName.of(familySlug);
         if (insectQuery.families().getByName(familyName).isEmpty()) {
             var description = parentDescriptions.getOrDefault(familyName, PLACEHOLDER);
-            insectCommand.families().insert(new InsectFamily(
+            commands.families().insert(new InsectFamily(
                     familyName, orderName, taxonomy.family(), description, Set.of(), null));
         }
         return familyName;
@@ -205,7 +211,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         var genusName = InsectGenusName.of(genusSlug);
         if (insectQuery.genera().getByName(genusName).isEmpty()) {
             var description = parentDescriptions.getOrDefault(genusName, PLACEHOLDER);
-            insectCommand.genera().insert(new InsectGenus(
+            commands.genera().insert(new InsectGenus(
                     genusName, familyName, taxonomy.genus(), description, Set.of(), null));
         }
     }
