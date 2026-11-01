@@ -50,6 +50,10 @@ naturalist:
     alert-email: patway99@gmail.com
   access:
     grant-policy: self-serve
+  images:
+    # Filesystem root of the image store: one <space>/ subdirectory per domain holds the
+    # photos. Seed photos not found here fall back to the classpath.
+    root: data/images
   email:
     # Envelope sender for outbound mail (verification / reset links, usage alerts).
     # Override per deployment once a real sending domain (with SPF/DKIM) is set up.

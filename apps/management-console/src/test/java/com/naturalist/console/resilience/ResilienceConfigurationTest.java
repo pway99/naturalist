@@ -66,4 +66,9 @@ class ResilienceConfigurationTest {
         assertThat(resilience.rateLimiter("auth.register")).isNotNull();
         assertThat(resilience.rateLimiterNames()).contains("auth.register");
     }
+
+    @Test
+    void resolvesImageStoreTimeout() {
+        assertThat(resilience.timeout("image.store")).isNotNull();
+    }
 }
