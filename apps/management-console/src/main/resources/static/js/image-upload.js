@@ -51,7 +51,7 @@
      * re-encodes as JPEG quality 0.85, returns a Blob.
      */
     function resizeImage(file, maxDim) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             var img = new window.Image();
             img.onload = function () {
                 var w = img.width, h = img.height;
@@ -65,6 +65,7 @@
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                 canvas.toBlob(function (blob) { resolve(blob); }, 'image/jpeg', 0.85);
             };
+            img.onerror = function () { reject(new Error('This browser cannot read that photo. Choose a JPEG, PNG or WebP image.')); };
             img.src = URL.createObjectURL(file);
         });
     }

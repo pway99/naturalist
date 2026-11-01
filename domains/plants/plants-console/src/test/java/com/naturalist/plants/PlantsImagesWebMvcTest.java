@@ -36,7 +36,7 @@ class PlantsImagesWebMvcTest {
     }
 
     @Test
-    void image_servesStoredUpload()throws Exception {
+    void image_servesStoredUpload() throws Exception {
         var name = PlantsControllerTestConfig.IMAGE_STORE.store("plants", ImageUpload.of(TINY_JPEG));
         mockMvc.perform(MockMvcRequestBuilders.get("/plants/images/" + name.value()))
                 .andExpect(MockMvcResultMatchers.status().isOk())

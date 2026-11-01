@@ -115,6 +115,7 @@ class ResilienceComplianceTest {
                     .because("an HTTP call leaves the process and can hang on a "
                             + "network no caller controls — see docs/resilience-policy.md");
 
+    // No subprocess spawner ships today (the sips HEIC converter was removed with the kernel ImageStore); the rule stays armed as a tripwire for the next one.
     @ArchTest
     static final ArchRule subprocessSpawnersDeclareResilience =
             classes()
@@ -122,6 +123,7 @@ class ResilienceComplianceTest {
                     .and().areNotInterfaces()
                     .and().doNotHaveModifier(JavaModifier.ABSTRACT)
                     .should(declareResilience())
+                    .allowEmptyShould(true)
                     .because("spawning an OS subprocess is a cross-boundary call — "
                             + "see docs/resilience-policy.md");
 
