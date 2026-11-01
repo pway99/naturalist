@@ -48,6 +48,14 @@
             <groupId>com.naturalist</groupId>
             <artifactId>observation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>vision</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>identification</artifactId>
+        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency>

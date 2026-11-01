@@ -90,6 +90,16 @@ not have a `Description`, that is a deliberate omission worth questioning.
 import com.naturalist.fieldnotes.Description;
 ```
 
+### identification  (`com.naturalist.identification`)
+
+Shared identification vocabulary, framework-only. Today that is `IdentificationRefused`
+(`Reason` = `RATE_LIMITED` | `BUDGET_EXHAUSTED`, plus a `detail` string carrying the budget's
+limit-kind name and an optional `resetAt`): the port-level refusal any adapter can catch
+without depending on `usage-api` or the resilience kernel. The identification *pipeline*
+joins this kernel later, when plants identification is built. It is not part of `vision`:
+`vision` is the driven-side vendor port, whereas the pipeline orchestrates it alongside
+usage, authority, text-generation and feature-search.
+
 ### taxonomy  (`com.naturalist.taxonomy`)
 
 Linnaean classification. `TaxonomicClassification` holds order, family, genus, and species
@@ -349,7 +359,7 @@ constraint. Adding a kernel-level test would re-verify edges that
 `InsectFamilyTest` already covers.
 
 **Scope of this convention.** Applies to all kernels: `framework`, `framework-test`,
-`field-notes`, `taxonomy`, `clades`, `biogeography`, `catalog`, `catalog-inmem`,
+`field-notes`, `identification`, `taxonomy`, `clades`, `biogeography`, `catalog`, `catalog-inmem`,
 `catalog-rdbms`, `habitat`, `image-store-filesystem`, `measurements`, `observation`. The `framework-test` kernel additionally carries the
 "no test infra for test infra" rule — don't add unit tests for code that exists
 only to support other tests; rely on manual smoke + the consuming `*-repository-test`

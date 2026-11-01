@@ -18,6 +18,7 @@
     <modules>
         <module>framework</module>
         <module>framework-test</module>
+        <module>identification</module>
         <module>authority</module>
         <module>catalog</module>
         <module>catalog-inmem</module>

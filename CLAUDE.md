@@ -69,6 +69,7 @@ kernels/
   clades/             — Clade sealed type (evolutionary tree of life, trait-bearing nodes)
   catalog/            — cross-domain reference resolution (DomainId, Catalog)
   catalog-inmem/      — in-memory reference adapter for catalog
+  identification/     — IdentificationRefused (port-level refusal; pipeline joins later)
   image-store-filesystem/ — ImageStore over a directory root with classpath fallback for seed photos
 domains/
   identifiers/        — typed names (EntityName subclasses) and typed ids
@@ -100,6 +101,7 @@ clades                      →  framework, field-notes
 biogeography                →  framework, field-notes
 catalog                     →  framework, identifiers
 observation                 →  framework, identifiers, taxonomy
+identification              →  framework
 image-store-filesystem      →  framework, observation
 framework                   →  Jackson, Commons, Micrometer, JSpecify only
 framework-test              →  framework
@@ -109,13 +111,14 @@ Rules:
 
 1. api modules depend only on `framework`, `identifiers` and `field-notes`, plus — as
    the domain needs them — `taxonomy`, `clades`, `observation`, `habitat`,
-   `biogeography`, `measurements`, `catalog` and `authority`. Nothing else: never
+   `biogeography`, `measurements`, `catalog`, `authority`, `vision` and
+   `identification`. Nothing else: never
    another domain's api, core, repository-test or repository-rdms. Who uses what today:
    `taxonomy` in arachnids, insects, library, microbes, plants and worms; `clades` in
    insects, library and plants; `observation` in insects and plants; `habitat` in
    insects; `biogeography` in plants; `measurements` in sensors, soil, weather and
    zone; `catalog` in chemistry, insects, library and plants; `authority` in insects,
-   library and `eol-api`.
+   library and `eol-api`; `vision` and `identification` in insects.
 2. core may import another domain's **api** only — never its core, repository-test, or
    repository-rdms.
 3. repository modules depend only on their own api (+ framework).
