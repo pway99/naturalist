@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FilesystemImageStoreTest {
@@ -127,5 +128,30 @@ class FilesystemImageStoreTest {
 
         assertThat(read).isPresent();
         assertThat(read.get().mediaType()).isEqualTo("image/jpeg");
+    }
+
+    @Test
+    void delete_removesStoredFile() {
+        FileName name = store.store("insects", ImageUpload.of(JPEG));
+
+        store.delete("insects", name);
+
+        assertThat(Files.exists(root.resolve("insects").resolve(name.value()))).isFalse();
+        assertThat(store.read("insects", name)).isEmpty();
+    }
+
+    @Test
+    void delete_missingIsNoOp() {
+        assertThatCode(() -> store.delete("insects", FileName.of("nope.jpg"))).doesNotThrowAnyException();
+    }
+
+    @Test
+    void delete_rejectsPathTraversal() throws IOException {
+        Path secret = root.resolve("secret.jpg");
+        Files.writeString(secret, "secret");
+
+        store.delete("insects", FileName.of("../secret.jpg"));
+
+        assertThat(Files.exists(secret)).isTrue();
     }
 }

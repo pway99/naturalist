@@ -14,4 +14,11 @@ public interface ImageStore {
     FileName store(String space, ImageUpload upload);
 
     Optional<StoredImage> read(String space, FileName name);
+
+    /**
+     * Removes a stored image, best-effort: a missing file is not an error, and a name that
+     * would escape the space (path separators or {@code ..}) is silently ignored. Intended for
+     * discarding an orphaned upload when persistence fails after {@link #store}.
+     */
+    void delete(String space, FileName name);
 }

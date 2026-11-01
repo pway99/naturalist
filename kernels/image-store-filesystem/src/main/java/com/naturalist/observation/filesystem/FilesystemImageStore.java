@@ -108,4 +108,23 @@ public final class FilesystemImageStore implements ImageStore {
         String sniffed = ImageUpload.of(bytes).mediaType();
         return sniffed != null ? sniffed : mediaType(name);
     }
+
+    @Override
+    public void delete(String space, FileName name) {
+        if (name == null || space == null || space.isBlank() || !isPlainName(name.value())) {
+            return;
+        }
+        Path directory = root.resolve(space).normalize();
+        Path file = directory.resolve(name.value()).normalize();
+        if (!directory.startsWith(root.normalize()) || !file.startsWith(directory)) {
+            return;
+        }
+        resilience.timeout(STRATEGY).execute(() -> {
+            try {
+                Files.deleteIfExists(file);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
+    }
 }
