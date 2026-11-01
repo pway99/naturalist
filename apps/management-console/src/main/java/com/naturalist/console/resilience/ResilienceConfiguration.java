@@ -37,7 +37,7 @@ import java.util.List;
  *       that ceiling exists for. Also carries a {@code RateLimiterConfig}
  *       capping the strategy at three requests per minute with a zero
  *       timeout. The permit is acquired once per identification by
- *       {@code InsectIdentificationCommand} — before the vision call, not
+ *       {@code InsectIdentificationCommandImpl} — before the vision call, not
  *       inside {@code AnthropicVisionService}, and not once per vision turn
  *       — so "3/min" genuinely means three identifications per minute. A
  *       caller over the limit is rejected immediately with the kernel

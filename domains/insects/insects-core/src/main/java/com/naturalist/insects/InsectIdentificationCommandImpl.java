@@ -14,6 +14,16 @@ import com.naturalist.data.FileName;
 import com.naturalist.featuresearch.FeatureSearch;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.identification.IdentificationRefused;
+import com.naturalist.infrastructure.DomainService;
+import com.naturalist.observability.Observer;
+import com.naturalist.observation.ImageStore;
+import com.naturalist.observation.ImageUpload;
+import com.naturalist.resilience.RateLimitExceededException;
+import com.naturalist.resilience.RateLimiter;
+import com.naturalist.resilience.Resilience;
+import com.naturalist.usage.BudgetExceededException;
+import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.library.CitationAttribution;
 import com.naturalist.library.LibraryCommand;
 import com.naturalist.naturalist.NaturalistName;
@@ -25,6 +35,7 @@ import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
 import com.naturalist.textgeneration.TextGenerationService;
 import com.naturalist.vision.Image;
+import com.naturalist.vision.ImageMetadata;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
 import com.naturalist.vision.VisionService;
@@ -46,7 +57,7 @@ import com.naturalist.observation.Identification;
 
 /**
  * Orchestrates the full insect identification flow: rate gate → budget
- * reservation → vision identification → authority enrichment (best-effort)
+ * reservation → store the upload → vision identification → authority enrichment (best-effort)
  * → parent rank enrichment → feature resolution → citation creation →
  * transactional persistence. All external calls (vision, authority lookup,
  * content fetch, text generation) complete before the transaction boundary.
@@ -55,21 +66,31 @@ import com.naturalist.observation.Identification;
  * <p>The {@code vision.identification} rate limit is acquired here, one
  * permit per identification call — not inside the vision adapter, and not
  * per vision turn — and strictly before {@link com.naturalist.usage.IdentificationBudget#reserve}
- * so a rate-rejected call never burns budget.
+ * so a rate-rejected call never burns budget. Both gates surface as
+ * {@link IdentificationRefused} (api vocabulary) and run before the upload is stored,
+ * so a refused call stores nothing; a failed catalog write deletes the stored upload.
  *
  * <p>Authority lookups enrich the identification with citations and
  * grounded descriptions but never gate it — the vision result is
  * authoritative for rank determination.
  */
-class InsectIdentificationCommand {
+@DomainService
+class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCommand {
+
+    /** The resilience rate-limiter strategy gating one permit per identification. */
+    public static final String RATE_STRATEGY = "vision.identification";
+
+    /** The image-store space holding insect photos. */
+    public static final String SPACE = "insects";
 
     private static final String TOOL_NAME = "propose_insect_species";
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final AuthoritySource VISION_SUGGESTED =
             new AuthoritySource("ref", "Suggested Reference");
 
-    private final com.naturalist.resilience.RateLimiter rateLimiter;
-    private final com.naturalist.usage.IdentificationBudget budget;
+    private final Observer observer = Observer.forClass(InsectIdentificationCommandImpl.class);
+    private final RateLimiter rateLimiter;
+    private final IdentificationBudget budget;
     private final VisionService visionService;
     private final TextGenerationService textGenerationService;
     private final ExternalAuthority externalAuthority;
@@ -77,18 +98,32 @@ class InsectIdentificationCommand {
     private final InsectQuery insectQuery;
     // Surfaces similar existing features for the turn-2 reuse-or-new resolution.
     private final FeatureSearch<InsectFeatureId> featureSearch;
+    private final ImageStore imageStore;
     private final InsectCatalogIdentificationTransaction transaction;
 
-    InsectIdentificationCommand(com.naturalist.resilience.RateLimiter rateLimiter,
-                                        com.naturalist.usage.IdentificationBudget budget,
-                                        VisionService visionService,
-                                        TextGenerationService textGenerationService,
-                                        ExternalAuthority externalAuthority,
-                                        LibraryCommand libraryCommand,
-                                        InsectQuery insectQuery,
-                                        FeatureSearch<InsectFeatureId> featureSearch,
-                                        InsectCatalogIdentificationTransaction transaction) {
-        this.rateLimiter = java.util.Objects.requireNonNull(rateLimiter, "rateLimiter");
+    InsectIdentificationCommandImpl(Resilience resilience,
+                                    IdentificationBudget budget,
+                                    VisionService visionService,
+                                    TextGenerationService textGenerationService,
+                                    ExternalAuthority externalAuthority,
+                                    LibraryCommand libraryCommand,
+                                    InsectQuery insectQuery,
+                                    FeatureSearch<InsectFeatureId> featureSearch,
+                                    ImageStore imageStore,
+                                    InsectCatalogIdentificationTransaction transaction) {
+        observer.arguments("constructor", i -> i
+                        .notNull(resilience, "resilience")
+                        .notNull(budget, "budget")
+                        .notNull(visionService, "visionService")
+                        .notNull(textGenerationService, "textGenerationService")
+                        .notNull(externalAuthority, "externalAuthority")
+                        .notNull(libraryCommand, "libraryCommand")
+                        .notNull(insectQuery, "insectQuery")
+                        .notNull(featureSearch, "featureSearch")
+                        .notNull(imageStore, "imageStore")
+                        .notNull(transaction, "transaction"))
+                .throwWhenInvalid();
+        this.rateLimiter = resilience.rateLimiter(RATE_STRATEGY);
         this.budget = budget;
         this.visionService = visionService;
         this.textGenerationService = textGenerationService;
@@ -96,6 +131,7 @@ class InsectIdentificationCommand {
         this.libraryCommand = libraryCommand;
         this.insectQuery = insectQuery;
         this.featureSearch = featureSearch;
+        this.imageStore = imageStore;
         this.transaction = transaction;
     }
 
@@ -110,16 +146,36 @@ class InsectIdentificationCommand {
      *
      * @return the identified rank name for redirect
      */
-    public InsectRankName identify(Image image, FileName storedFileName,
-                                    NaturalistName naturalist,
-                                    @Nullable String notes) {
-        // 0a. RATE GATE -- one permit per identification (not per vision turn); throws
-        // RateLimitExceededException before any budget reservation or vision spend, so a
-        // rate-rejected call burns no budget.
-        rateLimiter.execute(() -> { });
+    @Override
+    public InsectRankName identify(ImageUpload upload, ImageMetadata metadata,
+                                   NaturalistName naturalist,
+                                   @Nullable String notes) {
+        observer.arguments("identify", i -> i
+                        .valueObject(upload, "upload")
+                        .valueObject(metadata, "metadata")
+                        .entityName(naturalist, "naturalist"))
+                .throwWhenInvalid();
 
-        // 0b. BUDGET RESERVATION -- throws BudgetExceededException before any vision spend
-        budget.reserve(naturalist);
+        // 0a. RATE GATE -- one permit per identification (not per vision turn); refuses
+        // before any budget reservation or vision spend, so a rate-rejected call burns no
+        // budget and stores nothing.
+        try {
+            rateLimiter.execute(() -> { });
+        } catch (RateLimitExceededException rateLimited) {
+            throw new IdentificationRefused(IdentificationRefused.Reason.RATE_LIMITED, null, null);
+        }
+
+        // 0b. BUDGET RESERVATION -- refuses before any vision spend; nothing stored
+        try {
+            budget.reserve(naturalist);
+        } catch (BudgetExceededException over) {
+            throw new IdentificationRefused(IdentificationRefused.Reason.BUDGET_EXHAUSTED,
+                    over.limitKind().name(), over.resetAt());
+        }
+
+        // 0c. STORE THE UPLOAD -- deleted again below if the catalog write fails
+        FileName storedFileName = imageStore.store(SPACE, upload);
+        var image = new Image(upload.bytes(), upload.mediaType(), metadata);
 
         // 1. VISION -- external call (turn 1 propose, optional turn 2 reuse-resolve)
         var visionOutcome = identifyViaVision(image);
@@ -176,7 +232,12 @@ class InsectIdentificationCommand {
                 featureResolution.newFeatures(), featureResolution.assignments(),
                 descriptionMap);
 
-        transaction.execute(catalogId);
+        try {
+            transaction.execute(catalogId);
+        } catch (RuntimeException e) {
+            imageStore.delete(SPACE, storedFileName);
+            throw e;
+        }
 
         return rankName;
     }

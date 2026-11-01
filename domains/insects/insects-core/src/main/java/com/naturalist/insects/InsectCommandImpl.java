@@ -12,15 +12,20 @@ class InsectCommandImpl implements InsectCommand {
 
     private final PhotoCommand photos;
 
-    InsectCommandImpl(InsectEntityCommands commands, SightingCommand sightings, PhotoCommand photos) {
+    private final IdentificationCommand identification;
+
+    InsectCommandImpl(InsectEntityCommands commands, SightingCommand sightings, PhotoCommand photos,
+                      IdentificationCommand identification) {
         Observer.forClass(InsectCommandImpl.class).arguments("constructor", i -> i
                         .notNull(commands, "commands")
                         .notNull(sightings, "sightings")
-                        .notNull(photos, "photos"))
+                        .notNull(photos, "photos")
+                        .notNull(identification, "identification"))
                 .throwWhenInvalid();
         this.commands = commands;
         this.sightings = sightings;
         this.photos = photos;
+        this.identification = identification;
     }
 
     @Override
@@ -71,5 +76,10 @@ class InsectCommandImpl implements InsectCommand {
     @Override
     public FeatureAssignmentCommand featureAssignments() {
         return commands.featureAssignments();
+    }
+
+    @Override
+    public IdentificationCommand identification() {
+        return identification;
     }
 }

@@ -6,20 +6,29 @@ import com.naturalist.authority.AuthoritySource;
 import com.naturalist.authority.CitationName;
 import com.naturalist.authority.ExternalAuthority;
 import com.naturalist.authority.OnlineSource;
-import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.featuresearch.FeatureCorpus;
 import com.naturalist.featuresearch.FeatureSearch;
 import com.naturalist.featuresearch.InMemoryFeatureSearch;
+import com.naturalist.identification.IdentificationRefused;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.ImageStore;
+import com.naturalist.observation.ImageUpload;
+import com.naturalist.resilience.Bulkhead;
+import com.naturalist.resilience.CircuitBreaker;
 import com.naturalist.resilience.RateLimitExceededException;
 import com.naturalist.resilience.RateLimiter;
+import com.naturalist.resilience.Resilience;
+import com.naturalist.resilience.Retry;
+import com.naturalist.resilience.Timeout;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.textgeneration.NoOpTextGenerationService;
-import com.naturalist.vision.Image;
+import com.naturalist.usage.BudgetExceededException;
+import com.naturalist.usage.IdentificationBudget;
+import com.naturalist.usage.LimitKind;
 import com.naturalist.vision.ImageMetadata;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
@@ -29,12 +38,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class InsectIdentificationCommandTest {
+class InsectIdentificationCommandImplTest {
 
     static final String SAMPLE_RESULT_JSON = """
             {
@@ -137,30 +153,14 @@ class InsectIdentificationCommandTest {
                         .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
     }
 
-    private InsectIdentificationCommand buildCommand(VisionService vision) {
-        var libraryContext = LibraryTestContext.create(nte);
-        return new InsectIdentificationCommand(
-                com.naturalist.resilience.Resilience.noOp().rateLimiter("x"),
-                com.naturalist.usage.IdentificationBudget.noOp(),
-                vision,
-                new NoOpTextGenerationService(),
-                STUB_AUTHORITY,
-                libraryContext.libraryCommand(),
-                query,
-                buildFeatureSearch(),
-                context.catalogIdentificationTransaction());
+    private InsectIdentificationCommandImpl buildCommand(VisionService vision) {
+        return buildCommand(com.naturalist.resilience.Resilience.noOp(), com.naturalist.usage.IdentificationBudget.noOp(), vision);
     }
-
-    private final InsectIdentificationCommand command = buildCommand(stubService);
 
     @Test
     void identify_returnsRankNameAndPersistsEntities() {
-        var image = new Image(
-                new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
-
-        var rankName = command.identify(
-                image, FileName.of("IMG_0001.jpg"),
+        var rankName = buildCommand(stubService).identify(
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
                 NaturalistName.of("pat"), null);
 
         assertThat(rankName.value()).isEqualTo("testus-fabricatus");
@@ -179,8 +179,8 @@ class InsectIdentificationCommandTest {
         // Image persisted
         var images = query.images().forParentName(speciesName);
         assertThat(images.stream().toList()).hasSize(1);
-        assertThat(images.stream().toList().getFirst().resourceName())
-                .isEqualTo(FileName.of("IMG_0001.jpg"));
+        assertThat(store.read(InsectIdentificationCommandImpl.SPACE,
+                images.stream().toList().getFirst().resourceName())).isPresent();
     }
 
     /**
@@ -212,11 +212,9 @@ class InsectIdentificationCommandTest {
         // test documents. (Turn 2 is never reached on the first, clean-corpus call.)
         var twoTurnCmd = buildCommand((img, tool, prompt) ->
                 twoTurn(SAMPLE_RESULT_JSON, "{\"resolutions\":[]}"));
-        var image = new Image(
-                new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
+        var metadata = new ImageMetadata("Chico, CA", null);
 
-        twoTurnCmd.identify(image, FileName.of("IMG_0006.jpg"), NaturalistName.of("pat"), null);
+        twoTurnCmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null);
 
         var featureSource = nte.getNamed(InsectFeatureTestEntitySource.class);
         var assignmentSource = nte.getNamed(InsectFeatureAssignmentTestEntitySource.class);
@@ -225,7 +223,7 @@ class InsectIdentificationCommandTest {
         assertThat(featureCountAfterFirst).isGreaterThanOrEqualTo(3);
 
         // Same stub -> vision reports the exact same three feature strings again.
-        twoTurnCmd.identify(image, FileName.of("IMG_0007.jpg"), NaturalistName.of("pat"), null);
+        twoTurnCmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null);
 
         assertThat(featureSource.entityStream().count()).isEqualTo(featureCountAfterFirst);
         assertThat(assignmentSource.entityStream().count()).isEqualTo(assignmentCountAfterFirst);
@@ -252,9 +250,8 @@ class InsectIdentificationCommandTest {
         var featureSource = nte.getNamed(InsectFeatureTestEntitySource.class);
         long before = featureSource.entityStream().count();
 
-        var image = new Image(new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
-        command.identify(image, FileName.of("IMG_0008.jpg"), NaturalistName.of("pat"), null);
+        buildCommand(stubService).identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null);
 
         assertThat(featureSource.entityStream().count()).isEqualTo(before + 3);
         assertThat(featureSource.entityStream().map(InsectFeature::value).toList())
@@ -284,9 +281,8 @@ class InsectIdentificationCommandTest {
         var exchange = twoTurn(SAMPLE_RESULT_JSON, turn2);
         var cmd = buildCommand((image, tool, prompt) -> exchange);
 
-        var image = new Image(new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
-        cmd.identify(image, FileName.of("IMG_0009.jpg"), NaturalistName.of("pat"), null);
+        cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null);
 
         // Only the two non-reused sample values were minted; "hovering flight" reused the seed.
         assertThat(featureSource.entityStream().count()).isEqualTo(before + 2);
@@ -322,9 +318,8 @@ class InsectIdentificationCommandTest {
         var exchange = twoTurn(SAMPLE_RESULT_JSON, turn2);
         var cmd = buildCommand((image, tool, prompt) -> exchange);
 
-        var image = new Image(new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
-        cmd.identify(image, FileName.of("IMG_0010.jpg"), NaturalistName.of("pat"), null);
+        cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null);
 
         // All three sample values minted fresh; the seeded near-variant untouched.
         assertThat(featureSource.entityStream().count()).isEqualTo(before + 3);
@@ -335,15 +330,16 @@ class InsectIdentificationCommandTest {
     @Test
     void identify_persistsCitationAssociationWhenCitationAlreadyExists() {
         var libraryContext = LibraryTestContext.create(nte);
-        var cmd = new InsectIdentificationCommand(
-                com.naturalist.resilience.Resilience.noOp().rateLimiter("x"),
-                com.naturalist.usage.IdentificationBudget.noOp(),
+        var cmd = new InsectIdentificationCommandImpl(
+                Resilience.noOp(),
+                IdentificationBudget.noOp(),
                 stubService,
                 new NoOpTextGenerationService(),
                 STUB_AUTHORITY,
                 libraryContext.libraryCommand(),
                 query,
                 buildFeatureSearch(),
+                store,
                 context.catalogIdentificationTransaction());
 
         // Pre-seed the deterministic citation slug the command derives for the
@@ -360,11 +356,8 @@ class InsectIdentificationCommandTest {
                 "Pre-existing citation", null, null, null);
         libraryContext.libraryCommand().citations().insert(preExisting);
 
-        var image = new Image(
-                new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
-
-        cmd.identify(image, FileName.of("IMG_0005.jpg"), NaturalistName.of("pat"), null);
+        cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null);
 
         var associations = libraryContext.citationAssociationQuery().findByCitationName(citationName);
         assertThat(associations.size()).isEqualTo(1);
@@ -379,10 +372,8 @@ class InsectIdentificationCommandTest {
         VisionService withAlternatives = (image, tool, prompt) ->
                 fixedExchange("propose_insect_species", jsonWithAlternatives);
         var cmd = buildCommand(withAlternatives);
-        var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));
-
         var rankName = cmd.identify(
-                image, FileName.of("IMG_0002.jpg"),
+                ImageUpload.of(JPEG), new ImageMetadata(null, null),
                 NaturalistName.of("pat"), null);
 
         var obs = query.observations().findPage(PageRequest.console(0));
@@ -404,11 +395,7 @@ class InsectIdentificationCommandTest {
             return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
         };
         var cmd = buildCommand(capturing);
-        var image = new Image(
-                new byte[]{1}, "image/jpeg",
-                new ImageMetadata("Deer Creek, Butte County, CA", null));
-
-        cmd.identify(image, FileName.of("IMG_0003.jpg"),
+        cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Deer Creek, Butte County, CA", null),
                 NaturalistName.of("pat"), null);
 
         assertThat(promptCapture[0]).contains("Deer Creek, Butte County, CA");
@@ -422,9 +409,7 @@ class InsectIdentificationCommandTest {
             return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
         };
         var cmd = buildCommand(capturing);
-        var image = new Image(new byte[]{1}, "image/jpeg", new ImageMetadata(null, null));
-
-        cmd.identify(image, FileName.of("IMG_0004.jpg"),
+        cmd.identify(ImageUpload.of(JPEG), new ImageMetadata(null, null),
                 NaturalistName.of("pat"), null);
 
         assertThat(promptCapture[0]).doesNotContain("Location context:");
@@ -442,25 +427,12 @@ class InsectIdentificationCommandTest {
                     com.naturalist.usage.LimitKind.MONTHLY,
                     java.time.Instant.parse("2026-09-01T00:00:00Z"));
         };
-        var libraryContext = LibraryTestContext.create(nte);
-        var cmd = new InsectIdentificationCommand(
-                com.naturalist.resilience.Resilience.noOp().rateLimiter("x"),
-                exceededBudget,
-                trackingVision,
-                new NoOpTextGenerationService(),
-                STUB_AUTHORITY,
-                libraryContext.libraryCommand(),
-                query,
-                buildFeatureSearch(),
-                context.catalogIdentificationTransaction());
-
-        var image = new Image(
-                new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
+        var cmd = buildCommand(com.naturalist.resilience.Resilience.noOp(), exceededBudget, trackingVision);
 
         assertThatThrownBy(() -> cmd.identify(
-                image, FileName.of("IMG_0011.jpg"), NaturalistName.of("pat"), null))
-                .isInstanceOf(com.naturalist.usage.BudgetExceededException.class);
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
+                        assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.BUDGET_EXHAUSTED));
 
         assertThat(visionCalled.get()).isFalse();
     }
@@ -468,8 +440,8 @@ class InsectIdentificationCommandTest {
     /**
      * Proves the rate gate runs BEFORE budget reservation: a {@link RateLimiter}
      * that throws on its second permit (the second {@code identify} call within
-     * this test) makes {@code identify} throw
-     * {@link RateLimitExceededException} and neither reserves budget (no
+     * this test) makes {@code identify} throw {@link IdentificationRefused} with reason
+     * {@code RATE_LIMITED} and neither reserves budget (no
      * {@code UsageEvent} is inserted -- verified indirectly via the tracking
      * {@code IdentificationBudget} never being called) nor calls vision. Mirrors
      * {@link #identify_reserves_budget_before_calling_vision}'s structure, one
@@ -507,24 +479,13 @@ class InsectIdentificationCommandTest {
             }
         };
 
-        var libraryContext = LibraryTestContext.create(nte);
-        var cmd = new InsectIdentificationCommand(
-                rejectOnSecondCall,
-                trackingBudget,
-                trackingVision,
-                new NoOpTextGenerationService(),
-                STUB_AUTHORITY,
-                libraryContext.libraryCommand(),
-                query,
-                buildFeatureSearch(),
-                context.catalogIdentificationTransaction());
+        var cmd = buildCommand(
+                new RejectingRateLimiterResilience(rejectOnSecondCall), trackingBudget, trackingVision);
 
-        var image = new Image(
-                new byte[]{1, 2, 3}, "image/jpeg",
-                new ImageMetadata("Chico, CA", null));
+        var metadata = new ImageMetadata("Chico, CA", null);
 
         // First call: the rate limiter permits it through -- budget reserves and vision runs.
-        cmd.identify(image, FileName.of("IMG_0012.jpg"), NaturalistName.of("pat"), null);
+        cmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null);
         assertThat(budgetReserveCalls.get()).isEqualTo(1);
         assertThat(visionCalled.get()).isTrue();
 
@@ -532,8 +493,9 @@ class InsectIdentificationCommandTest {
         // is never called again.
         visionCalled.set(false);
         assertThatThrownBy(() -> cmd.identify(
-                image, FileName.of("IMG_0013.jpg"), NaturalistName.of("pat"), null))
-                .isInstanceOf(RateLimitExceededException.class);
+                ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null))
+                .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
+                        assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.RATE_LIMITED));
 
         assertThat(budgetReserveCalls.get())
                 .as("budget.reserve() must not run once the rate limiter rejects")
@@ -541,5 +503,175 @@ class InsectIdentificationCommandTest {
         assertThat(visionCalled.get())
                 .as("vision must not be called once the rate limiter rejects")
                 .isFalse();
+    }
+
+    private InsectIdentificationCommandImpl buildCommand(Resilience resilience, IdentificationBudget budget, VisionService vision) {
+        var libraryContext = LibraryTestContext.create(nte);
+        return new InsectIdentificationCommandImpl(
+                resilience,
+                budget,
+                vision,
+                new NoOpTextGenerationService(),
+                STUB_AUTHORITY,
+                libraryContext.libraryCommand(),
+                query,
+                buildFeatureSearch(),
+                store,
+                context.catalogIdentificationTransaction());
+    }
+
+    private static Path createImageRoot() {
+        try {
+            return Files.createTempDirectory("insects-identify-images");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private static List<Path> filesUnder(Path root) throws IOException {
+        try (Stream<Path> walk = Files.walk(root)) {
+            return walk.filter(Files::isRegularFile).toList();
+        }
+    }
+
+    /**
+     * A {@link com.naturalist.resilience.Resilience} that mirrors
+     * {@link com.naturalist.resilience.Resilience#noOp()} for every primitive except
+     * {@code rateLimiter}: by default its {@code execute} always throws
+     * {@link RateLimitExceededException} (copied from {@code InsectsControllerRateLimitedTest});
+     * the one-argument form hands out the given limiter instead.
+     */
+    private static final class RejectingRateLimiterResilience implements Resilience {
+        private final RateLimiter limiter;
+
+        RejectingRateLimiterResilience() {
+            this(new RateLimiter() {
+                @Override
+                public <T> T execute(java.util.function.Supplier<T> supplier) {
+                    throw new RateLimitExceededException(
+                            "Rate limit exceeded for strategy 'vision.identification'",
+                            "vision.identification");
+                }
+
+                @Override
+                public void execute(Runnable runnable) {
+                    execute(() -> {
+                        runnable.run();
+                        return null;
+                    });
+                }
+            });
+        }
+
+        RejectingRateLimiterResilience(RateLimiter limiter) {
+            this.limiter = limiter;
+        }
+
+        @Override
+        public Retry retry(String name) {
+            return Resilience.noOp().retry(name);
+        }
+
+        @Override
+        public Timeout timeout(String name) {
+            return Resilience.noOp().timeout(name);
+        }
+
+        @Override
+        public CircuitBreaker circuitBreaker(String name) {
+            return Resilience.noOp().circuitBreaker(name);
+        }
+
+        @Override
+        public Bulkhead bulkhead(String name) {
+            return Resilience.noOp().bulkhead(name);
+        }
+
+        @Override
+        public RateLimiter rateLimiter(String name) {
+            return limiter;
+        }
+
+        @Override
+        public Set<String> retryNames() {
+            return Set.of();
+        }
+
+        @Override
+        public Set<String> timeoutNames() {
+            return Set.of();
+        }
+
+        @Override
+        public Set<String> circuitBreakerNames() {
+            return Set.of();
+        }
+
+        @Override
+        public Set<String> bulkheadNames() {
+            return Set.of();
+        }
+
+        @Override
+        public Set<String> rateLimiterNames() {
+            return Set.of("vision.identification");
+        }
+    }
+
+    /** A minimal upload that sniffs as JPEG (the image store validates it). */
+    private static final byte[] JPEG = {
+            (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 16, 'J', 'F', 'I', 'F', 0, 1, 1, 0, 0, 1};
+
+    /**
+     * Per-test image-store root. A field initializer (not {@code @TempDir}) because
+     * {@link #store} must exist before the command fields that use it are built.
+     */
+    private final Path imageRoot = createImageRoot();
+
+    private final ImageStore store = new com.naturalist.observation.filesystem.FilesystemImageStore(imageRoot, com.naturalist.resilience.Resilience.noOp());
+
+    @Test
+    void identify_rateLimited_storesNothing() throws IOException {
+        var cmd = buildCommand(new RejectingRateLimiterResilience(),
+                IdentificationBudget.noOp(), stubService);
+
+        assertThatThrownBy(() -> cmd.identify(
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
+                        assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.RATE_LIMITED));
+
+        assertThat(filesUnder(imageRoot)).isEmpty();
+    }
+
+    @Test
+    void identify_overBudget_storesNothing() throws IOException {
+        var resetAt = Instant.parse("2026-09-01T00:00:00Z");
+        IdentificationBudget exceeded = naturalist -> {
+            throw new BudgetExceededException(
+                    LimitKind.MONTHLY, resetAt);
+        };
+        var cmd = buildCommand(Resilience.noOp(), exceeded, stubService);
+
+        assertThatThrownBy(() -> cmd.identify(
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                .isInstanceOfSatisfying(IdentificationRefused.class, refused -> {
+                    assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.BUDGET_EXHAUSTED);
+                    assertThat(refused.detail()).isEqualTo("MONTHLY");
+                    assertThat(refused.resetAt()).isEqualTo(resetAt);
+                });
+
+        assertThat(filesUnder(imageRoot)).isEmpty();
+    }
+
+    @Test
+    void identify_success_storesTheUpload() {
+        var rankName = buildCommand(stubService).identify(
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null);
+
+        var images = query.images().forParentName(rankName).stream().toList();
+        assertThat(images).hasSize(1);
+        var stored = store.read(InsectIdentificationCommandImpl.SPACE, images.getFirst().resourceName());
+        assertThat(stored).isPresent();
+        assertThat(stored.get().bytes()).isEqualTo(JPEG);
     }
 }

@@ -11,9 +11,6 @@ import com.naturalist.data.FileName;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.data.Pages;
-import com.naturalist.featuresearch.FeatureCorpus;
-import com.naturalist.featuresearch.FeatureSearch;
-import com.naturalist.featuresearch.InMemoryFeatureSearch;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.insects.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
@@ -22,8 +19,6 @@ import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
 import com.naturalist.library.GlossaryLinker;
-import com.naturalist.resilience.Resilience;
-import com.naturalist.textgeneration.NoOpTextGenerationService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.CacheControl;
@@ -86,45 +81,25 @@ public class InsectsController {
     private final InsectCommand insectCommand;
     private final InsectLifeStageQuery insectLifeStageQuery;
     private final CladeQuery cladeQuery;
-    private final Resilience resilience;
     private final DescriptionRenderer descriptionRenderer;
     private final ImageStore imageStore;
-    private final InsectIdentificationCommand identificationCommand;
     private final GlossaryLinker glossaryLinker;
 
-    InsectsController(Resilience resilience,
-                      com.naturalist.vision.VisionService visionService,
-                      InsectQuery insectQuery,
+    InsectsController(InsectQuery insectQuery,
                       InsectCommand insectCommand,
                       InsectLifeStageQuery insectLifeStageQuery,
                       CladeQuery cladeQuery,
                       com.naturalist.library.GlossaryTermQuery glossaryTermQuery,
-                      com.naturalist.library.LibraryCommand libraryCommand,
-                      com.naturalist.authority.ExternalAuthority eolAuthority,
-                      com.naturalist.usage.IdentificationBudget budget,
                       ImageStore imageStore,
-                      InsectCatalogIdentificationTransaction catalogIdentificationTransaction,
                       InsectAddPhotoTransaction addPhotoTransaction) {
         this.insectQuery = insectQuery;
         this.insectCommand = insectCommand;
         this.insectLifeStageQuery = insectLifeStageQuery;
         this.cladeQuery = cladeQuery;
-        this.resilience = resilience;
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
         this.imageStore = imageStore;
         this.glossaryLinker = GlossaryLinker.of(glossaryTermQuery
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
-        // Not-yet-real dev/test adapter built inline at the composition root, mirroring
-        // NoOpTextGenerationService above -- production wires an injected Solr-backed
-        // FeatureSearch bean here instead.
-        FeatureSearch<InsectFeatureId> featureSearch =
-                new InMemoryFeatureSearch<>(() ->
-                        insectQuery.features().corpus()
-                                .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
-        this.identificationCommand = new InsectIdentificationCommand(
-                resilience.rateLimiter("vision.identification"),
-                budget, visionService, new NoOpTextGenerationService(), eolAuthority,
-                libraryCommand, insectQuery, featureSearch, catalogIdentificationTransaction);
     }
 
     /**
@@ -476,36 +451,30 @@ public class InsectsController {
             return "redirect:/insects/identify";
         }
 
-        var imageBytes = imageFile.getBytes();
-        FileName storedFileName;
-        try {
-            storedFileName = imageStore.store("insects", ImageUpload.of(imageBytes));
-        } catch (InvariantViolationException invalid) {
-            return "redirect:/insects/identify?error=image";
-        }
-
         Instant capturedInstant = null;
         if (capturedAt != null && !capturedAt.isBlank()) {
             try { capturedInstant = Instant.parse(capturedAt); }
             catch (java.time.format.DateTimeParseException ignored) { }
         }
-        var image = new com.naturalist.vision.Image(
-                imageBytes, "image/jpeg",
-                new com.naturalist.vision.ImageMetadata(location, capturedInstant));
 
         try {
-            var rankName = identificationCommand.identify(
-                    image, storedFileName, me.get(), notes);
+            var rankName = insectCommand.identification().identify(
+                    ImageUpload.of(imageFile.getBytes()),
+                    new com.naturalist.vision.ImageMetadata(location, capturedInstant),
+                    me.get(), notes);
             return "redirect:/insects/" + rankName.value();
-        } catch (com.naturalist.usage.BudgetExceededException over) {
-            return "redirect:/insects/identify?limit=" + over.limitKind();
-        } catch (com.naturalist.resilience.RateLimitExceededException rateLimited) {
-            // vision.identification's rate limiter (acquired by InsectIdentificationCommand,
-            // one permit per identification, before budget reservation) rejected the spend --
-            // "RATE" is a UI-only query-param string, not a usage.LimitKind (that enum
-            // dropped RATE by design; rate limiting lives entirely in Resilience). The kernel
-            // RateLimitExceededException keeps resilience4j confined to the adapter.
-            return "redirect:/insects/identify?limit=RATE";
+        } catch (InvariantViolationException invalid) {
+            // The upload is not a JPEG/PNG/WebP -- refused before anything is stored.
+            return "redirect:/insects/identify?error=image";
+        } catch (com.naturalist.identification.IdentificationRefused refused) {
+            // The rate gate and the budget both live behind insectCommand.identification()
+            // (InsectIdentificationCommandImpl), ahead of the store and any vision call.
+            // "RATE" is a UI-only query-param string, not a usage.LimitKind; a budget refusal's
+            // detail is the exhausted LimitKind's name (DAILY / MONTHLY ...).
+            return switch (refused.reason()) {
+                case RATE_LIMITED -> "redirect:/insects/identify?limit=RATE";
+                case BUDGET_EXHAUSTED -> "redirect:/insects/identify?limit=" + refused.detail();
+            };
         }
     }
 

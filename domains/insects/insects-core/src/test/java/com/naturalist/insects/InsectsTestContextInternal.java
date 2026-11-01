@@ -1,6 +1,14 @@
 package com.naturalist.insects;
 
+import com.naturalist.authority.AuthorityContent;
+import com.naturalist.authority.AuthorityReference;
+import com.naturalist.authority.AuthoritySource;
+import com.naturalist.authority.ExternalAuthority;
+import com.naturalist.ddd.EntityName;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.featuresearch.FeatureCorpus;
+import com.naturalist.featuresearch.FeatureSearch;
+import com.naturalist.featuresearch.InMemoryFeatureSearch;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
@@ -10,6 +18,10 @@ import com.naturalist.library.LibraryTestContext;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
+import com.naturalist.textgeneration.NoOpTextGenerationService;
+import com.naturalist.usage.IdentificationBudget;
+import com.naturalist.vision.NoOpVisionService;
+import com.naturalist.vision.VisionService;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -37,7 +49,9 @@ class InsectsTestContextInternal {
     private final InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
     private final InsectAddPhotoTransaction addPhotoTransaction;
 
-    private InsectsTestContextInternal(NaturalistDatabase db, ImageStore imageStore) {
+    private InsectsTestContextInternal(NaturalistDatabase db, ImageStore imageStore, Resilience resilience,
+                                       IdentificationBudget budget, VisionService visionService,
+                                       ExternalAuthority authority) {
         InsectRepository repository = InsectRepository.create(
                 new InsectSpeciesRepositoryMock(db),
                 new InsectImageRepositoryMock(db),
@@ -89,12 +103,19 @@ class InsectsTestContextInternal {
                 orderCommand, familyCommand, genusCommand,
                 featureCommand, featureAssignmentCommand);
         this.addPhotoTransaction = new InsectAddPhotoTransaction(this.entityCommands);
-        this.insectCommand = new InsectCommandImpl(this.entityCommands,
-                new InsectSightingCommandImpl(observationCommand, observationQuery),
-                new InsectPhotoCommandImpl(imageStore, this.addPhotoTransaction));
-
         this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
                 this.entityCommands, this.insectQuery);
+        InsectQuery wiredQuery = this.insectQuery;
+        FeatureSearch<InsectFeatureId> featureSearch = new InMemoryFeatureSearch<>(() -> wiredQuery.features().corpus()
+                .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
+        InsectCommand.IdentificationCommand identificationCommand = new InsectIdentificationCommandImpl(
+                resilience, budget, visionService, new NoOpTextGenerationService(), authority,
+                libraryContext.libraryCommand(), this.insectQuery, featureSearch, imageStore,
+                this.catalogIdentificationTransaction);
+        this.insectCommand = new InsectCommandImpl(this.entityCommands,
+                new InsectSightingCommandImpl(observationCommand, observationQuery),
+                new InsectPhotoCommandImpl(imageStore, this.addPhotoTransaction),
+                identificationCommand);
     }
 
     static InsectsTestContextInternal create(NaturalistDatabase db) {
@@ -102,7 +123,19 @@ class InsectsTestContextInternal {
     }
 
     static InsectsTestContextInternal create(NaturalistDatabase db, ImageStore imageStore) {
-        return new InsectsTestContextInternal(db, imageStore);
+        return create(db, imageStore, Resilience.noOp(), IdentificationBudget.noOp(),
+                new NoOpVisionService(), NO_OP_AUTHORITY);
+    }
+
+    /**
+     * Full overload: the identification port ({@code insectCommand().identification()}) runs
+     * behind the given rate-limiting {@link Resilience}, {@link IdentificationBudget},
+     * {@link VisionService} and {@link ExternalAuthority}.
+     */
+    static InsectsTestContextInternal create(NaturalistDatabase db, ImageStore imageStore, Resilience resilience,
+                                             IdentificationBudget budget, VisionService visionService,
+                                             ExternalAuthority authority) {
+        return new InsectsTestContextInternal(db, imageStore, resilience, budget, visionService, authority);
     }
 
     private static ImageStore tempImageStore() {
@@ -132,6 +165,26 @@ class InsectsTestContextInternal {
     InsectAddPhotoTransaction addPhotoTransaction() {
         return addPhotoTransaction;
     }
+
+    /** Confirms nothing and fetches no content — the identification path is not exercised here. */
+    private static final ExternalAuthority NO_OP_AUTHORITY = new ExternalAuthority() {
+        private final AuthoritySource source = new AuthoritySource("test", "Test Authority");
+
+        @Override
+        public AuthoritySource source() {
+            return source;
+        }
+
+        @Override
+        public Set<AuthorityReference> lookup(EntityName name) {
+            return Set.of();
+        }
+
+        @Override
+        public AuthorityContent fetchContent(AuthorityReference reference) {
+            throw new UnsupportedOperationException("no-op authority fetches no content");
+        }
+    };
 
     private static InsectLifeStageQuery noOpLifeStageQuery() {
         return () -> new InsectLifeStageQuery.LifeStageEntityQuery() {

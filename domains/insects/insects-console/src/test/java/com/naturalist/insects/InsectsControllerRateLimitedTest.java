@@ -11,7 +11,7 @@ import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Retry;
 import com.naturalist.resilience.Timeout;
 import com.naturalist.usage.IdentificationBudget;
-import com.naturalist.vision.VisionService;
+import com.naturalist.vision.NoOpVisionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -26,10 +26,12 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * {@link InsectsController#identify} must turn a {@link RateLimitExceededException}
- * thrown by the {@code vision.identification} rate limiter (acquired by
- * {@link InsectIdentificationCommand#identify} <em>before</em> the budget
- * reservation and any vision call) into the same kind of friendly redirect as
+ * {@link InsectsController#identify} must turn an
+ * {@link com.naturalist.identification.IdentificationRefused} with reason
+ * {@code RATE_LIMITED} -- raised by {@code insectCommand.identification()}
+ * ({@link InsectIdentificationCommandImpl#identify}) when its {@code vision.identification}
+ * rate limiter rejects a permit, <em>before</em> the budget reservation, the image store and
+ * any vision call -- into the same kind of friendly redirect as
  * {@link InsectsControllerOverBudgetTest}'s budget-exceeded case -- this console has
  * no flash-attribute / {@code @ControllerAdvice} infrastructure, so the over-rate
  * signal travels the same way: a query parameter on the {@code redirect:} target.
@@ -37,30 +39,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@code ?limit=RATE} is a UI-only copy branch on {@code identify.jte}, not an enum
  * value.
  *
- * <p>{@link InsectsController} builds its own {@link InsectIdentificationCommand}
- * internally from the {@link Resilience} it is constructed with (see
- * {@code resilience.rateLimiter("vision.identification")} at the composition
- * site), so this test drives the rejection by supplying a {@link Resilience} whose
- * {@code vision.identification} rate limiter always throws
+ * <p>The gate no longer lives in the controller: {@link InsectIdentificationCommandImpl}
+ * resolves {@code resilience.rateLimiter(InsectIdentificationCommandImpl.RATE_STRATEGY)} in
+ * its constructor, and {@link InsectsTestContext#create(com.naturalist.data.NaturalistDatabase,
+ * com.naturalist.observation.ImageStore, Resilience, IdentificationBudget,
+ * com.naturalist.vision.VisionService, com.naturalist.authority.ExternalAuthority)} wires it
+ * from the {@link Resilience} given there. This test drives the rejection by supplying a
+ * {@link Resilience} whose {@code vision.identification} rate limiter always throws
  * {@link RateLimitExceededException} -- exactly the kernel exception the production
- * {@code adapters/resilience-resilience4j} bridge translates its vendor rejection
- * into (see {@code Resilience4jRateLimiterTest}), never the vendor type itself. The
- * budget reservation happens strictly after the rate gate
- * ({@link InsectIdentificationCommand#identify}'s step 0a before 0b), so
- * {@link IdentificationBudget#noOp()} lets every other collaborator stay a real,
- * un-exercised implementation from {@link InsectsTestContext} /
- * {@link LibraryTestContext} -- {@link VisionService} is never reached either.
+ * {@code adapters/resilience-resilience4j} bridge translates its vendor rejection into
+ * (see {@code Resilience4jRateLimiterTest}), never the vendor type itself; the command maps
+ * it to {@code IdentificationRefused(RATE_LIMITED)}. The budget reservation happens strictly
+ * after the rate gate, so {@link IdentificationBudget#noOp()} lets every other collaborator
+ * stay a real, un-exercised implementation from {@link InsectsTestContext} /
+ * {@link LibraryTestContext} -- {@link NoOpVisionService} is never reached either.
  */
 class InsectsControllerRateLimitedTest {
 
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContext context = InsectsTestContext.create(nte);
     LibraryTestContext libraryContext = LibraryTestContext.create(nte);
 
     // Minimal valid JPEG (magic bytes, padded to the 12 bytes ImageUpload sniffs) --
-    // the image store validates the upload before the rate gate fires.
+    // a valid upload, so the refusal can only come from the rate gate.
     private static final byte[] JPEG_BYTES = {
             (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, 0x00, 0x01, 0x02, 0x03,
             0, 0, 0, 0, 0
@@ -73,7 +75,7 @@ class InsectsControllerRateLimitedTest {
      * A {@link Resilience} that mirrors {@link Resilience#noOp()} for every
      * primitive except {@code rateLimiter}, whose {@code execute} always throws
      * {@link RateLimitExceededException} -- the shape
-     * {@code InsectIdentificationCommand}'s rate gate observes when the
+     * {@code InsectIdentificationCommandImpl}'s rate gate observes when the
      * {@code vision.identification} strategy rejects a permit.
      */
     private static final class RejectingRateLimiterResilience implements Resilience {
@@ -147,19 +149,19 @@ class InsectsControllerRateLimitedTest {
     }
 
     private InsectsController controller() {
-        return new InsectsController(
+        var imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
+        var context = InsectsTestContext.create(nte, imageStore,
                 new RejectingRateLimiterResilience(),
-                null, // VisionService -- never called; the rate gate throws first
+                IdentificationBudget.noOp(),
+                new NoOpVisionService(),      // never called; the rate gate throws first
+                new NoOpExternalAuthority()); // never called; the rate gate throws first
+        return new InsectsController(
                 context.insectQuery(),
                 context.insectCommand(),
                 context.insectLifeStageQuery(),
                 libraryContext.cladeQuery(),
                 libraryContext.glossaryTermQuery(),
-                libraryContext.libraryCommand(),
-                null, // ExternalAuthority -- never called; the rate gate throws first
-                IdentificationBudget.noOp(),
-                new FilesystemImageStore(imageRoot, Resilience.noOp()),
-                context.catalogIdentificationTransaction(),
+                imageStore,
                 context.addPhotoTransaction());
     }
 

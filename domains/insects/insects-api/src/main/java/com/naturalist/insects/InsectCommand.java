@@ -6,6 +6,7 @@ import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
+import com.naturalist.vision.ImageMetadata;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -53,6 +54,8 @@ public interface InsectCommand {
     SightingCommand sightings();
 
     PhotoCommand photos();
+
+    IdentificationCommand identification();
 
     /**
      * Use-case command: a naturalist's field sightings of an insect.
@@ -134,5 +137,19 @@ public interface InsectCommand {
          * @throws com.naturalist.exception.InvariantViolationException for an invalid upload — nothing is stored
          */
         void add(InsectRankName subject, ImageUpload upload, @Nullable NaturalistName naturalist, @Nullable String notes, @Nullable String location);
+    }
+
+    /**
+     * Use-case command: identifying an insect from a photograph.
+     */
+    interface IdentificationCommand {
+        /**
+         * Rate gate → budget → store upload → vision → enrichment → features → citations →
+         * transactional catalog write. Returns the identified rank.
+         *
+         * @throws com.naturalist.identification.IdentificationRefused RATE_LIMITED or BUDGET_EXHAUSTED (nothing stored)
+         * @throws com.naturalist.exception.InvariantViolationException for an invalid upload (nothing stored)
+         */
+        InsectRankName identify(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist, @Nullable String notes);
     }
 }

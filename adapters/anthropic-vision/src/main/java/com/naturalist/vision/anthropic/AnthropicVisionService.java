@@ -47,7 +47,7 @@ import java.util.Map;
  * thread, so the adapter's worker-thread hop covers the network call and nothing else.
  *
  * <p>The {@value #STRATEGY} rate limit is enforced by the caller
- * ({@code InsectIdentificationCommand}), one permit per identification, before this
+ * ({@code InsectIdentificationCommandImpl}, behind {@code InsectCommand.identification()}), one permit per identification, before this
  * service is ever invoked — not here, and not per vision turn. This adapter no longer
  * wraps the call in a rate limiter.
  */
