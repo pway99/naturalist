@@ -26,10 +26,6 @@ import java.util.List;
  *       timeout (a fan-out is on the request path; anything slower belongs on
  *       a worker) plus a circuit breaker so a consistently failing provider
  *       stops being called for thirty seconds before the next probe.</li>
- *   <li><b>{@code image.conversion}</b> — bounds the {@code sips} HEIC→JPEG
- *       subprocess in {@code InsectsController.image}: a 2&nbsp;s timeout (the
- *       full request-path ceiling — image conversion is the lone serving call
- *       at this size, so it is allowed the headroom).</li>
  *   <li><b>{@code image.store}</b> — bounds every {@code FilesystemImageStore}
  *       operation (declared by {@code FilesystemImageStore.STRATEGY}): a 2&nbsp;s
  *       timeout, the full request-path ceiling, since serving a stored photo is
@@ -100,13 +96,6 @@ public class ResilienceConfiguration {
                 80.0f,
                 Duration.ofSeconds(30),
                 5);
-    }
-
-    @Bean
-    TimeoutConfig imageConversionTimeout() {
-        // removed in Task 4/5: the consoles' controllers still declare @Resilient("image.conversion"),
-        // which ResilienceNameValidator checks at boot, until they delegate to the ImageStore.
-        return new TimeoutConfig("image.conversion", Duration.ofSeconds(2));
     }
 
     @Bean

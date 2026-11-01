@@ -34,11 +34,6 @@ class ResilienceConfigurationTest {
     }
 
     @Test
-    void resolvesImageConversionTimeout() {
-        assertThat(resilience.timeout("image.conversion")).isNotNull();
-    }
-
-    @Test
     void resolvesVisionIdentificationTimeout() {
         assertThat(resilience.timeout("vision.identification")).isNotNull();
     }

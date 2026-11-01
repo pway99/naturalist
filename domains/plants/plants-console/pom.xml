@@ -52,6 +52,10 @@
             <artifactId>clades</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>observation</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
@@ -73,6 +77,16 @@
         </dependency>
 
         <!-- TEST -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>image-store-filesystem</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-test-context</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>spring-console-test</artifactId>
