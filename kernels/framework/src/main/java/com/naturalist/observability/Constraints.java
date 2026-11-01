@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.lang.String;
 
 
 public class Constraints {
@@ -348,6 +349,17 @@ public class Constraints {
      */
     public Constraints isTrue(boolean value, String name) {
         return add(new IsTrueConstraint(value, name));
+    }
+
+    /**
+     * The negated twin of {@link #isTrue}: fires a violation under {@code name} when
+     * {@code value} is {@code true}. Exists so the name can stay the predicate method's own
+     * name when that predicate reads positively — {@code isFalse(token.isConsumed(), "isConsumed")}
+     * tags the metric with the method a reviewer can open, where
+     * {@code isTrue(!token.isConsumed(), "notConsumed")} would have to invent one.
+     */
+    public Constraints isFalse(boolean value, String name) {
+        return add(new IsFalseConstraint(value, name));
     }
 
     /**

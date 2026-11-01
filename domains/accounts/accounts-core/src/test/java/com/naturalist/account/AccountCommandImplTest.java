@@ -2,6 +2,11 @@ package com.naturalist.account;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -213,5 +218,90 @@ class AccountCommandImplTest {
         assertThatThrownBy(() ->
                 command(AccountPolicy.selfServe()).resetPassword("never-minted", "new-hash"))
                 .isInstanceOf(InvalidTokenException.class);
+    }
+
+    private final SimpleMeterRegistry meters = new SimpleMeterRegistry();
+
+    @BeforeEach
+    void bindMeters() {
+        // A private registry on the global composite for the test's duration — the technique the
+        // ADR-017 rationale documents — so each test reads only the metrics it caused.
+        Metrics.addRegistry(meters);
+    }
+
+    @AfterEach
+    void unbindMeters() {
+        Metrics.removeRegistry(meters);
+    }
+
+    private double violations(String decision) {
+        // decision is "<method>.<predicate>"; the framework scopes it under the observing class.
+        Counter counter = meters.find("naturalist.invariant.violation")
+                .tag("name", "AccountCommandImpl." + decision).counter();
+        return counter == null ? 0 : counter.count();
+    }
+
+    private double baseline(String decision) {
+        // ALWAYS mode: a decision that held is emitted as a valid observation — the baseline row.
+        Counter counter = meters.find("naturalist.observation")
+                .tag("name", "AccountCommandImpl." + decision).tag("valid", "true").counter();
+        return counter == null ? 0 : counter.count();
+    }
+
+    @Test
+    void register_duplicateEmail_isObservedAsEmailUnregisteredViolation() {
+        assertThatThrownBy(() ->
+                command(AccountPolicy.selfServe()).register("gerald.durrell@oakvista.example", "hash"))
+                .isInstanceOf(DuplicateEmailException.class);
+
+        assertThat(violations("register.emailUnregistered")).isEqualTo(1);
+        assertThat(baseline("register.emailUnregistered")).isZero();
+    }
+
+    @Test
+    void register_newEmail_isObservedAsBaseline() {
+        command(AccountPolicy.selfServe()).register("newbie@example.org", "hash");
+
+        assertThat(baseline("register.emailUnregistered")).isEqualTo(1);
+        assertThat(violations("register.emailUnregistered")).isZero();
+        // The written account is observed on the success path (ADR-017 producer rule).
+        assertThat(baseline("register.created.email")).isEqualTo(1);
+    }
+
+    @Test
+    void verifyEmail_eachInvalidTokenCause_isObservedUnderItsOwnName() {
+        AccountCommand cmd = command(AccountPolicy.selfServe());
+
+        // unknown: never minted
+        assertThatThrownBy(() -> cmd.verifyEmail("never-minted")).isInstanceOf(InvalidTokenException.class);
+        assertThat(violations("verifyEmail.tokenKnown")).isEqualTo(1);
+
+        // consumed: redeemed twice
+        AccountCommand.Registration once = cmd.register("once@example.org", "hash");
+        cmd.verifyEmail(once.rawToken());
+        assertThatThrownBy(() -> cmd.verifyEmail(once.rawToken())).isInstanceOf(InvalidTokenException.class);
+        assertThat(violations("verifyEmail.isConsumed")).isEqualTo(1);
+
+        // expired: 25h after a 24h TTL
+        AccountCommand.Registration late = cmd.register("late@example.org", "hash");
+        AccountCommand later = commandAt(AccountPolicy.selfServe(), MINT_TIME.plusSeconds(25 * 3600));
+        assertThatThrownBy(() -> later.verifyEmail(late.rawToken())).isInstanceOf(InvalidTokenException.class);
+        assertThat(violations("verifyEmail.isExpired")).isEqualTo(1);
+
+        // wrong purpose: a verification token offered as a reset
+        AccountCommand.Registration mixed = cmd.register("mixed@example.org", "hash");
+        assertThatThrownBy(() -> cmd.resetPassword(mixed.rawToken(), "new-hash")).isInstanceOf(InvalidTokenException.class);
+        assertThat(violations("resetPassword.hasPurpose")).isEqualTo(1);
+
+        // the message never distinguishes them; only the metric names do
+        assertThat(violations("verifyEmail.hasPurpose")).isZero();
+        assertThat(violations("resetPassword.tokenKnown")).isZero();
+    }
+
+    @Test
+    void beginPasswordReset_unknownEmail_isObservedThoughTheResponseIsIdentical() {
+        assertThat(command(AccountPolicy.selfServe()).beginPasswordReset("ghost@example.org")).isEmpty();
+
+        assertThat(violations("beginPasswordReset.emailRegistered")).isEqualTo(1);
     }
 }

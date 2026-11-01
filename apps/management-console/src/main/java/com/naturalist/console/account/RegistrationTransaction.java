@@ -50,7 +50,8 @@ class RegistrationTransaction {
     private static final NaturalistRole SELF_REGISTERED_ROLE = NaturalistRole.VISITOR;
     private static final EcologicalStage SELF_REGISTERED_STAGE = EcologicalStage.CURIOUS;
 
-    private final Observer observer = Observer.forClass(getClass());
+    /** ALWAYS: registration is an attack surface — the valid rows are the baseline the violations stand out against. */
+    private final Observer observer = Observer.forClass(getClass(), Observer.MonitoringMode.ALWAYS);
     private final AccountCommand accountCommand;
     private final NaturalistCommand naturalistCommand;
     private final PasswordEncoder passwordEncoder;

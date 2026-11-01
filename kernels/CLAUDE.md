@@ -250,6 +250,14 @@ from outside the parent (e.g. `namedEntity(this, FooAggregate::fooInfo, "fooInfo
 Do not use the by-function form when the direct-value form suffices — the functional indirection adds no value when
 `this` can never be null.
 
+**Predicate constraints** — `isTrue(boolean, name)` / `isFalse(boolean, name)` — carry a complex condition under the
+name of the method that computes it (`isTrue(family.belongsToOrder(order), "familyBelongsToOrder")`,
+`isFalse(token.isConsumed(), "isConsumed")`), so the metric tag names something a reviewer can open. Use them for
+cross-field invariants and for an operation's *decisions*: observe the decision at `WARN` via
+`observer.forMethod(m).arguments(...).observe(Level.WARN)` before throwing the exception the operation already throws.
+Security-critical classes (`accounts-core`, console authentication, registration) construct their `Observer` in
+`MonitoringMode.ALWAYS` so valid decisions are counted too (as the `INFO` baseline); everything else stays `ON_FAILURE`.
+
 `Observer` validates entities at insertion points — `TestEntitySource.insert()` calls
 `observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid()`. Insertion is an
 argument-validation site: the producer refuses bad input at its boundary. For method-body observation of *produced*

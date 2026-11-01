@@ -96,9 +96,12 @@ public class InvariantObservation {
 
     /**
      * Emit metrics without throwing. The {@code level} tag carries {@code level} on every
-     * metric — only the call site knows whether this observation is informational or a
-     * warning, so the call site supplies it. Returns {@code this} so callers can inspect
-     * the observation after metric emission:
+     * violation metric — only the call site knows whether this observation is informational or a
+     * warning, so the call site supplies it. Under {@link Observer.MonitoringMode#ALWAYS} the
+     * constraints that held are emitted too, tagged {@link Level#INFO}: a valid observation is
+     * baseline signal, never a warning, whatever level the call site chose for the violations —
+     * the same split {@link #throwWhenInvalid()} makes between {@code ERROR} and {@code INFO}.
+     * Returns {@code this} so callers can inspect the observation after metric emission:
      *
      * <pre>{@code
      * InvariantObservation obs = observer.entity(e, "created").observe(Level.INFO);
@@ -107,7 +110,7 @@ public class InvariantObservation {
      */
     public InvariantObservation observe(Level level) {
         Level resolved = level == null ? Level.INFO : level;
-        emitMetrics(violations(), resolved, resolved);
+        emitMetrics(violations(), resolved, Level.INFO);
         return this;
     }
 
