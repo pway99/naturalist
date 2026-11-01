@@ -76,4 +76,18 @@ class ImageUploadTest {
         assertThat(ImageUpload.of(JPEG)).isEqualTo(ImageUpload.of(JPEG.clone()));
         assertThat(ImageUpload.of(JPEG).hashCode()).isEqualTo(ImageUpload.of(JPEG.clone()).hashCode());
     }
+
+    @Test
+    void equality_differsByContent() {
+        assertThat(ImageUpload.of(JPEG)).isNotEqualTo(ImageUpload.of(PNG));
+    }
+
+    @Test
+    void of_nullNeverThrows() {
+        var mo = observer.forMethod("of_nullNeverThrows");
+        ImageUpload upload = ImageUpload.of(null);
+        assertThat(upload.mediaType()).isNull();
+        InvariantObservation result = mo.observable(upload, "upload");
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint())).contains(".upload.format");
+    }
 }

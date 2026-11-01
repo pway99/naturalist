@@ -129,4 +129,26 @@ class InsectsCatalogWebMvcTest {
         mockMvc.perform(get("/insects/images/nope.jpg"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void identify_rejectsUnsupportedFormat() throws Exception {
+        var file = new MockMultipartFile("image", "photo.heic", "image/heic", TINY_HEIC);
+        mockMvc.perform(multipart("/insects/identify").file(file)
+                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/insects/identify?error=image"));
+    }
+
+    @Test
+    void addImage_rejectsOversize() throws Exception {
+        var oversize = new byte[ImageUpload.MAX_BYTES + 1];
+        oversize[0] = (byte) 0xFF;
+        oversize[1] = (byte) 0xD8;
+        oversize[2] = (byte) 0xFF;
+        var file = new MockMultipartFile("image", "huge.jpg", "image/jpeg", oversize);
+        mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
+                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/insects/battus-philenor?error=image"));
+    }
 }

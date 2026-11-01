@@ -7,8 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.hamcrest.Matchers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -99,5 +101,20 @@ class InsectsRouteSecurityWebMvcTest {
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isForbidden());
+    }
+
+    /**
+     * The identify page's ?error=image notice. App-level, not in the insects-console slice:
+     * identify.jte takes a Spring Security CsrfToken, which only the app classpath carries.
+     */
+    @Test
+    void identifyForm_rendersImageErrorWhenFlagged() throws Exception {
+        mockMvc.perform(get("/insects/identify?error=image")
+                        .with(user("naturalist").authorities(
+                                new SimpleGrantedAuthority("ROLE_NATURALIST"),
+                                new SimpleGrantedAuthority("VISION"))))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(Matchers.containsString("not a JPEG, PNG or WebP")));
     }
 }

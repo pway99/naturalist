@@ -1,6 +1,13 @@
 spring:
   application:
     name: naturalist-console
+  servlet:
+    multipart:
+      # Just above ImageUpload.MAX_BYTES (20 MB) so an oversize photo is refused by the
+      # upload's own `size` invariant with the friendly ?error=image redirect, not by the
+      # servlet container's default 1 MB limit and its error page.
+      max-file-size: 21MB
+      max-request-size: 22MB
   # Naturalist persistence runs on the RDBMS adapter (Postgres + MyBatis). Points at
   # the standing local test database for now; production wiring is a later effort.
   datasource:
@@ -52,7 +59,9 @@ naturalist:
     grant-policy: self-serve
   images:
     # Filesystem root of the image store: one <space>/ subdirectory per domain holds the
-    # photos. Seed photos not found here fall back to the classpath.
+    # photos. Seed photos not found here fall back to the classpath. The path is relative
+    # to the working directory the app is started from (the repo root when run with
+    # `mvn -pl apps/management-console spring-boot:run`).
     root: data/images
   email:
     # Envelope sender for outbound mail (verification / reset links, usage alerts).
