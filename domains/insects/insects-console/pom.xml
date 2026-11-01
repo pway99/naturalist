@@ -53,6 +53,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>observation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>text-generation</artifactId>
         </dependency>
         <dependency>
@@ -99,6 +103,13 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>library-test-context</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- TEST: the filesystem ImageStore adapter the slice config and the
+             direct-construction tests hand the controller, over a temp directory. -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>image-store-filesystem</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -3,6 +3,7 @@
 @param CsrfToken _csrf = null
 @param String identified = null
 @param String limit = null
+@param boolean imageError = false
 
 !{var csrfName = _csrf != null ? _csrf.getParameterName() : "";}
 !{var csrfValue = _csrf != null ? _csrf.getToken() : "";}
@@ -27,6 +28,9 @@
                     <p role="alert">Identification is temporarily unavailable due to high demand.
                        Please try again later.</p>
                 @endif
+            @endif
+            @if(imageError)
+                <p class="error">That file is not a JPEG, PNG or WebP photo under 20 MB.</p>
             @endif
             <p>Upload a photo and Claude will suggest an identification.
                You can verify the result against authoritative references.</p>

@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.library.LibraryTestContext;
+import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Bulkhead;
 import com.naturalist.resilience.CircuitBreaker;
 import com.naturalist.resilience.RateLimitExceededException;
@@ -11,17 +12,14 @@ import com.naturalist.resilience.Retry;
 import com.naturalist.resilience.Timeout;
 import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.vision.VisionService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -61,11 +59,15 @@ class InsectsControllerRateLimitedTest {
     InsectsTestContext context = InsectsTestContext.create(nte);
     LibraryTestContext libraryContext = LibraryTestContext.create(nte);
 
-    // Minimal valid JPEG magic bytes -- ImageStorageService.store validates
-    // content type before the rate gate fires.
+    // Minimal valid JPEG (magic bytes, padded to the 12 bytes ImageUpload sniffs) --
+    // the image store validates the upload before the rate gate fires.
     private static final byte[] JPEG_BYTES = {
-            (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, 0x00, 0x01, 0x02, 0x03
+            (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, 0x00, 0x01, 0x02, 0x03,
+            0, 0, 0, 0, 0
     };
+
+    @TempDir
+    Path imageRoot;
 
     /**
      * A {@link Resilience} that mirrors {@link Resilience#noOp()} for every
@@ -155,7 +157,8 @@ class InsectsControllerRateLimitedTest {
                 libraryContext.glossaryTermQuery(),
                 libraryContext.libraryCommand(),
                 null, // ExternalAuthority -- never called; the rate gate throws first
-                IdentificationBudget.noOp());
+                IdentificationBudget.noOp(),
+                new FilesystemImageStore(imageRoot, Resilience.noOp()));
     }
 
     @Test
@@ -167,27 +170,5 @@ class InsectsControllerRateLimitedTest {
         String view = controller().identify(image, null, null, null, request);
 
         assertThat(view).isEqualTo("redirect:/insects/identify?limit=RATE");
-    }
-
-    // InsectsController hard-codes its image storage directory to
-    // "data/images/insects" relative to the working directory (not injectable);
-    // identify() writes the uploaded image to disk before the rate gate fires,
-    // so this test cleans up the one file (and now-empty directories) it creates
-    // rather than leaving stray untracked files in the worktree.
-    @AfterEach
-    void cleanUpStoredImage() throws IOException {
-        var dataDir = Path.of("data");
-        if (!Files.exists(dataDir)) {
-            return;
-        }
-        try (var paths = Files.walk(dataDir)) {
-            paths.sorted(Comparator.reverseOrder()).forEach(p -> {
-                try {
-                    Files.delete(p);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
-        }
     }
 }

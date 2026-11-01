@@ -20,11 +20,9 @@
         <div class="image-gallery">
             @for(var img : images)
                 <figure class="observation-card">
-                    <img src="/insects/uploads/${img.resourceName().value()}"
+                    <img src="/insects/images/${img.resourceName().value()}"
                          alt="${alt}"
-                         loading="lazy"
-                         onerror="this.onerror=null; this.src='/insects/images/${img.resourceName().value()}'">
-                    <%-- Fall back to classpath images for pre-upload catalog images --%>
+                         loading="lazy">
                     @if(observations.containsKey(img.id()))
                         !{var obs = observations.get(img.id());}
                         <figcaption>
