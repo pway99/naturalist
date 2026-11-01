@@ -2,6 +2,7 @@ package com.naturalist.notification.spring;
 
 import com.naturalist.notification.EmailMessage;
 import com.naturalist.notification.EmailSender;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -47,8 +48,8 @@ public final class SmtpEmailSender implements EmailSender {
 
     @Override
     public void send(EmailMessage message) {
-        observer.arguments("send", i -> i.valueObject(message, "message"))
-                .throwWhenInvalid();
+        MethodObserver send = observer.forMethod("send");
+        send.arguments(i -> i.valueObject(message, "message")).throwWhenInvalid();
         var mail = new SimpleMailMessage();
         mail.setFrom(fromAddress);
         mail.setTo(message.to().value());
@@ -56,8 +57,7 @@ public final class SmtpEmailSender implements EmailSender {
         mail.setText(message.body());
 
         boolean delivered = deliver(mail, message);
-        observer.forMethod("send")
-                .arguments(i -> i.isTrue(delivered, "delivered"))
+        send.arguments(i -> i.isTrue(delivered, "delivered"))
                 .observe(com.naturalist.observability.Level.WARN);
     }
 

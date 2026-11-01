@@ -317,4 +317,28 @@ class AccountCommandImplTest {
         assertThat(violations("verifyEmail.accountActive")).isEqualTo(1);
         assertThat(accounts.getByEmail("banned@example.org").orElseThrow().access()).isEqualTo(AccessLevel.BROWSE_ONLY);
     }
+
+    @Test
+    void suspend_andReinstate_flipStatusAndAreObserved() {
+        AccountCommand cmd = command(AccountPolicy.selfServe());
+        cmd.register("troublemaker@example.org", "hash");
+        AccountName name = accounts.getByEmail("troublemaker@example.org").orElseThrow().name();
+
+        cmd.suspend(name);
+        assertThat(accounts.getByName(name).orElseThrow().status()).isEqualTo(AccountStatus.SUSPENDED);
+        assertThat(baseline("suspend.accountKnown")).isEqualTo(1);
+        assertThat(baseline("suspend.suspended.status")).isEqualTo(1);
+
+        cmd.reinstate(name);
+        assertThat(accounts.getByName(name).orElseThrow().status()).isEqualTo(AccountStatus.ACTIVE);
+        assertThat(baseline("reinstate.accountKnown")).isEqualTo(1);
+    }
+
+    @Test
+    void suspend_unknownAccount_isRejectedAndObserved() {
+        assertThatThrownBy(() -> command(AccountPolicy.selfServe()).suspend(AccountName.create()))
+                .isInstanceOf(AccountNotFoundException.class);
+
+        assertThat(violations("suspend.accountKnown")).isEqualTo(1);
+    }
 }

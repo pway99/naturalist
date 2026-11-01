@@ -121,26 +121,47 @@ class RegistrationController {
         return "redirect:/register?registered";
     }
 
+    /**
+     * The emailed link lands here. A GET must never redeem: mail scanners (Outlook SafeLinks,
+     * Gmail prefetch) follow links before the user does and would burn the single-use token,
+     * leaving the real click to fail as "expired". The page shows the token in a form and the
+     * CSRF-protected {@link #verify POST} does the redeeming.
+     */
     @GetMapping("/verify")
-    String verify(@RequestParam(value = "token", required = false) String token,
+    String verifyPrompt(@RequestParam(value = "token", required = false) String token,
+                        HttpServletRequest request, Model model) {
+        if (token == null || token.isBlank()) {
+            model.addAttribute("confirm", false);
+            model.addAttribute("success", false);
+            model.addAttribute("message", "This verification link is missing its token.");
+            return "verify";
+        }
+        model.addAttribute("confirm", true);
+        model.addAttribute("token", token);
+        model.addAttribute("success", false);
+        model.addAttribute("message", "");
+        putCsrf(request, model);
+        return "verify";
+    }
+
+    @PostMapping("/verify")
+    String verify(@RequestParam String token,
                   HttpServletRequest request, HttpServletResponse response, Model model) {
         boolean success;
         String message;
-        if (token == null || token.isBlank()) {
+        try {
+            accountCommand.verifyEmail(token);
+            success = true;
+            message = "Your email is verified. Vision identification is now available.";
+            reDeriveAuthorities(request, response);
+        } catch (InvariantViolationException | InvalidTokenException invalidOrExpired) {
+            // A blank token fails the command's argument invariant; a wrong one its decision —
+            // one message for both, as the metrics already tell them apart.
             success = false;
-            message = "This verification link is missing its token.";
-        } else {
-            try {
-                accountCommand.verifyEmail(token);
-                success = true;
-                message = "Your email is verified. Vision identification is now available.";
-                reDeriveAuthorities(request, response);
-            } catch (InvalidTokenException invalidOrExpired) {
-                success = false;
-                message = "This verification link is invalid or has expired. "
-                        + "Request a fresh one from your profile.";
-            }
+            message = "This verification link is invalid or has expired. "
+                    + "Request a fresh one from your profile.";
         }
+        model.addAttribute("confirm", false);
         model.addAttribute("success", success);
         model.addAttribute("message", message);
         return "verify";

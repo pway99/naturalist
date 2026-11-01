@@ -3,6 +3,7 @@ package com.naturalist.account;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import jakarta.transaction.Transactional;
 
@@ -26,14 +27,18 @@ import java.util.Optional;
  * <h2>Observability — every decision, not just every argument</h2>
  * Accounts are the attack surface, so this command runs its {@link Observer} in
  * {@link Observer.MonitoringMode#ALWAYS}: every constraint inspected emits, valid or not. Each
- * business decision is expressed as a predicate-named constraint and observed at
+ * public method obtains its {@link MethodObserver} <em>once</em> ({@code observer.forMethod})
+ * and routes argument validation, every business decision and the helpers through it — the
+ * method name is spelled in exactly one place, so a rename cannot leave a metric scoped to a
+ * method that no longer exists. Each decision is a predicate-named constraint observed at
  * {@link Level#WARN} <em>before</em> the exception the port already throws — the thrown message
  * never changes, so nothing new leaks to a caller, while the metric tags say exactly which rule
  * failed: {@code AccountCommandImpl.register.emailUnregistered} is an enumeration probe,
  * {@code …verifyEmail.tokenKnown} is token guessing, {@code …isConsumed} is a replay,
- * {@code …isExpired} is a slow user, {@code …accountKnown} is a data-integrity hole. The same
- * names with {@code valid=true} are the baseline rates those anomalies stand out against. The
- * written entity is observed on every success path (ADR-017's producer rule).
+ * {@code …isExpired} is a slow user, {@code …accountKnown} is a data-integrity hole,
+ * {@code …accountActive} is a suspended account trying a token. The same names with
+ * {@code valid=true} are the baseline rates those anomalies stand out against. The written
+ * entity is observed on every success path (ADR-017's producer rule).
  */
 @DomainService
 class AccountCommandImpl implements AccountCommand {
@@ -54,7 +59,7 @@ class AccountCommandImpl implements AccountCommand {
                        SecureTokens secureTokens,
                        Clock clock,
                        AccountPolicy policy) {
-        observer.arguments("constructor", i -> i
+        observer.forMethod("constructor").arguments(i -> i
                         .notNull(accounts, "accounts")
                         .notNull(tokens, "tokens")
                         .notNull(secureTokens, "secureTokens")
@@ -71,13 +76,14 @@ class AccountCommandImpl implements AccountCommand {
     @Override
     @Transactional
     public Registration register(String email, String passwordHash) {
-        observer.arguments("register", i -> i
+        MethodObserver register = observer.forMethod("register");
+        register.arguments(i -> i
                         .email(email, "email")
                         .notBlank(passwordHash, "passwordHash"))
                 .throwWhenInvalid();
 
         Optional<Account> existing = accounts.getByEmail(email);
-        InvariantObservation decision = observer.forMethod("register")
+        InvariantObservation decision = register
                 .arguments(i -> i.isTrue(existing.isEmpty(), "emailUnregistered"))
                 .observe(Level.WARN);
         if (!decision.violations().isEmpty()) {
@@ -99,57 +105,82 @@ class AccountCommandImpl implements AccountCommand {
                 null);
         tokens.insert(token);
 
-        observer.forMethod("register").namedEntity(created, "created").observe(Level.WARN);
-        observer.forMethod("register").namedEntity(token, "verificationToken").observe(Level.WARN);
+        register.namedEntity(created, "created").observe(Level.WARN);
+        register.namedEntity(token, "verificationToken").observe(Level.WARN);
         return new Registration(name, minted.rawValue());
     }
 
     @Override
     @Transactional
     public void verifyEmail(String rawToken) {
-        observer.arguments("verifyEmail", i -> i.notBlank(rawToken, "rawToken"))
-                .throwWhenInvalid();
+        MethodObserver verifyEmail = observer.forMethod("verifyEmail");
+        verifyEmail.arguments(i -> i.notBlank(rawToken, "rawToken")).throwWhenInvalid();
 
         Instant now = clock.instant();
-        EmailVerificationToken token = redeemableToken("verifyEmail", rawToken, TokenPurpose.VERIFY_EMAIL, now);
+        EmailVerificationToken token = redeemableToken(verifyEmail, rawToken, TokenPurpose.VERIFY_EMAIL, now);
         tokens.update(token.withConsumedAt(now));
 
-        Account account = activeAccount("verifyEmail", token.account());
+        Account account = activeAccount(verifyEmail, token.account());
         Account verified = account.withEmailVerified(true);
         if (policy.grantsVisionOnVerification()) {
             verified = verified.withAccess(AccessLevel.VISION);
         }
         accounts.update(verified);
-        observer.forMethod("verifyEmail").namedEntity(verified, "verified").observe(Level.WARN);
+        verifyEmail.namedEntity(verified, "verified").observe(Level.WARN);
     }
 
     @Override
     public void grantVision(AccountName account) {
-        observer.arguments("grantVision", i -> i.entityName(account, "account")).throwWhenInvalid();
-        Account existing = knownAccount("grantVision", account)
+        MethodObserver grantVision = observer.forMethod("grantVision");
+        grantVision.arguments(i -> i.entityName(account, "account")).throwWhenInvalid();
+        Account existing = knownAccount(grantVision, account)
                 .orElseThrow(() -> new AccountNotFoundException(account));
         Account granted = existing.withAccess(AccessLevel.VISION);
         accounts.update(granted);
-        observer.forMethod("grantVision").namedEntity(granted, "granted").observe(Level.WARN);
+        grantVision.namedEntity(granted, "granted").observe(Level.WARN);
     }
 
     @Override
     public void revokeVision(AccountName account) {
-        observer.arguments("revokeVision", i -> i.entityName(account, "account")).throwWhenInvalid();
-        Account existing = knownAccount("revokeVision", account)
+        MethodObserver revokeVision = observer.forMethod("revokeVision");
+        revokeVision.arguments(i -> i.entityName(account, "account")).throwWhenInvalid();
+        Account existing = knownAccount(revokeVision, account)
                 .orElseThrow(() -> new AccountNotFoundException(account));
         Account revoked = existing.withAccess(AccessLevel.BROWSE_ONLY);
         accounts.update(revoked);
-        observer.forMethod("revokeVision").namedEntity(revoked, "revoked").observe(Level.WARN);
+        revokeVision.namedEntity(revoked, "revoked").observe(Level.WARN);
+    }
+
+    @Override
+    public void suspend(AccountName account) {
+        MethodObserver suspend = observer.forMethod("suspend");
+        suspend.arguments(i -> i.entityName(account, "account")).throwWhenInvalid();
+        Account existing = knownAccount(suspend, account)
+                .orElseThrow(() -> new AccountNotFoundException(account));
+        Account suspended = existing.withStatus(AccountStatus.SUSPENDED);
+        accounts.update(suspended);
+        suspend.namedEntity(suspended, "suspended").observe(Level.WARN);
+    }
+
+    @Override
+    public void reinstate(AccountName account) {
+        MethodObserver reinstate = observer.forMethod("reinstate");
+        reinstate.arguments(i -> i.entityName(account, "account")).throwWhenInvalid();
+        Account existing = knownAccount(reinstate, account)
+                .orElseThrow(() -> new AccountNotFoundException(account));
+        Account reinstated = existing.withStatus(AccountStatus.ACTIVE);
+        accounts.update(reinstated);
+        reinstate.namedEntity(reinstated, "reinstated").observe(Level.WARN);
     }
 
     @Override
     public Optional<String> beginPasswordReset(String email) {
-        observer.arguments("beginPasswordReset", i -> i.email(email, "email")).throwWhenInvalid();
+        MethodObserver beginPasswordReset = observer.forMethod("beginPasswordReset");
+        beginPasswordReset.arguments(i -> i.email(email, "email")).throwWhenInvalid();
         Optional<Account> account = accounts.getByEmail(email);
         // The caller answers identically either way (no enumeration through the response);
         // the metric is the only place an unknown email is distinguishable — which is the point.
-        InvariantObservation decision = observer.forMethod("beginPasswordReset")
+        InvariantObservation decision = beginPasswordReset
                 .arguments(i -> i.isTrue(account.isPresent(), "emailRegistered"))
                 .observe(Level.WARN);
         if (!decision.violations().isEmpty()) {
@@ -164,26 +195,27 @@ class AccountCommandImpl implements AccountCommand {
                 clock.instant().plus(RESET_TTL),
                 null);
         tokens.insert(token);
-        observer.forMethod("beginPasswordReset").namedEntity(token, "resetToken").observe(Level.WARN);
+        beginPasswordReset.namedEntity(token, "resetToken").observe(Level.WARN);
         return Optional.of(minted.rawValue());
     }
 
     @Override
     @Transactional
     public void resetPassword(String rawToken, String newPasswordHash) {
-        observer.arguments("resetPassword", i -> i
+        MethodObserver resetPassword = observer.forMethod("resetPassword");
+        resetPassword.arguments(i -> i
                         .notBlank(rawToken, "rawToken")
                         .notBlank(newPasswordHash, "newPasswordHash"))
                 .throwWhenInvalid();
 
         Instant now = clock.instant();
-        EmailVerificationToken token = redeemableToken("resetPassword", rawToken, TokenPurpose.RESET_PASSWORD, now);
+        EmailVerificationToken token = redeemableToken(resetPassword, rawToken, TokenPurpose.RESET_PASSWORD, now);
         tokens.update(token.withConsumedAt(now));
 
-        Account account = activeAccount("resetPassword", token.account());
+        Account account = activeAccount(resetPassword, token.account());
         Account reset = account.withPasswordHash(newPasswordHash);
         accounts.update(reset);
-        observer.forMethod("resetPassword").namedEntity(reset, "passwordReset").observe(Level.WARN);
+        resetPassword.namedEntity(reset, "passwordReset").observe(Level.WARN);
     }
 
     /**
@@ -192,11 +224,11 @@ class AccountCommandImpl implements AccountCommand {
      * {@code isConsumed}, {@code isExpired} — while throwing the one unchanged
      * {@link InvalidTokenException} message, so the caller learns nothing the metrics do.
      */
-    private EmailVerificationToken redeemableToken(String method, String rawToken,
+    private EmailVerificationToken redeemableToken(MethodObserver method, String rawToken,
                                                    TokenPurpose purpose, Instant now) {
         Optional<EmailVerificationToken> found = tokens.getByTokenHash(secureTokens.hash(rawToken));
         EmailVerificationToken token = found.orElse(null);
-        InvariantObservation decision = observer.forMethod(method)
+        InvariantObservation decision = method
                 .arguments(i -> i
                         .isTrue(found.isPresent(), "tokenKnown")
                         .whenNotNull(token, c -> c
@@ -216,10 +248,10 @@ class AccountCommandImpl implements AccountCommand {
      * {@code accountKnown} and {@code accountActive}; either failing is the same unchanged
      * {@link InvalidTokenException} to the caller.
      */
-    private Account activeAccount(String method, AccountName name) {
+    private Account activeAccount(MethodObserver method, AccountName name) {
         Account account = knownAccount(method, name)
                 .orElseThrow(() -> new InvalidTokenException("invalid token"));
-        InvariantObservation decision = observer.forMethod(method)
+        InvariantObservation decision = method
                 .arguments(i -> i.isTrue(account.status() == AccountStatus.ACTIVE, "accountActive"))
                 .observe(Level.WARN);
         if (!decision.violations().isEmpty()) {
@@ -229,11 +261,9 @@ class AccountCommandImpl implements AccountCommand {
     }
 
     /** Looks an account up by name, observing a miss as {@code accountKnown}; the caller picks the exception. */
-    private Optional<Account> knownAccount(String method, AccountName name) {
+    private Optional<Account> knownAccount(MethodObserver method, AccountName name) {
         Optional<Account> account = accounts.getByName(name);
-        observer.forMethod(method)
-                .arguments(i -> i.isTrue(account.isPresent(), "accountKnown"))
-                .observe(Level.WARN);
+        method.arguments(i -> i.isTrue(account.isPresent(), "accountKnown")).observe(Level.WARN);
         return account;
     }
 }

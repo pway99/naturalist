@@ -1,5 +1,8 @@
 package com.naturalist.console.auth;
 
+import com.naturalist.account.AccountCommand;
+import com.naturalist.account.AccountName;
+import com.naturalist.account.AccountQuery;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -31,6 +34,11 @@ class LoginObservabilityWebMvcTest {
 
     private final SimpleMeterRegistry meters = new SimpleMeterRegistry();
     private MockMvc mockMvc;
+
+    @Autowired
+    private AccountQuery accountQuery;
+    @Autowired
+    private AccountCommand accountCommand;
 
     @BeforeEach
     void setUp(@Autowired WebApplicationContext context) {
@@ -77,6 +85,25 @@ class LoginObservabilityWebMvcTest {
         // The email exists (seeded), so this is password guessing, not enumeration.
         assertThat(violations("NaturalistUserDetailsService.loadUserByUsername.accountKnown")).isZero();
         assertThat(violations("AuthenticationEventObserver.onApplicationEvent.badCredentials")).isEqualTo(1);
+    }
+
+    @Test
+    void login_suspendedAccount_isObservedAsSuspendedAccountAttempt() throws Exception {
+        AccountName gerald = accountQuery.getByEmail("gerald.durrell@oakvista.example").orElseThrow().name();
+        accountCommand.suspend(gerald);
+        try {
+            // The lock check runs before the password check, so even a wrong password surfaces
+            // the suspension — exactly the signal wanted: a banned account trying to get back in.
+            mockMvc.perform(post("/login").with(csrf())
+                            .param("username", "gerald.durrell@oakvista.example").param("password", "guess"))
+                    .andExpect(redirectedUrl("/login?error"));
+
+            assertThat(violations("NaturalistUserDetailsService.loadUserByUsername.accountActive")).isEqualTo(1);
+            assertThat(violations("AuthenticationEventObserver.onApplicationEvent.suspendedAccountAttempt")).isEqualTo(1);
+            assertThat(violations("AuthenticationEventObserver.onApplicationEvent.badCredentials")).isZero();
+        } finally {
+            accountCommand.reinstate(gerald);   // the seeded account is shared with the other tests
+        }
     }
 
     private double violations(String name) {

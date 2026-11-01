@@ -35,6 +35,17 @@ public interface AccountCommand {
     void revokeVision(AccountName account);
 
     /**
+     * The abuse ban switch: sets {@link AccountStatus#SUSPENDED}. A suspended account cannot
+     * log in ({@code accountNonLocked = false} at the console boundary) and cannot redeem a
+     * verification or reset token. Throws {@link AccountNotFoundException} for an unknown
+     * account. Existing sessions are not ended here — that is the console's concern.
+     */
+    void suspend(AccountName account);
+
+    /** Lifts a suspension: sets {@link AccountStatus#ACTIVE}. Throws {@link AccountNotFoundException}. */
+    void reinstate(AccountName account);
+
+    /**
      * Mints a password-reset token if the email belongs to an account, returning the raw token to
      * email. Returns {@link Optional#empty()} when no account matches — the caller responds
      * identically either way, so the response cannot be used to enumerate registered emails.

@@ -123,8 +123,18 @@ class RegistrationFlowWebMvcTest {
 
         String token = extractToken(emailSender.sent.getFirst().body());
 
-        // Verify in the same session: self-serve policy grants VISION.
+        // Following the link (a GET, as a mail scanner would) shows the confirm page and
+        // redeems NOTHING — the single-use token survives the prefetch.
         mockMvc.perform(get("/verify").param("token", token).session(session))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("confirm", true))
+                .andExpect(model().attribute("token", token));
+        assertThat(accountQuery.getByEmail(email).orElseThrow().access())
+                .isEqualTo(AccessLevel.BROWSE_ONLY);
+
+        // The user's confirm (CSRF-protected POST) in the same session redeems it:
+        // self-serve policy grants VISION and the session stays authenticated.
+        mockMvc.perform(post("/verify").with(csrf()).param("token", token).session(session))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("success", true))
                 .andExpect(authenticated().withUsername(email));
@@ -203,9 +213,22 @@ class RegistrationFlowWebMvcTest {
     }
 
     @Test
-    void verify_badToken_showsFailurePage() throws Exception {
+    void verify_badToken_showsFailurePageOnConfirm() throws Exception {
+        // The GET cannot know the token is bad (it does not consult it); the POST does.
         mockMvc.perform(get("/verify").param("token", "not-a-real-token"))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute("confirm", true));
+        mockMvc.perform(post("/verify").with(csrf()).param("token", "not-a-real-token"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("confirm", false))
+                .andExpect(model().attribute("success", false));
+    }
+
+    @Test
+    void verify_missingToken_showsFailurePageWithoutConfirm() throws Exception {
+        mockMvc.perform(get("/verify"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("confirm", false))
                 .andExpect(model().attribute("success", false));
     }
 
