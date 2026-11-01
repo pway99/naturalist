@@ -34,7 +34,7 @@ class SecurityConfiguration {
                         // (Anonymous callers are bounced to login; a signed-in BROWSE_ONLY
                         // naturalist gets 403 — they lack the authority.)
                         .requestMatchers(HttpMethod.POST,
-                                "/insects/identify", "/insects/*/re-identify", "/plants/identify")
+                                "/insects/identify", "/plants/identify")
                                 .hasAuthority("VISION")
                         // Anonymous browsing of the public catalog: the organism domains and the
                         // field-guide library. Operational Oak Vista domains stay authenticated
