@@ -27,7 +27,7 @@
 4. A persistence failure after the file is stored must delete the file — pinned in Task 5 `add_persistFailure_deletesStoredFile`.
 5. The app context must resolve every new bean (generic `FeatureSearch<InsectFeatureId>`, `TextGenerationService`, the two transactions, the three use cases) — pinned in Task 7 by booting `MockPersistenceWiringTest`.
 
-Known limitation, not fixed here: `Transaction.execute` is `final`, so a CGLIB proxy cannot wrap it; making the transactions beans does not by itself make them transactional. Record this in the work tracker (Task 9) as a kernel follow-up.
+Known limitation, corrected and fixed on this branch: this paragraph first said the transaction beans are "not proxied". That was wrong. In the deployed app (Postgres `DataSource`, so Boot registers a `JdbcTransactionManager`) the `@DomainService` transactions *are* CGLIB-proxied for their `@Transactional execute`, and because `Transaction.execute` was `final` the call ran on the Objenesis-built proxy instance, whose `observer` field is null — a NullPointerException before `doExecute` ran (identify 500s after the rate permit, budget and vision call are spent; add-photo 500s; citations silently lost). App test contexts have no `DataSource`, so no test saw it. Fixed in the slice-2 review-fix commit by dropping `final` from `execute` (subclasses still implement `doExecute` only), pinned by `TransactionProxyReachesDoExecuteTest` in `apps/management-console`.
 
 ---
 

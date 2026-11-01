@@ -2,6 +2,7 @@ package com.naturalist.identification;
 
 import java.time.Instant;
 import org.jspecify.annotations.Nullable;
+import java.util.Objects;
 
 /**
  * The port-level refusal of an identification attempt: the one type an adapter can catch
@@ -28,7 +29,7 @@ public final class IdentificationRefused extends RuntimeException {
 
     public IdentificationRefused(Reason reason, @Nullable String detail, @Nullable Instant resetAt) {
         super("Identification refused: " + reason + (detail == null ? "" : " (" + detail + ")"));
-        this.reason = reason;
+        this.reason = Objects.requireNonNull(reason, "reason");
         this.detail = detail;
         this.resetAt = resetAt;
     }

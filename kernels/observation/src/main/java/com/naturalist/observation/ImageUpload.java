@@ -72,4 +72,13 @@ public record ImageUpload(byte[] bytes) implements ValueObject {
     public String toString() {
         return "ImageUpload[" + (bytes == null ? 0 : bytes.length) + " bytes]";
     }
+
+    /**
+     * True when this upload satisfies its own {@link #invariants()}: it sniffs as JPEG, PNG or
+     * WebP and is at most {@link #MAX_BYTES}. The same conditions, as a plain predicate for
+     * callers that only need the verdict.
+     */
+    public boolean isValid() {
+        return mediaType() != null && bytes != null && bytes.length <= MAX_BYTES;
+    }
 }

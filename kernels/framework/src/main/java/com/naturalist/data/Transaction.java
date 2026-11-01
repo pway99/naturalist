@@ -9,10 +9,17 @@ import jakarta.transaction.Transactional;
  * {@link Aggregate} atomically — the write-side analogue of an aggregate
  * factory on the read side.
  *
- * <p>Public {@link #execute(Aggregate)} is {@code final}: it validates the
- * aggregate's invariants via {@link Observer} before delegating to
- * {@link #doExecute(Aggregate)}, so a subclass cannot accidentally skip
- * validation. This mirrors the template in {@link AbstractEntityCommand}.
+ * <p>Public {@link #execute(Aggregate)} validates the aggregate's invariants
+ * via {@link Observer} before delegating to {@link #doExecute(Aggregate)}.
+ * Subclasses implement {@code doExecute} only and must not override
+ * {@code execute}, so validation cannot be skipped. This mirrors the template
+ * in {@link AbstractEntityCommand}.
+ *
+ * <p>{@code execute} is deliberately <em>not</em> {@code final}: when a
+ * transaction manager is present, Spring wraps these beans in CGLIB proxies,
+ * and CGLIB cannot override a final method. A final {@code execute} would run
+ * on the proxy instance itself, whose fields (including {@code observer}) are
+ * null, and fail before {@code doExecute} ran.
  *
  * <p>Subclasses are long-lived, constructor-injected beans — they receive
  * the entity commands and queries they need at construction time and reuse
@@ -42,7 +49,7 @@ public abstract class Transaction<A extends Aggregate> {
      *         if any invariant on the aggregate fails
      */
     @Transactional
-    public final void execute(A aggregate) {
+    public void execute(A aggregate) {
         observer.arguments("execute", i -> i.aggregate(aggregate, "aggregate"))
                 .throwWhenInvalid();
         doExecute(aggregate);

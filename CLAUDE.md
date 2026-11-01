@@ -102,6 +102,7 @@ biogeography                →  framework, field-notes
 catalog                     →  framework, identifiers
 observation                 →  framework, identifiers, taxonomy
 identification              →  framework
+vision                      →  framework
 image-store-filesystem      →  framework, observation
 framework                   →  Jackson, Commons, Micrometer, JSpecify only
 framework-test              →  framework

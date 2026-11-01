@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import com.naturalist.observability.Observer;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.OrganismImage;
@@ -457,7 +456,7 @@ public class InsectsController {
         }
 
         ImageUpload upload = ImageUpload.of(imageFile.getBytes());
-        if (isInvalid(upload)) {
+        if (!upload.isValid()) {
             // The upload is not a JPEG/PNG/WebP (or is oversize) -- nothing is stored.
             return "redirect:/insects/identify?error=image";
         }
@@ -817,7 +816,7 @@ public class InsectsController {
         var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
         ImageUpload upload = ImageUpload.of(imageFile.getBytes());
-        if (isInvalid(upload)) {
+        if (!upload.isValid()) {
             return "redirect:/insects/" + name + "?error=image";
         }
         insectCommand.photos().add(species, upload, me.orElse(null), notes, location);
@@ -843,12 +842,6 @@ public class InsectsController {
         currentNaturalist(request).ifPresent(viewer ->
                 insectCommand.sightings().updateNotes(obsId, viewer, notes));
         return "redirect:" + destination;
-    }
-
-    /** True when the upload fails its own invariants (not a JPEG/PNG/WebP, or over the size cap). */
-    private static boolean isInvalid(ImageUpload upload) {
-        return !Observer.forClass(InsectsController.class)
-                .observable(upload, "upload").violations().isEmpty();
     }
 
     /**

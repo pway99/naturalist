@@ -90,4 +90,21 @@ class ImageUploadTest {
         InvariantObservation result = mo.observable(upload, "upload");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint())).contains(".upload.format");
     }
+
+    @Test
+    void isValid_trueForEverySupportedFormat() {
+        assertThat(ImageUpload.of(JPEG).isValid()).isTrue();
+        assertThat(ImageUpload.of(PNG).isValid()).isTrue();
+        assertThat(ImageUpload.of(WEBP).isValid()).isTrue();
+    }
+
+    @Test
+    void isValid_falseWhenAnInvariantFails() {
+        byte[] big = new byte[ImageUpload.MAX_BYTES + 1];
+        System.arraycopy(JPEG, 0, big, 0, JPEG.length);
+        assertThat(ImageUpload.of(HEIC).isValid()).isFalse();
+        assertThat(ImageUpload.of(big).isValid()).isFalse();
+        assertThat(ImageUpload.of(new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF}).isValid()).isFalse();
+        assertThat(ImageUpload.of(null).isValid()).isFalse();
+    }
 }
