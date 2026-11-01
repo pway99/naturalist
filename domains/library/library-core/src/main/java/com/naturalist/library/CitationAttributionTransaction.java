@@ -16,7 +16,7 @@ import com.naturalist.infrastructure.DomainService;
  * reference is the least trustworthy source in the system: it must never
  * overwrite a citation's {@code authorityReference}/{@code title}. The
  * deterministic slug ({@code source id + rank name}, see
- * {@code InsectIdentificationCommand}) means a later identification of the
+ * {@code InsectIdentificationCommandImpl}) means a later identification of the
  * same rank regenerates the same {@code CitationName} even when this run's
  * authority lookup found nothing and fell back to a vision-suggested URL —
  * without this check, that hallucination-prone fallback would silently and
@@ -28,7 +28,7 @@ import com.naturalist.infrastructure.DomainService;
  * association by the {@code citationName + subject} unique constraint
  * declared on {@code CitationAssociationTestEntitySource} — even though a
  * fresh {@code CitationAssociationId} is minted at every call site that
- * builds one (see {@code InsectIdentificationCommand}), because the
+ * builds one (see {@code InsectIdentificationCommandImpl}), because the
  * repository layer underneath {@code save()} resolves identity by declared
  * unique constraint, not just by primary key. This transaction does not need
  * to know that resolution happens, only that it does — that is what makes it

@@ -68,7 +68,7 @@ import com.naturalist.observation.Identification;
  * per vision turn — and strictly before {@link com.naturalist.usage.IdentificationBudget#reserve}
  * so a rate-rejected call never burns budget. Both gates surface as
  * {@link IdentificationRefused} (api vocabulary) and run before the upload is stored,
- * so a refused call stores nothing; a failed catalog write deletes the stored upload.
+ * so a refused call stores nothing; a failure at any later stage deletes the stored upload.
  *
  * <p>Authority lookups enrich the identification with citations and
  * grounded descriptions but never gate it — the vision result is
@@ -173,8 +173,24 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                     over.limitKind().name(), over.resetAt());
         }
 
-        // 0c. STORE THE UPLOAD -- deleted again below if the catalog write fails
+        // 0c. STORE THE UPLOAD -- deleted again if any later stage fails
         FileName storedFileName = imageStore.store(SPACE, upload);
+        try {
+            return catalogue(upload, metadata, naturalist, notes, storedFileName);
+        } catch (RuntimeException e) {
+            try {
+                imageStore.delete(SPACE, storedFileName);
+            } catch (RuntimeException deleteFailure) {
+                e.addSuppressed(deleteFailure);
+            }
+            throw e;
+        }
+    }
+
+    /** Stages 1-6: vision, enrichment, feature and citation resolution, catalog write. */
+    private InsectRankName catalogue(ImageUpload upload, ImageMetadata metadata,
+                                     NaturalistName naturalist, @Nullable String notes,
+                                     FileName storedFileName) {
         var image = new Image(upload.bytes(), upload.mediaType(), metadata);
 
         // 1. VISION -- external call (turn 1 propose, optional turn 2 reuse-resolve)
@@ -232,12 +248,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 featureResolution.newFeatures(), featureResolution.assignments(),
                 descriptionMap);
 
-        try {
-            transaction.execute(catalogId);
-        } catch (RuntimeException e) {
-            imageStore.delete(SPACE, storedFileName);
-            throw e;
-        }
+        transaction.execute(catalogId);
 
         return rankName;
     }

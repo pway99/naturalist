@@ -69,15 +69,14 @@ class InsectsControllerOverBudgetTest {
                 Resilience.noOp(),
                 EXCEEDED_BUDGET,
                 new NoOpVisionService(),      // never called; budget.reserve() throws first
-                new NoOpExternalAuthority()); // never called; budget.reserve() throws first
+                InsectsTestContext.noOpAuthority()); // never called; budget.reserve() throws first
         return new InsectsController(
                 context.insectQuery(),
                 context.insectCommand(),
                 context.insectLifeStageQuery(),
                 libraryContext.cladeQuery(),
                 libraryContext.glossaryTermQuery(),
-                imageStore,
-                context.addPhotoTransaction());
+                imageStore);
     }
 
     @Test

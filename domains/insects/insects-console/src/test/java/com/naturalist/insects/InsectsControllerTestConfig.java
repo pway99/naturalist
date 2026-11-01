@@ -57,6 +57,12 @@ class InsectsControllerTestConfig {
      */
     static final FilesystemImageStore IMAGE_STORE = new FilesystemImageStore(IMAGE_ROOT, Resilience.noOp());
 
+    /**
+     * The insects context the controller bean is built from, exposed so slice tests can read
+     * state back through {@code INSECTS.insectQuery()} after driving the controller.
+     */
+    static final InsectsTestContext INSECTS = InsectsTestContext.create(DATABASE, IMAGE_STORE);
+
     private static Path createImageRoot() {
         try {
             return Files.createTempDirectory("insects-images");
@@ -67,15 +73,13 @@ class InsectsControllerTestConfig {
 
     @Bean
     InsectsController insectsController() {
-        InsectsTestContext insects = InsectsTestContext.create(DATABASE, IMAGE_STORE);
         LibraryTestContext library = LibraryTestContext.create(DATABASE);
         return new InsectsController(
-                insects.insectQuery(),
-                insects.insectCommand(),
-                insects.insectLifeStageQuery(),
+                INSECTS.insectQuery(),
+                INSECTS.insectCommand(),
+                INSECTS.insectLifeStageQuery(),
                 library.cladeQuery(),
                 library.glossaryTermQuery(),
-                IMAGE_STORE,
-                insects.addPhotoTransaction());
+                IMAGE_STORE);
     }
 }

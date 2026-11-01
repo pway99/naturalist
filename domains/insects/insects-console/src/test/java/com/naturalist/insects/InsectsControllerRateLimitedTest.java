@@ -154,15 +154,14 @@ class InsectsControllerRateLimitedTest {
                 new RejectingRateLimiterResilience(),
                 IdentificationBudget.noOp(),
                 new NoOpVisionService(),      // never called; the rate gate throws first
-                new NoOpExternalAuthority()); // never called; the rate gate throws first
+                InsectsTestContext.noOpAuthority()); // never called; the rate gate throws first
         return new InsectsController(
                 context.insectQuery(),
                 context.insectCommand(),
                 context.insectLifeStageQuery(),
                 libraryContext.cladeQuery(),
                 libraryContext.glossaryTermQuery(),
-                imageStore,
-                context.addPhotoTransaction());
+                imageStore);
     }
 
     @Test

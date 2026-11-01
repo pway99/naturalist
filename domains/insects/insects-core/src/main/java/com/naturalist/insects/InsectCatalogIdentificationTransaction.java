@@ -86,7 +86,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         //    strings that differ at all (e.g. punctuation variants) remain two
         //    separate rows here. That is not dedup, it is "don't fail on an
         //    exact repeat"; semantic near-duplicate merging is handled upstream
-        //    by InsectIdentificationCommand's reuse-aware resolution (feature
+        //    by InsectIdentificationCommandImpl's reuse-aware resolution (feature
         //    search + a clarification turn) before the transaction runs.
         //
         //    save()'s unique-constraint branch discards the id resolveFeatures()

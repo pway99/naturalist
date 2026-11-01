@@ -146,6 +146,11 @@ public class InsectsTestContext {
         return new InsectsTestContext(db, imageStore, resilience, budget, visionService, authority);
     }
 
+    /** The context's default {@link ExternalAuthority}: a no-op, for tests that never reach enrichment. */
+    public static ExternalAuthority noOpAuthority() {
+        return new NoOpExternalAuthority();
+    }
+
     public InsectQuery insectQuery() {
         return insectQuery;
     }

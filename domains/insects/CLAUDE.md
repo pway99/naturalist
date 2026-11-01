@@ -63,7 +63,7 @@ in `insects-core`. Persists a `CatalogIdentification` atomically: resolves paren
 ranks (order → family → genus) idempotently, inserts species if new, then inserts
 image and field observation.
 
-**InsectIdentificationCommand** — in `insects-core`. Orchestrates vision
+**InsectIdentificationCommandImpl** — in `insects-core`. Orchestrates vision
 identification → aggregate construction → transactional persistence. Takes
 `VisionService` and `InsectCatalogIdentificationTransaction`. Returns
 `InsectSpeciesName` (pragmatic CQS exception for controller redirect).
@@ -106,14 +106,13 @@ hand-written DTO and how the flush seam keeps it round-trippable.
 The notes form posts to `/insects/{name}/notes` from every rank and carries a
 `returnPath` hidden field; `InsectsController.safeReturnPath` constrains it to
 `/insects/` prefixes so the field cannot become an open redirect.
-`InsectsController.updateNotes` also checks ownership before writing: a
-package-private static `owns(FieldObservation, Optional<NaturalistName>)` compares
-`obs.observedBy()` against the signed-in naturalist and refuses on mismatch,
-redirecting to the same `destination` as the not-found branch so the two outcomes are
-indistinguishable to the caller. Before this check, any naturalist could overwrite
-another naturalist's field notes by POSTing their observation id —
-`FieldObservationId` is a UUIDv7 and therefore time-ordered and partially guessable,
-so the id alone was never proof of ownership.
+`InsectsController.updateNotes` delegates to `insectCommand.sightings().updateNotes(id, viewer, notes)`,
+which owns the ownership rule: it compares `obs.observedBy()` against the signed-in naturalist and
+silently changes nothing on mismatch or a missing id, so the two outcomes are indistinguishable to
+the caller (the controller redirects to the same `destination` either way). Before this check, any
+naturalist could overwrite another naturalist's field notes by POSTing their observation id —
+the id is a UUIDv7 and therefore time-ordered and partially guessable, so the id alone was never
+proof of ownership.
 
 **CSRF on the rank pages.** `family.jte`, `genus.jte`, and `order.jte` do **not** take
 a `@param CsrfToken _csrf`. They read the CSRF param name and token as plain request
@@ -143,6 +142,6 @@ the same.
   twice with identical arguments.
 - `safeReturn` and `safeReturnPath` are two near-identical untrusted-redirect
   validators on `InsectsController`; `safeReturnPath` has no CRLF guard.
-- Feature dedup by value is unimplemented — `InsectIdentificationCommand` creates a
+- Feature dedup by value is unimplemented — `InsectIdentificationCommandImpl` creates a
   fresh `InsectFeature` per value per identification, so the catalog holds
   near-duplicates.

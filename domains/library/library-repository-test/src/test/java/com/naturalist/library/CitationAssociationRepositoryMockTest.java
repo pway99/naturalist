@@ -16,7 +16,7 @@ class CitationAssociationRepositoryMockTest implements CitationAssociationEntity
 
     /**
      * {@code CitationAssociation}'s key is a freshly-minted {@code CitationAssociationId}
-     * on every call site that builds one (see {@code InsectIdentificationCommand}), so
+     * on every call site that builds one (see {@code InsectIdentificationCommandImpl}), so
      * its real identity for dedup purposes is the {@code citationName+subject} unique
      * constraint declared by {@link CitationAssociationTestEntitySource}, not the id.
      * {@link EntityRepository#save} must resolve that: a second save colliding only on

@@ -39,7 +39,7 @@ A working personal project, not a product.
 3. **The identification pipeline**, from upload to filed record:
    - [`InsectsController`](domains/insects/insects-console/src/main/java/com/naturalist/insects/InsectsController.java):
      `POST /insects/identify` takes the photo.
-   - [`InsectIdentificationCommand`](domains/insects/insects-core/src/main/java/com/naturalist/insects/InsectIdentificationCommand.java):
+   - [`InsectIdentificationCommandImpl`](domains/insects/insects-core/src/main/java/com/naturalist/insects/InsectIdentificationCommandImpl.java):
      the orchestrator. Rate gate, budget reservation, vision, authority and
      parent-rank enrichment, feature resolution, citations, then one
      transactional write.

@@ -29,10 +29,6 @@
     <dependencies>
         <dependency>
             <groupId>com.naturalist</groupId>
-            <artifactId>authority</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.naturalist</groupId>
             <artifactId>catalog</artifactId>
         </dependency>
         <dependency>
@@ -54,14 +50,6 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>observation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>text-generation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>usage-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

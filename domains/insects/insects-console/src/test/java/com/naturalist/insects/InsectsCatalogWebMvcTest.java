@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.ImageUpload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -9,7 +10,9 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -137,6 +140,43 @@ class InsectsCatalogWebMvcTest {
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/identify?error=image"));
+    }
+
+    @Test
+    void updateNotes_byNonOwner_redirectsWithoutChange() throws Exception {
+        mockMvc.perform(post("/insects/battus-philenor/observe").param("notes", "original")
+                        .requestAttr(CURRENT_NATURALIST, "pat-way"))
+                .andExpect(status().is3xxRedirection());
+        var id = InsectsControllerTestConfig.INSECTS.insectQuery().observations()
+                .forNaturalist(NaturalistName.of("pat-way")).stream().findFirst().orElseThrow().id();
+
+        mockMvc.perform(post("/insects/battus-philenor/notes")
+                        .param("observationId", id.value().toString())
+                        .param("notes", "overwritten")
+                        .requestAttr(CURRENT_NATURALIST, "mallory"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/insects/battus-philenor"));
+
+        assertThat(InsectsControllerTestConfig.INSECTS.insectQuery().observations().getByName(id)
+                .orElseThrow().notes()).isEqualTo("original");
+    }
+
+    @Test
+    void updateNotes_byOwner_changesNotes() throws Exception {
+        mockMvc.perform(post("/insects/battus-philenor/observe").param("notes", "original")
+                        .requestAttr(CURRENT_NATURALIST, "pat-way"))
+                .andExpect(status().is3xxRedirection());
+        var id = InsectsControllerTestConfig.INSECTS.insectQuery().observations()
+                .forNaturalist(NaturalistName.of("pat-way")).stream().findFirst().orElseThrow().id();
+
+        mockMvc.perform(post("/insects/battus-philenor/notes")
+                        .param("observationId", id.value().toString())
+                        .param("notes", "revised")
+                        .requestAttr(CURRENT_NATURALIST, "pat-way"))
+                .andExpect(status().is3xxRedirection());
+
+        assertThat(InsectsControllerTestConfig.INSECTS.insectQuery().observations().getByName(id)
+                .orElseThrow().notes()).isEqualTo("revised");
     }
 
     @Test

@@ -100,7 +100,7 @@ public class PlantsCompoundReferences implements EntityReferences<CompoundName> 
             if (seenPlants.add(constituent.plantName())) {
                 // EntityRef takes an EntityName; PlantRankName is a sibling interface, so
                 // the cast is unavoidable. Every permit extends EntityName, making it safe.
-                // insects casts the same way — see InsectIdentificationCommand.writeCitations.
+                // insects casts the same way — see InsectIdentificationCommandImpl.writeCitations.
                 refs.add(new EntityRef(DOMAIN, (EntityName) constituent.plantName()));
             }
             refs.add(new EntityRef(DOMAIN, constituent.name()));

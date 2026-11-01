@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * repository-level coverage of {@code save()}'s resolution for that case --
  * the caller-supplied id (freshly minted per identification, in the real
  * caller) is discarded and the existing row's id is reused. See
- * {@code InsectIdentificationCommandTest#identify_reIdentifyingSameRankWithSameFeatures_doesNotGrowCatalogOrDangleFeatureIds}
+ * {@code InsectIdentificationCommandImplTest#identify_reIdentifyingSameRankWithSameFeatures_doesNotGrowCatalogOrDangleFeatureIds}
  * in {@code insects-core} for the end-to-end path this repository behavior
  * unblocks.
  */

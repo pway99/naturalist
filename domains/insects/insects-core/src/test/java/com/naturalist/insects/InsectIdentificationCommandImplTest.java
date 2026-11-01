@@ -520,14 +520,6 @@ class InsectIdentificationCommandImplTest {
                 context.catalogIdentificationTransaction());
     }
 
-    private static Path createImageRoot() {
-        try {
-            return Files.createTempDirectory("insects-identify-images");
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
     private static List<Path> filesUnder(Path root) throws IOException {
         try (Stream<Path> walk = Files.walk(root)) {
             return walk.filter(Files::isRegularFile).toList();
@@ -622,13 +614,31 @@ class InsectIdentificationCommandImplTest {
     private static final byte[] JPEG = {
             (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 16, 'J', 'F', 'I', 'F', 0, 1, 1, 0, 0, 1};
 
-    /**
-     * Per-test image-store root. A field initializer (not {@code @TempDir}) because
-     * {@link #store} must exist before the command fields that use it are built.
-     */
-    private final Path imageRoot = createImageRoot();
+    /** Per-test image-store root, created and removed by JUnit. */
+    @org.junit.jupiter.api.io.TempDir
+    Path imageRoot;
 
-    private final ImageStore store = new com.naturalist.observation.filesystem.FilesystemImageStore(imageRoot, com.naturalist.resilience.Resilience.noOp());
+    private ImageStore store;
+
+    @org.junit.jupiter.api.BeforeEach
+    void createStore() {
+        store = new com.naturalist.observation.filesystem.FilesystemImageStore(imageRoot, com.naturalist.resilience.Resilience.noOp());
+    }
+
+    @Test
+    void identify_pipelineFailure_deletesStoredFile() throws IOException {
+        VisionService failing = (image, tool, prompt) -> {
+            throw new IllegalStateException("vision exploded");
+        };
+        var cmd = buildCommand(failing);
+
+        assertThatThrownBy(() -> cmd.identify(
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("vision exploded");
+
+        assertThat(filesUnder(imageRoot)).isEmpty();
+    }
 
     @Test
     void identify_rateLimited_storesNothing() throws IOException {

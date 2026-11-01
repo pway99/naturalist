@@ -1,7 +1,6 @@
 package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
-import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.clades.CladeCatalog;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Eukaryota;
@@ -41,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import com.naturalist.observability.Observer;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.OrganismImage;
@@ -90,8 +90,7 @@ public class InsectsController {
                       InsectLifeStageQuery insectLifeStageQuery,
                       CladeQuery cladeQuery,
                       com.naturalist.library.GlossaryTermQuery glossaryTermQuery,
-                      ImageStore imageStore,
-                      InsectAddPhotoTransaction addPhotoTransaction) {
+                      ImageStore imageStore) {
         this.insectQuery = insectQuery;
         this.insectCommand = insectCommand;
         this.insectLifeStageQuery = insectLifeStageQuery;
@@ -457,15 +456,18 @@ public class InsectsController {
             catch (java.time.format.DateTimeParseException ignored) { }
         }
 
+        ImageUpload upload = ImageUpload.of(imageFile.getBytes());
+        if (isInvalid(upload)) {
+            // The upload is not a JPEG/PNG/WebP (or is oversize) -- nothing is stored.
+            return "redirect:/insects/identify?error=image";
+        }
+
         try {
             var rankName = insectCommand.identification().identify(
-                    ImageUpload.of(imageFile.getBytes()),
+                    upload,
                     new com.naturalist.vision.ImageMetadata(location, capturedInstant),
                     me.get(), notes);
             return "redirect:/insects/" + rankName.value();
-        } catch (InvariantViolationException invalid) {
-            // The upload is not a JPEG/PNG/WebP -- refused before anything is stored.
-            return "redirect:/insects/identify?error=image";
         } catch (com.naturalist.identification.IdentificationRefused refused) {
             // The rate gate and the budget both live behind insectCommand.identification()
             // (InsectIdentificationCommandImpl), ahead of the store and any vision call.
@@ -802,14 +804,7 @@ public class InsectsController {
         if (me.isEmpty()) {
             return "redirect:/insects/" + name;
         }
-        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
-                InsectObservationId.create(),
-                me.get(),
-                InsectSpeciesName.of(name),
-                Instant.now(),
-                (notes == null || notes.isBlank()) ? null : notes,
-                null, null);
-        insectCommand.observations().insert(observation);
+        insectCommand.sightings().record(InsectSpeciesName.of(name), me.get(), notes);
         return "redirect:/insects/" + name;
     }
 
@@ -821,12 +816,11 @@ public class InsectsController {
                     HttpServletRequest request) throws IOException {
         var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
-        try {
-            insectCommand.photos().add(species, ImageUpload.of(imageFile.getBytes()),
-                    me.orElse(null), notes, location);
-        } catch (InvariantViolationException invalid) {
+        ImageUpload upload = ImageUpload.of(imageFile.getBytes());
+        if (isInvalid(upload)) {
             return "redirect:/insects/" + name + "?error=image";
         }
+        insectCommand.photos().add(species, upload, me.orElse(null), notes, location);
         return "redirect:/insects/" + name;
     }
 
@@ -844,33 +838,17 @@ public class InsectsController {
             // Malformed observationId -- same outcome as not-found, not a 500.
             return "redirect:" + destination;
         }
-        var existing = insectQuery.observations().getByName(obsId);
-        if (existing.isEmpty()) {
-            return "redirect:" + destination;
-        }
-        var obs = existing.get();
-        if (!owns(obs, currentNaturalist(request))) {
-            // Refuse silently rather than 403 — the caller learns nothing about
-            // whether the observation exists or who owns it, only that nothing changed.
-            return "redirect:" + destination;
-        }
-        var updated = obs.withNotes((notes == null || notes.isBlank()) ? null : notes);
-        insectCommand.observations().update(updated);
+        // The sighting port owns the ownership rule: a missing id or a non-owner changes nothing
+        // and looks identical to the caller (no 403, so nothing leaks about who owns what).
+        currentNaturalist(request).ifPresent(viewer ->
+                insectCommand.sightings().updateNotes(obsId, viewer, notes));
         return "redirect:" + destination;
     }
 
-    /**
-     * True when {@code viewer} is signed in as the naturalist who recorded
-     * {@code obs}. Guards {@link #updateNotes} against naturalist A overwriting
-     * naturalist B's field notes by POSTing B's observation id —
-     * {@link InsectObservationId} is a UUIDv7 and therefore time-ordered and
-     * partially guessable, so the id alone is not proof of ownership.
-     * Package-private (not {@code private}) so it is directly unit-testable
-     * without standing up the controller's full servlet/database wiring.
-     */
-    static boolean owns(OrganismObservation<InsectObservationId, InsectRankName> obs,
-                        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer) {
-        return viewer.isPresent() && obs.observedBy().equals(viewer.get());
+    /** True when the upload fails its own invariants (not a JPEG/PNG/WebP, or over the size cap). */
+    private static boolean isInvalid(ImageUpload upload) {
+        return !Observer.forClass(InsectsController.class)
+                .observable(upload, "upload").violations().isEmpty();
     }
 
     /**
@@ -894,29 +872,6 @@ public class InsectsController {
             }
         }
         return candidate;
-    }
-
-    @PostMapping("/{name}/re-identify")
-    String reIdentify(@PathVariable String name,
-                      @RequestParam("observationId") String observationId,
-                      @RequestParam("newSubject") String newSubject,
-                      @RequestParam("newSubjectRank") String newSubjectRank,
-                      HttpServletRequest request) {
-        var obsId = InsectObservationId.of(java.util.UUID.fromString(observationId));
-        var existing = insectQuery.observations().getByName(obsId);
-        if (existing.isEmpty()) return "redirect:/insects/" + name;
-
-        var obs = existing.get();
-        var newRankName = InsectRankName.of(
-                newSubject, com.naturalist.taxonomy.LinealRank.valueOf(newSubjectRank));
-
-        var updatedObs = obs.withSubject(newRankName);
-        insectCommand.observations().update(updatedObs);
-
-        // TODO: update linked images' parentName to newRankName
-        // (no query method to find images by observationId yet)
-
-        return "redirect:/insects/" + newSubject;
     }
 
     @GetMapping("/{name}/life-stages")
