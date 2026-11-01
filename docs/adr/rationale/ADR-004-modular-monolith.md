@@ -22,6 +22,14 @@ the type explicitly crosses a sub-context boundary.
 The module DAG is strictly acyclic. Any cycle is a violation and must be corrected
 immediately. ArchUnit tests verify the DAG at build time.
 
+> **Amended 2026-10-06.** The kernel allow-list below is the original four. Seven
+> more kernels have since been extracted and are depended on by api modules
+> (`clades`, `observation`, `habitat`, `biogeography`, `measurements`, `catalog`,
+> `authority`). The DAG was re-verified acyclic across all 114 modules on that
+> date. See the amendment in the canonical
+> [ADR-004](../ADR-004-modular-monolith.md); the live list is rule 1 in the root
+> `CLAUDE.md`.
+
 ```
 bootstrap                   →  application
 <domain>-repository-test    →  <domain>-api
