@@ -34,11 +34,6 @@ class ResilienceConfigurationTest {
     }
 
     @Test
-    void resolvesImageConversionTimeout() {
-        assertThat(resilience.timeout("image.conversion")).isNotNull();
-    }
-
-    @Test
     void resolvesVisionIdentificationTimeout() {
         assertThat(resilience.timeout("vision.identification")).isNotNull();
     }
@@ -65,5 +60,10 @@ class ResilienceConfigurationTest {
     void resolvesAuthRegisterRateLimiter() {
         assertThat(resilience.rateLimiter("auth.register")).isNotNull();
         assertThat(resilience.rateLimiterNames()).contains("auth.register");
+    }
+
+    @Test
+    void resolvesImageStoreTimeout() {
+        assertThat(resilience.timeout("image.store")).isNotNull();
     }
 }

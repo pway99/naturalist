@@ -49,6 +49,20 @@
             <version>${jte.version}</version>
         </dependency>
 
+        <!-- KERNELS -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>image-store-filesystem</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>observation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>vision</artifactId>
+        </dependency>
+
         <!-- ADAPTERS -->
         <dependency>
             <groupId>com.naturalist</groupId>
@@ -57,10 +71,6 @@
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>eol-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.naturalist</groupId>
-            <artifactId>vision</artifactId>
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>

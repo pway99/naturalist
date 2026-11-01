@@ -2,12 +2,18 @@ package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.library.LibraryTestContext;
+import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.spring.console.ConsoleSliceRenderConfiguration;
 import com.naturalist.usage.IdentificationBudget;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Spring Boot test composition for {@link InsectsController} slice tests
@@ -44,6 +50,23 @@ class InsectsControllerTestConfig {
      */
     static final NaturalistTestExtension DATABASE = NaturalistTestExtension.create();
 
+    /** A per-JVM temp directory the slice's {@link #IMAGE_STORE} writes uploads under. */
+    static final Path IMAGE_ROOT = createImageRoot();
+
+    /**
+     * The controller's {@link com.naturalist.observation.ImageStore}, exposed so a slice test
+     * can store a photo directly and then request it through the serve endpoint.
+     */
+    static final FilesystemImageStore IMAGE_STORE = new FilesystemImageStore(IMAGE_ROOT, Resilience.noOp());
+
+    private static Path createImageRoot() {
+        try {
+            return Files.createTempDirectory("insects-images");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     @Bean
     InsectsController insectsController() {
         InsectsTestContext insects = InsectsTestContext.create(DATABASE);
@@ -58,6 +81,7 @@ class InsectsControllerTestConfig {
                 library.glossaryTermQuery(),
                 library.libraryCommand(),
                 null,                       // ExternalAuthority -- unused
-                IdentificationBudget.noOp());
+                IdentificationBudget.noOp(),
+                IMAGE_STORE);
     }
 }

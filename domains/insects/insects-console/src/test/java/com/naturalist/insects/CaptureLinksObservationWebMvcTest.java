@@ -1,17 +1,12 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,7 +37,6 @@ class CaptureLinksObservationWebMvcTest {
     static final NaturalistTestExtension database = InsectsControllerTestConfig.DATABASE;
 
     private static final String CURRENT_NATURALIST = "naturalist.currentNaturalistName";
-    private static final Path IMAGE_DIR = Path.of("data/images/insects");
 
     /** Minimal valid JPEG: FF D8 FF E0 header + padding. */
     private static final byte[] TINY_JPEG = {
@@ -65,14 +59,5 @@ class CaptureLinksObservationWebMvcTest {
                         .requestAttr(CURRENT_NATURALIST, "amir-hassan"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("battus-philenor")));
-    }
-
-    @AfterAll
-    static void cleanUpTestImages() throws IOException {
-        if (Files.isDirectory(IMAGE_DIR)) {
-            try (var files = Files.list(IMAGE_DIR)) {
-                files.forEach(f -> { try { Files.delete(f); } catch (IOException ignored) { } });
-            }
-        }
     }
 }

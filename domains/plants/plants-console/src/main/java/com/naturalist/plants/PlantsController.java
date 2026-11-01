@@ -3,6 +3,7 @@ package com.naturalist.plants;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Plantae;
+import com.naturalist.data.FileName;
 import com.naturalist.data.Page;
 import com.naturalist.data.Pages;
 import com.naturalist.data.PageRequest;
@@ -11,6 +12,7 @@ import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
+import com.naturalist.observation.ImageStore;
 import com.naturalist.plants.render.PlantsParagraphCues;
 import com.naturalist.plants.cultivar.Cultivar;
 import com.naturalist.plants.cultivar.CultivarName;
@@ -24,10 +26,6 @@ import com.naturalist.plants.management.PlantProgramQuery;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
-import com.naturalist.resilience.Resilience;
-import com.naturalist.resilience.Resilient;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,22 +36,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/plants")
 public class PlantsController {
-
-    private static final String IMAGE_CONVERSION = "image.conversion";
 
     private final PlantQuery plantQuery;
     private final CultivarQuery cultivarQuery;
@@ -62,10 +54,7 @@ public class PlantsController {
     private final PhytochemicalConstituentQuery phytochemicalConstituentQuery;
     private final CladeQuery cladeQuery;
     private final DescriptionRenderer descriptionRenderer;
-    private final Resilience resilience;
-    private final PlantImageStorageService imageStorageService =
-            new PlantImageStorageService(Path.of("data/images/plants"));
-    private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
+    private final ImageStore imageStore;
 
     PlantsController(PlantQuery plantQuery,
                      CultivarQuery cultivarQuery,
@@ -73,7 +62,7 @@ public class PlantsController {
                      PlantProgramQuery plantProgramQuery,
                      PhytochemicalConstituentQuery phytochemicalConstituentQuery,
                      CladeQuery cladeQuery,
-                     Resilience resilience) {
+                     ImageStore imageStore) {
         this.plantQuery = plantQuery;
         this.cultivarQuery = cultivarQuery;
         this.seedLineageQuery = seedLineageQuery;
@@ -81,7 +70,7 @@ public class PlantsController {
         this.phytochemicalConstituentQuery = phytochemicalConstituentQuery;
         this.cladeQuery = cladeQuery;
         this.descriptionRenderer = new DescriptionRenderer(PlantsParagraphCues.CUES);
-        this.resilience = resilience;
+        this.imageStore = imageStore;
     }
 
     // ── Plant catalog ────────────────────────────────────────────────────
@@ -456,77 +445,19 @@ public class PlantsController {
 
     // ── Images ───────────────────────────────────────────────────────────
 
-    @GetMapping("/images/{filename}")
-    @Resilient(name = IMAGE_CONVERSION)
-    ResponseEntity<byte[]> image(@PathVariable String filename) throws IOException {
-        byte[] jpeg = jpegCache.get(filename);
-        if (jpeg != null) {
-            return jpegResponse(jpeg);
-        }
-
-        var resource = new ClassPathResource("plants/images/" + filename);
-        if (!resource.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Path heicTemp = Files.createTempFile("plant-", ".heic");
-        Path jpegTemp = Files.createTempFile("plant-", ".jpg");
-        try {
-            return resilience.timeout(IMAGE_CONVERSION).execute(() ->
-                    convert(filename, resource, heicTemp, jpegTemp));
-        } finally {
-            Files.deleteIfExists(heicTemp);
-            Files.deleteIfExists(jpegTemp);
-        }
-    }
-
-    @GetMapping("/uploads/{filename:.+}")
-    void serveUpload(@PathVariable String filename, HttpServletResponse response) throws IOException {
-        var path = imageStorageService.resolve(filename);
-        if (!Files.exists(path)) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        var contentType = Files.probeContentType(path);
-        if (contentType == null) contentType = "application/octet-stream";
-        response.setContentType(contentType);
-        var safeName = path.getFileName().toString();
-        response.setHeader("Content-Disposition", "inline; filename=\"" + safeName + "\"");
-        response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-        Files.copy(path, response.getOutputStream());
-    }
-
-    private ResponseEntity<byte[]> convert(String filename,
-                                           ClassPathResource resource,
-                                           Path heicTemp,
-                                           Path jpegTemp) {
-        try {
-            Files.copy(resource.getInputStream(), heicTemp, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-            var process = new ProcessBuilder("sips", "-s", "format", "jpeg",
-                    "-s", "formatOptions", "80",
-                    heicTemp.toString(), "--out", jpegTemp.toString())
-                    .redirectErrorStream(true)
-                    .start();
-            int exit = process.waitFor();
-            if (exit != 0) {
-                return ResponseEntity.unprocessableEntity().build();
-            }
-            byte[] jpeg = Files.readAllBytes(jpegTemp);
-            jpegCache.put(filename, jpeg);
-            return jpegResponse(jpeg);
-        } catch (IOException e) {
-            throw new java.io.UncheckedIOException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-    }
-
-    private ResponseEntity<byte[]> jpegResponse(byte[] jpeg) {
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS))
-                .body(jpeg);
+    /**
+     * Serves a stored photo — a seed catalog image or an upload, the store resolves both —
+     * under the media type the store derives from its file name. Names are unique,
+     * so the response is cacheable forever.
+     */
+    @GetMapping("/images/{filename:.+}")
+    ResponseEntity<byte[]> image(@PathVariable String filename) {
+        return imageStore.read("plants", FileName.of(filename))
+                .map(stored -> ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(stored.mediaType()))
+                        .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
+                        .body(stored.bytes()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // ── Shared ───────────────────────────────────────────────────────────

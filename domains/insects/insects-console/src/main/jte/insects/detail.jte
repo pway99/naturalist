@@ -38,6 +38,7 @@
 @param Map<InsectImageId, OrganismObservation> observations = java.util.Map.of()
 @param OrganismFeatureView<InsectRankName, InsectFeature> features = null
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
+@param boolean imageError = false
 
 !{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
 !{var binomial = genus.genus().value() + " " + species.epithet().value();}
@@ -123,6 +124,9 @@
 
     <section class="add-image">
         <h2>Add Photo</h2>
+        @if(imageError)
+            <p class="error">That file is not a JPEG, PNG or WebP photo under 20 MB.</p>
+        @endif
         <form id="identify-form" action="/insects/${species.name().value()}/images" method="post"
               enctype="multipart/form-data">
             @if(_csrfParam != null)

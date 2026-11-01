@@ -12,12 +12,9 @@
         <h2>Photos</h2>
         <div class="photo-grid">
             @for(int i = 0; i < images.size(); i++)
-                <%-- Uploaded photos live under /uploads; bundled catalog images under /images.
-                     Try uploads first, fall back once to the classpath copy. --%>
-                <img src="/plants/uploads/${images.get(i).resourceName().value()}"
+                <img src="/plants/images/${images.get(i).resourceName().value()}"
                      alt="${alt}"
-                     loading="lazy"
-                     onerror="this.onerror=null; this.src='/plants/images/${images.get(i).resourceName().value()}'">
+                     loading="lazy">
             @endfor
         </div>
     </section>

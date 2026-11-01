@@ -1,5 +1,6 @@
 package com.naturalist.console.resilience;
 
+import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.ResilienceConfig;
 import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
@@ -25,10 +26,10 @@ import java.util.List;
  *       timeout (a fan-out is on the request path; anything slower belongs on
  *       a worker) plus a circuit breaker so a consistently failing provider
  *       stops being called for thirty seconds before the next probe.</li>
- *   <li><b>{@code image.conversion}</b> — bounds the {@code sips} HEIC→JPEG
- *       subprocess in {@code InsectsController.image}: a 2&nbsp;s timeout (the
- *       full request-path ceiling — image conversion is the lone serving call
- *       at this size, so it is allowed the headroom).</li>
+ *   <li><b>{@code image.store}</b> — bounds every {@code FilesystemImageStore}
+ *       operation (declared by {@code FilesystemImageStore.STRATEGY}): a 2&nbsp;s
+ *       timeout, the full request-path ceiling, since serving a stored photo is
+ *       a request-path call.</li>
  *   <li><b>{@code vision.identification}</b> — bounds the Anthropic vision API
  *       call in {@code AnthropicVisionService}. Declared {@code upload = true}
  *       and given the full {@link ResilienceConfig#MAX_UPLOAD_TIMEOUT}: the
@@ -98,11 +99,6 @@ public class ResilienceConfiguration {
     }
 
     @Bean
-    TimeoutConfig imageConversionTimeout() {
-        return new TimeoutConfig("image.conversion", Duration.ofSeconds(2));
-    }
-
-    @Bean
     TimeoutConfig visionIdentificationTimeout() {
         return new TimeoutConfig("vision.identification", ResilienceConfig.MAX_UPLOAD_TIMEOUT, true);
     }
@@ -136,5 +132,10 @@ public class ResilienceConfiguration {
         // proven they own, so an unbounded /register is a mail-bombing primitive against third
         // parties. Ten a minute is far above any honest rate for this audience.
         return new RateLimiterConfig("auth.register", 10, Duration.ofMinutes(1), Duration.ZERO);
+    }
+
+    @Bean
+    TimeoutConfig imageStoreTimeout() {
+        return new TimeoutConfig(FilesystemImageStore.STRATEGY, Duration.ofSeconds(2));
     }
 }

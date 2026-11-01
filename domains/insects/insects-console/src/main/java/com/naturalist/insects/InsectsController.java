@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.clades.CladeCatalog;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Eukaryota;
@@ -23,11 +24,8 @@ import com.naturalist.library.CladeView;
 import com.naturalist.library.GlossaryLinker;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.textgeneration.NoOpTextGenerationService;
-import com.naturalist.resilience.Resilient;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.Nullable;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,24 +39,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import com.naturalist.observation.ImageStore;
+import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 
 @Controller
 @RequestMapping("/insects")
 public class InsectsController {
-    private static final String IMAGE_CONVERSION = "image.conversion";
-
     private static final String CSRF_REQUEST_ATTRIBUTE = "org.springframework.security.web.csrf.CsrfToken";
 
     // Written by the app's NaturalistHeaderInterceptor (same literal, by convention).
@@ -93,11 +88,10 @@ public class InsectsController {
     private final CladeQuery cladeQuery;
     private final Resilience resilience;
     private final DescriptionRenderer descriptionRenderer;
-    private final ImageStorageService imageStorageService;
+    private final ImageStore imageStore;
     private final InsectIdentificationCommand identificationCommand;
     private final InsectAddPhotoCommand addPhotoCommand;
     private final GlossaryLinker glossaryLinker;
-    private final Map<String, byte[]> jpegCache = new ConcurrentHashMap<>();
 
     InsectsController(Resilience resilience,
                       com.naturalist.vision.VisionService visionService,
@@ -108,14 +102,15 @@ public class InsectsController {
                       com.naturalist.library.GlossaryTermQuery glossaryTermQuery,
                       com.naturalist.library.LibraryCommand libraryCommand,
                       com.naturalist.authority.ExternalAuthority eolAuthority,
-                      com.naturalist.usage.IdentificationBudget budget) {
+                      com.naturalist.usage.IdentificationBudget budget,
+                      ImageStore imageStore) {
         this.insectQuery = insectQuery;
         this.insectCommand = insectCommand;
         this.insectLifeStageQuery = insectLifeStageQuery;
         this.cladeQuery = cladeQuery;
         this.resilience = resilience;
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
-        this.imageStorageService = new ImageStorageService(Path.of("data/images/insects"));
+        this.imageStore = imageStore;
         this.glossaryLinker = GlossaryLinker.of(glossaryTermQuery
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content());
         var catalogIdentificationTransaction =
@@ -455,6 +450,7 @@ public class InsectsController {
     @GetMapping("/identify")
     String identifyForm(@RequestParam(name = "identified", required = false) String identified,
                         @RequestParam(name = "limit", required = false) String limit,
+                        @RequestParam(name = "error", required = false) String error,
                         HttpServletRequest request, Model model) {
         Object csrf = request.getAttribute(CSRF_REQUEST_ATTRIBUTE);
         if (csrf != null) {
@@ -465,6 +461,9 @@ public class InsectsController {
         }
         if (limit != null && !limit.isBlank()) {
             model.addAttribute("limit", limit);
+        }
+        if ("image".equals(error)) {
+            model.addAttribute("imageError", true);
         }
         return "insects/identify";
     }
@@ -481,7 +480,12 @@ public class InsectsController {
         }
 
         var imageBytes = imageFile.getBytes();
-        var storedFileName = imageStorageService.store(imageBytes);
+        FileName storedFileName;
+        try {
+            storedFileName = imageStore.store("insects", ImageUpload.of(imageBytes));
+        } catch (InvariantViolationException invalid) {
+            return "redirect:/insects/identify?error=image";
+        }
 
         Instant capturedInstant = null;
         if (capturedAt != null && !capturedAt.isBlank()) {
@@ -752,7 +756,9 @@ public class InsectsController {
     }
 
     @GetMapping("/{name}")
-    String detail(@PathVariable String name, HttpServletRequest request, Model model) {
+    String detail(@PathVariable String name,
+                  @RequestParam(name = "error", required = false) String error,
+                  HttpServletRequest request, Model model) {
         var speciesName = InsectSpeciesName.of(name);
         var insect = insectQuery.getByName(speciesName);
         if (insect.isEmpty()) {
@@ -764,6 +770,9 @@ public class InsectsController {
         InsectFamily family = i.family().family();
         InsectOrder order = i.order().order();
         var description = s.description();
+        if ("image".equals(error)) {
+            model.addAttribute("imageError", true);
+        }
         model.addAttribute("species", s);
         model.addAttribute("genus", genus);
         model.addAttribute("family", family);
@@ -846,7 +855,12 @@ public class InsectsController {
                     HttpServletRequest request) throws IOException {
         var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
-        var storedFileName = imageStorageService.store(imageFile.getBytes());
+        FileName storedFileName;
+        try {
+            storedFileName = imageStore.store("insects", ImageUpload.of(imageFile.getBytes()));
+        } catch (InvariantViolationException invalid) {
+            return "redirect:/insects/" + name + "?error=image";
+        }
         addPhotoCommand.addPhoto(species, storedFileName,
                 me.orElse(null), notes, location);
         return "redirect:/insects/" + name;
@@ -965,77 +979,19 @@ public class InsectsController {
         return "insects/life-stages";
     }
 
-    @GetMapping("/images/{filename}")
-    @Resilient(name = IMAGE_CONVERSION)
-    ResponseEntity<byte[]> image(@PathVariable String filename) throws IOException {
-        byte[] jpeg = jpegCache.get(filename);
-        if (jpeg != null) {
-            return jpegResponse(jpeg);
-        }
-
-        var resource = new ClassPathResource("insects/images/" + filename);
-        if (!resource.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Path heicTemp = Files.createTempFile("insect-", ".heic");
-        Path jpegTemp = Files.createTempFile("insect-", ".jpg");
-        try {
-            return resilience.timeout(IMAGE_CONVERSION).execute(() ->
-                    convert(filename, resource, heicTemp, jpegTemp));
-        } finally {
-            Files.deleteIfExists(heicTemp);
-            Files.deleteIfExists(jpegTemp);
-        }
-    }
-
-    @GetMapping("/uploads/{filename:.+}")
-    void serveUpload(@PathVariable String filename, HttpServletResponse response) throws IOException {
-        var path = imageStorageService.resolve(filename);
-        if (!Files.exists(path)) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        var contentType = Files.probeContentType(path);
-        if (contentType == null) contentType = "application/octet-stream";
-        response.setContentType(contentType);
-        var safeName = path.getFileName().toString();
-        response.setHeader("Content-Disposition", "inline; filename=\"" + safeName + "\"");
-        response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-        Files.copy(path, response.getOutputStream());
-    }
-
-    private ResponseEntity<byte[]> convert(String filename,
-                                           ClassPathResource resource,
-                                           Path heicTemp,
-                                           Path jpegTemp) {
-        try {
-            Files.copy(resource.getInputStream(), heicTemp, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-            var process = new ProcessBuilder("sips", "-s", "format", "jpeg",
-                    "-s", "formatOptions", "80",
-                    heicTemp.toString(), "--out", jpegTemp.toString())
-                    .redirectErrorStream(true)
-                    .start();
-            int exit = process.waitFor();
-            if (exit != 0) {
-                return ResponseEntity.unprocessableEntity().build();
-            }
-            byte[] jpeg = Files.readAllBytes(jpegTemp);
-            jpegCache.put(filename, jpeg);
-            return jpegResponse(jpeg);
-        } catch (IOException e) {
-            throw new java.io.UncheckedIOException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-    }
-
-    private ResponseEntity<byte[]> jpegResponse(byte[] jpeg) {
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS))
-                .body(jpeg);
+    /**
+     * Serves a stored photo — an upload or a seed catalog image, the store resolves both —
+     * under the media type the store derives from its file name. Upload names are unique,
+     * so the response is cacheable forever.
+     */
+    @GetMapping("/images/{filename:.+}")
+    ResponseEntity<byte[]> image(@PathVariable String filename) {
+        return imageStore.read("insects", FileName.of(filename))
+                .map(stored -> ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(stored.mediaType()))
+                        .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
+                        .body(stored.bytes()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }

@@ -26,6 +26,7 @@
         <module>biogeography</module>
         <module>feature-search</module>
         <module>field-notes</module>
+        <module>image-store-filesystem</module>
         <module>taxonomy</module>
         <module>observation</module>
         <module>persistence</module>

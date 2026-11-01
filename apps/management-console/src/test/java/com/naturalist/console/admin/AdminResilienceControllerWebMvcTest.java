@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * <p>The registered set comes from
  * {@link com.naturalist.console.resilience.ResilienceConfiguration} —
  * {@code catalog.fanout} (timeout + circuit breaker),
- * {@code image.conversion} (timeout only), and
+ * {@code image.store} (timeout only), and
  * {@code vision.identification} (timeout + rate limiter). Retry and
  * bulkhead are unused today and render the empty state.
  */
@@ -90,11 +90,11 @@ class AdminResilienceControllerWebMvcTest {
         assertThat(retrySection).contains("None registered.");
         assertThat(timeoutSection)
                 .contains("catalog.fanout")
-                .contains("image.conversion")
+                .contains("image.store")
                 .contains("vision.identification");
         assertThat(breakerSection)
                 .contains("catalog.fanout")
-                .doesNotContain("image.conversion");
+                .doesNotContain("image.store");
         assertThat(bulkheadSection).contains("None registered.");
         assertThat(rateLimiterSection).contains("vision.identification");
     }
