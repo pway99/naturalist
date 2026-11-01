@@ -278,14 +278,12 @@ Resolves a filename to a filesystem path. Validates against path traversal
 
 ### Image serving
 
-`GET /insects/uploads/{filename}` serves uploaded images from the
-filesystem. Content-Disposition uses the resolved path's filename (not the
-raw parameter) to prevent header injection.
-
-Pre-upload catalog images are served from classpath at
-`GET /insects/images/{filename}`. The `detail.jte` template uses an
-`onerror` fallback: tries `/insects/uploads/` first, falls back to
-`/insects/images/`.
+Images are served by `GET /insects/images/{filename}` through the kernel
+`ImageStore` (`FilesystemImageStore`): uploads are read from the image root
+(`naturalist.images.root`, `<root>/insects/`), and seed photos from the
+classpath fallback (`insects/images/<name>`) or from the copy the
+test-db-seeder places in the image root. The served media type is sniffed
+from the bytes, and the store refuses any filename that is not a plain name.
 
 ---
 

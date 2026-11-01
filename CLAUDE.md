@@ -100,6 +100,7 @@ clades                      →  framework, field-notes
 biogeography                →  framework, field-notes
 catalog                     →  framework, identifiers
 observation                 →  framework, identifiers, taxonomy
+image-store-filesystem      →  framework, observation
 framework                   →  Jackson, Commons, Micrometer, JSpecify only
 framework-test              →  framework
 ```
