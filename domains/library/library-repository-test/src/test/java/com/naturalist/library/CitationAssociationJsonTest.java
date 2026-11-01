@@ -9,8 +9,11 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CitationAssociationJsonTest {
+
+    private final EntityRefResolver resolver = new InsectsEntityRefResolverMock();
 
     @Test
     void fromEntityFlattensTheSubjectRef() {
@@ -20,7 +23,7 @@ class CitationAssociationJsonTest {
                 new EntityRef(new InsectsDomain(), InsectFamilyName.of("chrysomelidae")),
                 "Identified via vision");
 
-        var json = CitationAssociationJson.fromEntity(association);
+        var json = CitationAssociationJson.fromEntity(association, resolver);
 
         assertThat(json.citationName()).isEqualTo("ref-chrysomelidae");
         assertThat(json.subjectDomain()).isEqualTo("insects");
@@ -37,7 +40,7 @@ class CitationAssociationJsonTest {
                 new EntityRef(new InsectsDomain(), InsectFamilyName.of("chrysomelidae")),
                 "Identified via vision");
 
-        var roundTripped = CitationAssociationJson.fromEntity(original).toEntity();
+        var roundTripped = CitationAssociationJson.fromEntity(original, resolver).toEntity(resolver);
 
         assertThat(roundTripped).isEqualTo(original);
     }
@@ -55,10 +58,33 @@ class CitationAssociationJsonTest {
                 } ]
                 """;
 
-        var entities = CitationAssociationJson.parseAll(json);
+        var entities = CitationAssociationJson.parseAll(json, resolver);
 
         assertThat(entities).hasSize(1);
         assertThat(entities.getFirst().citationName().value()).isEqualTo("eol-lepidoptera-747");
         assertThat(entities.getFirst().subject().name().value()).isEqualTo("lepidoptera");
+    }
+
+    /**
+     * The DTO no longer decides which domains are admissible — the resolver does.
+     * This pins that: an unknown subject domain is rejected by the resolver, and
+     * the message is the resolver's, not a {@code switch} inside the DTO.
+     */
+    @Test
+    void parseAllRejectsASubjectDomainTheResolverDoesNotKnow() {
+        var json = """
+                [ {
+                  "id" : "019f0001-a001-7001-8001-a00000000002",
+                  "citationName" : "ref-aristolochia",
+                  "subjectDomain" : "plants",
+                  "subjectRank" : "GENUS",
+                  "subjectName" : "aristolochia",
+                  "note" : null
+                } ]
+                """;
+
+        assertThatThrownBy(() -> CitationAssociationJson.parseAll(json, resolver))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Unknown citation subject domain: plants");
     }
 }

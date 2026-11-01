@@ -10,9 +10,18 @@ import java.util.function.Function;
 public class CitationAssociationTestEntitySource
         extends TestEntitySource<CitationAssociationId, CitationAssociation> {
 
+    /**
+     * Resolves the cross-domain subject ref both ways for
+     * {@link CitationAssociationJson}. This is the mock stack's wiring point —
+     * the single place library's in-memory data names a subject domain, and the
+     * one line to change when a second subject domain appears.
+     */
+    private static final EntityRefResolver SUBJECT_RESOLVER = new InsectsEntityRefResolverMock();
+
     public CitationAssociationTestEntitySource(NaturalistDatabase database) {
         super(database);
-        loadFile("library/citation-associations.json", CitationAssociationJson::parseAll);
+        loadFile("library/citation-associations.json",
+                json -> CitationAssociationJson.parseAll(json, SUBJECT_RESOLVER));
     }
 
     @Override
@@ -45,7 +54,7 @@ public class CitationAssociationTestEntitySource
 
     @Override
     protected Object writable(CitationAssociation entity) {
-        return CitationAssociationJson.fromEntity(entity);
+        return CitationAssociationJson.fromEntity(entity, SUBJECT_RESOLVER);
     }
 
     @Override

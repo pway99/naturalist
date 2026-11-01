@@ -3,12 +3,7 @@ package com.naturalist.library;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.authority.CitationName;
-import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
-import com.naturalist.ddd.EntityName;
-import com.naturalist.insects.InsectRankName;
-import com.naturalist.insects.InsectsDomain;
-import com.naturalist.taxonomy.LinealRank;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
@@ -21,12 +16,27 @@ import java.util.UUID;
  * On-disk shape of {@link CitationAssociation} in
  * {@code library/citation-associations.json}.
  *
- * <p>The entity's {@link EntityRef} subject pairs a {@link DomainId} — an open
- * interface — with an abstract {@link EntityName}. Jackson can round-trip
- * neither on its own, which is why this catalog needs a hand-written DTO where
- * every other catalog serializes its entity directly. The DTO flattens the pair
- * into {@code subjectDomain} / {@code subjectRank} / {@code subjectName} and
- * reconstructs the typed values on read.
+ * <p>The entity's {@link EntityRef} subject pairs a
+ * {@link com.naturalist.catalog.DomainId} — an open interface — with an abstract
+ * {@link com.naturalist.ddd.EntityName}. Jackson can round-trip neither on its
+ * own, which is why this catalog needs a hand-written DTO where every other
+ * catalog serializes its entity directly. The DTO flattens the pair into
+ * {@code subjectDomain} / {@code subjectRank} / {@code subjectName}.
+ *
+ * <h2>Why both directions take a resolver</h2>
+ * Flattening and rebuilding the pair needs the owning domain's factory, and the
+ * rank discriminator is encoded in the concrete {@code EntityName} subtype — so
+ * neither direction can be done generically. This DTO therefore names no domain
+ * at all: it delegates both to an {@link EntityRefResolver}, the same port the
+ * {@code library-repository-rdbms} adapter is handed at the composition root.
+ *
+ * <p>It used to resolve the pair inline, with a {@code case "insects"} switch and
+ * an {@code instanceof InsectRankName} check. That duplicated
+ * {@code InsectsEntityRefResolver} branch for branch, and it made the catalog
+ * file insects-only — a plant or chemistry subject threw
+ * {@code IllegalArgumentException} from inside library's own serialization.
+ * Adding a second subject domain is now a different resolver rather than an
+ * edit here.
  *
  * <p>Both directions are declared here so
  * {@link CitationAssociationTestEntitySource} can register this shape as its
@@ -43,15 +53,14 @@ record CitationAssociationJson(
 ) {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final InsectsDomain INSECTS = new InsectsDomain();
 
-    static List<CitationAssociation> parseAll(String json) {
+    static List<CitationAssociation> parseAll(String json, EntityRefResolver resolver) {
         try {
             List<CitationAssociationJson> dtos =
                     MAPPER.readValue(json, new TypeReference<>() {});
             List<CitationAssociation> entities = new ArrayList<>(dtos.size());
             for (CitationAssociationJson dto : dtos) {
-                entities.add(dto.toEntity());
+                entities.add(dto.toEntity(resolver));
             }
             return entities;
         } catch (IOException e) {
@@ -60,49 +69,23 @@ record CitationAssociationJson(
         }
     }
 
-    static CitationAssociationJson fromEntity(CitationAssociation association) {
+    static CitationAssociationJson fromEntity(CitationAssociation association,
+                                              EntityRefResolver resolver) {
         EntityRef subject = association.subject();
-        EntityName name = subject.name();
         return new CitationAssociationJson(
                 association.id().value().toString(),
                 association.citationName().value(),
                 subject.domain().value(),
-                rankOf(name),
-                name.value(),
+                resolver.rankOf(subject),
+                subject.name().value(),
                 association.note());
     }
 
-    CitationAssociation toEntity() {
+    CitationAssociation toEntity(EntityRefResolver resolver) {
         return new CitationAssociation(
                 CitationAssociationId.of(UUID.fromString(id)),
                 CitationName.of(citationName),
-                new EntityRef(resolveDomain(subjectDomain),
-                        resolveEntityName(subjectDomain, subjectRank, subjectName)),
+                resolver.resolve(subjectDomain, subjectRank, subjectName),
                 note);
-    }
-
-    private static String rankOf(EntityName name) {
-        if (name instanceof InsectRankName rankName) {
-            return rankName.rank().name();
-        }
-        throw new IllegalArgumentException(
-                "Unsupported citation subject name type: " + name.getClass().getName());
-    }
-
-    private static DomainId resolveDomain(String domain) {
-        return switch (domain) {
-            case "insects" -> INSECTS;
-            default -> throw new IllegalArgumentException("Unknown domain: " + domain);
-        };
-    }
-
-    private static EntityName resolveEntityName(String domain, String rank, String slug) {
-        if ("insects".equals(domain)) {
-            // InsectRankName is a sealed interface that does not itself extend
-            // EntityName — every permit implements both separately — so the
-            // conversion needs an explicit cast rather than a plain return.
-            return (EntityName) InsectRankName.of(slug, LinealRank.valueOf(rank));
-        }
-        throw new IllegalArgumentException("Unknown domain: " + domain);
     }
 }
