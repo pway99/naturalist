@@ -90,7 +90,6 @@ public class InsectsController {
     private final DescriptionRenderer descriptionRenderer;
     private final ImageStore imageStore;
     private final InsectIdentificationCommand identificationCommand;
-    private final InsectAddPhotoCommand addPhotoCommand;
     private final GlossaryLinker glossaryLinker;
 
     InsectsController(Resilience resilience,
@@ -126,7 +125,6 @@ public class InsectsController {
                 resilience.rateLimiter("vision.identification"),
                 budget, visionService, new NoOpTextGenerationService(), eolAuthority,
                 libraryCommand, insectQuery, featureSearch, catalogIdentificationTransaction);
-        this.addPhotoCommand = new InsectAddPhotoCommand(addPhotoTransaction);
     }
 
     /**
@@ -854,14 +852,12 @@ public class InsectsController {
                     HttpServletRequest request) throws IOException {
         var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
-        FileName storedFileName;
         try {
-            storedFileName = imageStore.store("insects", ImageUpload.of(imageFile.getBytes()));
+            insectCommand.photos().add(species, ImageUpload.of(imageFile.getBytes()),
+                    me.orElse(null), notes, location);
         } catch (InvariantViolationException invalid) {
             return "redirect:/insects/" + name + "?error=image";
         }
-        addPhotoCommand.addPhoto(species, storedFileName,
-                me.orElse(null), notes, location);
         return "redirect:/insects/" + name;
     }
 

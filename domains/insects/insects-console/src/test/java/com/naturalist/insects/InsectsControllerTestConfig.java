@@ -69,7 +69,7 @@ class InsectsControllerTestConfig {
 
     @Bean
     InsectsController insectsController() {
-        InsectsTestContext insects = InsectsTestContext.create(DATABASE);
+        InsectsTestContext insects = InsectsTestContext.create(DATABASE, IMAGE_STORE);
         LibraryTestContext library = LibraryTestContext.create(DATABASE);
         return new InsectsController(
                 Resilience.noOp(),

@@ -32,5 +32,13 @@
             <groupId>com.naturalist</groupId>
             <artifactId>library-test-context</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>image-store-filesystem</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>observation</artifactId>
+        </dependency>
     </dependencies>
 </project>

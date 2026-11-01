@@ -6,6 +6,13 @@ import com.naturalist.insects.lifestage.InsectLifeStageTestContext;
 import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.library.CitationQuery;
 import com.naturalist.library.LibraryTestContext;
+import com.naturalist.observation.ImageStore;
+import com.naturalist.observation.filesystem.FilesystemImageStore;
+import com.naturalist.resilience.Resilience;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 
 /**
  * Pre-wired, in-memory read and write surface for the insects bounded context.
@@ -38,7 +45,7 @@ public class InsectsTestContext {
     private final InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
     private final InsectAddPhotoTransaction addPhotoTransaction;
 
-    private InsectsTestContext(NaturalistDatabase db) {
+    private InsectsTestContext(NaturalistDatabase db, ImageStore imageStore) {
         InsectRepository repository = InsectRepository.create(
                 new InsectSpeciesRepositoryMock(db),
                 new InsectImageRepositoryMock(db),
@@ -88,15 +95,25 @@ public class InsectsTestContext {
                 speciesCommand, imageCommand, observationCommand,
                 orderCommand, familyCommand, genusCommand,
                 featureCommand, featureAssignmentCommand);
+        this.addPhotoTransaction = new InsectAddPhotoTransaction(this.entityCommands);
         this.insectCommand = new InsectCommandImpl(this.entityCommands,
-                new InsectSightingCommandImpl(observationCommand, observationQuery));
+                new InsectSightingCommandImpl(observationCommand, observationQuery),
+                new InsectPhotoCommandImpl(imageStore, this.addPhotoTransaction));
         this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
                 this.entityCommands, this.insectQuery);
-        this.addPhotoTransaction = new InsectAddPhotoTransaction(this.entityCommands);
     }
 
     public static InsectsTestContext create(NaturalistDatabase db) {
-        return new InsectsTestContext(db);
+        try {
+            return create(db, new FilesystemImageStore(
+                    Files.createTempDirectory("insects-images"), Resilience.noOp()));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public static InsectsTestContext create(NaturalistDatabase db, ImageStore imageStore) {
+        return new InsectsTestContext(db, imageStore);
     }
 
     public InsectQuery insectQuery() {

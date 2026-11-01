@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.EntityCommand;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
@@ -50,6 +51,8 @@ public interface InsectCommand {
     FeatureAssignmentCommand featureAssignments();
 
     SightingCommand sightings();
+
+    PhotoCommand photos();
 
     /**
      * Use-case command: a naturalist's field sightings of an insect.
@@ -118,5 +121,18 @@ public interface InsectCommand {
     interface FeatureAssignmentCommand
             extends EntityCommand<InsectFeatureAssignmentId,
                     OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
+    }
+
+    /**
+     * Use-case command: adding a photo to a catalog entry through the image store.
+     */
+    interface PhotoCommand {
+        /**
+         * Stores the upload, then persists an image at {@code subject} (plus an observation when
+         * {@code naturalist} is given) atomically; if persistence fails the stored file is deleted.
+         *
+         * @throws com.naturalist.exception.InvariantViolationException for an invalid upload — nothing is stored
+         */
+        void add(InsectRankName subject, ImageUpload upload, @Nullable NaturalistName naturalist, @Nullable String notes, @Nullable String location);
     }
 }

@@ -80,5 +80,10 @@
             <artifactId>library-test-context</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>image-store-filesystem</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
