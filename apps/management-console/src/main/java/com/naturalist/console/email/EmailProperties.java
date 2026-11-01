@@ -18,9 +18,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * surrendered when the victim clicks it. Defaults to {@code http://localhost:8080} so a
  * deployment that forgets to set it sends links that fail safely (they go nowhere), never
  * links that go somewhere else.
+ *
+ * <p>{@code logOnly} is the explicit opt-in to the kernel's {@code LoggingEmailSender} when
+ * no {@code spring.mail.*} transport is configured. It defaults to {@code false} and the
+ * composition root refuses to boot without a transport unless it is {@code true}: the
+ * log-only sender writes every verification and reset token to the log beside the recipient's
+ * address, which in a deployment is an account-takeover primitive for anyone with log access.
+ * Dev and CI set it; a deployment never should.
  */
 @ConfigurationProperties("naturalist.email")
-public record EmailProperties(String from, String publicUrl) {
+public record EmailProperties(String from, String publicUrl, boolean logOnly) {
 
     public EmailProperties {
         if (from == null || from.isBlank()) {

@@ -58,3 +58,7 @@ naturalist:
     # attacker controls. Set to the deployment's real origin (https://…, no trailing slash);
     # the default makes a forgotten setting fail safe (dead links), not dangerous (their links).
     public-url: http://localhost:8080
+    # naturalist.email.log-only is deliberately NOT set here. With no spring.mail.* block the
+    # app REFUSES to boot unless --naturalist.email.log-only=true is passed explicitly: the
+    # log-only sender prints every verification / reset token beside the recipient address,
+    # which is fine on a developer's machine and an account-takeover primitive in a deployment.

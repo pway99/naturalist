@@ -33,6 +33,9 @@ naturalist:
     # Deliberately NOT the MockMvc host (localhost): the registration test proves the emailed
     # link comes from this setting and not from the request.
     public-url: http://naturalist.test
+    # No spring.mail.* in tests, so the composition root needs this explicit opt-in to the
+    # log-only sender — without it the context refuses to start (EmailConfigurationTest).
+    log-only: true
 
 gg:
   jte:

@@ -198,6 +198,12 @@ The identify call thus has three cleanly-separated, separately-owned gates:
   of whether the email exists (no account enumeration); mints a `RESET_PASSWORD`
   token (~1h) when it does. `POST /reset` (token + new password) → `resetPassword`.
   Resends rate-limited (resilience limiter) against email-bombing.
+  **Session termination is part of this slice:** a successful `resetPassword`, and an
+  admin `suspend`, must expire every live session of the account (Spring
+  `SessionRegistry` + `HttpSessionEventPublisher`, expire-by-principal), otherwise a
+  session an attacker already holds outlives the credential change. Not built on the
+  registration branch because neither route has a production caller there yet
+  (security review 2026-10-31, finding #8).
 - **Change handle** (`POST /naturalists/me/handle`, authenticated):
   `naturalistCommand.rename(naturalistName, newHandle)`. Stable key unchanged.
 
