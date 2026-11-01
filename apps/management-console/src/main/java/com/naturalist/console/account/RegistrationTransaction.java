@@ -2,10 +2,12 @@ package com.naturalist.console.account;
 
 import com.naturalist.account.AccountCommand;
 import com.naturalist.account.AccountName;
+import com.naturalist.ddd.EmailAddress;
 import com.naturalist.naturalist.EcologicalStage;
 import com.naturalist.naturalist.NaturalistCommand;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.naturalist.NaturalistRole;
+import com.naturalist.observability.Observer;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,18 +22,35 @@ import org.springframework.stereotype.Component;
  * half-built identity. {@code AccountCommand}'s own methods are independently transactional
  * and join this one by {@code REQUIRED} propagation.
  *
+ * <p>Like every command, query and {@code Transaction} in the system it observes its
+ * arguments first ({@code observer.arguments("register", ...)}) and throws
+ * {@code InvariantViolationException} before any work: before the password is encoded,
+ * before either domain is written. That is what makes a bad form submission attributable
+ * to registration in the metrics (class {@code RegistrationTransaction}, method
+ * {@code register}) rather than to whichever downstream command happened to notice. It is
+ * also the only place the minimum password length can be enforced — the account port only
+ * ever sees the encoded hash — so that rule lives here as an observed constraint, not as a
+ * controller {@code if}.
+ *
  * <p>Named a {@code Transaction}, not a {@code *Service} (CQS/transactional naming). It does
- * not send the verification email: that is a post-commit side effect the controller performs
- * on the returned {@link Result}, so a mail hiccup never rolls back a good registration.
+ * not extend the kernel {@code data.Transaction}: that template persists one
+ * {@code Aggregate} and returns nothing, whereas this composes two domains' ports and must
+ * hand back the raw verification token. It does not send the verification email: that is a
+ * post-commit side effect the controller performs on the returned {@link Result}, so a mail
+ * hiccup never rolls back a good registration.
  */
 @Component
 class RegistrationTransaction {
+
+    /** Server-side floor for a self-chosen password; the form's {@code minlength} mirrors it. */
+    static final int MIN_PASSWORD_LENGTH = 8;
 
     /** A brand-new self-registrant is an ecological visitor, newly curious — not a child
      *  ({@code WONDER}) nor an established practitioner. */
     private static final NaturalistRole SELF_REGISTERED_ROLE = NaturalistRole.VISITOR;
     private static final EcologicalStage SELF_REGISTERED_STAGE = EcologicalStage.CURIOUS;
 
+    private final Observer observer = Observer.forClass(getClass());
     private final AccountCommand accountCommand;
     private final NaturalistCommand naturalistCommand;
     private final PasswordEncoder passwordEncoder;
@@ -46,17 +65,29 @@ class RegistrationTransaction {
 
     /**
      * Registers a new account + naturalist. The password is encoded here — the account port
-     * never sees plaintext. Propagates {@code DuplicateEmailException} (email taken),
-     * {@code InvariantViolationException} (malformed email, blank/short password, taken or
-     * invalid handle) for the controller to turn into a form error.
+     * never sees plaintext. Throws {@code InvariantViolationException} first for any invalid
+     * input (malformed email, blank or too-short password, blank handle or given name) — its
+     * {@code violations()} name the failing fields ({@code email}, {@code password},
+     * {@code password.length}, {@code publicHandle}, {@code givenName}) for the controller to
+     * render per field — and propagates {@code DuplicateEmailException} (email taken) and the
+     * naturalists domain's own {@code InvariantViolationException} (taken handle).
      *
      * @return the minted handles, the login email, and the raw verification token to email.
      */
     @Transactional
-    Result register(String email, String rawPassword, String publicHandle,
+    Result register(EmailAddress email, String rawPassword, String publicHandle,
                     String givenName, @Nullable String familyName) {
+        observer.arguments("register", i -> i
+                        .emailAddress(email, "email")
+                        .notBlank(rawPassword, "password")
+                        .whenNotNull(rawPassword, c -> c
+                                .atLeast(rawPassword.length(), MIN_PASSWORD_LENGTH, "password.length"))
+                        .notBlank(publicHandle, "publicHandle")
+                        .notBlank(givenName, "givenName"))
+                .throwWhenInvalid();
+
         AccountCommand.Registration registration =
-                accountCommand.register(email, passwordEncoder.encode(rawPassword));
+                accountCommand.register(email.value(), passwordEncoder.encode(rawPassword));
         NaturalistName naturalist = naturalistCommand.create(
                 registration.account(), publicHandle, givenName, familyName,
                 SELF_REGISTERED_ROLE, SELF_REGISTERED_STAGE, null);
@@ -65,5 +96,5 @@ class RegistrationTransaction {
 
     /** The outcome of {@link #register}: the minted handles, the login email, and the raw
      *  verification token to email (returned once, never stored in the clear). */
-    record Result(AccountName account, NaturalistName naturalist, String email, String rawToken) {}
+    record Result(AccountName account, NaturalistName naturalist, EmailAddress email, String rawToken) {}
 }

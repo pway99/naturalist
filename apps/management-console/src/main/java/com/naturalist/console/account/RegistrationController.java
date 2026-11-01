@@ -3,10 +3,11 @@ package com.naturalist.console.account;
 import com.naturalist.account.AccountCommand;
 import com.naturalist.account.DuplicateEmailException;
 import com.naturalist.account.InvalidTokenException;
-import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.ddd.EmailAddress;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.notification.EmailMessage;
 import com.naturalist.notification.EmailSender;
+import com.naturalist.observability.Constraint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -26,6 +27,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Public self-registration and email verification. Both routes are {@code permitAll} in
@@ -47,8 +51,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  */
 @Controller
 class RegistrationController {
-
-    private static final int MIN_PASSWORD_LENGTH = 8;
 
     private final RegistrationTransaction registration;
     private final EmailSender emailSender;
@@ -87,37 +89,29 @@ class RegistrationController {
                   @RequestParam String givenName,
                   @RequestParam(required = false) String familyName,
                   HttpServletRequest request, HttpServletResponse response, Model model) {
-        if (password == null || password.length() < MIN_PASSWORD_LENGTH) {
-            // The account port only ever sees the encoded hash (never blank), so it cannot
-            // enforce a minimum length — this app-layer policy does, server-side, so the
-            // client-side minlength on the form cannot be the only guard.
-            return reRender(model, request,
-                    "Please choose a password of at least " + MIN_PASSWORD_LENGTH + " characters.",
-                    email, publicHandle, givenName, familyName);
-        }
         RegistrationTransaction.Result result;
         try {
-            result = registration.register(email, password, publicHandle, givenName, blankToNull(familyName));
+            result = registration.register(
+                    EmailAddress.of(email), password, publicHandle, givenName, blankToNull(familyName));
         } catch (DuplicateEmailException alreadyRegistered) {
             return reRender(model, request,
                     "That email is already registered — try logging in instead.",
                     email, publicHandle, givenName, familyName);
         } catch (InvariantViolationException invalid) {
-            return reRender(model, request,
-                    "Please check your details: a valid email, a password of at least 8 characters, "
-                            + "and an unused handle are required.",
+            // The transaction observed the form's fields and named the failing ones; render those.
+            return reRender(model, request, invalidDetailsMessage(invalid),
                     email, publicHandle, givenName, familyName);
         }
 
         String verifyUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/verify").queryParam("token", result.rawToken()).toUriString();
         emailSender.send(new EmailMessage(
-                EmailAddress.of(result.email()),
+                result.email(),
                 "Verify your email — The Amateur Naturalist",
                 "Welcome! Confirm your email address to unlock vision identification:\n\n"
                         + verifyUrl + "\n\nIf you didn't sign up, you can ignore this message."));
 
-        autoLogin(result.email(), request, response);
+        autoLogin(result.email().value(), request, response);
         return "redirect:/register?registered";
     }
 
@@ -210,5 +204,31 @@ class RegistrationController {
 
     private static String nullToBlank(String value) {
         return value == null ? "" : value;
+    }
+
+    private static String invalidDetailsMessage(InvariantViolationException invalid) {
+        // Violation names are scoped (RegistrationTransaction.register.<field>); match on the tail.
+        List<String> needed = new ArrayList<>();
+        for (Constraint<?> violation : invalid.violations()) {
+            String field = violation.name();
+            if (field.endsWith("password.length")) {
+                needed.add("a password of at least " + RegistrationTransaction.MIN_PASSWORD_LENGTH + " characters");
+            } else if (field.endsWith(".password")) {
+                needed.add("a password");
+            } else if (field.endsWith(".email")) {
+                needed.add("a valid email");
+            } else if (field.endsWith(".publicHandle")) {
+                needed.add("an unused handle");
+            } else if (field.endsWith(".givenName")) {
+                needed.add("a first name");
+            }
+        }
+        if (needed.isEmpty()) {
+            // A violation raised below the registration boundary (e.g. the naturalists domain
+            // rejecting a taken handle) — name nothing we cannot vouch for.
+            return "Please check your details: a valid email, a password of at least "
+                    + RegistrationTransaction.MIN_PASSWORD_LENGTH + " characters, and an unused handle are required.";
+        }
+        return "Please check your details — we need " + String.join(", ", needed) + ".";
     }
 }

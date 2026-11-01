@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Full-stack ({@code @SpringBootTest}, real security filter chain) coverage of public
@@ -156,7 +157,7 @@ class RegistrationFlowWebMvcTest {
                         .param("email", "short@example.com").param("password", "tiny")
                         .param("publicHandle", "short-pw").param("givenName", "Shorty"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("error"))
+                .andExpect(model().attribute("error", containsString("8 characters")))
                 .andExpect(unauthenticated());
 
         assertThat(accountQuery.getByEmail("short@example.com")).isEmpty();
