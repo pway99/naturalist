@@ -1,5 +1,6 @@
 package com.naturalist.library;
 
+import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.insects.InsectRankName;
@@ -34,6 +35,11 @@ import com.naturalist.taxonomy.LinealRank;
 final class InsectsEntityRefResolverMock implements EntityRefResolver {
 
     private static final InsectsDomain INSECTS = new InsectsDomain();
+
+    @Override
+    public DomainId domain() {
+        return INSECTS;
+    }
 
     @Override
     public String rankOf(EntityRef subject) {

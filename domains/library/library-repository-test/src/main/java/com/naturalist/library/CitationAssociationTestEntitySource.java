@@ -12,11 +12,17 @@ public class CitationAssociationTestEntitySource
 
     /**
      * Resolves the cross-domain subject ref both ways for
-     * {@link CitationAssociationJson}. This is the mock stack's wiring point —
-     * the single place library's in-memory data names a subject domain, and the
-     * one line to change when a second subject domain appears.
+     * {@link CitationAssociationJson}. This is the mock stack's wiring point — the
+     * single place library's in-memory data names its subject domains, and the one
+     * list to extend when another domain becomes citable.
+     *
+     * <p>Mirrors the app, where {@code CompositeEntityRefResolver} composes the same
+     * two domains from Spring-discovered {@code @DomainService} beans.
      */
-    private static final EntityRefResolver SUBJECT_RESOLVER = new InsectsEntityRefResolverMock();
+    private static final EntityRefResolver SUBJECT_RESOLVER =
+            new CompositeEntityRefResolverMock(List.of(
+                    new InsectsEntityRefResolverMock(),
+                    new PlantsEntityRefResolverMock()));
 
     public CitationAssociationTestEntitySource(NaturalistDatabase database) {
         super(database);

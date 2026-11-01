@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.infrastructure.DomainService;
@@ -12,16 +13,25 @@ import com.naturalist.taxonomy.LinealRank;
  * {@code library-repository-rdbms} adapter may not). Registered as a {@code @DomainService} bean so
  * the app auto-wires it into {@code CitationAssociationEntityRepositoryRdbms}.
  *
- * <p>Insects is the only domain that is a citation subject today; when a second one appears, this
- * grows into a per-domain fragment behind a composite (mirroring {@code EntityRefLinker}). The rank
- * discriminator lives in the concrete {@link InsectRankName} permit, so both directions dispatch on
- * it: {@link #rankOf} reads {@code rank()} off the typed name, {@link #resolve} rebuilds the permit
- * via {@link InsectRankName#of(String, LinealRank)}.
+ * <p>This answers for insects alone, and says so via {@link #domain()}. A second subject domain
+ * ({@code PlantsEntityRefResolver}) now sits beside it, and
+ * {@code CompositeEntityRefResolver} in the app dispatches between them on the domain slug — the
+ * per-domain-fragment-behind-a-composite shape this class's javadoc anticipated, keyed by slug
+ * rather than walking delegates like {@code EntityRefLinker} does.
+ *
+ * <p>The rank discriminator lives in the concrete {@link InsectRankName} permit, so both directions
+ * dispatch on it: {@link #rankOf} reads {@code rank()} off the typed name, {@link #resolve} rebuilds
+ * the permit via {@link InsectRankName#of(String, LinealRank)}.
  */
 @DomainService
 public final class InsectsEntityRefResolver implements EntityRefResolver {
 
     private static final InsectsDomain INSECTS = new InsectsDomain();
+
+    @Override
+    public DomainId domain() {
+        return INSECTS;
+    }
 
     @Override
     public String rankOf(EntityRef subject) {

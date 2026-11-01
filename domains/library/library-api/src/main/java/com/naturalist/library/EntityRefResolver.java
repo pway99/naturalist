@@ -1,5 +1,6 @@
 package com.naturalist.library;
 
+import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityRef;
 
 /**
@@ -23,10 +24,29 @@ import com.naturalist.catalog.EntityRef;
  * {@link #rankOf}.
  *
  * <p>Implementations live in a subject domain's {@code *-core} (e.g. an insects resolver) or in the
- * app, and are registered as a {@code @DomainService} bean. The in-memory mock resolves the same pair
- * directly (it may import the subject domains); this port is the production equivalent of that logic.
+ * app, and are registered as a {@code @DomainService} bean. The in-memory mock stack ships its own
+ * api-only equivalents in {@code library-repository-test}, because the DAG puts a {@code *-core} out
+ * of its reach.
+ *
+ * <h2>One resolver per subject domain, composed</h2>
+ * An implementation answers for exactly one domain, which it names via {@link #domain()}. Serving
+ * more than one subject domain is therefore a composite that dispatches on the domain slug — see
+ * {@code CompositeEntityRefResolver} in the app and {@code CompositeEntityRefResolverMock} in
+ * {@code library-repository-test}.
+ *
+ * <p>{@link #domain()} exists so that dispatch can be a map lookup. Without it a composite would
+ * have to call each delegate and catch the {@link IllegalArgumentException} below to learn whether
+ * the delegate recognised the ref — exceptions as control flow, and order-dependent besides. It also
+ * lets a composite reject two delegates claiming one slug at construction, the same
+ * fail-fast-on-collision rule {@code CatalogAssembly} applies to {@code DomainId}s.
  */
 public interface EntityRefResolver {
+
+    /**
+     * The one domain whose subject refs this resolver handles. A composite keys its delegates on
+     * {@link DomainId#value()}, so two resolvers must never report the same slug.
+     */
+    DomainId domain();
 
     /**
      * The stored rank discriminator (e.g. {@code "ORDER"}, {@code "FAMILY"}) for a subject ref,

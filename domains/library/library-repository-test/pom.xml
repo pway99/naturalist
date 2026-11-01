@@ -24,9 +24,21 @@
             <groupId>com.naturalist</groupId>
             <artifactId>identifiers-test</artifactId>
         </dependency>
+        <!-- Subject domains for CitationAssociation. Each is needed for exactly one type: the
+             concrete DomainId (InsectsDomain / PlantsDomain) that rebuilding a typed EntityRef
+             must name. The rank-name factories come from identifiers above.
+
+             This is the open deviation from DAG rule 3 ("repository modules depend only on their
+             own api"), tracked in the ADR-004 amendment, and it grows by one entry per citable
+             domain. It would collapse to zero if DomainId were obtainable without importing the
+             owning domain's api. -->
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>insects-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>plants-api</artifactId>
         </dependency>
     </dependencies>
 </project>

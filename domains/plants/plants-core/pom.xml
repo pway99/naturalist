@@ -24,6 +24,12 @@
             <groupId>com.naturalist</groupId>
             <artifactId>framework</artifactId>
         </dependency>
+        <!-- PlantsEntityRefResolver implements library's EntityRefResolver port, so plant taxa
+             can be citation subjects. DAG rule 2: a core may import another domain's api. -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-api</artifactId>
+        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency>
