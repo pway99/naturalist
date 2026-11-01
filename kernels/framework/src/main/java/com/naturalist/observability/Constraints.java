@@ -262,6 +262,22 @@ public class Constraints {
         return add(new EmailFormatConstraint<>(t, valueFunction, name));
     }
 
+    /**
+     * The typed form of {@link #email(String, String)} for an {@link EmailAddress}
+     * component. Observes the same {@code EmailFormatConstraint} directly — rather than
+     * reaching the address through the generic {@link #namedValue} path — so the metric
+     * tag reads {@code constraint=EmailFormatConstraint} and the diagnostic names the
+     * actual failure (null, empty, too long, malformed), exactly as a raw-string
+     * {@code email} check does. A null address fails as a null carrier.
+     */
+    public Constraints emailAddress(EmailAddress address, String name) {
+        return add(new EmailFormatConstraint<>(address, EmailAddress::value, name));
+    }
+
+    public <T> Constraints emailAddress(T t, Function<T, EmailAddress> valueFunction, String name) {
+        return add(new EmailFormatConstraint<>(t, valueFunction.andThen(EmailAddress::value), name));
+    }
+
     public <R> Constraints notNull(R value, String name) {
         return notNull(value, Function.identity(), name);
     }

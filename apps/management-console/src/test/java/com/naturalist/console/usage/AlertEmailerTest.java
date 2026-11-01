@@ -44,7 +44,7 @@ class AlertEmailerTest {
         emailer.send(ALERT);
 
         assertThat(sender.sent).isNotNull();
-        assertThat(sender.sent.to()).isEqualTo("alerts@example.com");
+        assertThat(sender.sent.to().value()).isEqualTo("alerts@example.com");
         assertThat(sender.sent.subject()).isEqualTo("[naturalist] WARNING DAILY");
         assertThat(sender.sent.body()).isEqualTo("daily identification budget warning: 40/50 used");
     }

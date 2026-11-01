@@ -103,7 +103,7 @@ class RegistrationFlowWebMvcTest {
 
         // The verification link was emailed.
         assertThat(emailSender.sent).hasSize(1);
-        assertThat(emailSender.sent.getFirst().to()).isEqualTo(email);
+        assertThat(emailSender.sent.getFirst().to().value()).isEqualTo(email);
         assertThat(emailSender.sent.getFirst().body()).contains("/verify?token=");
     }
 

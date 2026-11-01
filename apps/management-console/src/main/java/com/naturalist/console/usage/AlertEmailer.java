@@ -1,5 +1,6 @@
 package com.naturalist.console.usage;
 
+import com.naturalist.ddd.EmailAddress;
 import com.naturalist.notification.EmailMessage;
 import com.naturalist.notification.EmailSender;
 import com.naturalist.usage.UsageAlert;
@@ -29,7 +30,7 @@ class AlertEmailer {
 
     void send(UsageAlert alert) {
         emailSender.send(new EmailMessage(
-                properties.alertEmail(),
+                EmailAddress.of(properties.alertEmail()),
                 "[naturalist] " + alert.kind() + " " + alert.scope(),
                 alert.message()));
     }

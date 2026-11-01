@@ -2,6 +2,7 @@ package com.naturalist.notification.spring;
 
 import com.naturalist.notification.EmailMessage;
 import com.naturalist.notification.EmailSender;
+import com.naturalist.observability.Observer;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -28,6 +29,7 @@ public final class SmtpEmailSender implements EmailSender {
 
     private static final Logger LOG = System.getLogger(SmtpEmailSender.class.getName());
 
+    private final Observer observer = Observer.forClass(getClass());
     private final MailSender mailSender;
     private final String fromAddress;
 
@@ -38,9 +40,11 @@ public final class SmtpEmailSender implements EmailSender {
 
     @Override
     public void send(EmailMessage message) {
+        observer.arguments("send", i -> i.valueObject(message, "message"))
+                .throwWhenInvalid();
         var mail = new SimpleMailMessage();
         mail.setFrom(fromAddress);
-        mail.setTo(message.to());
+        mail.setTo(message.to().value());
         mail.setSubject(message.subject());
         mail.setText(message.body());
         try {
@@ -48,7 +52,7 @@ public final class SmtpEmailSender implements EmailSender {
         } catch (MailException transportFailure) {
             LOG.log(Level.WARNING,
                     "[email:smtp] delivery to {0} failed; swallowed (best-effort). subject: {1}",
-                    message.to(), message.subject());
+                    message.to().value(), message.subject());
         }
     }
 }

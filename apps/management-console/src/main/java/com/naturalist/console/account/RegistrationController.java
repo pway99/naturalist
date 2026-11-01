@@ -4,6 +4,7 @@ import com.naturalist.account.AccountCommand;
 import com.naturalist.account.DuplicateEmailException;
 import com.naturalist.account.InvalidTokenException;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.ddd.EmailAddress;
 import com.naturalist.notification.EmailMessage;
 import com.naturalist.notification.EmailSender;
 import jakarta.servlet.http.HttpServletRequest;
@@ -111,7 +112,7 @@ class RegistrationController {
         String verifyUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/verify").queryParam("token", result.rawToken()).toUriString();
         emailSender.send(new EmailMessage(
-                result.email(),
+                EmailAddress.of(result.email()),
                 "Verify your email — The Amateur Naturalist",
                 "Welcome! Confirm your email address to unlock vision identification:\n\n"
                         + verifyUrl + "\n\nIf you didn't sign up, you can ignore this message."));

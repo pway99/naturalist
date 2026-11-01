@@ -1,5 +1,7 @@
 package com.naturalist.notification.spring;
 
+import com.naturalist.ddd.EmailAddress;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.notification.EmailMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.mail.MailException;
@@ -8,6 +10,7 @@ import org.springframework.mail.SimpleMailMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Unit tests for {@link SmtpEmailSender} against a hand-built {@link MailSender} fake — no
@@ -18,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class SmtpEmailSenderTest {
 
     private static final EmailMessage MESSAGE = new EmailMessage(
-            "naturalist@example.com",
+            EmailAddress.of("naturalist@example.com"),
             "Verify your email",
             "Open http://localhost:8080/verify?token=abc to finish signing up.");
 
@@ -70,5 +73,16 @@ class SmtpEmailSenderTest {
         public void send(SimpleMailMessage... simpleMessages) throws MailException {
             throw new MailException("transport down") {};
         }
+    }
+
+    @Test
+    void rejectsInvalidMessageBeforeReachingTransport() {
+        RecordingMailSender transport = new RecordingMailSender();
+        SmtpEmailSender sender = new SmtpEmailSender(transport, "no-reply@naturalist.local");
+        EmailMessage blankRecipient = new EmailMessage(EmailAddress.of(" "), "Verify your email", "body");
+
+        assertThatThrownBy(() -> sender.send(blankRecipient))
+                .isInstanceOf(InvariantViolationException.class);
+        assertThat(transport.sent).isNull();
     }
 }
