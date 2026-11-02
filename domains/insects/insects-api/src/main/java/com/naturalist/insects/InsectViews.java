@@ -6,6 +6,8 @@ import com.naturalist.observability.Constraints;
 import com.naturalist.observation.OrganismObservation;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -17,6 +19,11 @@ import java.util.function.Consumer;
 public interface InsectViews {
     /** What the page knows about the naturalist looking at it; {@link #anonymous()} when no one is signed in. */
     record Viewer(boolean collected, InsectEntityCollections.ImageCollection ownImages, Map<InsectImageId, OrganismObservation<InsectObservationId, InsectRankName>> ownObservationByImage) implements ValueObject {
+        public Viewer {
+            // Unmodifiable but insertion-ordered; null is left for the invariant to report.
+            ownObservationByImage = ownObservationByImage == null ? null : Collections.unmodifiableMap(new LinkedHashMap<>(ownObservationByImage));
+        }
+
         public static Viewer anonymous() {
             return new Viewer(false, InsectEntityCollections.ImageCollection.empty(), Map.of());
         }
@@ -48,7 +55,7 @@ public interface InsectViews {
                        @Nullable InsectFunctionalRole role, InsectEntityCollections.ImageCollection images,
                        boolean collected) implements ReadModel {
         public String displayName() {
-            return species.displayName();
+            return species.displayName(genus);
         }
 
         public String binomial() {

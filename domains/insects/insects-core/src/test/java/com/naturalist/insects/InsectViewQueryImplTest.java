@@ -9,7 +9,6 @@ import com.naturalist.observation.ImageUpload;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.Map;
@@ -64,6 +63,7 @@ class InsectViewQueryImplTest {
         assertThat(viewer.ownObservationByImage().get(image.id()).observedBy()).isEqualTo(FLORA);
         assertThat(viewer.ownObservationByImage().get(image.id()).id()).isEqualTo(image.observationId());
         assertThat(page.insect().observations().stream().toList()).contains(image);
+        assertThatThrownBy(() -> viewer.ownObservationByImage().clear()).isInstanceOf(UnsupportedOperationException.class);
         assertThat(views.rankPage(species, NaturalistName.of("someone-else")).orElseThrow().viewer().collected()).isFalse();
     }
 
@@ -88,11 +88,27 @@ class InsectViewQueryImplTest {
         assertThat(card.collected()).isFalse();
         assertThat(card.genus()).isNotNull();
         assertThat(card.binomial()).isEqualTo(card.species().binomial(card.genus()));
-        assertThat(card.displayName()).isEqualTo(card.species().displayName());
+        assertThat(card.displayName()).isEqualTo(card.species().displayName(card.genus()));
         assertThat(card.genusLabel()).isEqualTo(card.genus().genus().value());
         assertThat(card.familyLabel()).isNotEqualTo("\u2014");
         assertThat(card.role()).isNotNull();
         assertThat(card.images().stream().toList()).isNotEmpty();
+    }
+
+    @Test
+    void speciesCards_withoutCommonName_displaysTheBinomialNotTheSlug() {
+        InsectViews.SpeciesCard card = views.speciesCards(PageRequest.first(100), null).content().stream()
+                .filter(c -> c.species().name().equals(TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name))
+                .findFirst().orElseThrow();
+
+        assertThat(card.species().commonNames()).isEmpty();
+        assertThat(card.genus()).isNotNull();
+        assertThat(card.displayName()).isEqualTo(card.binomial()).isNotEqualTo(card.species().name().value());
+    }
+
+    @Test
+    void speciesCards_emptyPage_isEmpty() {
+        assertThat(views.speciesCards(PageRequest.of(999, 25), FLORA).content()).isEmpty();
     }
 
     @Test
@@ -137,6 +153,24 @@ class InsectViewQueryImplTest {
     }
 
     @Test
+    void collectedBy_viewerWithNoObservations_isAnEmptyLastPage() {
+        Page<InsectViews.SpeciesCard> page = views.collectedBy(FLORA, PageRequest.first(10));
+
+        assertThat(page.content()).isEmpty();
+        assertThat(page.hasNext()).isFalse();
+    }
+
+    @Test
+    void collectedBy_hugePageNumber_isEmptyNotAnOverflow() {
+        sighting(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+
+        Page<InsectViews.SpeciesCard> page = views.collectedBy(FLORA, PageRequest.of(100_000_000, 25));
+
+        assertThat(page.content()).isEmpty();
+        assertThat(page.hasNext()).isFalse();
+    }
+
+    @Test
     void speciesCards_rejectsNullRequest() {
         assertThatThrownBy(() -> views.speciesCards(null, FLORA)).isInstanceOf(InvariantViolationException.class);
     }
@@ -161,9 +195,14 @@ class InsectViewQueryImplTest {
             assertThat(card.displayName()).isEqualTo(family.displayName());
             assertThat(card.scientificName()).isEqualTo(family.family().value());
             assertThat(card.parentName()).isEqualTo(family.orderName());
-            assertThat(card.parentLabel()).isEqualTo(orders.get(family.orderName()).displayName());
+            assertThat(card.parentLabel()).isEqualTo(orders.get(family.orderName()).order().value());
         }
         assertThat(page.content()).anyMatch(c -> !c.images().stream().toList().isEmpty());
+    }
+
+    @Test
+    void familyCards_emptyPage_isEmpty() {
+        assertThat(views.familyCards(PageRequest.of(999, 25)).content()).isEmpty();
     }
 
     @Test
@@ -181,7 +220,7 @@ class InsectViewQueryImplTest {
             assertThat(card.displayName()).isEqualTo(genus.displayName());
             assertThat(card.scientificName()).isEqualTo(genus.genus().value());
             assertThat(card.parentName()).isEqualTo(genus.familyName());
-            assertThat(card.parentLabel()).isEqualTo(families.get(genus.familyName()).displayName());
+            assertThat(card.parentLabel()).isEqualTo(families.get(genus.familyName()).family().value());
         }
     }
 

@@ -381,9 +381,14 @@ public record InsectSpecies(
 
     /** The alphabetically first common name (ties broken by natural order), else the scientific slug. */
     public String displayName() {
+        return displayName(null);
+    }
+
+    /** The alphabetically first common name (ties broken by natural order), else the binomial ({@link #binomial}). */
+    public String displayName(@Nullable InsectGenus genus) {
         return commonNames.stream().map(CommonName::label)
                 .min(String.CASE_INSENSITIVE_ORDER.thenComparing(Comparator.naturalOrder()))
-                .orElse(name.value());
+                .orElseGet(() -> binomial(genus));
     }
 
     /** The genus's scientific name plus this species' epithet, or the slug when the genus is not known. */

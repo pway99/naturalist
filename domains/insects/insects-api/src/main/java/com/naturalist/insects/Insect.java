@@ -239,4 +239,9 @@ public record Insect(
     public String binomial() {
         return species == null ? "" : species.species().binomial(genus == null ? null : genus.genus());
     }
+
+    /** The identified species' first common name, else its binomial; empty when no species is present. */
+    public String speciesDisplayName() {
+        return species == null ? "" : species.species().displayName(genus == null ? null : genus.genus());
+    }
 }

@@ -9,6 +9,11 @@ Reference implementation for [ADR-021](../../docs/adr/ADR-021-persistenceid-is-a
 recognised by the naturalist. Four-level Durrell `Description`. No `id()` at the domain
 layer; the RDBMS adapter carries a numeric primary key privately.
 
+**InsectViews / InsectViewQuery** — presentation read models (`RankPage`, `SpeciesCard`,
+`RankCard`, `Viewer`) that `InsectViewQuery` assembles for the console from the biology
+`InsectQuery`; nothing in the biology refers to them. The console's read handlers bind,
+call one `InsectViewQuery` method and render.
+
 **InsectImage** — `Entity<InsectImageId>`. A photograph of an observed individual.
 Carries `InsectImageId id`, accessor `id()`. Parent reference is an
 `InsectRankName parentName` (slug) — no `insectSpeciesId`, no `withId`, no nullable
@@ -92,10 +97,11 @@ per-page fetch. `OrganismFeatureView.groups()` are `RankGroup`s (rank + ordinal-
 
 **`observationGallery.jte`** — photo, `%` confidence, "Why this ID?" evidence
 disclosure, "Also considered" alternatives, and the field-notes form. Sourced from
-`FieldObservation.identification()`. The rank pages pass
-`insectQuery.images().forParentName(rankName)` — **not** `forRankHierarchy` — because
-the child-rank cards on the same page already show descendant photos via the `gallery`
-attribute; using the hierarchy query would render every descendant image twice.
+`FieldObservation.identification()`. The rank pages render `Insect.observations()`,
+which `InsectFactory` fills from `insectQuery.images().forParentName(rankName)` — **not**
+`forRankHierarchy` — because the child-rank cards on the same page already show
+descendant photos via the `gallery` attribute; using the hierarchy query would render
+every descendant image twice.
 
 **`citations.jte`** — renders `Insect.citations()`, which resolves through
 `CitationAssociation` records in the library domain. An identification that writes a
@@ -138,8 +144,6 @@ the same.
 - `detail.jte` and `identify.jte` still import `CsrfToken` directly; neither is
   rendered by any test, so the missing-dependency risk above is latent rather than
   broken.
-- The `detail` handler calls `insectQuery.fieldObservations().forNaturalistAndSubjects`
-  twice with identical arguments.
 - `safeReturn` and `safeReturnPath` are two near-identical untrusted-redirect
   validators on `InsectsController`; `safeReturnPath` has no CRLF guard.
 - Feature dedup by value is unimplemented — `InsectIdentificationCommandImpl` creates a

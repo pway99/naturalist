@@ -70,6 +70,16 @@ class InsectSpeciesTest {
     }
 
     @Test
+    void displayName_withGenusAndNoCommonName_fallsBackToTheBinomial() {
+        InsectGenus genus = new InsectGenus(InsectGenusName.of("battus"), InsectFamilyName.of("papilionidae"),
+                TaxonomicGenus.of("Battus"), displayNameDescription(), Set.of(), null);
+
+        assertThat(speciesWith(Set.of()).displayName(genus)).isEqualTo("Battus philenor");
+        assertThat(speciesWith(Set.of(CommonName.of("Pipevine Swallowtail"))).displayName(genus))
+                .isEqualTo("Pipevine Swallowtail");
+    }
+
+    @Test
     void binomial_withoutGenus_isTheSlug() {
         InsectSpecies species = speciesWith(Set.of());
 

@@ -2,23 +2,10 @@ package com.naturalist.insects;
 
 import com.naturalist.spring.console.ConsoleSliceTemplates;
 
-import com.naturalist.observation.OrganismImage;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.insects.InsectEntityCollections;
-import com.naturalist.insects.InsectFamily;
-import com.naturalist.insects.InsectGenus;
-import com.naturalist.insects.InsectGenusTestEntitySource;
-import com.naturalist.insects.InsectImageId;
-import com.naturalist.insects.InsectObservationId;
-import com.naturalist.insects.InsectRankName;
-import com.naturalist.insects.InsectFamilyTestEntitySource;
-import com.naturalist.insects.InsectOrder;
-import com.naturalist.insects.InsectOrderName;
-import com.naturalist.insects.InsectOrderTestEntitySource;
-import com.naturalist.insects.InsectTaxonView;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

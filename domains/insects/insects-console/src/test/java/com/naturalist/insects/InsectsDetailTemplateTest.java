@@ -3,14 +3,6 @@ package com.naturalist.insects;
 import com.naturalist.spring.console.ConsoleSliceTemplates;
 
 import com.naturalist.data.NaturalistTestExtension;
-import com.naturalist.insects.InsectFamily;
-import com.naturalist.insects.InsectFamilyTestEntitySource;
-import com.naturalist.insects.InsectGenus;
-import com.naturalist.insects.InsectGenusTestEntitySource;
-import com.naturalist.insects.InsectOrder;
-import com.naturalist.insects.InsectOrderTestEntitySource;
-import com.naturalist.insects.InsectSpecies;
-import com.naturalist.insects.InsectSpeciesTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -64,5 +56,29 @@ class InsectsDetailTemplateTest {
         // null, so neither the observe-form nor the CSRF hidden input renders. This
         // is the behaviour the fix is verifying doesn't crash the template.
         assertThat(output.toString()).doesNotContain("observe-form");
+    }
+
+    @Test
+    void detail_speciesWithoutCommonName_headsWithTheBinomialNotTheSlug() {
+        InsectSpecies species = nte.getNamed(InsectSpeciesTestEntitySource.class)
+                .getByName(TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name).orElseThrow();
+        InsectGenus genus = nte.getNamed(InsectGenusTestEntitySource.class).getByName(species.genusName()).orElseThrow();
+        StringOutput output = new StringOutput();
+
+        ConsoleSliceTemplates.create().render(
+                "insects/detail.jte",
+                Map.of(
+                        "page", InsectViews.RankPage.anonymous(Insect.empty()
+                                .withGenus(InsectTaxonView.GenusView.of(genus))
+                                .withSpecies(InsectTaxonView.SpeciesView.of(species))),
+                        "descriptionPreschool", "p",
+                        "descriptionElementary", "e",
+                        "descriptionSecondary", "s",
+                        "descriptionUniversity", "u"),
+                output);
+
+        assertThat(species.commonNames()).isEmpty();
+        assertThat(output.toString()).contains("<h1>" + species.binomial(genus) + "</h1>")
+                .doesNotContain("<h1>" + species.name().value() + "</h1>");
     }
 }

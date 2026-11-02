@@ -1,9 +1,14 @@
 package com.naturalist.insects;
 
+import com.naturalist.RandomValue;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.fieldnotes.Description;
+import com.naturalist.insects.lifestage.AdultStage;
+import com.naturalist.insects.lifestage.EggStage;
+import com.naturalist.insects.lifestage.LarvaStage;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.insects.lifestage.InsectLifeStageTestEntitySource;
@@ -239,10 +244,41 @@ class InsectFactoryTest {
                 .sorted(Comparator.comparingInt((LifeStage stage) -> stage.kind().ordinal()).reversed())
                 .toList();
         assertThat(reversed).extracting(LifeStage::kind).first().isEqualTo(LifeStageKind.ADULT);
-        InsectLifeStageQuery scrambled = () -> new InsectLifeStageQuery.LifeStageEntityQuery() {
+
+        Insect insect = factoryWithStages(reversed).buildByName(name).orElseThrow();
+
+        assertThat(insect.lifeStages().stream().map(LifeStage::kind).toList())
+                .containsExactly(LifeStageKind.EGG, LifeStageKind.LARVA, LifeStageKind.PUPA, LifeStageKind.ADULT);
+    }
+
+    /**
+     * A hemimetabolous sequence is egg, nymph, adult: it differs from enum order once a larva is present, so only
+     * the factory's {@code orderedBy(sequence)} produces this order, not repository order and not an ordinal sort.
+     */
+    @Test
+    void buildByName_lifeStagesFollowTheSpeciesSequenceNotEnumOrder() {
+        InsectSpeciesName name = TestInsectsIdentifiers.InsectSpecies.PeriplanetaAmericana.name;
+        Description description = new Description(
+                RandomValue.string(), RandomValue.string(), RandomValue.string(), RandomValue.string());
+        List<LifeStage> repositoryOrder = List.of(
+                new LarvaStage(LifeStageName.of(name, LifeStageKind.LARVA), name, null, null, null, description,
+                        null, List.of(), List.of(), null, null),
+                new AdultStage(LifeStageName.of(name, LifeStageKind.ADULT), name, null, null, null, description,
+                        null, List.of(), null, null),
+                new EggStage(LifeStageName.of(name, LifeStageKind.EGG), name, null, null, null, description,
+                        null, null, null));
+
+        Insect insect = factoryWithStages(repositoryOrder).buildByName(name).orElseThrow();
+
+        assertThat(insect.lifeStages().stream().map(LifeStage::kind).toList())
+                .containsExactly(LifeStageKind.EGG, LifeStageKind.ADULT, LifeStageKind.LARVA);
+    }
+
+    private InsectFactory factoryWithStages(List<LifeStage> stages) {
+        InsectLifeStageQuery stub = () -> new InsectLifeStageQuery.LifeStageEntityQuery() {
             @Override
             public LifeStageCollection forParentName(InsectRankName parentName) {
-                return LifeStageCollection.of(reversed);
+                return LifeStageCollection.of(stages);
             }
 
             @Override
@@ -257,16 +293,11 @@ class InsectFactoryTest {
 
             @Override
             public Page<LifeStage> findPage(PageRequest pageRequest) {
-                return new Page<>(java.util.List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
+                return new Page<>(List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
             }
         };
-        InsectFactory orderedFactory = new InsectFactory(
+        return new InsectFactory(
                 speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
-                scrambled, citationQuery, featureQuery, roleQuery);
-
-        Insect insect = orderedFactory.buildByName(name).orElseThrow();
-
-        assertThat(insect.lifeStages().stream().map(LifeStage::kind).toList())
-                .containsExactly(LifeStageKind.EGG, LifeStageKind.LARVA, LifeStageKind.PUPA, LifeStageKind.ADULT);
+                stub, citationQuery, featureQuery, roleQuery);
     }
 }

@@ -64,7 +64,7 @@
                 @for(var child : children)
                     @if(child instanceof InsectTaxonView.SpeciesView sv)
                         !{var s = sv.species();}
-                        !{var speciesCommonName = s.displayName();}
+                        !{var speciesCommonName = s.displayName(genus);}
                         <article>
                             <header>
                                 <a href="/insects/${s.name().value()}">

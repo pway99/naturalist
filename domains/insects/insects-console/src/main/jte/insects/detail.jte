@@ -25,7 +25,7 @@
 !{var images = lens ? page.viewer().ownImages().stream().toList() : insect.observations().stream().toList();}
 !{var observations = page.viewer().ownObservationByImage();}
 !{var collected = page.viewer().collected();}
-!{var commonName = species.displayName();}
+!{var commonName = insect.speciesDisplayName();}
 !{var binomial = insect.binomial();}
 <%-- The CSRF token is read the same way layout/page.jte and the other rank
      templates read it -- plain request attributes published by
