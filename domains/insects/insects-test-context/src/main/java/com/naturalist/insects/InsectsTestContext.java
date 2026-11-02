@@ -47,6 +47,7 @@ import java.nio.file.Files;
  */
 public class InsectsTestContext {
     private final InsectQuery insectQuery;
+    private final InsectViewQuery insectViewQuery;
     private final InsectCommand insectCommand;
     private final InsectEntityCommands entityCommands;
     private final InsectLifeStageQuery insectLifeStageQuery;
@@ -90,6 +91,7 @@ public class InsectsTestContext {
                 speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
                 orderQuery, citationQuery, featureQuery,
                 this.insectLifeStageQuery, observationQuery);
+        this.insectViewQuery = new InsectViewQueryImpl(this.insectQuery);
         InsectCommand.SpeciesCommand speciesCommand = new InsectSpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new InsectImageCommandImpl(repository.imageRepository);
         InsectCommand.ObservationCommand observationCommand =
@@ -153,6 +155,10 @@ public class InsectsTestContext {
 
     public InsectQuery insectQuery() {
         return insectQuery;
+    }
+
+    public InsectViewQuery insectViewQuery() {
+        return insectViewQuery;
     }
 
     public InsectCommand insectCommand() {

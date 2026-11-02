@@ -122,6 +122,10 @@ Standalone concrete classes (section 5) invert this: they carry `<DomainNoun><En
 | contract test       | `InsectSpeciesRepositoryTest`                              |
 | concrete unit test  | `InsectSpeciesQueryImplTest`, `PlantCultivarTestEntitySourceTest` |
 
+### Addendum: presentation namespaces
+
+Two further namespaces, `<DomainNoun>Views` (presentation read models) and `<DomainNoun>ViewQuery` (the flat port that returns them), keep viewer- and layout-shaped models out of the biology's `<DomainNoun>Query`. See [`domains/CLAUDE.md`](../../domains/CLAUDE.md) § API Surface: Namespace Patterns.
+
 ### Revisit when
 
 - Nested value object becomes cross-domain referenced → promote.

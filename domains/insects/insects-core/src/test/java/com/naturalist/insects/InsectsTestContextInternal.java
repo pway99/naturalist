@@ -44,6 +44,7 @@ import java.util.Set;
 class InsectsTestContextInternal {
 
     private final InsectQuery insectQuery;
+    private final InsectViewQuery insectViewQuery;
     private final InsectCommand insectCommand;
     private final InsectEntityCommands entityCommands;
     private final InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
@@ -86,6 +87,7 @@ class InsectsTestContextInternal {
                 speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
                 orderQuery, citationQuery, featureQuery,
                 noOpLifeStageQuery(), observationQuery);
+        this.insectViewQuery = new InsectViewQueryImpl(this.insectQuery);
 
         InsectCommand.SpeciesCommand speciesCommand = new InsectSpeciesCommandImpl(repository.speciesRepository);
         InsectCommand.ImageCommand imageCommand = new InsectImageCommandImpl(repository.imageRepository);
@@ -148,6 +150,10 @@ class InsectsTestContextInternal {
 
     InsectQuery insectQuery() {
         return insectQuery;
+    }
+
+    InsectViewQuery insectViewQuery() {
+        return insectViewQuery;
     }
 
     InsectCommand insectCommand() {

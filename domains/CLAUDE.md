@@ -279,7 +279,7 @@ applied to that goal.
 See [ADR-020](../docs/adr/ADR-020-namespace-interface-pattern.md) for the full
 rationale.
 
-Three coordinated namespace types organize a domain api around discoverability and
+Coordinated namespace types organize a domain api around discoverability and
 visibility:
 
 | Outer                           | Java type   | Visibility      | Nested types                                            |
@@ -287,6 +287,8 @@ visibility:
 | `<DomainNoun>Repository`        | `class`     | package-private | `<EntitySubject>Repository` (`protected interface`)     |
 | `<DomainNoun>Query`             | `interface` | public          | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
 | `<DomainNoun>EntityCollections` | `interface` | public          | `<EntitySubject>Collection` (`final class`)             |
+| `<DomainNoun>Views`             | `interface` | public          | presentation read models (records implementing `ReadModel`) |
+| `<DomainNoun>ViewQuery`         | `interface` | public          | none — flat methods returning `<DomainNoun>Views` models |
 
 `EntitySubject` drops the domain prefix — `InsectSpecies` → `Species`, `InsectImage`
 → `Image`. The outer namespace carries the prefix.
@@ -304,6 +306,8 @@ an `interface` are implicitly `public static` — visibility cannot be restricte
 `class` keeps repository contracts hidden (`protected` = package-private + subclass
 access) at both source and bytecode level. Queries and collections *want* their
 nested types public; they are the consumer surface.
+
+**Views namespace.** A read model that exists for a viewer or a list layout — viewer state, page wrappers, list cards — nests in `<DomainNoun>Views`, and only `<DomainNoun>ViewQuery` returns one, so the domain's file tree and its `<DomainNoun>Query` show only the domain's nature. The view-query impl depends only on `<DomainNoun>Query`: views are derived from the biology, and no biology type refers to a view. Types that are components of the composed biological read model (`InsectTaxonView`, `InsectCitationView`) are biology, not views. Plants adopts this when ported.
 
 **N=1 collapse rule.** When a package contains exactly one entity, skip the
 namespace: declare a top-level package-private `<Entity>Repository` interface and

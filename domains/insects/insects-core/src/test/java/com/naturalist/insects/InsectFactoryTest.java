@@ -6,6 +6,7 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
+import com.naturalist.insects.lifestage.InsectLifeStageTestEntitySource;
 import com.naturalist.insects.lifestage.LifeStage;
 import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.library.CitationQuery;
@@ -14,6 +15,8 @@ import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -225,5 +228,45 @@ class InsectFactoryTest {
         assertThat(insect.role()).isNotNull();
         assertThat(insect.role().parentName()).isEqualTo(
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+    }
+
+    @Test
+    void buildByName_lifeStagesFollowMetabolySequence() {
+        InsectSpeciesName name = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        List<LifeStage> reversed = nte.getNamed(InsectLifeStageTestEntitySource.class)
+                .entityStream()
+                .filter(stage -> stage.parentName().equals(name))
+                .sorted(Comparator.comparingInt((LifeStage stage) -> stage.kind().ordinal()).reversed())
+                .toList();
+        assertThat(reversed).extracting(LifeStage::kind).first().isEqualTo(LifeStageKind.ADULT);
+        InsectLifeStageQuery scrambled = () -> new InsectLifeStageQuery.LifeStageEntityQuery() {
+            @Override
+            public LifeStageCollection forParentName(InsectRankName parentName) {
+                return LifeStageCollection.of(reversed);
+            }
+
+            @Override
+            public Optional<LifeStage> getByName(LifeStageName stageName) {
+                return Optional.empty();
+            }
+
+            @Override
+            public LifeStageCollection findByNameSet(Set<LifeStageName> names) {
+                return LifeStageCollection.empty();
+            }
+
+            @Override
+            public Page<LifeStage> findPage(PageRequest pageRequest) {
+                return new Page<>(java.util.List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
+            }
+        };
+        InsectFactory orderedFactory = new InsectFactory(
+                speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
+                scrambled, citationQuery, featureQuery, roleQuery);
+
+        Insect insect = orderedFactory.buildByName(name).orElseThrow();
+
+        assertThat(insect.lifeStages().stream().map(LifeStage::kind).toList())
+                .containsExactly(LifeStageKind.EGG, LifeStageKind.LARVA, LifeStageKind.PUPA, LifeStageKind.ADULT);
     }
 }

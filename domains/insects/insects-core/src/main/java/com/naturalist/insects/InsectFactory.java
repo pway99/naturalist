@@ -93,7 +93,7 @@ class InsectFactory {
                 if (genus.isPresent()) insect = insect.withGenus(InsectTaxonView.GenusView.of(genus.get()));
                 if (family.isPresent()) insect = insect.withFamily(InsectTaxonView.FamilyView.of(family.get()));
                 if (order.isPresent()) insect = insect.withOrder(InsectTaxonView.OrderView.of(order.get()));
-                return observe(insect);
+                return observe(insect.withLifeStages(insect.lifeStages().orderedBy(com.naturalist.insects.lifestage.InsectLifeStages.stagesOf(species, genus.orElse(null), family.orElse(null), order.orElse(null)))));
             });
             case InsectGenusName gn -> genusQuery.getByName(gn).map(genus -> {
                 Optional<InsectFamily> family = familyQuery.getByName(genus.familyName());
@@ -105,7 +105,7 @@ class InsectFactory {
                         .withChildren(speciesChildren(gn));
                 if (family.isPresent()) insect = insect.withFamily(InsectTaxonView.FamilyView.of(family.get()));
                 if (order.isPresent()) insect = insect.withOrder(InsectTaxonView.OrderView.of(order.get()));
-                return observe(insect);
+                return observe(insect.withLifeStages(insect.lifeStages().orderedBy(com.naturalist.insects.lifestage.InsectLifeStages.stagesOf(genus))));
             });
             case InsectFamilyName fn -> familyQuery.getByName(fn).map(family -> {
                 Optional<InsectOrder> order = orderQuery.getByName(family.orderName());
@@ -114,7 +114,7 @@ class InsectFactory {
                         .withFamily(InsectTaxonView.FamilyView.of(family))
                         .withChildren(genusChildren(fn));
                 if (order.isPresent()) insect = insect.withOrder(InsectTaxonView.OrderView.of(order.get()));
-                return observe(insect);
+                return observe(insect.withLifeStages(insect.lifeStages().orderedBy(com.naturalist.insects.lifestage.InsectLifeStages.stagesOf(family))));
             });
             case InsectOrderName on -> orderQuery.getByName(on).map(order -> observe(
                     base(on, lineage(on)).withOrder(InsectTaxonView.OrderView.of(order)).withChildren(familyChildren(on))));
