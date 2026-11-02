@@ -64,7 +64,7 @@ class InsectsOrdersTemplateTest {
                 .findFirst().orElseThrow();
         InsectOrderInfo order = nte.getNamed(InsectOrderTestEntitySource.class)
                 .getByName(anyFamily.orderName()).orElseThrow();
-        InsectTaxonView familyChild = InsectTaxonView.FamilyView.of(
+        InsectTaxon familyChild = InsectFamily.of(
                 anyFamily,
                 InsectEntityCollections.ImageCollection.empty());
         StringOutput output = new StringOutput();
@@ -84,9 +84,9 @@ class InsectsOrdersTemplateTest {
         assertThat(output.toString()).contains("/insects/families/" + anyFamily.name().value());
     }
 
-    private static InsectViews.RankPage orderPage(InsectOrderInfo order, List<InsectTaxonView> children) {
+    private static InsectViews.RankPage orderPage(InsectOrderInfo order, List<InsectTaxon> children) {
         return InsectViews.RankPage.anonymous(Insect.empty()
-                .withOrder(InsectTaxonView.OrderView.of(order))
+                .withOrder(InsectOrder.of(order))
                 .withChildren(children));
     }
 }

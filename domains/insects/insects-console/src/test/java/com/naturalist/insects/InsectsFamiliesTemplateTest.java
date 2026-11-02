@@ -124,7 +124,7 @@ class InsectsFamiliesTemplateTest {
         InsectFamilyInfo family = nte.getNamed(InsectFamilyTestEntitySource.class)
                 .getByName(anyGenus.familyName()).orElseThrow();
         InsectOrderInfo order = orderSource.getByName(family.orderName()).orElseThrow();
-        InsectTaxonView genusChild = InsectTaxonView.GenusView.of(
+        InsectTaxon genusChild = InsectGenus.of(
                 anyGenus,
                 InsectEntityCollections.ImageCollection.empty());
         StringOutput output = new StringOutput();
@@ -145,10 +145,10 @@ class InsectsFamiliesTemplateTest {
     }
 
     private static InsectViews.RankPage familyPage(InsectFamilyInfo family, InsectOrderInfo order,
-                                                   List<InsectTaxonView> children) {
+                                                   List<InsectTaxon> children) {
         return InsectViews.RankPage.anonymous(Insect.empty()
-                .withOrder(InsectTaxonView.OrderView.of(order))
-                .withFamily(InsectTaxonView.FamilyView.of(family))
+                .withOrder(InsectOrder.of(order))
+                .withFamily(InsectFamily.of(family))
                 .withChildren(children));
     }
 }

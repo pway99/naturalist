@@ -2,10 +2,6 @@ package com.naturalist.insects;
 
 import com.naturalist.ddd.ReadModel;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
-import com.naturalist.insects.InsectTaxonView.FamilyView;
-import com.naturalist.insects.InsectTaxonView.GenusView;
-import com.naturalist.insects.InsectTaxonView.OrderView;
-import com.naturalist.insects.InsectTaxonView.SpeciesView;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.observability.Constraints;
 import com.naturalist.taxonomy.OrganismFeatureView;
@@ -25,9 +21,9 @@ import java.util.function.Consumer;
  *   <li>{@link ImageCollection observations} — the photographic working set
  *       driving identification (catalog-read use case loads the rank's images;
  *       workflow use case loads the naturalist's gathered photos).</li>
- *   <li>The rank chain — {@code @Nullable} {@link OrderView},
- *       {@link FamilyView}, {@link GenusView},
- *       {@link SpeciesView}. Populated to whatever depth
+ *   <li>The rank chain — {@code @Nullable} {@link InsectOrder},
+ *       {@link InsectFamily}, {@link InsectGenus},
+ *       {@link InsectSpecies}. Populated to whatever depth
  *       identification has reached, monotonically filled from the top down.</li>
  *   <li>{@link LifeStageCollection lifeStages} — the
  *       {@link com.naturalist.insects.lifestage.LifeStage} records attached to
@@ -46,7 +42,7 @@ import java.util.function.Consumer;
  * monotonic-fill violations, etc.) are reported by {@link #invariants()} when
  * a consumer asks the {@link com.naturalist.observability.Observer} to walk
  * them. This is the project's standard pattern (see {@code domains/CLAUDE.md}
- * and {@code SpeciesView} for reference). Consumers are responsible
+ * and {@code InsectSpecies} for reference). Consumers are responsible
  * for observing at boundaries before acting on a read model.
  *
  * <p>Structural invariants declared by {@link #invariants()}:
@@ -85,10 +81,10 @@ import java.util.function.Consumer;
  */
 public record Insect(
         ImageCollection observations,
-        @Nullable OrderView order,
-        @Nullable FamilyView family,
-        @Nullable GenusView genus,
-        @Nullable SpeciesView species,
+        @Nullable InsectOrder order,
+        @Nullable InsectFamily family,
+        @Nullable InsectGenus genus,
+        @Nullable InsectSpecies species,
         LifeStageCollection lifeStages,
         @Nullable InsectCitationView citations,
         @Nullable OrganismFeatureView<InsectRankName, InsectFeature> features,
@@ -102,7 +98,7 @@ public record Insect(
          * gallery, so the rank page's child cards can render photos without
          * a separate per-card fetch.
          */
-        List<InsectTaxonView> children
+        List<InsectTaxon> children
 ) implements ReadModel {
 
     /**
@@ -160,19 +156,19 @@ public record Insect(
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withOrder(@Nullable OrderView order) {
+    public Insect withOrder(@Nullable InsectOrder order) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withFamily(@Nullable FamilyView family) {
+    public Insect withFamily(@Nullable InsectFamily family) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withGenus(@Nullable GenusView genus) {
+    public Insect withGenus(@Nullable InsectGenus genus) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withSpecies(@Nullable SpeciesView species) {
+    public Insect withSpecies(@Nullable InsectSpecies species) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
@@ -192,7 +188,7 @@ public record Insect(
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withChildren(List<InsectTaxonView> children) {
+    public Insect withChildren(List<InsectTaxon> children) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
@@ -237,11 +233,11 @@ public record Insect(
 
     /** The scientific name of the identified species, or empty when no species is present. */
     public String binomial() {
-        return species == null ? "" : species.species().binomial(genus == null ? null : genus.genus());
+        return species == null ? "" : species.info().binomial(genus == null ? null : genus.info());
     }
 
     /** The identified species' first common name, else its binomial; empty when no species is present. */
     public String speciesDisplayName() {
-        return species == null ? "" : species.species().displayName(genus == null ? null : genus.genus());
+        return species == null ? "" : species.info().displayName(genus == null ? null : genus.info());
     }
 }

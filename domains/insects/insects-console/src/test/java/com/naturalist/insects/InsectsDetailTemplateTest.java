@@ -40,10 +40,10 @@ class InsectsDetailTemplateTest {
                 "insects/detail.jte",
                 Map.of(
                         "page", InsectViews.RankPage.anonymous(Insect.empty()
-                                .withOrder(InsectTaxonView.OrderView.of(order))
-                                .withFamily(InsectTaxonView.FamilyView.of(family))
-                                .withGenus(InsectTaxonView.GenusView.of(genus))
-                                .withSpecies(InsectTaxonView.SpeciesView.of(anySpecies))),
+                                .withOrder(InsectOrder.of(order))
+                                .withFamily(InsectFamily.of(family))
+                                .withGenus(InsectGenus.of(genus))
+                                .withSpecies(InsectSpecies.of(anySpecies))),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -69,8 +69,8 @@ class InsectsDetailTemplateTest {
                 "insects/detail.jte",
                 Map.of(
                         "page", InsectViews.RankPage.anonymous(Insect.empty()
-                                .withGenus(InsectTaxonView.GenusView.of(genus))
-                                .withSpecies(InsectTaxonView.SpeciesView.of(species))),
+                                .withGenus(InsectGenus.of(genus))
+                                .withSpecies(InsectSpecies.of(species))),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",

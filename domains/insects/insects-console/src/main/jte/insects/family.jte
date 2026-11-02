@@ -1,5 +1,5 @@
 @import com.naturalist.insects.InsectViews
-@import com.naturalist.insects.InsectTaxonView
+@import com.naturalist.insects.InsectGenus
 @import com.naturalist.insects.AncestorIntro
 @import com.naturalist.insects.BreadcrumbSegment
 @import com.naturalist.insects.CladeTrail
@@ -22,7 +22,7 @@
 !{var features = insect.features();}
 !{var images = insect.observations().stream().toList();}
 !{var observations = page.viewer().ownObservationByImage();}
-!{var family = insect.family().family();}
+!{var family = insect.family().info();}
 !{var commonName = family.displayName();}
 <%-- The CSRF token is read the same way layout/page.jte reads it — plain request
      attributes published by NaturalistHeaderInterceptor (management-console only)
@@ -62,8 +62,8 @@
         @else
             <div class="entity-grid">
                 @for(var child : children)
-                    @if(child instanceof InsectTaxonView.GenusView gv)
-                        !{var g = gv.genus();}
+                    @if(child instanceof InsectGenus gv)
+                        !{var g = gv.info();}
                         !{var genusCommonName = g.displayName();}
                         <article>
                             <header>

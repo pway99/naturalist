@@ -17,7 +17,7 @@
 @param boolean imageError = false
 
 !{var insect = page.insect();}
-!{var species = insect.species().species();}
+!{var species = insect.species().info();}
 !{var role = insect.role();}
 !{var citations = insect.citations();}
 !{var features = insect.features();}

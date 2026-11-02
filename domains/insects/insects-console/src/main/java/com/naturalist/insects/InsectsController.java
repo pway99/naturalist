@@ -481,8 +481,8 @@ public class InsectsController {
             return "redirect:/insects/families";
         }
         Insect insect = rankPage.get().insect();
-        InsectFamilyInfo family = insect.family().family();
-        InsectOrderInfo order = insect.order().order();
+        InsectFamilyInfo family = insect.family().info();
+        InsectOrderInfo order = insect.order().info();
         var description = family.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -511,7 +511,7 @@ public class InsectsController {
         if (rankPage.isEmpty()) {
             return "redirect:/insects/orders";
         }
-        InsectOrderInfo order = rankPage.get().insect().order().order();
+        InsectOrderInfo order = rankPage.get().insect().order().info();
         var description = order.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -541,9 +541,9 @@ public class InsectsController {
             return "redirect:/insects/genera";
         }
         Insect insect = rankPage.get().insect();
-        InsectGenusInfo genus = insect.genus().genus();
-        InsectFamilyInfo family = insect.family().family();
-        InsectOrderInfo order = insect.order().order();
+        InsectGenusInfo genus = insect.genus().info();
+        InsectFamilyInfo family = insect.family().info();
+        InsectOrderInfo order = insect.order().info();
         var description = genus.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -585,10 +585,10 @@ public class InsectsController {
             return "redirect:/insects";
         }
         Insect i = rankPage.get().insect();
-        InsectSpeciesInfo s = i.species().species();
-        InsectGenusInfo genus = i.genus().genus();
-        InsectFamilyInfo family = i.family().family();
-        InsectOrderInfo order = i.order().order();
+        InsectSpeciesInfo s = i.species().info();
+        InsectGenusInfo genus = i.genus().info();
+        InsectFamilyInfo family = i.family().info();
+        InsectOrderInfo order = i.order().info();
         var description = s.description();
         if ("image".equals(error)) {
             model.addAttribute("imageError", true);
@@ -695,10 +695,10 @@ public class InsectsController {
             return "redirect:/insects";
         }
         Insect i = insect.get();
-        InsectSpeciesInfo s = i.species().species();
-        InsectGenusInfo genus = i.genus().genus();
-        InsectFamilyInfo family = i.family().family();
-        InsectOrderInfo order = i.order().order();
+        InsectSpeciesInfo s = i.species().info();
+        InsectGenusInfo genus = i.genus().info();
+        InsectFamilyInfo family = i.family().info();
+        InsectOrderInfo order = i.order().info();
         model.addAttribute("species", s);
         model.addAttribute("genus", genus);
         model.addAttribute("family", family);

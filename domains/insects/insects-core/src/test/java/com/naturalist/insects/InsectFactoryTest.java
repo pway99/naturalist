@@ -204,7 +204,7 @@ class InsectFactoryTest {
         Insect insect = factory.buildByName(InsectOrderName.of("lepidoptera")).orElseThrow();
         assertThat(insect.children()).isNotEmpty();
         assertThat(insect.children()).allSatisfy(c ->
-                assertThat(c).isInstanceOf(InsectTaxonView.FamilyView.class));
+                assertThat(c).isInstanceOf(InsectFamily.class));
     }
 
     @Test

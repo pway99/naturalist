@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * Identity is the root rank's typed {@link PlantRankName}, returned polymorphically by
  * {@link #name()}. Permits carry no {@code features()} slot; features live on
  * {@link Plant} as an {@code OrganismFeatureView<PlantRankName, PlantFeature>} (later
- * chunk). Mirrors {@code InsectTaxonView}.
+ * chunk). Mirrors {@code InsectTaxon}.
  */
 public sealed interface PlantTaxonView extends ReadModel {
 

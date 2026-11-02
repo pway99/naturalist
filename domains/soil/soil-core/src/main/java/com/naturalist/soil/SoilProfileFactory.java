@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * {@link Nutrients} catalog) and the {@link SoilPhysicalCharacteristics} row.
  * <p>
  * Package-private concrete factory (no interface, no {@code Impl} suffix) per ADR-020, mirroring
- * {@code InsectTaxonViewFactory}. Per the producer/consumer rule (ADR-017) it validates its own
+ * {@code InsectFactory}. Per the producer/consumer rule (ADR-017) it validates its own
  * arguments with {@code throwWhenInvalid()} but only observes the assembled profile (metrics).
  */
 @DomainService

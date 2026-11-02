@@ -106,7 +106,7 @@ class InsectTest {
     @Test
     void withOrderReplacesOrderAndPreservesOtherFields() {
         Insect base = Insect.empty();
-        InsectTaxonView.OrderView orderView = orderView();
+        InsectOrder orderView = orderView();
 
         Insect updated = base.withOrder(orderView);
 
@@ -118,7 +118,7 @@ class InsectTest {
     @Test
     void withFamilyReplacesFamilyAndPreservesOtherFields() {
         Insect base = Insect.empty().withOrder(orderView());
-        InsectTaxonView.FamilyView familyView = familyView();
+        InsectFamily familyView = familyView();
 
         Insect updated = base.withFamily(familyView);
 
@@ -131,7 +131,7 @@ class InsectTest {
         Insect base = Insect.empty()
                 .withOrder(orderView())
                 .withFamily(familyView());
-        InsectTaxonView.GenusView genusView = genusView();
+        InsectGenus genusView = genusView();
 
         Insect updated = base.withGenus(genusView);
 
@@ -145,7 +145,7 @@ class InsectTest {
                 .withOrder(orderView())
                 .withFamily(familyView())
                 .withGenus(genusView());
-        InsectTaxonView.SpeciesView speciesView = speciesView();
+        InsectSpecies speciesView = speciesView();
 
         Insect updated = base.withSpecies(speciesView);
 
@@ -349,7 +349,7 @@ class InsectTest {
     @Test
     void familyWithMismatchedOrderFkReportsFamilyBelongsToOrderViolation() {
         var mo = observer.forMethod("familyWithMismatchedOrderFkReportsFamilyBelongsToOrderViolation");
-        InsectTaxonView.FamilyView mismatched = InsectTaxonView.FamilyView.of(new InsectFamilyInfo(
+        InsectFamily mismatched = InsectFamily.of(new InsectFamilyInfo(
                 familyName(),
                 InsectOrderName.of("diptera"),
                 TaxonomicFamily.of("Papilionidae"),
@@ -369,7 +369,7 @@ class InsectTest {
     @Test
     void genusWithMismatchedFamilyFkReportsGenusBelongsToFamilyViolation() {
         var mo = observer.forMethod("genusWithMismatchedFamilyFkReportsGenusBelongsToFamilyViolation");
-        InsectTaxonView.GenusView mismatched = InsectTaxonView.GenusView.of(new InsectGenusInfo(
+        InsectGenus mismatched = InsectGenus.of(new InsectGenusInfo(
                 genusName(),
                 InsectFamilyName.of("syrphidae"),
                 TaxonomicGenus.of("Battus"),
@@ -390,7 +390,7 @@ class InsectTest {
     @Test
     void speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation() {
         var mo = observer.forMethod("speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation");
-        InsectTaxonView.SpeciesView mismatched = InsectTaxonView.SpeciesView.of(new InsectSpeciesInfo(
+        InsectSpecies mismatched = InsectSpecies.of(new InsectSpeciesInfo(
                 speciesName(),
                 InsectGenusName.of("empoasca"),
                 TaxonomicSpecies.of("philenor"),
@@ -451,8 +451,8 @@ class InsectTest {
         return InsectSpeciesName.of("battus-philenor");
     }
 
-    private static InsectTaxonView.OrderView orderView() {
-        return InsectTaxonView.OrderView.of(new InsectOrderInfo(
+    private static InsectOrder orderView() {
+        return InsectOrder.of(new InsectOrderInfo(
                 orderName(),
                 TaxonomicOrder.of("Lepidoptera"),
                 description(),
@@ -460,8 +460,8 @@ class InsectTest {
                 null));
     }
 
-    private static InsectTaxonView.FamilyView familyView() {
-        return InsectTaxonView.FamilyView.of(new InsectFamilyInfo(
+    private static InsectFamily familyView() {
+        return InsectFamily.of(new InsectFamilyInfo(
                 familyName(),
                 orderName(),
                 TaxonomicFamily.of("Papilionidae"),
@@ -470,8 +470,8 @@ class InsectTest {
                 null));
     }
 
-    private static InsectTaxonView.GenusView genusView() {
-        return InsectTaxonView.GenusView.of(new InsectGenusInfo(
+    private static InsectGenus genusView() {
+        return InsectGenus.of(new InsectGenusInfo(
                 genusName(),
                 familyName(),
                 TaxonomicGenus.of("Battus"),
@@ -480,8 +480,8 @@ class InsectTest {
                 null));
     }
 
-    private static InsectTaxonView.SpeciesView speciesView() {
-        return InsectTaxonView.SpeciesView.of(new InsectSpeciesInfo(
+    private static InsectSpecies speciesView() {
+        return InsectSpecies.of(new InsectSpeciesInfo(
                 speciesName(),
                 genusName(),
                 TaxonomicSpecies.of("philenor"),
