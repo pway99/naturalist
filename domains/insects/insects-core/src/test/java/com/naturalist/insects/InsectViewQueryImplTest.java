@@ -9,6 +9,7 @@ import com.naturalist.observation.ImageUpload;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -135,5 +136,51 @@ class InsectViewQueryImplTest {
     @Test
     void speciesCards_rejectsNullRequest() {
         assertThatThrownBy(() -> views.speciesCards(null, FLORA)).isInstanceOf(InvariantViolationException.class);
+    }
+
+    @Test
+    void familyCards_carryOrderLabelAndSubtreeImages() {
+        Page<InsectViews.RankCard> page = views.familyCards(PageRequest.first(100));
+                assertThat(page.content()).isNotEmpty();
+                for (InsectViews.RankCard card : page.content()) {
+                    InsectFamily family = context.insectQuery().families().findByNameSet(Set.of((InsectFamilyName) card.name())).stream().findFirst().orElseThrow();
+                    InsectOrder order = context.insectQuery().orders().findByNameSet(Set.of(family.orderName())).stream().findFirst().orElseThrow();
+                    assertThat(card.displayName()).isEqualTo(family.displayName());
+                    assertThat(card.scientificName()).isEqualTo(family.family().value());
+                    assertThat(card.parentName()).isEqualTo(family.orderName());
+                    assertThat(card.parentLabel()).isEqualTo(order.displayName());
+                }
+                assertThat(page.content()).anyMatch(c -> !c.images().stream().toList().isEmpty());
+    }
+
+    @Test
+    void genusCards_carryFamilyLabel() {
+        Page<InsectViews.RankCard> page = views.genusCards(PageRequest.first(100));
+                assertThat(page.content()).isNotEmpty();
+                for (InsectViews.RankCard card : page.content()) {
+                    InsectGenus genus = context.insectQuery().genera().findByNameSet(Set.of((InsectGenusName) card.name())).stream().findFirst().orElseThrow();
+                    InsectFamily family = context.insectQuery().families().findByNameSet(Set.of(genus.familyName())).stream().findFirst().orElseThrow();
+                    assertThat(card.displayName()).isEqualTo(genus.displayName());
+                    assertThat(card.scientificName()).isEqualTo(genus.genus().value());
+                    assertThat(card.parentName()).isEqualTo(genus.familyName());
+                    assertThat(card.parentLabel()).isEqualTo(family.displayName());
+                }
+    }
+
+    @Test
+    void orderCards_haveNoParent() {
+        Page<InsectViews.RankCard> page = views.orderCards(PageRequest.first(100));
+                assertThat(page.content()).isNotEmpty();
+                assertThat(page.content()).allSatisfy(c -> {
+                    assertThat(c.parentName()).isNull();
+                    assertThat(c.parentLabel()).isNull();
+                    assertThat(c.scientificName()).isEqualToIgnoringCase(c.name().value());
+                });
+                assertThat(page.content()).anyMatch(c -> !c.images().stream().toList().isEmpty());
+    }
+
+    @Test
+    void orderCards_rejectsNullRequest() {
+        assertThatThrownBy(() -> views.orderCards(null)).isInstanceOf(InvariantViolationException.class);
     }
 }

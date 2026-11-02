@@ -37,4 +37,22 @@ class InsectViewQueryImpl implements InsectViewQuery {
         observer.arguments("collectedBy", i -> i.entityName(viewer, "viewer").valueObject(request, "request")).throwWhenInvalid();
         return viewFactory.collectedBy(viewer, request);
     }
+
+    @Override
+    public Page<InsectViews.RankCard> orderCards(PageRequest request) {
+        observer.arguments("orderCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
+        return viewFactory.orderCards(request);
+    }
+
+    @Override
+    public Page<InsectViews.RankCard> familyCards(PageRequest request) {
+        observer.arguments("familyCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
+        return viewFactory.familyCards(request);
+    }
+
+    @Override
+    public Page<InsectViews.RankCard> genusCards(PageRequest request) {
+        observer.arguments("genusCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
+        return viewFactory.genusCards(request);
+    }
 }

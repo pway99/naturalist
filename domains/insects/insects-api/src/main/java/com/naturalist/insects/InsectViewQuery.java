@@ -26,4 +26,13 @@ public interface InsectViewQuery {
      * is true on every card returned.
      */
     Page<InsectViews.SpeciesCard> collectedBy(NaturalistName viewer, PageRequest request);
+
+    /** A page of orders as list cards (no parent). */
+    Page<InsectViews.RankCard> orderCards(PageRequest request);
+
+    /** A page of families as list cards; the parent is the order. */
+    Page<InsectViews.RankCard> familyCards(PageRequest request);
+
+    /** A page of genera as list cards; the parent is the family. */
+    Page<InsectViews.RankCard> genusCards(PageRequest request);
 }

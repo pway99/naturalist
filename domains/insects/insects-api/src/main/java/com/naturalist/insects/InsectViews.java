@@ -74,4 +74,15 @@ public interface InsectViews {
                     .whenNotNull(role, r -> r.observable(role, "role"));
         }
     }
+
+    /** One rank-list card (order / family / genus): names, labels and the rank's subtree gallery. */
+    record RankCard(InsectRankName name, String displayName, String scientificName,
+                    @Nullable InsectRankName parentName, @Nullable String parentLabel,
+                    InsectEntityCollections.ImageCollection images) implements ReadModel {
+        @Override
+        public Consumer<? extends Constraints> invariants() {
+            return i -> i.identifier(name, "name").notBlank(displayName, "displayName")
+                    .notBlank(scientificName, "scientificName").notNull(images, "images");
+        }
+    }
 }

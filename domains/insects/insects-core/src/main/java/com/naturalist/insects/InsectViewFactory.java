@@ -125,4 +125,51 @@ class InsectViewFactory {
                     collected.contains(s.name()));
         }).toList();
     }
+
+    Page<InsectViews.RankCard> orderCards(PageRequest request) {
+        observer.arguments("orderCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
+        Page<InsectOrder> page = insectQuery.orders().findPage(request);
+        return rankCards(page, page.content().stream().map(InsectOrder::name).toList(), o -> o.name(), InsectOrder::displayName,
+                o -> o.order().value(), o -> null, Map.of());
+    }
+
+    Page<InsectViews.RankCard> familyCards(PageRequest request) {
+        observer.arguments("familyCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
+        Page<InsectFamily> page = insectQuery.families().findPage(request);
+        Set<InsectOrderName> orderNames = page.content().stream().map(InsectFamily::orderName).collect(Collectors.toSet());
+        Map<InsectRankName, String> labels = page.content().isEmpty() ? Map.of()
+                : insectQuery.orders().findByNameSet(orderNames).stream()
+                .collect(Collectors.toMap(InsectOrder::name, InsectOrder::displayName));
+        return rankCards(page, page.content().stream().map(InsectFamily::name).toList(), f -> f.name(), InsectFamily::displayName,
+                f -> f.family().value(), InsectFamily::orderName, labels);
+    }
+
+    Page<InsectViews.RankCard> genusCards(PageRequest request) {
+        observer.arguments("genusCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
+        Page<InsectGenus> page = insectQuery.genera().findPage(request);
+        Set<InsectFamilyName> familyNames = page.content().stream().map(InsectGenus::familyName).collect(Collectors.toSet());
+        Map<InsectRankName, String> labels = page.content().isEmpty() ? Map.of()
+                : insectQuery.families().findByNameSet(familyNames).stream()
+                .collect(Collectors.toMap(InsectFamily::name, InsectFamily::displayName));
+        return rankCards(page, page.content().stream().map(InsectGenus::name).toList(), g -> g.name(), InsectGenus::displayName,
+                g -> g.genus().value(), InsectGenus::familyName, labels);
+    }
+
+    /** One batched subtree-gallery read for the page's roots, then in-memory assembly in page order. */
+    private <E> Page<InsectViews.RankCard> rankCards(Page<E> page, List<? extends InsectRankName> roots,
+                                                    Function<E, InsectRankName> nameOf, Function<E, String> displayOf,
+                                                    Function<E, String> scientificOf, Function<E, @Nullable InsectRankName> parentOf,
+                                                    Map<InsectRankName, String> parentLabels) {
+        if (page.content().isEmpty()) {
+            return new Page<>(List.of(), page.pageNumber(), page.pageSize(), page.pagesAheadKnown(), page.moreBeyondLookahead());
+        }
+        InsectEntityCollections.ImageGallery gallery = insectQuery.images().forRankHierarchies(new java.util.LinkedHashSet<InsectRankName>(roots));
+        List<InsectViews.RankCard> cards = page.content().stream().map(e -> {
+            InsectRankName parent = parentOf.apply(e);
+            String label = parent == null ? null : parentLabels.getOrDefault(parent, parent.value());
+            return new InsectViews.RankCard(nameOf.apply(e), displayOf.apply(e), scientificOf.apply(e), parent, label,
+                    gallery.forEntity(nameOf.apply(e)));
+        }).toList();
+        return new Page<>(cards, page.pageNumber(), page.pageSize(), page.pagesAheadKnown(), page.moreBeyondLookahead());
+    }
 }
