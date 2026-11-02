@@ -20,20 +20,20 @@ class InsectTaxonTest {
     @Test
     void speciesIsValid() {
         var mo = observer.forMethod("speciesIsValid");
-        InsectSpecies view = InsectSpecies.of(validSpecies());
+        InsectSpecies taxon = InsectSpecies.of(validSpecies());
 
-        InvariantObservation result = mo.observable(view, "agg");
+        InvariantObservation result = mo.observable(taxon, "agg");
 
         assertThat(result.violations()).isEmpty();
-        assertThat(view.name()).isEqualTo(view.info().name());
+        assertThat(taxon.name()).isEqualTo(taxon.info().name());
     }
 
     @Test
     void speciesIsNotValid() {
         var mo = observer.forMethod("speciesIsNotValid");
-        InsectSpecies view = new InsectSpecies(null, null);
+        InsectSpecies taxon = new InsectSpecies(null, null);
 
-        InvariantObservation result = mo.observable(view, "agg");
+        InvariantObservation result = mo.observable(taxon, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(".agg.info", ".agg.images");
@@ -42,20 +42,20 @@ class InsectTaxonTest {
     @Test
     void genusIsValid() {
         var mo = observer.forMethod("genusIsValid");
-        InsectGenus view = InsectGenus.of(validGenus());
+        InsectGenus taxon = InsectGenus.of(validGenus());
 
-        InvariantObservation result = mo.observable(view, "agg");
+        InvariantObservation result = mo.observable(taxon, "agg");
 
         assertThat(result.violations()).isEmpty();
-        assertThat(view.name()).isEqualTo(view.info().name());
+        assertThat(taxon.name()).isEqualTo(taxon.info().name());
     }
 
     @Test
     void genusIsNotValid() {
         var mo = observer.forMethod("genusIsNotValid");
-        InsectGenus view = new InsectGenus(null, null);
+        InsectGenus taxon = new InsectGenus(null, null);
 
-        InvariantObservation result = mo.observable(view, "agg");
+        InvariantObservation result = mo.observable(taxon, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(".agg.info", ".agg.images");
@@ -64,20 +64,20 @@ class InsectTaxonTest {
     @Test
     void familyIsValid() {
         var mo = observer.forMethod("familyIsValid");
-        InsectFamily view = InsectFamily.of(validFamily());
+        InsectFamily taxon = InsectFamily.of(validFamily());
 
-        InvariantObservation result = mo.observable(view, "agg");
+        InvariantObservation result = mo.observable(taxon, "agg");
 
         assertThat(result.violations()).isEmpty();
-        assertThat(view.name()).isEqualTo(view.info().name());
+        assertThat(taxon.name()).isEqualTo(taxon.info().name());
     }
 
     @Test
     void familyIsNotValid() {
         var mo = observer.forMethod("familyIsNotValid");
-        InsectFamily view = new InsectFamily(null, null);
+        InsectFamily taxon = new InsectFamily(null, null);
 
-        InvariantObservation result = mo.observable(view, "agg");
+        InvariantObservation result = mo.observable(taxon, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(".agg.info", ".agg.images");
@@ -86,9 +86,9 @@ class InsectTaxonTest {
     @Test
     void orderIsValid() {
         var mo = observer.forMethod("orderIsValid");
-        InsectOrder view = InsectOrder.of(validOrder());
+        InsectOrder taxon = InsectOrder.of(validOrder());
 
-        InvariantObservation result = mo.observable(view, "agg");
+        InvariantObservation result = mo.observable(taxon, "agg");
 
         assertThat(result.violations()).isEmpty();
     }
@@ -96,9 +96,9 @@ class InsectTaxonTest {
     @Test
     void orderIsNotValid() {
         var mo = observer.forMethod("orderIsNotValid");
-        InsectOrder view = new InsectOrder(null, null);
+        InsectOrder taxon = new InsectOrder(null, null);
 
-        InvariantObservation result = mo.observable(view, "agg");
+        InvariantObservation result = mo.observable(taxon, "agg");
 
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
                 .containsExactlyInAnyOrder(".agg.info", ".agg.images");

@@ -35,7 +35,7 @@ graph TD
 is not identity and carries no reference.
 **slug** — the lowercased epithet, used as an `EntityName` value. Derivation lives in
 `TaxonomicSlugs`.
-**rank entity** — a domain record that *is* a taxon at one rung, e.g. `InsectGenus`.
+**rank entity** — a domain record that *is* a taxon at one rung, e.g. `InsectGenusInfo`.
 **upward reference** — a rank entity's typed parent name. This, not the classification, is
 what makes the chain traversable.
 

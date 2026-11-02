@@ -123,7 +123,7 @@ registry because the clade *values* are value-equal.
 A rank entity carries both — `name` for its rung, `placedIn` for its branch:
 
 ```java
-// domains/insects/insects-api/.../InsectSpecies.java
+// domains/insects/insects-api/.../InsectSpeciesInfo.java
 InsectSpeciesName name, ..., @Nullable Clade placedIn
 ```
 

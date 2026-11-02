@@ -6,9 +6,9 @@ import com.naturalist.ddd.ReadModel;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 
 /**
- * The catalog-view read model for an insect at Oak Vista — its rank record (family,
- * genus, or species, depending on identification confidence) and the photographic
- * field record assembled into a single read-side view.
+ * An insect taxon at Oak Vista — its stored rank record (order, family, genus or species,
+ * depending on identification confidence) composed with the photographs attached at that
+ * rank, as one read-side model.
  *
  * <p>Sealed across the four Linnaean ranks that currently carry catalog entities, each
  * a top-level {@code record} composing the stored {@code *Info} rank record with its
@@ -23,7 +23,7 @@ import com.naturalist.insects.InsectEntityCollections.ImageCollection;
  *       is resolved (e.g. <i>Diptera</i> sp.).</li>
  * </ul>
  *
- * <p>The view's identity is the root rank's typed slug, returned by {@link #name()}
+ * <p>The taxon's identity is the root rank's typed slug, returned by {@link #name()}
  * as the sealed {@link InsectRankName}. Consumers dispatch by pattern-matching the
  * sealed permit:
  *

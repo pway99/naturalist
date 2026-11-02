@@ -353,10 +353,10 @@ primitive works in the shape that actually matters.
   helpers. Direct tests pin lifecycle cleanly in a way consumer tests don't.
 
 **Recent example.** `NamedEntityOrNullConstraint` shipped without a kernel test
-(commit `150009d`); `InsectFamilyInfo.invariants()` and `InsectFamilyInfo.withEgg` are the
-first consumers, and their tests cover both null and non-null paths through the
+(commit `150009d`); `InsectFamilyInfo.invariants()` was the
+first consumer, and its tests cover both null and non-null paths through the
 constraint. Adding a kernel-level test would re-verify edges that
-`InsectFamilyTest` already covers.
+`InsectFamilyInfoTest` already covers.
 
 **Scope of this convention.** Applies to all kernels: `framework`, `framework-test`,
 `field-notes`, `identification`, `taxonomy`, `clades`, `biogeography`, `catalog`, `catalog-inmem`,

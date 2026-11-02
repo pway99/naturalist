@@ -20,7 +20,7 @@ events are `Entity` records: immutable, equality by value. The other four marker
   Immutable, identity optional, NOT a consistency boundary; `invariants()` assert
   the projection's structural well-formedness, not owned cross-entity consistency.
   Use instead of `Aggregate` when the type owns nothing and is never mutated as a
-  unit (e.g. the insect `*View` read models).
+  unit (e.g. insects' `InsectTaxon` and its permits, soil's `SoilProfile`).
 - **ValueObject** — immutable, no identity, equality by value. Must satisfy all four
   ADR-013 constraints: no Entity/Aggregate members, does not uniquely identify an entity,
   cohesive ubiquitous-language concept, members have collective meaning (not a projection
@@ -290,8 +290,8 @@ visibility:
 | `<DomainNoun>Views`             | `interface` | public          | presentation read models (records implementing `ReadModel`) |
 | `<DomainNoun>ViewQuery`         | `interface` | public          | none — flat methods returning `<DomainNoun>Views` models |
 
-`EntitySubject` drops the domain prefix — `InsectSpeciesInfo` → `Species`, `InsectImage`
-→ `Image`. The outer namespace carries the prefix.
+`EntitySubject` drops the domain prefix — `InsectImage` → `Image`, `InsectFeature`
+→ `Feature`. The outer namespace carries the prefix.
 
 This bare-`EntitySubject` rule is for **nested** namespace types (and the N=1-collapsed
 ports that stand in for one). **Standalone concrete classes invert it**: query/command

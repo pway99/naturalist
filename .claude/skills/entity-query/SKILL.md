@@ -76,7 +76,7 @@ Find the entity class. Read it to determine:
 **Namespace naming.** `<DomainNoun>Query` is the domain noun for the package:
 `com.naturalist.insects` → `InsectQuery`; `com.naturalist.insects.lifestage` →
 `InsectLifeStageQuery` (sub-package compound noun). `<EntitySubject>` drops the
-namespace prefix — `InsectImage` → `Image`, `InsectSpeciesInfo` → `Species`. A
+namespace prefix — `InsectImage` → `Image`, `InsectFeature` → `Feature`. A
 sub-package entity that already reads cleanly without a prefix (`LifeStage`) keeps
 its name as the subject.
 

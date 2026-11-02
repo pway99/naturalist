@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * Species-rank permit of {@link InsectTaxon} — the canonical "we know exactly what species this is" view.
+ * Species-rank permit of {@link InsectTaxon} — the canonical "we know exactly what species this is" taxon.
  * Composes the species record with the photographic field record. Root identity is
  * the species's {@link InsectSpeciesName}.
  */
