@@ -45,7 +45,7 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
     record PendingCitation(CitationName citationName, InsectRankName attachedAt, String note) {}
 
     @Override
-    public InsectCitationView findByRankName(InsectRankName rankName) {
+    public InsectCitations findByRankName(InsectRankName rankName) {
         observer.arguments("findByRankName", i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
         return findByAncestry(rankName, ancestryResolver.ancestry(rankName));
@@ -57,7 +57,7 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
      * {@code InsectFactory} resolves the lineage once and hands it here so the whole read model
      * costs a single ancestry walk; {@link #findByRankName} supplies the walk for direct callers.
      */
-    InsectCitationView findByAncestry(InsectRankName subject, Set<InsectRankName> ancestry) {
+    InsectCitations findByAncestry(InsectRankName subject, Set<InsectRankName> ancestry) {
         observer.arguments("findByAncestry", i -> i
                         .identifier(subject, "subject")
                         .observableCollection(ancestry, "ancestry"))
@@ -86,7 +86,7 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
         }
 
         if (pending.isEmpty()) {
-            InsectCitationView view = new InsectCitationView(subject, List.of());
+            InsectCitations view = new InsectCitations(subject, List.of());
             observer.observable(view, "citationView").observe(Level.WARN);
             return view;
         }
@@ -97,17 +97,17 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
             resolved.put(c.name(), c);
         }
 
-        List<InsectCitationView.RankedCitation> citations = new ArrayList<>();
+        List<InsectCitations.RankedCitation> citations = new ArrayList<>();
         for (PendingCitation p : pending) {
             Citation citation = resolved.get(p.citationName());
             if (citation != null) {
-                citations.add(new InsectCitationView.RankedCitation(citation, p.attachedAt(), p.note()));
+                citations.add(new InsectCitations.RankedCitation(citation, p.attachedAt(), p.note()));
             } else {
                 observer.forMethod("findByAncestry").entityName(p.citationName(), "unresolvedCitationName").observe(Level.WARN);
             }
         }
 
-        InsectCitationView view = new InsectCitationView(subject, List.copyOf(citations));
+        InsectCitations view = new InsectCitations(subject, List.copyOf(citations));
         observer.observable(view, "citationView").observe(Level.WARN);
         return view;
     }

@@ -13,9 +13,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InsectCitationViewTest {
+class InsectCitationsTest {
 
-    private static final Observer observer = Observer.forClass(InsectCitationViewTest.class);
+    private static final Observer observer = Observer.forClass(InsectCitationsTest.class);
 
     private static OnlineSource citation(String slug, String title, String url) {
         return new OnlineSource(
@@ -30,9 +30,9 @@ class InsectCitationViewTest {
     void validView_hasNoInvariantViolations() {
         MethodObserver mo = observer.forMethod("validView_hasNoInvariantViolations");
 
-        InsectCitationView view = new InsectCitationView(
+        InsectCitations view = new InsectCitations(
                 InsectSpeciesName.of("battus-philenor"),
-                List.of(new InsectCitationView.RankedCitation(
+                List.of(new InsectCitations.RankedCitation(
                     citation("eol-lepidoptera-747", "Lepidoptera",
                         "https://eol.org/pages/747"),
                         InsectOrderName.of("lepidoptera"),
@@ -46,7 +46,7 @@ class InsectCitationViewTest {
     void nullComponents_reportInvariantViolations() {
         MethodObserver mo = observer.forMethod("nullComponents_reportInvariantViolations");
 
-        InsectCitationView view = new InsectCitationView(null, null);
+        InsectCitations view = new InsectCitations(null, null);
 
         InvariantObservation result = mo.observable(view, "view");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
@@ -57,7 +57,7 @@ class InsectCitationViewTest {
     void validRankedCitation_hasNoInvariantViolations() {
         MethodObserver mo = observer.forMethod("validRankedCitation_hasNoInvariantViolations");
 
-        InsectCitationView.RankedCitation rc = new InsectCitationView.RankedCitation(
+        InsectCitations.RankedCitation rc = new InsectCitations.RankedCitation(
             citation("eol-battus-philenor-130502", "Battus philenor",
                 "https://eol.org/pages/130502"),
                 InsectFamilyName.of("papilionidae"),
@@ -71,7 +71,7 @@ class InsectCitationViewTest {
     void nullRankedCitationComponents_reportInvariantViolations() {
         MethodObserver mo = observer.forMethod("nullRankedCitationComponents_reportInvariantViolations");
 
-        InsectCitationView.RankedCitation rc = new InsectCitationView.RankedCitation(
+        InsectCitations.RankedCitation rc = new InsectCitations.RankedCitation(
                 null, null, null);
 
         InvariantObservation result = mo.observable(rc, "rankedCitation");

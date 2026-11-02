@@ -176,7 +176,7 @@ public interface InsectQuery {
     }
 
     interface CitationQuery {
-        InsectCitationView findByRankName(InsectRankName rankName);
+        InsectCitations findByRankName(InsectRankName rankName);
     }
 
     interface FeatureQuery {

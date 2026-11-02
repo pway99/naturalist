@@ -86,7 +86,7 @@ public record Insect(
         @Nullable InsectGenus genus,
         @Nullable InsectSpecies species,
         LifeStageCollection lifeStages,
-        @Nullable InsectCitationView citations,
+        @Nullable InsectCitations citations,
         @Nullable OrganismFeatureView<InsectRankName, InsectFeature> features,
         @Nullable InsectFunctionalRole role,
         /**
@@ -176,7 +176,7 @@ public record Insect(
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 
-    public Insect withCitations(@Nullable InsectCitationView citations) {
+    public Insect withCitations(@Nullable InsectCitations citations) {
         return new Insect(observations, order, family, genus, species, lifeStages, citations, features, role, children);
     }
 

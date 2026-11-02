@@ -9,7 +9,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public record InsectCitationView(
+public record InsectCitations(
         InsectRankName subject,
         List<RankedCitation> citations
 ) implements ReadModel {

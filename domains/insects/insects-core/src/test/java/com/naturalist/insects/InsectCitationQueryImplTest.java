@@ -42,7 +42,7 @@ class InsectCitationQueryImplTest {
 
     @Test
     void findByRankName_orderWithCitation_returnsCitation() {
-        InsectCitationView view = insectCitationQuery.findByRankName(
+        InsectCitations view = insectCitationQuery.findByRankName(
                 InsectOrderName.of("lepidoptera"));
 
         assertThat(view.subject().value()).isEqualTo("lepidoptera");
@@ -55,7 +55,7 @@ class InsectCitationQueryImplTest {
 
     @Test
     void findByRankName_familyInheritsFromOrder() {
-        InsectCitationView view = insectCitationQuery.findByRankName(
+        InsectCitations view = insectCitationQuery.findByRankName(
                 InsectFamilyName.of("papilionidae"));
 
         assertThat(view.subject().value()).isEqualTo("papilionidae");
@@ -67,7 +67,7 @@ class InsectCitationQueryImplTest {
 
     @Test
     void findByRankName_speciesInheritsFullChain() {
-        InsectCitationView view = insectCitationQuery.findByRankName(
+        InsectCitations view = insectCitationQuery.findByRankName(
                 InsectSpeciesName.of("battus-philenor"));
 
         assertThat(view.subject().value()).isEqualTo("battus-philenor");
@@ -80,7 +80,7 @@ class InsectCitationQueryImplTest {
     @Test
     void findByRankName_orderWithNoCitations_returnsEmpty() {
         // Use an order with no citation associations
-        InsectCitationView view = insectCitationQuery.findByRankName(
+        InsectCitations view = insectCitationQuery.findByRankName(
                 InsectOrderName.of("coleoptera"));
 
         assertThat(view.citations()).isEmpty();

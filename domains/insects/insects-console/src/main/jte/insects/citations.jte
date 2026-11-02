@@ -1,7 +1,7 @@
-@import com.naturalist.insects.InsectCitationView
+@import com.naturalist.insects.InsectCitations
 @import com.naturalist.authority.OnlineSource
 
-@param InsectCitationView citations = null
+@param InsectCitations citations = null
 
 @if(citations != null && !citations.citations().isEmpty())
     <section class="citations">

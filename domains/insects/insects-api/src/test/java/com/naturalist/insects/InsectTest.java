@@ -167,9 +167,9 @@ class InsectTest {
     @Test
     void withCitationsReplacesCitationsAndPreservesOtherFields() {
         Insect base = Insect.empty().withOrder(orderView());
-        InsectCitationView citations = new InsectCitationView(
+        InsectCitations citations = new InsectCitations(
                 InsectOrderName.of("lepidoptera"),
-                List.of(new InsectCitationView.RankedCitation(
+                List.of(new InsectCitations.RankedCitation(
                         new OnlineSource(
                                 CitationName.of("eol-lepidoptera"),
                                 new AuthorityReference(
