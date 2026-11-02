@@ -377,4 +377,14 @@ public record InsectSpecies(
             };
         }
     }
+
+    /** The alphabetically first common name, else the scientific slug. */
+    public String displayName() {
+        return commonNames.stream().map(CommonName::label).min(String.CASE_INSENSITIVE_ORDER).orElse(name.value());
+    }
+
+    /** The genus's scientific name plus this species' epithet, or the slug when the genus is not known. */
+    public String binomial(@Nullable InsectGenus genus) {
+        return genus == null ? name.value() : genus.genus().value() + " " + epithet.value();
+    }
 }

@@ -1,8 +1,10 @@
 package com.naturalist.insects.lifestage;
 
 import com.naturalist.ddd.BehavioralCollection;
+import com.naturalist.insects.LifeStageKind;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -24,6 +26,16 @@ public interface InsectLifeStageEntityCollections {
 
         public static LifeStageCollection empty() {
             return new LifeStageCollection(List.of());
+        }
+
+        /** Stages whose kind is in {@code sequence} first, in that order; the rest after, in enum order. */
+        public LifeStageCollection orderedBy(List<LifeStageKind> sequence) {
+            return new LifeStageCollection(stream()
+                    .sorted(Comparator.comparingInt((LifeStage stage) -> {
+                        int position = sequence.indexOf(stage.kind());
+                        return position >= 0 ? position : sequence.size() + stage.kind().ordinal();
+                    }))
+                    .toList());
         }
     }
 }

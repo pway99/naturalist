@@ -51,4 +51,9 @@ public record InsectOrder(
                 .valueObject(description, "description")
                 .notNull(commonNames, "commonNames");
     }
+
+    /** The alphabetically first common name, else the scientific slug. */
+    public String displayName() {
+        return commonNames.stream().map(CommonName::label).min(String.CASE_INSENSITIVE_ORDER).orElse(name.value());
+    }
 }

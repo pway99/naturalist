@@ -497,4 +497,19 @@ class InsectTest {
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
     }
+
+    // ----- binomial() -----
+
+    @Test
+    void binomial_joinsGenusAndEpithet() {
+        Insect insect = Insect.empty().withGenus(genusView()).withSpecies(speciesView());
+
+        assertThat(insect.binomial()).isEqualTo("Battus philenor");
+    }
+
+    @Test
+    void binomial_isEmptyWithoutSpecies() {
+        assertThat(Insect.empty().binomial()).isEmpty();
+        assertThat(Insect.empty().withGenus(genusView()).binomial()).isEmpty();
+    }
 }

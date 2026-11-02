@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.RandomValue;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.Holometabola;
@@ -70,5 +71,30 @@ class InsectOrderTest {
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    void displayName_prefersAlphabeticallyFirstCommonName() {
+        var rank = orderWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
+
+        assertThat(rank.displayName()).isEqualTo("Pipevine Swallowtail");
+    }
+
+    @Test
+    void displayName_fallsBackToScientificName() {
+        var rank = orderWith(Set.of());
+
+        assertThat(rank.displayName()).isEqualTo("lepidoptera");
+    }
+
+    private static Description displayNameDescription() {
+        return new Description(
+                RandomValue.string(), RandomValue.string(),
+                RandomValue.string(), RandomValue.string());
+    }
+
+    private static InsectOrder orderWith(Set<CommonName> commonNames) {
+        return new InsectOrder(InsectOrderName.of("lepidoptera"), TaxonomicOrder.of("Lepidoptera"),
+                displayNameDescription(), commonNames, null);
     }
 }

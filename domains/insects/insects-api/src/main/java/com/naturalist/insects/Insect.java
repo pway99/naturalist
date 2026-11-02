@@ -234,4 +234,9 @@ public record Insect(
             .notNull(children, "children")
         ;
     }
+
+    /** The scientific name of the identified species, or empty when no species is present. */
+    public String binomial() {
+        return species == null ? "" : species.species().binomial(genus == null ? null : genus.genus());
+    }
 }

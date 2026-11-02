@@ -4,6 +4,7 @@ import com.naturalist.ddd.BehavioralCollection;
 import com.naturalist.ddd.BehavioralMap;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import com.naturalist.observation.OrganismImage;
@@ -158,6 +159,13 @@ public interface InsectEntityCollections {
 
         public static FunctionalRoleCollection empty() {
             return new FunctionalRoleCollection(List.of());
+        }
+
+        /** A new collection ordered by the parent rank's slug. */
+        public FunctionalRoleCollection sortedByParentName() {
+            return new FunctionalRoleCollection(stream()
+                    .sorted(Comparator.comparing((InsectFunctionalRole role) -> role.parentName().value()))
+                    .toList());
         }
     }
 

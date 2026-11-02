@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.RandomValue;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.Papilionidae;
@@ -37,5 +38,30 @@ class InsectFamilyTest {
         return new Description(
                 RandomValue.string(), RandomValue.string(),
                 RandomValue.string(), RandomValue.string());
+    }
+
+    @Test
+    void displayName_prefersAlphabeticallyFirstCommonName() {
+        var rank = familyWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
+
+        assertThat(rank.displayName()).isEqualTo("Pipevine Swallowtail");
+    }
+
+    @Test
+    void displayName_fallsBackToScientificName() {
+        var rank = familyWith(Set.of());
+
+        assertThat(rank.displayName()).isEqualTo("papilionidae");
+    }
+
+    private static Description displayNameDescription() {
+        return new Description(
+                RandomValue.string(), RandomValue.string(),
+                RandomValue.string(), RandomValue.string());
+    }
+
+    private static InsectFamily familyWith(Set<CommonName> commonNames) {
+        return new InsectFamily(InsectFamilyName.of("papilionidae"), InsectOrderName.of("lepidoptera"),
+                TaxonomicFamily.of("Papilionidae"), displayNameDescription(), commonNames, null);
     }
 }
