@@ -81,6 +81,18 @@ generic service tier.
 
 ### D2. Read side: one call per page
 
+> **Amended 2026-11-01 (user decisions, before slice 3):** the viewer lens does
+> not become an `Insect` component, and no viewer- or list-shaped read lives on
+> `InsectQuery`. `Insect` stays the viewer-free biological read model. A new
+> `InsectViewQuery` port returns the presentation models nested in one
+> `InsectViews` interface — `rankPage(name, @Nullable viewer)` →
+> `InsectViews.RankPage(Insect insect, Viewer viewer)`, plus the species and
+> rank list cards — and its impl depends only on `InsectQuery` (views derive
+> from the biology, never the reverse). `InsectTaxonView` and
+> `InsectCitationView` stay where they are: they are components of `Insect`.
+> Where the bullets below say `getByName(name, viewer)` / "`Insect` gains a
+> collection view", read `InsectViewQuery.rankPage` / `RankPage.viewer()`.
+
 - `InsectQuery.getByName(InsectRankName name, @Nullable NaturalistName viewer)`
   returns `Optional<Insect>`. The existing one-argument form stays and means
   "no viewer". `Insect` gains a collection view (my call on shape, builder
