@@ -4,6 +4,7 @@ import com.naturalist.ddd.ReadModel;
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
 import com.naturalist.observation.OrganismObservation;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -39,6 +40,38 @@ public interface InsectViews {
         @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i.readModel(insect, "insect").valueObject(viewer, "viewer");
+        }
+    }
+
+    /** One species-list card: the species with the labels, role, photos and viewer state the card shows. */
+    record SpeciesCard(InsectSpecies species, @Nullable InsectGenus genus, @Nullable InsectFamily family,
+                       @Nullable InsectFunctionalRole role, InsectEntityCollections.ImageCollection images,
+                       boolean collected) implements ReadModel {
+        public String displayName() {
+            return species.displayName();
+        }
+
+        public String binomial() {
+            return species.binomial(genus);
+        }
+
+        public String familyLabel() {
+            if (family != null) {
+                return family.family().value();
+            }
+            return genus != null ? genus.familyName().value() : "\u2014";
+        }
+
+        public String genusLabel() {
+            return genus != null ? genus.genus().value() : species.genusName().value();
+        }
+
+        @Override
+        public Consumer<? extends Constraints> invariants() {
+            return i -> i.namedEntity(species, "species").notNull(images, "images")
+                    .whenNotNull(genus, g -> g.namedEntity(genus, "genus"))
+                    .whenNotNull(family, f -> f.namedEntity(family, "family"))
+                    .whenNotNull(role, r -> r.observable(role, "role"));
         }
     }
 }

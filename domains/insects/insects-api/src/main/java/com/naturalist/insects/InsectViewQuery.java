@@ -1,5 +1,7 @@
 package com.naturalist.insects;
 
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import com.naturalist.naturalist.NaturalistName;
 import org.jspecify.annotations.Nullable;
 
@@ -15,4 +17,13 @@ public interface InsectViewQuery {
      * Empty when {@code InsectQuery.getByName(name)} is.
      */
     Optional<InsectViews.RankPage> rankPage(InsectRankName name, @Nullable NaturalistName viewer);
+
+    /** A page of the species catalogue as cards; {@code viewer} null means anonymous (no card is collected). */
+    Page<InsectViews.SpeciesCard> speciesCards(PageRequest request, @Nullable NaturalistName viewer);
+
+    /**
+     * A page over the species {@code viewer} has observed, ordered by species name; {@code collected}
+     * is true on every card returned.
+     */
+    Page<InsectViews.SpeciesCard> collectedBy(NaturalistName viewer, PageRequest request);
 }

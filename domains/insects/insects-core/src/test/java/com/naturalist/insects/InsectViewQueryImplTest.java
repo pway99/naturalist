@@ -1,6 +1,8 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.data.Page;
+import com.naturalist.data.PageRequest;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.ImageUpload;
@@ -69,5 +71,69 @@ class InsectViewQueryImplTest {
     @Test
     void rankPage_rejectsNullName() {
         assertThatThrownBy(() -> views.rankPage(null, FLORA)).isInstanceOf(InvariantViolationException.class);
+    }
+    private void photo(InsectSpeciesName name) {
+        context.insectCommand().photos().add(name, ImageUpload.of(JPEG), FLORA, "seen", null);
+    }
+
+    @Test
+    void speciesCards_firstPage_carriesLabelsRoleAndImages() {
+        InsectViews.SpeciesCard card = views.speciesCards(PageRequest.first(100), null).content().stream()
+                .filter(c -> c.species().name().equals(species)).findFirst().orElseThrow();
+
+        assertThat(card.collected()).isFalse();
+        assertThat(card.genus()).isNotNull();
+        assertThat(card.binomial()).isEqualTo(card.species().binomial(card.genus()));
+        assertThat(card.displayName()).isEqualTo(card.species().displayName());
+        assertThat(card.genusLabel()).isEqualTo(card.genus().genus().value());
+        assertThat(card.familyLabel()).isNotEqualTo("\u2014");
+        assertThat(card.role()).isNotNull();
+        assertThat(card.images().stream().toList()).isNotEmpty();
+    }
+
+    @Test
+    void speciesCards_withViewer_marksCollected() {
+        photo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+
+        Page<InsectViews.SpeciesCard> page = views.speciesCards(PageRequest.first(100), FLORA);
+
+        assertThat(page.content()).filteredOn(InsectViews.SpeciesCard::collected)
+                .extracting(c -> c.species().name()).containsExactly(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+        assertThat(page.content()).hasSizeGreaterThan(1);
+    }
+
+    @Test
+    void collectedBy_returnsOnlyObservedSpecies() {
+        photo(TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
+        photo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+
+        Page<InsectViews.SpeciesCard> page = views.collectedBy(FLORA, PageRequest.first(10));
+
+        assertThat(page.content()).extracting(c -> c.species().name())
+                .containsExactly(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name, TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
+        assertThat(page.content()).allMatch(InsectViews.SpeciesCard::collected);
+        assertThat(page.hasNext()).isFalse();
+    }
+
+    @Test
+    void collectedBy_pagesOverTheCollection() {
+        photo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+        photo(TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
+        photo(TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
+
+        Page<InsectViews.SpeciesCard> first = views.collectedBy(FLORA, PageRequest.of(0, 2, 2));
+        Page<InsectViews.SpeciesCard> second = views.collectedBy(FLORA, PageRequest.of(1, 2, 2));
+
+        assertThat(first.content()).hasSize(2);
+        assertThat(first.pagesAheadKnown()).isEqualTo(1);
+        assertThat(first.moreBeyondLookahead()).isFalse();
+        assertThat(second.content()).hasSize(1);
+        assertThat(second.hasNext()).isFalse();
+        assertThat(second.pageNumber()).isEqualTo(1);
+    }
+
+    @Test
+    void speciesCards_rejectsNullRequest() {
+        assertThatThrownBy(() -> views.speciesCards(null, FLORA)).isInstanceOf(InvariantViolationException.class);
     }
 }
