@@ -1,4 +1,5 @@
 @import com.naturalist.insects.InsectFamily
+@import com.naturalist.insects.InsectGenus
 @import com.naturalist.insects.InsectOrder
 @import com.naturalist.insects.InsectSpecies
 @import com.naturalist.insects.AncestorIntro
@@ -8,6 +9,7 @@
 @import java.util.List
 
 @param InsectSpecies species
+@param InsectGenus genus = null
 @param InsectFamily family
 @param InsectOrder order
 @param List<LifeStage> stages
@@ -15,7 +17,7 @@
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 
-!{var commonName = species.displayName();}
+!{var commonName = species.displayName(genus);}
 
 @template.layout.page(title = commonName + " — Life Stages", content = @`
     @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)

@@ -700,6 +700,7 @@ public class InsectsController {
         InsectFamily family = i.family().family();
         InsectOrder order = i.order().order();
         model.addAttribute("species", s);
+        model.addAttribute("genus", genus);
         model.addAttribute("family", family);
         model.addAttribute("order", order);
         model.addAttribute("stages", i.lifeStages().stream().toList());
