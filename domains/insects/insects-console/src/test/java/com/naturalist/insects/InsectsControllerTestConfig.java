@@ -76,6 +76,7 @@ class InsectsControllerTestConfig {
         LibraryTestContext library = LibraryTestContext.create(DATABASE);
         return new InsectsController(
                 INSECTS.insectQuery(),
+                INSECTS.insectViewQuery(),
                 INSECTS.insectCommand(),
                 INSECTS.insectLifeStageQuery(),
                 library.cladeQuery(),

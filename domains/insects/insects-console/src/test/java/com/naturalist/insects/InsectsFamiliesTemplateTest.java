@@ -23,7 +23,6 @@ import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,20 +35,24 @@ class InsectsFamiliesTemplateTest {
 
     @Test
     void families_rendersWithoutError() {
-        InsectOrderTestEntitySource orderSource = nte.getNamed(InsectOrderTestEntitySource.class);
+        Map<InsectOrderName, InsectOrder> orderByName = nte.getNamed(InsectOrderTestEntitySource.class)
+                .entityStream().collect(java.util.stream.Collectors.toMap(InsectOrder::name, o -> o));
         Page<InsectFamily> familyPage = nte.getNamed(InsectFamilyTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
-        Map<InsectOrderName, InsectOrder> orderByName = new LinkedHashMap<>();
-        for (var family : familyPage.content()) {
-            orderByName.computeIfAbsent(family.orderName(),
-                    n -> orderSource.getByName(n).orElseThrow());
-        }
+        List<InsectViews.RankCard> cards = familyPage.content().stream()
+                .map(f -> {
+                    InsectOrder order = orderByName.get(f.orderName());
+                    return new InsectViews.RankCard(f.name(), f.displayName(), f.family().value(), f.orderName(),
+                            order != null ? order.order().value() : f.orderName().value(),
+                            InsectEntityCollections.ImageCollection.empty());
+                })
+                .toList();
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render(
                 "insects/families.jte",
-                Map.of("familyPage", familyPage,
-                       "orderByName", orderByName),
+                Map.of("cards", new Page<>(cards, familyPage.pageNumber(), familyPage.pageSize(),
+                        familyPage.pagesAheadKnown(), familyPage.moreBeyondLookahead())),
                 output);
 
         assertThat(output.toString()).isNotBlank();
@@ -66,9 +69,7 @@ class InsectsFamiliesTemplateTest {
         ConsoleSliceTemplates.create().render(
                 "insects/family.jte",
                 Map.of(
-                        "family", anyFamily,
-                        "order", order,
-                        "children", List.of(),
+                        "page", familyPage(anyFamily, order, List.of()),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -109,11 +110,12 @@ class InsectsFamiliesTemplateTest {
         ConsoleSliceTemplates.create().render(
                 "insects/family.jte",
                 Map.of(
-                        "family", anyFamily,
-                        "order", order,
-                        "children", List.of(),
-                        "images", List.of(image),
-                        "observations", Map.of(image.id(), observation),
+                        "page", new InsectViews.RankPage(
+                                familyPage(anyFamily, order, List.of()).insect()
+                                        .withObservations(InsectEntityCollections.ImageCollection.of(List.of(image))),
+                                new InsectViews.Viewer(true,
+                                        InsectEntityCollections.ImageCollection.of(List.of(image)),
+                                        Map.of(image.id(), observation))),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -143,9 +145,7 @@ class InsectsFamiliesTemplateTest {
         ConsoleSliceTemplates.create().render(
                 "insects/family.jte",
                 Map.of(
-                        "family", family,
-                        "order", order,
-                        "children", List.of(genusChild),
+                        "page", familyPage(family, order, List.of(genusChild)),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -156,5 +156,13 @@ class InsectsFamiliesTemplateTest {
                 .map(cn -> cn.label()).orElse(anyGenus.name().value());
         assertThat(output.toString()).contains(genusDisplayName);
         assertThat(output.toString()).contains("/insects/genera/" + anyGenus.name().value());
+    }
+
+    private static InsectViews.RankPage familyPage(InsectFamily family, InsectOrder order,
+                                                   List<InsectTaxonView> children) {
+        return InsectViews.RankPage.anonymous(Insect.empty()
+                .withOrder(InsectTaxonView.OrderView.of(order))
+                .withFamily(InsectTaxonView.FamilyView.of(family))
+                .withChildren(children));
     }
 }

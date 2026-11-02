@@ -7,7 +7,7 @@
 @import java.util.Map
 
 @param List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images = List.of()
-@param Map<InsectImageId, OrganismObservation> observations = Map.of()
+@param Map<InsectImageId, OrganismObservation<InsectObservationId, InsectRankName>> observations = Map.of()
 @param String alt = ""
 @param String notesAction = ""
 @param String returnPath = ""

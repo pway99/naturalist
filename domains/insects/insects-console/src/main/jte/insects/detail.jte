@@ -1,31 +1,10 @@
-@import com.naturalist.insects.InsectCitationView
-@import com.naturalist.insects.InsectFamily
-@import com.naturalist.insects.InsectFunctionalRole
-@import com.naturalist.insects.InsectGenus
-@import com.naturalist.insects.InsectOrder
-@import com.naturalist.insects.InsectSpecies
-@import com.naturalist.observation.OrganismImage
-@import com.naturalist.insects.InsectObservationId
-@import com.naturalist.insects.InsectRankName
-@import com.naturalist.insects.InsectImageId
-@import com.naturalist.observation.OrganismObservation
+@import com.naturalist.insects.InsectViews
 @import com.naturalist.insects.BreadcrumbSegment
 @import com.naturalist.insects.CladeTrail
-@import com.naturalist.taxonomy.OrganismFeatureView
-@import com.naturalist.insects.InsectFeature
 @import com.naturalist.library.GlossaryLinker
-@import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
-@import java.util.Map
 
-@param InsectSpecies species
-@param InsectGenus genus
-@param InsectFamily family
-@param InsectOrder order
-@param List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images
-@param List<LifeStage> stages = List.of()
-@param InsectFunctionalRole role = null
-@param InsectCitationView citations = null
+@param InsectViews.RankPage page
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -33,15 +12,21 @@
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
 @param java.util.List<com.naturalist.insects.AncestorIntro> ancestorIntros = List.of()
-@param boolean collected = false
 @param boolean lens = false
-@param Map<InsectImageId, OrganismObservation> observations = java.util.Map.of()
-@param OrganismFeatureView<InsectRankName, InsectFeature> features = null
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 @param boolean imageError = false
 
-!{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
-!{var binomial = genus.genus().value() + " " + species.epithet().value();}
+!{var insect = page.insect();}
+!{var species = insect.species().species();}
+!{var role = insect.role();}
+!{var citations = insect.citations();}
+!{var features = insect.features();}
+!{var stages = insect.lifeStages().stream().toList();}
+!{var images = lens ? page.viewer().ownImages().stream().toList() : insect.observations().stream().toList();}
+!{var observations = page.viewer().ownObservationByImage();}
+!{var collected = page.viewer().collected();}
+!{var commonName = species.displayName();}
+!{var binomial = insect.binomial();}
 <%-- The CSRF token is read the same way layout/page.jte and the other rank
      templates read it -- plain request attributes published by
      NaturalistHeaderInterceptor (management-console only) -- rather than a

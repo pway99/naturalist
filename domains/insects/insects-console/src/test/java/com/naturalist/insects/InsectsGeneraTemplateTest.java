@@ -10,9 +10,9 @@ import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,18 +25,22 @@ class InsectsGeneraTemplateTest {
     void genera_rendersWithoutError() {
         Page<InsectGenus> genusPage = nte.getNamed(InsectGenusTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
-        InsectFamilyTestEntitySource familySource = nte.getNamed(InsectFamilyTestEntitySource.class);
-        Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
-        for (var genus : genusPage.content()) {
-            familyByName.computeIfAbsent(genus.familyName(),
-                    n -> familySource.getByName(n).orElseThrow());
-        }
+        Map<InsectFamilyName, InsectFamily> familyByName = nte.getNamed(InsectFamilyTestEntitySource.class)
+                .entityStream().collect(Collectors.toMap(InsectFamily::name, f -> f));
+        List<InsectViews.RankCard> cards = genusPage.content().stream()
+                .map(g -> {
+                    InsectFamily family = familyByName.get(g.familyName());
+                    return new InsectViews.RankCard(g.name(), g.displayName(), g.genus().value(), g.familyName(),
+                            family != null ? family.family().value() : g.familyName().value(),
+                            InsectEntityCollections.ImageCollection.empty());
+                })
+                .toList();
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render(
                 "insects/genera.jte",
-                Map.of("genusPage", genusPage,
-                       "familyByName", familyByName),
+                Map.of("cards", new Page<>(cards, genusPage.pageNumber(), genusPage.pageSize(),
+                        genusPage.pagesAheadKnown(), genusPage.moreBeyondLookahead())),
                 output);
 
         assertThat(output.toString()).isNotBlank();
@@ -55,10 +59,7 @@ class InsectsGeneraTemplateTest {
         ConsoleSliceTemplates.create().render(
                 "insects/genus.jte",
                 Map.of(
-                        "genus", anyGenus,
-                        "family", family,
-                        "order", order,
-                        "children", List.of(),
+                        "page", genusPage(anyGenus, family, order, List.of()),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -86,10 +87,7 @@ class InsectsGeneraTemplateTest {
         ConsoleSliceTemplates.create().render(
                 "insects/genus.jte",
                 Map.of(
-                        "genus", genus,
-                        "family", family,
-                        "order", order,
-                        "children", List.of(speciesChild),
+                        "page", genusPage(genus, family, order, List.of(speciesChild)),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -100,5 +98,14 @@ class InsectsGeneraTemplateTest {
                 .map(cn -> cn.label()).orElse(anySpecies.name().value());
         assertThat(output.toString()).contains(speciesDisplayName);
         assertThat(output.toString()).contains("/insects/" + anySpecies.name().value());
+    }
+
+    private static InsectViews.RankPage genusPage(InsectGenus genus, InsectFamily family, InsectOrder order,
+                                                  List<InsectTaxonView> children) {
+        return InsectViews.RankPage.anonymous(Insect.empty()
+                .withOrder(InsectTaxonView.OrderView.of(order))
+                .withFamily(InsectTaxonView.FamilyView.of(family))
+                .withGenus(InsectTaxonView.GenusView.of(genus))
+                .withChildren(children));
     }
 }

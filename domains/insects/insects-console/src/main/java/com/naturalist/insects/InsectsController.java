@@ -13,7 +13,6 @@ import com.naturalist.data.Pages;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.insects.render.InsectsParagraphCues;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
-import com.naturalist.insects.lifestage.LifeStage;
 import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
@@ -42,8 +41,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
-import com.naturalist.observation.OrganismImage;
-import com.naturalist.observation.OrganismObservation;
 
 @Controller
 @RequestMapping("/insects")
@@ -77,6 +74,7 @@ public class InsectsController {
     }
 
     private final InsectQuery insectQuery;
+    private final InsectViewQuery insectViewQuery;
     private final InsectCommand insectCommand;
     private final InsectLifeStageQuery insectLifeStageQuery;
     private final CladeQuery cladeQuery;
@@ -85,12 +83,14 @@ public class InsectsController {
     private final GlossaryLinker glossaryLinker;
 
     InsectsController(InsectQuery insectQuery,
+                      InsectViewQuery insectViewQuery,
                       InsectCommand insectCommand,
                       InsectLifeStageQuery insectLifeStageQuery,
                       CladeQuery cladeQuery,
                       com.naturalist.library.GlossaryTermQuery glossaryTermQuery,
                       ImageStore imageStore) {
         this.insectQuery = insectQuery;
+        this.insectViewQuery = insectViewQuery;
         this.insectCommand = insectCommand;
         this.insectLifeStageQuery = insectLifeStageQuery;
         this.cladeQuery = cladeQuery;
@@ -159,33 +159,6 @@ public class InsectsController {
                 intro("Family " + family.family().value(), "intro-family-open", family.description()),
                 intro("Genus " + genus.genus().value(), "intro-genus-open", genus.description()),
                 intro("Species " + binomial, "intro-species-open", species.description()));
-    }
-
-    /**
-     * Maps each image to the signed-in naturalist's own {@link OrganismObservation}
-     * for it, when one exists. Only the viewer's observations are exposed — the
-     * gallery's notes form edits the viewer's own field notes, never someone
-     * else's.
-     */
-    private Map<InsectImageId, OrganismObservation<InsectObservationId, InsectRankName>> observationLookup(
-            List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images,
-            java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer,
-            InsectRankName subject) {
-        var lookup = new java.util.HashMap<InsectImageId, OrganismObservation<InsectObservationId, InsectRankName>>();
-        if (viewer.isEmpty()) {
-            return lookup;
-        }
-        var mine = insectQuery.observations()
-                .forNaturalistAndSubjects(viewer.get(), java.util.Set.of(subject));
-        for (var img : images) {
-            if (img.observationId() != null) {
-                mine.stream()
-                        .filter(o -> o.id().equals(img.observationId()))
-                        .findFirst()
-                        .ifPresent(o -> lookup.put(img.id(), o));
-            }
-        }
-        return lookup;
     }
 
     /**
@@ -482,59 +455,14 @@ public class InsectsController {
     @GetMapping("/species")
     String list(@RequestParam(defaultValue = "0") int page,
                 HttpServletRequest request, Model model) {
-        boolean mine = collectionLensOn(request);
-        Page<InsectSpecies> speciesPage = insectQuery.species().findPage(PageRequest.console(Math.max(0, page)));
-        List<InsectSpecies> speciesInPage = speciesPage.content();
-
-        java.util.Set<InsectRankName> speciesNameSet = speciesInPage.stream()
-                .<InsectRankName>map(InsectSpecies::name)
-                .collect(java.util.stream.Collectors.toSet());
-        InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.of(
-                insectQuery.images().forParentNames(speciesNameSet).stream().toList());
-
-        Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = new LinkedHashMap<>();
-        insectQuery.functionalRoles().getByParentNames(speciesNameSet).stream()
-                .forEach(role -> {
-                    if (role.parentName() instanceof InsectSpeciesName parentSpeciesName) {
-                        rolesBySpecies.put(parentSpeciesName, role);
-                    }
-                });
-
-        java.util.Set<InsectGenusName> genusNameSet = speciesInPage.stream()
-                .map(InsectSpecies::genusName)
-                .collect(java.util.stream.Collectors.toSet());
-        Map<InsectGenusName, InsectGenus> genusByName = new LinkedHashMap<>();
-        insectQuery.genera().findByNameSet(genusNameSet).stream()
-                .forEach(genus -> genusByName.put(genus.name(), genus));
-
-        java.util.Set<InsectFamilyName> familyNameSet = genusByName.values().stream()
-                .map(InsectGenus::familyName)
-                .collect(java.util.stream.Collectors.toSet());
-        Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
-        insectQuery.families().findByNameSet(familyNameSet).stream()
-                .forEach(family -> familyByName.put(family.name(), family));
-
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> me = currentNaturalist(request);
-        List<InsectSpecies> speciesList;
-        if (mine && me.isPresent()) {
-            java.util.Set<InsectRankName> mySubjects = insectQuery.observations()
-                    .forNaturalist(me.get()).stream()
-                    .map(OrganismObservation<InsectObservationId, InsectRankName>::subject)
-                    .collect(java.util.stream.Collectors.toSet());
-            speciesList = speciesPage.content().stream()
-                    .filter(s -> mySubjects.contains(s.name()))
-                    .toList();
-        } else {
-            speciesList = speciesPage.content();
-        }
-        model.addAttribute("mine", mine && me.isPresent());
-
-        model.addAttribute("speciesPage", speciesPage);
-        model.addAttribute("speciesList", speciesList);
-        model.addAttribute("gallery", gallery);
-        model.addAttribute("rolesBySpecies", rolesBySpecies);
-        model.addAttribute("familyByName", familyByName);
-        model.addAttribute("genusByName", genusByName);
+        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
+        boolean mine = collectionLensOn(request) && viewer.isPresent();
+        PageRequest pageRequest = PageRequest.console(Math.max(0, page));
+        Page<InsectViews.SpeciesCard> cards = mine
+                ? insectViewQuery.collectedBy(viewer.get(), pageRequest)
+                : insectViewQuery.speciesCards(pageRequest, viewer.orElse(null));
+        model.addAttribute("cards", cards);
+        model.addAttribute("mine", mine);
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
         model.addAttribute("cladeTrail", cladeTrail(List.of()));
@@ -543,21 +471,7 @@ public class InsectsController {
 
     @GetMapping("/families")
     String families(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<InsectFamily> familyPage = insectQuery.families()
-                .findPage(PageRequest.console(Math.max(0, page)));
-        java.util.Set<InsectOrderName> orderNameSet = familyPage.content().stream()
-                .map(InsectFamily::orderName)
-                .collect(java.util.stream.Collectors.toSet());
-        Map<InsectOrderName, InsectOrder> orderByName = new LinkedHashMap<>();
-        insectQuery.orders().findByNameSet(orderNameSet).stream()
-                .forEach(order -> orderByName.put(order.name(), order));
-        java.util.LinkedHashSet<InsectRankName> familyRoots = familyPage.content().stream()
-                .map(family -> (InsectRankName) family.name())
-                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
-        InsectEntityCollections.ImageGallery gallery = insectQuery.images().forRankHierarchies(familyRoots);
-        model.addAttribute("familyPage", familyPage);
-        model.addAttribute("orderByName", orderByName);
-        model.addAttribute("gallery", gallery);
+        model.addAttribute("cards", insectViewQuery.familyCards(PageRequest.console(Math.max(0, page))));
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
         model.addAttribute("cladeTrail", cladeTrail(List.of()));
@@ -566,19 +480,15 @@ public class InsectsController {
 
     @GetMapping("/families/{name}")
     String familyDetail(@PathVariable String name, HttpServletRequest request, Model model) {
-        var familyName = InsectFamilyName.of(name);
-        var insect = insectQuery.getByName(familyName);
-        if (insect.isEmpty()) {
+        var rankPage = insectViewQuery.rankPage(InsectFamilyName.of(name), currentNaturalist(request).orElse(null));
+        if (rankPage.isEmpty()) {
             return "redirect:/insects/families";
         }
-        InsectFamily family = insect.get().family().family();
-        InsectOrder order = insect.get().order().order();
+        Insect insect = rankPage.get().insect();
+        InsectFamily family = insect.family().family();
+        InsectOrder order = insect.order().order();
         var description = family.description();
-        model.addAttribute("family", family);
-        model.addAttribute("order", order);
-        model.addAttribute("children", insect.get().children());
-        model.addAttribute("citations", insect.get().citations());
-        model.addAttribute("features", insect.get().features());
+        model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -587,26 +497,12 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToFamily(family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToFamily(family, order)));
         model.addAttribute("ancestorIntros", introsForFamily(order));
-        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> rankImages = insectQuery.images()
-                .forParentName(familyName).stream().toList();
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
-                currentNaturalist(request);
-        model.addAttribute("images", rankImages);
-        model.addAttribute("observations",
-                observationLookup(rankImages, viewer, familyName));
         return "insects/family";
     }
 
     @GetMapping("/orders")
     String orders(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<InsectOrder> orderPage = insectQuery.orders()
-                .findPage(PageRequest.console(Math.max(0, page)));
-        java.util.LinkedHashSet<InsectRankName> orderRoots = orderPage.content().stream()
-                .map(order -> (InsectRankName) order.name())
-                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
-        InsectEntityCollections.ImageGallery gallery = insectQuery.images().forRankHierarchies(orderRoots);
-        model.addAttribute("orderPage", orderPage);
-        model.addAttribute("gallery", gallery);
+        model.addAttribute("cards", insectViewQuery.orderCards(PageRequest.console(Math.max(0, page))));
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
         model.addAttribute("cladeTrail", cladeTrail(List.of()));
@@ -615,17 +511,13 @@ public class InsectsController {
 
     @GetMapping("/orders/{name}")
     String orderDetail(@PathVariable String name, HttpServletRequest request, Model model) {
-        var orderName = InsectOrderName.of(name);
-        var insect = insectQuery.getByName(orderName);
-        if (insect.isEmpty()) {
+        var rankPage = insectViewQuery.rankPage(InsectOrderName.of(name), currentNaturalist(request).orElse(null));
+        if (rankPage.isEmpty()) {
             return "redirect:/insects/orders";
         }
-        InsectOrder order = insect.get().order().order();
+        InsectOrder order = rankPage.get().insect().order().order();
         var description = order.description();
-        model.addAttribute("order", order);
-        model.addAttribute("children", insect.get().children());
-        model.addAttribute("citations", insect.get().citations());
-        model.addAttribute("features", insect.get().features());
+        model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -634,33 +526,12 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToOrder(order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToOrder(order)));
         model.addAttribute("ancestorIntros", classOnlyIntros());
-        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> rankImages = insectQuery.images()
-                .forParentName(orderName).stream().toList();
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
-                currentNaturalist(request);
-        model.addAttribute("images", rankImages);
-        model.addAttribute("observations",
-                observationLookup(rankImages, viewer, orderName));
         return "insects/order";
     }
 
     @GetMapping("/genera")
     String genera(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<InsectGenus> genusPage = insectQuery.genera()
-                .findPage(PageRequest.console(Math.max(0, page)));
-        java.util.Set<InsectFamilyName> familyNameSet = genusPage.content().stream()
-                .map(InsectGenus::familyName)
-                .collect(java.util.stream.Collectors.toSet());
-        Map<InsectFamilyName, InsectFamily> familyByName = new LinkedHashMap<>();
-        insectQuery.families().findByNameSet(familyNameSet).stream()
-                .forEach(family -> familyByName.put(family.name(), family));
-        java.util.LinkedHashSet<InsectRankName> genusRoots = genusPage.content().stream()
-                .map(genus -> (InsectRankName) genus.name())
-                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
-        InsectEntityCollections.ImageGallery gallery = insectQuery.images().forRankHierarchies(genusRoots);
-        model.addAttribute("genusPage", genusPage);
-        model.addAttribute("familyByName", familyByName);
-        model.addAttribute("gallery", gallery);
+        model.addAttribute("cards", insectViewQuery.genusCards(PageRequest.console(Math.max(0, page))));
         model.addAttribute("ancestorIntros", classOnlyIntros());
         model.addAttribute("breadcrumb", cladePrefix());
         model.addAttribute("cladeTrail", cladeTrail(List.of()));
@@ -669,21 +540,16 @@ public class InsectsController {
 
     @GetMapping("/genera/{name}")
     String genusDetail(@PathVariable String name, HttpServletRequest request, Model model) {
-        var genusName = InsectGenusName.of(name);
-        var insect = insectQuery.getByName(genusName);
-        if (insect.isEmpty()) {
+        var rankPage = insectViewQuery.rankPage(InsectGenusName.of(name), currentNaturalist(request).orElse(null));
+        if (rankPage.isEmpty()) {
             return "redirect:/insects/genera";
         }
-        InsectGenus genus = insect.get().genus().genus();
-        InsectFamily family = insect.get().family().family();
-        InsectOrder order = insect.get().order().order();
+        Insect insect = rankPage.get().insect();
+        InsectGenus genus = insect.genus().genus();
+        InsectFamily family = insect.family().family();
+        InsectOrder order = insect.order().order();
         var description = genus.description();
-        model.addAttribute("genus", genus);
-        model.addAttribute("family", family);
-        model.addAttribute("order", order);
-        model.addAttribute("children", insect.get().children());
-        model.addAttribute("citations", insect.get().citations());
-        model.addAttribute("features", insect.get().features());
+        model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
@@ -692,13 +558,6 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus, family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToGenus(genus, family, order)));
         model.addAttribute("ancestorIntros", introsForGenus(order, family));
-        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> rankImages = insectQuery.images()
-                .forParentName(genusName).stream().toList();
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer =
-                currentNaturalist(request);
-        model.addAttribute("images", rankImages);
-        model.addAttribute("observations",
-                observationLookup(rankImages, viewer, genusName));
         return "insects/genus";
     }
 
@@ -710,9 +569,7 @@ public class InsectsController {
         } catch (IllegalArgumentException e) {
             return "redirect:/insects";
         }
-        var roles = insectQuery.functionalRoles().getByGuild(selected).stream()
-                .sorted(Comparator.comparing(r -> r.parentName().value()))
-                .toList();
+        var roles = insectQuery.functionalRoles().getByGuild(selected).sortedByParentName().stream().toList();
         model.addAttribute("selectedGuild", selected);
         model.addAttribute("guilds", FunctionalGuild.values());
         model.addAttribute("roles", roles);
@@ -726,12 +583,12 @@ public class InsectsController {
     String detail(@PathVariable String name,
                   @RequestParam(name = "error", required = false) String error,
                   HttpServletRequest request, Model model) {
-        var speciesName = InsectSpeciesName.of(name);
-        var insect = insectQuery.getByName(speciesName);
-        if (insect.isEmpty()) {
+        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
+        var rankPage = insectViewQuery.rankPage(InsectSpeciesName.of(name), viewer.orElse(null));
+        if (rankPage.isEmpty()) {
             return "redirect:/insects";
         }
-        Insect i = insect.get();
+        Insect i = rankPage.get().insect();
         InsectSpecies s = i.species().species();
         InsectGenus genus = i.genus().genus();
         InsectFamily family = i.family().family();
@@ -740,41 +597,9 @@ public class InsectsController {
         if ("image".equals(error)) {
             model.addAttribute("imageError", true);
         }
-        model.addAttribute("species", s);
-        model.addAttribute("genus", genus);
-        model.addAttribute("family", family);
-        model.addAttribute("order", order);
-        model.addAttribute("stages", i.lifeStages().stream()
-                .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
-                .toList());
-        boolean lens = collectionLensOn(request);
-        java.util.Optional<com.naturalist.naturalist.NaturalistName> viewer = currentNaturalist(request);
-        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> galleryImages = i.observations().stream().toList();
-        if (lens && viewer.isPresent()) {
-            java.util.Set<InsectObservationId> myObservationIds = insectQuery.observations()
-                    .forNaturalist(viewer.get()).stream()
-                    .map(OrganismObservation<InsectObservationId, InsectRankName>::id)
-                    .collect(java.util.stream.Collectors.toSet());
-            galleryImages = galleryImages.stream()
-                    .filter(img -> img.observationId() != null && myObservationIds.contains(img.observationId()))
-                    .toList();
-        }
-        model.addAttribute("images", galleryImages);
-        model.addAttribute("lens", lens && viewer.isPresent());
-
-        var myObservations = viewer.isPresent()
-                ? insectQuery.observations()
-                        .forNaturalistAndSubjects(viewer.get(), java.util.Set.<InsectRankName>of(speciesName))
-                : null;
-        model.addAttribute("observations",
-                observationLookup(galleryImages, viewer, speciesName));
-
-        model.addAttribute("citations", i.citations());
-        model.addAttribute("features", i.features());
+        model.addAttribute("page", rankPage.get());
+        model.addAttribute("lens", collectionLensOn(request) && viewer.isPresent());
         model.addAttribute("glossaryLinker", glossaryLinker);
-        model.addAttribute("role", i.role());
-        boolean collected = myObservations != null && !myObservations.isEmpty();
-        model.addAttribute("collected", collected);
         model.addAttribute("descriptionPreschool", descriptionRenderer.render(description.preschool()));
         model.addAttribute("descriptionElementary", descriptionRenderer.render(description.elementary()));
         model.addAttribute("descriptionSecondary", descriptionRenderer.render(description.secondary()));
@@ -869,22 +694,19 @@ public class InsectsController {
 
     @GetMapping("/{name}/life-stages")
     String lifeStages(@PathVariable String name, Model model) {
-        var speciesName = InsectSpeciesName.of(name);
-        var species = insectQuery.species().getByName(speciesName);
-        if (species.isEmpty()) {
+        var insect = insectQuery.getByName(InsectSpeciesName.of(name));
+        if (insect.isEmpty()) {
             return "redirect:/insects";
         }
-        InsectSpecies s = species.get();
-        InsectGenus genus = insectQuery.genera().getByName(s.genusName()).orElseThrow();
-        InsectFamily family = insectQuery.families().getByName(genus.familyName()).orElseThrow();
-        InsectOrder order = insectQuery.orders().getByName(family.orderName()).orElseThrow();
-        var stages = insectLifeStageQuery.lifeStages().forParentName(speciesName).stream()
-                .sorted(Comparator.comparingInt(stage -> stage.kind().ordinal()))
-                .toList();
+        Insect i = insect.get();
+        InsectSpecies s = i.species().species();
+        InsectGenus genus = i.genus().genus();
+        InsectFamily family = i.family().family();
+        InsectOrder order = i.order().order();
         model.addAttribute("species", s);
         model.addAttribute("family", family);
         model.addAttribute("order", order);
-        model.addAttribute("stages", stages);
+        model.addAttribute("stages", i.lifeStages().stream().toList());
         model.addAttribute("ancestorIntros", introsForLifeStages(order, family, genus, s));
         model.addAttribute("breadcrumb", breadcrumbToSpecies(s, genus, family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToSpecies(s, genus, family, order)));

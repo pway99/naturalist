@@ -72,6 +72,7 @@ class InsectsControllerOverBudgetTest {
                 InsectsTestContext.noOpAuthority()); // never called; budget.reserve() throws first
         return new InsectsController(
                 context.insectQuery(),
+                context.insectViewQuery(),
                 context.insectCommand(),
                 context.insectLifeStageQuery(),
                 libraryContext.cladeQuery(),

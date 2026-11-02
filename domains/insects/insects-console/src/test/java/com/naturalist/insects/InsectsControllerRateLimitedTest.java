@@ -157,6 +157,7 @@ class InsectsControllerRateLimitedTest {
                 InsectsTestContext.noOpAuthority()); // never called; the rate gate throws first
         return new InsectsController(
                 context.insectQuery(),
+                context.insectViewQuery(),
                 context.insectCommand(),
                 context.insectLifeStageQuery(),
                 libraryContext.cladeQuery(),

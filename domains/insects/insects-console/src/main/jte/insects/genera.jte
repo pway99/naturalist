@@ -1,17 +1,11 @@
-@import com.naturalist.insects.InsectEntityCollections
-@import com.naturalist.insects.InsectFamily
-@import com.naturalist.insects.InsectFamilyName
-@import com.naturalist.insects.InsectGenus
+@import com.naturalist.insects.InsectViews
 @import com.naturalist.insects.AncestorIntro
 @import com.naturalist.insects.BreadcrumbSegment
 @import com.naturalist.insects.CladeTrail
 @import com.naturalist.data.Page
 @import java.util.List
-@import java.util.Map
 
-@param Page<InsectGenus> genusPage
-@param Map<InsectFamilyName, InsectFamily> familyByName
-@param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
+@param Page<InsectViews.RankCard> cards
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
@@ -24,28 +18,27 @@
     <p>Genus-rank records in the Oak Vista catalog.</p>
 
     <div class="entity-grid">
-        @for(var g : genusPage.content())
-            !{var commonName = g.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(g.name().value());}
-            !{var family = familyByName.get(g.familyName());}
+        @for(var card : cards.content())
+            !{var commonName = card.displayName();}
             <article>
                 <header>
-                    <a href="/insects/genera/${g.name().value()}">
+                    <a href="/insects/genera/${card.name().value()}">
                         <strong>${commonName}</strong>
                     </a>
                 </header>
                 <dl class="taxonomy">
                     <dt>family</dt>
-                    <dd><a href="/insects/families/${g.familyName().value()}">${family != null ? family.family().value() : g.familyName().value()}</a></dd>
+                    <dd><a href="/insects/families/${card.parentName().value()}">${card.parentLabel()}</a></dd>
                     <dt>genus</dt>
-                    <dd><em>${g.genus().value()}</em></dd>
+                    <dd><em>${card.scientificName()}</em></dd>
                 </dl>
-                !{var images = gallery.forEntity(g.name()).stream().toList();}
+                !{var images = card.images().stream().toList();}
                 @if(!images.isEmpty())
-                    @template.insects.cardImages(images = images, linkUrl = "/insects/genera/" + g.name().value(), alt = commonName)
+                    @template.insects.cardImages(images = images, linkUrl = "/insects/genera/" + card.name().value(), alt = commonName)
                 @endif
             </article>
         @endfor
     </div>
 
-    @template.components.pager(page = genusPage, baseUrl = "/insects/genera")
+    @template.components.pager(page = cards, baseUrl = "/insects/genera")
 `)

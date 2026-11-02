@@ -15,7 +15,6 @@ import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,11 +47,11 @@ class InsectsDetailTemplateTest {
         ConsoleSliceTemplates.create().render(
                 "insects/detail.jte",
                 Map.of(
-                        "species", anySpecies,
-                        "genus", genus,
-                        "family", family,
-                        "order", order,
-                        "images", List.of(),
+                        "page", InsectViews.RankPage.anonymous(Insect.empty()
+                                .withOrder(InsectTaxonView.OrderView.of(order))
+                                .withFamily(InsectTaxonView.FamilyView.of(family))
+                                .withGenus(InsectTaxonView.GenusView.of(genus))
+                                .withSpecies(InsectTaxonView.SpeciesView.of(anySpecies))),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",

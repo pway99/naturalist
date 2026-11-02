@@ -15,7 +15,7 @@
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 
-!{var commonName = species.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(species.name().value());}
+!{var commonName = species.displayName();}
 
 @template.layout.page(title = commonName + " — Life Stages", content = @`
     @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
@@ -33,10 +33,11 @@
         @if(stages.isEmpty())
             <p class="plate-note"><em>No life stage plates catalogued for this species yet.</em></p>
         @else
-            @for(var stage : stages)
+            @for(int i = 0; i < stages.size(); i++)
+                !{var stage = stages.get(i);}
                 <article class="stage-plate stage-${stage.kind().name().toLowerCase()}">
                     <header class="stage-header">
-                        <span class="stage-ordinal">${String.valueOf(stage.kind().ordinal() + 1)}</span>
+                        <span class="stage-ordinal">${String.valueOf(i + 1)}</span>
                         <div>
                             <h2>${stage.kind().name().charAt(0) + stage.kind().name().substring(1).toLowerCase()}</h2>
                             <p class="stage-slug">${stage.name().value()}</p>

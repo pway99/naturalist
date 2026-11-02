@@ -42,13 +42,26 @@ class InsectsListTemplateTest {
                 nte.getNamed(InsectImageTestEntitySource.class).entityStream()
                         .filter(image -> image.parentName() instanceof InsectSpeciesName)
                         .collect(Collectors.groupingBy(image -> (InsectSpeciesName) image.parentName()));
+        Map<InsectGenusName, InsectGenus> genusByName = nte.getNamed(InsectGenusTestEntitySource.class)
+                .entityStream().collect(Collectors.toMap(InsectGenus::name, g -> g));
+        Map<InsectFamilyName, InsectFamily> familyByName = nte.getNamed(InsectFamilyTestEntitySource.class)
+                .entityStream().collect(Collectors.toMap(InsectFamily::name, f -> f));
+        List<InsectViews.SpeciesCard> cards = speciesPage.content().stream()
+                .map(s -> {
+                    InsectGenus genus = genusByName.get(s.genusName());
+                    InsectFamily family = genus == null ? null : familyByName.get(genus.familyName());
+                    return new InsectViews.SpeciesCard(s, genus, family, null,
+                            InsectEntityCollections.ImageCollection.of(
+                                    imagesBySpecies.getOrDefault(s.name(), List.of())),
+                            false);
+                })
+                .toList();
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render(
                 "insects/list.jte",
-                Map.of(
-                        "speciesPage", speciesPage,
-                        "imagesBySpecies", imagesBySpecies),
+                Map.of("cards", new Page<>(cards, speciesPage.pageNumber(), speciesPage.pageSize(),
+                        speciesPage.pagesAheadKnown(), speciesPage.moreBeyondLookahead())),
                 output);
 
         assertThat(output.toString()).isNotBlank();

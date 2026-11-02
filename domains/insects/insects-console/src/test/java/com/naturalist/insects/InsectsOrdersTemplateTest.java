@@ -24,11 +24,16 @@ class InsectsOrdersTemplateTest {
     void orders_rendersWithoutError() {
         Page<InsectOrder> orderPage = nte.getNamed(InsectOrderTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
+        List<InsectViews.RankCard> cards = orderPage.content().stream()
+                .map(o -> new InsectViews.RankCard(o.name(), o.displayName(), o.order().value(), null, null,
+                        InsectEntityCollections.ImageCollection.empty()))
+                .toList();
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render(
                 "insects/orders.jte",
-                Map.of("orderPage", orderPage),
+                Map.of("cards", new Page<>(cards, orderPage.pageNumber(), orderPage.pageSize(),
+                        orderPage.pagesAheadKnown(), orderPage.moreBeyondLookahead())),
                 output);
 
         assertThat(output.toString()).isNotBlank();
@@ -43,8 +48,7 @@ class InsectsOrdersTemplateTest {
         ConsoleSliceTemplates.create().render(
                 "insects/order.jte",
                 Map.of(
-                        "order", anyOrder,
-                        "children", List.of(),
+                        "page", orderPage(anyOrder, List.of()),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -68,8 +72,7 @@ class InsectsOrdersTemplateTest {
         ConsoleSliceTemplates.create().render(
                 "insects/order.jte",
                 Map.of(
-                        "order", order,
-                        "children", List.of(familyChild),
+                        "page", orderPage(order, List.of(familyChild)),
                         "descriptionPreschool", "p",
                         "descriptionElementary", "e",
                         "descriptionSecondary", "s",
@@ -80,5 +83,11 @@ class InsectsOrdersTemplateTest {
                 .map(cn -> cn.label()).orElse(anyFamily.name().value());
         assertThat(output.toString()).contains(familyDisplayName);
         assertThat(output.toString()).contains("/insects/families/" + anyFamily.name().value());
+    }
+
+    private static InsectViews.RankPage orderPage(InsectOrder order, List<InsectTaxonView> children) {
+        return InsectViews.RankPage.anonymous(Insect.empty()
+                .withOrder(InsectTaxonView.OrderView.of(order))
+                .withChildren(children));
     }
 }

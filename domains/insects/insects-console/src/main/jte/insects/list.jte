@@ -1,26 +1,13 @@
-@import com.naturalist.insects.InsectEntityCollections
-@import com.naturalist.insects.InsectFamily
-@import com.naturalist.insects.InsectFamilyName
-@import com.naturalist.insects.InsectFunctionalRole
-@import com.naturalist.insects.InsectGenus
-@import com.naturalist.insects.InsectGenusName
-@import com.naturalist.insects.InsectSpecies
-@import com.naturalist.insects.InsectSpeciesName
+@import com.naturalist.insects.InsectViews
 @import com.naturalist.insects.FunctionalGuild
 @import com.naturalist.insects.AncestorIntro
 @import com.naturalist.insects.BreadcrumbSegment
 @import com.naturalist.insects.CladeTrail
 @import com.naturalist.data.Page
 @import java.util.List
-@import java.util.Map
 @import java.util.Set
 
-@param Page<InsectSpecies> speciesPage
-@param List<InsectSpecies> speciesList = List.of()
-@param InsectEntityCollections.ImageGallery gallery = InsectEntityCollections.ImageGallery.empty()
-@param Map<InsectSpeciesName, InsectFunctionalRole> rolesBySpecies = Map.of()
-@param Map<InsectFamilyName, InsectFamily> familyByName = Map.of()
-@param Map<InsectGenusName, InsectGenus> genusByName = Map.of()
+@param Page<InsectViews.SpeciesCard> cards
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
@@ -34,14 +21,13 @@
     <p>Insect species documented at Oak Vista.</p>
 
     <div class="entity-grid">
-        @for(var s : speciesList)
-            !{var images = gallery.forEntity(s.name()).stream().toList();}
-            !{var role = rolesBySpecies.get(s.name());}
+        @for(var card : cards.content())
+            !{var s = card.species();}
+            !{var images = card.images().stream().toList();}
+            !{var role = card.role();}
             !{var guilds = role == null ? Set.<FunctionalGuild>of() : role.guilds();}
             !{var beneficial = role != null && role.beneficial();}
-            !{var commonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
-            !{var genus = genusByName.get(s.genusName());}
-            !{var family = genus != null ? familyByName.get(genus.familyName()) : null;}
+            !{var commonName = card.displayName();}
             <article>
                 <header>
                     <a href="/insects/${s.name().value()}">
@@ -51,11 +37,14 @@
                         <span class="badge beneficial">beneficial</span>
                     @endif
                 </header>
+                @if(card.collected())
+                    <p class="collected-badge">✓ In your collection</p>
+                @endif
                 <dl class="taxonomy">
                     <dt>fam.</dt>
-                    <dd>${family != null ? family.family().value() : (genus != null ? genus.familyName().value() : "—")}</dd>
+                    <dd>${card.familyLabel()}</dd>
                     <dt>gen.</dt>
-                    <dd><em>${genus != null ? genus.genus().value() : s.genusName().value()}</em></dd>
+                    <dd><em>${card.genusLabel()}</em></dd>
                     <dt>sp.</dt>
                     <dd><em>${s.epithet().value()}</em></dd>
                 </dl>
@@ -77,9 +66,9 @@
         @endfor
     </div>
 
-    @if(mine && speciesList.isEmpty())
+    @if(mine && cards.content().isEmpty())
         <p class="collection-empty">No insects in your collection yet — turn off "My collection" and go make some observations.</p>
     @endif
 
-    @template.components.pager(page = speciesPage, baseUrl = "/insects/species")
+    @template.components.pager(page = cards, baseUrl = "/insects/species")
 `)

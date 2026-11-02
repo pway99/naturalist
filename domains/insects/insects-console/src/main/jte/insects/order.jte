@@ -1,23 +1,12 @@
-@import com.naturalist.observation.OrganismObservation
-@import com.naturalist.insects.InsectCitationView
-@import com.naturalist.observation.OrganismImage
-@import com.naturalist.insects.InsectObservationId
-@import com.naturalist.insects.InsectRankName
-@import com.naturalist.insects.InsectImageId
-@import com.naturalist.insects.InsectOrder
+@import com.naturalist.insects.InsectViews
 @import com.naturalist.insects.InsectTaxonView
 @import com.naturalist.insects.AncestorIntro
 @import com.naturalist.insects.BreadcrumbSegment
 @import com.naturalist.insects.CladeTrail
-@import com.naturalist.taxonomy.OrganismFeatureView
-@import com.naturalist.insects.InsectFeature
 @import com.naturalist.library.GlossaryLinker
 @import java.util.List
-@import java.util.Map
 
-@param InsectOrder order
-@param List<InsectTaxonView> children = List.of()
-@param InsectCitationView citations = null
+@param InsectViews.RankPage page
 @param String descriptionPreschool = ""
 @param String descriptionElementary = ""
 @param String descriptionSecondary = ""
@@ -25,12 +14,16 @@
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
-@param OrganismFeatureView<InsectRankName, InsectFeature> features = null
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
-@param List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> images = List.of()
-@param Map<InsectImageId, OrganismObservation> observations = Map.of()
 
-!{var commonName = order.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(order.order().value());}
+!{var insect = page.insect();}
+!{var children = insect.children();}
+!{var citations = insect.citations();}
+!{var features = insect.features();}
+!{var images = insect.observations().stream().toList();}
+!{var observations = page.viewer().ownObservationByImage();}
+!{var order = insect.order().order();}
+!{var commonName = order.displayName();}
 <%-- The CSRF token is read the same way layout/page.jte reads it — plain request
      attributes published by NaturalistHeaderInterceptor (management-console only)
      — rather than a CsrfToken-typed @param, so this template stays compilable
