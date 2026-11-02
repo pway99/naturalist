@@ -79,8 +79,7 @@ class InsectsOrdersTemplateTest {
                         "descriptionUniversity", "u"),
                 output);
 
-        String familyDisplayName = anyFamily.commonNames().stream().findFirst()
-                .map(cn -> cn.label()).orElse(anyFamily.name().value());
+        String familyDisplayName = anyFamily.displayName();
         assertThat(output.toString()).contains(familyDisplayName);
         assertThat(output.toString()).contains("/insects/families/" + anyFamily.name().value());
     }

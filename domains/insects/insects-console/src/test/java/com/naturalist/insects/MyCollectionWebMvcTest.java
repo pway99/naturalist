@@ -102,11 +102,18 @@ class MyCollectionWebMvcTest {
                     .andExpect(status().is3xxRedirection());
         }
 
-        mockMvc.perform(get("/insects/species").param("page", "1")
+        String body = mockMvc.perform(get("/insects/species").param("page", "1")
                         .sessionAttr("insects.collectionLens", true)
                         .requestAttr(CURRENT_NATURALIST, "page-collector"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("/life-stages\"")))
-                .andExpect(content().string(not(containsString("No insects in your collection yet"))));
+                .andExpect(content().string(not(containsString("No insects in your collection yet"))))
+                .andReturn().getResponse().getContentAsString();
+        // The page holds the viewer's collection, and none of catalogue page 1 -- which a dropped
+        // lens would render for page=1.
+        assertThat(collected).anySatisfy(species ->
+                assertThat(body).contains("/insects/" + species.name().value() + "/life-stages\""));
+        assertThat(catalogPageOne).allSatisfy(name ->
+                assertThat(body).doesNotContain("/insects/" + name.value() + "/life-stages\""));
     }
 }

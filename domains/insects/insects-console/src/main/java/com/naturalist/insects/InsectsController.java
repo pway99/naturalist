@@ -12,7 +12,6 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.data.Pages;
 import com.naturalist.fieldnotes.render.DescriptionRenderer;
 import com.naturalist.insects.render.InsectsParagraphCues;
-import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.library.CladeQuery;
 import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
@@ -76,7 +75,6 @@ public class InsectsController {
     private final InsectQuery insectQuery;
     private final InsectViewQuery insectViewQuery;
     private final InsectCommand insectCommand;
-    private final InsectLifeStageQuery insectLifeStageQuery;
     private final CladeQuery cladeQuery;
     private final DescriptionRenderer descriptionRenderer;
     private final ImageStore imageStore;
@@ -85,14 +83,12 @@ public class InsectsController {
     InsectsController(InsectQuery insectQuery,
                       InsectViewQuery insectViewQuery,
                       InsectCommand insectCommand,
-                      InsectLifeStageQuery insectLifeStageQuery,
                       CladeQuery cladeQuery,
                       com.naturalist.library.GlossaryTermQuery glossaryTermQuery,
                       ImageStore imageStore) {
         this.insectQuery = insectQuery;
         this.insectViewQuery = insectViewQuery;
         this.insectCommand = insectCommand;
-        this.insectLifeStageQuery = insectLifeStageQuery;
         this.cladeQuery = cladeQuery;
         this.descriptionRenderer = new DescriptionRenderer(InsectsParagraphCues.CUES);
         this.imageStore = imageStore;

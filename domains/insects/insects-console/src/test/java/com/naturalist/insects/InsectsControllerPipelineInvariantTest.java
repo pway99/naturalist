@@ -50,7 +50,7 @@ class InsectsControllerPipelineInvariantTest {
                 InsectsTestContext.noOpAuthority());
         var library = LibraryTestContext.create(nte);
         var controller = new InsectsController(
-                context.insectQuery(), context.insectViewQuery(), context.insectCommand(), context.insectLifeStageQuery(),
+                context.insectQuery(), context.insectViewQuery(), context.insectCommand(),
                 library.cladeQuery(), library.glossaryTermQuery(), imageStore);
         var request = new MockHttpServletRequest();
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");

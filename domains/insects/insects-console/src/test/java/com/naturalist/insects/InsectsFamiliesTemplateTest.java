@@ -152,8 +152,7 @@ class InsectsFamiliesTemplateTest {
                         "descriptionUniversity", "u"),
                 output);
 
-        String genusDisplayName = anyGenus.commonNames().stream().findFirst()
-                .map(cn -> cn.label()).orElse(anyGenus.name().value());
+        String genusDisplayName = anyGenus.displayName();
         assertThat(output.toString()).contains(genusDisplayName);
         assertThat(output.toString()).contains("/insects/genera/" + anyGenus.name().value());
     }

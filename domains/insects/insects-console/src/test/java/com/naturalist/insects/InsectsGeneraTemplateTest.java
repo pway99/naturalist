@@ -94,8 +94,7 @@ class InsectsGeneraTemplateTest {
                         "descriptionUniversity", "u"),
                 output);
 
-        String speciesDisplayName = anySpecies.commonNames().stream().findFirst()
-                .map(cn -> cn.label()).orElse(anySpecies.name().value());
+        String speciesDisplayName = anySpecies.displayName();
         assertThat(output.toString()).contains(speciesDisplayName);
         assertThat(output.toString()).contains("/insects/" + anySpecies.name().value());
     }

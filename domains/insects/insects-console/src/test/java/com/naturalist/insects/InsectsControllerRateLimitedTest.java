@@ -159,7 +159,6 @@ class InsectsControllerRateLimitedTest {
                 context.insectQuery(),
                 context.insectViewQuery(),
                 context.insectCommand(),
-                context.insectLifeStageQuery(),
                 libraryContext.cladeQuery(),
                 libraryContext.glossaryTermQuery(),
                 imageStore);

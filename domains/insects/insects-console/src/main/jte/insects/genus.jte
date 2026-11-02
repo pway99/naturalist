@@ -64,7 +64,7 @@
                 @for(var child : children)
                     @if(child instanceof InsectTaxonView.SpeciesView sv)
                         !{var s = sv.species();}
-                        !{var speciesCommonName = s.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(s.name().value());}
+                        !{var speciesCommonName = s.displayName();}
                         <article>
                             <header>
                                 <a href="/insects/${s.name().value()}">

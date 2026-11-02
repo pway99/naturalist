@@ -78,7 +78,6 @@ class InsectsControllerTestConfig {
                 INSECTS.insectQuery(),
                 INSECTS.insectViewQuery(),
                 INSECTS.insectCommand(),
-                INSECTS.insectLifeStageQuery(),
                 library.cladeQuery(),
                 library.glossaryTermQuery(),
                 IMAGE_STORE);

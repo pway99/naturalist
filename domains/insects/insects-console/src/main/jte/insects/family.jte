@@ -64,7 +64,7 @@
                 @for(var child : children)
                     @if(child instanceof InsectTaxonView.GenusView gv)
                         !{var g = gv.genus();}
-                        !{var genusCommonName = g.commonNames().stream().findFirst().map(cn -> cn.label()).orElse(g.name().value());}
+                        !{var genusCommonName = g.displayName();}
                         <article>
                             <header>
                                 <a href="/insects/genera/${g.name().value()}">
