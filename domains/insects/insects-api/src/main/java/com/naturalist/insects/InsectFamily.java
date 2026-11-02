@@ -9,6 +9,7 @@ import com.naturalist.taxonomy.LinnaeanFamily;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -62,8 +63,10 @@ public record InsectFamily(
                 .notNull(commonNames, "commonNames");
     }
 
-    /** The alphabetically first common name, else the scientific slug. */
+    /** The alphabetically first common name (ties broken by natural order), else the scientific name. */
     public String displayName() {
-        return commonNames.stream().map(CommonName::label).min(String.CASE_INSENSITIVE_ORDER).orElse(name.value());
+        return commonNames.stream().map(CommonName::label)
+                .min(String.CASE_INSENSITIVE_ORDER.thenComparing(Comparator.naturalOrder()))
+                .orElse(family.value());
     }
 }

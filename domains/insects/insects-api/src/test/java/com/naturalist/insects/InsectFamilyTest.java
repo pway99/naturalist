@@ -51,7 +51,7 @@ class InsectFamilyTest {
     void displayName_fallsBackToScientificName() {
         var rank = familyWith(Set.of());
 
-        assertThat(rank.displayName()).isEqualTo("papilionidae");
+        assertThat(rank.displayName()).isEqualTo("Papilionidae");
     }
 
     private static Description displayNameDescription() {

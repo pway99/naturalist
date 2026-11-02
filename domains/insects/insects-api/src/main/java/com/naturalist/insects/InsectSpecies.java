@@ -13,6 +13,7 @@ import org.jspecify.annotations.Nullable;
 
 
 import java.util.List;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -378,9 +379,11 @@ public record InsectSpecies(
         }
     }
 
-    /** The alphabetically first common name, else the scientific slug. */
+    /** The alphabetically first common name (ties broken by natural order), else the scientific slug. */
     public String displayName() {
-        return commonNames.stream().map(CommonName::label).min(String.CASE_INSENSITIVE_ORDER).orElse(name.value());
+        return commonNames.stream().map(CommonName::label)
+                .min(String.CASE_INSENSITIVE_ORDER.thenComparing(Comparator.naturalOrder()))
+                .orElse(name.value());
     }
 
     /** The genus's scientific name plus this species' epithet, or the slug when the genus is not known. */

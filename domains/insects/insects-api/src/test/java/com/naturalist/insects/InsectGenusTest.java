@@ -51,7 +51,7 @@ class InsectGenusTest {
     void displayName_fallsBackToScientificName() {
         var rank = genusWith(Set.of());
 
-        assertThat(rank.displayName()).isEqualTo("battus");
+        assertThat(rank.displayName()).isEqualTo("Battus");
     }
 
     private static Description displayNameDescription() {

@@ -84,7 +84,7 @@ class InsectOrderTest {
     void displayName_fallsBackToScientificName() {
         var rank = orderWith(Set.of());
 
-        assertThat(rank.displayName()).isEqualTo("lepidoptera");
+        assertThat(rank.displayName()).isEqualTo("Lepidoptera");
     }
 
     private static Description displayNameDescription() {

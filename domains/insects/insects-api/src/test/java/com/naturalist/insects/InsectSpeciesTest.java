@@ -63,6 +63,13 @@ class InsectSpeciesTest {
     }
 
     @Test
+    void displayName_breaksCaseOnlyTiesByNaturalOrder() {
+        var species = speciesWith(Set.of(CommonName.of("monarch"), CommonName.of("Monarch")));
+
+        assertThat(species.displayName()).isEqualTo("Monarch");
+    }
+
+    @Test
     void binomial_withoutGenus_isTheSlug() {
         InsectSpecies species = speciesWith(Set.of());
 
