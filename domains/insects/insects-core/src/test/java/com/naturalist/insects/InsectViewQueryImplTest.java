@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -139,48 +142,63 @@ class InsectViewQueryImplTest {
     }
 
     @Test
+    void orderCards_rejectsNullRequest() {
+        assertThatThrownBy(() -> views.orderCards(null)).isInstanceOf(InvariantViolationException.class);
+    }
+
+    @Test
     void familyCards_carryOrderLabelAndSubtreeImages() {
         Page<InsectViews.RankCard> page = views.familyCards(PageRequest.first(100));
-                assertThat(page.content()).isNotEmpty();
-                for (InsectViews.RankCard card : page.content()) {
-                    InsectFamily family = context.insectQuery().families().findByNameSet(Set.of((InsectFamilyName) card.name())).stream().findFirst().orElseThrow();
-                    InsectOrder order = context.insectQuery().orders().findByNameSet(Set.of(family.orderName())).stream().findFirst().orElseThrow();
-                    assertThat(card.displayName()).isEqualTo(family.displayName());
-                    assertThat(card.scientificName()).isEqualTo(family.family().value());
-                    assertThat(card.parentName()).isEqualTo(family.orderName());
-                    assertThat(card.parentLabel()).isEqualTo(order.displayName());
-                }
-                assertThat(page.content()).anyMatch(c -> !c.images().stream().toList().isEmpty());
+        assertThat(page.content()).isNotEmpty();
+        Map<InsectFamilyName, InsectFamily> families = context.insectQuery().families()
+                .findByNameSet(page.content().stream().map(c -> (InsectFamilyName) c.name()).collect(Collectors.toSet()))
+                .stream().collect(Collectors.toMap(InsectFamily::name, Function.identity()));
+        Map<InsectOrderName, InsectOrder> orders = context.insectQuery().orders()
+                .findByNameSet(families.values().stream().map(InsectFamily::orderName).collect(Collectors.toSet()))
+                .stream().collect(Collectors.toMap(InsectOrder::name, Function.identity()));
+        for (InsectViews.RankCard card : page.content()) {
+            InsectFamily family = families.get((InsectFamilyName) card.name());
+            assertThat(card.displayName()).isEqualTo(family.displayName());
+            assertThat(card.scientificName()).isEqualTo(family.family().value());
+            assertThat(card.parentName()).isEqualTo(family.orderName());
+            assertThat(card.parentLabel()).isEqualTo(orders.get(family.orderName()).displayName());
+        }
+        assertThat(page.content()).anyMatch(c -> !c.images().stream().toList().isEmpty());
     }
 
     @Test
     void genusCards_carryFamilyLabel() {
         Page<InsectViews.RankCard> page = views.genusCards(PageRequest.first(100));
-                assertThat(page.content()).isNotEmpty();
-                for (InsectViews.RankCard card : page.content()) {
-                    InsectGenus genus = context.insectQuery().genera().findByNameSet(Set.of((InsectGenusName) card.name())).stream().findFirst().orElseThrow();
-                    InsectFamily family = context.insectQuery().families().findByNameSet(Set.of(genus.familyName())).stream().findFirst().orElseThrow();
-                    assertThat(card.displayName()).isEqualTo(genus.displayName());
-                    assertThat(card.scientificName()).isEqualTo(genus.genus().value());
-                    assertThat(card.parentName()).isEqualTo(genus.familyName());
-                    assertThat(card.parentLabel()).isEqualTo(family.displayName());
-                }
+        assertThat(page.content()).isNotEmpty();
+        Map<InsectGenusName, InsectGenus> genera = context.insectQuery().genera()
+                .findByNameSet(page.content().stream().map(c -> (InsectGenusName) c.name()).collect(Collectors.toSet()))
+                .stream().collect(Collectors.toMap(InsectGenus::name, Function.identity()));
+        Map<InsectFamilyName, InsectFamily> families = context.insectQuery().families()
+                .findByNameSet(genera.values().stream().map(InsectGenus::familyName).collect(Collectors.toSet()))
+                .stream().collect(Collectors.toMap(InsectFamily::name, Function.identity()));
+        for (InsectViews.RankCard card : page.content()) {
+            InsectGenus genus = genera.get((InsectGenusName) card.name());
+            assertThat(card.displayName()).isEqualTo(genus.displayName());
+            assertThat(card.scientificName()).isEqualTo(genus.genus().value());
+            assertThat(card.parentName()).isEqualTo(genus.familyName());
+            assertThat(card.parentLabel()).isEqualTo(families.get(genus.familyName()).displayName());
+        }
     }
 
     @Test
     void orderCards_haveNoParent() {
         Page<InsectViews.RankCard> page = views.orderCards(PageRequest.first(100));
-                assertThat(page.content()).isNotEmpty();
-                assertThat(page.content()).allSatisfy(c -> {
-                    assertThat(c.parentName()).isNull();
-                    assertThat(c.parentLabel()).isNull();
-                    assertThat(c.scientificName()).isEqualToIgnoringCase(c.name().value());
-                });
-                assertThat(page.content()).anyMatch(c -> !c.images().stream().toList().isEmpty());
-    }
-
-    @Test
-    void orderCards_rejectsNullRequest() {
-        assertThatThrownBy(() -> views.orderCards(null)).isInstanceOf(InvariantViolationException.class);
+        assertThat(page.content()).isNotEmpty();
+        Map<InsectOrderName, InsectOrder> orders = context.insectQuery().orders()
+                .findByNameSet(page.content().stream().map(c -> (InsectOrderName) c.name()).collect(Collectors.toSet()))
+                .stream().collect(Collectors.toMap(InsectOrder::name, Function.identity()));
+        for (InsectViews.RankCard card : page.content()) {
+            InsectOrder order = orders.get((InsectOrderName) card.name());
+            assertThat(card.displayName()).isEqualTo(order.displayName());
+            assertThat(card.scientificName()).isEqualTo(order.order().value());
+            assertThat(card.parentName()).isNull();
+            assertThat(card.parentLabel()).isNull();
+        }
+        assertThat(page.content()).anyMatch(c -> !c.images().stream().toList().isEmpty());
     }
 }
