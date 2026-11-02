@@ -56,7 +56,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void control_battusPhilenorPlacedAtTroidini() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
         assertThat(species.placedIn()).isEqualTo(new Troidini());
@@ -69,7 +69,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void control_battusPhilenorResolvesHolometabolous() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
         Optional<MetabolyTrait> trait = CladeTraversal.findTrait(
@@ -82,7 +82,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void drosophila_genusPlacedAtDrosophilinae() {
-        InsectGenus genus = loadGenus(
+        InsectGenusInfo genus = loadGenus(
                 TestInsectsIdentifiers.InsectGenus.Drosophila.name);
 
         assertThat(genus.placedIn()).isEqualTo(new Drosophilinae());
@@ -90,7 +90,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void drosophila_melanogasterPlacedAtSophophora() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.DrosophilaMelanogaster.name);
 
         assertThat(species.placedIn()).isEqualTo(new Sophophora());
@@ -98,7 +98,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void drosophila_funebrisPlacedAtDrosophilaSensuStricto() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name);
 
         assertThat(species.placedIn()).isEqualTo(new DrosophilaSensuStricto());
@@ -117,7 +117,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void drosophila_melanogasterResolvesHolometabolous() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.DrosophilaMelanogaster.name);
 
         Optional<MetabolyTrait> trait = CladeTraversal.findTrait(
@@ -128,7 +128,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void drosophila_funebrisResolvesHolometabolous() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name);
 
         Optional<MetabolyTrait> trait = CladeTraversal.findTrait(
@@ -141,7 +141,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void blattodea_orderPlacedAtBlattodea() {
-        InsectOrder order = loadOrder(
+        InsectOrderInfo order = loadOrder(
                 TestInsectsIdentifiers.InsectOrder.Blattodea.name);
 
         assertThat(order.placedIn()).isEqualTo(new Blattodea());
@@ -149,7 +149,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void blattodea_periplanetaAmericanaPlacedAtBlattodea() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.PeriplanetaAmericana.name);
 
         assertThat(species.placedIn()).isEqualTo(new Blattodea());
@@ -157,7 +157,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void blattodea_reticulitermesHesperusPlacedAtTermitoidae() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.ReticulitermesHesperus.name);
 
         assertThat(species.placedIn()).isEqualTo(new Termitoidae());
@@ -170,7 +170,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void blattodea_periplanetaAmericanaResolvesHemimetabolous() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.PeriplanetaAmericana.name);
 
         Optional<MetabolyTrait> trait = CladeTraversal.findTrait(
@@ -181,7 +181,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void blattodea_reticulitermesHesperusResolvesHemimetabolous() {
-        InsectSpecies species = loadSpecies(
+        InsectSpeciesInfo species = loadSpecies(
                 TestInsectsIdentifiers.InsectSpecies.ReticulitermesHesperus.name);
 
         Optional<MetabolyTrait> trait = CladeTraversal.findTrait(
@@ -194,7 +194,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void bees_apidaeFamilyPlacedAtAnthophila() {
-        InsectFamily family = loadFamily(
+        InsectFamilyInfo family = loadFamily(
                 TestInsectsIdentifiers.InsectFamily.Apidae.name);
 
         assertThat(family.placedIn()).isEqualTo(new Anthophila());
@@ -202,7 +202,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void bees_crabronidaeFamilyPlacedAtApoidea() {
-        InsectFamily family = loadFamily(
+        InsectFamilyInfo family = loadFamily(
                 TestInsectsIdentifiers.InsectFamily.Crabronidae.name);
 
         assertThat(family.placedIn()).isEqualTo(new Apoidea());
@@ -215,7 +215,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void bees_apidaeResolvesHolometabolous() {
-        InsectFamily family = loadFamily(
+        InsectFamilyInfo family = loadFamily(
                 TestInsectsIdentifiers.InsectFamily.Apidae.name);
 
         Optional<MetabolyTrait> trait = CladeTraversal.findTrait(
@@ -226,7 +226,7 @@ class ParaphylyPlacementMonotonicityTest {
 
     @Test
     void bees_crabronidaeResolvesHolometabolous() {
-        InsectFamily family = loadFamily(
+        InsectFamilyInfo family = loadFamily(
                 TestInsectsIdentifiers.InsectFamily.Crabronidae.name);
 
         Optional<MetabolyTrait> trait = CladeTraversal.findTrait(
@@ -237,22 +237,22 @@ class ParaphylyPlacementMonotonicityTest {
 
     // -- Helpers --
 
-    private InsectOrder loadOrder(InsectOrderName name) {
+    private InsectOrderInfo loadOrder(InsectOrderName name) {
         return nte.getNamed(InsectOrderTestEntitySource.class)
                 .getByName(name).orElseThrow();
     }
 
-    private InsectFamily loadFamily(InsectFamilyName name) {
+    private InsectFamilyInfo loadFamily(InsectFamilyName name) {
         return nte.getNamed(InsectFamilyTestEntitySource.class)
                 .getByName(name).orElseThrow();
     }
 
-    private InsectGenus loadGenus(InsectGenusName name) {
+    private InsectGenusInfo loadGenus(InsectGenusName name) {
         return nte.getNamed(InsectGenusTestEntitySource.class)
                 .getByName(name).orElseThrow();
     }
 
-    private InsectSpecies loadSpecies(InsectSpeciesName name) {
+    private InsectSpeciesInfo loadSpecies(InsectSpeciesName name) {
         return nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .getByName(name).orElseThrow();
     }

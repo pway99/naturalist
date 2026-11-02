@@ -14,7 +14,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * A stage in an insect's life cycle. Sealed over four permitted subtypes.
  * Cross-stage invariants (chemistry coherence, metabolous-type consistency)
- * are enforced at the InsectSpecies aggregate root, not here.
+ * are enforced at the InsectSpeciesInfo aggregate root, not here.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "kind")
 @JsonSubTypes({

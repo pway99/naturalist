@@ -18,7 +18,7 @@ import com.naturalist.ddd.EntityName;
  * catalog-assembly time.
  *
  * <p>Implemented by {@code com.naturalist.plants.PlantSpecies} and
- * {@code com.naturalist.insects.InsectSpecies}; any future living-organism
+ * {@code com.naturalist.insects.InsectSpeciesInfo}; any future living-organism
  * aggregate at species rank should implement this interface rather than
  * carrying a free-form slug.
  *

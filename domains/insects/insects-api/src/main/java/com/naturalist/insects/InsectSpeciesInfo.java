@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 /**
  * A catalogued insect species (class Insecta) observed or documented at Oak Vista.
  * <p>
- * Each species carries a typed upward FK to its parent {@link InsectGenus},
+ * Each species carries a typed upward FK to its parent {@link InsectGenusInfo},
  * its own species epithet (e.g. {@code "philenor"}), and a four-level {@link Description}
  * embodying Durrell's principle — the same ecological truth rendered at preschool,
  * elementary, secondary, and university resolution. Family and order are reached by
@@ -72,14 +72,14 @@ import java.util.function.Consumer;
  * The species's value-object graph — {@link ChemicalDefense}, {@link Voltinism},
  * {@link HabitatRequirements}, {@link GardenConnections}, {@link BeneficialProfile},
  * {@link EcologicalSignificance} — is nested here. Each value object is exclusively
- * owned by {@code InsectSpecies}; nesting expresses that ownership structurally and
+ * owned by {@code InsectSpeciesInfo}; nesting expresses that ownership structurally and
  * collapses the consumer's import surface to this single type.
  * {@link LifeStageKind} — the shared vocabulary in
  * {@link com.naturalist.insects.lifestage} — is used by {@link ChemicalDefense} to
  * name one or more stages of the life cycle.
  */
 @AggregateRoot
-public record InsectSpecies(
+public record InsectSpeciesInfo(
         InsectSpeciesName name,
         InsectGenusName genusName,
         TaxonomicSpecies epithet,
@@ -96,8 +96,8 @@ public record InsectSpecies(
         @Nullable EcologicalSignificance ecologicalSignificance
 ) implements NamedEntity<InsectSpeciesName> {
 
-    public InsectSpecies withPlacedIn(@Nullable Clade value) {
-        return new InsectSpecies(
+    public InsectSpeciesInfo withPlacedIn(@Nullable Clade value) {
+        return new InsectSpeciesInfo(
                 name, genusName, epithet, description, commonNames,
                 sightingNotes,
                 value,
@@ -134,7 +134,7 @@ public record InsectSpecies(
      * life cycle over which that protection is expressed.
      * <p>
      * Populated only for defended species. Non-defended species carry a {@code null}
-     * {@link InsectSpecies#chemicalDefense()}; an empty or default {@code ChemicalDefense}
+     * {@link InsectSpeciesInfo#chemicalDefense()}; an empty or default {@code ChemicalDefense}
      * is not a legal alternative encoding.
      * <p>
      * <b>Fields:</b>
@@ -314,7 +314,7 @@ public record InsectSpecies(
      * {@link InsectFunctionalRole#beneficial()} flag is {@code true} (per PL-11,
      * functional ecology lives on the cross-rank role record, not on the species record).
      * <p>
-     * This is a nullable field on {@link InsectSpecies} — it is only populated for
+     * This is a nullable field on {@link InsectSpeciesInfo} — it is only populated for
      * documented beneficial species. Future catalog entries for pest species or
      * ecologically neutral species will carry {@code null} here.
      * <p>
@@ -385,14 +385,14 @@ public record InsectSpecies(
     }
 
     /** The alphabetically first common name (ties broken by natural order), else the binomial ({@link #binomial}). */
-    public String displayName(@Nullable InsectGenus genus) {
+    public String displayName(@Nullable InsectGenusInfo genus) {
         return commonNames.stream().map(CommonName::label)
                 .min(String.CASE_INSENSITIVE_ORDER.thenComparing(Comparator.naturalOrder()))
                 .orElseGet(() -> binomial(genus));
     }
 
     /** The genus's scientific name plus this species' epithet, or the slug when the genus is not known. */
-    public String binomial(@Nullable InsectGenus genus) {
+    public String binomial(@Nullable InsectGenusInfo genus) {
         return genus == null ? name.value() : genus.genus().value() + " " + epithet.value();
     }
 }

@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 /**
  * Forward-direction catalog contribution for the insects domain — emits one
- * {@link SearchableEntity} per {@link InsectSpecies} in the live catalog with
+ * {@link SearchableEntity} per {@link InsectSpeciesInfo} in the live catalog with
  * the tokens under which a young naturalist might search:
  *
  * <ul>
@@ -85,8 +85,8 @@ public class InsectsCatalogContribution implements CatalogContribution {
     public Stream<SearchableEntity> searchableEntities() {
         // Build the genus lookup once per stream so species token assembly can resolve
         // the parent genus's TaxonomicGenus epithet without re-querying per species.
-        Map<InsectGenusName, InsectGenus> genusByName = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
-                .collect(Collectors.toMap(InsectGenus::name, Function.identity()));
+        Map<InsectGenusName, InsectGenusInfo> genusByName = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
+                .collect(Collectors.toMap(InsectGenusInfo::name, Function.identity()));
         return Stream.of(
                 speciesEntities(genusByName),
                 familyEntities(),
@@ -95,7 +95,7 @@ public class InsectsCatalogContribution implements CatalogContribution {
         ).flatMap(s -> s);
     }
 
-    private Stream<SearchableEntity> speciesEntities(Map<InsectGenusName, InsectGenus> genusByName) {
+    private Stream<SearchableEntity> speciesEntities(Map<InsectGenusName, InsectGenusInfo> genusByName) {
         return Pages.stream(ASSEMBLY_PAGE_SIZE, species::findPage)
                 .map(s -> toSearchableSpecies(s, genusByName));
     }
@@ -110,30 +110,30 @@ public class InsectsCatalogContribution implements CatalogContribution {
                 .map(InsectsCatalogContribution::toSearchableGenus);
     }
 
-    private static SearchableEntity toSearchableSpecies(InsectSpecies entity,
-                                                        Map<InsectGenusName, InsectGenus> genusByName) {
+    private static SearchableEntity toSearchableSpecies(InsectSpeciesInfo entity,
+                                                        Map<InsectGenusName, InsectGenusInfo> genusByName) {
         EntityRef target = new EntityRef(DOMAIN, entity.name());
         return new SearchableEntity(target, tokensFor(entity, genusByName));
     }
 
-    private static SearchableEntity toSearchableFamily(InsectFamily entity) {
+    private static SearchableEntity toSearchableFamily(InsectFamilyInfo entity) {
         EntityRef target = new EntityRef(DOMAIN, entity.name());
         return new SearchableEntity(target, tokensFor(entity));
     }
 
-    private static SearchableEntity toSearchableGenus(InsectGenus entity) {
+    private static SearchableEntity toSearchableGenus(InsectGenusInfo entity) {
         EntityRef target = new EntityRef(DOMAIN, entity.name());
         return new SearchableEntity(target, tokensFor(entity));
     }
 
-    private static Stream<String> tokensFor(InsectSpecies entity,
-                                            Map<InsectGenusName, InsectGenus> genusByName) {
+    private static Stream<String> tokensFor(InsectSpeciesInfo entity,
+                                            Map<InsectGenusName, InsectGenusInfo> genusByName) {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(entity.name().value());
         // Every species has a non-null genusName + epithet after the TaxonomicClassification
         // collapse — referential integrity to the parent genus record is enforced by the
         // species's invariants. A missing parent here would be a catalog data error.
-        InsectGenus parentGenus = genusByName.get(entity.genusName());
+        InsectGenusInfo parentGenus = genusByName.get(entity.genusName());
         if (parentGenus != null) {
             TaxonomicGenus genusEpithet = parentGenus.genus();
             String speciesEpithet = entity.epithet().value();
@@ -145,7 +145,7 @@ public class InsectsCatalogContribution implements CatalogContribution {
         return tokens.build();
     }
 
-    private static Stream<String> tokensFor(InsectFamily entity) {
+    private static Stream<String> tokensFor(InsectFamilyInfo entity) {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(entity.name().value());
         tokens.add(entity.family().value());
@@ -153,7 +153,7 @@ public class InsectsCatalogContribution implements CatalogContribution {
         return tokens.build();
     }
 
-    private static Stream<String> tokensFor(InsectGenus entity) {
+    private static Stream<String> tokensFor(InsectGenusInfo entity) {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(entity.name().value());
         tokens.add(entity.genus().value());
@@ -166,12 +166,12 @@ public class InsectsCatalogContribution implements CatalogContribution {
                 .map(InsectsCatalogContribution::toSearchableOrder);
     }
 
-    private static SearchableEntity toSearchableOrder(InsectOrder entity) {
+    private static SearchableEntity toSearchableOrder(InsectOrderInfo entity) {
         EntityRef target = new EntityRef(DOMAIN, entity.name());
         return new SearchableEntity(target, tokensFor(entity));
     }
 
-    private static Stream<String> tokensFor(InsectOrder entity) {
+    private static Stream<String> tokensFor(InsectOrderInfo entity) {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(entity.name().value());
         tokens.add(entity.order().value());

@@ -20,8 +20,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Parent row of the {@link InsectSpecies} aggregate — the bottom of the insect Linnaean chain. The
- * upward reference to the parent {@link InsectGenus} is stored as {@code genus_id} (FK-enforced); the
+ * Parent row of the {@link InsectSpeciesInfo} aggregate — the bottom of the insect Linnaean chain. The
+ * upward reference to the parent {@link InsectGenusInfo} is stored as {@code genus_id} (FK-enforced); the
  * DBO carries the genus's {@code name} in {@link #genusName} for the mapper's JOIN projection (read)
  * and nested-select (write).
  *
@@ -47,7 +47,7 @@ import java.util.function.Consumer;
  */
 @DboSchema(table = "insect_species", primaryKey = "id", unique = {"name"},
            foreignKeys = @Fk(columns = "genus_id", references = "insect_genus(id)"),
-           entity = InsectSpecies.class)
+           entity = InsectSpeciesInfo.class)
 final class InsectSpeciesDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;
@@ -95,7 +95,7 @@ final class InsectSpeciesDbo implements Dbo {
     String descriptionSecondary;
     String descriptionUniversity;
 
-    static InsectSpeciesDbo from(InsectSpecies s) {
+    static InsectSpeciesDbo from(InsectSpeciesInfo s) {
         InsectSpeciesDbo d = new InsectSpeciesDbo();
         d.name = s.name().value();
         d.genusName = s.genusName().value();
@@ -109,14 +109,14 @@ final class InsectSpeciesDbo implements Dbo {
         d.descriptionSecondary = desc.secondary();
         d.descriptionUniversity = desc.university();
 
-        InsectSpecies.ChemicalDefense chem = s.chemicalDefense();
+        InsectSpeciesInfo.ChemicalDefense chem = s.chemicalDefense();
         if (chem != null) {
             d.chemMechanism = chem.mechanism();
             d.chemSourceCompounds = chem.sourceCompounds();
             d.chemAposematicSignal = chem.aposematicSignal();
         }
 
-        InsectSpecies.Voltinism voltinism = s.voltinism();
+        InsectSpeciesInfo.Voltinism voltinism = s.voltinism();
         if (voltinism != null) {
             d.voltinismPattern = voltinism.pattern().name();
             d.voltinismNotes = voltinism.notes();
@@ -128,7 +128,7 @@ final class InsectSpeciesDbo implements Dbo {
             d.habitatLight = habitat.light() == null ? null : habitat.light().name();
         }
 
-        InsectSpecies.HabitatRequirements req = s.habitatRequirements();
+        InsectSpeciesInfo.HabitatRequirements req = s.habitatRequirements();
         if (req != null) {
             d.reqNectarSources = req.nectarSources();
             d.reqShelter = req.shelter();
@@ -137,20 +137,20 @@ final class InsectSpeciesDbo implements Dbo {
             d.reqElevationRange = req.elevationRange();
         }
 
-        InsectSpecies.GardenConnections garden = s.gardenConnections();
+        InsectSpeciesInfo.GardenConnections garden = s.gardenConnections();
         if (garden != null) {
             d.gardenRelationshipToOtherBeneficials = garden.relationshipToOtherBeneficials();
             d.gardenNaturalEnemies = garden.naturalEnemies();
         }
 
-        InsectSpecies.BeneficialProfile beneficial = s.beneficialProfile();
+        InsectSpeciesInfo.BeneficialProfile beneficial = s.beneficialProfile();
         if (beneficial != null) {
             d.beneficialSignificance = beneficial.significance();
             d.beneficialPestManagementValue = beneficial.pestManagementValue();
             d.beneficialIpmNotes = beneficial.ipmNotes();
         }
 
-        InsectSpecies.EcologicalSignificance eco = s.ecologicalSignificance();
+        InsectSpeciesInfo.EcologicalSignificance eco = s.ecologicalSignificance();
         if (eco != null) {
             d.ecoIndicatorValue = eco.indicatorValue();
             d.ecoFoodWebPosition = eco.foodWebPosition();
@@ -170,7 +170,7 @@ final class InsectSpeciesDbo implements Dbo {
      * reconstructed only when its null-group presence condition holds, so an all-null species
      * round-trips as absent (null) on every owned VO.
      */
-    InsectSpecies toEntity(Set<CommonName> commonNames,
+    InsectSpeciesInfo toEntity(Set<CommonName> commonNames,
                            Set<LifeStageKind> protectedStages,
                            Set<HabitatZone> zones,
                            Set<VerticalLayer> layers,
@@ -181,13 +181,13 @@ final class InsectSpeciesDbo implements Dbo {
                 descriptionSecondary,
                 descriptionUniversity);
 
-        InsectSpecies.ChemicalDefense chemicalDefense = chemMechanism == null ? null
-                : new InsectSpecies.ChemicalDefense(
+        InsectSpeciesInfo.ChemicalDefense chemicalDefense = chemMechanism == null ? null
+                : new InsectSpeciesInfo.ChemicalDefense(
                         chemMechanism, chemSourceCompounds, chemAposematicSignal, protectedStages);
 
-        InsectSpecies.Voltinism voltinism = voltinismPattern == null ? null
-                : new InsectSpecies.Voltinism(
-                        InsectSpecies.Voltinism.VoltinismPattern.valueOf(voltinismPattern), voltinismNotes);
+        InsectSpeciesInfo.Voltinism voltinism = voltinismPattern == null ? null
+                : new InsectSpeciesInfo.Voltinism(
+                        InsectSpeciesInfo.Voltinism.VoltinismPattern.valueOf(voltinismPattern), voltinismNotes);
 
         HabitatProfile habitatProfile = zones.isEmpty() ? null
                 : new HabitatProfile(
@@ -198,30 +198,30 @@ final class InsectSpeciesDbo implements Dbo {
 
         boolean anyRequirement = reqNectarSources != null || reqShelter != null
                 || reqPreyAvailability != null || reqLighting != null || reqElevationRange != null;
-        InsectSpecies.HabitatRequirements habitatRequirements = anyRequirement
-                ? new InsectSpecies.HabitatRequirements(
+        InsectSpeciesInfo.HabitatRequirements habitatRequirements = anyRequirement
+                ? new InsectSpeciesInfo.HabitatRequirements(
                         reqNectarSources, reqShelter, reqPreyAvailability, reqLighting, reqElevationRange)
                 : null;
 
         boolean gardenPresent = !supportingPlants.isEmpty()
                 || gardenRelationshipToOtherBeneficials != null || gardenNaturalEnemies != null;
-        InsectSpecies.GardenConnections gardenConnections = gardenPresent
-                ? new InsectSpecies.GardenConnections(
+        InsectSpeciesInfo.GardenConnections gardenConnections = gardenPresent
+                ? new InsectSpeciesInfo.GardenConnections(
                         supportingPlants, gardenRelationshipToOtherBeneficials, gardenNaturalEnemies)
                 : null;
 
-        InsectSpecies.BeneficialProfile beneficialProfile = beneficialSignificance == null ? null
-                : new InsectSpecies.BeneficialProfile(
+        InsectSpeciesInfo.BeneficialProfile beneficialProfile = beneficialSignificance == null ? null
+                : new InsectSpeciesInfo.BeneficialProfile(
                         beneficialSignificance, beneficialPestManagementValue, beneficialIpmNotes);
 
         boolean anyEcological = ecoIndicatorValue != null || ecoFoodWebPosition != null
                 || ecoRegionalContext != null;
-        InsectSpecies.EcologicalSignificance ecologicalSignificance = anyEcological
-                ? new InsectSpecies.EcologicalSignificance(
+        InsectSpeciesInfo.EcologicalSignificance ecologicalSignificance = anyEcological
+                ? new InsectSpeciesInfo.EcologicalSignificance(
                         ecoIndicatorValue, ecoFoodWebPosition, ecoRegionalContext)
                 : null;
 
-        return new InsectSpecies(
+        return new InsectSpeciesInfo(
                 InsectSpeciesName.of(name),
                 InsectGenusName.of(genusName),
                 TaxonomicSpecies.of(epithet),

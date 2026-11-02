@@ -16,7 +16,7 @@ import org.jspecify.annotations.Nullable;
  *
  * <p>Nested commands scope to a single entity each:
  * <ul>
- *   <li>{@link SpeciesCommand} — {@link InsectSpecies} mutations.</li>
+ *   <li>{@link SpeciesCommand} — {@link InsectSpeciesInfo} mutations.</li>
  *   <li>{@link ImageCommand} — {@link OrganismImage} mutations.</li>
  * </ul>
  *
@@ -76,9 +76,9 @@ public interface InsectCommand {
     }
 
     /**
-     * Entity-level command surface for {@link InsectSpecies}.
+     * Entity-level command surface for {@link InsectSpeciesInfo}.
      */
-    interface SpeciesCommand extends EntityCommand<InsectSpeciesName, InsectSpecies> {
+    interface SpeciesCommand extends EntityCommand<InsectSpeciesName, InsectSpeciesInfo> {
     }
 
     /**
@@ -95,21 +95,21 @@ public interface InsectCommand {
     }
 
     /**
-     * Entity-level command surface for {@link InsectOrder}.
+     * Entity-level command surface for {@link InsectOrderInfo}.
      */
-    interface OrderCommand extends EntityCommand<InsectOrderName, InsectOrder> {
+    interface OrderCommand extends EntityCommand<InsectOrderName, InsectOrderInfo> {
     }
 
     /**
-     * Entity-level command surface for {@link InsectFamily}.
+     * Entity-level command surface for {@link InsectFamilyInfo}.
      */
-    interface FamilyCommand extends EntityCommand<InsectFamilyName, InsectFamily> {
+    interface FamilyCommand extends EntityCommand<InsectFamilyName, InsectFamilyInfo> {
     }
 
     /**
-     * Entity-level command surface for {@link InsectGenus}.
+     * Entity-level command surface for {@link InsectGenusInfo}.
      */
-    interface GenusCommand extends EntityCommand<InsectGenusName, InsectGenus> {
+    interface GenusCommand extends EntityCommand<InsectGenusName, InsectGenusInfo> {
     }
 
     /**

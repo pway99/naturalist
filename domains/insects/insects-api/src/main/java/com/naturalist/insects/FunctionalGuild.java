@@ -5,7 +5,7 @@ package com.naturalist.insects;
  * <p>
  * An insect may belong to multiple guilds simultaneously — a hoverfly is both
  * a predatory larva (PREDATOR) and an adult pollinator (POLLINATOR). The guild
- * set on {@link InsectSpecies} captures all roles the species exhibits at Oak Vista.
+ * set on {@link InsectSpeciesInfo} captures all roles the species exhibits at Oak Vista.
  * <p>
  * <b>Guild definitions in the Oak Vista context:</b>
  * <ul>

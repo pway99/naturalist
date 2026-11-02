@@ -37,7 +37,7 @@ class CladePlacementResolutionTest {
         InsectSpeciesTestEntitySource species =
                 nte.getNamed(InsectSpeciesTestEntitySource.class);
 
-        InsectSpecies battusPhilenor = species
+        InsectSpeciesInfo battusPhilenor = species
                 .getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name)
                 .orElseThrow();
 
@@ -56,7 +56,7 @@ class CladePlacementResolutionTest {
         InsectSpeciesTestEntitySource species =
                 nte.getNamed(InsectSpeciesTestEntitySource.class);
 
-        InsectSpecies battusPhilenor = species
+        InsectSpeciesInfo battusPhilenor = species
                 .getByName(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name)
                 .orElseThrow();
 
@@ -73,7 +73,7 @@ class CladePlacementResolutionTest {
         InsectFamilyTestEntitySource families =
                 nte.getNamed(InsectFamilyTestEntitySource.class);
 
-        InsectFamily papilionidae = families
+        InsectFamilyInfo papilionidae = families
                 .getByName(TestInsectsIdentifiers.InsectFamily.Papilionidae.name)
                 .orElseThrow();
 
@@ -90,7 +90,7 @@ class CladePlacementResolutionTest {
         InsectGenusTestEntitySource genera =
                 nte.getNamed(InsectGenusTestEntitySource.class);
 
-        InsectGenus andrena = genera
+        InsectGenusInfo andrena = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Andrena.name)
                 .orElseThrow();
 
@@ -108,7 +108,7 @@ class CladePlacementResolutionTest {
         InsectGenusTestEntitySource genera =
                 nte.getNamed(InsectGenusTestEntitySource.class);
 
-        InsectGenus halictus = genera
+        InsectGenusInfo halictus = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Halictus.name)
                 .orElseThrow();
 
@@ -126,7 +126,7 @@ class CladePlacementResolutionTest {
         InsectGenusTestEntitySource genera =
                 nte.getNamed(InsectGenusTestEntitySource.class);
 
-        InsectGenus empoasca = genera
+        InsectGenusInfo empoasca = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Empoasca.name)
                 .orElseThrow();
 
@@ -145,7 +145,7 @@ class CladePlacementResolutionTest {
         InsectGenusTestEntitySource genera =
                 nte.getNamed(InsectGenusTestEntitySource.class);
 
-        InsectGenus empoasca = genera
+        InsectGenusInfo empoasca = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Empoasca.name)
                 .orElseThrow();
 
@@ -161,7 +161,7 @@ class CladePlacementResolutionTest {
         InsectGenusTestEntitySource genera =
                 nte.getNamed(InsectGenusTestEntitySource.class);
 
-        InsectGenus chrysoperla = genera
+        InsectGenusInfo chrysoperla = genera
                 .getByName(TestInsectsIdentifiers.InsectGenus.Chrysoperla.name)
                 .orElseThrow();
 
@@ -207,7 +207,7 @@ class CladePlacementResolutionTest {
         InsectFamilyTestEntitySource families =
                 nte.getNamed(InsectFamilyTestEntitySource.class);
 
-        InsectFamily family = families.getByName(name).orElseThrow();
+        InsectFamilyInfo family = families.getByName(name).orElseThrow();
 
         assertThat(family.placedIn()).isEqualTo(expectedPlacement);
         assertThat(InsectLifeStages.stagesOf(family))
@@ -223,7 +223,7 @@ class CladePlacementResolutionTest {
         InsectFamilyTestEntitySource families =
                 nte.getNamed(InsectFamilyTestEntitySource.class);
 
-        InsectFamily papilionidae = families
+        InsectFamilyInfo papilionidae = families
                 .getByName(TestInsectsIdentifiers.InsectFamily.Papilionidae.name)
                 .orElseThrow();
 

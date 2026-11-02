@@ -29,11 +29,11 @@ class InsectsDetailTemplateTest {
         InsectOrderTestEntitySource orderSource = nte.getNamed(InsectOrderTestEntitySource.class);
         InsectFamilyTestEntitySource familySource = nte.getNamed(InsectFamilyTestEntitySource.class);
         InsectGenusTestEntitySource genusSource = nte.getNamed(InsectGenusTestEntitySource.class);
-        InsectSpecies anySpecies = nte.getNamed(InsectSpeciesTestEntitySource.class)
+        InsectSpeciesInfo anySpecies = nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .entityStream().findFirst().orElseThrow();
-        InsectGenus genus = genusSource.getByName(anySpecies.genusName()).orElseThrow();
-        InsectFamily family = familySource.getByName(genus.familyName()).orElseThrow();
-        InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
+        InsectGenusInfo genus = genusSource.getByName(anySpecies.genusName()).orElseThrow();
+        InsectFamilyInfo family = familySource.getByName(genus.familyName()).orElseThrow();
+        InsectOrderInfo order = orderSource.getByName(family.orderName()).orElseThrow();
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render(
@@ -60,9 +60,9 @@ class InsectsDetailTemplateTest {
 
     @Test
     void detail_speciesWithoutCommonName_headsWithTheBinomialNotTheSlug() {
-        InsectSpecies species = nte.getNamed(InsectSpeciesTestEntitySource.class)
+        InsectSpeciesInfo species = nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .getByName(TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name).orElseThrow();
-        InsectGenus genus = nte.getNamed(InsectGenusTestEntitySource.class).getByName(species.genusName()).orElseThrow();
+        InsectGenusInfo genus = nte.getNamed(InsectGenusTestEntitySource.class).getByName(species.genusName()).orElseThrow();
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render(

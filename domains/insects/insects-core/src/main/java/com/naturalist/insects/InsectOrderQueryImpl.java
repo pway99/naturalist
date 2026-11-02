@@ -10,7 +10,7 @@ import java.util.Set;
 class InsectOrderQueryImpl
         extends AbstractEntityQuery<
         InsectOrderName,
-        InsectOrder,
+        InsectOrderInfo,
         OrderCollection,
         InsectRepository.OrderRepository>
         implements InsectQuery.OrderQuery {

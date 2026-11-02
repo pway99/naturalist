@@ -20,11 +20,11 @@ class InsectsLifeStagesTemplateTest {
 
     @Test
     void lifeStages_speciesWithoutCommonName_headsWithTheBinomialNotTheSlug() {
-        InsectSpecies species = nte.getNamed(InsectSpeciesTestEntitySource.class)
+        InsectSpeciesInfo species = nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .getByName(TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name).orElseThrow();
-        InsectGenus genus = nte.getNamed(InsectGenusTestEntitySource.class).getByName(species.genusName()).orElseThrow();
-        InsectFamily family = nte.getNamed(InsectFamilyTestEntitySource.class).getByName(genus.familyName()).orElseThrow();
-        InsectOrder order = nte.getNamed(InsectOrderTestEntitySource.class).getByName(family.orderName()).orElseThrow();
+        InsectGenusInfo genus = nte.getNamed(InsectGenusTestEntitySource.class).getByName(species.genusName()).orElseThrow();
+        InsectFamilyInfo family = nte.getNamed(InsectFamilyTestEntitySource.class).getByName(genus.familyName()).orElseThrow();
+        InsectOrderInfo order = nte.getNamed(InsectOrderTestEntitySource.class).getByName(family.orderName()).orElseThrow();
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render(

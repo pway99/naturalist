@@ -14,12 +14,12 @@ import com.naturalist.taxonomy.OrganismFeatureAssignment;
  *
  * <p>Nested repositories scope to a single entity each:
  * <ul>
- *   <li>{@link SpeciesRepository} — {@link InsectSpecies} entities.</li>
+ *   <li>{@link SpeciesRepository} — {@link InsectSpeciesInfo} entities.</li>
  *   <li>{@link ImageRepository} — {@link OrganismImage} entities.</li>
- *   <li>{@link FamilyRepository} — {@link InsectFamily} entities.</li>
- *   <li>{@link GenusRepository} — {@link InsectGenus} entities.</li>
+ *   <li>{@link FamilyRepository} — {@link InsectFamilyInfo} entities.</li>
+ *   <li>{@link GenusRepository} — {@link InsectGenusInfo} entities.</li>
  *   <li>{@link FunctionalRoleRepository} — {@link InsectFunctionalRole} entities.</li>
- *   <li>{@link OrderRepository} — {@link InsectOrder} entities.</li>
+ *   <li>{@link OrderRepository} — {@link InsectOrderInfo} entities.</li>
  *   <li>{@link FeatureRepository} — {@link InsectFeature} entities.</li>
  *   <li>{@link FeatureAssignmentRepository} — {@link OrganismFeatureAssignment} entities.</li>
  * </ul>
@@ -115,11 +115,11 @@ class InsectRepository {
     }
 
     protected interface SpeciesRepository
-            extends EntityRepository<InsectSpeciesName, InsectSpecies> {
+            extends EntityRepository<InsectSpeciesName, InsectSpeciesInfo> {
 
-        List<InsectSpecies> getByGenusName(InsectGenusName genusName);
+        List<InsectSpeciesInfo> getByGenusName(InsectGenusName genusName);
 
-        List<InsectSpecies> getByGenusNames(Set<InsectGenusName> genusNames);
+        List<InsectSpeciesInfo> getByGenusNames(Set<InsectGenusName> genusNames);
     }
 
     protected interface ImageRepository
@@ -142,20 +142,20 @@ class InsectRepository {
     }
 
     protected interface FamilyRepository
-            extends EntityRepository<InsectFamilyName, InsectFamily> {
+            extends EntityRepository<InsectFamilyName, InsectFamilyInfo> {
 
-        List<InsectFamily> getByOrderName(InsectOrderName orderName);
+        List<InsectFamilyInfo> getByOrderName(InsectOrderName orderName);
 
         /** Batched sibling of {@link #getByOrderName} across a set of orders. */
-        List<InsectFamily> getByOrderNames(Set<InsectOrderName> orderNames);
+        List<InsectFamilyInfo> getByOrderNames(Set<InsectOrderName> orderNames);
     }
 
     protected interface GenusRepository
-            extends EntityRepository<InsectGenusName, InsectGenus> {
+            extends EntityRepository<InsectGenusName, InsectGenusInfo> {
 
-        List<InsectGenus> getByFamilyName(InsectFamilyName familyName);
+        List<InsectGenusInfo> getByFamilyName(InsectFamilyName familyName);
 
-        List<InsectGenus> getByFamilyNames(Set<InsectFamilyName> familyNames);
+        List<InsectGenusInfo> getByFamilyNames(Set<InsectFamilyName> familyNames);
     }
 
     protected interface FunctionalRoleRepository
@@ -169,7 +169,7 @@ class InsectRepository {
     }
 
     protected interface OrderRepository
-            extends EntityRepository<InsectOrderName, InsectOrder> {
+            extends EntityRepository<InsectOrderName, InsectOrderInfo> {
     }
 
     protected interface FeatureRepository

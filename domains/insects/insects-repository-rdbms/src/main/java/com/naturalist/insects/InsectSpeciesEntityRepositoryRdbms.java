@@ -19,8 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * RDBMS adapter for the {@link InsectSpecies} aggregate — the bottom of the insect Linnaean chain.
- * The upward reference to {@link InsectGenus} is stored as {@code genus_id}, resolved from the genus
+ * RDBMS adapter for the {@link InsectSpeciesInfo} aggregate — the bottom of the insect Linnaean chain.
+ * The upward reference to {@link InsectGenusInfo} is stored as {@code genus_id}, resolved from the genus
  * name by nested-select on write and recovered by JOIN on read; a species whose genus is absent
  * inserts zero rows, which becomes {@link EntityNotFoundException}. Reads assemble each parent with
  * its five child collections ({@code commonNames}, {@code protectedStages}, habitat {@code zones} and
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @DomainService
 class InsectSpeciesEntityRepositoryRdbms
-        extends AbstractEntityRepository<InsectSpeciesName, InsectSpecies>
+        extends AbstractEntityRepository<InsectSpeciesName, InsectSpeciesInfo>
         implements InsectRepository.SpeciesRepository {
 
     private final InsectSpeciesMapper mapper;
@@ -43,27 +43,27 @@ class InsectSpeciesEntityRepositoryRdbms
     }
 
     @Override
-    protected Optional<InsectSpecies> doGetByName(InsectSpeciesName name) {
+    protected Optional<InsectSpeciesInfo> doGetByName(InsectSpeciesName name) {
         InsectSpeciesDbo parent = mapper.selectByName(name.value());
         if (parent == null) return Optional.empty();
         return Optional.of(assemble(List.of(parent), Set.of(name.value())).get(0));
     }
 
     @Override
-    protected List<InsectSpecies> doGetByNameSet(Set<InsectSpeciesName> nameSet) {
+    protected List<InsectSpeciesInfo> doGetByNameSet(Set<InsectSpeciesName> nameSet) {
         if (nameSet.isEmpty()) return List.of();
         Set<String> slugs = nameSet.stream().map(InsectSpeciesName::value).collect(Collectors.toSet());
         return assemble(mapper.selectByNameSet(slugs), slugs);
     }
 
     @Override
-    protected Page<InsectSpecies> doGetPage(PageRequest request) {
+    protected Page<InsectSpeciesInfo> doGetPage(PageRequest request) {
         int pageSize = request.pageSize();
         List<InsectSpeciesDbo> rows = mapper.selectPage(pageSize + 1, request.offset());
         boolean immediateMore = rows.size() > pageSize;
         List<InsectSpeciesDbo> parents = rows.stream().limit(pageSize).toList();
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<InsectSpecies> content = assemble(parents, names);
+        List<InsectSpeciesInfo> content = assemble(parents, names);
 
         int pagesAheadKnown = 0;
         boolean moreBeyondLookahead = immediateMore;
@@ -79,7 +79,7 @@ class InsectSpeciesEntityRepositoryRdbms
     }
 
     @Override
-    protected void doInsert(InsectSpecies entity) {
+    protected void doInsert(InsectSpeciesInfo entity) {
         InsectSpeciesDbo dbo = InsectSpeciesDbo.from(entity);   // validates the parent scalars + throws
         int inserted;
         try {
@@ -93,7 +93,7 @@ class InsectSpeciesEntityRepositoryRdbms
     }
 
     @Override
-    protected void doUpdate(InsectSpecies entity) {
+    protected void doUpdate(InsectSpeciesInfo entity) {
         InsectSpeciesDbo dbo = InsectSpeciesDbo.from(entity);
         if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
         String name = entity.name().value();
@@ -106,14 +106,14 @@ class InsectSpeciesEntityRepositoryRdbms
     }
 
     @Override
-    protected InsectSpecies doSave(InsectSpecies entity) {
+    protected InsectSpeciesInfo doSave(InsectSpeciesInfo entity) {
         if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
         else doInsert(entity);
         return entity;
     }
 
     @Override
-    public List<InsectSpecies> getByGenusName(InsectGenusName genusName) {
+    public List<InsectSpeciesInfo> getByGenusName(InsectGenusName genusName) {
         Observer.forClass(InsectSpeciesEntityRepositoryRdbms.class)
                 .arguments("getByGenusName", i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
@@ -123,7 +123,7 @@ class InsectSpeciesEntityRepositoryRdbms
     }
 
     @Override
-    public List<InsectSpecies> getByGenusNames(Set<InsectGenusName> genusNames) {
+    public List<InsectSpeciesInfo> getByGenusNames(Set<InsectGenusName> genusNames) {
         Observer.forClass(InsectSpeciesEntityRepositoryRdbms.class)
                 .arguments("getByGenusNames", i -> i.entityNameCollection(genusNames, "genusNames"))
                 .throwWhenInvalid();
@@ -134,7 +134,7 @@ class InsectSpeciesEntityRepositoryRdbms
         return assemble(parents, names);
     }
 
-    private void insertChildren(InsectSpecies s) {
+    private void insertChildren(InsectSpeciesInfo s) {
         InsectSpeciesName name = s.name();
         for (CommonName commonName : s.commonNames()) {
             mapper.insertCommonName(InsectSpeciesCommonNameDbo.from(name, commonName));
@@ -164,7 +164,7 @@ class InsectSpeciesEntityRepositoryRdbms
     }
 
     /** Assemble aggregates from parent rows + one batched load per child table. */
-    private List<InsectSpecies> assemble(List<InsectSpeciesDbo> parents, Set<String> names) {
+    private List<InsectSpeciesInfo> assemble(List<InsectSpeciesDbo> parents, Set<String> names) {
         if (parents.isEmpty()) return List.of();
 
         Map<String, Set<CommonName>> commonNames = mapper.selectCommonNames(names).stream()

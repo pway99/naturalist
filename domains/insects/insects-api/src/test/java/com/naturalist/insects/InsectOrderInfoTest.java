@@ -14,13 +14,13 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InsectOrderTest {
-    private static final Observer observer = Observer.forClass(InsectOrderTest.class);
+class InsectOrderInfoTest {
+    private static final Observer observer = Observer.forClass(InsectOrderInfoTest.class);
 
     @Test
     void validOrderPassesAllInvariants() {
         var mo = observer.forMethod("validOrderPassesAllInvariants");
-        InsectOrder order = new InsectOrder(
+        InsectOrderInfo order = new InsectOrderInfo(
                 InsectOrderName.of("diptera"),
                 TaxonomicOrder.of("Diptera"),
                 description(),
@@ -35,7 +35,7 @@ class InsectOrderTest {
     @Test
     void nullComponentsProduceExpectedInvariantViolations() {
         var mo = observer.forMethod("nullComponentsProduceExpectedInvariantViolations");
-        InsectOrder order = new InsectOrder(
+        InsectOrderInfo order = new InsectOrderInfo(
                 null, null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(order, "order");
@@ -50,16 +50,16 @@ class InsectOrderTest {
 
     @Test
     void withPlacedInReturnsNewInstanceWithUpdatedClade() {
-        InsectOrder order = orderWithPlacedIn(null);
+        InsectOrderInfo order = orderWithPlacedIn(null);
 
-        InsectOrder updated = order.withPlacedIn(new Holometabola());
+        InsectOrderInfo updated = order.withPlacedIn(new Holometabola());
 
         assertThat(updated.placedIn()).isEqualTo(new Holometabola());
         assertThat(order.placedIn()).isNull();
     }
 
-    private static InsectOrder orderWithPlacedIn(Clade placedIn) {
-        return new InsectOrder(
+    private static InsectOrderInfo orderWithPlacedIn(Clade placedIn) {
+        return new InsectOrderInfo(
                 InsectOrderName.of("diptera"),
                 TaxonomicOrder.of("Diptera"),
                 description(),
@@ -93,8 +93,8 @@ class InsectOrderTest {
                 RandomValue.string(), RandomValue.string());
     }
 
-    private static InsectOrder orderWith(Set<CommonName> commonNames) {
-        return new InsectOrder(InsectOrderName.of("lepidoptera"), TaxonomicOrder.of("Lepidoptera"),
+    private static InsectOrderInfo orderWith(Set<CommonName> commonNames) {
+        return new InsectOrderInfo(InsectOrderName.of("lepidoptera"), TaxonomicOrder.of("Lepidoptera"),
                 displayNameDescription(), commonNames, null);
     }
 }

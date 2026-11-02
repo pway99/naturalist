@@ -104,8 +104,8 @@ class InsectTaxonViewTest {
                 .containsExactlyInAnyOrder(".agg.order", ".agg.images");
     }
 
-    private static InsectSpecies validSpecies() {
-        return new InsectSpecies(
+    private static InsectSpeciesInfo validSpecies() {
+        return new InsectSpeciesInfo(
                 InsectSpeciesName.of(RandomValue.string()),
                 InsectGenusName.of("hippodamia"),
                 TaxonomicSpecies.of("convergens"),
@@ -117,8 +117,8 @@ class InsectTaxonViewTest {
         );
     }
 
-    private static InsectGenus validGenus() {
-        return new InsectGenus(
+    private static InsectGenusInfo validGenus() {
+        return new InsectGenusInfo(
                 InsectGenusName.of(RandomValue.string()),
                 InsectFamilyName.of("papilionidae"),
                 TaxonomicGenus.of("Battus"),
@@ -127,8 +127,8 @@ class InsectTaxonViewTest {
                 null);
     }
 
-    private static InsectFamily validFamily() {
-        return new InsectFamily(
+    private static InsectFamilyInfo validFamily() {
+        return new InsectFamilyInfo(
                 InsectFamilyName.of(RandomValue.string()),
                 InsectOrderName.of("diptera"),
                 TaxonomicFamily.of("Syrphidae"),
@@ -137,8 +137,8 @@ class InsectTaxonViewTest {
                 null);
     }
 
-    private static InsectOrder validOrder() {
-        return new InsectOrder(
+    private static InsectOrderInfo validOrder() {
+        return new InsectOrderInfo(
                 InsectOrderName.of(RandomValue.string()),
                 TaxonomicOrder.of("Diptera"),
                 description(),

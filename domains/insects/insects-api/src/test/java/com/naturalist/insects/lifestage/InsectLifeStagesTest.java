@@ -5,13 +5,13 @@ import com.naturalist.clades.Clade;
 import com.naturalist.clades.Hemiptera;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.insects.InsectFamily;
+import com.naturalist.insects.InsectFamilyInfo;
 import com.naturalist.insects.InsectFamilyName;
-import com.naturalist.insects.InsectGenus;
+import com.naturalist.insects.InsectGenusInfo;
 import com.naturalist.insects.InsectGenusName;
-import com.naturalist.insects.InsectOrder;
+import com.naturalist.insects.InsectOrderInfo;
 import com.naturalist.insects.InsectOrderName;
-import com.naturalist.insects.InsectSpecies;
+import com.naturalist.insects.InsectSpeciesInfo;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageKind;
 import com.naturalist.taxonomy.TaxonomicFamily;
@@ -41,7 +41,7 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfSpeciesPlacedInPapilionidaeReturnsHolometabolousStages() {
-        InsectSpecies species = speciesWithPlacedIn(new Papilionidae());
+        InsectSpeciesInfo species = speciesWithPlacedIn(new Papilionidae());
 
         assertThat(InsectLifeStages.stagesOf(species))
                 .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
@@ -49,14 +49,14 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfUnplacedSpeciesReturnsEmptyList() {
-        InsectSpecies species = speciesWithPlacedIn(null);
+        InsectSpeciesInfo species = speciesWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(species)).isEmpty();
     }
 
     @Test
     void stagesOfGenusPlacedInPapilionidaeReturnsHolometabolousStages() {
-        InsectGenus genus = genusWithPlacedIn(new Papilionidae());
+        InsectGenusInfo genus = genusWithPlacedIn(new Papilionidae());
 
         assertThat(InsectLifeStages.stagesOf(genus))
                 .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
@@ -64,14 +64,14 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfUnplacedGenusReturnsEmptyList() {
-        InsectGenus genus = genusWithPlacedIn(null);
+        InsectGenusInfo genus = genusWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(genus)).isEmpty();
     }
 
     @Test
     void stagesOfFamilyPlacedInPapilionidaeReturnsHolometabolousStages() {
-        InsectFamily family = familyWithPlacedIn(new Papilionidae());
+        InsectFamilyInfo family = familyWithPlacedIn(new Papilionidae());
 
         assertThat(InsectLifeStages.stagesOf(family))
                 .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
@@ -79,14 +79,14 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfUnplacedFamilyReturnsEmptyList() {
-        InsectFamily family = familyWithPlacedIn(null);
+        InsectFamilyInfo family = familyWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(family)).isEmpty();
     }
 
     @Test
     void stagesOfWalkUpUsesSpeciesPlacementWhenSet() {
-        InsectSpecies species = speciesWithPlacedIn(new Papilionidae());
+        InsectSpeciesInfo species = speciesWithPlacedIn(new Papilionidae());
 
         assertThat(InsectLifeStages.stagesOf(species, null, null, null))
                 .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
@@ -94,10 +94,10 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfWalkUpPrefersCloserParentWhenSpeciesUnplaced() {
-        InsectSpecies species = speciesWithPlacedIn(null);
-        InsectGenus   genus   = genusWithPlacedIn(new Papilionidae());
-        InsectFamily  family  = familyWithPlacedIn(null);
-        InsectOrder   order   = orderWithPlacedIn(null);
+        InsectSpeciesInfo species = speciesWithPlacedIn(null);
+        InsectGenusInfo   genus   = genusWithPlacedIn(new Papilionidae());
+        InsectFamilyInfo  family  = familyWithPlacedIn(null);
+        InsectOrderInfo   order   = orderWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(species, genus, family, order))
                 .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
@@ -105,10 +105,10 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfWalkUpUsesFamilyPlacementWhenSpeciesAndGenusUnplaced() {
-        InsectSpecies species = speciesWithPlacedIn(null);
-        InsectGenus   genus   = genusWithPlacedIn(null);
-        InsectFamily  family  = familyWithPlacedIn(new Papilionidae());
-        InsectOrder   order   = orderWithPlacedIn(null);
+        InsectSpeciesInfo species = speciesWithPlacedIn(null);
+        InsectGenusInfo   genus   = genusWithPlacedIn(null);
+        InsectFamilyInfo  family  = familyWithPlacedIn(new Papilionidae());
+        InsectOrderInfo   order   = orderWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(species, genus, family, order))
                 .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
@@ -116,10 +116,10 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfWalkUpUsesOrderPlacementWhenSpeciesGenusFamilyUnplaced() {
-        InsectSpecies species = speciesWithPlacedIn(null);
-        InsectGenus   genus   = genusWithPlacedIn(null);
-        InsectFamily  family  = familyWithPlacedIn(null);
-        InsectOrder   order   = orderWithPlacedIn(new Papilionidae());
+        InsectSpeciesInfo species = speciesWithPlacedIn(null);
+        InsectGenusInfo   genus   = genusWithPlacedIn(null);
+        InsectFamilyInfo  family  = familyWithPlacedIn(null);
+        InsectOrderInfo   order   = orderWithPlacedIn(new Papilionidae());
 
         assertThat(InsectLifeStages.stagesOf(species, genus, family, order))
                 .containsExactlyElementsOf(HOLOMETABOLOUS_STAGES);
@@ -127,20 +127,20 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfWalkUpReturnsEmptyWhenNoRankIsPlaced() {
-        InsectSpecies species = speciesWithPlacedIn(null);
-        InsectGenus   genus   = genusWithPlacedIn(null);
-        InsectFamily  family  = familyWithPlacedIn(null);
-        InsectOrder   order   = orderWithPlacedIn(null);
+        InsectSpeciesInfo species = speciesWithPlacedIn(null);
+        InsectGenusInfo   genus   = genusWithPlacedIn(null);
+        InsectFamilyInfo  family  = familyWithPlacedIn(null);
+        InsectOrderInfo   order   = orderWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(species, genus, family, order)).isEmpty();
     }
 
     @Test
     void stagesOfWalkUpResolvesHemimetabolousFromFamilyPlacement() {
-        InsectSpecies species = speciesWithPlacedIn(null);
-        InsectGenus   genus   = genusWithPlacedIn(null);
-        InsectFamily  family  = familyWithPlacedIn(new Hemiptera());
-        InsectOrder   order   = orderWithPlacedIn(null);
+        InsectSpeciesInfo species = speciesWithPlacedIn(null);
+        InsectGenusInfo   genus   = genusWithPlacedIn(null);
+        InsectFamilyInfo  family  = familyWithPlacedIn(new Hemiptera());
+        InsectOrderInfo   order   = orderWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(species, genus, family, order))
                 .containsExactlyElementsOf(HEMIMETABOLOUS_STAGES);
@@ -148,7 +148,7 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfWalkUpAcceptsNullParentsWhenSpeciesPlacedIn() {
-        InsectSpecies species = speciesWithPlacedIn(new Papilionidae());
+        InsectSpeciesInfo species = speciesWithPlacedIn(new Papilionidae());
 
         // Identical call shape to Task 2's pilot — kept as a separate test
         // to document the nullable-parents contract independently from the
@@ -159,13 +159,13 @@ class InsectLifeStagesTest {
 
     @Test
     void stagesOfWalkUpReturnsEmptyWhenSpeciesUnplacedAndParentsNull() {
-        InsectSpecies species = speciesWithPlacedIn(null);
+        InsectSpeciesInfo species = speciesWithPlacedIn(null);
 
         assertThat(InsectLifeStages.stagesOf(species, null, null, null)).isEmpty();
     }
 
-    private static InsectOrder orderWithPlacedIn(@Nullable Clade placedIn) {
-        return new InsectOrder(
+    private static InsectOrderInfo orderWithPlacedIn(@Nullable Clade placedIn) {
+        return new InsectOrderInfo(
                 InsectOrderName.of("lepidoptera"),
                 TaxonomicOrder.of("Lepidoptera"),
                 description(),
@@ -173,8 +173,8 @@ class InsectLifeStagesTest {
                 placedIn);
     }
 
-    private static InsectFamily familyWithPlacedIn(@Nullable Clade placedIn) {
-        return new InsectFamily(
+    private static InsectFamilyInfo familyWithPlacedIn(@Nullable Clade placedIn) {
+        return new InsectFamilyInfo(
                 InsectFamilyName.of("papilionidae"),
                 InsectOrderName.of("lepidoptera"),
                 TaxonomicFamily.of("Papilionidae"),
@@ -183,8 +183,8 @@ class InsectLifeStagesTest {
                 placedIn);
     }
 
-    private static InsectGenus genusWithPlacedIn(@Nullable Clade placedIn) {
-        return new InsectGenus(
+    private static InsectGenusInfo genusWithPlacedIn(@Nullable Clade placedIn) {
+        return new InsectGenusInfo(
                 InsectGenusName.of("battus"),
                 InsectFamilyName.of("papilionidae"),
                 TaxonomicGenus.of("Battus"),
@@ -193,8 +193,8 @@ class InsectLifeStagesTest {
                 placedIn);
     }
 
-    private static InsectSpecies speciesWithPlacedIn(@Nullable Clade placedIn) {
-        return new InsectSpecies(
+    private static InsectSpeciesInfo speciesWithPlacedIn(@Nullable Clade placedIn) {
+        return new InsectSpeciesInfo(
                 InsectSpeciesName.of("battus-philenor"),
                 InsectGenusName.of("battus"),
                 TaxonomicSpecies.of("philenor"),

@@ -11,14 +11,14 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
- * Child row for one member of an {@link InsectGenus}'s {@code Set<CommonName>}. Stored reference is
+ * Child row for one member of an {@link InsectGenusInfo}'s {@code Set<CommonName>}. Stored reference is
  * the numeric {@code genus_id} (FK-enforced); the DBO carries the genus's {@code name} for the
  * mapper's JOIN projection (read) and nested-select (write). {@link CommonName}'s {@link Locale}
  * round-trips as its BCP-47 language tag.
  */
 @DboSchema(table = "insect_genus_common_name", primaryKey = "genus_id,label,locale",
            foreignKeys = @Fk(columns = "genus_id", references = "insect_genus(id)"),
-           entity = InsectGenus.class)
+           entity = InsectGenusInfo.class)
 final class InsectGenusCommonNameDbo implements Dbo {
     String genusName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String label;

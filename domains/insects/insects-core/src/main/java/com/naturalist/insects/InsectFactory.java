@@ -83,11 +83,11 @@ class InsectFactory {
         observer.arguments("buildByName", i -> i.identifier(name, "name")).throwWhenInvalid();
         return switch (name) {
             case InsectSpeciesName sn -> speciesQuery.getByName(sn).map(species -> {
-                Optional<InsectGenus> genus = genusQuery.getByName(species.genusName());
-                Optional<InsectFamily> family = genus.flatMap(g -> familyQuery.getByName(g.familyName()));
-                Optional<InsectOrder> order = family.flatMap(f -> orderQuery.getByName(f.orderName()));
+                Optional<InsectGenusInfo> genus = genusQuery.getByName(species.genusName());
+                Optional<InsectFamilyInfo> family = genus.flatMap(g -> familyQuery.getByName(g.familyName()));
+                Optional<InsectOrderInfo> order = family.flatMap(f -> orderQuery.getByName(f.orderName()));
                 Set<InsectRankName> ancestry = lineage(sn,
-                        genus.map(InsectGenus::name), family.map(InsectFamily::name), order.map(InsectOrder::name));
+                        genus.map(InsectGenusInfo::name), family.map(InsectFamilyInfo::name), order.map(InsectOrderInfo::name));
                 Insect insect = base(sn, ancestry)
                         .withSpecies(InsectTaxonView.SpeciesView.of(species))
                         .withChildren(List.of());
@@ -97,10 +97,10 @@ class InsectFactory {
                 return observe(withOrderedStages(insect, InsectLifeStages.stagesOf(species, genus.orElse(null), family.orElse(null), order.orElse(null))));
             });
             case InsectGenusName gn -> genusQuery.getByName(gn).map(genus -> {
-                Optional<InsectFamily> family = familyQuery.getByName(genus.familyName());
-                Optional<InsectOrder> order = family.flatMap(f -> orderQuery.getByName(f.orderName()));
+                Optional<InsectFamilyInfo> family = familyQuery.getByName(genus.familyName());
+                Optional<InsectOrderInfo> order = family.flatMap(f -> orderQuery.getByName(f.orderName()));
                 Set<InsectRankName> ancestry = lineage(gn,
-                        family.map(InsectFamily::name), order.map(InsectOrder::name));
+                        family.map(InsectFamilyInfo::name), order.map(InsectOrderInfo::name));
                 Insect insect = base(gn, ancestry)
                         .withGenus(InsectTaxonView.GenusView.of(genus))
                         .withChildren(speciesChildren(gn));
@@ -109,8 +109,8 @@ class InsectFactory {
                 return observe(withOrderedStages(insect, InsectLifeStages.stagesOf(genus)));
             });
             case InsectFamilyName fn -> familyQuery.getByName(fn).map(family -> {
-                Optional<InsectOrder> order = orderQuery.getByName(family.orderName());
-                Set<InsectRankName> ancestry = lineage(fn, order.map(InsectOrder::name));
+                Optional<InsectOrderInfo> order = orderQuery.getByName(family.orderName());
+                Set<InsectRankName> ancestry = lineage(fn, order.map(InsectOrderInfo::name));
                 Insect insect = base(fn, ancestry)
                         .withFamily(InsectTaxonView.FamilyView.of(family))
                         .withChildren(genusChildren(fn));
@@ -158,8 +158,8 @@ class InsectFactory {
     }
 
     private List<InsectTaxonView> familyChildren(InsectOrderName orderName) {
-        List<InsectFamily> families = familyQuery.forOrderName(orderName).stream().toList();
-        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(families, InsectFamily::name));
+        List<InsectFamilyInfo> families = familyQuery.forOrderName(orderName).stream().toList();
+        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(families, InsectFamilyInfo::name));
         return families.stream()
                 .map(f -> (InsectTaxonView) InsectTaxonView.FamilyView.of(f, gallery.forEntity(f.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
@@ -167,8 +167,8 @@ class InsectFactory {
     }
 
     private List<InsectTaxonView> genusChildren(InsectFamilyName familyName) {
-        List<InsectGenus> genera = genusQuery.forFamilyName(familyName).stream().toList();
-        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(genera, InsectGenus::name));
+        List<InsectGenusInfo> genera = genusQuery.forFamilyName(familyName).stream().toList();
+        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(genera, InsectGenusInfo::name));
         return genera.stream()
                 .map(g -> (InsectTaxonView) InsectTaxonView.GenusView.of(g, gallery.forEntity(g.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))
@@ -176,8 +176,8 @@ class InsectFactory {
     }
 
     private List<InsectTaxonView> speciesChildren(InsectGenusName genusName) {
-        List<InsectSpecies> species = speciesQuery.forGenusName(genusName).stream().toList();
-        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(species, InsectSpecies::name));
+        List<InsectSpeciesInfo> species = speciesQuery.forGenusName(genusName).stream().toList();
+        ImageGallery gallery = imageQuery.forRankHierarchies(rootSet(species, InsectSpeciesInfo::name));
         return species.stream()
                 .map(s -> (InsectTaxonView) InsectTaxonView.SpeciesView.of(s, gallery.forEntity(s.name())))
                 .sorted(Comparator.comparing(v -> v.name().value()))

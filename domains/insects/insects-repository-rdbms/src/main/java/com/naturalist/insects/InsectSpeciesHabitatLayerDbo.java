@@ -10,7 +10,7 @@ import com.naturalist.persistence.Fk;
 import java.util.function.Consumer;
 
 /**
- * Child row for one member of an {@link InsectSpecies}'s {@code HabitatProfile.layers}
+ * Child row for one member of an {@link InsectSpeciesInfo}'s {@code HabitatProfile.layers}
  * {@code @Nullable Set<VerticalLayer>}. Stored reference is the numeric {@code species_id}
  * (FK-enforced); the DBO carries the species's {@code name} for the mapper's JOIN projection (read)
  * and nested-select (write). {@link VerticalLayer} round-trips as its {@code name()} /
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  */
 @DboSchema(table = "insect_species_habitat_layer", primaryKey = "species_id,layer",
            foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
-           entity = InsectSpecies.class)
+           entity = InsectSpeciesInfo.class)
 final class InsectSpeciesHabitatLayerDbo implements Dbo {
     String speciesName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String layer;

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 class InsectSpeciesQueryImpl
         extends AbstractEntityQuery<
         InsectSpeciesName,
-        InsectSpecies,
+        InsectSpeciesInfo,
         InsectEntityCollections.SpeciesCollection,
         InsectRepository.SpeciesRepository>
         implements InsectQuery.SpeciesQuery {
@@ -46,7 +46,7 @@ class InsectSpeciesQueryImpl
                         i -> i.entityName(familyName, "familyName"))
                 .throwWhenInvalid();
         Set<InsectGenusName> genusNames = genusQuery.forFamilyName(familyName).stream()
-                .map(InsectGenus::name)
+                .map(InsectGenusInfo::name)
                 .collect(Collectors.toSet());
         return forGenusNames(genusNames);
     }

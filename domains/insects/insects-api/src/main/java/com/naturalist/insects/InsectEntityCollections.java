@@ -15,15 +15,15 @@ import com.naturalist.observation.OrganismObservation;
  *
  * <p>Nested collections scope to a single entity each:
  * <ul>
- *   <li>{@link SpeciesCollection} — multi-result return type for {@link InsectSpecies}.</li>
+ *   <li>{@link SpeciesCollection} — multi-result return type for {@link InsectSpeciesInfo}.</li>
  *   <li>{@link ImageCollection} — multi-result return type for {@link OrganismImage}.</li>
- *   <li>{@link FamilyCollection} — multi-result return type for {@link InsectFamily}.</li>
- *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenus}.</li>
+ *   <li>{@link FamilyCollection} — multi-result return type for {@link InsectFamilyInfo}.</li>
+ *   <li>{@link GenusCollection} — multi-result return type for {@link InsectGenusInfo}.</li>
  *   <li>{@link ObservationCollection} — multi-result return type for
  *       {@link OrganismObservation}.</li>
  *   <li>{@link FunctionalRoleCollection} — multi-result return type for
  *       {@link InsectFunctionalRole}.</li>
- *   <li>{@link OrderCollection} — multi-result return type for {@link InsectOrder}.</li>
+ *   <li>{@link OrderCollection} — multi-result return type for {@link InsectOrderInfo}.</li>
  * </ul>
  *
  * <p>{@code InsectEntityCollections} is a pure container — it holds no behavior of its own,
@@ -32,13 +32,13 @@ import com.naturalist.observation.OrganismObservation;
  */
 public interface InsectEntityCollections {
 
-    final class SpeciesCollection extends BehavioralCollection<InsectSpecies> {
+    final class SpeciesCollection extends BehavioralCollection<InsectSpeciesInfo> {
 
-        SpeciesCollection(Collection<InsectSpecies> species) {
+        SpeciesCollection(Collection<InsectSpeciesInfo> species) {
             super(species);
         }
 
-        public static SpeciesCollection of(Collection<InsectSpecies> species) {
+        public static SpeciesCollection of(Collection<InsectSpeciesInfo> species) {
             return new SpeciesCollection(species);
         }
 
@@ -117,13 +117,13 @@ public interface InsectEntityCollections {
         }
     }
 
-    final class FamilyCollection extends BehavioralCollection<InsectFamily> {
+    final class FamilyCollection extends BehavioralCollection<InsectFamilyInfo> {
 
-        FamilyCollection(Collection<InsectFamily> families) {
+        FamilyCollection(Collection<InsectFamilyInfo> families) {
             super(families);
         }
 
-        public static FamilyCollection of(Collection<InsectFamily> families) {
+        public static FamilyCollection of(Collection<InsectFamilyInfo> families) {
             return new FamilyCollection(families);
         }
 
@@ -132,13 +132,13 @@ public interface InsectEntityCollections {
         }
     }
 
-    final class GenusCollection extends BehavioralCollection<InsectGenus> {
+    final class GenusCollection extends BehavioralCollection<InsectGenusInfo> {
 
-        GenusCollection(Collection<InsectGenus> genera) {
+        GenusCollection(Collection<InsectGenusInfo> genera) {
             super(genera);
         }
 
-        public static GenusCollection of(Collection<InsectGenus> genera) {
+        public static GenusCollection of(Collection<InsectGenusInfo> genera) {
             return new GenusCollection(genera);
         }
 
@@ -169,13 +169,13 @@ public interface InsectEntityCollections {
         }
     }
 
-    final class OrderCollection extends BehavioralCollection<InsectOrder> {
+    final class OrderCollection extends BehavioralCollection<InsectOrderInfo> {
 
-        OrderCollection(Collection<InsectOrder> orders) {
+        OrderCollection(Collection<InsectOrderInfo> orders) {
             super(orders);
         }
 
-        public static OrderCollection of(Collection<InsectOrder> orders) {
+        public static OrderCollection of(Collection<InsectOrderInfo> orders) {
             return new OrderCollection(orders);
         }
 

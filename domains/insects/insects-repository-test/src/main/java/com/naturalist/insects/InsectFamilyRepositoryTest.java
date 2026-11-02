@@ -19,16 +19,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Behavioral contract for {@link InsectRepository.FamilyRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
- * Supplies InsectFamily-specific identity constants and entity construction.
+ * Supplies InsectFamilyInfo-specific identity constants and entity construction.
  */
 interface InsectFamilyRepositoryTest
-        extends EntityRepositoryTest<InsectFamilyName, InsectFamily> {
+        extends EntityRepositoryTest<InsectFamilyName, InsectFamilyInfo> {
 
     @Override
     InsectRepository.FamilyRepository repository();
 
     @Override
-    default TestEntitySource<InsectFamilyName, InsectFamily> source() {
+    default TestEntitySource<InsectFamilyName, InsectFamilyInfo> source() {
         return db.getNamed(InsectFamilyTestEntitySource.class);
     }
 
@@ -45,8 +45,8 @@ interface InsectFamilyRepositoryTest
     }
 
     @Override
-    default InsectFamily newEntity() {
-        return new InsectFamily(
+    default InsectFamilyInfo newEntity() {
+        return new InsectFamilyInfo(
                 InsectFamilyName.of("test-family-xx"),
                 InsectOrderName.of("diptera"),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
@@ -56,8 +56,8 @@ interface InsectFamilyRepositoryTest
     }
 
     @Override
-    default InsectFamily ghostEntity() {
-        return new InsectFamily(
+    default InsectFamilyInfo ghostEntity() {
+        return new InsectFamilyInfo(
                 InsectFamilyName.of("test-ghost-xx"),
                 InsectOrderName.of("test-ghost-order-xx"),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
@@ -67,8 +67,8 @@ interface InsectFamilyRepositoryTest
     }
 
     @Override
-    default InsectFamily modifiedEntity(InsectFamily original) {
-        return new InsectFamily(
+    default InsectFamilyInfo modifiedEntity(InsectFamilyInfo original) {
+        return new InsectFamilyInfo(
                 original.name(),
                 InsectOrderName.of("hymenoptera"),
                 TaxonomicFamily.of("Family" + RandomValue.string()),
@@ -89,7 +89,7 @@ interface InsectFamilyRepositoryTest
         InsectOrderName diptera = InsectOrderName.of("diptera");
         var results = repository().getByOrderName(diptera);
         assertThat(results)
-                .extracting(InsectFamily::name)
+                .extracting(InsectFamilyInfo::name)
                 .extracting(InsectFamilyName::value)
                 .contains("tachinidae");
     }
@@ -114,7 +114,7 @@ interface InsectFamilyRepositoryTest
                 InsectOrderName.of("diptera"),
                 InsectOrderName.of("zygentoma")));
         assertThat(results)
-                .extracting(InsectFamily::name)
+                .extracting(InsectFamilyInfo::name)
                 .extracting(InsectFamilyName::value)
                 .contains("tachinidae");
         assertThat(results).allSatisfy(f ->

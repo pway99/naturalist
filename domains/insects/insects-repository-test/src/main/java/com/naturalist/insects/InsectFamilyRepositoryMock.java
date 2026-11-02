@@ -9,7 +9,7 @@ import java.util.Set;
 
 @MockDomainService
 class InsectFamilyRepositoryMock
-        extends AbstractTestEntityRepository<InsectFamilyName, InsectFamily, InsectFamilyTestEntitySource>
+        extends AbstractTestEntityRepository<InsectFamilyName, InsectFamilyInfo, InsectFamilyTestEntitySource>
         implements InsectRepository.FamilyRepository {
 
     InsectFamilyRepositoryMock(NaturalistDatabase naturalistDatabase) {
@@ -17,7 +17,7 @@ class InsectFamilyRepositoryMock
     }
 
     @Override
-    public List<InsectFamily> getByOrderName(InsectOrderName orderName) {
+    public List<InsectFamilyInfo> getByOrderName(InsectOrderName orderName) {
         observer().arguments("getByOrderName",
                         i -> i.entityName(orderName, "orderName"))
                 .throwWhenInvalid();
@@ -27,7 +27,7 @@ class InsectFamilyRepositoryMock
     }
 
     @Override
-    public List<InsectFamily> getByOrderNames(Set<InsectOrderName> orderNames) {
+    public List<InsectFamilyInfo> getByOrderNames(Set<InsectOrderName> orderNames) {
         observer().arguments("getByOrderNames",
                         i -> i.entityNameCollection(orderNames, "orderNames"))
                 .throwWhenInvalid();

@@ -159,8 +159,8 @@ class CatalogIdentificationTest {
                 List.of(), List.of(), Map.of());
     }
 
-    private static InsectSpecies species() {
-        return new InsectSpecies(
+    private static InsectSpeciesInfo species() {
+        return new InsectSpeciesInfo(
                 SPECIES_NAME, GENUS_NAME,
                 TaxonomicSpecies.of("cardui"),
                 description(),

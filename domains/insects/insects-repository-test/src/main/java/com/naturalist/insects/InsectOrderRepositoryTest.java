@@ -14,16 +14,16 @@ import java.util.Set;
  * Behavioral contract for {@link InsectRepository.OrderRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
- * Supplies InsectOrder-specific identity constants and entity construction.
+ * Supplies InsectOrderInfo-specific identity constants and entity construction.
  */
 interface InsectOrderRepositoryTest
-        extends EntityRepositoryTest<InsectOrderName, InsectOrder> {
+        extends EntityRepositoryTest<InsectOrderName, InsectOrderInfo> {
 
     @Override
     InsectRepository.OrderRepository repository();
 
     @Override
-    default TestEntitySource<InsectOrderName, InsectOrder> source() {
+    default TestEntitySource<InsectOrderName, InsectOrderInfo> source() {
         return db.getNamed(InsectOrderTestEntitySource.class);
     }
 
@@ -40,8 +40,8 @@ interface InsectOrderRepositoryTest
     }
 
     @Override
-    default InsectOrder newEntity() {
-        return new InsectOrder(
+    default InsectOrderInfo newEntity() {
+        return new InsectOrderInfo(
                 InsectOrderName.of("test-order-xx"),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),
@@ -50,8 +50,8 @@ interface InsectOrderRepositoryTest
     }
 
     @Override
-    default InsectOrder ghostEntity() {
-        return new InsectOrder(
+    default InsectOrderInfo ghostEntity() {
+        return new InsectOrderInfo(
                 InsectOrderName.of("test-ghost-order-xx"),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),
@@ -60,8 +60,8 @@ interface InsectOrderRepositoryTest
     }
 
     @Override
-    default InsectOrder modifiedEntity(InsectOrder original) {
-        return new InsectOrder(
+    default InsectOrderInfo modifiedEntity(InsectOrderInfo original) {
+        return new InsectOrderInfo(
                 original.name(),
                 TaxonomicOrder.of("Order" + RandomValue.string()),
                 description(),

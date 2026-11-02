@@ -5,7 +5,7 @@ import com.naturalist.ddd.EntityName;
 import com.naturalist.taxonomy.LinealRank;
 
 /**
- * Strongly typed natural key for {@code InsectOrder} entities.
+ * Strongly typed natural key for {@code InsectOrderInfo} entities.
  * <p>
  * The slug is the lowercased Linnaean order epithet —
  * {@code "diptera"}, {@code "hymenoptera"}, {@code "lepidoptera"}.

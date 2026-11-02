@@ -124,21 +124,21 @@ public class InsectsController {
         return List.of(classInsectaIntro());
     }
 
-    private List<AncestorIntro> introsForFamily(InsectOrder order) {
+    private List<AncestorIntro> introsForFamily(InsectOrderInfo order) {
         return List.of(
                 classInsectaIntro(),
                 intro("Order " + order.order().value(), "intro-order-open", order.description()));
     }
 
-    private List<AncestorIntro> introsForGenus(InsectOrder order, InsectFamily family) {
+    private List<AncestorIntro> introsForGenus(InsectOrderInfo order, InsectFamilyInfo family) {
         return List.of(
                 classInsectaIntro(),
                 intro("Order " + order.order().value(), "intro-order-open", order.description()),
                 intro("Family " + family.family().value(), "intro-family-open", family.description()));
     }
 
-    private List<AncestorIntro> introsForSpecies(InsectOrder order, InsectFamily family,
-                                                 InsectGenus genus) {
+    private List<AncestorIntro> introsForSpecies(InsectOrderInfo order, InsectFamilyInfo family,
+                                                 InsectGenusInfo genus) {
         return List.of(
                 classInsectaIntro(),
                 intro("Order " + order.order().value(), "intro-order-open", order.description()),
@@ -146,8 +146,8 @@ public class InsectsController {
                 intro("Genus " + genus.genus().value(), "intro-genus-open", genus.description()));
     }
 
-    private List<AncestorIntro> introsForLifeStages(InsectOrder order, InsectFamily family,
-                                                    InsectGenus genus, InsectSpecies species) {
+    private List<AncestorIntro> introsForLifeStages(InsectOrderInfo order, InsectFamilyInfo family,
+                                                    InsectGenusInfo genus, InsectSpeciesInfo species) {
         var binomial = genus.genus().value() + " " + species.epithet().value();
         return List.of(
                 classInsectaIntro(),
@@ -208,13 +208,13 @@ public class InsectsController {
                 .toList();
     }
 
-    private List<BreadcrumbSegment> breadcrumbToOrder(InsectOrder order) {
+    private List<BreadcrumbSegment> breadcrumbToOrder(InsectOrderInfo order) {
         var segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.current(order.order().value(), "Order"));
         return segments;
     }
 
-    private List<BreadcrumbSegment> breadcrumbToFamily(InsectFamily family, InsectOrder order) {
+    private List<BreadcrumbSegment> breadcrumbToFamily(InsectFamilyInfo family, InsectOrderInfo order) {
         var segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
                 "/insects/orders/" + order.name().value(), "Order"));
@@ -222,9 +222,9 @@ public class InsectsController {
         return segments;
     }
 
-    private List<BreadcrumbSegment> breadcrumbToGenus(InsectGenus genus,
-                                                      InsectFamily family,
-                                                      InsectOrder order) {
+    private List<BreadcrumbSegment> breadcrumbToGenus(InsectGenusInfo genus,
+                                                      InsectFamilyInfo family,
+                                                      InsectOrderInfo order) {
         var segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
                 "/insects/orders/" + order.name().value(), "Order"));
@@ -234,10 +234,10 @@ public class InsectsController {
         return segments;
     }
 
-    private List<BreadcrumbSegment> breadcrumbToSpecies(InsectSpecies species,
-                                                        InsectGenus genus,
-                                                        InsectFamily family,
-                                                        InsectOrder order) {
+    private List<BreadcrumbSegment> breadcrumbToSpecies(InsectSpeciesInfo species,
+                                                        InsectGenusInfo genus,
+                                                        InsectFamilyInfo family,
+                                                        InsectOrderInfo order) {
         var segments = new ArrayList<>(cladePrefix());
         segments.add(BreadcrumbSegment.link(order.order().value(),
                 "/insects/orders/" + order.name().value(), "Order"));
@@ -307,7 +307,7 @@ public class InsectsController {
     private List<CladeTaxonCard> ordersPlacedAt(Clade clade) {
         return Pages.stream(1000, insectQuery.orders()::findPage)
                 .filter(o -> clade.equals(o.placedIn()))
-                .sorted(Comparator.comparing((InsectOrder o) -> o.order().value()))
+                .sorted(Comparator.comparing((InsectOrderInfo o) -> o.order().value()))
                 .map(o -> new CladeTaxonCard("/insects/orders/" + o.name().value(), o.order().value()))
                 .toList();
     }
@@ -315,7 +315,7 @@ public class InsectsController {
     private List<CladeTaxonCard> familiesPlacedAt(Clade clade) {
         return Pages.stream(1000, insectQuery.families()::findPage)
                 .filter(f -> clade.equals(f.placedIn()))
-                .sorted(Comparator.comparing((InsectFamily f) -> f.family().value()))
+                .sorted(Comparator.comparing((InsectFamilyInfo f) -> f.family().value()))
                 .map(f -> new CladeTaxonCard("/insects/families/" + f.name().value(), f.family().value()))
                 .toList();
     }
@@ -323,24 +323,24 @@ public class InsectsController {
     private List<CladeTaxonCard> generaPlacedAt(Clade clade) {
         return Pages.stream(1000, insectQuery.genera()::findPage)
                 .filter(g -> clade.equals(g.placedIn()))
-                .sorted(Comparator.comparing((InsectGenus g) -> g.genus().value()))
+                .sorted(Comparator.comparing((InsectGenusInfo g) -> g.genus().value()))
                 .map(g -> new CladeTaxonCard("/insects/genera/" + g.name().value(), g.genus().value()))
                 .toList();
     }
 
     private List<CladeTaxonCard> speciesPlacedAt(Clade clade) {
-        List<InsectSpecies> placedSpecies = Pages.stream(1000, insectQuery.species()::findPage)
+        List<InsectSpeciesInfo> placedSpecies = Pages.stream(1000, insectQuery.species()::findPage)
                 .filter(s -> clade.equals(s.placedIn()))
                 .toList();
         java.util.Set<InsectGenusName> genusNameSet = placedSpecies.stream()
-                .map(InsectSpecies::genusName)
+                .map(InsectSpeciesInfo::genusName)
                 .collect(java.util.stream.Collectors.toSet());
-        Map<InsectGenusName, InsectGenus> genusByName = new LinkedHashMap<>();
+        Map<InsectGenusName, InsectGenusInfo> genusByName = new LinkedHashMap<>();
         insectQuery.genera().findByNameSet(genusNameSet).stream()
                 .forEach(genus -> genusByName.put(genus.name(), genus));
         return placedSpecies.stream()
                 .map(s -> {
-                    InsectGenus genus = genusByName.get(s.genusName());
+                    InsectGenusInfo genus = genusByName.get(s.genusName());
                     String genusEpithet = genus != null ? genus.genus().value() : "";
                     return new CladeTaxonCard("/insects/" + s.name().value(),
                             (genusEpithet + " " + s.epithet().value()).trim());
@@ -349,30 +349,30 @@ public class InsectsController {
                 .toList();
     }
 
-    private List<InsectCladeAnchors.LineageEntry> lineageToOrder(InsectOrder order) {
+    private List<InsectCladeAnchors.LineageEntry> lineageToOrder(InsectOrderInfo order) {
         return List.of(new InsectCladeAnchors.LineageEntry(
                 order.name().value(), order.order().value()));
     }
 
-    private List<InsectCladeAnchors.LineageEntry> lineageToFamily(InsectFamily family, InsectOrder order) {
+    private List<InsectCladeAnchors.LineageEntry> lineageToFamily(InsectFamilyInfo family, InsectOrderInfo order) {
         return List.of(
                 new InsectCladeAnchors.LineageEntry(family.name().value(), family.family().value()),
                 new InsectCladeAnchors.LineageEntry(order.name().value(), order.order().value()));
     }
 
-    private List<InsectCladeAnchors.LineageEntry> lineageToGenus(InsectGenus genus,
-                                                                 InsectFamily family,
-                                                                 InsectOrder order) {
+    private List<InsectCladeAnchors.LineageEntry> lineageToGenus(InsectGenusInfo genus,
+                                                                 InsectFamilyInfo family,
+                                                                 InsectOrderInfo order) {
         return List.of(
                 new InsectCladeAnchors.LineageEntry(genus.name().value(), genus.genus().value()),
                 new InsectCladeAnchors.LineageEntry(family.name().value(), family.family().value()),
                 new InsectCladeAnchors.LineageEntry(order.name().value(), order.order().value()));
     }
 
-    private List<InsectCladeAnchors.LineageEntry> lineageToSpecies(InsectSpecies species,
-                                                                   InsectGenus genus,
-                                                                   InsectFamily family,
-                                                                   InsectOrder order) {
+    private List<InsectCladeAnchors.LineageEntry> lineageToSpecies(InsectSpeciesInfo species,
+                                                                   InsectGenusInfo genus,
+                                                                   InsectFamilyInfo family,
+                                                                   InsectOrderInfo order) {
         String binomial = genus.genus().value() + " " + species.epithet().value();
         return List.of(
                 new InsectCladeAnchors.LineageEntry(species.name().value(), binomial),
@@ -481,8 +481,8 @@ public class InsectsController {
             return "redirect:/insects/families";
         }
         Insect insect = rankPage.get().insect();
-        InsectFamily family = insect.family().family();
-        InsectOrder order = insect.order().order();
+        InsectFamilyInfo family = insect.family().family();
+        InsectOrderInfo order = insect.order().order();
         var description = family.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -511,7 +511,7 @@ public class InsectsController {
         if (rankPage.isEmpty()) {
             return "redirect:/insects/orders";
         }
-        InsectOrder order = rankPage.get().insect().order().order();
+        InsectOrderInfo order = rankPage.get().insect().order().order();
         var description = order.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -541,9 +541,9 @@ public class InsectsController {
             return "redirect:/insects/genera";
         }
         Insect insect = rankPage.get().insect();
-        InsectGenus genus = insect.genus().genus();
-        InsectFamily family = insect.family().family();
-        InsectOrder order = insect.order().order();
+        InsectGenusInfo genus = insect.genus().genus();
+        InsectFamilyInfo family = insect.family().family();
+        InsectOrderInfo order = insect.order().order();
         var description = genus.description();
         model.addAttribute("page", rankPage.get());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -585,10 +585,10 @@ public class InsectsController {
             return "redirect:/insects";
         }
         Insect i = rankPage.get().insect();
-        InsectSpecies s = i.species().species();
-        InsectGenus genus = i.genus().genus();
-        InsectFamily family = i.family().family();
-        InsectOrder order = i.order().order();
+        InsectSpeciesInfo s = i.species().species();
+        InsectGenusInfo genus = i.genus().genus();
+        InsectFamilyInfo family = i.family().family();
+        InsectOrderInfo order = i.order().order();
         var description = s.description();
         if ("image".equals(error)) {
             model.addAttribute("imageError", true);
@@ -695,10 +695,10 @@ public class InsectsController {
             return "redirect:/insects";
         }
         Insect i = insect.get();
-        InsectSpecies s = i.species().species();
-        InsectGenus genus = i.genus().genus();
-        InsectFamily family = i.family().family();
-        InsectOrder order = i.order().order();
+        InsectSpeciesInfo s = i.species().species();
+        InsectGenusInfo genus = i.genus().genus();
+        InsectFamilyInfo family = i.family().family();
+        InsectOrderInfo order = i.order().order();
         model.addAttribute("species", s);
         model.addAttribute("genus", genus);
         model.addAttribute("family", family);

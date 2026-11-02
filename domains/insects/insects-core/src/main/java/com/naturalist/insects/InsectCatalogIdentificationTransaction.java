@@ -185,7 +185,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         var orderName = InsectOrderName.of(orderSlug);
         if (insectQuery.orders().getByName(orderName).isEmpty()) {
             var description = parentDescriptions.getOrDefault(orderName, PLACEHOLDER);
-            commands.orders().insert(new InsectOrder(
+            commands.orders().insert(new InsectOrderInfo(
                     orderName, taxonomy.order(), description, Set.of(), null));
         }
         return orderName;
@@ -198,7 +198,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         var familyName = InsectFamilyName.of(familySlug);
         if (insectQuery.families().getByName(familyName).isEmpty()) {
             var description = parentDescriptions.getOrDefault(familyName, PLACEHOLDER);
-            commands.families().insert(new InsectFamily(
+            commands.families().insert(new InsectFamilyInfo(
                     familyName, orderName, taxonomy.family(), description, Set.of(), null));
         }
         return familyName;
@@ -211,7 +211,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
         var genusName = InsectGenusName.of(genusSlug);
         if (insectQuery.genera().getByName(genusName).isEmpty()) {
             var description = parentDescriptions.getOrDefault(genusName, PLACEHOLDER);
-            commands.genera().insert(new InsectGenus(
+            commands.genera().insert(new InsectGenusInfo(
                     genusName, familyName, taxonomy.genus(), description, Set.of(), null));
         }
     }

@@ -9,7 +9,7 @@ import com.naturalist.persistence.Fk;
 import java.util.function.Consumer;
 
 /**
- * Child row for one member of an {@link InsectSpecies}'s {@code GardenConnections.supportingPlants}
+ * Child row for one member of an {@link InsectSpeciesInfo}'s {@code GardenConnections.supportingPlants}
  * {@code List<String>}, ordered within its parent by {@code ordinal}. Stored reference is the numeric
  * {@code species_id} (FK-enforced); the DBO carries the species's {@code name} for the mapper's JOIN
  * projection (read) and nested-select (write). The list is order-significant, so the mapper reads
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  */
 @DboSchema(table = "insect_species_supporting_plant", primaryKey = "species_id,ordinal",
            foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
-           entity = InsectSpecies.class)
+           entity = InsectSpeciesInfo.class)
 final class InsectSpeciesSupportingPlantDbo implements Dbo {
     String speciesName;  // JOIN projection (read) / nested-select key (write); not a stored column
     int ordinal;

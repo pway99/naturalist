@@ -12,20 +12,20 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InsectSpeciesTest {
+class InsectSpeciesInfoTest {
 
     @Test
     void withPlacedInReturnsNewInstanceWithUpdatedClade() {
-        InsectSpecies species = speciesWithPlacedIn(null);
+        InsectSpeciesInfo species = speciesWithPlacedIn(null);
 
-        InsectSpecies updated = species.withPlacedIn(new Papilionidae());
+        InsectSpeciesInfo updated = species.withPlacedIn(new Papilionidae());
 
         assertThat(updated.placedIn()).isEqualTo(new Papilionidae());
         assertThat(species.placedIn()).isNull();
     }
 
-    private static InsectSpecies speciesWithPlacedIn(Clade placedIn) {
-        return new InsectSpecies(
+    private static InsectSpeciesInfo speciesWithPlacedIn(Clade placedIn) {
+        return new InsectSpeciesInfo(
                 InsectSpeciesName.of("battus-philenor"),
                 InsectGenusName.of("battus"),
                 TaxonomicSpecies.of("philenor"),
@@ -71,7 +71,7 @@ class InsectSpeciesTest {
 
     @Test
     void displayName_withGenusAndNoCommonName_fallsBackToTheBinomial() {
-        InsectGenus genus = new InsectGenus(InsectGenusName.of("battus"), InsectFamilyName.of("papilionidae"),
+        InsectGenusInfo genus = new InsectGenusInfo(InsectGenusName.of("battus"), InsectFamilyName.of("papilionidae"),
                 TaxonomicGenus.of("Battus"), displayNameDescription(), Set.of(), null);
 
         assertThat(speciesWith(Set.of()).displayName(genus)).isEqualTo("Battus philenor");
@@ -81,22 +81,22 @@ class InsectSpeciesTest {
 
     @Test
     void binomial_withoutGenus_isTheSlug() {
-        InsectSpecies species = speciesWith(Set.of());
+        InsectSpeciesInfo species = speciesWith(Set.of());
 
         assertThat(species.binomial(null)).isEqualTo("battus-philenor");
     }
 
     @Test
     void binomial_withGenus_joinsGenusAndEpithet() {
-        InsectSpecies species = speciesWith(Set.of());
-        InsectGenus genus = new InsectGenus(InsectGenusName.of("battus"), InsectFamilyName.of("papilionidae"),
+        InsectSpeciesInfo species = speciesWith(Set.of());
+        InsectGenusInfo genus = new InsectGenusInfo(InsectGenusName.of("battus"), InsectFamilyName.of("papilionidae"),
                 TaxonomicGenus.of("Battus"), displayNameDescription(), Set.of(), null);
 
         assertThat(species.binomial(genus)).isEqualTo("Battus philenor");
     }
 
-    private static InsectSpecies speciesWith(Set<CommonName> commonNames) {
-        return new InsectSpecies(InsectSpeciesName.of("battus-philenor"), InsectGenusName.of("battus"),
+    private static InsectSpeciesInfo speciesWith(Set<CommonName> commonNames) {
+        return new InsectSpeciesInfo(InsectSpeciesName.of("battus-philenor"), InsectGenusName.of("battus"),
                 TaxonomicSpecies.of("philenor"), displayNameDescription(), commonNames,
                 null, null, null, null, null, null, null, null, null);
     }

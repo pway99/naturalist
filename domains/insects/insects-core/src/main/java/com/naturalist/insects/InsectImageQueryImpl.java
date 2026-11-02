@@ -81,14 +81,14 @@ class InsectImageQueryImpl
 
         Set<InsectOrderName> orderRoots = ofType(rankNames, InsectOrderName.class);
         if (!orderRoots.isEmpty()) {
-            for (InsectFamily family : familyQuery.forOrderNames(orderRoots).stream().toList()) {
+            for (InsectFamilyInfo family : familyQuery.forOrderNames(orderRoots).stream().toList()) {
                 rootOf.putIfAbsent(family.name(), rootOf.get(family.orderName()));
             }
         }
 
         Set<InsectFamilyName> familyNames = ofType(rootOf.keySet(), InsectFamilyName.class);
         if (!familyNames.isEmpty()) {
-            for (InsectGenus genus : genusQuery.forFamilyNames(familyNames).stream().toList()) {
+            for (InsectGenusInfo genus : genusQuery.forFamilyNames(familyNames).stream().toList()) {
                 InsectRankName root = rootOf.get(genus.familyName());
                 if (root != null) {
                     rootOf.putIfAbsent(genus.name(), root);
@@ -98,7 +98,7 @@ class InsectImageQueryImpl
 
         Set<InsectGenusName> genusNames = ofType(rootOf.keySet(), InsectGenusName.class);
         if (!genusNames.isEmpty()) {
-            for (InsectSpecies species : speciesQuery.forGenusNames(genusNames).stream().toList()) {
+            for (InsectSpeciesInfo species : speciesQuery.forGenusNames(genusNames).stream().toList()) {
                 InsectRankName root = rootOf.get(species.genusName());
                 if (root != null) {
                     rootOf.putIfAbsent(species.name(), root);
@@ -146,28 +146,28 @@ class InsectImageQueryImpl
             case InsectSubspeciesName _ -> { /* no entity yet */ }
             case InsectGenusName genusName ->
                     speciesQuery.forGenusName(genusName).stream()
-                            .map(InsectSpecies::name)
+                            .map(InsectSpeciesInfo::name)
                             .forEach(ranks::add);
             case InsectFamilyName familyName -> {
                 Set<InsectGenusName> genusNames = genusQuery.forFamilyName(familyName).stream()
-                        .map(InsectGenus::name)
+                        .map(InsectGenusInfo::name)
                         .collect(Collectors.toSet());
                 ranks.addAll(genusNames);
                 speciesQuery.forGenusNames(genusNames).stream()
-                        .map(InsectSpecies::name)
+                        .map(InsectSpeciesInfo::name)
                         .forEach(ranks::add);
             }
             case InsectOrderName orderName -> {
                 Set<InsectFamilyName> familyNames = familyQuery.forOrderName(orderName).stream()
-                        .map(InsectFamily::name)
+                        .map(InsectFamilyInfo::name)
                         .collect(Collectors.toSet());
                 ranks.addAll(familyNames);
                 Set<InsectGenusName> genusNames = genusQuery.forFamilyNames(familyNames).stream()
-                        .map(InsectGenus::name)
+                        .map(InsectGenusInfo::name)
                         .collect(Collectors.toSet());
                 ranks.addAll(genusNames);
                 speciesQuery.forGenusNames(genusNames).stream()
-                        .map(InsectSpecies::name)
+                        .map(InsectSpeciesInfo::name)
                         .forEach(ranks::add);
             }
         }

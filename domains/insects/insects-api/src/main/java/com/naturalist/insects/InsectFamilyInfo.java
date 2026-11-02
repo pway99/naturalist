@@ -14,14 +14,14 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * A catalogued insect family — the rank between {@link InsectOrder} and
- * {@link com.naturalist.insects.InsectSpecies} in the Linnaean hierarchy.
+ * A catalogued insect family — the rank between {@link InsectOrderInfo} and
+ * {@link com.naturalist.insects.InsectSpeciesInfo} in the Linnaean hierarchy.
  * <p>
  * Family-rank records are first-class catalog citizens, not placeholders for
  * unfinished species identifications. A naturalist who recognises a tachinid
  * fly without resolving the genus has a permanent home for that observation
- * here. As identification firms, an {@code InsectGenus} record is added
- * alongside this family record, and eventually an {@code InsectSpecies} record
+ * here. As identification firms, an {@code InsectGenusInfo} record is added
+ * alongside this family record, and eventually an {@code InsectSpeciesInfo} record
  * alongside that — the family record is never replaced or migrated.
  * <p>
  * Each family carries the four-level Durrell {@link Description}, locale-tagged
@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  * records keyed by {@code (name, stageKind)}, queried via
  * {@link com.naturalist.insects.lifestage.InsectLifeStageQuery}.
  */
-public record InsectFamily(
+public record InsectFamilyInfo(
         InsectFamilyName name,
         InsectOrderName orderName,
         TaxonomicFamily family,
@@ -43,8 +43,8 @@ public record InsectFamily(
         @Nullable Clade placedIn
 ) implements NamedEntity<InsectFamilyName>, LinnaeanFamily<InsectOrderName> {
 
-    public InsectFamily withPlacedIn(@Nullable Clade value) {
-        return new InsectFamily(name, orderName, family, description, commonNames,
+    public InsectFamilyInfo withPlacedIn(@Nullable Clade value) {
+        return new InsectFamilyInfo(name, orderName, family, description, commonNames,
                 value);
     }
 

@@ -1,17 +1,17 @@
-@import com.naturalist.insects.InsectFamily
-@import com.naturalist.insects.InsectGenus
-@import com.naturalist.insects.InsectOrder
-@import com.naturalist.insects.InsectSpecies
+@import com.naturalist.insects.InsectFamilyInfo
+@import com.naturalist.insects.InsectGenusInfo
+@import com.naturalist.insects.InsectOrderInfo
+@import com.naturalist.insects.InsectSpeciesInfo
 @import com.naturalist.insects.AncestorIntro
 @import com.naturalist.insects.BreadcrumbSegment
 @import com.naturalist.insects.CladeTrail
 @import com.naturalist.insects.lifestage.LifeStage
 @import java.util.List
 
-@param InsectSpecies species
-@param InsectGenus genus = null
-@param InsectFamily family
-@param InsectOrder order
+@param InsectSpeciesInfo species
+@param InsectGenusInfo genus = null
+@param InsectFamilyInfo family
+@param InsectOrderInfo order
 @param List<LifeStage> stages
 @param List<BreadcrumbSegment> breadcrumb = List.of()
 @param CladeTrail cladeTrail = null

@@ -5,30 +5,30 @@ import com.naturalist.RandomValue;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.Papilionidae;
 import com.naturalist.fieldnotes.Description;
-import com.naturalist.taxonomy.TaxonomicGenus;
+import com.naturalist.taxonomy.TaxonomicFamily;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InsectGenusTest {
+class InsectFamilyInfoTest {
 
     @Test
     void withPlacedInReturnsNewInstanceWithUpdatedClade() {
-        InsectGenus genus = genusWithPlacedIn(null);
+        InsectFamilyInfo family = familyWithPlacedIn(null);
 
-        InsectGenus updated = genus.withPlacedIn(new Papilionidae());
+        InsectFamilyInfo updated = family.withPlacedIn(new Papilionidae());
 
         assertThat(updated.placedIn()).isEqualTo(new Papilionidae());
-        assertThat(genus.placedIn()).isNull();
+        assertThat(family.placedIn()).isNull();
     }
 
-    private static InsectGenus genusWithPlacedIn(Clade placedIn) {
-        return new InsectGenus(
-                InsectGenusName.of("battus"),
+    private static InsectFamilyInfo familyWithPlacedIn(Clade placedIn) {
+        return new InsectFamilyInfo(
                 InsectFamilyName.of("papilionidae"),
-                TaxonomicGenus.of("Battus"),
+                InsectOrderName.of("lepidoptera"),
+                TaxonomicFamily.of("Papilionidae"),
                 description(),
                 Set.of(),
                 placedIn);
@@ -42,16 +42,16 @@ class InsectGenusTest {
 
     @Test
     void displayName_prefersAlphabeticallyFirstCommonName() {
-        var rank = genusWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
+        var rank = familyWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
 
         assertThat(rank.displayName()).isEqualTo("Pipevine Swallowtail");
     }
 
     @Test
     void displayName_fallsBackToScientificName() {
-        var rank = genusWith(Set.of());
+        var rank = familyWith(Set.of());
 
-        assertThat(rank.displayName()).isEqualTo("Battus");
+        assertThat(rank.displayName()).isEqualTo("Papilionidae");
     }
 
     private static Description displayNameDescription() {
@@ -60,8 +60,8 @@ class InsectGenusTest {
                 RandomValue.string(), RandomValue.string());
     }
 
-    private static InsectGenus genusWith(Set<CommonName> commonNames) {
-        return new InsectGenus(InsectGenusName.of("battus"), InsectFamilyName.of("papilionidae"),
-                TaxonomicGenus.of("Battus"), displayNameDescription(), commonNames, null);
+    private static InsectFamilyInfo familyWith(Set<CommonName> commonNames) {
+        return new InsectFamilyInfo(InsectFamilyName.of("papilionidae"), InsectOrderName.of("lepidoptera"),
+                TaxonomicFamily.of("Papilionidae"), displayNameDescription(), commonNames, null);
     }
 }

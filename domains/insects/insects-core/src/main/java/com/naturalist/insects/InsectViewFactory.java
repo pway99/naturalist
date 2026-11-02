@@ -63,8 +63,8 @@ class InsectViewFactory {
 
     Page<InsectViews.SpeciesCard> speciesCards(PageRequest request, @Nullable NaturalistName viewer) {
         observer.arguments("speciesCards", i -> i.valueObject(request, "request").whenNotNull(viewer, v -> v.entityName(viewer, "viewer"))).throwWhenInvalid();
-        Page<InsectSpecies> page = insectQuery.species().findPage(request);
-        Set<InsectSpeciesName> names = page.content().stream().map(InsectSpecies::name).collect(Collectors.toSet());
+        Page<InsectSpeciesInfo> page = insectQuery.species().findPage(request);
+        Set<InsectSpeciesName> names = page.content().stream().map(InsectSpeciesInfo::name).collect(Collectors.toSet());
         Set<InsectSpeciesName> collected = viewer == null || names.isEmpty() ? Set.of() : collectedAmong(viewer, names);
         return new Page<>(cards(page.content(), collected), page.pageNumber(), page.pageSize(),
                 page.pagesAheadKnown(), page.moreBeyondLookahead());
@@ -77,19 +77,19 @@ class InsectViewFactory {
                 .filter(InsectSpeciesName.class::isInstance)
                 .map(InsectSpeciesName.class::cast)
                 .collect(Collectors.toSet());
-        List<InsectSpecies> sorted = insectQuery.species().findByNameSet(observed).stream()
-                .sorted(Comparator.comparing((InsectSpecies s) -> s.name().value()))
+        List<InsectSpeciesInfo> sorted = insectQuery.species().findByNameSet(observed).stream()
+                .sorted(Comparator.comparing((InsectSpeciesInfo s) -> s.name().value()))
                 .toList();
         int pageSize = request.pageSize();
         // long math: a huge ?page= must clamp to an empty page, not overflow the int offset.
         int from = (int) Math.min((long) request.pageNumber() * pageSize, sorted.size());
         int to = Math.min(from + pageSize, sorted.size());
-        List<InsectSpecies> slice = sorted.subList(from, to);
+        List<InsectSpeciesInfo> slice = sorted.subList(from, to);
         int remaining = sorted.size() - to;
         int lookahead = request.lookahead();
         int pagesAheadKnown = lookahead == 0 ? 0 : Math.min(lookahead, (remaining + pageSize - 1) / pageSize);
         boolean moreBeyondLookahead = remaining > lookahead * pageSize;
-        Set<InsectSpeciesName> sliceNames = slice.stream().map(InsectSpecies::name).collect(Collectors.toSet());
+        Set<InsectSpeciesName> sliceNames = slice.stream().map(InsectSpeciesInfo::name).collect(Collectors.toSet());
         return new Page<>(cards(slice, sliceNames), request.pageNumber(), pageSize, pagesAheadKnown, moreBeyondLookahead);
     }
 
@@ -103,26 +103,26 @@ class InsectViewFactory {
     }
 
     /** One batched read per card part for the whole list, then in-memory assembly in list order. */
-    private List<InsectViews.SpeciesCard> cards(List<InsectSpecies> species, Set<InsectSpeciesName> collected) {
+    private List<InsectViews.SpeciesCard> cards(List<InsectSpeciesInfo> species, Set<InsectSpeciesName> collected) {
         if (species.isEmpty()) {
             return List.of();
         }
-        Set<InsectSpeciesName> speciesNames = species.stream().map(InsectSpecies::name).collect(Collectors.toSet());
+        Set<InsectSpeciesName> speciesNames = species.stream().map(InsectSpeciesInfo::name).collect(Collectors.toSet());
         Set<InsectRankName> rankNames = new java.util.HashSet<>(speciesNames);
-        Set<InsectGenusName> genusNames = species.stream().map(InsectSpecies::genusName).collect(Collectors.toSet());
+        Set<InsectGenusName> genusNames = species.stream().map(InsectSpeciesInfo::genusName).collect(Collectors.toSet());
         Map<InsectRankName, List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesByName =
                 insectQuery.images().forParentNames(rankNames).stream().collect(Collectors.groupingBy(OrganismImage::parentName));
         Map<InsectRankName, InsectFunctionalRole> roleByName = insectQuery.functionalRoles().getByParentNames(rankNames).stream()
                 .collect(Collectors.toMap(InsectFunctionalRole::parentName, Function.identity(),
                         (a, b) -> a)); // one role per parent is the invariant; a duplicate cannot occur, keep the first
-        Map<InsectGenusName, InsectGenus> genusByName = insectQuery.genera().findByNameSet(genusNames).stream()
-                .collect(Collectors.toMap(InsectGenus::name, Function.identity()));
-        Set<InsectFamilyName> familyNames = genusByName.values().stream().map(InsectGenus::familyName).collect(Collectors.toSet());
-        Map<InsectFamilyName, InsectFamily> familyByName = insectQuery.families().findByNameSet(familyNames).stream()
-                .collect(Collectors.toMap(InsectFamily::name, Function.identity()));
+        Map<InsectGenusName, InsectGenusInfo> genusByName = insectQuery.genera().findByNameSet(genusNames).stream()
+                .collect(Collectors.toMap(InsectGenusInfo::name, Function.identity()));
+        Set<InsectFamilyName> familyNames = genusByName.values().stream().map(InsectGenusInfo::familyName).collect(Collectors.toSet());
+        Map<InsectFamilyName, InsectFamilyInfo> familyByName = insectQuery.families().findByNameSet(familyNames).stream()
+                .collect(Collectors.toMap(InsectFamilyInfo::name, Function.identity()));
         return species.stream().map(s -> {
-            InsectGenus genus = genusByName.get(s.genusName());
-            InsectFamily family = genus == null ? null : familyByName.get(genus.familyName());
+            InsectGenusInfo genus = genusByName.get(s.genusName());
+            InsectFamilyInfo family = genus == null ? null : familyByName.get(genus.familyName());
             return new InsectViews.SpeciesCard(s, genus, family, roleByName.get(s.name()),
                     InsectEntityCollections.ImageCollection.of(imagesByName.getOrDefault(s.name(), List.of())),
                     collected.contains(s.name()));
@@ -131,31 +131,31 @@ class InsectViewFactory {
 
     Page<InsectViews.RankCard> orderCards(PageRequest request) {
         observer.arguments("orderCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
-        Page<InsectOrder> page = insectQuery.orders().findPage(request);
-        return rankCards(page, o -> o.name(), InsectOrder::displayName,
+        Page<InsectOrderInfo> page = insectQuery.orders().findPage(request);
+        return rankCards(page, o -> o.name(), InsectOrderInfo::displayName,
                 o -> o.order().value(), o -> null, Map.of());
     }
 
     Page<InsectViews.RankCard> familyCards(PageRequest request) {
         observer.arguments("familyCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
-        Page<InsectFamily> page = insectQuery.families().findPage(request);
-        Set<InsectOrderName> orderNames = page.content().stream().map(InsectFamily::orderName).collect(Collectors.toSet());
+        Page<InsectFamilyInfo> page = insectQuery.families().findPage(request);
+        Set<InsectOrderName> orderNames = page.content().stream().map(InsectFamilyInfo::orderName).collect(Collectors.toSet());
         Map<InsectRankName, String> labels = page.content().isEmpty() ? Map.of()
                 : insectQuery.orders().findByNameSet(orderNames).stream()
-                .collect(Collectors.toMap(InsectOrder::name, o -> o.order().value()));
-        return rankCards(page, f -> f.name(), InsectFamily::displayName,
-                f -> f.family().value(), InsectFamily::orderName, labels);
+                .collect(Collectors.toMap(InsectOrderInfo::name, o -> o.order().value()));
+        return rankCards(page, f -> f.name(), InsectFamilyInfo::displayName,
+                f -> f.family().value(), InsectFamilyInfo::orderName, labels);
     }
 
     Page<InsectViews.RankCard> genusCards(PageRequest request) {
         observer.arguments("genusCards", i -> i.valueObject(request, "request")).throwWhenInvalid();
-        Page<InsectGenus> page = insectQuery.genera().findPage(request);
-        Set<InsectFamilyName> familyNames = page.content().stream().map(InsectGenus::familyName).collect(Collectors.toSet());
+        Page<InsectGenusInfo> page = insectQuery.genera().findPage(request);
+        Set<InsectFamilyName> familyNames = page.content().stream().map(InsectGenusInfo::familyName).collect(Collectors.toSet());
         Map<InsectRankName, String> labels = page.content().isEmpty() ? Map.of()
                 : insectQuery.families().findByNameSet(familyNames).stream()
-                .collect(Collectors.toMap(InsectFamily::name, f -> f.family().value()));
-        return rankCards(page, g -> g.name(), InsectGenus::displayName,
-                g -> g.genus().value(), InsectGenus::familyName, labels);
+                .collect(Collectors.toMap(InsectFamilyInfo::name, f -> f.family().value()));
+        return rankCards(page, g -> g.name(), InsectGenusInfo::displayName,
+                g -> g.genus().value(), InsectGenusInfo::familyName, labels);
     }
 
     /** One batched subtree-gallery read for the page's roots, then in-memory assembly in page order. */

@@ -66,15 +66,15 @@ public sealed interface InsectTaxonView extends ReadModel {
      * the species's {@link InsectSpeciesName}.
      */
     record SpeciesView(
-            InsectSpecies species,
+            InsectSpeciesInfo species,
             ImageCollection images
     ) implements InsectTaxonView {
 
-        public static SpeciesView of(InsectSpecies species, ImageCollection images) {
+        public static SpeciesView of(InsectSpeciesInfo species, ImageCollection images) {
             return new SpeciesView(species, images);
         }
 
-        public static SpeciesView of(InsectSpecies species) {
+        public static SpeciesView of(InsectSpeciesInfo species) {
             return new SpeciesView(species, ImageCollection.empty());
         }
 
@@ -112,15 +112,15 @@ public sealed interface InsectTaxonView extends ReadModel {
      * photographic field record. Root identity is the genus's {@link InsectGenusName}.
      */
     record GenusView(
-            InsectGenus genus,
+            InsectGenusInfo genus,
             ImageCollection images
     ) implements InsectTaxonView {
 
-        public static GenusView of(InsectGenus genus, ImageCollection images) {
+        public static GenusView of(InsectGenusInfo genus, ImageCollection images) {
             return new GenusView(genus, images);
         }
 
-        public static GenusView of(InsectGenus genus) {
+        public static GenusView of(InsectGenusInfo genus) {
             return new GenusView(genus, ImageCollection.empty());
         }
 
@@ -160,15 +160,15 @@ public sealed interface InsectTaxonView extends ReadModel {
      * record. Root identity is the family's {@link InsectFamilyName}.
      */
     record FamilyView(
-            InsectFamily family,
+            InsectFamilyInfo family,
             ImageCollection images
     ) implements InsectTaxonView {
 
-        public static FamilyView of(InsectFamily family, ImageCollection images) {
+        public static FamilyView of(InsectFamilyInfo family, ImageCollection images) {
             return new FamilyView(family, images);
         }
 
-        public static FamilyView of(InsectFamily family) {
+        public static FamilyView of(InsectFamilyInfo family) {
             return new FamilyView(family, ImageCollection.empty());
         }
 
@@ -208,15 +208,15 @@ public sealed interface InsectTaxonView extends ReadModel {
      * order's {@link InsectOrderName}.
      */
     record OrderView(
-            InsectOrder order,
+            InsectOrderInfo order,
             ImageCollection images
     ) implements InsectTaxonView {
 
-        public static OrderView of(InsectOrder order, ImageCollection images) {
+        public static OrderView of(InsectOrderInfo order, ImageCollection images) {
             return new OrderView(order, images);
         }
 
-        public static OrderView of(InsectOrder order) {
+        public static OrderView of(InsectOrderInfo order) {
             return new OrderView(order, ImageCollection.empty());
         }
 

@@ -14,8 +14,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Parent row of the {@link InsectGenus} rank record. The upward reference to the parent
- * {@link InsectFamily} is stored as {@code family_id} (FK-enforced); the DBO carries the family's
+ * Parent row of the {@link InsectGenusInfo} rank record. The upward reference to the parent
+ * {@link InsectFamilyInfo} is stored as {@code family_id} (FK-enforced); the DBO carries the family's
  * {@code name} in {@link #familyName} for the mapper's JOIN projection (read) and nested-select
  * (write). Unlike the plant genus, the insect genus carries no redundant {@code taxonomic_family}
  * epithet — only its own {@link TaxonomicGenus} in the {@code taxonomic_genus} column; the order is
@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  */
 @DboSchema(table = "insect_genus", primaryKey = "id", unique = {"name"},
            foreignKeys = @Fk(columns = "family_id", references = "insect_family(id)"),
-           entity = InsectGenus.class)
+           entity = InsectGenusInfo.class)
 final class InsectGenusDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;
@@ -39,7 +39,7 @@ final class InsectGenusDbo implements Dbo {
     String descriptionSecondary;
     String descriptionUniversity;
 
-    static InsectGenusDbo from(InsectGenus g) {
+    static InsectGenusDbo from(InsectGenusInfo g) {
         InsectGenusDbo d = new InsectGenusDbo();
         d.name = g.name().value();
         d.familyName = g.familyName().value();
@@ -56,8 +56,8 @@ final class InsectGenusDbo implements Dbo {
         return d;
     }
 
-    InsectGenus toEntity(Set<CommonName> commonNames) {
-        return new InsectGenus(
+    InsectGenusInfo toEntity(Set<CommonName> commonNames) {
+        return new InsectGenusInfo(
                 InsectGenusName.of(name),
                 InsectFamilyName.of(familyName),
                 TaxonomicGenus.of(taxonomicGenus),

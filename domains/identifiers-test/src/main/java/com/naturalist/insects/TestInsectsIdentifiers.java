@@ -26,7 +26,7 @@ public class TestInsectsIdentifiers {
         }
 
         /**
-         * Fictitious identifier for the {@link com.naturalist.insects.InsectOrder}
+         * Fictitious identifier for the {@link com.naturalist.insects.InsectOrderInfo}
          * scope — guaranteed absent from any catalog.
          */
         public static class NotFound {
@@ -52,7 +52,7 @@ public class TestInsectsIdentifiers {
         }
 
         /**
-         * Fictitious identifier for the {@link com.naturalist.insects.InsectFamily}
+         * Fictitious identifier for the {@link com.naturalist.insects.InsectFamilyInfo}
          * scope — guaranteed absent from any catalog.
          */
         public static class NotFound {
@@ -171,7 +171,7 @@ public class TestInsectsIdentifiers {
         }
 
         /**
-         * Fictitious identifier for the {@link com.naturalist.insects.InsectGenus}
+         * Fictitious identifier for the {@link com.naturalist.insects.InsectGenusInfo}
          * scope — guaranteed absent from any catalog.
          */
         public static class NotFound {

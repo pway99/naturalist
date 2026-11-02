@@ -6,7 +6,7 @@ import com.naturalist.data.NaturalistDatabase;
 
 @MockDomainService
 class InsectOrderRepositoryMock
-        extends AbstractTestEntityRepository<InsectOrderName, InsectOrder, InsectOrderTestEntitySource>
+        extends AbstractTestEntityRepository<InsectOrderName, InsectOrderInfo, InsectOrderTestEntitySource>
         implements InsectRepository.OrderRepository {
 
     InsectOrderRepositoryMock(NaturalistDatabase naturalistDatabase) {

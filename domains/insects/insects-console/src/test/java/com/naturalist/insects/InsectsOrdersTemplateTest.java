@@ -22,7 +22,7 @@ class InsectsOrdersTemplateTest {
 
     @Test
     void orders_rendersWithoutError() {
-        Page<InsectOrder> orderPage = nte.getNamed(InsectOrderTestEntitySource.class)
+        Page<InsectOrderInfo> orderPage = nte.getNamed(InsectOrderTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         List<InsectViews.RankCard> cards = orderPage.content().stream()
                 .map(o -> new InsectViews.RankCard(o.name(), o.displayName(), o.order().value(), null, null,
@@ -41,7 +41,7 @@ class InsectsOrdersTemplateTest {
 
     @Test
     void order_rendersWithoutError() {
-        InsectOrder anyOrder = nte.getNamed(InsectOrderTestEntitySource.class).entityStream()
+        InsectOrderInfo anyOrder = nte.getNamed(InsectOrderTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
         StringOutput output = new StringOutput();
 
@@ -60,9 +60,9 @@ class InsectsOrdersTemplateTest {
 
     @Test
     void order_rendersChildFamilyCardFromPermit() {
-        InsectFamily anyFamily = nte.getNamed(InsectFamilyTestEntitySource.class).entityStream()
+        InsectFamilyInfo anyFamily = nte.getNamed(InsectFamilyTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
-        InsectOrder order = nte.getNamed(InsectOrderTestEntitySource.class)
+        InsectOrderInfo order = nte.getNamed(InsectOrderTestEntitySource.class)
                 .getByName(anyFamily.orderName()).orElseThrow();
         InsectTaxonView familyChild = InsectTaxonView.FamilyView.of(
                 anyFamily,
@@ -84,7 +84,7 @@ class InsectsOrdersTemplateTest {
         assertThat(output.toString()).contains("/insects/families/" + anyFamily.name().value());
     }
 
-    private static InsectViews.RankPage orderPage(InsectOrder order, List<InsectTaxonView> children) {
+    private static InsectViews.RankPage orderPage(InsectOrderInfo order, List<InsectTaxonView> children) {
         return InsectViews.RankPage.anonymous(Insect.empty()
                 .withOrder(InsectTaxonView.OrderView.of(order))
                 .withChildren(children));

@@ -29,20 +29,20 @@ class InsectsListTemplateTest {
 
     @Test
     void list_rendersWithoutError() {
-        Page<InsectSpecies> speciesPage = nte.getNamed(InsectSpeciesTestEntitySource.class)
+        Page<InsectSpeciesInfo> speciesPage = nte.getNamed(InsectSpeciesTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         Map<InsectSpeciesName, List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>>> imagesBySpecies =
                 nte.getNamed(InsectImageTestEntitySource.class).entityStream()
                         .filter(image -> image.parentName() instanceof InsectSpeciesName)
                         .collect(Collectors.groupingBy(image -> (InsectSpeciesName) image.parentName()));
-        Map<InsectGenusName, InsectGenus> genusByName = nte.getNamed(InsectGenusTestEntitySource.class)
-                .entityStream().collect(Collectors.toMap(InsectGenus::name, g -> g));
-        Map<InsectFamilyName, InsectFamily> familyByName = nte.getNamed(InsectFamilyTestEntitySource.class)
-                .entityStream().collect(Collectors.toMap(InsectFamily::name, f -> f));
+        Map<InsectGenusName, InsectGenusInfo> genusByName = nte.getNamed(InsectGenusTestEntitySource.class)
+                .entityStream().collect(Collectors.toMap(InsectGenusInfo::name, g -> g));
+        Map<InsectFamilyName, InsectFamilyInfo> familyByName = nte.getNamed(InsectFamilyTestEntitySource.class)
+                .entityStream().collect(Collectors.toMap(InsectFamilyInfo::name, f -> f));
         List<InsectViews.SpeciesCard> cards = speciesPage.content().stream()
                 .map(s -> {
-                    InsectGenus genus = genusByName.get(s.genusName());
-                    InsectFamily family = genus == null ? null : familyByName.get(genus.familyName());
+                    InsectGenusInfo genus = genusByName.get(s.genusName());
+                    InsectFamilyInfo family = genus == null ? null : familyByName.get(genus.familyName());
                     return new InsectViews.SpeciesCard(s, genus, family, null,
                             InsectEntityCollections.ImageCollection.of(
                                     imagesBySpecies.getOrDefault(s.name(), List.of())),

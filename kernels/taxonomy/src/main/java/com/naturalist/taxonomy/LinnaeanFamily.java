@@ -10,7 +10,7 @@ import com.naturalist.ddd.EntityName;
  * level. The family slug is derived mechanically from the epithet.
  *
  * <p>Implemented by per-domain family entities (e.g.
- * {@code com.naturalist.insects.InsectFamily}). The implementing entity
+ * {@code com.naturalist.insects.InsectFamilyInfo}). The implementing entity
  * supplies its own typed name via its {@code NamedEntity<FAMILY_NAME>}
  * binding; this interface is concerned only with the rank-level contract.
  *

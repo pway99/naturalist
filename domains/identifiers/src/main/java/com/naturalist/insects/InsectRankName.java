@@ -41,7 +41,7 @@ import com.naturalist.taxonomy.RankName;
  * On read the concrete permit is rebuilt by the domain's {@code RankNameReconstructor}
  * ({@code InsectRankName::of}) registered on the mapper. Domain-local consumers that
  * still declare field-level {@code @JsonSubTypes} dispatch remain valid; direct uses of
- * the leaf classes (e.g. {@code InsectSpecies.name} typed {@code InsectSpeciesName})
+ * the leaf classes (e.g. {@code InsectSpeciesInfo.name} typed {@code InsectSpeciesName})
  * serialize as plain strings via the {@link com.naturalist.ddd.EntityName}
  * {@code @JsonValue} on {@code value()}.
  */

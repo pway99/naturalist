@@ -29,7 +29,7 @@ public class Constraints {
      * reference is descended into and its own {@code invariants()} are walked
      * by the graph walker. Use for {@code @Nullable NamedEntity} record
      * components — most commonly nullable child entities on an aggregate
-     * (e.g. {@code @Nullable EggStage egg} on {@code InsectFamily}).
+     * (e.g. {@code @Nullable EggStage egg} on {@code InsectFamilyInfo}).
      */
     public <E extends Named<?>> Constraints namedEntityOrNull(E entity, String name) {
         return namedEntityOrNull(entity, Function.identity(), name);

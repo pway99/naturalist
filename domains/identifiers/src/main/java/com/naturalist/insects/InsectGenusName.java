@@ -5,11 +5,11 @@ import com.naturalist.ddd.EntityName;
 import com.naturalist.taxonomy.LinealRank;
 
 /**
- * Strongly typed natural key for {@code InsectGenus} entities.
+ * Strongly typed natural key for {@code InsectGenusInfo} entities.
  * <p>
  * The slug is the lowercase kebab form of the Linnaean genus epithet —
  * {@code "halictus"}, {@code "chrysoperla"}, {@code "battus"}. Cross-domain
- * references (e.g. an {@code InsectSpecies}'s upward parent reference) carry
+ * references (e.g. an {@code InsectSpeciesInfo}'s upward parent reference) carry
  * {@code InsectGenusName} rather than importing {@code insects-api},
  * preserving DAG integrity.
  */

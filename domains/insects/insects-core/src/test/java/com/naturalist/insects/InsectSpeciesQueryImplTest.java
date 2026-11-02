@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InsectSpeciesQueryImplTest
-        implements EntityQueryContractTest<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
+        implements EntityQueryContractTest<InsectSpeciesName, InsectSpeciesInfo, SpeciesCollection> {
 
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
@@ -26,7 +26,7 @@ class InsectSpeciesQueryImplTest
     InsectQuery.SpeciesQuery query = new InsectSpeciesQueryImpl(repository, genusQuery);
 
     @Override
-    public EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> query() {
+    public EntityQuery<InsectSpeciesName, InsectSpeciesInfo, SpeciesCollection> query() {
         return query;
     }
 

@@ -6,7 +6,7 @@ import com.naturalist.data.TestEntitySource;
 
 import java.util.List;
 
-public class InsectSpeciesTestEntitySource extends TestEntitySource<InsectSpeciesName, InsectSpecies> {
+public class InsectSpeciesTestEntitySource extends TestEntitySource<InsectSpeciesName, InsectSpeciesInfo> {
 
     public InsectSpeciesTestEntitySource(NaturalistDatabase database) {
         super(database);
@@ -14,10 +14,10 @@ public class InsectSpeciesTestEntitySource extends TestEntitySource<InsectSpecie
     }
 
     @Override
-    protected List<ForeignKeyConstraint<InsectSpecies, ?>> foreignKeyConstraints() {
+    protected List<ForeignKeyConstraint<InsectSpeciesInfo, ?>> foreignKeyConstraints() {
         return List.of(ForeignKeyConstraint.of(
                 "genusName",
-                InsectSpecies::genusName,
+                InsectSpeciesInfo::genusName,
                 InsectGenusTestEntitySource.class));
     }
 }

@@ -3,7 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.data.TestEntitySource;
 
-public class InsectOrderTestEntitySource extends TestEntitySource<InsectOrderName, InsectOrder> {
+public class InsectOrderTestEntitySource extends TestEntitySource<InsectOrderName, InsectOrderInfo> {
 
     public InsectOrderTestEntitySource(NaturalistDatabase database) {
         super(database);

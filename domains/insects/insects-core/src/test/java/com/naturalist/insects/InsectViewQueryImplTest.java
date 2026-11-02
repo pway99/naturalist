@@ -184,14 +184,14 @@ class InsectViewQueryImplTest {
     void familyCards_carryOrderLabelAndSubtreeImages() {
         Page<InsectViews.RankCard> page = views.familyCards(PageRequest.first(100));
         assertThat(page.content()).isNotEmpty();
-        Map<InsectFamilyName, InsectFamily> families = context.insectQuery().families()
+        Map<InsectFamilyName, InsectFamilyInfo> families = context.insectQuery().families()
                 .findByNameSet(page.content().stream().map(c -> (InsectFamilyName) c.name()).collect(Collectors.toSet()))
-                .stream().collect(Collectors.toMap(InsectFamily::name, Function.identity()));
-        Map<InsectOrderName, InsectOrder> orders = context.insectQuery().orders()
-                .findByNameSet(families.values().stream().map(InsectFamily::orderName).collect(Collectors.toSet()))
-                .stream().collect(Collectors.toMap(InsectOrder::name, Function.identity()));
+                .stream().collect(Collectors.toMap(InsectFamilyInfo::name, Function.identity()));
+        Map<InsectOrderName, InsectOrderInfo> orders = context.insectQuery().orders()
+                .findByNameSet(families.values().stream().map(InsectFamilyInfo::orderName).collect(Collectors.toSet()))
+                .stream().collect(Collectors.toMap(InsectOrderInfo::name, Function.identity()));
         for (InsectViews.RankCard card : page.content()) {
-            InsectFamily family = families.get((InsectFamilyName) card.name());
+            InsectFamilyInfo family = families.get((InsectFamilyName) card.name());
             assertThat(card.displayName()).isEqualTo(family.displayName());
             assertThat(card.scientificName()).isEqualTo(family.family().value());
             assertThat(card.parentName()).isEqualTo(family.orderName());
@@ -209,14 +209,14 @@ class InsectViewQueryImplTest {
     void genusCards_carryFamilyLabel() {
         Page<InsectViews.RankCard> page = views.genusCards(PageRequest.first(100));
         assertThat(page.content()).isNotEmpty();
-        Map<InsectGenusName, InsectGenus> genera = context.insectQuery().genera()
+        Map<InsectGenusName, InsectGenusInfo> genera = context.insectQuery().genera()
                 .findByNameSet(page.content().stream().map(c -> (InsectGenusName) c.name()).collect(Collectors.toSet()))
-                .stream().collect(Collectors.toMap(InsectGenus::name, Function.identity()));
-        Map<InsectFamilyName, InsectFamily> families = context.insectQuery().families()
-                .findByNameSet(genera.values().stream().map(InsectGenus::familyName).collect(Collectors.toSet()))
-                .stream().collect(Collectors.toMap(InsectFamily::name, Function.identity()));
+                .stream().collect(Collectors.toMap(InsectGenusInfo::name, Function.identity()));
+        Map<InsectFamilyName, InsectFamilyInfo> families = context.insectQuery().families()
+                .findByNameSet(genera.values().stream().map(InsectGenusInfo::familyName).collect(Collectors.toSet()))
+                .stream().collect(Collectors.toMap(InsectFamilyInfo::name, Function.identity()));
         for (InsectViews.RankCard card : page.content()) {
-            InsectGenus genus = genera.get((InsectGenusName) card.name());
+            InsectGenusInfo genus = genera.get((InsectGenusName) card.name());
             assertThat(card.displayName()).isEqualTo(genus.displayName());
             assertThat(card.scientificName()).isEqualTo(genus.genus().value());
             assertThat(card.parentName()).isEqualTo(genus.familyName());
@@ -228,11 +228,11 @@ class InsectViewQueryImplTest {
     void orderCards_haveNoParent() {
         Page<InsectViews.RankCard> page = views.orderCards(PageRequest.first(100));
         assertThat(page.content()).isNotEmpty();
-        Map<InsectOrderName, InsectOrder> orders = context.insectQuery().orders()
+        Map<InsectOrderName, InsectOrderInfo> orders = context.insectQuery().orders()
                 .findByNameSet(page.content().stream().map(c -> (InsectOrderName) c.name()).collect(Collectors.toSet()))
-                .stream().collect(Collectors.toMap(InsectOrder::name, Function.identity()));
+                .stream().collect(Collectors.toMap(InsectOrderInfo::name, Function.identity()));
         for (InsectViews.RankCard card : page.content()) {
-            InsectOrder order = orders.get((InsectOrderName) card.name());
+            InsectOrderInfo order = orders.get((InsectOrderName) card.name());
             assertThat(card.displayName()).isEqualTo(order.displayName());
             assertThat(card.scientificName()).isEqualTo(order.order().value());
             assertThat(card.parentName()).isNull();

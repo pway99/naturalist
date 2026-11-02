@@ -19,16 +19,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Behavioral contract for {@link InsectRepository.SpeciesRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
- * Supplies InsectSpecies-specific identity constants and entity construction.
+ * Supplies InsectSpeciesInfo-specific identity constants and entity construction.
  */
 interface InsectSpeciesRepositoryTest
-        extends EntityRepositoryTest<InsectSpeciesName, InsectSpecies> {
+        extends EntityRepositoryTest<InsectSpeciesName, InsectSpeciesInfo> {
 
     @Override
     InsectRepository.SpeciesRepository repository();
 
     @Override
-    default TestEntitySource<InsectSpeciesName, InsectSpecies> source() {
+    default TestEntitySource<InsectSpeciesName, InsectSpeciesInfo> source() {
         return db.getNamed(InsectSpeciesTestEntitySource.class);
     }
 
@@ -45,8 +45,8 @@ interface InsectSpeciesRepositoryTest
     }
 
     @Override
-    default InsectSpecies newEntity() {
-        return new InsectSpecies(
+    default InsectSpeciesInfo newEntity() {
+        return new InsectSpeciesInfo(
                 InsectSpeciesName.of("test-species-xx"),
                 InsectGenusName.of("empoasca"),
                 TaxonomicSpecies.of("nemoralis"),
@@ -59,8 +59,8 @@ interface InsectSpeciesRepositoryTest
     }
 
     @Override
-    default InsectSpecies ghostEntity() {
-        return new InsectSpecies(
+    default InsectSpeciesInfo ghostEntity() {
+        return new InsectSpeciesInfo(
                 InsectSpeciesName.of("test-ghost-xx"),
                 InsectGenusName.of("empoasca"),
                 TaxonomicSpecies.of("ghost"),
@@ -73,8 +73,8 @@ interface InsectSpeciesRepositoryTest
     }
 
     @Override
-    default InsectSpecies modifiedEntity(InsectSpecies original) {
-        return new InsectSpecies(
+    default InsectSpeciesInfo modifiedEntity(InsectSpeciesInfo original) {
+        return new InsectSpeciesInfo(
                 original.name(),
                 InsectGenusName.of("empoasca"),
                 TaxonomicSpecies.of("nemoralis"),
@@ -83,16 +83,16 @@ interface InsectSpeciesRepositoryTest
                 RandomValue.string(),
                 null,
                 null,
-                new InsectSpecies.Voltinism(
-                        InsectSpecies.Voltinism.VoltinismPattern.UNIVOLTINE,
+                new InsectSpeciesInfo.Voltinism(
+                        InsectSpeciesInfo.Voltinism.VoltinismPattern.UNIVOLTINE,
                         RandomValue.string()),
                 null,
                 null,
-                new InsectSpecies.GardenConnections(
+                new InsectSpeciesInfo.GardenConnections(
                         List.of(RandomValue.string()),
                         RandomValue.string(),
                         RandomValue.string()),
-                new InsectSpecies.BeneficialProfile(
+                new InsectSpeciesInfo.BeneficialProfile(
                         RandomValue.string(),
                         RandomValue.string(),
                         RandomValue.string()),
@@ -115,8 +115,8 @@ interface InsectSpeciesRepositoryTest
     @Test
     default void getByGenusName_returnsSpeciesWithMatchingGenusName() {
         InsectGenusName halictus = TestInsectsIdentifiers.InsectGenus.Halictus.name;
-        InsectSpecies seeded = newEntity();
-        InsectSpecies underHalictus = new InsectSpecies(
+        InsectSpeciesInfo seeded = newEntity();
+        InsectSpeciesInfo underHalictus = new InsectSpeciesInfo(
                 seeded.name(),
                 halictus,
                 seeded.epithet(),
@@ -129,7 +129,7 @@ interface InsectSpeciesRepositoryTest
         var results = repository().getByGenusName(halictus);
 
         assertThat(results)
-                .extracting(InsectSpecies::name)
+                .extracting(InsectSpeciesInfo::name)
                 .extracting(InsectSpeciesName::value)
                 .contains(seeded.name().value());
     }
@@ -156,7 +156,7 @@ interface InsectSpeciesRepositoryTest
                 TestInsectsIdentifiers.InsectGenus.Drosophila.name,
                 TestInsectsIdentifiers.InsectGenus.Battus.name));
 
-        assertThat(result).extracting(InsectSpecies::name)
+        assertThat(result).extracting(InsectSpeciesInfo::name)
                 .contains(
                         TestInsectsIdentifiers.InsectSpecies.DrosophilaFunebris.name,
                         TestInsectsIdentifiers.InsectSpecies.DrosophilaMelanogaster.name,

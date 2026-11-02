@@ -10,7 +10,7 @@ import java.util.Set;
 class InsectFamilyQueryImpl
         extends AbstractEntityQuery<
         InsectFamilyName,
-        InsectFamily,
+        InsectFamilyInfo,
         FamilyCollection,
         InsectRepository.FamilyRepository>
         implements InsectQuery.FamilyQuery {

@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * <p>
  * Order-rank records are first-class catalog citizens. A naturalist who
  * recognises a dipteran without resolving the family has a permanent home
- * for that observation here. As identification firms, an {@link InsectFamily}
+ * for that observation here. As identification firms, an {@link InsectFamilyInfo}
  * record is added alongside this order record; the order record is never
  * replaced or migrated.
  * <p>
@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  * records keyed by {@code (name, stageKind)}, queried via
  * {@link com.naturalist.insects.lifestage.InsectLifeStageQuery}.
  */
-public record InsectOrder(
+public record InsectOrderInfo(
         InsectOrderName name,
         TaxonomicOrder order,
         Description description,
@@ -39,8 +39,8 @@ public record InsectOrder(
         @Nullable Clade placedIn
 ) implements NamedEntity<InsectOrderName>, LinnaeanOrder {
 
-    public InsectOrder withPlacedIn(@Nullable Clade value) {
-        return new InsectOrder(name, order, description, commonNames,
+    public InsectOrderInfo withPlacedIn(@Nullable Clade value) {
+        return new InsectOrderInfo(name, order, description, commonNames,
                 value);
     }
 

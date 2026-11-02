@@ -50,9 +50,9 @@ class InsectAncestryResolver {
     /** The insect FK chain: the parent rank of a given rank, empty at the order (or a gap). */
     private Optional<InsectRankName> parentOf(InsectRankName rankName) {
         return switch (rankName) {
-            case InsectSpeciesName s -> speciesQuery.getByName(s).map(InsectSpecies::genusName);
-            case InsectGenusName g -> genusQuery.getByName(g).map(InsectGenus::familyName);
-            case InsectFamilyName f -> familyQuery.getByName(f).map(InsectFamily::orderName);
+            case InsectSpeciesName s -> speciesQuery.getByName(s).map(InsectSpeciesInfo::genusName);
+            case InsectGenusName g -> genusQuery.getByName(g).map(InsectGenusInfo::familyName);
+            case InsectFamilyName f -> familyQuery.getByName(f).map(InsectFamilyInfo::orderName);
             case InsectOrderName o -> Optional.empty();
             case InsectSubspeciesName ss -> Optional.empty();
         };

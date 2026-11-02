@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
- * Child row for one member of an {@link InsectOrder}'s {@code Set<CommonName>}. The stored reference
+ * Child row for one member of an {@link InsectOrderInfo}'s {@code Set<CommonName>}. The stored reference
  * is the numeric {@code order_id} (FK-enforced); the DBO carries the order's {@code name} — the
  * mapper JOINs {@code insect_order} to project it on read and nested-selects {@code insect_order.id}
  * from it on write, so no name is persisted here and nothing can drift. {@link CommonName}'s
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  */
 @DboSchema(table = "insect_order_common_name", primaryKey = "order_id,label,locale",
            foreignKeys = @Fk(columns = "order_id", references = "insect_order(id)"),
-           entity = InsectOrder.class)
+           entity = InsectOrderInfo.class)
 final class InsectOrderCommonNameDbo implements Dbo {
     String orderName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String label;

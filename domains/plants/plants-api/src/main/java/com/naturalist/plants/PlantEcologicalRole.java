@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  * concern in three places and leave genus-rank taxa unable to carry it at all.
  * <p>
  * <b>Why this is not a component on the rank records.</b> Insects made exactly this move
- * in PL-11 — functional ecology came off {@code InsectSpecies} onto the cross-rank
+ * in PL-11 — functional ecology came off {@code InsectSpeciesInfo} onto the cross-rank
  * {@link com.naturalist.insects.InsectFunctionalRole}, for the same reason. This record is
  * the plants-side counterpart; where insects splits guilds from a {@code beneficial} flag,
  * plants carries a single {@link PlantRole} set, because {@code PlantRole} already mixes

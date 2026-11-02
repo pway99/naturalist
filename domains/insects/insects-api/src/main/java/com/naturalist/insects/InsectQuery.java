@@ -21,21 +21,21 @@ import com.naturalist.taxonomy.OrganismFeatureView;
  *
  * <p>Nested queries scope to a single consistency concern each:
  * <ul>
- *   <li>{@link SpeciesQuery} — {@link InsectSpecies} entities in isolation.</li>
+ *   <li>{@link SpeciesQuery} — {@link InsectSpeciesInfo} entities in isolation.</li>
  *   <li>{@link ImageQuery} — {@link OrganismImage} entities in isolation.</li>
 
- *   <li>{@link FamilyQuery} — {@link InsectFamily} entities in isolation.</li>
- *   <li>{@link GenusQuery} — {@link InsectGenus} entities in isolation.</li>
+ *   <li>{@link FamilyQuery} — {@link InsectFamilyInfo} entities in isolation.</li>
+ *   <li>{@link GenusQuery} — {@link InsectGenusInfo} entities in isolation.</li>
  *   <li>{@link FunctionalRoleQuery} — {@link InsectFunctionalRole} entities,
  *       carrying the cross-rank {@code (guilds, beneficial)} assignment.</li>
  * </ul>
  *
  * <p><b>Usage:</b>
  * <pre>{@code
- * insectQuery.species().getByName(speciesName);      // InsectSpecies
+ * insectQuery.species().getByName(speciesName);      // InsectSpeciesInfo
  * insectQuery.images().getByName(imageName);         // OrganismImage
- * insectQuery.families().getByName(familyName);      // InsectFamily
- * insectQuery.genera().getByName(genusName);         // InsectGenus
+ * insectQuery.families().getByName(familyName);      // InsectFamilyInfo
+ * insectQuery.genera().getByName(genusName);         // InsectGenusInfo
  * insectQuery.genera().forFamilyName(familyName);    // genera under a family
  * insectQuery.species().forGenusName(genusName);     // species under a genus
  * insectQuery.species().forFamilyName(familyName);   // species under a family (typed FK)
@@ -71,17 +71,17 @@ public interface InsectQuery {
      */
     Optional<Insect> getByName(InsectRankName name);
 
-    interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
+    interface SpeciesQuery extends EntityQuery<InsectSpeciesName, InsectSpeciesInfo, SpeciesCollection> {
 
         /**
-         * Members of a genus, joined on the species's typed {@link InsectSpecies#genusName()}
+         * Members of a genus, joined on the species's typed {@link InsectSpeciesInfo#genusName()}
          * upward FK. Species without a catalogued parent genus carry a {@code null}
          * {@code genusName} and are absent from the result.
          */
         SpeciesCollection forGenusName(InsectGenusName genusName);
 
         /**
-         * Members of a family, joined on the species's typed {@link InsectSpecies#familyName()}
+         * Members of a family, joined on the species's typed {@link InsectSpeciesInfo#familyName()}
          * upward FK (e.g. {@code battus-philenor} → {@code papilionidae}). Species without
          * a catalogued parent family carry a {@code null} {@code familyName} and are absent
          * from the result.
@@ -143,7 +143,7 @@ public interface InsectQuery {
                 java.util.Set<InsectRankName> subjects);
     }
 
-    interface FamilyQuery extends EntityQuery<InsectFamilyName, InsectFamily, FamilyCollection> {
+    interface FamilyQuery extends EntityQuery<InsectFamilyName, InsectFamilyInfo, FamilyCollection> {
 
         FamilyCollection forOrderName(InsectOrderName orderName);
 
@@ -151,7 +151,7 @@ public interface InsectQuery {
         FamilyCollection forOrderNames(Set<InsectOrderName> orderNames);
     }
 
-    interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenus, GenusCollection> {
+    interface GenusQuery extends EntityQuery<InsectGenusName, InsectGenusInfo, GenusCollection> {
 
         GenusCollection forFamilyName(InsectFamilyName familyName);
 
@@ -172,7 +172,7 @@ public interface InsectQuery {
         FunctionalRoleCollection getByParentNames(Set<InsectRankName> parentNames);
     }
 
-    interface OrderQuery extends EntityQuery<InsectOrderName, InsectOrder, OrderCollection> {
+    interface OrderQuery extends EntityQuery<InsectOrderName, InsectOrderInfo, OrderCollection> {
     }
 
     interface CitationQuery {

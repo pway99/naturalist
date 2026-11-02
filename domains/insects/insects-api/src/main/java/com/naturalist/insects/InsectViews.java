@@ -51,7 +51,7 @@ public interface InsectViews {
     }
 
     /** One species-list card: the species with the labels, role, photos and viewer state the card shows. */
-    record SpeciesCard(InsectSpecies species, @Nullable InsectGenus genus, @Nullable InsectFamily family,
+    record SpeciesCard(InsectSpeciesInfo species, @Nullable InsectGenusInfo genus, @Nullable InsectFamilyInfo family,
                        @Nullable InsectFunctionalRole role, InsectEntityCollections.ImageCollection images,
                        boolean collected) implements ReadModel {
         public String displayName() {

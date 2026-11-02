@@ -77,11 +77,11 @@ class MyCollectionWebMvcTest {
         // More collected species than one console page: the lens pages over the naturalist's
         // collection, so page 1 holds the overflow instead of an empty filter over catalogue page 1.
         InsectsTestContext insects = InsectsControllerTestConfig.INSECTS;
-        InsectSpecies template = insects.insectQuery().species()
+        InsectSpeciesInfo template = insects.insectQuery().species()
                 .findPage(PageRequest.first(1)).content().getFirst();
         // Enough species for three catalogue pages.
         for (int i = 0; i < 2 * PageRequest.DEFAULT_CONSOLE_PAGE_SIZE; i++) {
-            insects.insectCommand().species().insert(new InsectSpecies(
+            insects.insectCommand().species().insert(new InsectSpeciesInfo(
                     InsectSpeciesName.of("zz-extra-" + i), template.genusName(), template.epithet(),
                     template.description(), template.commonNames(), null, null, null, null, null,
                     null, null, null, null));
@@ -90,12 +90,12 @@ class MyCollectionWebMvcTest {
         // so a lens that merely filters catalogue page 1 renders it empty.
         java.util.Set<InsectSpeciesName> catalogPageOne = insects.insectQuery().species()
                 .findPage(PageRequest.console(1)).content().stream()
-                .map(InsectSpecies::name).collect(java.util.stream.Collectors.toSet());
-        List<InsectSpecies> collected = Pages.stream(PageRequest.MAX_PAGE_SIZE,
+                .map(InsectSpeciesInfo::name).collect(java.util.stream.Collectors.toSet());
+        List<InsectSpeciesInfo> collected = Pages.stream(PageRequest.MAX_PAGE_SIZE,
                 insects.insectQuery().species()::findPage)
                 .filter(species -> !catalogPageOne.contains(species.name())).toList();
         assertThat(collected).hasSizeGreaterThan(PageRequest.DEFAULT_CONSOLE_PAGE_SIZE);
-        for (InsectSpecies species : collected) {
+        for (InsectSpeciesInfo species : collected) {
             mockMvc.perform(MockMvcRequestBuilders
                             .post("/insects/" + species.name().value() + "/observe")
                             .requestAttr(CURRENT_NATURALIST, "page-collector"))

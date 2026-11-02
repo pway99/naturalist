@@ -773,7 +773,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 var speciesName = InsectSpeciesName.of(slug);
                 var genusName = InsectGenusName.of(
                         taxonomy.genus().value().toLowerCase(Locale.ROOT));
-                yield new IdentifiedRankEntity.Species(new InsectSpecies(
+                yield new IdentifiedRankEntity.Species(new InsectSpeciesInfo(
                         speciesName, genusName, taxonomy.species(), description,
                         Set.of(CommonName.of(commonName)), sightingNotes,
                         null, null, null, null, null, null, null, null));
@@ -782,7 +782,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 var genusName = InsectGenusName.of(slug);
                 var familyName = InsectFamilyName.of(
                         taxonomy.family().value().toLowerCase(Locale.ROOT));
-                yield new IdentifiedRankEntity.Genus(new InsectGenus(
+                yield new IdentifiedRankEntity.Genus(new InsectGenusInfo(
                         genusName, familyName, taxonomy.genus(), description,
                         Set.of(CommonName.of(commonName)), null));
             }
@@ -790,13 +790,13 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 var familyName = InsectFamilyName.of(slug);
                 var orderName = InsectOrderName.of(
                         taxonomy.order().value().toLowerCase(Locale.ROOT));
-                yield new IdentifiedRankEntity.Family(new InsectFamily(
+                yield new IdentifiedRankEntity.Family(new InsectFamilyInfo(
                         familyName, orderName, taxonomy.family(), description,
                         Set.of(CommonName.of(commonName)), null));
             }
             case "ORDER" -> {
                 var orderName = InsectOrderName.of(slug);
-                yield new IdentifiedRankEntity.Order(new InsectOrder(
+                yield new IdentifiedRankEntity.Order(new InsectOrderInfo(
                         orderName, taxonomy.order(), description,
                         Set.of(CommonName.of(commonName)), null));
             }

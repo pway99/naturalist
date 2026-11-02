@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 class InsectSpeciesCommandImplTest
-        implements EntityCommandContractTest<InsectSpeciesName, InsectSpecies, SpeciesCollection> {
+        implements EntityCommandContractTest<InsectSpeciesName, InsectSpeciesInfo, SpeciesCollection> {
 
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
@@ -27,17 +27,17 @@ class InsectSpeciesCommandImplTest
     InsectQuery.SpeciesQuery query = new InsectSpeciesQueryImpl(repository, genusQuery);
 
     @Override
-    public EntityCommand<InsectSpeciesName, InsectSpecies> command() {
+    public EntityCommand<InsectSpeciesName, InsectSpeciesInfo> command() {
         return command;
     }
 
     @Override
-    public EntityQuery<InsectSpeciesName, InsectSpecies, SpeciesCollection> query() {
+    public EntityQuery<InsectSpeciesName, InsectSpeciesInfo, SpeciesCollection> query() {
         return query;
     }
 
     @Override
-    public TestEntitySource<InsectSpeciesName, InsectSpecies> source() {
+    public TestEntitySource<InsectSpeciesName, InsectSpeciesInfo> source() {
         return nte.getNamed(InsectSpeciesTestEntitySource.class);
     }
 
@@ -54,8 +54,8 @@ class InsectSpeciesCommandImplTest
     }
 
     @Override
-    public InsectSpecies newEntity() {
-        return new InsectSpecies(
+    public InsectSpeciesInfo newEntity() {
+        return new InsectSpeciesInfo(
                 InsectSpeciesName.of("test-command-species-xx"),
                 TestInsectsIdentifiers.InsectGenus.Chrysoperla.name,
                 TaxonomicSpecies.of("nemoralis"),
@@ -68,8 +68,8 @@ class InsectSpeciesCommandImplTest
     }
 
     @Override
-    public InsectSpecies ghostEntity() {
-        return new InsectSpecies(
+    public InsectSpeciesInfo ghostEntity() {
+        return new InsectSpeciesInfo(
                 InsectSpeciesName.of("test-command-ghost-xx"),
                 TestInsectsIdentifiers.InsectGenus.Chrysoperla.name,
                 TaxonomicSpecies.of("ghost"),
@@ -82,8 +82,8 @@ class InsectSpeciesCommandImplTest
     }
 
     @Override
-    public InsectSpecies modifiedEntity(InsectSpecies original) {
-        return new InsectSpecies(
+    public InsectSpeciesInfo modifiedEntity(InsectSpeciesInfo original) {
+        return new InsectSpeciesInfo(
                 original.name(),
                 TestInsectsIdentifiers.InsectGenus.Chrysoperla.name,
                 TaxonomicSpecies.of("nemoralis"),
@@ -92,16 +92,16 @@ class InsectSpeciesCommandImplTest
                 RandomValue.string(),
                 null,
                 null,
-                new InsectSpecies.Voltinism(
-                        InsectSpecies.Voltinism.VoltinismPattern.UNIVOLTINE,
+                new InsectSpeciesInfo.Voltinism(
+                        InsectSpeciesInfo.Voltinism.VoltinismPattern.UNIVOLTINE,
                         RandomValue.string()),
                 null,
                 null,
-                new InsectSpecies.GardenConnections(
+                new InsectSpeciesInfo.GardenConnections(
                         List.of(RandomValue.string()),
                         RandomValue.string(),
                         RandomValue.string()),
-                new InsectSpecies.BeneficialProfile(
+                new InsectSpeciesInfo.BeneficialProfile(
                         RandomValue.string(),
                         RandomValue.string(),
                         RandomValue.string()),

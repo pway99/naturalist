@@ -5,7 +5,7 @@ import com.naturalist.infrastructure.DomainService;
 
 @DomainService
 class InsectGenusCommandImpl
-        extends AbstractEntityCommand<InsectGenusName, InsectGenus, InsectRepository.GenusRepository>
+        extends AbstractEntityCommand<InsectGenusName, InsectGenusInfo, InsectRepository.GenusRepository>
         implements InsectCommand.GenusCommand {
 
     InsectGenusCommandImpl(InsectRepository.GenusRepository repository) {

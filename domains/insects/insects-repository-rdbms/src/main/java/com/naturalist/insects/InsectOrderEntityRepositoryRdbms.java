@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * RDBMS adapter for the {@link InsectOrder} rank record — a {@code NamedEntity} at the top of the
+ * RDBMS adapter for the {@link InsectOrderInfo} rank record — a {@code NamedEntity} at the top of the
  * insect Linnaean chain, so it has no upward FK. Reads assemble the parent row with its
  * {@code commonNames} loaded in one batched query keyed on the order-name set, so a page of orders
  * costs two selects, not two-per-order — no N+1. Writes persist the parent then its common-name
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 @DomainService
 class InsectOrderEntityRepositoryRdbms
-        extends AbstractEntityRepository<InsectOrderName, InsectOrder>
+        extends AbstractEntityRepository<InsectOrderName, InsectOrderInfo>
         implements InsectRepository.OrderRepository {
 
     private final InsectOrderMapper mapper;
@@ -33,27 +33,27 @@ class InsectOrderEntityRepositoryRdbms
     }
 
     @Override
-    protected Optional<InsectOrder> doGetByName(InsectOrderName name) {
+    protected Optional<InsectOrderInfo> doGetByName(InsectOrderName name) {
         InsectOrderDbo parent = mapper.selectByName(name.value());
         if (parent == null) return Optional.empty();
         return Optional.of(assemble(List.of(parent), Set.of(name.value())).get(0));
     }
 
     @Override
-    protected List<InsectOrder> doGetByNameSet(Set<InsectOrderName> nameSet) {
+    protected List<InsectOrderInfo> doGetByNameSet(Set<InsectOrderName> nameSet) {
         if (nameSet.isEmpty()) return List.of();
         Set<String> slugs = nameSet.stream().map(InsectOrderName::value).collect(Collectors.toSet());
         return assemble(mapper.selectByNameSet(slugs), slugs);
     }
 
     @Override
-    protected Page<InsectOrder> doGetPage(PageRequest request) {
+    protected Page<InsectOrderInfo> doGetPage(PageRequest request) {
         int pageSize = request.pageSize();
         List<InsectOrderDbo> rows = mapper.selectPage(pageSize + 1, request.offset());
         boolean immediateMore = rows.size() > pageSize;
         List<InsectOrderDbo> parents = rows.stream().limit(pageSize).toList();
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        List<InsectOrder> content = assemble(parents, names);
+        List<InsectOrderInfo> content = assemble(parents, names);
 
         int pagesAheadKnown = 0;
         boolean moreBeyondLookahead = immediateMore;
@@ -69,7 +69,7 @@ class InsectOrderEntityRepositoryRdbms
     }
 
     @Override
-    protected void doInsert(InsectOrder entity) {
+    protected void doInsert(InsectOrderInfo entity) {
         InsectOrderDbo dbo = InsectOrderDbo.from(entity);   // validates the parent scalars + throws
         try {
             mapper.insert(dbo);
@@ -81,7 +81,7 @@ class InsectOrderEntityRepositoryRdbms
     }
 
     @Override
-    protected void doUpdate(InsectOrder entity) {
+    protected void doUpdate(InsectOrderInfo entity) {
         InsectOrderDbo dbo = InsectOrderDbo.from(entity);
         if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
         mapper.deleteCommonNames(entity.name().value());
@@ -89,13 +89,13 @@ class InsectOrderEntityRepositoryRdbms
     }
 
     @Override
-    protected InsectOrder doSave(InsectOrder entity) {
+    protected InsectOrderInfo doSave(InsectOrderInfo entity) {
         if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
         else doInsert(entity);
         return entity;
     }
 
-    private void insertChildren(InsectOrder o) {
+    private void insertChildren(InsectOrderInfo o) {
         InsectOrderName name = o.name();
         for (CommonName commonName : o.commonNames()) {
             mapper.insertCommonName(InsectOrderCommonNameDbo.from(name, commonName));
@@ -103,7 +103,7 @@ class InsectOrderEntityRepositoryRdbms
     }
 
     /** Assemble records from parent rows + one batched common-name load. */
-    private List<InsectOrder> assemble(List<InsectOrderDbo> parents, Set<String> names) {
+    private List<InsectOrderInfo> assemble(List<InsectOrderDbo> parents, Set<String> names) {
         if (parents.isEmpty()) return List.of();
         var commonNames = mapper.selectCommonNames(names).stream()
                 .collect(Collectors.groupingBy(cn -> cn.orderName,

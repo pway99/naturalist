@@ -20,16 +20,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Behavioral contract for {@link InsectRepository.GenusRepository}.
  * <p>
  * Inherits the {@link EntityRepositoryTest} cases (ADR-002).
- * Supplies InsectGenus-specific identity constants and entity construction.
+ * Supplies InsectGenusInfo-specific identity constants and entity construction.
  */
 interface InsectGenusRepositoryTest
-        extends EntityRepositoryTest<InsectGenusName, InsectGenus> {
+        extends EntityRepositoryTest<InsectGenusName, InsectGenusInfo> {
 
     @Override
     InsectRepository.GenusRepository repository();
 
     @Override
-    default TestEntitySource<InsectGenusName, InsectGenus> source() {
+    default TestEntitySource<InsectGenusName, InsectGenusInfo> source() {
         return db.getNamed(InsectGenusTestEntitySource.class);
     }
 
@@ -46,8 +46,8 @@ interface InsectGenusRepositoryTest
     }
 
     @Override
-    default InsectGenus newEntity() {
-        return new InsectGenus(
+    default InsectGenusInfo newEntity() {
+        return new InsectGenusInfo(
                 InsectGenusName.of("test-genus-xx"),
                 InsectFamilyName.of("tachinidae"),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
@@ -57,10 +57,10 @@ interface InsectGenusRepositoryTest
     }
 
     @Override
-    default InsectGenus ghostEntity() {
+    default InsectGenusInfo ghostEntity() {
         // FK check is skipped because EntityNotFoundException fires first on
         // update; familyName slug here does not need to resolve.
-        return new InsectGenus(
+        return new InsectGenusInfo(
                 InsectGenusName.of("test-ghost-xx"),
                 InsectFamilyName.of("test-ghost-family-xx"),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
@@ -70,8 +70,8 @@ interface InsectGenusRepositoryTest
     }
 
     @Override
-    default InsectGenus modifiedEntity(InsectGenus original) {
-        return new InsectGenus(
+    default InsectGenusInfo modifiedEntity(InsectGenusInfo original) {
+        return new InsectGenusInfo(
                 original.name(),
                 InsectFamilyName.of("braconidae"),
                 TaxonomicGenus.of("Genus" + RandomValue.string()),
@@ -100,7 +100,7 @@ interface InsectGenusRepositoryTest
         var results = repository().getByFamilyName(halictidae);
 
         assertThat(results)
-                .extracting(InsectGenus::name)
+                .extracting(InsectGenusInfo::name)
                 .extracting(InsectGenusName::value)
                 .contains("halictus");
     }
@@ -127,7 +127,7 @@ interface InsectGenusRepositoryTest
                 TestInsectsIdentifiers.InsectFamily.Papilionidae.name,
                 TestInsectsIdentifiers.InsectFamily.Apidae.name));
 
-        assertThat(result).extracting(InsectGenus::name)
+        assertThat(result).extracting(InsectGenusInfo::name)
                 .contains(
                         TestInsectsIdentifiers.InsectGenus.Battus.name,
                         TestInsectsIdentifiers.InsectGenus.Apis.name)

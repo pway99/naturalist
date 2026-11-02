@@ -22,13 +22,13 @@ class InsectsFamiliesTemplateTest {
 
     @Test
     void families_rendersWithoutError() {
-        Map<InsectOrderName, InsectOrder> orderByName = nte.getNamed(InsectOrderTestEntitySource.class)
-                .entityStream().collect(java.util.stream.Collectors.toMap(InsectOrder::name, o -> o));
-        Page<InsectFamily> familyPage = nte.getNamed(InsectFamilyTestEntitySource.class)
+        Map<InsectOrderName, InsectOrderInfo> orderByName = nte.getNamed(InsectOrderTestEntitySource.class)
+                .entityStream().collect(java.util.stream.Collectors.toMap(InsectOrderInfo::name, o -> o));
+        Page<InsectFamilyInfo> familyPage = nte.getNamed(InsectFamilyTestEntitySource.class)
                 .pageOf(PageRequest.console(0));
         List<InsectViews.RankCard> cards = familyPage.content().stream()
                 .map(f -> {
-                    InsectOrder order = orderByName.get(f.orderName());
+                    InsectOrderInfo order = orderByName.get(f.orderName());
                     return new InsectViews.RankCard(f.name(), f.displayName(), f.family().value(), f.orderName(),
                             order != null ? order.order().value() : f.orderName().value(),
                             InsectEntityCollections.ImageCollection.empty());
@@ -48,9 +48,9 @@ class InsectsFamiliesTemplateTest {
     @Test
     void family_rendersWithoutError() {
         InsectOrderTestEntitySource orderSource = nte.getNamed(InsectOrderTestEntitySource.class);
-        InsectFamily anyFamily = nte.getNamed(InsectFamilyTestEntitySource.class).entityStream()
+        InsectFamilyInfo anyFamily = nte.getNamed(InsectFamilyTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
-        InsectOrder order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
+        InsectOrderInfo order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render(
@@ -69,9 +69,9 @@ class InsectsFamiliesTemplateTest {
     @Test
     void family_rendersRankImagesWithEvidence() {
         InsectOrderTestEntitySource orderSource = nte.getNamed(InsectOrderTestEntitySource.class);
-        InsectFamily anyFamily = nte.getNamed(InsectFamilyTestEntitySource.class).entityStream()
+        InsectFamilyInfo anyFamily = nte.getNamed(InsectFamilyTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
-        InsectOrder order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
+        InsectOrderInfo order = orderSource.getByName(anyFamily.orderName()).orElseThrow();
         var observationId = com.naturalist.insects.InsectObservationId.create();
         var image = new com.naturalist.observation.OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 com.naturalist.insects.InsectImageId.create(),
@@ -119,11 +119,11 @@ class InsectsFamiliesTemplateTest {
     @Test
     void family_rendersChildGenusCardFromPermit() {
         InsectOrderTestEntitySource orderSource = nte.getNamed(InsectOrderTestEntitySource.class);
-        InsectGenus anyGenus = nte.getNamed(InsectGenusTestEntitySource.class).entityStream()
+        InsectGenusInfo anyGenus = nte.getNamed(InsectGenusTestEntitySource.class).entityStream()
                 .findFirst().orElseThrow();
-        InsectFamily family = nte.getNamed(InsectFamilyTestEntitySource.class)
+        InsectFamilyInfo family = nte.getNamed(InsectFamilyTestEntitySource.class)
                 .getByName(anyGenus.familyName()).orElseThrow();
-        InsectOrder order = orderSource.getByName(family.orderName()).orElseThrow();
+        InsectOrderInfo order = orderSource.getByName(family.orderName()).orElseThrow();
         InsectTaxonView genusChild = InsectTaxonView.GenusView.of(
                 anyGenus,
                 InsectEntityCollections.ImageCollection.empty());
@@ -144,7 +144,7 @@ class InsectsFamiliesTemplateTest {
         assertThat(output.toString()).contains("/insects/genera/" + anyGenus.name().value());
     }
 
-    private static InsectViews.RankPage familyPage(InsectFamily family, InsectOrder order,
+    private static InsectViews.RankPage familyPage(InsectFamilyInfo family, InsectOrderInfo order,
                                                    List<InsectTaxonView> children) {
         return InsectViews.RankPage.anonymous(Insect.empty()
                 .withOrder(InsectTaxonView.OrderView.of(order))

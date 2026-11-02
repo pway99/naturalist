@@ -10,7 +10,7 @@ import com.naturalist.ddd.EntityName;
  * entity level. The genus slug is derived mechanically from the epithet.
  *
  * <p>Implemented by per-domain genus aggregates (e.g.
- * {@code com.naturalist.insects.InsectGenus}). The implementing entity
+ * {@code com.naturalist.insects.InsectGenusInfo}). The implementing entity
  * supplies its own typed name via its {@code NamedEntity<GENUS_NAME>}
  * binding; this interface is concerned only with the rank-level contract.
  *

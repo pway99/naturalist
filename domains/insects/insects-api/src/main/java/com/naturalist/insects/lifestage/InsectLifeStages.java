@@ -3,10 +3,10 @@ package com.naturalist.insects.lifestage;
 import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.insects.InsectClades;
-import com.naturalist.insects.InsectFamily;
-import com.naturalist.insects.InsectGenus;
-import com.naturalist.insects.InsectOrder;
-import com.naturalist.insects.InsectSpecies;
+import com.naturalist.insects.InsectFamilyInfo;
+import com.naturalist.insects.InsectGenusInfo;
+import com.naturalist.insects.InsectOrderInfo;
+import com.naturalist.insects.InsectSpeciesInfo;
 import com.naturalist.insects.LifeStageKind;
 import org.jspecify.annotations.Nullable;
 
@@ -21,7 +21,7 @@ import java.util.List;
  * <p>This is the consumer-facing surface introduced in Phase 5 of the
  * clades-kernel refactor. It replaces the implicit answer that the inline
  * {@code egg}/{@code larva}/{@code pupa}/{@code adult} fields on
- * {@link InsectSpecies}, {@link InsectGenus}, and {@link InsectFamily}
+ * {@link InsectSpeciesInfo}, {@link InsectGenusInfo}, and {@link InsectFamilyInfo}
  * previously gave — those fields remain populated for the time being but
  * are no longer the source of truth for "what stages exist". Per-organism
  * stage <i>data</i> (descriptions, phenology, habitat, chemistry roles)
@@ -46,15 +46,15 @@ public final class InsectLifeStages {
     private InsectLifeStages() {
     }
 
-    public static List<LifeStageKind> stagesOf(InsectSpecies species) {
+    public static List<LifeStageKind> stagesOf(InsectSpeciesInfo species) {
         return resolve(species.placedIn());
     }
 
-    public static List<LifeStageKind> stagesOf(InsectGenus genus) {
+    public static List<LifeStageKind> stagesOf(InsectGenusInfo genus) {
         return resolve(genus.placedIn());
     }
 
-    public static List<LifeStageKind> stagesOf(InsectFamily family) {
+    public static List<LifeStageKind> stagesOf(InsectFamilyInfo family) {
         return resolve(family.placedIn());
     }
 
@@ -75,13 +75,13 @@ public final class InsectLifeStages {
      * Phase 5b slice. Replaces silent empties on species-detail pages whose
      * placement is declared at a higher rank than the species itself.
      *
-     * @see #stagesOf(InsectSpecies) for the narrow "this entity's own placement" semantics
+     * @see #stagesOf(InsectSpeciesInfo) for the narrow "this entity's own placement" semantics
      */
     public static List<LifeStageKind> stagesOf(
-            InsectSpecies species,
-            @Nullable InsectGenus genus,
-            @Nullable InsectFamily family,
-            @Nullable InsectOrder order) {
+            InsectSpeciesInfo species,
+            @Nullable InsectGenusInfo genus,
+            @Nullable InsectFamilyInfo family,
+            @Nullable InsectOrderInfo order) {
 
         Clade placement = firstNonNull(
                 species.placedIn(),

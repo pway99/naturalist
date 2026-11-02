@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 /**
  * The stage's role in its species's chemistry story (e.g. Battus philenor:
  * larva ACQUISITION, pupa RETENTION, adult EXPRESSION, egg MATERNAL_TRANSFER).
- * Cross-stage consistency enforced on the InsectSpecies aggregate root.
+ * Cross-stage consistency enforced on the InsectSpeciesInfo aggregate root.
  */
 public record StageChemistryRole(
         Role role,

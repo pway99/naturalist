@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Parent row of the {@link InsectOrder} rank record — the top of the insect Linnaean chain within
+ * Parent row of the {@link InsectOrderInfo} rank record — the top of the insect Linnaean chain within
  * Class Insecta, so it carries no upward foreign key. The 1:1 scalars ({@code taxonomic_order}, the
  * four-column Durrell {@link Description}) flatten onto columns here; the multi-valued
  * {@code commonNames} become the {@link InsectOrderCommonNameDbo} child table, loaded in one batched
@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * ({@code taxonomic_order} → {@code taxonomicOrder}). {@code id} is a DB-generated identity, populated
  * on insert and never surfaced in the domain.
  */
-@DboSchema(table = "insect_order", primaryKey = "id", unique = {"name"}, entity = InsectOrder.class)
+@DboSchema(table = "insect_order", primaryKey = "id", unique = {"name"}, entity = InsectOrderInfo.class)
 final class InsectOrderDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;
@@ -36,7 +36,7 @@ final class InsectOrderDbo implements Dbo {
     String descriptionSecondary;
     String descriptionUniversity;
 
-    static InsectOrderDbo from(InsectOrder o) {
+    static InsectOrderDbo from(InsectOrderInfo o) {
         InsectOrderDbo d = new InsectOrderDbo();
         d.name = o.name().value();
         d.taxonomicOrder = o.order().value();
@@ -52,8 +52,8 @@ final class InsectOrderDbo implements Dbo {
         return d;
     }
 
-    InsectOrder toEntity(Set<CommonName> commonNames) {
-        return new InsectOrder(
+    InsectOrderInfo toEntity(Set<CommonName> commonNames) {
+        return new InsectOrderInfo(
                 InsectOrderName.of(name),
                 TaxonomicOrder.of(taxonomicOrder),
                 new Description(

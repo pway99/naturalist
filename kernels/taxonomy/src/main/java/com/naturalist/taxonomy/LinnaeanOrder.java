@@ -8,7 +8,7 @@ package com.naturalist.taxonomy;
  * from the epithet.
  *
  * <p>Implemented by per-domain order entities (e.g.
- * {@code com.naturalist.insects.InsectOrder}). The implementing entity
+ * {@code com.naturalist.insects.InsectOrderInfo}). The implementing entity
  * supplies its own typed name via its {@code NamedEntity<ORDER_NAME>}
  * binding; this interface is concerned only with the rank-level contract.
  */

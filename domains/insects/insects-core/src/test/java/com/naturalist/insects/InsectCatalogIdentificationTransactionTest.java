@@ -98,7 +98,7 @@ class InsectCatalogIdentificationTransactionTest {
         // Second species in same genus — parent ranks already exist
         var secondSpeciesName = InsectSpeciesName.of("fabricatus-secundus");
         var secondObsId = InsectObservationId.create();
-        var secondSpecies = new InsectSpecies(
+        var secondSpecies = new InsectSpeciesInfo(
                 secondSpeciesName, GENUS_NAME,
                 TaxonomicSpecies.of("secundus"),
                 description(),
@@ -132,7 +132,7 @@ class InsectCatalogIdentificationTransactionTest {
         var familyName = InsectFamilyName.of("bogusidae");
         var orderName = InsectOrderName.of("neuroptera"); // real seeded order — FK valid
         var obsId = InsectObservationId.create();
-        var family = new InsectFamily(
+        var family = new InsectFamilyInfo(
                 familyName, orderName,
                 TaxonomicFamily.of("Bogusidae"), description(),
                 Set.of(CommonName.of("Bogus Lacewings")), null);
@@ -170,7 +170,7 @@ class InsectCatalogIdentificationTransactionTest {
         var familyName = InsectFamilyName.of("nonexistentidae");
         var orderName = InsectOrderName.of("neuroptera"); // real seeded order
         var obsId = InsectObservationId.create();
-        var genus = new InsectGenus(
+        var genus = new InsectGenusInfo(
                 genusName, familyName, TaxonomicGenus.of("Fictus"), description(),
                 Set.of(CommonName.of("Fictitious Lacewings")), null);
         var taxonomy = new TaxonomicClassification(
@@ -257,8 +257,8 @@ class InsectCatalogIdentificationTransactionTest {
                 List.of(), List.of(), Map.of());
     }
 
-    private static InsectSpecies species() {
-        return new InsectSpecies(
+    private static InsectSpeciesInfo species() {
+        return new InsectSpeciesInfo(
                 SPECIES_NAME, GENUS_NAME,
                 TaxonomicSpecies.of("imaginarius"),
                 description(),
