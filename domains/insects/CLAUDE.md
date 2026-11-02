@@ -5,9 +5,13 @@ Reference implementation for [ADR-021](../../docs/adr/ADR-021-persistenceid-is-a
 
 ## Domain Vocabulary
 
-**InsectSpecies** — `NamedEntity<InsectSpeciesName>`. Catalog identity of a species as
-recognised by the naturalist. Four-level Durrell `Description`. No `id()` at the domain
-layer; the RDBMS adapter carries a numeric primary key privately.
+**InsectSpeciesInfo** (and `InsectGenusInfo`, `InsectFamilyInfo`, `InsectOrderInfo`) —
+`NamedEntity<InsectSpeciesName>` etc. The stored catalog record of a rank as recognised by
+the naturalist. Four-level Durrell `Description`. No `id()` at the domain layer; the RDBMS
+adapter carries a numeric primary key privately. The `Info` suffix follows the Info pattern
+in [`domains/CLAUDE.md`](../CLAUDE.md): the bare name belongs to the composed read model
+below. The persistence stack keeps the rank subject (`InsectSpeciesQueryImpl`,
+`InsectSpeciesTestEntitySource`, `SpeciesQuery`).
 
 **InsectViews / InsectViewQuery** — presentation read models (`RankPage`, `SpeciesCard`,
 `RankCard`, `Viewer`) that `InsectViewQuery` assembles for the console from the biology
@@ -19,15 +23,13 @@ Carries `InsectImageId id`, accessor `id()`. Parent reference is an
 `InsectRankName parentName` (slug) — no `insectSpeciesId`, no `withId`, no nullable
 id-shaped FK column.
 
-**InsectTaxonView** — Sealed `ReadModel` over the four Linnaean ranks that carry
-catalog entities. Its four permits are **nested records inside the interface** —
-`InsectTaxonView.SpeciesView`, `.GenusView`, `.FamilyView`, `.OrderView` — so the
-`permits` clause is inferred from the compilation unit rather than written out.
-The domain prefix is dropped per ADR-020 (the namespace carries it); the `View`
-role suffix is kept, distinguishing e.g. `InsectTaxonView.SpeciesView` (the
-projection) from `InsectSpecies` (the entity it wraps). Each permit composes its
-rank entity with the `ImageCollection` of photographs attached at that rank — a
-read-side projection, not a consistency boundary. Identity is the root's typed
+**InsectTaxon** — Sealed `ReadModel` over the four Linnaean ranks that carry
+catalog entities. Its four permits are **top-level records** — `InsectSpecies`,
+`InsectGenus`, `InsectFamily`, `InsectOrder` — named in an explicit `permits` clause.
+Each composes its stored `*Info` record (component `info`) with the `ImageCollection`
+of photographs attached at that rank — a read-side projection, not a consistency
+boundary. `InsectSpecies` is the species with its photographs; `InsectSpeciesInfo` is
+the record it wraps. Identity is the root's typed
 `InsectRankName`, returned polymorphically by `name()`. No standalone query — used
 only as the rank-chain and child-card building blocks assembled inside the `Insect`
 read model, by `InsectFactory`. Permits carry no `features()` slot; features live on

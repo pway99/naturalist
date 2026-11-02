@@ -1,6 +1,6 @@
 # Insects Domain Model Reference
 
-## InsectSpecies JSON Schema
+## InsectSpeciesInfo JSON Schema
 
 ```json
 {
@@ -11,8 +11,8 @@
     "genus": "<Genus — capitalised, or null>",
     "species": "<species epithet — lowercase, or null>"
   },
-  "genusName": "<kebab-case InsectGenus slug if the parent genus is catalogued, else null>",
-  "familyName": "<kebab-case InsectFamily slug if the parent family is catalogued, else null>",
+  "genusName": "<kebab-case InsectGenusInfo slug if the parent genus is catalogued, else null>",
+  "familyName": "<kebab-case InsectFamilyInfo slug if the parent family is catalogued, else null>",
   "description": {
     "preschool": "...",
     "elementary": "...",
@@ -45,7 +45,7 @@
 ```json
 {
   "name": "<UUID string — e.g. dfc3f072-0ee1-4a30-b81b-a4b8f4a9221b>",
-  "insectSpeciesName": "<slug matching InsectSpecies.name exactly>",
+  "insectSpeciesName": "<slug matching InsectSpeciesInfo.name exactly>",
   "dateAdded": "<ISO-8601 instant in UTC — e.g. 2026-04-17T22:39:00Z>",
   "resourceName": "<original filename including extension — e.g. IMG_9047.HEIC>"
 }
@@ -55,7 +55,7 @@
 
 - Domain records carry no persistence id (ADR-021) — there is no `id` or `insectSpeciesId` field
 - `name` — UUID v4 string; each image record gets its own UUID; never reuse
-- `insectSpeciesName` — must match `InsectSpecies.name` byte-for-byte; any mismatch
+- `insectSpeciesName` — must match `InsectSpeciesInfo.name` byte-for-byte; any mismatch
   will cause a runtime resolution failure
 - `dateAdded` — ISO-8601 instant in UTC (`"2026-04-17T22:39:00Z"`); Jackson deserialises
   this as `java.time.Instant` with `JavaTimeModule`. Never use date-only format — it will

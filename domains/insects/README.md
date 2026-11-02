@@ -12,8 +12,8 @@ ecology, chemistry, and life-stage biology on top of the Linnaean backbone.
 
 ## Core concepts
 
-**The catalog is a Linnaean hierarchy of first-class entities.** `InsectOrder`,
-`InsectFamily`, `InsectGenus`, and `InsectSpecies` are each a `NamedEntity`
+**The catalog is a Linnaean hierarchy of first-class entities.** `InsectOrderInfo`,
+`InsectFamilyInfo`, `InsectGenusInfo`, and `InsectSpeciesInfo` are each a `NamedEntity`
 with a typed slug identity (`lepidoptera`, `papilionidae`, `battus`,
 `battus-philenor`) and a typed foreign key to its immediate parent. There is no
 grandparent shortcut — resolving species → order walks the chain.

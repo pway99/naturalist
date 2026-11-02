@@ -42,7 +42,7 @@ events are `Entity` records: immutable, equality by value. The other four marker
 Entity, Aggregate, and ValueObject are Java records. No Lombok. `BehavioralCollection` is
 the single exception — `final class` to enable package-private construction (see ADR-011).
 
-Reference implementations: `Compound` (NamedEntity), `InsectSpecies` (NamedEntity),
+Reference implementations: `Compound` (NamedEntity), `InsectSpeciesInfo` (NamedEntity),
 `CompoundInfo` (ValueObject), `CompoundCollection` (BehavioralCollection). Reading the
 source is faster than a spec.
 
@@ -290,7 +290,7 @@ visibility:
 | `<DomainNoun>Views`             | `interface` | public          | presentation read models (records implementing `ReadModel`) |
 | `<DomainNoun>ViewQuery`         | `interface` | public          | none — flat methods returning `<DomainNoun>Views` models |
 
-`EntitySubject` drops the domain prefix — `InsectSpecies` → `Species`, `InsectImage`
+`EntitySubject` drops the domain prefix — `InsectSpeciesInfo` → `Species`, `InsectImage`
 → `Image`. The outer namespace carries the prefix.
 
 This bare-`EntitySubject` rule is for **nested** namespace types (and the N=1-collapsed
@@ -307,7 +307,16 @@ an `interface` are implicitly `public static` — visibility cannot be restricte
 access) at both source and bytecode level. Queries and collections *want* their
 nested types public; they are the consumer surface.
 
-**Views namespace.** A read model that exists for a viewer or a list layout — viewer state, page wrappers, list cards — nests in `<DomainNoun>Views`, and only `<DomainNoun>ViewQuery` returns one, so the domain's file tree and its `<DomainNoun>Query` show only the domain's nature. The view-query impl depends only on `<DomainNoun>Query`: views are derived from the biology, and no biology type refers to a view. Types that are components of the composed biological read model (`InsectTaxonView`, `InsectCitationView`) are biology, not views. Plants adopts this when ported.
+**Views namespace.** A read model that exists for a viewer or a list layout — viewer state, page wrappers, list cards — nests in `<DomainNoun>Views`, and only `<DomainNoun>ViewQuery` returns one, so the domain's file tree and its `<DomainNoun>Query` show only the domain's nature. The view-query impl depends only on `<DomainNoun>Query`: views are derived from the biology, and no biology type refers to a view. Types that are components of the composed biological read model (`InsectTaxon` and its permits, `InsectCitations`) are biology, not views, and carry no `View` suffix. Plants adopts this when ported.
+
+**Info pattern.** When a composed biology read model and its persisted root would want the same name, the persisted
+`NamedEntity` takes the `Info` suffix and the composed `ReadModel` takes the bare name, so the bare name is the fuller
+thing a biologist means: `SoilProfileInfo` / `SoilProfile`, `InsectSpeciesInfo` / `InsectSpecies` (the species with its
+photographs). The `<DomainNoun><EntitySubject>` stack (query/command impls, mocks, test-entity-sources, DBOs) keeps
+the rank subject (`InsectSpeciesQueryImpl` persists `InsectSpeciesInfo`). It renames only where, as in soil, both
+types own a stack of their own. A sealed family whose permits are top-level records spells `permits` explicitly.
+`CompoundInfo` in chemistry predates this and means a field group inside `Compound`, so do not copy it.
+Plants adopts this when ported.
 
 **N=1 collapse rule.** When a package contains exactly one entity, skip the
 namespace: declare a top-level package-private `<Entity>Repository` interface and
@@ -340,7 +349,7 @@ Short version:
 
 **Reference implementation:** `domains/insects/insects-api/` — `InsectRepository`
 (namespace class), `InsectQuery` (namespace interface), `InsectEntityCollections`
-(collection namespace), `InsectSpecies` (nested value-object graph). Adapters
+(collection namespace), `InsectSpeciesInfo` (nested value-object graph). Adapters
 live in `insects-core/`: `InsectQueryImpl`, `SpeciesQueryImpl`, `ImageQueryImpl`,
 and the read-model factory `InsectFactory` (concrete, no interface — the
 template for factory placement).

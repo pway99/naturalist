@@ -7,7 +7,7 @@ description: >
   time the user provides image files alongside an insect question. Also triggers on
   explicit invocations like "identify-insect [folder] [files...]". This skill handles the
   complete workflow autonomously: vision-based identification, checking whether the species
-  is already cataloged, creating a new InsectSpecies entry if needed (with four-level
+  is already cataloged, creating a new InsectSpeciesInfo entry if needed (with four-level
   Durrell descriptions), and appending InsectImage records for every photo. Use it even
   if the user only says "add this to the insects catalog" -- don't ask them to do the steps
   manually.
@@ -20,7 +20,7 @@ description: >
 Given a folder and one or more image filenames, perform the full catalog workflow:
 
 1. Read and visually identify the insect in the images
-2. Check `insects.json` — add a new `InsectSpecies` entry if the species isn't there yet
+2. Check `insects.json` — add a new `InsectSpeciesInfo` entry if the species isn't there yet
 3. Append `InsectImage` records to `insect-images.json` for every photo
 4. Verify both files are valid JSON and report the result
 
@@ -117,7 +117,7 @@ the files you are about to add — skip those files to avoid duplicates.
 
 ---
 
-## Step 4 — Add New InsectSpecies (only if not in catalog)
+## Step 4 — Add New InsectSpeciesInfo (only if not in catalog)
 
 Append a new entry to `insects.json`. Follow the schema in `references/domain-model.md`
 exactly — field order, null values, and guild casing all matter for deserialization.
@@ -167,7 +167,7 @@ Append one record per image to `insect-images.json`. See the schema in
 `references/domain-model.md`. Key points:
 
 - `name` → the generated UUID string
-- `insectSpeciesName` → must exactly match the `name` field of the `InsectSpecies` entry
+- `insectSpeciesName` → must exactly match the `name` field of the `InsectSpeciesInfo` entry
 - `dateAdded` → ISO-8601 instant in UTC (`"2026-04-17T22:39:00Z"`). The Java type is
   `java.time.Instant` — never use date-only format (`"2026-04-17"`) as it will fail
   deserialization

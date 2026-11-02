@@ -76,7 +76,7 @@ Find the entity class. Read it to determine:
 **Namespace naming.** `<DomainNoun>Query` is the domain noun for the package:
 `com.naturalist.insects` → `InsectQuery`; `com.naturalist.insects.lifestage` →
 `InsectLifeStageQuery` (sub-package compound noun). `<EntitySubject>` drops the
-namespace prefix — `InsectSpecies` → `Species`, `InsectImage` → `Image`. A
+namespace prefix — `InsectImage` → `Image`, `InsectSpeciesInfo` → `Species`. A
 sub-package entity that already reads cleanly without a prefix (`LifeStage`) keeps
 its name as the subject.
 
@@ -408,8 +408,8 @@ The full inherited contract plus any domain-specific tests must pass.
 | Contract test  | `<Entity>QueryImplTest`                                           | `<domain>-core/src/test/java/.../<package>/` |
 | Namespace test | `<DomainNoun>QueryImplTest`                                       | `<domain>-core/src/test/java/.../<package>/` |
 
-`<Entity>` is the full entity class name (`InsectSpecies`); `<EntitySubject>`
-drops the domain prefix (`Species`); `<DomainNoun>` is the namespace prefix
+`<Entity>` is the full entity class name (`InsectImage`); `<EntitySubject>`
+drops the domain prefix (`Image`); `<DomainNoun>` is the namespace prefix
 (`Insect`).
 
 ---

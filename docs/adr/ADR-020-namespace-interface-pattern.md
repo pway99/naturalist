@@ -91,7 +91,7 @@ Concretely, prefix `<DomainNoun>` onto the simple name of every:
 Leave unchanged: the outer namespace types (`InsectQuery`, `InsectRepository`,
 `InsectEntityCollections`) and their impls (`InsectQueryImpl` — already prefixed), the
 nested ports (`SpeciesQuery`, `ImageRepository`), N=1-collapsed ports (`CultivarQuery`,
-`LifeStageRepository`), and the shared entity/value types (`InsectSpecies`,
+`LifeStageRepository`), and the shared entity/value types (`InsectSpeciesInfo`,
 `Species`-subjected collections).
 
 Rationale: the namespace `interface`/`class` *is* the disambiguator for the types it
@@ -109,7 +109,7 @@ different structures.
 | `<DomainNoun>Query`             | `interface` | public          | `<EntitySubject>Query`, `<EntitySubject>AggregateQuery` |
 | `<DomainNoun>EntityCollections` | `interface` | public          | `<EntitySubject>Collection` (`final class`)             |
 
-`EntitySubject` drops the domain prefix — `InsectSpecies` → `Species`. Outer namespace
+`EntitySubject` drops the domain prefix — `InsectImage` → `Image`. Outer namespace
 carries the prefix.
 
 Standalone concrete classes (section 5) invert this: they carry `<DomainNoun><EntitySubject>`.

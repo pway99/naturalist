@@ -302,7 +302,7 @@ results to the user.
 | Contract test     | `<Entity>RepositoryTest`      | `<domain>-repository-test/src/main/java/.../` |
 | Mock test         | `<Entity>RepositoryMockTest`  | `<domain>-repository-test/src/test/java/.../` |
 
-`<Entity>` is the full entity class name (`InsectSpecies`); `<EntitySubject>` drops the
-domain prefix (`Species`); `<DomainNoun>` is the namespace prefix (`Insect`). For an N=1
+`<Entity>` is the full entity class name (`InsectImage`); `<EntitySubject>` drops the
+domain prefix (`Image`); `<DomainNoun>` is the namespace prefix (`Insect`). For an N=1
 package the namespace class is skipped and the nested interface becomes a top-level
 package-private `<EntitySubject>Repository`.
