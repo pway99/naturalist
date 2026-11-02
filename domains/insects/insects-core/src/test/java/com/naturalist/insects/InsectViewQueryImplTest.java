@@ -72,8 +72,8 @@ class InsectViewQueryImplTest {
     void rankPage_rejectsNullName() {
         assertThatThrownBy(() -> views.rankPage(null, FLORA)).isInstanceOf(InvariantViolationException.class);
     }
-    private void photo(InsectSpeciesName name) {
-        context.insectCommand().photos().add(name, ImageUpload.of(JPEG), FLORA, "seen", null);
+    private void sighting(InsectSpeciesName name) {
+        context.insectCommand().sightings().record(name, FLORA, null);
     }
 
     @Test
@@ -93,7 +93,7 @@ class InsectViewQueryImplTest {
 
     @Test
     void speciesCards_withViewer_marksCollected() {
-        photo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+        sighting(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
         Page<InsectViews.SpeciesCard> page = views.speciesCards(PageRequest.first(100), FLORA);
 
@@ -104,8 +104,8 @@ class InsectViewQueryImplTest {
 
     @Test
     void collectedBy_returnsOnlyObservedSpecies() {
-        photo(TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
-        photo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+        sighting(TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
+        sighting(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
 
         Page<InsectViews.SpeciesCard> page = views.collectedBy(FLORA, PageRequest.first(10));
 
@@ -117,9 +117,9 @@ class InsectViewQueryImplTest {
 
     @Test
     void collectedBy_pagesOverTheCollection() {
-        photo(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
-        photo(TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
-        photo(TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
+        sighting(TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name);
+        sighting(TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name);
+        sighting(TestInsectsIdentifiers.InsectSpecies.HippodamiaConvergens.name);
 
         Page<InsectViews.SpeciesCard> first = views.collectedBy(FLORA, PageRequest.of(0, 2, 2));
         Page<InsectViews.SpeciesCard> second = views.collectedBy(FLORA, PageRequest.of(1, 2, 2));
