@@ -48,7 +48,7 @@ two of them are worth a decision before public hosting (the action items below).
 - `SecretName` is restricted to kebab-case (`^[a-z0-9]+(-[a-z0-9]+)*$`), so file-source path
   traversal is impossible.
 - The Anthropic base URL is never set by the app; the SDK defaults to `api.anthropic.com` and
-  redacts `x-api-key` in its request logging.
+  redacts the credential header in its request logging.
 - The `VISION` gate does not depend on which `VisionService` is wired.
 - The app has no actuator, so `/env` and `/configprops` are not exposed.
 - `System.getenv` is called only in `EnvironmentSecretProvider` and the documented
