@@ -6,7 +6,6 @@ import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
 import com.naturalist.resilience.ResilienceConfig.RateLimiterConfig;
 import com.naturalist.resilience.ResilienceConfig.RetryConfig;
 import com.naturalist.resilience.ResilienceConfig.TimeoutConfig;
-import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import org.junit.jupiter.api.Test;
 
@@ -183,7 +182,8 @@ class Resilience4jResilienceTest {
             Future<String> second = pool.submit(() -> bulkhead.execute(() -> "second"));
 
             assertThatThrownBy(second::get)
-                    .hasCauseInstanceOf(BulkheadFullException.class);
+                    .hasCauseInstanceOf(com.naturalist.resilience.BulkheadFullException.class)
+                    .cause().hasMessageContaining("narrow");
 
             holdInside.countDown();
             assertThat(first.get()).isEqualTo("first");
@@ -234,6 +234,15 @@ class Resilience4jResilienceTest {
 
         assertThatThrownBy(() -> resilience.rateLimiter("strict").forKey(" "))
                 .isInstanceOf(com.naturalist.exception.InvariantViolationException.class);
+    }
+
+    @Test
+    void bulkhead_releasesPermit_whenTheSupplierThrows() {
+        Resilience resilience = new Resilience4jResilience(List.of(new BulkheadConfig("narrow", 1, Duration.ZERO)));
+        Bulkhead bulkhead = resilience.bulkhead("narrow");
+        assertThatThrownBy(() -> bulkhead.execute(() -> { throw new IllegalStateException("vision failed"); }))
+                .isInstanceOf(IllegalStateException.class);
+        assertThat(bulkhead.execute(() -> "next")).isEqualTo("next");
     }
 
 }

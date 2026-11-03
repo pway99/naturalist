@@ -14,11 +14,21 @@ final class Resilience4jBulkhead implements Bulkhead {
 
     @Override
     public <T> T execute(Supplier<T> supplier) {
-        return delegate.executeSupplier(supplier);
+        try {
+            return delegate.executeSupplier(supplier);
+        } catch (io.github.resilience4j.bulkhead.BulkheadFullException full) {
+            throw new com.naturalist.resilience.BulkheadFullException(
+                    "Bulkhead full for strategy '" + delegate.getName() + "'", delegate.getName());
+        }
     }
 
     @Override
     public void execute(Runnable runnable) {
-        delegate.executeRunnable(runnable);
+        try {
+            delegate.executeRunnable(runnable);
+        } catch (io.github.resilience4j.bulkhead.BulkheadFullException full) {
+            throw new com.naturalist.resilience.BulkheadFullException(
+                    "Bulkhead full for strategy '" + delegate.getName() + "'", delegate.getName());
+        }
     }
 }
