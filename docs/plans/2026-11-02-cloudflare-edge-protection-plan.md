@@ -20,7 +20,7 @@ Fixed inputs: zone `backyardnaturalist.app`, Cloudflare **Free**, hosting undeci
 | 2 | **Keyed limiters** — the `keyed-rate-limits` WIP (branched at `bf0c34fe`; rebase onto `main` first): `RateLimiter.forKey` (kernel), `Resilience4jRateLimiter` per-key LRU, `ClientKey`, the `auth.login.client` / `auth.register.client` pair, plus: IPv6 keyed on the /64 prefix; `apps/CLAUDE.md` cross-reference resolved | 1 (deploy order; it compiles alone) | ~300 |
 | 3 | **Challenge port** (`kernels/framework`, `com.naturalist.challenge`): `ChallengeVerifier`, `ChallengeSubmission` (VO), `ChallengeVerdict`, `LogOnlyChallengeVerifier`; `kernels/CLAUDE.md` entry | — | ~200 |
 | 4 | **Turnstile adapter** `adapters/challenge-turnstile`: `TurnstileChallengeVerifier`, siteverify client on `java.net.http`, response mapping, `@Resilient("challenge.verify")` via the programmatic facade; `adapters/CLAUDE.md` member entry; reactor pom | 3 | ~350 |
-| 5 | **Registration wiring**: `ChallengeConfiguration` (fail-closed boot, log-only opt-in, observed), `ChallengeProperties`, the three `challenge.verify` configs in `ResilienceConfiguration`, `RegistrationController.submit` verify-before-register, `register.jte` widget, test yml `log-only: true` | 4; 1 for a meaningful `remoteip` | ~350 |
+| 5 | **Registration wiring**: `ChallengeConfiguration` (fail-closed boot, log-only opt-in, credential via `SecretProvider`, observed), `ChallengeProperties`, the three `challenge.verify` configs in `ResilienceConfiguration`, `RegistrationController.submit` verify-before-register, `register.jte` widget, test yml `log-only: true` | 4; 1 for a meaningful `remoteip` | ~350 |
 | 6 | **Login wiring**: `LoginChallengeFilter` after `LoginRateLimitFilter`, `login.jte` widget + `?challenge` / `?unavailable` messages (model attributes from `HomeController.login`) | 5 | ~200 |
 | 7 | **Ops runbook + backstop thresholds**: `docs/ops/cloudflare-edge.md` (below), `auth.login` 300 → 600, `auth.register` 10 → 60, work-tracker row closed | 2, 6 (thresholds assume the edge and Turnstile are live) | ~100 |
 
@@ -37,9 +37,11 @@ them. Each PR runs `mvn verify` plus the completeness gate
 - **`ChallengeVerdict`**: `(Outcome outcome, List<String> reasons)` with
   `Outcome { PASSED, FAILED, UNAVAILABLE }`; `reasons` are Turnstile's error codes or
   the adapter's own `action-mismatch` / `hostname-mismatch` / `missing-token`.
-- **Turnstile adapter**: constructor `(TurnstileConfig config, Resilience resilience)`
-  where `TurnstileConfig(secretKey, @Nullable expectedHostname, endpoint)`; the
-  endpoint is a constructor input so tests point it at a local stub. Nesting:
+- **Turnstile adapter**: constructor `(TurnstileConfig config, SecretProvider secrets,
+  Resilience resilience)` where `TurnstileConfig(@Nullable expectedHostname, endpoint)`;
+  the credential is `secrets.require(SecretName.of("challenge-credential"))`, resolved
+  once at construction like the model adapters (ADR-028); the endpoint is a
+  constructor input so tests point it at a local stub. Nesting:
   `circuitBreaker.execute(() -> timeout.execute(() -> retry.execute(() -> exchange())))`
   — the 2 s timeout bounds the whole verification; the JDK `HttpClient` request
   timeout is 900 ms per attempt. `exchange()` **returns** a verdict for any 2xx
@@ -50,10 +52,11 @@ them. Each PR runs `mvn verify` plus the completeness gate
   the /64 `ClientKey`. Observe under `ALWAYS`: `challengePassed`, `actionMatches`,
   `hostnameMatches` (skipped, with a standing `hostnameChecked` violation, when
   `expectedHostname` is blank), `serviceAvailable`.
-- **`ChallengeConfiguration`** mirrors `EmailConfiguration`: `secret-key` present →
-  Turnstile; else `log-only=true` → `LogOnlyChallengeVerifier` (standing
-  `turnstile` violation); else `IllegalStateException` naming both remedies.
-  `site-key` must accompany `secret-key` (observed `siteKeyConfigured`). Expose the
+- **`ChallengeConfiguration`** mirrors `EmailConfiguration`: `challenge-credential`
+  resolvable through the `SecretProvider` bean → Turnstile; else `log-only=true` →
+  `LogOnlyChallengeVerifier` (standing `turnstile` violation); else
+  `IllegalStateException` naming both remedies. `naturalist.challenge.site-key` must
+  accompany a resolvable credential (observed `siteKeyConfigured`). Expose the
   site key to templates through a model attribute (`challengeSiteKey`, empty in
   log-only mode → template renders no widget).
 - **Templates**: when `challengeSiteKey` is non-empty, render
@@ -109,8 +112,29 @@ on client identity, the login/registration limiters and Turnstile. Agreed split:
 | Composition (PR 5) | `ChallengeConfigurationTest`, the `EmailConfigurationTest` shape: neither secret nor flag → refuses to boot and both violations counted; flag only → log-only verifier and the standing `turnstile` violation; secret present → Turnstile adapter regardless of the flag. `ResilienceConfigurationTest` gains the three `challenge.verify` names. |
 | Registration (PR 5) | `@SpringBootTest` + MockMvc with a `@Primary` stub `ChallengeVerifier` returning a scripted verdict: `PASSED` → redirect `/register?registered`; `FAILED` → 200 re-render with the message, no account created, no email; `UNAVAILABLE` → 503 with `Retry-After`, no account. The existing `RegistrationFlowWebMvcTest` keeps passing on the test yml's `log-only: true`. |
 | Login (PR 6) | Same stub: `FAILED` → 303 `/login?challenge` and **no** `AuthenticationSuccessEvent` / `badCredentials` observation (the password was never checked); `UNAVAILABLE` → 303 `/login?unavailable`; `PASSED` → normal login. Order test: a client over `auth.login.client` gets 429 and the stub is never called. |
-| Manual browser check (any PR ≥ 5) | Run the console with the Cloudflare test keys (`site-key 1x00000000000000000000AA`, `secret-key 1x0000000000000000000000000000000AA`) against the real siteverify endpoint; then with `2x…` keys to see the refusal; `3x…FF` to see the interactive widget. Needs internet, not an account. |
+| Manual browser check (any PR ≥ 5) | Run the console with the Cloudflare test keys (`site-key 1x00000000000000000000AA`, `CHALLENGE_CREDENTIAL=1x0000000000000000000000000000000AA`) against the real siteverify endpoint; then with `2x…` keys to see the refusal; `3x…FF` to see the interactive widget. Needs internet, not an account. |
 | Edge rules E1–E5, tunnel | Cannot be tested without the zone. The runbook below carries the post-deploy checks. |
+
+### Owed by PR 5, found while building PRs 3 and 4
+
+- **An overlong token must not become a 500.** The port refuses a token over
+  `ChallengeSubmission.MAX_TOKEN_LENGTH` with `InvariantViolationException`, and the
+  form field is attacker-controlled. The controller and the filter treat an overlong
+  field as a failed challenge before calling the port.
+- **Prove the adapter against the real strategy.** An adapter may not depend on another
+  adapter, so `TurnstileChallengeVerifierTest` runs on a hand-written `Resilience` double.
+  `management-console` has both on its classpath: add a test there that wires the real
+  `challenge.verify` strategy and checks the 2 s ceiling and the open breaker through
+  Resilience4j, whose timeout and open-state exceptions the double only imitates.
+- **The verifier blocks a shared worker pool.** `Resilience4jTimeout` runs every timed
+  supplier on one pool sized to the processor count, shared with the other `timeout`
+  strategies such as `catalog.fanout` and `image.store`. A slow siteverify can hold a
+  worker for up to 2 s per sign-in, and a worker keeps running after its caller has timed
+  out, so a login burst could queue those other calls. Size this in PR 5 before wiring:
+  either give `challenge.verify` a bulkhead, or give the timeout adapter a dedicated pool.
+- **Test keys may not echo the action or hostname.** The manual browser check below has
+  not been run, so what the vendor's test keys return is unconfirmed. If they produce
+  `action-mismatch`, verify with a real widget; do not relax the check.
 
 ## Ops runbook (`docs/ops/cloudflare-edge.md`, written in PR 7)
 
@@ -121,8 +145,9 @@ on client identity, the login/registration limiters and Turnstile. Agreed split:
    `backyardnaturalist.app` → `http://localhost:8080`. Firewall / platform ingress:
    no inbound 80/443.
 3. Turnstile: one widget, Managed, hostname `backyardnaturalist.app`; set
-   `naturalist.challenge.site-key` / `secret-key` at deploy, never in the yml
-   (the `AdminProperties` placeholder trap applies).
+   `naturalist.challenge.site-key` at deploy and supply `challenge-credential` the way
+   `model-credential` is supplied (`docs/runbooks/secret-rotation.md`); never in the
+   yml (the `AdminProperties` placeholder trap applies).
 4. Security → WAF: rate-limiting rule E1; custom rule E2; Bot Fight Mode on (E3);
    Free Managed Ruleset on (E4).
 5. App: `naturalist.email.public-url=https://backyardnaturalist.app`;

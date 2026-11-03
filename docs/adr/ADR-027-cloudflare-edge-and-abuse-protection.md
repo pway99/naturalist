@@ -195,12 +195,17 @@ lockout.
   siteverify outage pauses sign-ups and sign-ins, including the config admin's, for
   its duration. Escape hatch for an incident: `naturalist.challenge.log-only=true`
   and restart, which is loud on the dashboard.
-- **Opt-in dev/test mode, like `naturalist.email.log-only`**: with
-  `naturalist.challenge.secret-key` (and `site-key`) set, the Turnstile adapter is
-  wired; with `naturalist.challenge.log-only=true` and no secret, the kernel
-  log-only verifier is wired and the templates render no widget; with neither, the
-  app **refuses to boot** naming both remedies. The test `application.yml` sets
-  `log-only: true`; the main one sets nothing. For a manual browser check against
+- **Opt-in dev/test mode, like `naturalist.email.log-only`**: with the
+  `challenge-credential` secret resolvable through the kernel `SecretProvider`
+  (`CHALLENGE_CREDENTIAL`, or `<dir>/challenge-credential`; ADR-028, the
+  `model-credential` shape) and `naturalist.challenge.site-key` set (the site key is
+  public, since it is rendered into the page, so it stays a plain property), the
+  Turnstile adapter is wired; with `naturalist.challenge.log-only=true` and no
+  resolvable credential, the kernel log-only verifier is wired and the templates
+  render no widget; with neither, the app **refuses to boot** naming both remedies.
+  The adapter resolves the credential once, at construction, and never names what it
+  unlocks (the "never name a credential" rule in the root `CLAUDE.md`). The test
+  `application.yml` sets `log-only: true`; the main one sets nothing. For a manual browser check against
   the real endpoint, Cloudflare's documented test keys (sitekey
   `1x00000000000000000000AA` always passes, `2x…AB` always fails,
   `3x…FF` forces the interactive challenge; secret `1x…AA` passes, `2x…AA` fails,
@@ -251,9 +256,9 @@ Recorded so they are not reintroduced.
 ## Consequences
 
 - Deployment gains a hard prerequisite list: a zone on Cloudflare, a tunnel and
-  connector, one Turnstile widget, the E1–E5 settings, and three secrets
-  (`naturalist.challenge.site-key`, `secret-key`, the tunnel token). The runbook
-  in the plan carries them.
+  connector, one Turnstile widget, the E1–E5 settings, the public
+  `naturalist.challenge.site-key` property, the `challenge-credential` secret and
+  the tunnel token. The runbook in the plan carries them.
 - `adapters/` gains `challenge-turnstile`; `kernels/framework` gains
   `com.naturalist.challenge`; the composition root gains `ChallengeConfiguration`
   and `ChallengeProperties` and the `challenge.verify` strategy.
@@ -269,7 +274,8 @@ Recorded so they are not reintroduced.
 
 ## Open items
 
-Raised during ADR-028's review of this ADR; neither changes the decisions above.
+Raised during ADR-028's review of this ADR. The first changes no decision; the second
+amended D6 when it was resolved.
 
 - **Add `POST /insects/identify` (and `/plants/identify`) to rule E1's path set?**
   Recommendation: **no** for E1 — identification is already `VISION`-gated,
@@ -277,10 +283,7 @@ Raised during ADR-028's review of this ADR; neither changes the decisions above.
   per-address limiter and bulkhead; a path-only 10-per-10-s edge rule would also
   count the gallery page loads that share the prefix. Revisit if Security Events
   show volumetric POSTs reaching the origin on those routes.
-- **Should `naturalist.challenge.secret-key` resolve through ADR-028's
-  `SecretProvider` port?** Recommendation: **yes, once the port exists** — the
-  Turnstile secret is exactly the class of credential that port is for, and
-  `ChallengeConfiguration` should read it the way the Anthropic key is read.
-  Until then it is a plain Spring property supplied at deploy time, never in the
-  yml (the `AdminProperties` placeholder trap applies). The fail-closed boot rule
-  is unchanged either way.
+- **Should the Turnstile credential resolve through ADR-028's `SecretProvider`
+  port?** **Resolved 2026-11-03: yes.** The port shipped (`5f725b0e`), so D6 now reads
+  the credential as `challenge-credential` through it, exactly as the model credential
+  is read, and no Spring property carries it. The fail-closed boot rule is unchanged.

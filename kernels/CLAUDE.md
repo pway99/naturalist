@@ -36,6 +36,16 @@ meta-annotations. The `adapters/spring-runtime/` module discovers annotated
 classes and registers them as Spring beans without domain code importing
 Spring (ADR-025).
 
+The framework also hosts the cross-boundary **ports** whose vendor adapters live
+under `adapters/`, each with a zero-dependency default beside it so dev and CI run
+with nothing external: `com.naturalist.notification.EmailSender`
+(`LoggingEmailSender`), `com.naturalist.secrets.SecretProvider`
+(`EnvironmentSecretProvider`, `FileSecretProvider`; ADR-028), and
+`com.naturalist.challenge.ChallengeVerifier` (`LogOnlyChallengeVerifier`; ADR-027 D6:
+a `ChallengeSubmission` in, a `ChallengeVerdict` of `PASSED | FAILED | UNAVAILABLE`
+out; the fail-open/closed decision belongs to the caller, never the port). Every
+default is an explicit composition-root opt-in, never a silent fallback.
+
 ### framework-test
 
 Test infrastructure. `TestEntitySource`, `TestEntitySourceTest`,

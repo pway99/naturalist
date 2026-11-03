@@ -46,10 +46,9 @@ The primary threat is abuse of the endpoints that spend, not theft of the key.
 - The port is the home for the other deployment secrets ADR-027 introduces,
   the Turnstile secret key and the tunnel token, as well as the SMTP and
   datasource passwords the console takes from Spring properties today. ADR-027
-  passes the Turnstile secret as `naturalist.challenge.secret-key`; once this
-  port exists, `ChallengeConfiguration` resolves `challenge-secret` through
-  it instead. That is a one-line reconciliation inside ADR-027's registration
-  PR, recorded here so neither effort builds a second mechanism.
+  D6 now resolves the Turnstile secret as `challenge-credential` through this
+  port, in the `model-credential` shape (amended 2026-11-03), so neither effort
+  builds a second mechanism.
 
 ### The vendor adapters consume the port and nothing else
 
@@ -202,8 +201,8 @@ Recorded so they are not reintroduced.
   send the header; it is not an identity. Trust named proxies at the
   deployment layer only. Rejected here and in ADR-027.
 - **A second secret mechanism for the Turnstile key and tunnel token.**
-  ADR-027 passes the Turnstile secret as a Spring property; keeping that beside
-  `SecretProvider` would give the deployment two ways to carry a secret, two
+  ADR-027 first passed the Turnstile secret as a Spring property; keeping that beside
+  `SecretProvider` would have given the deployment two ways to carry a secret, two
   places to rotate and two procedures to rehearse. Rejected: those
   secrets move onto the port as soon as it exists.
 - **Workload Identity Federation now.** It retires the static key entirely and
