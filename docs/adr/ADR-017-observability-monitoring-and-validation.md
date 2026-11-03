@@ -14,12 +14,17 @@ processing. Structural, not cross-cutting.
 - **InvariantObservation** — result of one graph walk; exposes `violations()`.
 - **InvariantViolationException** — all violations from one pass (no iterative discovery).
 
-**Three roles, one walk**
+**Four roles, one walk**
 
 1. **Argument validation** — `observer.arguments("method", i -> i.entityName(name, "name")).throwWhenInvalid()`.
-2. **State observation** — `observer.entity(e, "label")` or `observer.observable(o, "label")`.
-   Terminal op chosen by the **consumer**.
-3. **Realtime monitoring** — `MonitoringMode.ALWAYS` emits per constraint inspected;
+   Values the *caller passed*.
+2. **State validation** — `observer.state("method", s -> s.notNull(zone, "zone").atLeast(count, 1, "count"))`.
+   Values the method *acquired or computed during its own run* (a fetched aggregate, a count, a
+   looked-up mapping, a decision). Same constraint lambda and scope as arguments; terminal op
+   chosen by the **consumer**.
+3. **Observable observation** — `observer.namedEntity(e, "label")` or `observer.observable(o, "label")`.
+   Walks the object's own `invariants()`. Terminal op chosen by the **consumer**.
+4. **Realtime monitoring** — `MonitoringMode.ALWAYS` emits per constraint inspected;
    `MonitoringMode.ON_FAILURE` (default) emits per violation.
 
 **Producer vs consumer (control flow)**
@@ -35,7 +40,7 @@ Used as metric tag and exception message path.
 **Decisions, not just arguments.** A business rule an operation decides (an email already
 registered, a token already consumed, a login against a suspended account) is observed as a
 predicate-named constraint — `isTrue(existing.isEmpty(), "emailUnregistered")`,
-`isFalse(token.isConsumed(), "isConsumed")` — via `observer.forMethod(m).arguments(...).observe(WARN)`
+`isFalse(token.isConsumed(), "isConsumed")` — via `observer.forMethod(m).state(...).observe(WARN)`
 *before* the exception the operation already throws; the thrown message never changes. The
 `name` is the predicate method a reviewer can open, so the metric tag reads as the reason.
 Security-critical classes (accounts, authentication, registration) run `MonitoringMode.ALWAYS`
@@ -57,7 +62,9 @@ to `io.micrometer.core.instrument.Metrics`.
 **One meter**
 
 - `naturalist.invariant.check` — one increment per inspected constraint. Tags: `constraint`,
-  `class`, `method`, `name`, `outcome` (`held` | `violated`), `level`. The monitoring mode
+  `class`, `method`, `name`, `outcome` (`held` | `violated`), `level`, `kind` (`argument` |
+  `state` | `observable` — what was observed; split on it to tell a bad caller from a bad
+  dependency). The monitoring mode
   selects which outcomes are emitted: `ON_FAILURE` emits `outcome=violated` only (low
   cardinality, always on); `ALWAYS` emits `outcome=held` too (high cardinality, opt-in).
   A violation is counted once, and an alert on `outcome=violated` reads the same in either

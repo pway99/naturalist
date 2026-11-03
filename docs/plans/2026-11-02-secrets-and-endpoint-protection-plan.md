@@ -3,7 +3,17 @@
 **Decision record:** [ADR-028](../adr/ADR-028-secrets-and-model-spend-protection.md)
 holds the decisions and the rejected alternatives. This plan holds the survey,
 the hosting comparison, the abuse layers, the rotation runbook and the sequenced
-work. Status: proposed 2026-11-02, nothing implemented.
+work.
+
+**Status (2026-11-03):** approved 2026-11-02. Steps 1 to 6 are implemented and
+committed on local main, unpushed (`5f725b0e`, `29766f81`..`20228523`, `bad2a93d`,
+`91ec05eb`). Still open, all outside the code: step 0 (vendor workspaces, spend
+limits, scoped keys, retiring today's key; the runbook log shows nothing recorded
+yet), the rehearsal in step 7, and step 8 (waits on the host decision and the
+Cloudflare plan's PR 7). The spike alert on refusals also waits on step 8, because
+no metrics backend is wired yet. Sections 1 to 5 are the survey and design as
+written on 2026-11-02; where they differ from ADR-028 or the code, those win.
+`/admin/secrets` was built and then withdrawn (ADR-028, rejected alternatives).
 
 **Goal:** deploy the management console publicly without the Anthropic API key
 reaching a client, a log, a config file or git, and with a cost ceiling the
@@ -251,7 +261,7 @@ documentation at setup time.
 
 | Host | Secret injection | Source property | Rotation mechanics | WIF later | Notes |
 |---|---|---|---|---|---|
-| Fly.io | `fly secrets set NAME=…` → env, machines restart | `environment` | set secret, rolling restart, verify fingerprint | Likely: Fly Machines mint OIDC tokens (issuer `oidc.fly.io/<org>`) | Cheapest managed path for a Spring Boot jar plus Postgres; forwarded headers from Fly proxy |
+| Fly.io | `fly secrets set NAME=…` → env, machines restart | `environment` | set secret, rolling restart, smoke identification | Likely: Fly Machines mint OIDC tokens (issuer `oidc.fly.io/<org>`) | Cheapest managed path for a Spring Boot jar plus Postgres; forwarded headers from Fly proxy |
 | Render | env vars / secret files, env groups; redeploy on change | `environment` or `file` | edit, redeploy | No | Simple; no identity token |
 | Railway | variables → env; redeploy | `environment` | edit, redeploy | No | Simple; no identity token |
 | AWS ECS Fargate / App Runner | Secrets Manager or SSM injected as env from the task definition | `environment` | update secret version, force new deployment | Not on ECS/App Runner (no OIDC JWT for tasks); yes on EKS via projected service-account tokens | A `secrets-aws` adapter only if hot rotation is wanted |
@@ -283,8 +293,9 @@ limits) can deactivate a key and read limits; key creation is Console-only.
 
 ## 6. Key rotation runbook
 
-Lives at `docs/runbooks/secret-rotation.md` once step 6 lands; this is
-its first draft. Fingerprint = first eight hex digits of SHA-256 of the key:
+The live version is [`docs/runbooks/secret-rotation.md`](../runbooks/secret-rotation.md);
+follow that one. This is its first draft, corrected where `/admin/secrets` was
+withdrawn. Fingerprint = first eight hex digits of SHA-256 of the key:
 
 ```bash
 printf %s "$KEY" | shasum -a 256 | cut -c1-8
@@ -295,13 +306,14 @@ printf %s "$KEY" | shasum -a 256 | cut -c1-8
 1. Console → workspace `naturalist-prod` → create key `naturalist-prod-YYYY-MM-DD`. Copy it once.
 2. Compute the fingerprint locally. Record date, key name and fingerprint in the runbook log. Never record the value.
 3. Update the store with the host's command (table in §5). Do not deactivate the old key yet.
-4. Restart or redeploy. Confirm `/admin/secrets` shows the new fingerprint.
+4. Restart or redeploy.
 5. Smoke: one identification in the deployment with a known photo. It counts against the budget; that is fine.
-6. Console (or Admin API `api_keys.update status=inactive`) → deactivate the old key. Delete it after seven days.
-7. Close the log entry with the old key's deactivation time.
+6. Console (or Admin API `api_keys.update status=inactive`) → deactivate the old key.
+7. Smoke again. A pass proves the new key is the live one; a failure means the deployment is still on the old one, so reactivate it and go back to step 3. Delete the old key after seven days.
+8. Close the log entry with the old key's deactivation time.
 
 **Emergency rotation** (suspected leak): deactivate the old key first, accept
-minutes of identification outage, then run steps 1 to 5 and 7. Afterwards read
+minutes of identification outage, then run steps 1 to 5 and 8. Afterwards read
 the workspace usage in the Console for anomalous spend and the per-naturalist
 counters at `/admin/usage` for the source.
 
@@ -330,10 +342,10 @@ approved.
 | 2 | **Kernel secrets package.** `SecretProvider`, `SecretName`, `Secret`, `MissingSecretException`, `EnvironmentSecretProvider`, `FileSecretProvider` in `kernels/framework`. | `SecretTest`: `toString` is `Secret[<fp>]`, fingerprint is 8 hex and stable, equality by value, blank value refused. `SecretNameTest`: kebab-case only, env mapping `model-credential → MODEL_CREDENTIAL`. `EnvironmentSecretProviderTest`: injected `Map` lookup for present / absent / blank → `MissingSecretException` naming the name and the source. `FileSecretProviderTest`: temp dir, trailing newline trimmed, missing file, unreadable file. |
 | 3 | **Adapters consume the port.** Both Anthropic adapters take `SecretProvider`; `System.getenv` removed; `NoOpVisionService` message reworded. | New `AnthropicVisionServiceTest` and `AnthropicTextGenerationServiceTest` (first tests in those modules): construction with a stub provider succeeds without network; missing secret → `MissingSecretException`; `buildTool` schema mapping (already pure) gets a direct test while the module is open. |
 | 4 | **Composition root selects by property.** `SecretsConfiguration` (`naturalist.secrets.source`), `VisionConfiguration` on `naturalist.vision.provider` with no default, fail closed, observed; test `application.yml` sets `provider: none`; `NoSystemGetenv` recipe in `EnforceArchitecture` with the one scoped exemption; `SecretsComplianceTest` ArchUnit for `com.anthropic` imports. | `VisionConfigurationTest` (context slices): `none` → `NoOpVisionService`; `anthropic` + stub secret source → `AnthropicVisionService`; `anthropic` with no secret → context fails, message names property, secret and source; property absent → context fails naming the property; unknown `secrets.source` → boot fails. Recipe test in `tooling/naturalist-rewrite` (the existing recipe-test pattern): a `System.getenv` in a scratch class is flagged, one in `com.naturalist.secrets` is not, `RdbmsDataSource` is not; repo-wide `rewrite:dryRun` green. `SecretsComplianceTest` green on the tree. All `@SpringBootTest`s green with `MODEL_CREDENTIAL` exported in the shell. |
-| 5 | **Request-size, concurrency and per-client limits.** Kernel `BulkheadFullException` beside `RateLimitExceededException`; `IdentificationRefused.Reason.BUSY`; bulkhead permit (`vision.identification`, 2, zero wait) taken in `InsectIdentificationCommandImpl` around the whole identification, after the rate gate and before `budget.reserve`; controller maps `BUSY` to `?limit=BUSY` and the identify page says so; adapter downscale of decodable images to 1568 px JPEG before base64; `IdentifyRateLimitFilter` (strategy `vision.identification.client`) keyed by `ClientKey` on `POST /*/identify` at 2/min; CSP (`connect-src`, `form-action`, `frame-ancestors`) and `nosniff` headers. | Bulkhead in core: a `Resilience` stub whose bulkhead rejects → `identify` throws `IdentificationRefused(BUSY)`, `budget.reserve` never called, `imageStore.store` never called, vision never called (extends `InsectIdentificationCommandTest`'s existing rate-gate case). Controller: `BUSY` → redirect with `limit=BUSY`. Downscale as a package-private pure function in the adapter: a generated 4000×3000 PNG → longest edge 1568, JPEG; an 800 px JPEG → unchanged bytes; a WebP byte array → returned unchanged. Filter: MockMvc, third POST from one address in a minute → 429, a second address unaffected, global limit still enforced. Headers: MockMvc asserts the exact CSP value and `X-Content-Type-Options` on `/insects/identify` and `/`, and a rendered `/login` and `/insects/species` still carry their inline style and script blocks (the policy must not have touched them). |
-| 6 | **Rotation support.** `/admin/secrets` view (the only place a resolution is shown; nothing is logged) (name, source, fingerprint, resolved-at) behind `ADMIN`; `docs/runbooks/secret-rotation.md` with the §6 text and a log table. | `AdminSecretsControllerTest` (`@WebMvcTest`): page shows fingerprint and never the value (assert the stub value's bytes are absent from the body). |
+| 5 | **Request-size, concurrency and per-client limits.** Kernel `BulkheadFullException` beside `RateLimitExceededException`; `IdentificationRefused.Reason.BUSY`; bulkhead permit (`vision.identification`, 2, zero wait) taken in `InsectIdentificationCommandImpl` around the whole identification, after the rate gate and before `budget.reserve`; controller maps `BUSY` to `?limit=BUSY` and the identify page says so; adapter downscale of decodable images to 1568 px JPEG before base64; `IdentifyRateLimitFilter` (strategy `vision.identification.client`) keyed by `ClientKey` on `POST /*/identify` at 2/min; CSP (`connect-src`, `form-action`, `frame-ancestors`) and `nosniff` headers. | Bulkhead in core: a `Resilience` stub whose bulkhead rejects → `identify` throws `IdentificationRefused(BUSY)`, `budget.reserve` never called, `imageStore.store` never called, vision never called (extends `InsectIdentificationCommandTest`'s existing rate-gate case). Controller: `BUSY` → redirect with `limit=BUSY`. Downscale as a package-private pure function in the adapter: a generated 4000×3000 PNG → longest edge 1568, JPEG; an 800 px JPEG → unchanged bytes; a WebP byte array → returned unchanged. Filter: third POST from one address in a minute → `303` to `/<domain>/identify?limit=RATE` (as built; the upload script follows redirects, so a `429` would only reload the form), a second address unaffected, global limit still enforced. Headers: MockMvc asserts the exact CSP value and `X-Content-Type-Options` on `/insects/identify` and `/`, and a rendered `/login` and `/insects/species` still carry their inline style and script blocks (the policy must not have touched them). |
+| 6 | **Rotation support.** `docs/runbooks/secret-rotation.md` with the §6 text and a log table. The `/admin/secrets` view planned here was built and then withdrawn (ADR-028, rejected alternatives): no UI or log shows a secret's source, path or fingerprint. | Behaviour, not a page: the runbook's smoke identification after the old key is deactivated proves which key is live. |
 | 7 | **Rehearsal and docs.** Run the runbook once end to end against the pre-public deployment; fix what the rehearsal exposes; README env-var section → properties; `.env*` in `.gitignore`; `work-tracker.md` row (the `apps/CLAUDE.md` proxy section is Cloudflare PR 1's). | The rehearsal log in the runbook with timings and the fingerprints before and after; `mvn verify` green with no key in the environment; CI unchanged and green. |
-| 8 | **Deploy configuration** (after the host is chosen). The store command for the chosen host, `naturalist.secrets.source`, `naturalist.vision.provider=anthropic`, and the Turnstile secret and tunnel token through the same source; forwarded-header trust and the edge checks are the Cloudflare runbook's (`docs/ops/cloudflare-edge.md`). | A deployed smoke identification; `/admin/secrets` shows the prod fingerprint; `/admin/resilience` lists `vision.identification` with its bulkhead and `vision.identification.client`; a request with a forged `CF-Connecting-IP` sent straight to the connector's public hostname is keyed by the address Cloudflare set, not the forged one (verify by reading the limiter key in the log). |
+| 8 | **Deploy configuration** (after the host is chosen). The store command for the chosen host, `naturalist.secrets.source`, `naturalist.vision.provider=anthropic`, and the Turnstile secret and tunnel token through the same source; forwarded-header trust and the edge checks are the Cloudflare runbook's (`docs/ops/cloudflare-edge.md`). | A deployed smoke identification; `/admin/resilience` lists `vision.identification` with its bulkhead and `vision.identification.client`; the forged-header check: from one machine, send `POST /login` through the public hostname twenty-five times, one every two seconds (slow enough to stay under Cloudflare rule E1), with a valid session's CSRF token (`CsrfFilter` otherwise answers `403` before the limiter) and a different forged `CF-Connecting-IP` each time. The requests must share one client bucket (ten a minute), so at least one is refused with the app's `429` ("Too many login attempts"), even if a one-minute cycle resets partway through. If the forged header were honoured, each would get its own bucket and none would be refused. Limiters log nothing, so that refusal is the evidence. Also an alert rule on `naturalist.invariant.check` violations (`withinRate`, `notBusy`, `withinBudget`, `withinClientRate`) once the host's metrics backend exists. |
 | later | **WIF adapter path** once the host issues identity tokens: `naturalist.vision.credential=federation`, federation issuer and rule created in the Console, the static key deactivated. | Boot with federation env vars and no `model-credential` secret → adapter constructs through the SDK's federation path; a smoke identification; the static key shown inactive in the Console. |
 
 Dependencies: 0 is independent of code. 1 (the Cloudflare plan's PRs 1–2)

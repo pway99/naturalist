@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 /**
  * The single entry point into the observability framework. An {@code Observer} performs
- * three complementary roles over the same constraint-graph walk:
+ * four complementary roles over the same constraint-graph walk:
  *
  * <ol>
  *   <li><b>Argument validation.</b> {@link #arguments(String, Consumer)} builds an
@@ -26,6 +26,13 @@ import java.util.function.Consumer;
  *       retains control over the data flow. Only a consumer observing a value it received
  *       may choose {@link InvariantObservation#throwWhenInvalid()}. Argument validation
  *       always throws — it is the producer's boundary contract.</li>
+ *   <li><b>State validation.</b> {@link #state(String, Consumer)} builds the same kind of
+ *       observation over values the method acquired during its own run — an aggregate fetched
+ *       from another api, a count, a looked-up value. Arguments are what the caller handed in;
+ *       state is what the method obtained. Emissions are tagged {@code kind=state} (arguments
+ *       {@code kind=argument}, observables {@code kind=observable}) on the one
+ *       {@code naturalist.invariant.check} meter. The terminal operation is the consumer's
+ *       choice.</li>
  *   <li><b>Realtime monitoring.</b> Constructing an observer with
  *       {@link MonitoringMode#ALWAYS} causes every observation to emit a metric for every
  *       constraint inspected, valid or invalid. With {@link MonitoringMode#ON_FAILURE} (the
@@ -99,6 +106,7 @@ public class Observer {
     /**
      * Build an {@link InvariantObservation} over a method's argument constraints.
      * Arguments are external input — user-supplied values crossing the method boundary.
+     * For values the method acquires during its own run, use {@link #state(String, Consumer)}.
      * The returned observation is terminal: the caller invokes
      * {@link InvariantObservation#throwWhenInvalid()} to validate, or inspects
      * {@link InvariantObservation#violations()} directly.
@@ -114,13 +122,51 @@ public class Observer {
      * }</pre>
      */
     public InvariantObservation arguments(String methodName, Consumer<? extends Constraints> constraintConsumer) {
+        return constraintBatch(methodName, constraintConsumer, ObservationKind.ARGUMENT);
+    }
+
+    // ---------------------------------------------------------------------------------
+    // State validation — values the method acquired during its own run
+    // ---------------------------------------------------------------------------------
+
+    /**
+     * Build an {@link InvariantObservation} over the state a method body depends on — values it
+     * acquired or computed during its own run rather than received from its caller: an entity or
+     * aggregate fetched from another api, a count, a looked-up mapping, a string read off a
+     * result. The constraint declarations and scope ({@code ClassName.methodName.label}) are the
+     * same as {@link #arguments(String, Consumer)}; only the meaning differs, and every emission
+     * carries {@code kind=state} instead of {@code kind=argument} so a violation points at what
+     * the method consumed, not at its caller.
+     *
+     * <p>Unlike arguments, the terminal operation is the call site's choice (ADR-017): a consumer
+     * that cannot continue on invalid state calls {@link InvariantObservation#throwWhenInvalid()};
+     * one that can degrade calls {@link InvariantObservation#observe(Level)}.
+     *
+     * <pre>{@code
+     * Zone zone = zoneQuery.getByName(zoneName);
+     * observer.state("assignPlot", s -> s
+     *         .notNull(zone, "zone")
+     *         .atLeast(zone.plotCount(), 1, "plotCount")
+     *         .notBlank(zone.ownerHandle(), "ownerHandle"))
+     *     .throwWhenInvalid();
+     * }</pre>
+     *
+     * <p>To walk an acquired {@link Observable}'s own declared invariants rather than the facts
+     * this method depends on, use {@link #observable(Observable, String)}.
+     */
+    public InvariantObservation state(String methodName, Consumer<? extends Constraints> constraintConsumer) {
+        return constraintBatch(methodName, constraintConsumer, ObservationKind.STATE);
+    }
+
+    private InvariantObservation constraintBatch(String methodName, Consumer<? extends Constraints> constraintConsumer,
+                                                 ObservationKind kind) {
         Constraints accumulator = new Constraints();
         @SuppressWarnings({"unchecked", "rawtypes"})
         Consumer<Constraints> consumer = (Consumer) constraintConsumer;
         consumer.accept(accumulator);
 
         String scope = referenceClass.getSimpleName() + "." + methodName;
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, kind);
     }
 
     // ---------------------------------------------------------------------------------
@@ -143,20 +189,21 @@ public class Observer {
     /**
      * Observe any named {@link Observable} within a method body. Walks the observable's
      * full constraint graph. A {@code null} observable produces a single failing
-     * {@code notNull} constraint.
+     * {@code notNull} constraint. To check specific facts this method depends on rather than
+     * the observable's own invariants, use {@link #state(String, Consumer)}.
      */
     public InvariantObservation observable(Observable observable, String label) {
         String scope = referenceClass.getSimpleName() + "." + label;
         if (observable == null) {
             Constraints accumulator = new Constraints();
             accumulator.notNull(this, ignored -> null, label);
-            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
         }
         Constraints accumulator = new Constraints();
         @SuppressWarnings({"unchecked", "rawtypes"})
         Consumer<Constraints> consumer = (Consumer) observable.invariants();
         consumer.accept(accumulator);
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
     }
 
     // ---------------------------------------------------------------------------------
@@ -172,7 +219,7 @@ public class Observer {
             String scope = referenceClass.getSimpleName() + ".<null>";
             Constraints accumulator = new Constraints();
             accumulator.notNull(this, ignored -> null, "observable");
-            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
         }
         Constraints accumulator = new Constraints();
         @SuppressWarnings({"unchecked", "rawtypes"})
@@ -180,7 +227,7 @@ public class Observer {
         consumer.accept(accumulator);
 
         String scope = referenceClass.getSimpleName() + "." + observable.getClass().getSimpleName();
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
     }
 
     /**

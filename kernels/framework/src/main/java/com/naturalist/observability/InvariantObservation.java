@@ -31,6 +31,11 @@ import java.util.stream.Collectors;
  * traffic dashboards. A violation is never counted twice, and an alert on
  * {@code outcome=violated} reads the same in either mode.
  *
+ * <p>Every emitted metric also carries a {@code kind} tag — {@code argument}, {@code state} or
+ * {@code observable} ({@link ObservationKind}) — naming what was observed: values the caller
+ * passed, values the method acquired during its own run, or an observable's declared
+ * invariants. Split on {@code kind} to tell a bad caller from a bad dependency.
+ *
  * <p>Every emitted metric also carries a {@code level} tag. A violated check takes
  * {@code error} when an exception is being thrown, otherwise the call-site value passed to
  * {@link #observe(Level)}; a held check is always {@code info}. Split on {@code outcome},
@@ -46,11 +51,14 @@ public class InvariantObservation {
     private final String scope;
     private final Set<Constraint<?>> constraints;
     private final Observer.MonitoringMode monitoringMode;
+    private final ObservationKind kind;
 
-    InvariantObservation(String scope, Set<Constraint<?>> constraints, Observer.MonitoringMode monitoringMode) {
+    InvariantObservation(String scope, Set<Constraint<?>> constraints, Observer.MonitoringMode monitoringMode,
+                         ObservationKind kind) {
         this.scope = scope;
         this.constraints = constraints == null ? Set.of() : Set.copyOf(constraints);
         this.monitoringMode = monitoringMode == null ? Observer.MonitoringMode.ON_FAILURE : monitoringMode;
+        this.kind = kind == null ? ObservationKind.OBSERVABLE : kind;
     }
 
     /**
@@ -123,6 +131,14 @@ public class InvariantObservation {
         return scope;
     }
 
+    /**
+     * What this observation looked at — the caller's arguments, the method's acquired state, or
+     * an observable's own invariants. Emitted as the {@code kind} tag.
+     */
+    public ObservationKind kind() {
+        return kind;
+    }
+
     private void emitMetrics(Level violationLevel, Level heldLevel) {
         // One increment per inspected constraint, on one meter: ON_FAILURE emits the violated
         // checks only, ALWAYS emits the held checks too. A violation is never counted twice.
@@ -139,6 +155,7 @@ public class InvariantObservation {
                         .tag("name", c.name())
                         .tag("outcome", held ? "held" : "violated")
                         .tag("level", (held ? heldLevel : violationLevel).tagValue())
+                        .tag("kind", kind.tagValue())
                         .incrementCounter();
             }
         } catch (Exception ignored) {

@@ -1,10 +1,12 @@
 # Secrets and Endpoint Protection Implementation Plan
 
+> **Status (2026-11-03):** all tasks done and committed on local main, unpushed. This is the plan as it was written, so three things differ from what shipped: Tasks 3 and 13 were withdrawn, Task 11's refusal is a redirect, and limiters log nothing. Each of those tasks carries a note. What remains is under "After the tasks" at the end.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Supply the model credential through a kernel `SecretProvider` port with environment and file sources, select the vision adapter by property, bound identification spend with a bulkhead, a per-client limiter and image downscaling, and write a rehearsed secret-rotation runbook.
 
-**Architecture:** A new zero-dependency `com.naturalist.secrets` package in `kernels/framework` (port, typed name, redacting value, two sources, a recording decorator) is consumed by the two Anthropic adapters and wired at the composition root by `naturalist.secrets.source` and `naturalist.vision.provider`. Spend ceilings stack outermost-first: the existing usage budgets and global rate gate gain a bulkhead in `InsectIdentificationCommandImpl` (a kernel `BulkheadFullException` and a `BUSY` refusal), a `ClientKey`-keyed limiter on the identify routes, and a JDK-only downscale inside the vision adapter. Two build gates (an OpenRewrite `NoSystemGetenv` recipe and an ArchUnit `SecretsComplianceTest`) keep the credential path honest; `/admin/secrets` shows fingerprints only.
+**Architecture:** A new zero-dependency `com.naturalist.secrets` package in `kernels/framework` (port, typed name, redacting value, two sources) is consumed by the two Anthropic adapters and wired at the composition root by `naturalist.secrets.source` and `naturalist.vision.provider`. Spend ceilings stack outermost-first: the existing usage budgets and global rate gate gain a bulkhead in `InsectIdentificationCommandImpl` (a kernel `BulkheadFullException` and a `BUSY` refusal), a `ClientKey`-keyed limiter on the identify routes, and a JDK-only downscale inside the vision adapter. Two build gates (an OpenRewrite `NoSystemGetenv` recipe and an ArchUnit `SecretsComplianceTest`) keep the credential path honest. No UI or log shows a secret's source, path or fingerprint (`/admin/secrets` was withdrawn; see Task 13).
 
 **Tech Stack:** Java 25, Maven reactor, Spring Boot 4 (composition root only), JTE, Anthropic Java SDK (`${anthropic-sdk-version}`), Resilience4j behind the kernel `Resilience` facade, `javax.imageio` (JDK), OpenRewrite (`tooling/naturalist-rewrite`), ArchUnit, JUnit 5 + AssertJ.
 
@@ -242,6 +244,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ---
 
 ### Task 3: `RecordingSecretProvider` and `SecretResolution`
+
+> **Withdrawn 2026-11-03 (Pat).** Removed with Task 13's page. Neither type exists; where later tasks consume them (Task 5's bean), the shipped code uses the plain `SecretProvider`.
 
 **Files:**
 - Create: `kernels/framework/src/main/java/com/naturalist/secrets/SecretResolution.java`
@@ -927,6 +931,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 11: `IdentifyRateLimitFilter`, two per minute per client address
 
+> **Changed in review, 2026-11-03.** A refusal is a `303` to `/<domain>/identify?limit=RATE`, not a `429`, because the upload script follows redirects and on any other answer only reloads the form. The path is matched with `PathPatternRequestMatcher`, not a servlet-path regex. Nothing is logged: the observer's `withinClientRate` count is the only record of the address, and a refusal of a signed-in naturalist also writes an `identification-refused` usage event (ADR-028).
+
 **Prerequisite:** ADR-027 PRs 1 and 2 are on `main` (`RateLimiter.forKey`, `ClientKey`, `RemoteIpValve` properties). Do not start this task before; before PR 1 every request keys to the connector and this limiter becomes a global lockout (ADR-028 spend layer 4).
 
 **Files:**
@@ -1151,7 +1157,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the runbook**
 
-Content is design plan §6 verbatim in structure: the fingerprint command, the seven routine steps (naming `/admin/secrets` as the one place the live fingerprint is confirmed), emergency rotation, rehearsal, "rotation without a restart is deliberately not built", and a **Rotation log** table with columns Date, Key name, Fingerprint, Deactivated old key at, Notes, seeded with one row for step 0's `naturalist-dev` key once Pat records it. Link ADR-028 and the design plan at the top.
+Content is design plan §6 verbatim in structure: the fingerprint command, the routine steps (as shipped there are eight, with a second smoke test after the old credential is deactivated as the proof of which one is live, since `/admin/secrets` was withdrawn), emergency rotation, rehearsal, "rotation without a restart is deliberately not built", and a **Rotation log** table with columns Date, Key name, Fingerprint, Deactivated old key at, Notes, seeded with one row for step 0's `naturalist-dev` key once Pat records it. Link ADR-028 and the design plan at the top.
 
 - [ ] **Step 2: Update ignore rules and indexes**
 
@@ -1177,7 +1183,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ## After the tasks (operational, not code)
 
+- **Vendor ceiling (design plan §7 step 0):** workspaces, spend limits, scoped keys, retiring today's key. Pat's to do, before any public traffic; nothing is recorded in the runbook log yet.
 - **Rehearsal (design plan §7 step 7):** run the runbook end to end against the pre-public deployment with the `naturalist-dev` key; record timings and every deviation in the runbook's log; fix what it exposes.
-- **Deploy configuration (step 8, after the host is chosen):** the host's store command for `model-credential`, `naturalist.secrets.source` (`environment` or `file` + `directory`), `naturalist.vision.provider=anthropic`, the Turnstile secret and tunnel token through the same source; forwarded-header trust and the edge checks per the Cloudflare plan. Smoke: one identification, `/admin/secrets` shows the prod fingerprint, `/admin/resilience` lists the bulkhead and `vision.identification.client`.
+- **Deploy configuration (step 8, after the host is chosen):** the host's store command for `model-credential`, `naturalist.secrets.source` (`environment` or `file` + `directory`), `naturalist.vision.provider=anthropic`, the Turnstile secret and tunnel token through the same source; forwarded-header trust and the edge checks per the Cloudflare plan. Smoke and evidence: design plan §7 step 8 (one identification, `/admin/resilience` lists the bulkhead and `vision.identification.client`, the forged-header check, the refusal alert rule).
 - **Reconciliation with ADR-027:** when `ChallengeConfiguration` lands, it resolves `challenge-secret` through `SecretProvider` instead of `naturalist.challenge.secret-key` (ADR-028, one line).
 - **Later:** `naturalist.vision.credential=federation` once the host issues OIDC identity tokens (ADR-028, deferred).

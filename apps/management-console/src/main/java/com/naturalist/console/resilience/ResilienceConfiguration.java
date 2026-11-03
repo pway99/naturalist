@@ -53,7 +53,8 @@ import java.util.List;
  *       authorization: two a minute per client (keyed by the remote address through
  *       {@code RateLimiter.forKey}), shared across the organism domains and deliberately
  *       below the global three, so one address can never hold every shared slot.
- *       Rejections are {@code 429}, observed as {@code withinClientRate}.</li>
+ *       Rejections are a {@code 303} to {@code /<domain>/identify?limit=RATE}, observed as
+ *       {@code withinClientRate}.</li>
  *   <li><b>{@code auth.login}</b> / <b>{@code auth.login.client}</b> — the pair of
  *       ceilings {@code LoginRateLimitFilter} takes on {@code POST /login} ahead of the
  *       password check: ten attempts a minute per client (keyed by the remote address
