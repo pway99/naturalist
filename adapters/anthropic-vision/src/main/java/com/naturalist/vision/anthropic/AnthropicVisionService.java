@@ -46,6 +46,12 @@ import java.util.Objects;
  * process environment, nor through the SDK's own environment lookup (ADR-028).
  * Construction fails with {@code MissingSecretException} when the source lacks it.
  *
+ * <h2>Image bound</h2>
+ * Before encoding, the image passes through {@link ImageDownscaler#fit}: a decodable image
+ * larger than {@value ImageDownscaler#MAX_EDGE}&nbsp;px on its longest edge is sent as a JPEG
+ * at that edge, and the media type sent is the one that describes the bytes actually sent.
+ * WebP and undecodable bytes go as uploaded, bounded by {@code ImageUpload.MAX_BYTES}.
+ *
  * <h2>Resilience</h2>
  * The HTTP call is bounded by the {@value #STRATEGY} timeout, applied through the
  * {@link Resilience} facade. Only {@code client.messages().create(...)} is wrapped —
@@ -80,11 +86,12 @@ public class AnthropicVisionService implements VisionService {
 
     @Override
     public VisionExchange identify(Image image, ToolSchema tool, String systemPrompt) {
-        // 1. Base64-encode the image bytes
-        var base64Data = Base64.getEncoder().encodeToString(image.bytes());
+        // 1. Fit the image within the vendor's longest edge, then base64-encode it
+        var sized = ImageDownscaler.fit(image.bytes(), image.mediaType());
+        var base64Data = Base64.getEncoder().encodeToString(sized.bytes());
 
         // 2. Determine media type
-        var mediaType = resolveMediaType(image.mediaType());
+        var mediaType = resolveMediaType(sized.mediaType());
 
         // 3. Build the image content block
         var imageBlock = ContentBlockParam.ofImage(
