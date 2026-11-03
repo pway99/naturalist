@@ -70,11 +70,11 @@ them. Each PR runs `mvn verify` plus the completeness gate
   (`InetAddress` parse → first 8 bytes → text); IPv4 unchanged; unparseable → the
   literal.
 
-## Coordination with ADR-028 (Anthropic credential and spend protection)
+## Coordination with ADR-028 (deployment secrets and model spend protection)
 
 A sibling effort designed the same day
-([ADR-028](../adr/ADR-028-anthropic-credential-and-spend-protection.md),
-[plan](2026-11-02-anthropic-key-and-endpoint-protection-plan.md)) defers to this one
+([ADR-028](../adr/ADR-028-secrets-and-model-spend-protection.md),
+[plan](2026-11-02-secrets-and-endpoint-protection-plan.md)) defers to this one
 on client identity, the login/registration limiters and Turnstile. Agreed split:
 
 - **PRs 1 and 2 here own the `keyed-rate-limits` worktree**; the other plan's step 1

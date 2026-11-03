@@ -200,7 +200,7 @@ public class NoOpVisionService implements VisionService {
     @Override
     public ToolResult identify(Image image, ToolSchema tool, String systemPrompt) {
         throw new UnsupportedOperationException(
-                "VisionService is not configured. Set ANTHROPIC_API_KEY and wire the Anthropic adapter.");
+                "VisionService is not configured. Set MODEL_CREDENTIAL and wire the Anthropic adapter.");
     }
 }
 ```
@@ -303,7 +303,7 @@ package com.naturalist.vision.anthropic;
 
 /**
  * Configuration for the Anthropic Vision adapter. All fields have sensible
- * defaults; the API key comes from the {@code ANTHROPIC_API_KEY} environment
+ * defaults; the API key comes from the {@code MODEL_CREDENTIAL} environment
  * variable, not from this config.
  */
 public record AnthropicVisionConfig(
@@ -341,7 +341,7 @@ import java.util.Base64;
  * the system prompt and tool schema are cache-stable across calls; only the image
  * varies, so repeated identifications benefit from cached prefixes.
  * <p>
- * API key read from {@code ANTHROPIC_API_KEY} environment variable at construction.
+ * API key read from {@code MODEL_CREDENTIAL} environment variable at construction.
  * Refuses to construct if the key is absent.
  */
 @Resilient(name = "vision.identification")
@@ -352,10 +352,10 @@ public class AnthropicVisionService implements VisionService {
 
     public AnthropicVisionService(AnthropicVisionConfig config) {
         this.config = config;
-        this.apiKey = System.getenv("ANTHROPIC_API_KEY");
+        this.apiKey = System.getenv("MODEL_CREDENTIAL");
         if (apiKey == null || apiKey.isBlank()) {
             throw new IllegalStateException(
-                    "ANTHROPIC_API_KEY environment variable is required for vision identification");
+                    "MODEL_CREDENTIAL environment variable is required for vision identification");
         }
     }
 
@@ -455,7 +455,7 @@ class VisionConfiguration {
 
     @Bean
     VisionService visionService() {
-        var apiKey = System.getenv("ANTHROPIC_API_KEY");
+        var apiKey = System.getenv("MODEL_CREDENTIAL");
         if (apiKey == null || apiKey.isBlank()) {
             return new NoOpVisionService();
         }
@@ -1427,7 +1427,7 @@ Add an "Identify" link in the insects navigation (header or sidebar) pointing to
 
 - [ ] **Step 5: Test the full flow manually**
 
-Start the management console with `ANTHROPIC_API_KEY` set. Navigate to `/insects/identify`, upload a photo, verify:
+Start the management console with `MODEL_CREDENTIAL` set. Navigate to `/insects/identify`, upload a photo, verify:
 - Client-side: preview shows, location field populates (if EXIF GPS present), resize happens on submit.
 - Server-side: image stored to `data/images/insects/`, species created in catalog, citation created, observation created.
 - Redirect lands on the species detail page showing the new catalog entry, photo, and field notes.

@@ -170,6 +170,19 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
   Second, prefer importing a library's own BOM in root `dependencyManagement` when its
   artifacts version independently (Jackson does: since 2.20 `jackson-annotations` releases on
   its own track, so no single flat property can name the whole set).
+- **Never name a credential.** No code, test, config or doc names an API key or other
+  credential by vendor or role, and none quotes a vendor key prefix. Secrets are resolved
+  through the kernel `com.naturalist.secrets.SecretProvider` under a `SecretName` that does
+  not say what it unlocks (the model credential is `model-credential`, read from
+  `MODEL_CREDENTIAL` or `<dir>/model-credential`); test values are `not-a-real-secret`. Only
+  `com.naturalist.secrets` reads the process environment (ADR-028). The
+  `NoNamedCredentials` and `NoSystemGetenv` recipes enforce this for Java; for everything
+  else this must return nothing:
+
+  ```bash
+  git ls-files -co --exclude-standard | xargs grep -nIiE '[a-z0-9]+[-_]api[-_]?key|sk-ant[-]'
+  ```
+
 - **Never weaken a test, gate, or enforcement to make code pass — fix the code.** The
   build-time invariants exist to be *satisfied*, not silenced: the N+1 no-fan-out gate
   (`kernels/framework-test` → `com.naturalist.test.query.nofanout`, surfaced as
@@ -197,6 +210,8 @@ pending fix or marker — the invariants ArchUnit cannot reach repo-wide (e.g. a
 `@RegisterExtension NaturalistTestExtension` field, never cache a `TestEntitySource`
 in a field). It also includes `com.naturalist.EnforceQueryHygiene` (`NoSelectInIteration`,
 armed 2026-08-23), which fails on a repository/query select invoked inside a loop or a
-per-element stream op — the static N+1 backstop to the runtime select-count gate.
+per-element stream op — the static N+1 backstop to the runtime select-count gate. It also runs `NoSystemGetenv` and `NoNamedCredentials` (ADR-028): only
+`com.naturalist.secrets` may read the process environment, and no Java source may name a
+credential. Run the credential grep from the non-negotiables alongside it.
 Developers auto-apply the fixable ones with `mvn rewrite:run`. Design:
 [`docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md`](docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md).

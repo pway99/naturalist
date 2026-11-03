@@ -70,7 +70,7 @@ capture live fixtures for a known taxon (e.g. *Apis mellifera*). Confirm:
   `https://eol.org/api/pages/1.0/<id>.json?...`.) Record the JSON path to the overview/
   description text.
 - **Whether a token is required** by the current supported API — if so, it changes the config
-  (add an API-key field, sourced from env like `VisionConfiguration` reads `ANTHROPIC_API_KEY`)
+  (add an API-key field, sourced from env like `VisionConfiguration` reads `MODEL_CREDENTIAL`)
   and the wiring; STOP and flag before proceeding.
 Save the two responses as fixtures under `eol-client/src/test/resources/eol/`.
 

@@ -129,8 +129,8 @@ using the Anthropic Java SDK (`com.anthropic:anthropic-java`).
 
 ### `AnthropicVisionService`
 
-- Reads `ANTHROPIC_API_KEY` from environment at construction; refuses to
-  construct if absent.
+- Takes the kernel `SecretProvider` and resolves `model-credential` once
+  at construction; refuses to construct if the secret is absent.
 - Sends the image as base64 in an `ImageBlockParam`.
 - Forces tool use via `ToolChoice.ofTool(name)` so the response always
   contains structured data.
@@ -153,18 +153,13 @@ Model is pinned to a date-stamped identifier to prevent silent upgrades.
 
 ### Wiring — `VisionConfiguration` (in `apps/management-console`)
 
-```java
-@Bean
-VisionService visionService() {
-    var apiKey = System.getenv("ANTHROPIC_API_KEY");
-    if (apiKey == null || apiKey.isBlank()) {
-        return new NoOpVisionService();
-    }
-    return new AnthropicVisionService(AnthropicVisionConfig.defaults());
-}
-```
-
-No API key → `NoOpVisionService`. Set `ANTHROPIC_API_KEY` to activate.
+The provider is chosen by the required property `naturalist.vision.provider`
+(`none` or `anthropic`), never by what the environment happens to hold
+(ADR-028). `none` wires `NoOpVisionService`. `anthropic` wires
+`AnthropicVisionService`, which resolves the `model-credential` secret
+once through the kernel `SecretProvider` (`naturalist.secrets.source`:
+`environment` or `file`). A missing property, an unknown value, or an
+unresolvable secret refuses boot.
 
 ---
 

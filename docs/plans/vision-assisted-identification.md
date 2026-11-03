@@ -112,7 +112,7 @@ definition and result-mapping. The kernel knows the shape of the
 contract; the domain knows the prompt vocabulary and the entity
 mapping. Mirrors the `CatalogContribution` pattern.
 
-**API key from environment, not config files.** `ANTHROPIC_API_KEY`
+**API key from environment, not config files.** `MODEL_CREDENTIAL`
 env var, read at adapter construction. Refuse to start if absent and
 the vision feature is wired. No defaults, no fallback — a missing key
 is a clear configuration error.

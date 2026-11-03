@@ -273,11 +273,14 @@ mvn install
 ```
 
 ```bash
-java -jar apps/management-console/target/management-console-1.0.0-SNAPSHOT.jar --naturalist.admin.username=admin --naturalist.admin.password=change-me
+java -jar apps/management-console/target/management-console-1.0.0-SNAPSHOT.jar --naturalist.admin.username=admin --naturalist.admin.password=change-me --naturalist.vision.provider=none
 ```
 
-Set `ANTHROPIC_API_KEY` to enable identification; without it the vision port
-falls back to a no-op.
+To enable identification, pass `--naturalist.vision.provider=anthropic` and
+supply the `model-credential` secret: as the `MODEL_CREDENTIAL` environment
+variable (the default source), or as the file `<dir>/model-credential` with
+`--naturalist.secrets.source=file --naturalist.secrets.directory=<dir>`. The
+provider has no default, so a deployment that omits it refuses to start.
 
 ## Tech stack
 

@@ -204,7 +204,7 @@ public class AnthropicVisionService implements VisionService {
     // Prompt caching: system prompt + tool schema are cache-stable
     // across calls; only the image varies.
     // Resilience-wrapped: @Resilient(name = "vision.identification")
-    // API key from ANTHROPIC_API_KEY env var.
+    // API key from MODEL_CREDENTIAL env var.
 }
 ```
 

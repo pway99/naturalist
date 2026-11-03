@@ -4,11 +4,15 @@ displayName: Naturalist architectural enforcement
 description: >-
   Enforces the ADR-001 test-data-graph invariants: acquire TestEntitySources via
   NaturalistDatabase#getNamed, obtain the test database from a @RegisterExtension
-  NaturalistTestExtension, and never cache a TestEntitySource in a field.
+  NaturalistTestExtension, and never cache a TestEntitySource in a field; and the ADR-028
+  secrets rules: never read the process environment outside com.naturalist.secrets, and
+  never name a credential in source.
 recipeList:
   - com.naturalist.rewrite.NoDirectTestEntitySourceConstruction
   - com.naturalist.rewrite.NoCachedTestEntitySourceField
   - com.naturalist.rewrite.AcquireDatabaseViaExtension
+  - com.naturalist.rewrite.NoSystemGetenv
+  - com.naturalist.rewrite.NoNamedCredentials
   - com.naturalist.EnforceQueryHygiene
 ---
 type: specs.openrewrite.org/v1beta/recipe

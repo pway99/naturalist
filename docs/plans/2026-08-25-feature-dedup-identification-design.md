@@ -33,7 +33,7 @@ fresh `InsectFeature` for every value it hasn't seen *in that call*. **It never
 queries existing persisted features.** A `@UniqueValue` DB constraint on
 `InsectFeature.value` means *exact* normalized repeats collide, so the live
 problem is the **near-variants** the model phrases differently each run. The
-problem is live in production whenever `ANTHROPIC_API_KEY` is set (the real
+problem is live in production whenever `MODEL_CREDENTIAL` is set (the real
 `AnthropicVisionService`); with no key the `NoOpVisionService` throws (no silent
 degradation).
 

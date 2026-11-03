@@ -28,7 +28,7 @@ Closed decisions are not revisited without a new ADR.
 | [ADR-025](ADR-025-di-via-marker-annotations.md)               | DI via Marker Annotations                                                               | Accepted              |
 | [ADR-026](ADR-026-resilience-first-order-concern.md)          | Resilience as a First-Order Concern                                                     | Accepted              |
 | [ADR-027](ADR-027-cloudflare-edge-and-abuse-protection.md)         | Cloudflare at the Edge; Abuse Protection for Login and Registration                       | Accepted              |
-| [ADR-028](ADR-028-anthropic-credential-and-spend-protection.md) | Anthropic Credential Supply and Spend Protection                                      | Proposed              |
+| [ADR-028](ADR-028-secrets-and-model-spend-protection.md) | Deployment Secrets and Model Spend Protection                                      | Accepted              |
 
 ## Archived (rationale only, not in active read path)
 

@@ -1,6 +1,6 @@
-# Anthropic key and endpoint protection — plan
+# Deployment secrets and endpoint protection — plan
 
-**Decision record:** [ADR-028](../adr/ADR-028-anthropic-credential-and-spend-protection.md)
+**Decision record:** [ADR-028](../adr/ADR-028-secrets-and-model-spend-protection.md)
 holds the decisions and the rejected alternatives. This plan holds the survey,
 the hosting comparison, the abuse layers, the rotation runbook and the sequenced
 work. Status: proposed 2026-11-02, nothing implemented.
@@ -30,7 +30,7 @@ defers to them wherever they overlap; §1.6, §4 and §7 say exactly where.
 
 | Site | What it does | Verdict |
 |---|---|---|
-| [`AnthropicVisionService.java:68`](../../adapters/anthropic-vision/src/main/java/com/naturalist/vision/anthropic/AnthropicVisionService.java) | `System.getenv("ANTHROPIC_API_KEY")` in the constructor; builds `AnthropicOkHttpClient` with the explicit key; throws if absent | Replace with the port |
+| [`AnthropicVisionService.java:68`](../../adapters/anthropic-vision/src/main/java/com/naturalist/vision/anthropic/AnthropicVisionService.java) | `System.getenv("MODEL_CREDENTIAL")` in the constructor; builds `AnthropicOkHttpClient` with the explicit key; throws if absent | Replace with the port |
 | [`AnthropicTextGenerationService.java:48`](../../adapters/anthropic-text-generation/src/main/java/com/naturalist/textgeneration/anthropic/AnthropicTextGenerationService.java) | Same pattern | Replace with the port |
 | [`VisionConfiguration.java:16`](../../apps/management-console/src/main/java/com/naturalist/console/VisionConfiguration.java) | Reads the env var a second time to choose `AnthropicVisionService` or `NoOpVisionService` | Select by property instead |
 | [`IdentificationConfiguration.java`](../../apps/management-console/src/main/java/com/naturalist/console/IdentificationConfiguration.java) | Wires `NoOpTextGenerationService`; the text adapter is not on the app classpath | Leave; note it in the sequence |
@@ -38,18 +38,18 @@ defers to them wherever they overlap; §1.6, §4 and §7 say exactly where.
 | [`application.yml`](../../apps/management-console/src/main/resources/application.yml), test `application.yml` | No key, no placeholder. The admin-credential comment already documents the unresolved-placeholder trap | Nothing to remove |
 | [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) | Postgres service only; no Anthropic secret, no `secrets.*` reference | Nothing to change; tests must keep running with no key |
 | Dockerfile, compose, Procfile, `.env` | None exist | Deployment config is greenfield |
-| [`README.md:279`](../../README.md) | Documents `ANTHROPIC_API_KEY`; line 30 records the intent to move to WIF once a host is chosen | Update when the property lands |
+| [`README.md:279`](../../README.md) | Documents `MODEL_CREDENTIAL`; line 30 records the intent to move to WIF once a host is chosen | Update when the property lands |
 | `.claude/launch.json` | gitignored; may carry the key for local runs | Keep ignored; add `.env*` to `.gitignore` |
 | Adapter tests | `adapters/anthropic-vision` and `adapters/anthropic-text-generation` have no tests at all | The port makes them testable |
 
 Latent hazard found: the real adapter is selected by env-var presence, so a
-developer with `ANTHROPIC_API_KEY` exported runs every `@SpringBootTest` in
+developer with `MODEL_CREDENTIAL` exported runs every `@SpringBootTest` in
 `management-console` against the real API.
 
 ### 1.2 Git history
 
 All 904 commits on every ref were scanned for key-shaped strings
-(`sk-ant-…`), literal `.apiKey("…")` arguments, `ANTHROPIC_API_KEY=` assignment
+(vendor key prefixes), literal `.apiKey("…")` arguments, `MODEL_CREDENTIAL=` assignment
 lines, and files ever added with secret-like names (`.env`, `*secret*`,
 `*credential*`, keystores). Nothing was found; the only hits were the
 `NaturalistCredential` domain classes.
@@ -136,10 +136,10 @@ secondary threat is §3 plus §5.
 kernels/framework
   com.naturalist.secrets
     SecretProvider            port:   Secret require(SecretName); Optional<Secret> lookup(SecretName)
-    SecretName                typed, kebab-case, e.g. SecretName.of("anthropic-api-key")
+    SecretName                typed, kebab-case, e.g. SecretName.of("model-credential")
     Secret                    value; toString() -> "Secret[<fingerprint>]"; fingerprint() = sha256 hex[0..8)
     MissingSecretException    names the SecretName and the source that failed
-    EnvironmentSecretProvider name -> UPPER_SNAKE env var ("anthropic-api-key" -> ANTHROPIC_API_KEY)
+    EnvironmentSecretProvider name -> UPPER_SNAKE env var ("model-credential" -> MODEL_CREDENTIAL)
     FileSecretProvider        <dir>/<name>, trailing newline trimmed
                               (systemd $CREDENTIALS_DIRECTORY, Docker/Kubernetes/Cloud Run mounts)
 
@@ -169,7 +169,7 @@ vision seam.
 ### 3.3 Construction and selection
 
 - `AnthropicVisionService(AnthropicVisionConfig, SecretProvider, Resilience)`
-  resolves `secrets.require(API_KEY)` once in the constructor and builds the
+  resolves `secrets.require(CREDENTIAL)` once in the constructor and builds the
   client with `.apiKey(secret.value())`. Same for the text adapter.
 - `SecretsConfiguration` builds the one `SecretProvider` bean from
   `naturalist.secrets.source`. Unknown value fails boot.
@@ -257,7 +257,7 @@ documentation at setup time.
 | AWS ECS Fargate / App Runner | Secrets Manager or SSM injected as env from the task definition | `environment` | update secret version, force new deployment | Not on ECS/App Runner (no OIDC JWT for tasks); yes on EKS via projected service-account tokens | A `secrets-aws` adapter only if hot rotation is wanted |
 | GCP Cloud Run | Secret Manager as env or mounted file, versioned | `environment` or `file` | add version, new revision | Yes: metadata server issues identity tokens for the service account | `file` source reads the mounted version |
 | Azure Container Apps | Key Vault reference → env | `environment` | new version, revision | Likely: managed identity federated token | |
-| Bare VPS (Hetzner etc.) + systemd | `LoadCredentialEncrypted=` → `$CREDENTIALS_DIRECTORY/anthropic-api-key` | `file:$CREDENTIALS_DIRECTORY` | re-encrypt, `systemctl restart` | No | Cheapest, most operator burden (TLS, Postgres, backups) |
+| Bare VPS (Hetzner etc.) + systemd | `LoadCredentialEncrypted=` → `$CREDENTIALS_DIRECTORY/model-credential` | `file:$CREDENTIALS_DIRECTORY` | re-encrypt, `systemctl restart` | No | Cheapest, most operator burden (TLS, Postgres, backups) |
 | Kubernetes (any) | Secret → env or mount | `environment` or `file` | update Secret, rollout | Yes if the cluster's issuer is publicly discoverable | |
 
 ADR-027 D3 changes one thing in this table: with a Cloudflare Tunnel the
@@ -283,7 +283,7 @@ limits) can deactivate a key and read limits; key creation is Console-only.
 
 ## 6. Key rotation runbook
 
-Lives at `docs/runbooks/anthropic-key-rotation.md` once step 6 lands; this is
+Lives at `docs/runbooks/secret-rotation.md` once step 6 lands; this is
 its first draft. Fingerprint = first eight hex digits of SHA-256 of the key:
 
 ```bash
@@ -295,7 +295,7 @@ printf %s "$KEY" | shasum -a 256 | cut -c1-8
 1. Console → workspace `naturalist-prod` → create key `naturalist-prod-YYYY-MM-DD`. Copy it once.
 2. Compute the fingerprint locally. Record date, key name and fingerprint in the runbook log. Never record the value.
 3. Update the store with the host's command (table in §5). Do not deactivate the old key yet.
-4. Restart or redeploy. Confirm the boot line `secrets: anthropic-api-key source=<source> fingerprint=<fp>` and `/admin/secrets` show the new fingerprint.
+4. Restart or redeploy. Confirm `/admin/secrets` shows the new fingerprint.
 5. Smoke: one identification in the deployment with a known photo. It counts against the budget; that is fine.
 6. Console (or Admin API `api_keys.update status=inactive`) → deactivate the old key. Delete it after seven days.
 7. Close the log entry with the old key's deactivation time.
@@ -327,14 +327,14 @@ approved.
 |---|---|---|
 | 0 | **Vendor ceiling, operational.** Create `naturalist-prod` and `naturalist-dev` workspaces, set spend limits, create scoped keys, record fingerprints. Rotate away from today's key (§1.2). | Manual: one identification in dev with the new dev key; the old key deactivated in the Console; fingerprints logged in the runbook draft. |
 | 1 | **Cloudflare plan PRs 1 and 2 land** (not this plan's work): client address behind the connector, then the `keyed-rate-limits` worktree as PR 2 (`RateLimiter.forKey`, `Resilience4jRateLimiter` keyed/LRU, `ClientKey` with IPv6 /64 keying, per-client login and registration limits). Note for whoever lands it: the worktree branches from `bf0c34fe` and `main` is 43 commits ahead, including insects-ports changes to `InsectIdentificationCommandTest` that the worktree also edits, so it is a rebase, not a fast-forward. | That plan's tests. This plan's step 5 depends on `ClientKey` and `forKey` existing and on `getRemoteAddr()` being the visitor. |
-| 2 | **Kernel secrets package.** `SecretProvider`, `SecretName`, `Secret`, `MissingSecretException`, `EnvironmentSecretProvider`, `FileSecretProvider` in `kernels/framework`. | `SecretTest`: `toString` is `Secret[<fp>]`, fingerprint is 8 hex and stable, equality by value, blank value refused. `SecretNameTest`: kebab-case only, env mapping `anthropic-api-key → ANTHROPIC_API_KEY`. `EnvironmentSecretProviderTest`: injected `Map` lookup for present / absent / blank → `MissingSecretException` naming the name and the source. `FileSecretProviderTest`: temp dir, trailing newline trimmed, missing file, unreadable file. |
+| 2 | **Kernel secrets package.** `SecretProvider`, `SecretName`, `Secret`, `MissingSecretException`, `EnvironmentSecretProvider`, `FileSecretProvider` in `kernels/framework`. | `SecretTest`: `toString` is `Secret[<fp>]`, fingerprint is 8 hex and stable, equality by value, blank value refused. `SecretNameTest`: kebab-case only, env mapping `model-credential → MODEL_CREDENTIAL`. `EnvironmentSecretProviderTest`: injected `Map` lookup for present / absent / blank → `MissingSecretException` naming the name and the source. `FileSecretProviderTest`: temp dir, trailing newline trimmed, missing file, unreadable file. |
 | 3 | **Adapters consume the port.** Both Anthropic adapters take `SecretProvider`; `System.getenv` removed; `NoOpVisionService` message reworded. | New `AnthropicVisionServiceTest` and `AnthropicTextGenerationServiceTest` (first tests in those modules): construction with a stub provider succeeds without network; missing secret → `MissingSecretException`; `buildTool` schema mapping (already pure) gets a direct test while the module is open. |
-| 4 | **Composition root selects by property.** `SecretsConfiguration` (`naturalist.secrets.source`), `VisionConfiguration` on `naturalist.vision.provider` with no default, fail closed, observed; test `application.yml` sets `provider: none`; `NoSystemGetenv` recipe in `EnforceArchitecture` with the one scoped exemption; `SecretsComplianceTest` ArchUnit for `com.anthropic` imports. | `VisionConfigurationTest` (context slices): `none` → `NoOpVisionService`; `anthropic` + stub secret source → `AnthropicVisionService`; `anthropic` with no secret → context fails, message names property, secret and source; property absent → context fails naming the property; unknown `secrets.source` → boot fails. Recipe test in `tooling/naturalist-rewrite` (the existing recipe-test pattern): a `System.getenv` in a scratch class is flagged, one in `com.naturalist.secrets` is not, `RdbmsDataSource` is not; repo-wide `rewrite:dryRun` green. `SecretsComplianceTest` green on the tree. All `@SpringBootTest`s green with `ANTHROPIC_API_KEY` exported in the shell. |
+| 4 | **Composition root selects by property.** `SecretsConfiguration` (`naturalist.secrets.source`), `VisionConfiguration` on `naturalist.vision.provider` with no default, fail closed, observed; test `application.yml` sets `provider: none`; `NoSystemGetenv` recipe in `EnforceArchitecture` with the one scoped exemption; `SecretsComplianceTest` ArchUnit for `com.anthropic` imports. | `VisionConfigurationTest` (context slices): `none` → `NoOpVisionService`; `anthropic` + stub secret source → `AnthropicVisionService`; `anthropic` with no secret → context fails, message names property, secret and source; property absent → context fails naming the property; unknown `secrets.source` → boot fails. Recipe test in `tooling/naturalist-rewrite` (the existing recipe-test pattern): a `System.getenv` in a scratch class is flagged, one in `com.naturalist.secrets` is not, `RdbmsDataSource` is not; repo-wide `rewrite:dryRun` green. `SecretsComplianceTest` green on the tree. All `@SpringBootTest`s green with `MODEL_CREDENTIAL` exported in the shell. |
 | 5 | **Request-size, concurrency and per-client limits.** Kernel `BulkheadFullException` beside `RateLimitExceededException`; `IdentificationRefused.Reason.BUSY`; bulkhead permit (`vision.identification`, 2, zero wait) taken in `InsectIdentificationCommandImpl` around the whole identification, after the rate gate and before `budget.reserve`; controller maps `BUSY` to `?limit=BUSY` and the identify page says so; adapter downscale of decodable images to 1568 px JPEG before base64; `IdentifyRateLimitFilter` (strategy `vision.identification.client`) keyed by `ClientKey` on `POST /*/identify` at 2/min; CSP (`connect-src`, `form-action`, `frame-ancestors`) and `nosniff` headers. | Bulkhead in core: a `Resilience` stub whose bulkhead rejects → `identify` throws `IdentificationRefused(BUSY)`, `budget.reserve` never called, `imageStore.store` never called, vision never called (extends `InsectIdentificationCommandTest`'s existing rate-gate case). Controller: `BUSY` → redirect with `limit=BUSY`. Downscale as a package-private pure function in the adapter: a generated 4000×3000 PNG → longest edge 1568, JPEG; an 800 px JPEG → unchanged bytes; a WebP byte array → returned unchanged. Filter: MockMvc, third POST from one address in a minute → 429, a second address unaffected, global limit still enforced. Headers: MockMvc asserts the exact CSP value and `X-Content-Type-Options` on `/insects/identify` and `/`, and a rendered `/login` and `/insects/species` still carry their inline style and script blocks (the policy must not have touched them). |
-| 6 | **Rotation support.** Boot log line with source and fingerprint; `/admin/secrets` view (name, source, fingerprint, resolved-at) behind `ADMIN`; `docs/runbooks/anthropic-key-rotation.md` with the §6 text and a log table. | `AdminSecretsControllerTest` (`@WebMvcTest`): page shows fingerprint and never the value (assert the stub value's bytes are absent from the body); log capture asserts the boot line contains the fingerprint and not the value. |
+| 6 | **Rotation support.** `/admin/secrets` view (the only place a resolution is shown; nothing is logged) (name, source, fingerprint, resolved-at) behind `ADMIN`; `docs/runbooks/secret-rotation.md` with the §6 text and a log table. | `AdminSecretsControllerTest` (`@WebMvcTest`): page shows fingerprint and never the value (assert the stub value's bytes are absent from the body). |
 | 7 | **Rehearsal and docs.** Run the runbook once end to end against the pre-public deployment; fix what the rehearsal exposes; README env-var section → properties; `.env*` in `.gitignore`; `work-tracker.md` row (the `apps/CLAUDE.md` proxy section is Cloudflare PR 1's). | The rehearsal log in the runbook with timings and the fingerprints before and after; `mvn verify` green with no key in the environment; CI unchanged and green. |
 | 8 | **Deploy configuration** (after the host is chosen). The store command for the chosen host, `naturalist.secrets.source`, `naturalist.vision.provider=anthropic`, and the Turnstile secret and tunnel token through the same source; forwarded-header trust and the edge checks are the Cloudflare runbook's (`docs/ops/cloudflare-edge.md`). | A deployed smoke identification; `/admin/secrets` shows the prod fingerprint; `/admin/resilience` lists `vision.identification` with its bulkhead and `vision.identification.client`; a request with a forged `CF-Connecting-IP` sent straight to the connector's public hostname is keyed by the address Cloudflare set, not the forged one (verify by reading the limiter key in the log). |
-| later | **WIF adapter path** once the host issues identity tokens: `naturalist.vision.credential=federation`, federation issuer and rule created in the Console, the static key deactivated. | Boot with federation env vars and no `anthropic-api-key` secret → adapter constructs through the SDK's federation path; a smoke identification; the static key shown inactive in the Console. |
+| later | **WIF adapter path** once the host issues identity tokens: `naturalist.vision.credential=federation`, federation issuer and rule created in the Console, the static key deactivated. | Boot with federation env vars and no `model-credential` secret → adapter constructs through the SDK's federation path; a smoke identification; the static key shown inactive in the Console. |
 
 Dependencies: 0 is independent of code. 1 (the Cloudflare plan's PRs 1–2)
 before 5. 2 before 3 before 4 before 5, 6. 7 after 6. 8 after the host

@@ -52,6 +52,11 @@ naturalist:
   # baked into the artifact. Verified: with the placeholders present the jar starts with no
   # credentials supplied; with the keys absent it aborts with
   # "naturalist.admin.username must be set and non-blank", which is the intended behaviour.
+  #
+  # naturalist.vision.provider is REQUIRED (none or anthropic) and deliberately NOT set here
+  # either; supply it at deploy time. anthropic resolves the model-credential secret from
+  # naturalist.secrets.source: environment (the default, variable MODEL_CREDENTIAL) or file
+  # (the file <naturalist.secrets.directory>/model-credential). See ADR-028.
   usage:
     warning-percent: 80
     alert-email: patway99@gmail.com

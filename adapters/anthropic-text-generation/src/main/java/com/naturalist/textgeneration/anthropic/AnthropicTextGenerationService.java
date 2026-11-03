@@ -14,12 +14,16 @@ import com.anthropic.models.messages.ToolUseBlock;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.resilience.Resilient;
+import com.naturalist.secrets.Secret;
+import com.naturalist.secrets.SecretName;
+import com.naturalist.secrets.SecretProvider;
 import com.naturalist.textgeneration.TextGenerationService;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Anthropic Java SDK implementation of {@link TextGenerationService}.
@@ -32,25 +36,25 @@ import java.util.Map;
  * {@code cache_control: ephemeral} so that the fixed prompt prefix is cached
  * across calls.
  *
- * <p>API key read from {@code ANTHROPIC_API_KEY} environment variable at
- * construction. Refuses to construct if the key is absent.
+ * <p>The credential is the {@link #CREDENTIAL} secret, supplied by the kernel
+ * {@link SecretProvider} and resolved once at construction. It is never read from the
+ * process environment, nor through the SDK's own environment lookup (ADR-028).
  */
 @Resilient(name = "textgeneration.enrichment")
 public class AnthropicTextGenerationService implements TextGenerationService {
+
+    /** The one secret this adapter resolves, at construction (ADR-028). */
+    static final SecretName CREDENTIAL = SecretName.of("model-credential");
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final AnthropicTextGenerationConfig config;
     private final AnthropicClient client;
 
-    public AnthropicTextGenerationService(AnthropicTextGenerationConfig config) {
-        this.config = config;
-        var apiKey = System.getenv("ANTHROPIC_API_KEY");
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException(
-                    "ANTHROPIC_API_KEY environment variable is required for text generation");
-        }
-        this.client = AnthropicOkHttpClient.builder().apiKey(apiKey).build();
+    public AnthropicTextGenerationService(AnthropicTextGenerationConfig config, SecretProvider secrets) {
+        this.config = Objects.requireNonNull(config, "config");
+        Secret credential = Objects.requireNonNull(secrets, "secrets").require(CREDENTIAL);
+        this.client = AnthropicOkHttpClient.builder().apiKey(credential.value()).build();
     }
 
     @Override

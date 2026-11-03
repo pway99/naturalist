@@ -1812,9 +1812,9 @@ public class AnthropicTextGenerationService implements TextGenerationService {
 
     public AnthropicTextGenerationService(AnthropicTextGenerationConfig config) {
         this.config = Objects.requireNonNull(config);
-        var apiKey = System.getenv("ANTHROPIC_API_KEY");
+        var apiKey = System.getenv("MODEL_CREDENTIAL");
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("ANTHROPIC_API_KEY environment variable is required");
+            throw new IllegalStateException("MODEL_CREDENTIAL environment variable is required");
         }
         this.client = AnthropicOkHttpClient.builder().apiKey(apiKey).build();
     }

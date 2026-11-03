@@ -261,7 +261,7 @@ Recorded so they are not reintroduced.
 - Parking-lot item "per-client keyed limiters" (the `4aa4532` follow-up) is
   decided: build it, after the client-address PR.
 - Shares the keyed-limiter worktree, the `ClientKey` deploy-order constraint and a
-  future CSP with ADR-028 (Anthropic credential and spend protection); the plan's
+  future CSP with ADR-028 (deployment secrets and model spend protection); the plan's
   coordination section says who owns what.
 - Not covered here and still open before hosting: PL-16 (image reads share the
   resilience executor) and PL-17 (EXIF on raw uploads).

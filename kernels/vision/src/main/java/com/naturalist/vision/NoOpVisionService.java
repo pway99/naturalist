@@ -9,6 +9,7 @@ public class NoOpVisionService implements VisionService {
     @Override
     public VisionExchange identify(Image image, ToolSchema tool, String systemPrompt) {
         throw new UnsupportedOperationException(
-                "VisionService is not configured. Set ANTHROPIC_API_KEY and wire the Anthropic adapter.");
+                "VisionService is not configured: set naturalist.vision.provider=anthropic"
+                        + " and supply the model-credential secret (see ADR-028).");
     }
 }

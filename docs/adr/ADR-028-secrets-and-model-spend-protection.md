@@ -1,10 +1,11 @@
-# ADR-028: Anthropic Credential Supply and Spend Protection
+# ADR-028: Deployment Secrets and Model Spend Protection
 
 > Companion plan with the repo survey, hosting comparison, rotation runbook and
 > sequenced steps:
-> [`docs/plans/2026-11-02-anthropic-key-and-endpoint-protection-plan.md`](../plans/2026-11-02-anthropic-key-and-endpoint-protection-plan.md)
+> [`docs/plans/2026-11-02-secrets-and-endpoint-protection-plan.md`](../plans/2026-11-02-secrets-and-endpoint-protection-plan.md)
 
-Status: Proposed (2026-11-02)
+Status: Accepted (2026-11-02; task plan
+[`docs/plans/2026-11-03-secrets-and-endpoint-protection-tasks.md`](../plans/2026-11-03-secrets-and-endpoint-protection-tasks.md))
 
 Relates to [ADR-027, Cloudflare at the Edge](ADR-027-cloudflare-edge-and-abuse-protection.md),
 written the same day. ADR-027 decides the edge, the tunnel-only origin, how
@@ -28,7 +29,7 @@ The primary threat is abuse of the endpoints that spend, not theft of the key.
   `com.naturalist.notification`: port in the kernel, vendor in an adapter.
 - Two zero-dependency sources ship in the same package, like
   `LoggingEmailSender` and `NoOpResilience`: `EnvironmentSecretProvider`
-  (`anthropic-api-key` reads `ANTHROPIC_API_KEY`) and `FileSecretProvider`
+  (`model-credential` reads `MODEL_CREDENTIAL`) and `FileSecretProvider`
   (`<dir>/<name>`, the shape of systemd credentials, Docker/Kubernetes secret
   mounts and Cloud Run secret volumes). They are the "environment-variable
   adapter in the public repo" and cover every candidate host, because every
@@ -46,14 +47,14 @@ The primary threat is abuse of the endpoints that spend, not theft of the key.
   the Turnstile secret key and the tunnel token, as well as the SMTP and
   datasource passwords the console takes from Spring properties today. ADR-027
   passes the Turnstile secret as `naturalist.challenge.secret-key`; once this
-  port exists, `ChallengeConfiguration` resolves `turnstile-secret-key` through
+  port exists, `ChallengeConfiguration` resolves `challenge-secret` through
   it instead. That is a one-line reconciliation inside ADR-027's registration
   PR, recorded here so neither effort builds a second mechanism.
 
 ### The vendor adapters consume the port and nothing else
 
 - `AnthropicVisionService` and `AnthropicTextGenerationService` take a
-  `SecretProvider` in their constructors and resolve `anthropic-api-key` once,
+  `SecretProvider` in their constructors and resolve `model-credential` once,
   at construction. Neither touches `System.getenv`, and neither uses the SDK's
   own environment lookup (`fromEnv()`).
 - The composition root picks the vision provider by property,
@@ -128,12 +129,13 @@ identification is not offered.
 
 ### Rotation is a rehearsed procedure, supported by code
 
-The adapters log the live key's source and fingerprint at boot, and
-`/admin/secrets` shows the same, so an operator can prove which key is live
-without ever seeing a value. Rotation is: create the new key in the same
-workspace, update the store, restart, confirm the fingerprint, smoke one
-identification, deactivate the old key. The runbook is rehearsed once before
-the first public deployment and then quarterly. The first real rotation
+`/admin/secrets` shows the live key's source and fingerprint, so an operator
+can prove which key is live without ever seeing a value. Nothing about a
+resolution is logged: it is state, not an invariant, and the admin page is the
+one place it is shown. Rotation is: create the new key in the same workspace,
+update the store, restart, confirm the fingerprint, smoke one identification,
+deactivate the old key. The runbook is rehearsed once before the first public
+deployment and then quarterly. The first real rotation
 retires the pre-publication key, because the 2026-09-26 history rewrite cannot
 prove what earlier clones hold.
 
@@ -146,12 +148,12 @@ Recorded so they are not reintroduced.
   runtime, so the root of trust moves rather than disappears; the scheme
   depends on secrecy of mechanism; and the public build no longer runs for a
   contributor. Rejected.
-- **Let the Anthropic SDK read `ANTHROPIC_API_KEY` itself** via
+- **Let the Anthropic SDK read `MODEL_CREDENTIAL` itself** via
   `AnthropicOkHttpClient.fromEnv()`. Invisible coupling to the process
   environment, no way to swap the source by configuration, no fingerprint to
   verify a rotation, and tests cannot be isolated from a developer's shell.
   Rejected.
-- **A `${ANTHROPIC_API_KEY}` placeholder in `application.yml`.** An unresolved
+- **A `${MODEL_CREDENTIAL}` placeholder in `application.yml`.** An unresolved
   placeholder binds as the literal string and is non-blank, the trap already
   documented for the admin credentials; and the config file becomes a
   secret-bearing artifact. Rejected.

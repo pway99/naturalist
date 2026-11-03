@@ -2,8 +2,8 @@ package com.naturalist.textgeneration.anthropic;
 
 /**
  * Configuration for the Anthropic text generation adapter. All fields have
- * sensible defaults; the API key comes from the {@code ANTHROPIC_API_KEY}
- * environment variable, not from this config.
+ * sensible defaults; the credential comes from the kernel {@code SecretProvider},
+ * not from this config (ADR-028).
  */
 public record AnthropicTextGenerationConfig(
         String model,
