@@ -87,13 +87,15 @@ class AdminResilienceControllerWebMvcTest {
         var bulkheadSection = html.substring(bulkheadAt, rateLimiterAt);
         var rateLimiterSection = html.substring(rateLimiterAt);
 
-        assertThat(retrySection).contains("None registered.");
+        assertThat(retrySection).contains("challenge.verify").doesNotContain("None registered.");
         assertThat(timeoutSection)
                 .contains("catalog.fanout")
+                .contains("challenge.verify")
                 .contains("image.store")
                 .contains("vision.identification");
         assertThat(breakerSection)
                 .contains("catalog.fanout")
+                .contains("challenge.verify")
                 .doesNotContain("image.store");
         assertThat(bulkheadSection).contains("vision.identification").doesNotContain("None registered.");
         assertThat(rateLimiterSection).contains("vision.identification", "vision.identification.client");

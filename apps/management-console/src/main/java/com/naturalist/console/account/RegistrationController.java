@@ -3,7 +3,9 @@ package com.naturalist.console.account;
 import com.naturalist.account.AccountCommand;
 import com.naturalist.account.DuplicateEmailException;
 import com.naturalist.account.InvalidTokenException;
+import com.naturalist.challenge.ChallengeVerdict;
 import com.naturalist.console.auth.ClientKey;
+import com.naturalist.console.challenge.ChallengeGate;
 import com.naturalist.console.email.EmailProperties;
 import com.naturalist.ddd.EmailAddress;
 import com.naturalist.exception.InvariantViolationException;
@@ -54,7 +56,11 @@ import java.util.List;
 @Controller
 class RegistrationController {
 
+    /** The action the widget declares and the vendor echoes back (ADR-027 D6). */
+    private static final String CHALLENGE_ACTION = "register";
+
     private final RegistrationTransaction registration;
+    private final ChallengeGate challenge;
     private final EmailSender emailSender;
     private final EmailProperties emailProperties;
     private final UserDetailsService userDetailsService;
@@ -63,11 +69,13 @@ class RegistrationController {
             new HttpSessionSecurityContextRepository();
 
     RegistrationController(RegistrationTransaction registration,
+                           ChallengeGate challenge,
                            EmailSender emailSender,
                            EmailProperties emailProperties,
                            UserDetailsService userDetailsService,
                            AccountCommand accountCommand) {
         this.registration = registration;
+        this.challenge = challenge;
         this.emailSender = emailSender;
         this.emailProperties = emailProperties;
         this.userDetailsService = userDetailsService;
@@ -83,6 +91,7 @@ class RegistrationController {
         model.addAttribute("publicHandle", "");
         model.addAttribute("givenName", "");
         model.addAttribute("familyName", "");
+        model.addAttribute("challengeSiteKey", challenge.siteKey());
         putCsrf(request, model);
         return "register";
     }
@@ -94,6 +103,21 @@ class RegistrationController {
                   @RequestParam String givenName,
                   @RequestParam(required = false) String familyName,
                   HttpServletRequest request, HttpServletResponse response, Model model) {
+        // Before the transaction and its rate limits (ADR-027 D7): no vendor call inside a database
+        // transaction, and a failed challenge spends none of the budget honest sign-ups share.
+        ChallengeVerdict verdict = challenge.verify(request, CHALLENGE_ACTION);
+        if (verdict.outcome() == ChallengeVerdict.Outcome.UNAVAILABLE) {
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            response.setHeader("Retry-After", "30");
+            return reRender(model, request,
+                    "We couldn't confirm your browser just now — please try again in a moment.",
+                    email, publicHandle, givenName, familyName);
+        }
+        if (!verdict.isPassed()) {
+            return reRender(model, request, "Please complete the verification and try again.",
+                    email, publicHandle, givenName, familyName);
+        }
+
         RegistrationTransaction.Result result;
         String client = ClientKey.of(request);
         try {
@@ -222,6 +246,7 @@ class RegistrationController {
         model.addAttribute("publicHandle", nullToBlank(publicHandle));
         model.addAttribute("givenName", nullToBlank(givenName));
         model.addAttribute("familyName", nullToBlank(familyName));
+        model.addAttribute("challengeSiteKey", challenge.siteKey());
         putCsrf(request, model);
         return "register";
     }

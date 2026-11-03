@@ -4,6 +4,7 @@
 @param String publicHandle = ""
 @param String givenName = ""
 @param String familyName = ""
+@param String challengeSiteKey = ""
 @param org.springframework.security.web.csrf.CsrfToken _csrf = null
 
 <!DOCTYPE html>
@@ -135,8 +136,14 @@
                     <label for="familyName">Last name <small>(optional)</small></label>
                     <input type="text" id="familyName" name="familyName" value="${familyName}">
                 </div>
+                @if(!challengeSiteKey.isEmpty())
+                    <div class="cf-turnstile" data-sitekey="${challengeSiteKey}" data-action="register"></div>
+                @endif
                 <button type="submit">Create account</button>
             </form>
+            @if(!challengeSiteKey.isEmpty())
+                <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            @endif
             <div class="auth-links">
                 <a href="/login">Already have an account? Log in</a>
             </div>

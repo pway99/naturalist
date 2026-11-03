@@ -33,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 /**
  * Full-stack ({@code @SpringBootTest}, real security filter chain) coverage of public
@@ -119,6 +121,15 @@ class RegistrationFlowWebMvcTest {
         assertThat(emailSender.sent).hasSize(1);
         assertThat(emailSender.sent.getFirst().to().value()).isEqualTo(email);
         assertThat(emailSender.sent.getFirst().body()).contains("http://naturalist.test/verify?token=");
+    }
+
+    /** Log-only has no site key, and a widget with none would only raise an error in the browser. */
+    @Test
+    void theForm_rendersNoWidget_whenThereIsNoSiteKey() throws Exception {
+        mockMvc.perform(get("/register"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("cf-turnstile"))))
+                .andExpect(content().string(not(containsString("challenges.cloudflare.com"))));
     }
 
     @Test

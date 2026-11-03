@@ -78,6 +78,10 @@
         </dependency>
         <dependency>
             <groupId>com.naturalist</groupId>
+            <artifactId>challenge-turnstile</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
             <artifactId>resilience-resilience4j</artifactId>
         </dependency>
         <dependency>

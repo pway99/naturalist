@@ -68,6 +68,9 @@ import java.util.List;
  *       or encoding: three a minute per client, ten a minute system-wide. Every
  *       registration emails an address nobody has proven they own, so an unbounded
  *       endpoint is a mail-bombing primitive.</li>
+ *   <li><b>{@code challenge.verify}</b> — the bot-challenge round trip: breaker around a
+ *       two-second timeout around one retry. An open breaker or a timeout comes back as
+ *       {@code UNAVAILABLE} and the caller fails closed (ADR-027 D6).</li>
  * </ul>
  *
  * <p>What "client" means is a deployment decision, not a header the app reads:
@@ -166,6 +169,30 @@ public class ResilienceConfiguration {
         // controller derives from the remote address): three a minute from one address covers
         // a household or a classroom; more is a script. The global auth.register ceiling stays.
         return new RateLimiterConfig("auth.register.client", 3, Duration.ofMinutes(1), Duration.ZERO);
+    }
+
+    @Bean
+    TimeoutConfig challengeVerifyTimeout() {
+        // The whole verification, retry included (ADR-027 D6): a sign-up waits no longer than this.
+        return new TimeoutConfig("challenge.verify", Duration.ofSeconds(2));
+    }
+
+    @Bean
+    ResilienceConfig.RetryConfig challengeVerifyRetry() {
+        // One retry for a transient vendor error; the adapter's idempotency key keeps it from
+        // spending the single-use token twice.
+        return new ResilienceConfig.RetryConfig("challenge.verify", 2, Duration.ofMillis(200));
+    }
+
+    @Bean
+    CircuitBreakerConfig challengeVerifyCircuitBreaker() {
+        return new CircuitBreakerConfig(
+                "challenge.verify",
+                50.0f,
+                Duration.ofMillis(1500),
+                80.0f,
+                Duration.ofSeconds(30),
+                5);
     }
 
     @Bean

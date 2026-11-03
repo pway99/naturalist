@@ -75,6 +75,13 @@ class ResilienceConfigurationTest {
     }
 
     @Test
+    void resolvesTheChallengeVerifyStrategy() {
+        assertThat(resilience.timeout("challenge.verify")).isNotNull();
+        assertThat(resilience.retry("challenge.verify")).isNotNull();
+        assertThat(resilience.circuitBreaker("challenge.verify")).isNotNull();
+    }
+
+    @Test
     void resolvesImageStoreTimeout() {
         assertThat(resilience.timeout("image.store")).isNotNull();
     }

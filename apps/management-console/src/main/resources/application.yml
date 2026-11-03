@@ -99,3 +99,7 @@ naturalist:
     # app REFUSES to boot unless --naturalist.email.log-only=true is passed explicitly: the
     # log-only sender prints every verification / reset token beside the recipient address,
     # which is fine on a developer's machine and an account-takeover primitive in a deployment.
+  # naturalist.challenge.* is deliberately NOT set here either (ADR-027 D6). With no
+  # challenge-credential secret the app REFUSES to boot unless --naturalist.challenge.log-only=true
+  # is passed explicitly: the log-only verifier passes every bot, so sign-ups go unchallenged.
+  # A deployment supplies the secret plus naturalist.challenge.site-key and expected-hostname.

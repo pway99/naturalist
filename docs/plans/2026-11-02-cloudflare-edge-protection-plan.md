@@ -117,6 +117,12 @@ on client identity, the login/registration limiters and Turnstile. Agreed split:
 
 ### Owed by PR 5, found while building PRs 3 and 4
 
+Done in PR 5, except the manual test-key check. The worker pool took neither option below:
+`Resilience4jTimeout` now gives each timed call its own virtual thread, which fixes the
+contention for every strategy at its source (PL-16). The CSP needs no change: Turnstile asks
+for `script-src` and `frame-src` only where a policy sets them, and this one does not. Its docs
+ask for `connect-src 'self'` only in pre-clearance mode, which the policy already allows.
+
 - **An overlong token must not become a 500.** The port refuses a token over
   `ChallengeSubmission.MAX_TOKEN_LENGTH` with `InvariantViolationException`, and the
   form field is attacker-controlled. The controller and the filter treat an overlong
