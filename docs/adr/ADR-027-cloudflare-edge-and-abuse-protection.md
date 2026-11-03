@@ -117,8 +117,9 @@ limiters of D5 key on the visitor, not on the connector); `isSecure()` / scheme
 become `https` (secure session cookie, correct redirects; `public-url` is already
 config-driven and unaffected); Tomcat's access log, if enabled, records the visitor.
 Observed decisions carry **no** address tag — ADR-017's cardinality rule stands —
-and the keyed limiters' rejection log lines carry the address at `WARNING`, which is
-PII and sets the log-retention expectation. There is no audit log; who did what
+and no log line carries the address either (amended 2026-11-03: the keyed limiters'
+`WARNING` rejection lines were removed; the address is PII and the observer's
+`withinClientRate` count is the record). There is no audit log; who did what
 remains "a separate decision" as `AuthenticationEventObserver` already says.
 
 ### D5 — In-app limiters: keyed per client *and* global, with the global raised

@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.lang.System.Logger;
 
 /**
  * Two ceilings on authentication attempts, ahead of Spring's login filter. {@code POST /login}
@@ -32,8 +31,8 @@ import java.lang.System.Logger;
  *
  * <p>Both decisions are observed in {@link Observer.MonitoringMode#ALWAYS} —
  * {@code withinClientRate} and {@code withinRate} — the violations the flood signal, the valid
- * rows the attempt baseline. The client key is never a metric tag (unbounded cardinality); a
- * client rejection logs it at {@code WARNING} instead. Constructed by
+ * rows the attempt baseline. Nothing is logged: the client key is personal data and is never a
+ * metric tag (unbounded cardinality), so the observer's count is the whole record. Constructed by
  * {@code SecurityConfiguration} directly (not a bean) so it sits in the security chain exactly
  * once; it declares {@code @Resilient} and reaches the facade in its constructor, satisfying
  * both resilience gates.
@@ -42,8 +41,6 @@ public @Resilient(name = LoginRateLimitFilter.STRATEGY)
 final class LoginRateLimitFilter extends OncePerRequestFilter {
     static final String STRATEGY = "auth.login";
     static final String CLIENT_STRATEGY = "auth.login.client";
-
-    private static final Logger LOG = System.getLogger(LoginRateLimitFilter.class.getName());
 
     private final Observer observer = Observer.forClass(getClass(), Observer.MonitoringMode.ALWAYS);
 
@@ -70,9 +67,6 @@ final class LoginRateLimitFilter extends OncePerRequestFilter {
                         .isTrue(clientPermitted, "withinClientRate")
                         .isTrue(permitted, "withinRate"))
                 .observe(Level.WARN);
-        if (!clientPermitted) {
-            LOG.log(Logger.Level.WARNING, "[auth.login.client] login attempts from {0} over the per-client ceiling", client);
-        }
         if (!clientPermitted || !permitted) {
             response.setStatus(429);
             response.setHeader("Retry-After", "60");

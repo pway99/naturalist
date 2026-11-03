@@ -15,6 +15,10 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -125,5 +129,31 @@ class LoginRateLimitFilterTest {
         Counter counter = meters.find("naturalist.invariant.check").tag("outcome", "violated")
                 .tag("name", name).counter();
         return counter == null ? 0 : counter.count();
+    }
+
+    /**
+     * The client key is personal data: a refusal is recorded by the observer's
+     * {@code withinClientRate} count and nowhere else, so the filter's logger receives nothing.
+     */
+    @Test
+    void clientRefusal_writesNoLogRecord() throws Exception {
+        Logger logger = Logger.getLogger(LoginRateLimitFilter.class.getName());
+        List<LogRecord> records = new CopyOnWriteArrayList<>();
+        Handler capture = new Handler() {
+            @Override public void publish(java.util.logging.LogRecord record) { records.add(record); }
+            @Override public void flush() { }
+            @Override public void close() { }
+        };
+        logger.addHandler(capture);
+        try {
+            LoginRateLimitFilter filter = filter(100, 1);
+            attemptLogin(filter, "10.0.0.1");
+            assertThat(attemptLogin(filter, "10.0.0.1").getStatus()).isEqualTo(429);
+
+            assertThat(violations(WITHIN_CLIENT_RATE)).isEqualTo(1);
+            assertThat(records).extracting(LogRecord::getMessage).isEmpty();
+        } finally {
+            logger.removeHandler(capture);
+        }
     }
 }

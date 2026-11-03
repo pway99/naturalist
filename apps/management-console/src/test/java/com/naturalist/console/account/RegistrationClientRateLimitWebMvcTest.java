@@ -22,6 +22,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,5 +108,31 @@ class RegistrationClientRateLimitWebMvcTest {
         Counter counter = meters.find("naturalist.invariant.check").tag("outcome", "violated")
                 .tag("name", name).counter();
         return counter == null ? 0 : counter.count();
+    }
+
+    /**
+     * The client key is personal data: a per-client refusal is recorded by the observer's
+     * {@code withinClientRate} count and nowhere else, so the controller's logger receives nothing.
+     */
+    @Test
+    void clientRefusal_writesNoLogRecord() throws Exception {
+        Logger logger = Logger.getLogger(RegistrationController.class.getName());
+        List<LogRecord> records = new CopyOnWriteArrayList<>();
+        Handler capture = new Handler() {
+            @Override public void publish(java.util.logging.LogRecord record) { records.add(record); }
+            @Override public void flush() { }
+            @Override public void close() { }
+        };
+        logger.addHandler(capture);
+        try {
+            mockMvc.perform(register("203.0.113.9", "quiet-first@example.com", "quiet-first"))
+                    .andExpect(redirectedUrl("/register?registered"));
+            mockMvc.perform(register("203.0.113.9", "quiet-second@example.com", "quiet-second"))
+                    .andExpect(status().is(429));
+
+            assertThat(records).extracting(LogRecord::getMessage).isEmpty();
+        } finally {
+            logger.removeHandler(capture);
+        }
     }
 }

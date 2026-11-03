@@ -109,7 +109,8 @@ Decisions in [ADR-027](../docs/adr/ADR-027-cloudflare-edge-and-abuse-protection.
 - **IPv6 keys on the /64.** One subscriber holds a whole /64 and can rotate inside it for free,
   so `ClientKey` maps an IPv6 address to its /64 prefix. IPv4 is used as is.
 - **The address is PII.** Observed decisions never carry it as a metric tag (unbounded
-  cardinality, ADR-017); a per-client rejection logs it at `WARNING` instead.
+  cardinality, ADR-017), and no limiter logs it: a per-client rejection is recorded by the
+  observer's `withinClientRate` count and nowhere else.
 - **Tests.** `ForwardedClientAddressTest` and `UntrustedPeerForwardedHeadersTest` boot the app
   on a real port, since MockMvc never passes through the valve. The test `application.yml`
   replaces the main one wholesale, so it repeats the `server` block. Keep the two in step.

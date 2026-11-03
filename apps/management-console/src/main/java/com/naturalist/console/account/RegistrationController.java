@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,8 +53,6 @@ import java.util.List;
  */
 @Controller
 class RegistrationController {
-
-    private static final Logger LOG = System.getLogger(RegistrationController.class.getName());
 
     private final RegistrationTransaction registration;
     private final EmailSender emailSender;
@@ -112,11 +108,6 @@ class RegistrationController {
             return reRender(model, request, invalidDetailsMessage(invalid),
                     email, publicHandle, givenName, familyName);
         } catch (RateLimitExceededException tooMany) {
-            // auth.register.client (per client) or auth.register (global) — observed by the
-            // transaction as withinClientRate / withinRate. The key is logged, never tagged.
-            if (RegistrationTransaction.CLIENT_RATE_STRATEGY.equals(tooMany.strategyName())) {
-                LOG.log(Logger.Level.WARNING, "[auth.register.client] sign-ups from {0} over the per-client ceiling", client);
-            }
             response.setStatus(429);
             response.setHeader("Retry-After", "60");
             return reRender(model, request,

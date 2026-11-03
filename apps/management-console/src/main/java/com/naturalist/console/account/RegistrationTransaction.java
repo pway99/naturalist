@@ -108,7 +108,7 @@ class RegistrationTransaction {
      * ({@code auth.register.client}, keyed by {@code clientKey}) is spent before the system-wide
      * one ({@code auth.register}), so one script is refused alone and never drains the budget
      * honest sign-ups share. Either refusal is a {@code RateLimitExceededException} naming its
-     * strategy; the client key is logged by the caller, never tagged.
+     * strategy; the client key is neither logged nor tagged.
      *
      * @param clientKey who is asking, as {@code ClientKey.of(request)} spells it — opaque here.
      * @return the minted handles, the login email, and the raw verification token to email.
