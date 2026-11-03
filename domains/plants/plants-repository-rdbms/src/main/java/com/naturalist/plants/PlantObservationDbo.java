@@ -51,7 +51,7 @@ final class PlantObservationDbo implements Dbo {
             d.identificationEvidence = ident.evidence();
         }
         Observer.forClass(PlantObservationDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

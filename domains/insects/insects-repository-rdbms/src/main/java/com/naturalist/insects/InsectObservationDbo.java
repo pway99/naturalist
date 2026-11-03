@@ -49,7 +49,7 @@ final class InsectObservationDbo implements Dbo {
             d.identificationEvidence = ident.evidence();
         }
         Observer.forClass(InsectObservationDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

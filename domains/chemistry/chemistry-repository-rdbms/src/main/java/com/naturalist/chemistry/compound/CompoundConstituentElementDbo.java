@@ -28,7 +28,7 @@ final class CompoundConstituentElementDbo implements Dbo {
         d.compoundName = compoundName.value();
         d.elementSymbol = element.name();
         Observer.forClass(CompoundConstituentElementDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

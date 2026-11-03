@@ -40,7 +40,7 @@ final class EmailVerificationTokenDbo implements Dbo {
         d.expiresAt = t.expiresAt();
         d.consumedAt = t.consumedAt();
         Observer.forClass(EmailVerificationTokenDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

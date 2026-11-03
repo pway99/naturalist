@@ -24,7 +24,7 @@ final class InsectLifeStageParasitoidHostDbo implements Dbo {
         d.ordinal = ordinal;
         d.speciesName = species.value();
         Observer.forClass(InsectLifeStageParasitoidHostDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
+                .state("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
         return d;
     }
 

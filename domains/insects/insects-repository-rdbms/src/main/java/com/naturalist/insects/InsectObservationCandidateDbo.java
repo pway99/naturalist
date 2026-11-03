@@ -33,7 +33,7 @@ final class InsectObservationCandidateDbo implements Dbo {
         d.commonName = c.commonName();
         d.confidence = c.confidence();
         Observer.forClass(InsectObservationCandidateDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

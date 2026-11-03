@@ -28,7 +28,7 @@ final class ProductPropertyDbo implements Dbo {
         d.propertyKey = key;
         d.propertyValue = value;
         Observer.forClass(ProductPropertyDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

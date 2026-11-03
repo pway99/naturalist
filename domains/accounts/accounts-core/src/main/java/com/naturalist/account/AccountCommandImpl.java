@@ -84,7 +84,7 @@ class AccountCommandImpl implements AccountCommand {
 
         Optional<Account> existing = accounts.getByEmail(email);
         InvariantObservation decision = register
-                .arguments(i -> i.isTrue(existing.isEmpty(), "emailUnregistered"))
+                .state(i -> i.isTrue(existing.isEmpty(), "emailUnregistered"))
                 .observe(Level.WARN);
         if (!decision.violations().isEmpty()) {
             throw new DuplicateEmailException("email already registered");
@@ -181,7 +181,7 @@ class AccountCommandImpl implements AccountCommand {
         // The caller answers identically either way (no enumeration through the response);
         // the metric is the only place an unknown email is distinguishable — which is the point.
         InvariantObservation decision = beginPasswordReset
-                .arguments(i -> i.isTrue(account.isPresent(), "emailRegistered"))
+                .state(i -> i.isTrue(account.isPresent(), "emailRegistered"))
                 .observe(Level.WARN);
         if (!decision.violations().isEmpty()) {
             return Optional.empty();
@@ -229,7 +229,7 @@ class AccountCommandImpl implements AccountCommand {
         Optional<EmailVerificationToken> found = tokens.getByTokenHash(secureTokens.hash(rawToken));
         EmailVerificationToken token = found.orElse(null);
         InvariantObservation decision = method
-                .arguments(i -> i
+                .state(i -> i
                         .isTrue(found.isPresent(), "tokenKnown")
                         .whenNotNull(token, c -> c
                                 .isTrue(token.hasPurpose(purpose), "hasPurpose")
@@ -252,7 +252,7 @@ class AccountCommandImpl implements AccountCommand {
         Account account = knownAccount(method, name)
                 .orElseThrow(() -> new InvalidTokenException("invalid token"));
         InvariantObservation decision = method
-                .arguments(i -> i.isTrue(account.status() == AccountStatus.ACTIVE, "accountActive"))
+                .state(i -> i.isTrue(account.status() == AccountStatus.ACTIVE, "accountActive"))
                 .observe(Level.WARN);
         if (!decision.violations().isEmpty()) {
             throw new InvalidTokenException("invalid token");
@@ -263,7 +263,7 @@ class AccountCommandImpl implements AccountCommand {
     /** Looks an account up by name, observing a miss as {@code accountKnown}; the caller picks the exception. */
     private Optional<Account> knownAccount(MethodObserver method, AccountName name) {
         Optional<Account> account = accounts.getByName(name);
-        method.arguments(i -> i.isTrue(account.isPresent(), "accountKnown")).observe(Level.WARN);
+        method.state(i -> i.isTrue(account.isPresent(), "accountKnown")).observe(Level.WARN);
         return account;
     }
 }

@@ -26,7 +26,7 @@ final class AccountDbo implements Dbo {
         d.access = a.access().name();
         d.status = a.status().name();
         Observer.forClass(AccountDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

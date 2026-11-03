@@ -68,7 +68,7 @@ final class InMemoryCatalog implements Catalog {
             observer.arguments("constructor", i -> i.notNull(contribution, "contribution"))
                     .throwWhenInvalid();
             contribution.searchableEntities().forEach(entity -> {
-                observer.arguments("constructor", i -> i.notNull(entity, "entity"))
+                observer.state("constructor", i -> i.notNull(entity, "entity"))
                         .throwWhenInvalid();
                 EntityRef target = entity.target();
                 String slug = target.name().value().toLowerCase();

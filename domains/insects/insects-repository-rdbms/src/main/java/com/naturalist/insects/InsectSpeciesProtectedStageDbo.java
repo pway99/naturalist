@@ -26,7 +26,7 @@ final class InsectSpeciesProtectedStageDbo implements Dbo {
         d.speciesName = speciesName.value();
         d.stageKind = stage.name();
         Observer.forClass(InsectSpeciesProtectedStageDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

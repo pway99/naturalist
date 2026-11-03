@@ -59,7 +59,7 @@ class AuthenticationEventObserver implements ApplicationListener<AbstractAuthent
         boolean failed = event instanceof AbstractAuthenticationFailureEvent;
         boolean targetsAdmin = admin.username().equals(event.getAuthentication().getName());
         observer.forMethod("onApplicationEvent")
-                .arguments(i -> i
+                .state(i -> i
                         .isFalse(failed, "authenticationFailed")
                         .isFalse(event instanceof AuthenticationFailureBadCredentialsEvent, "badCredentials")
                         .isFalse(event instanceof AuthenticationFailureLockedEvent, "suspendedAccountAttempt")

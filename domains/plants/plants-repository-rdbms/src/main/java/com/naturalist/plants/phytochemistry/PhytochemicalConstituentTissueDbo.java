@@ -26,7 +26,7 @@ final class PhytochemicalConstituentTissueDbo implements Dbo {
         d.constituentName = constituentName.value();
         d.tissue = tissue.name();
         Observer.forClass(PhytochemicalConstituentTissueDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

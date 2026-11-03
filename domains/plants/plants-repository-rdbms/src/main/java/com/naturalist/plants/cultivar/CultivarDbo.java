@@ -58,7 +58,7 @@ final class CultivarDbo implements Dbo {
         d.descriptionSecondary = desc.secondary();
         d.descriptionUniversity = desc.university();
         Observer.forClass(CultivarDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

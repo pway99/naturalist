@@ -28,7 +28,7 @@ final class CompoundFunctionalRoleDbo implements Dbo {
         d.compoundName = compoundName.value();
         d.functionalRole = role.kind();
         Observer.forClass(CompoundFunctionalRoleDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

@@ -46,7 +46,7 @@ final class InsectFeatureAssignmentDbo implements Dbo {
         d.rankName = a.rankName().value();
         d.ordinal = a.ordinal();
         Observer.forClass(InsectFeatureAssignmentDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

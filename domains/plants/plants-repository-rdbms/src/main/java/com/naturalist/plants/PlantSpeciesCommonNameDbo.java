@@ -30,7 +30,7 @@ final class PlantSpeciesCommonNameDbo implements Dbo {
         d.label = commonName.label();
         d.locale = commonName.locale().toLanguageTag();
         Observer.forClass(PlantSpeciesCommonNameDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

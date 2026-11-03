@@ -30,7 +30,7 @@ final class SoilProfileInfoDbo implements Dbo {
         d.zoneName = p.zoneName().value();
         d.subZoneName = p.subZoneName() == null ? null : p.subZoneName().value();
         Observer.forClass(SoilProfileInfoDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

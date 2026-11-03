@@ -29,7 +29,7 @@ class VisionConfiguration {
     @Bean
     VisionService visionService(VisionProperties properties, SecretProvider secrets, Resilience resilience) {
         boolean anthropic = "anthropic".equals(properties.provider());
-        observer.forMethod("visionService").arguments(i -> i.isTrue(anthropic, "provider")).observe(Level.WARN);
+        observer.forMethod("visionService").state(i -> i.isTrue(anthropic, "provider")).observe(Level.WARN);
         if (!anthropic) {
             return new NoOpVisionService();
         }

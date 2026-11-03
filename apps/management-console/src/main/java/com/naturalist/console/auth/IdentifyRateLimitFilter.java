@@ -78,7 +78,7 @@ final class IdentifyRateLimitFilter extends OncePerRequestFilter {
         }
         MethodObserver doFilterInternal = observer.forMethod("doFilterInternal");
         boolean clientPermitted = acquire(perClient.forKey(ClientKey.of(request)));
-        doFilterInternal.arguments(i -> i.isTrue(clientPermitted, "withinClientRate"))
+        doFilterInternal.state(i -> i.isTrue(clientPermitted, "withinClientRate"))
                 .observe(Level.WARN);
         if (!clientPermitted) {
             currentNaturalist.name().ifPresent(budget::refused);

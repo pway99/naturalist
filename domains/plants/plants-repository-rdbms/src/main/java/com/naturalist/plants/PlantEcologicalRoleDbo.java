@@ -33,7 +33,7 @@ final class PlantEcologicalRoleDbo implements Dbo {
         d.plantRank = role.plantName().rank().name();
         d.plantName = role.plantName().value();
         Observer.forClass(PlantEcologicalRoleDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

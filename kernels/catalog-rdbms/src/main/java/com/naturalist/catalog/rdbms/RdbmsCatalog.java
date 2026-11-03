@@ -93,7 +93,7 @@ final class RdbmsCatalog implements Catalog {
         DomainId domain = domainsBySlug.get(row.domain);
         Function<String, EntityName> fn = reconstructors.get(row.entityType);
         if (domain == null || fn == null) {
-            observer.arguments("toRef", i -> i
+            observer.state("toRef", i -> i
                             .notNull(domain, "domain[" + row.domain + "]")
                             .notNull(fn, "reconstructor[" + row.entityType + "]"))
                     .observe(Level.WARN);

@@ -50,7 +50,7 @@ final class ReportedRecommendationDbo implements Dbo {
         d.unit = r.unit().name();
         d.route = r.route() == null ? null : r.route().name();
         Observer.forClass(ReportedRecommendationDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

@@ -26,7 +26,7 @@ final class InsectFunctionalRoleGuildDbo implements Dbo {
         d.roleId = roleId;
         d.guild = guild.name();
         Observer.forClass(InsectFunctionalRoleGuildDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

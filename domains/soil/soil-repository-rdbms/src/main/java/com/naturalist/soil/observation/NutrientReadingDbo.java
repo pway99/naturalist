@@ -35,7 +35,7 @@ final class NutrientReadingDbo implements Dbo {
         d.value = r.value();
         d.unit = r.unit().name();
         Observer.forClass(NutrientReadingDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

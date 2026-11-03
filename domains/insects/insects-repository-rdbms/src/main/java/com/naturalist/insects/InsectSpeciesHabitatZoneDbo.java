@@ -28,7 +28,7 @@ final class InsectSpeciesHabitatZoneDbo implements Dbo {
         d.speciesName = speciesName.value();
         d.zone = zone.name();
         Observer.forClass(InsectSpeciesHabitatZoneDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

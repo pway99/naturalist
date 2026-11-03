@@ -59,7 +59,7 @@ final class SoilPhysicalCharacteristicsDbo implements Dbo {
         d.cbsHydrogenPct = cbs.hydrogenPct();
         d.cbsHydrogenBelowDetectionLimit = cbs.hydrogenBelowDetectionLimit();
         Observer.forClass(SoilPhysicalCharacteristicsDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

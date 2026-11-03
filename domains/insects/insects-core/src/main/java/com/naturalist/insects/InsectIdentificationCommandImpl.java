@@ -194,7 +194,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * for the caller to throw.
      */
     private IdentificationRefused refusal(NaturalistName naturalist, String check, IdentificationRefused refused) {
-        refusals.forMethod("identify").arguments(i -> i.isTrue(false, check)).observe(Level.WARN);
+        refusals.forMethod("identify").state(i -> i.isTrue(false, check)).observe(Level.WARN);
         budget.refused(naturalist);
         return refused;
     }

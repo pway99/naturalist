@@ -23,7 +23,7 @@ final class InsectLifeStageNectarSourceDbo implements Dbo {
         d.lifeStageName = lifeStageName;
         d.ordinal = ordinal;
         d.plantName = plant.value();
-        Observer.forClass(InsectLifeStageNectarSourceDbo.class).arguments("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
+        Observer.forClass(InsectLifeStageNectarSourceDbo.class).state("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
         return d;
     }
 

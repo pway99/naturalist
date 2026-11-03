@@ -28,7 +28,7 @@ final class PlantFeatureDbo implements Dbo {
         d.id = feature.id().value().toString();
         d.value = feature.value();   // store as-is; the record already normalised it
         Observer.forClass(PlantFeatureDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

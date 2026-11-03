@@ -34,7 +34,7 @@ final class InsectLifeStageWindowDbo implements Dbo {
         d.tail = w.tail().toString();
         d.cohortLabel = w.cohortLabel();
         Observer.forClass(InsectLifeStageWindowDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

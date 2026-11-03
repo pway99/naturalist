@@ -57,7 +57,7 @@ public final class SmtpEmailSender implements EmailSender {
         mail.setText(message.body());
 
         boolean delivered = deliver(mail, message);
-        send.arguments(i -> i.isTrue(delivered, "delivered"))
+        send.state(i -> i.isTrue(delivered, "delivered"))
                 .observe(com.naturalist.observability.Level.WARN);
     }
 
