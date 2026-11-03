@@ -55,6 +55,10 @@ temp/
 ### Subagent-driven-development scratch workspace (ledgers, briefs, reports, diffs) ###
 .superpowers/
 
+### Secrets ###
+.env
+.env.*
+
 ### Personal soil lab reports (contain physical address) ###
 domains/soil/*.pdf
 .claude/launch.json

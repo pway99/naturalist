@@ -294,6 +294,7 @@ kernel facade · Micrometer · Jackson · ArchUnit · OpenRewrite · Anthropic A
 - [`CLAUDE.md`](CLAUDE.md): top-level conventions and identity model
 - [`docs/briefings/`](docs/briefings/README.md): short context briefings per domain
 - [`docs/resilience-policy.md`](docs/resilience-policy.md): cross-boundary resilience policy
+- [`docs/runbooks/secret-rotation.md`](docs/runbooks/secret-rotation.md): rotating deployment secrets by fingerprint
 - [`docs/measurement-standards.md`](docs/measurement-standards.md): units across the catalog
 
 ## License

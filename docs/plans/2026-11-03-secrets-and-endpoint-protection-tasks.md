@@ -1,8 +1,8 @@
-# Anthropic Key and Endpoint Protection Implementation Plan
+# Secrets and Endpoint Protection Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Supply the Anthropic API key through a kernel `SecretProvider` port with environment and file sources, select the vision adapter by property, bound identification spend with a bulkhead, a per-client limiter and image downscaling, and give the operator a fingerprint-only view for rehearsed key rotation.
+**Goal:** Supply the model credential through a kernel `SecretProvider` port with environment and file sources, select the vision adapter by property, bound identification spend with a bulkhead, a per-client limiter and image downscaling, and write a rehearsed secret-rotation runbook.
 
 **Architecture:** A new zero-dependency `com.naturalist.secrets` package in `kernels/framework` (port, typed name, redacting value, two sources, a recording decorator) is consumed by the two Anthropic adapters and wired at the composition root by `naturalist.secrets.source` and `naturalist.vision.provider`. Spend ceilings stack outermost-first: the existing usage budgets and global rate gate gain a bulkhead in `InsectIdentificationCommandImpl` (a kernel `BulkheadFullException` and a `BUSY` refusal), a `ClientKey`-keyed limiter on the identify routes, and a JDK-only downscale inside the vision adapter. Two build gates (an OpenRewrite `NoSystemGetenv` recipe and an ArchUnit `SecretsComplianceTest`) keep the credential path honest; `/admin/secrets` shows fingerprints only.
 
@@ -1067,6 +1067,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ---
 
 ### Task 13: `/admin/secrets` shows fingerprints only
+
+> **Withdrawn 2026-11-03 (Pat).** Implemented, then removed before commit together with Task 3's `RecordingSecretProvider` and `SecretResolution`: the external store and a post-deactivation smoke test already prove which credential is live, and the page put a credential derivative and the secret directory's path into a UI. ADR-028 records it as a rejected alternative.
 
 **Files:**
 - Create: `apps/management-console/src/main/java/com/naturalist/console/admin/AdminSecretsController.java`

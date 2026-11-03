@@ -93,7 +93,7 @@ import com.naturalist.fieldnotes.Description;
 ### identification  (`com.naturalist.identification`)
 
 Shared identification vocabulary, framework-only. Today that is `IdentificationRefused`
-(`Reason` = `RATE_LIMITED` | `BUDGET_EXHAUSTED`, plus a `detail` string carrying the budget's
+(`Reason` = `RATE_LIMITED` | `BUDGET_EXHAUSTED` | `BUSY`, plus a `detail` string carrying the budget's
 limit-kind name and an optional `resetAt`): the port-level refusal any adapter can catch
 without depending on `usage-api` or the resilience kernel. The identification *pipeline*
 joins this kernel later, when plants identification is built. It is not part of `vision`:
