@@ -95,4 +95,56 @@ class InvariantObservationMetricsTest {
         assertThat(check(ABSENT, "violated").getId().getTag("level")).isEqualTo("warn");
         assertThat(check(PRESENT, "held").getId().getTag("level")).isEqualTo("info");
     }
+
+    @Test
+    void arguments_tagsKindArgument() {
+        oneHeldOneViolated(Observer.MonitoringMode.ALWAYS).observe(Level.WARN);
+
+        assertThat(check(ABSENT, "violated").getId().getTag("kind")).isEqualTo("argument");
+        assertThat(check(PRESENT, "held").getId().getTag("kind")).isEqualTo("argument");
+    }
+
+    @Test
+    void state_tagsKindState() {
+        Observer.forClass(InvariantObservationMetricsTest.class)
+                .state("acquire", s -> s.notNull(null, "owner"))
+                .observe(Level.WARN);
+
+        Counter counter = check("InvariantObservationMetricsTest.acquire.owner", "violated");
+        assertThat(counter.count()).isEqualTo(1);
+        assertThat(counter.getId().getTag("kind")).isEqualTo("state");
+    }
+
+    @Test
+    void state_throwWhenInvalid_throwsAndTagsKindState() {
+        assertThatThrownBy(() -> Observer.forClass(InvariantObservationMetricsTest.class)
+                .state("count", s -> s.atLeast(0, 1, "plots"))
+                .throwWhenInvalid())
+                .isInstanceOf(InvariantViolationException.class);
+
+        Counter counter = check("InvariantObservationMetricsTest.count.plots", "violated");
+        assertThat(counter.getId().getTag("kind")).isEqualTo("state");
+        assertThat(counter.getId().getTag("level")).isEqualTo("error");
+    }
+
+    @Test
+    void methodObserverState_tagsKindState() {
+        Observer.forClass(InvariantObservationMetricsTest.class)
+                .forMethod("lookup")
+                .state(s -> s.notBlank("", "handle"))
+                .observe(Level.WARN);
+
+        Counter counter = check("InvariantObservationMetricsTest.lookup.handle", "violated");
+        assertThat(counter.getId().getTag("kind")).isEqualTo("state");
+    }
+
+    @Test
+    void observable_tagsKindObservable() {
+        Observer.forClass(InvariantObservationMetricsTest.class)
+                .observable(null, "fetched")
+                .observe(Level.WARN);
+
+        Counter counter = check("InvariantObservationMetricsTest.fetched.fetched", "violated");
+        assertThat(counter.getId().getTag("kind")).isEqualTo("observable");
+    }
 }

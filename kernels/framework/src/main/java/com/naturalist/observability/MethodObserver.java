@@ -55,7 +55,7 @@ public class MethodObserver {
         String scope = referenceClass.getSimpleName() + "." + methodName + "." + label;
         Constraints accumulator = new Constraints();
         accumulator.entityName(name, label);
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
     }
 
     /**
@@ -74,27 +74,42 @@ public class MethodObserver {
         if (observable == null) {
             Constraints accumulator = new Constraints();
             accumulator.notNull(this, ignored -> null, label);
-            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+            return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
         }
         Constraints accumulator = new Constraints();
         @SuppressWarnings({"unchecked", "rawtypes"})
         Consumer<Constraints> consumer = (Consumer) observable.invariants();
         consumer.accept(accumulator);
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, ObservationKind.OBSERVABLE);
     }
 
     /**
      * Build an {@link InvariantObservation} over argument constraints within this method
      * scope. The method name is already captured — supply only the constraint declarations.
+     * For values the method acquires during its own run, use {@link #state(Consumer)}.
      */
     public InvariantObservation arguments(Consumer<? extends Constraints> constraintConsumer) {
+        return constraintBatch(constraintConsumer, ObservationKind.ARGUMENT);
+    }
+
+    /**
+     * Build an {@link InvariantObservation} over state this method acquired during its own run
+     * — see {@link Observer#state(String, Consumer)}. Emissions carry {@code kind=state}; the
+     * terminal operation is the call site's choice.
+     */
+    public InvariantObservation state(Consumer<? extends Constraints> constraintConsumer) {
+        return constraintBatch(constraintConsumer, ObservationKind.STATE);
+    }
+
+    private InvariantObservation constraintBatch(Consumer<? extends Constraints> constraintConsumer,
+                                                 ObservationKind kind) {
         Constraints accumulator = new Constraints();
         @SuppressWarnings({"unchecked", "rawtypes"})
         Consumer<Constraints> consumer = (Consumer) constraintConsumer;
         consumer.accept(accumulator);
 
         String scope = referenceClass.getSimpleName() + "." + methodName;
-        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode);
+        return new InvariantObservation(scope, flatten(accumulator, scope + "."), monitoringMode, kind);
     }
 
     private Set<Constraint<?>> flatten(Constraints accumulator, String prefix) {

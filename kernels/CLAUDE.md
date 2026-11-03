@@ -275,13 +275,21 @@ Do not use the by-function form when the direct-value form suffices — the func
 name of the method that computes it (`isTrue(family.belongsToOrder(order), "familyBelongsToOrder")`,
 `isFalse(token.isConsumed(), "isConsumed")`), so the metric tag names something a reviewer can open. Use them for
 cross-field invariants and for an operation's *decisions*: observe the decision at `WARN` via
-`observer.forMethod(m).arguments(...).observe(Level.WARN)` before throwing the exception the operation already throws.
+`observer.forMethod(m).state(...).observe(Level.WARN)` before throwing the exception the operation already throws.
+
+**Arguments vs state.** `arguments(...)` is for values the *caller passed* — the method's boundary contract, always
+`throwWhenInvalid()`. `state(...)` takes the same constraint lambda for values the method *acquired or computed during
+its own run* — an aggregate fetched from another api, a count, a looked-up mapping, a decision — and the terminal
+operation is the consumer's choice. The two are told apart by the `kind` tag (`argument` | `state` | `observable`) on
+`naturalist.invariant.check`, so a violation points at the caller or at what the method consumed. A value that is not
+one of the method's parameters (or an element of one) never goes through `arguments(...)`. To walk an acquired
+object's *own* `invariants()` rather than the facts this method depends on, use `observable(...)` / `namedEntity(...)`.
 Security-critical classes (`accounts-core`, console authentication, registration) construct their `Observer` in
 `MonitoringMode.ALWAYS` so valid decisions are counted too (as the `INFO` baseline); everything else stays `ON_FAILURE`.
 
 **One `MethodObserver` per method.** A method that observes more than once — its arguments, then a decision, then the
 entity it wrote — obtains `MethodObserver m = observer.forMethod("name")` once and routes every observation through it
-(`m.arguments(...)`, `m.namedEntity(...)`, `m.observable(...)`); helpers that observe on the caller's behalf take the
+(`m.arguments(...)`, `m.state(...)`, `m.namedEntity(...)`, `m.observable(...)`); helpers that observe on the caller's behalf take the
 `MethodObserver`, never the method name. Spelling the name as a string at each site (`observer.arguments("x", …)` here,
 `observer.forMethod("x")` there, `helper("x", …)`) is an anti-pattern: the sites drift apart on rename and the metric
 ends up scoped to a method that no longer exists. Reference: `AccountCommandImpl`.
