@@ -28,6 +28,25 @@ spring:
   #         starttls:
   #           enable: true
 
+# Client identity behind the Cloudflare Tunnel connector (ADR-027 D4; apps/CLAUDE.md, "Client
+# identity behind a proxy"). Tomcat's RemoteIpValve rewrites getRemoteAddr() from
+# CF-Connecting-IP and the scheme from X-Forwarded-Proto — but only when the TCP peer matches
+# internal-proxies, left at Boot's default (loopback, RFC 1918, CGNAT, link-local): the local
+# connector is the only peer the origin ever has. A direct connection from anywhere else keeps
+# its own address and its forwarded headers are ignored. The app never reads these headers
+# itself (ClientKey is getRemoteAddr() and nothing else). Never switch to `framework`: it
+# trusts forwarded headers from any peer, letting a client choose its own rate-limit key.
+# The test application.yml replaces this file wholesale and repeats this block.
+server:
+  forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      remote-ip-header: CF-Connecting-IP
+      protocol-header: X-Forwarded-Proto
+    # TLS ends at the edge; honour X-Forwarded-Proto rather than the container's own scheme
+    # when building a context-root redirect.
+    redirect-context-root: false
+
 gg:
   jte:
     development-mode: true

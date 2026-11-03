@@ -85,6 +85,35 @@ Apps follow the same shape as `apps/management-console/`:
 A new app reusing this composition copies the pattern, not the
 configuration class. Each app owns its own composition root.
 
+## Client identity behind a proxy
+
+Per-client controls (the `auth.login.client` / `auth.register.client` limiters, any later
+per-address limiter) key on `ClientKey.of(request)`, which is `getRemoteAddr()` and nothing
+else. The app never reads `CF-Connecting-IP`, `X-Forwarded-For` or `Forwarded` itself: a header
+any client can send is not an identity, and only the container knows which peer sent it.
+Decisions in [ADR-027](../docs/adr/ADR-027-cloudflare-edge-and-abuse-protection.md) D3/D4.
+
+- **The container rewrites the address, for trusted peers only.** `management-console`'s
+  `application.yml` sets `server.forward-headers-strategy: native` and
+  `server.tomcat.remoteip.remote-ip-header: CF-Connecting-IP` (plus `protocol-header:
+  X-Forwarded-Proto`). Tomcat's `RemoteIpValve` then rewrites `getRemoteAddr()` and the scheme,
+  but only when the TCP peer matches `internal-proxies`. That is left at Boot's default
+  (loopback, RFC 1918, CGNAT, link-local), because the Cloudflare Tunnel connector is local
+  and is the only peer the origin has.
+- **Never `framework`.** `ForwardedHeaderFilter` has no trusted-proxy list, so every client
+  could choose its own rate-limit key.
+- **Fronted without a tunnel?** Then `internal-proxies` must become Cloudflare's published
+  ranges. Without that, every request keys to the proxy's address and a per-client ceiling
+  becomes a global lockout. This is also why the client-address config ships before, or with,
+  any `ClientKey`-keyed limiter.
+- **IPv6 keys on the /64.** One subscriber holds a whole /64 and can rotate inside it for free,
+  so `ClientKey` maps an IPv6 address to its /64 prefix. IPv4 is used as is.
+- **The address is PII.** Observed decisions never carry it as a metric tag (unbounded
+  cardinality, ADR-017); a per-client rejection logs it at `WARNING` instead.
+- **Tests.** `ForwardedClientAddressTest` and `UntrustedPeerForwardedHeadersTest` boot the app
+  on a real port, since MockMvc never passes through the valve. The test `application.yml`
+  replaces the main one wholesale, so it repeats the `server` block. Keep the two in step.
+
 ## Resource discipline
 
 The deployment artifact ships only the app's own resources under

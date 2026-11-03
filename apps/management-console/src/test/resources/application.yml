@@ -22,6 +22,16 @@ spring:
     exclude:
       - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 
+# The main application.yml's client-identity block, repeated because this file replaces it
+# (ForwardedClientAddressTest proves the trust boundary against it).
+server:
+  forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      remote-ip-header: CF-Connecting-IP
+      protocol-header: X-Forwarded-Proto
+    redirect-context-root: false
+
 naturalist:
   admin:
     username: test-admin
