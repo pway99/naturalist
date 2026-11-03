@@ -132,4 +132,11 @@ class UsageCommandImpl implements UsageCommand {
         }
         return claimed;
     }
+
+    private static final UsageCounterName REFUSED = UsageCounterName.of("identification-refused");
+
+    public void refused(NaturalistName naturalist) {
+        observer.arguments("refused", i -> i.identifier(naturalist, "naturalist")).throwWhenInvalid();
+        events.insert(new UsageEvent(UsageEventId.create(), REFUSED, naturalist, clock.instant()));
+    }
 }

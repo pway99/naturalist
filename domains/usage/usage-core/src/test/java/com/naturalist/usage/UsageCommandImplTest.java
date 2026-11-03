@@ -1,6 +1,7 @@
 package com.naturalist.usage;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -161,5 +162,45 @@ class UsageCommandImplTest {
         pool.shutdown();
 
         assertThat(succeeded.get()).isEqualTo(100);
+    }
+
+    /**
+     * A refused identification is one {@code identification-refused} event naming the naturalist
+     * and when -- nothing else -- and is counted apart from the {@code identification} budget.
+     */
+    @Test
+    void refused_recordsOneRefusalEventForTheNaturalist_andSpendsNoBudget() {
+        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
+        NaturalistName pat = NaturalistName.of("pat");
+
+        context.command().refused(pat);
+
+        assertThat(context.events().findByCounterSince(UsageCounterName.of("identification-refused"), pat, Instant.EPOCH))
+                .singleElement()
+                .satisfies(e -> assertThat(e.instant()).isEqualTo(clock.instant()));
+        assertThat(context.events().findByCounterSince(UsageCounterName.of("identification"), null, Instant.EPOCH))
+                .isEmpty();
+    }
+
+    @Test
+    void refused_nullNaturalist_isRejected() {
+        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
+
+        assertThatThrownBy(() -> context.command().refused(null))
+                .isInstanceOf(InvariantViolationException.class);
+        assertThat(context.events().findByCounterSince(UsageCounterName.of("identification-refused"), null, Instant.EPOCH))
+                .isEmpty();
+    }
+
+    /** The narrow seam insects holds records a refusal through the command, not as a no-op. */
+    @Test
+    void identificationBudgetSeam_forwardsRefused() {
+        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
+        NaturalistName pat = NaturalistName.of("pat");
+
+        new IdentificationBudgetImpl(context.command()).refused(pat);
+
+        assertThat(context.events().findByCounterSince(UsageCounterName.of("identification-refused"), pat, Instant.EPOCH))
+                .hasSize(1);
     }
 }

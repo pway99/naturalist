@@ -7,6 +7,7 @@ import com.naturalist.resilience.RateLimitExceededException;
 import com.naturalist.resilience.RateLimiter;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
+import com.naturalist.usage.IdentificationBudget;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +41,10 @@ import java.io.IOException;
  * <p>The decision is observed in {@link Observer.MonitoringMode#ALWAYS} as
  * {@code withinClientRate} -- the violations the flood signal, the valid rows the identify
  * baseline. Nothing is logged: the client key is personal data and is never a metric tag
- * (unbounded cardinality), so the observer's count is the whole record. Constructed by
+ * (unbounded cardinality), so the observer's count is the whole record of the address. A refusal
+ * of a signed-in naturalist is also recorded against that naturalist through
+ * {@link IdentificationBudget#refused} -- the name and the time, for client relations; an
+ * anonymous caller cannot reach this path past the VISION check. Constructed by
  * {@code SecurityConfiguration} directly (not a bean) so it sits in the security chain exactly
  * once; it declares {@code @Resilient} and reaches the facade in its constructor, satisfying
  * both resilience gates.
@@ -55,9 +59,14 @@ final class IdentifyRateLimitFilter extends OncePerRequestFilter {
     private final Observer observer = Observer.forClass(getClass(), Observer.MonitoringMode.ALWAYS);
 
     private final RateLimiter perClient;
+    private final CurrentNaturalist currentNaturalist;
+    private final IdentificationBudget budget;
 
-    public IdentifyRateLimitFilter(Resilience resilience) {
+    public IdentifyRateLimitFilter(Resilience resilience, CurrentNaturalist currentNaturalist,
+                                   IdentificationBudget budget) {
         this.perClient = resilience.rateLimiter(STRATEGY);
+        this.currentNaturalist = currentNaturalist;
+        this.budget = budget;
     }
 
     @Override
@@ -72,6 +81,7 @@ final class IdentifyRateLimitFilter extends OncePerRequestFilter {
         doFilterInternal.arguments(i -> i.isTrue(clientPermitted, "withinClientRate"))
                 .observe(Level.WARN);
         if (!clientPermitted) {
+            currentNaturalist.name().ifPresent(budget::refused);
             response.setStatus(HttpServletResponse.SC_SEE_OTHER);
             response.setHeader("Location", request.getContextPath()
                     + "/" + identify.getVariables().get("domain") + "/identify?limit=RATE");

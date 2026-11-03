@@ -34,4 +34,14 @@ public interface UsageCommand {
      * alerts just claimed, so the caller can hand them to the mailer exactly once.
      */
     List<UsageAlert> claimUnsentAlerts();
+
+    /**
+     * Records that {@code naturalist} was refused an identification: one
+     * {@code identification-refused} {@link UsageEvent} naming the naturalist and when, and
+     * nothing else -- no reason, no client address. It is counted apart from the
+     * {@code identification} counter, so a refusal never spends budget. The rate limits ahead of
+     * every refusal bound how many rows one naturalist can produce. Read it with SQL on
+     * {@code usage_event}; it exists for client relations, not for enforcement.
+     */
+    void refused(NaturalistName naturalist);
 }

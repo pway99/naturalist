@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -48,6 +49,8 @@ import java.nio.file.Files;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Instant;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -826,5 +829,54 @@ class InsectIdentificationCommandImplTest {
         assertThat(budgetReserveCalls.get()).as("budget.reserve() must not run once the bulkhead rejects").isZero();
         assertThat(visionCalled.get()).isFalse();
         assertThat(filesUnder(imageRoot)).as("nothing is stored for a refused identification").isEmpty();
+    }
+
+    /**
+     * Every refusal -- rate, bulkhead, budget -- tells the budget seam who was refused (the usage
+     * domain keeps one {@code identification-refused} row for client relations) and is observed as
+     * a WARN violation, so a spike in refusals is visible to monitoring. A permitted identification
+     * records no refusal.
+     */
+    @Test
+    void identify_eachRefusal_recordsTheNaturalist_andObservesAWarnViolation() {
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            var pat = NaturalistName.of("pat");
+            var refused = new ArrayList<NaturalistName>();
+            IdentificationBudget recording = new IdentificationBudget() {
+                @Override public void reserve(NaturalistName naturalist) { }
+                @Override public void refused(NaturalistName naturalist) { refused.add(naturalist); }
+            };
+            IdentificationBudget overBudget = new IdentificationBudget() {
+                @Override public void reserve(NaturalistName naturalist) {
+                    throw new BudgetExceededException(LimitKind.DAILY, Instant.parse("2026-11-04T00:00:00Z"));
+                }
+                @Override public void refused(NaturalistName naturalist) { refused.add(naturalist); }
+            };
+
+            buildCommand(Resilience.noOp(), recording, stubService)
+                    .identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), pat, null);
+            assertThat(refused).as("a permitted identification records no refusal").isEmpty();
+
+            for (var cmd : List.of(
+                    buildCommand(new RejectingRateLimiterResilience(), recording, stubService),
+                    buildCommand(new RejectingBulkheadResilience(), recording, stubService),
+                    buildCommand(Resilience.noOp(), overBudget, stubService))) {
+                assertThatThrownBy(() -> cmd.identify(
+                        ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), pat, null))
+                        .isInstanceOf(IdentificationRefused.class);
+            }
+
+            assertThat(refused).containsExactly(pat, pat, pat);
+            for (var check : List.of("withinRate", "notBusy", "withinBudget")) {
+                var counter = meters.find("naturalist.invariant.check").tag("outcome", "violated")
+                        .tag("name", "InsectIdentificationCommandImpl.identify." + check).counter();
+                assertThat(counter).as(check).isNotNull();
+                assertThat(counter.count()).as(check).isEqualTo(1.0);
+            }
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
     }
 }

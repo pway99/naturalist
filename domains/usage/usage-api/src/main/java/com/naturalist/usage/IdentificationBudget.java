@@ -23,4 +23,12 @@ public interface IdentificationBudget {
     static IdentificationBudget noOp() {
         return NoOpIdentificationBudget.INSTANCE;
     }
+
+    /**
+     * Records that {@code naturalist} was refused an identification, for client-relations
+     * reporting. It never spends budget. The default records nothing, which suits
+     * {@link #noOp()} and test doubles.
+     */
+    default void refused(NaturalistName naturalist) {
+    }
 }

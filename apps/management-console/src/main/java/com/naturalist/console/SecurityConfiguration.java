@@ -1,9 +1,11 @@
 package com.naturalist.console;
 
 import com.naturalist.console.admin.AdminProperties;
+import com.naturalist.console.auth.CurrentNaturalist;
 import com.naturalist.console.auth.IdentifyRateLimitFilter;
 import com.naturalist.console.auth.LoginRateLimitFilter;
 import com.naturalist.resilience.Resilience;
+import com.naturalist.usage.IdentificationBudget;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,15 +26,19 @@ import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWrite
 class SecurityConfiguration {
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, Resilience resilience) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, Resilience resilience,
+                                    CurrentNaturalist currentNaturalist,
+                                    IdentificationBudget identificationBudget) throws Exception {
         return http
                 // Global ceiling on POST /login (auth.login): caps the BCrypt CPU a
                 // credential-stuffing run can burn; rejections are observed as withinRate.
                 .addFilterBefore(new LoginRateLimitFilter(resilience), UsernamePasswordAuthenticationFilter.class)
                 // Per-client ceiling on POST /<domain>/identify (vision.identification.client, two a
                 // minute per address). After AuthorizationFilter, so only a request that already
-                // passed authentication, CSRF and the VISION check spends a client permit.
-                .addFilterAfter(new IdentifyRateLimitFilter(resilience), AuthorizationFilter.class)
+                // passed authentication, CSRF and the VISION check spends a client permit; a
+                // refusal is recorded against the signed-in naturalist (identification-refused).
+                .addFilterAfter(new IdentifyRateLimitFilter(resilience, currentNaturalist, identificationBudget),
+                        AuthorizationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         // Static assets + entry / self-service auth pages — open to everyone.
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**",

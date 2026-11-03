@@ -27,4 +27,9 @@ class IdentificationBudgetImpl implements IdentificationBudget {
     public void reserve(NaturalistName naturalist) {
         usageCommand.reserve(naturalist);
     }
+
+    @Override
+    public void refused(NaturalistName naturalist) {
+        usageCommand.refused(naturalist);
+    }
 }

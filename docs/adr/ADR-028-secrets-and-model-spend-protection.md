@@ -127,6 +127,23 @@ Turnstile script and frame ADR-027 D6 loads from `challenges.cloudflare.com`
 Identification stays behind sign-in and the `VISION` authority. Anonymous
 identification is not offered.
 
+### Refusals are recorded for client relations, and observed for alerting
+
+Added 2026-11-03. Every refused identification of a signed-in naturalist (rate,
+bulkhead, budget in `InsectIdentificationCommandImpl`; the per-client limit in
+`IdentifyRateLimitFilter`) is written as one `usage_event` row under the counter
+`identification-refused`, through `IdentificationBudget.refused`. The row holds
+the naturalist and the instant only: no reason, no client address, no new
+table. It is counted apart from `identification`, so a refusal never spends
+budget, and the limits ahead of it bound how many rows one naturalist can
+produce. It is read with SQL, for an administrator answering a naturalist; it
+is not an enforcement input.
+
+Each refusal is also observed as a WARN violation (`withinRate`, `notBusy`,
+`withinBudget`, `withinClientRate`) on `naturalist.invariant.check`. That is
+the spike signal. No metrics backend is wired yet, so the alert rule on it is
+set up with hosting; until then the counts exist only in-process.
+
 ### Rotation is a rehearsed procedure, supported by code
 
 The app never shows a secret, nor anything derived from one: no admin page

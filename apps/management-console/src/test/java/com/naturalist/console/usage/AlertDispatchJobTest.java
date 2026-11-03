@@ -74,6 +74,9 @@ class AlertDispatchJobTest {
             nextClaim = List.of();
             return claimed;
         }
+
+        public void refused(NaturalistName naturalist) {
+        }
     }
 
     /** Counts {@link EmailSender#send} invocations. */

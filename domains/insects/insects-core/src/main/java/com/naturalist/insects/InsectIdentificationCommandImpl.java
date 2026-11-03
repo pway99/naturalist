@@ -16,6 +16,7 @@ import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.identification.IdentificationRefused;
 import com.naturalist.infrastructure.DomainService;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.Observer;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
@@ -94,6 +95,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             new AuthoritySource("ref", "Suggested Reference");
 
     private final Observer observer = Observer.forClass(InsectIdentificationCommandImpl.class);
+    /** Observes every refusal as a WARN violation, so a refusal spike reaches monitoring. */
+    private final Observer refusals = Observer.forClass(InsectIdentificationCommandImpl.class, Observer.MonitoringMode.ALWAYS);
     private final RateLimiter rateLimiter;
     private final Bulkhead bulkhead;
     private final IdentificationBudget budget;
@@ -169,7 +172,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             rateLimiter.execute(() -> { });
         } catch (RateLimitExceededException rateLimited) {
-            throw new IdentificationRefused(IdentificationRefused.Reason.RATE_LIMITED, null, null);
+            throw refusal(naturalist, "withinRate",
+                    new IdentificationRefused(IdentificationRefused.Reason.RATE_LIMITED, null, null));
         }
 
         // 0b. BULKHEAD -- caps identifications in flight; a full bulkhead refuses before any
@@ -178,8 +182,21 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             return bulkhead.execute(() -> reserveStoreAndCatalogue(upload, metadata, naturalist, notes));
         } catch (BulkheadFullException full) {
-            throw new IdentificationRefused(IdentificationRefused.Reason.BUSY, null, null);
+            throw refusal(naturalist, "notBusy",
+                    new IdentificationRefused(IdentificationRefused.Reason.BUSY, null, null));
         }
+    }
+
+    /**
+     * Observes a refusal as a WARN violation named {@code check} and records who was refused --
+     * the naturalist and nothing else -- through the budget seam, which writes one
+     * {@code identification-refused} usage event for client relations. Returns {@code refused}
+     * for the caller to throw.
+     */
+    private IdentificationRefused refusal(NaturalistName naturalist, String check, IdentificationRefused refused) {
+        refusals.forMethod("identify").arguments(i -> i.isTrue(false, check)).observe(Level.WARN);
+        budget.refused(naturalist);
+        return refused;
     }
 
     /** Stages 1-6: vision, enrichment, feature and citation resolution, catalog write. */
@@ -833,8 +850,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             budget.reserve(naturalist);
         } catch (BudgetExceededException over) {
-            throw new IdentificationRefused(IdentificationRefused.Reason.BUDGET_EXHAUSTED,
-                    over.limitKind().name(), over.resetAt());
+            throw refusal(naturalist, "withinBudget", new IdentificationRefused(
+                    IdentificationRefused.Reason.BUDGET_EXHAUSTED, over.limitKind().name(), over.resetAt()));
         }
 
         // 0d. STORE THE UPLOAD -- deleted again if any later stage fails
