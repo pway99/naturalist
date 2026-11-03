@@ -2,14 +2,12 @@ package com.naturalist.console.secrets;
 
 import com.naturalist.secrets.EnvironmentSecretProvider;
 import com.naturalist.secrets.FileSecretProvider;
-import com.naturalist.secrets.RecordingSecretProvider;
 import com.naturalist.secrets.SecretProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.nio.file.Path;
-import java.time.Clock;
 
 /**
  * Selects the deployment-secret source by {@code naturalist.secrets.source} (ADR-028),
@@ -21,8 +19,8 @@ import java.time.Clock;
 @EnableConfigurationProperties(SecretsProperties.class)
 class SecretsConfiguration {
     @Bean
-    RecordingSecretProvider secretProvider(SecretsProperties properties) {
-        SecretProvider source = switch (properties.source()) {
+    SecretProvider secretProvider(SecretsProperties properties) {
+        return switch (properties.source()) {
             case "environment" -> EnvironmentSecretProvider.fromProcess();
             case "file" -> {
                 if (properties.directory() == null || properties.directory().isBlank()) {
@@ -34,6 +32,5 @@ class SecretsConfiguration {
             default -> throw new IllegalStateException(
                     "naturalist.secrets.source must be 'environment' or 'file' (was '" + properties.source() + "')");
         };
-        return new RecordingSecretProvider(source, Clock.systemUTC());
     }
 }

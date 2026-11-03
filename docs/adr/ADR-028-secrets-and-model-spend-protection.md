@@ -129,12 +129,14 @@ identification is not offered.
 
 ### Rotation is a rehearsed procedure, supported by code
 
-`/admin/secrets` shows the live key's source and fingerprint, so an operator
-can prove which key is live without ever seeing a value. Nothing about a
-resolution is logged: it is state, not an invariant, and the admin page is the
-one place it is shown. Rotation is: create the new key in the same workspace,
-update the store, restart, confirm the fingerprint, smoke one identification,
-deactivate the old key. The runbook is rehearsed once before the first public
+The app never shows a secret, nor anything derived from one: no admin page
+lists resolved secrets, and nothing about a resolution is logged. The external
+store is the source of truth for which version is current. A rotation is
+proved by behaviour, not by display: create the new key in the same workspace,
+record its locally computed fingerprint in the runbook log, update the store,
+restart, smoke one identification, deactivate the old key, and smoke again.
+The second smoke passing with the old key dead is the proof the new one is
+live. The runbook is rehearsed once before the first public
 deployment and then quarterly. The first real rotation
 retires the pre-publication key, because the 2026-09-26 history rewrite cannot
 prove what earlier clones hold.
@@ -143,6 +145,10 @@ prove what earlier clones hold.
 
 Recorded so they are not reintroduced.
 
+- **An admin page listing resolved secrets by source and fingerprint**
+  (built, then removed before commit). It answered a question the external
+  store and a post-deactivation smoke test already answer, and it put a
+  credential derivative and the secret directory's path into a UI. Rejected.
 - **Encrypted environment or startup variable, decrypted by a private module
   excluded from the public repo.** The decryption key must also be present at
   runtime, so the root of trust moves rather than disappears; the scheme
@@ -150,8 +156,7 @@ Recorded so they are not reintroduced.
   contributor. Rejected.
 - **Let the Anthropic SDK read `MODEL_CREDENTIAL` itself** via
   `AnthropicOkHttpClient.fromEnv()`. Invisible coupling to the process
-  environment, no way to swap the source by configuration, no fingerprint to
-  verify a rotation, and tests cannot be isolated from a developer's shell.
+  environment, no way to swap the source by configuration, and tests cannot be isolated from a developer's shell.
   Rejected.
 - **A `${MODEL_CREDENTIAL}` placeholder in `application.yml`.** An unresolved
   placeholder binds as the literal string and is non-blank, the trap already
@@ -182,7 +187,7 @@ Recorded so they are not reintroduced.
 - **A second secret mechanism for the Turnstile key and tunnel token.**
   ADR-027 passes the Turnstile secret as a Spring property; keeping that beside
   `SecretProvider` would give the deployment two ways to carry a secret, two
-  places to rotate and one that cannot report a fingerprint. Rejected: those
+  places to rotate and two procedures to rehearse. Rejected: those
   secrets move onto the port as soon as it exists.
 - **Workload Identity Federation now.** It retires the static key entirely and
   is the intended successor on a host that issues OIDC identity tokens, but it
@@ -197,8 +202,10 @@ Recorded so they are not reintroduced.
 
 - Any `System.getenv` outside `com.naturalist.secrets`.
 - Any `com.anthropic` import outside `adapters/anthropic-*`.
-- A secret value in a log line, an exception message, a template model or an
-  admin page; only `Secret.fingerprint()` is ever displayed.
+- A secret value, or anything derived from one, in a log line, an exception
+  message, a template model or an admin page. `Secret.fingerprint()` exists
+  only so `toString()` redacts; the operator computes fingerprints locally for
+  the rotation log.
 - An adapter chosen by environment-variable presence rather than a property.
 - A new route that reaches `VisionService` or `TextGenerationService` without
   passing through `InsectIdentificationCommandImpl`'s rate gate, bulkhead and

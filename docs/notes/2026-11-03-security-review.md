@@ -43,8 +43,9 @@ two of them are worth a decision before public hosting (the action items below).
 
 - No path leaks the secret value. `Secret.toString()` prints only an 8-hex fingerprint, and
   `MissingSecretException`, `FileSecretProvider` and `VisionConfiguration` carry the name,
-  source and path only. Neither adapter keeps the `Secret` in a field. `RecordingSecretProvider`
-  stores fingerprints, not values.
+  source and path only. Neither adapter keeps the `Secret` in a field. (The
+  `RecordingSecretProvider` reviewed here, which stored fingerprints only, was later removed
+  with the `/admin/secrets` page.)
 - `SecretName` is restricted to kebab-case (`^[a-z0-9]+(-[a-z0-9]+)*$`), so file-source path
   traversal is impossible.
 - The Anthropic base URL is never set by the app; the SDK defaults to `api.anthropic.com` and
