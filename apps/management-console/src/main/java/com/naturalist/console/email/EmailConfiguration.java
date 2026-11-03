@@ -44,7 +44,7 @@ class EmailConfiguration {
         MethodObserver emailSender = observer.forMethod("emailSender");
         // Both decisions are observed: a log-only deployment shows up as a standing `smtp`
         // violation on the dashboard; a deployment with neither trips `transportConfigured`.
-        emailSender.arguments(i -> i
+        emailSender.state(i -> i
                 .isTrue(smtp || logOnly, "transportConfigured")
                 .isTrue(smtp, "smtp")).observe(Level.WARN);
         if (smtp) {

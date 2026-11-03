@@ -31,7 +31,7 @@ final class NaturalistDbo implements Dbo {
         d.stage = n.stage().name();
         d.notes = n.notes();
         Observer.forClass(NaturalistDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

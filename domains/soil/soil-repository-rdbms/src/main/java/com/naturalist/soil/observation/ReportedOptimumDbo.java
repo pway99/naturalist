@@ -52,7 +52,7 @@ final class ReportedOptimumDbo implements Dbo {
         }
         d.unit = o.unit().name();
         Observer.forClass(ReportedOptimumDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

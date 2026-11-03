@@ -28,7 +28,7 @@ final class UsageEventDbo implements Dbo {
         d.naturalist = e.naturalist().value();
         d.instant = e.instant();
         Observer.forClass(UsageEventDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

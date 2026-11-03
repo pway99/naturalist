@@ -44,7 +44,7 @@ final class PlantFeatureAssignmentDbo implements Dbo {
         d.rankName = a.rankName().value();
         d.ordinal = a.ordinal();
         Observer.forClass(PlantFeatureAssignmentDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

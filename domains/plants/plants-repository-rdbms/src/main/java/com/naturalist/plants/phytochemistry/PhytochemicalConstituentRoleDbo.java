@@ -29,7 +29,7 @@ final class PhytochemicalConstituentRoleDbo implements Dbo {
         d.constituentName = constituentName.value();
         d.roleKind = role.kind();
         Observer.forClass(PhytochemicalConstituentRoleDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

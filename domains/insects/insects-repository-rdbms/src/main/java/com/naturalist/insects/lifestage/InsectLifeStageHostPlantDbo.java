@@ -23,7 +23,7 @@ final class InsectLifeStageHostPlantDbo implements Dbo {
         d.lifeStageName = lifeStageName;
         d.ordinal = ordinal;
         d.plantName = plant.value();
-        Observer.forClass(InsectLifeStageHostPlantDbo.class).arguments("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
+        Observer.forClass(InsectLifeStageHostPlantDbo.class).state("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
         return d;
     }
 

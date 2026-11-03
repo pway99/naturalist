@@ -56,7 +56,7 @@ final class LabAnalysisInfoDbo implements Dbo {
             d.samplingCompositingMethod = sp.compositingMethod().name();
         }
         Observer.forClass(LabAnalysisInfoDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

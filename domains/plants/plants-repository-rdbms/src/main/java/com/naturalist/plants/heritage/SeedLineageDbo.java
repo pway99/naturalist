@@ -59,7 +59,7 @@ final class SeedLineageDbo implements Dbo {
         d.descriptionSecondary = desc.secondary();
         d.descriptionUniversity = desc.university();
         Observer.forClass(SeedLineageDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

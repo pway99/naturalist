@@ -31,7 +31,7 @@ final class ProductCompoundDbo implements Dbo {
         d.productName = productName.value();
         d.compoundName = compoundName.value();
         Observer.forClass(ProductCompoundDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

@@ -121,7 +121,7 @@ class RegistrationTransaction {
         register.arguments(i -> i.notBlank(clientKey, "clientKey")).throwWhenInvalid();
         boolean clientPermitted = acquirePermit(registrationsPerClient.forKey(clientKey));
         boolean permitted = !clientPermitted || acquirePermit(registrations);
-        register.arguments(i -> i
+        register.state(i -> i
                         .isTrue(clientPermitted, "withinClientRate")
                         .isTrue(permitted, "withinRate"))
                 .observe(Level.WARN);

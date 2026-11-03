@@ -65,7 +65,7 @@ class NaturalistUserDetailsService implements UserDetailsService {
         boolean isConfigAdmin = admin.username().equals(username);
         if (isConfigAdmin) {
             observer.forMethod("loadUserByUsername")
-                    .arguments(i -> i.isTrue(isConfigAdmin, "isConfigAdmin"))
+                    .state(i -> i.isTrue(isConfigAdmin, "isConfigAdmin"))
                     .observe(Level.WARN);
             return User.withUsername(admin.username())
                     .password(adminPasswordHash)
@@ -86,7 +86,7 @@ class NaturalistUserDetailsService implements UserDetailsService {
         final Optional<Account> found = account;
         final boolean usernameWellFormed = wellFormed;
         observer.forMethod("loadUserByUsername")
-                .arguments(i -> i
+                .state(i -> i
                         .isTrue(usernameWellFormed, "usernameWellFormed")
                         .isTrue(found.isPresent(), "accountKnown")
                         .isTrue(naturalist.isPresent(), "naturalistLinked")

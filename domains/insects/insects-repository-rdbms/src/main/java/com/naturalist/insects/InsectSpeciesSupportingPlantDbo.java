@@ -30,7 +30,7 @@ final class InsectSpeciesSupportingPlantDbo implements Dbo {
         d.ordinal = ordinal;
         d.plant = plant;
         Observer.forClass(InsectSpeciesSupportingPlantDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

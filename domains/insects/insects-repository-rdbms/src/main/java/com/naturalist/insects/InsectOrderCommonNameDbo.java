@@ -31,7 +31,7 @@ final class InsectOrderCommonNameDbo implements Dbo {
         d.label = commonName.label();
         d.locale = commonName.locale().toLanguageTag();
         Observer.forClass(InsectOrderCommonNameDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

@@ -29,7 +29,7 @@ final class ProductDbo implements Dbo {
         d.name = p.name().value();
         d.displayName = p.displayName();
         Observer.forClass(ProductDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

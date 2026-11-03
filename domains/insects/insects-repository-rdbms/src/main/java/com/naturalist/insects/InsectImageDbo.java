@@ -39,7 +39,7 @@ final class InsectImageDbo implements Dbo {
         d.resourceName = img.resourceName().value();
         d.observationId = img.observationId() == null ? null : img.observationId().value().toString();
         Observer.forClass(InsectImageDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

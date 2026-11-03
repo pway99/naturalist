@@ -28,7 +28,7 @@ final class PlantSpeciesNativeBioregionDbo implements Dbo {
         d.speciesName = speciesName.value();
         d.bioregion = bioregion.slug();
         Observer.forClass(PlantSpeciesNativeBioregionDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

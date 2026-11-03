@@ -55,7 +55,7 @@ final class CitationDbo implements Dbo {
             }
         }
         Observer.forClass(CitationDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

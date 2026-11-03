@@ -22,7 +22,7 @@ final class InsectLifeStageHabitatZoneDbo implements Dbo {
         d.lifeStageName = lifeStageName;
         d.zone = zone.name();
         Observer.forClass(InsectLifeStageHabitatZoneDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
+                .state("from", i -> i.observable(d, "dbo")).throwWhenInvalid();
         return d;
     }
 

@@ -37,7 +37,7 @@ final class InsectFunctionalRoleDbo implements Dbo {
         d.parentName = role.parentName().value();
         d.beneficial = role.beneficial();
         Observer.forClass(InsectFunctionalRoleDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

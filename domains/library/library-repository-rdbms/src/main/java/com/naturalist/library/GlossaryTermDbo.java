@@ -28,7 +28,7 @@ final class GlossaryTermDbo implements Dbo {
         d.definition = t.definition();
         d.example = t.example();
         Observer.forClass(GlossaryTermDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }

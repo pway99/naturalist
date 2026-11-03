@@ -34,7 +34,7 @@ final class CompoundDepictionDbo implements Dbo {
         d.smiles = depiction.smiles();
         d.note = depiction.note();
         Observer.forClass(CompoundDepictionDbo.class)
-                .arguments("from", i -> i.observable(d, "dbo"))
+                .state("from", i -> i.observable(d, "dbo"))
                 .throwWhenInvalid();
         return d;
     }
