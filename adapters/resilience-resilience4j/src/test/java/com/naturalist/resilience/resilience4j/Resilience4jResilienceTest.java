@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -243,6 +244,41 @@ class Resilience4jResilienceTest {
         assertThatThrownBy(() -> bulkhead.execute(() -> { throw new IllegalStateException("vision failed"); }))
                 .isInstanceOf(IllegalStateException.class);
         assertThat(bulkhead.execute(() -> "next")).isEqualTo("next");
+    }
+
+    /**
+     * One strategy's slow calls must not spend another strategy's deadline. A worker keeps running
+     * after its caller has timed out, so a burst of stuck calls outlives its own timeouts.
+     */
+    @Test
+    void timeout_aBurstOfBlockedCalls_doesNotEatAnotherCallsDeadline() throws Exception {
+        Resilience resilience = new Resilience4jResilience(List.of(
+                new TimeoutConfig("stuck", Duration.ofSeconds(2)),
+                new TimeoutConfig("other", Duration.ofMillis(500))));
+        int held = Math.max(2, Runtime.getRuntime().availableProcessors());
+        CountDownLatch running = new CountDownLatch(held);
+        CountDownLatch release = new CountDownLatch(1);
+
+        try (ExecutorService callers = Executors.newVirtualThreadPerTaskExecutor()) {
+            try {
+                for (int i = 0; i < held * 2; i++) {
+                    callers.submit(() -> resilience.timeout("stuck").execute(() -> {
+                        running.countDown();
+                        try {
+                            release.await();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                        return "stuck";
+                    }));
+                }
+                assertThat(running.await(5, TimeUnit.SECONDS)).isTrue();
+
+                assertThat(resilience.timeout("other").execute(() -> "ran")).isEqualTo("ran");
+            } finally {
+                release.countDown();
+            }
+        }
     }
 
 }

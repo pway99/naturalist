@@ -4,15 +4,21 @@ import com.naturalist.resilience.Timeout;
 import io.github.resilience4j.timelimiter.TimeLimiter;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 final class Resilience4jTimeout implements Timeout {
 
-    private static final ScheduledExecutorService SCHEDULER =
-            Executors.newScheduledThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
+    /**
+     * One virtual thread per timed call, so strategies never queue behind each other: a worker
+     * keeps running after its caller times out, and on a fixed pool those orphans would spend
+     * other strategies' deadlines. {@link #execute(Supplier)} blocks its caller, so concurrency
+     * stays bounded by the callers themselves; a cap on them is what a bulkhead or a rate limiter
+     * is for.
+     */
+    private static final ExecutorService WORKERS = Executors.newVirtualThreadPerTaskExecutor();
 
     private final TimeLimiter delegate;
 
@@ -23,7 +29,7 @@ final class Resilience4jTimeout implements Timeout {
     @Override
     public <T> T execute(Supplier<T> supplier) {
         try {
-            return delegate.executeFutureSupplier(() -> CompletableFuture.supplyAsync(supplier, SCHEDULER));
+            return delegate.executeFutureSupplier(() -> CompletableFuture.supplyAsync(supplier, WORKERS));
         } catch (TimeoutException e) {
             throw new ResilienceTimeoutException(delegate.getName(), e);
         } catch (RuntimeException e) {
