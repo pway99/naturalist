@@ -376,4 +376,18 @@ class TurnstileChallengeVerifierTest {
                 .tag("name", "TurnstileChallengeVerifier.constructor." + argument).counter();
         return counter == null ? 0 : counter.count();
     }
+
+    @Test
+    void decisions_areObservedAsState_whileBadArgumentsPointAtTheCaller() {
+        respond(200, "{\"success\":false,\"error-codes\":[\"invalid-input-response\"]}");
+
+        verifier(Resilience.noOp()).verify(submission("a-token"));
+        assertThatThrownBy(() -> new TurnstileChallengeVerifier(null, secrets, Resilience.noOp()))
+                .isInstanceOf(InvariantViolationException.class);
+
+        assertThat(meters.find("naturalist.invariant.check").tag("outcome", "violated")
+                .tag("name", "TurnstileChallengeVerifier.verify.challengePassed").tag("kind", "state").counter()).isNotNull();
+        assertThat(meters.find("naturalist.invariant.check").tag("outcome", "violated")
+                .tag("name", "TurnstileChallengeVerifier.constructor.config").tag("kind", "argument").counter()).isNotNull();
+    }
 }

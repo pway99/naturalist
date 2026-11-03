@@ -47,7 +47,7 @@ import java.util.Set;
 @Resilient(name = TurnstileChallengeVerifier.STRATEGY)
 public final class TurnstileChallengeVerifier implements ChallengeVerifier {
     /** The one secret this adapter resolves, at construction (ADR-028). */
-    static final SecretName CREDENTIAL = SecretName.of("challenge-credential");
+    public static final SecretName CREDENTIAL = SecretName.of("challenge-credential");
 
     /** The resilience strategy the composition root must register. */
     static final String STRATEGY = "challenge.verify";
@@ -173,7 +173,7 @@ public final class TurnstileChallengeVerifier implements ChallengeVerifier {
 
     private void observeDecision(MethodObserver m, ChallengeVerdict verdict) {
         List<String> reasons = verdict.reasons();
-        m.arguments((Constraints c) -> c
+        m.state((Constraints c) -> c
                 .isTrue(verdict.outcome() != ChallengeVerdict.Outcome.FAILED, "challengePassed")
                 .isTrue(verdict.outcome() != ChallengeVerdict.Outcome.UNAVAILABLE, "serviceAvailable")
                 .isTrue(!reasons.contains(ACTION_MISMATCH), "actionMatches")
