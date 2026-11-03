@@ -29,8 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * {@link com.naturalist.console.resilience.ResilienceConfiguration} —
  * {@code catalog.fanout} (timeout + circuit breaker),
  * {@code image.store} (timeout only), and
- * {@code vision.identification} (timeout + rate limiter). Retry and
- * bulkhead are unused today and render the empty state.
+ * {@code vision.identification} (timeout + bulkhead + rate limiter). Retry
+ * is unused today and renders the empty state.
  */
 @SpringBootTest
 class AdminResilienceControllerWebMvcTest {
@@ -95,7 +95,7 @@ class AdminResilienceControllerWebMvcTest {
         assertThat(breakerSection)
                 .contains("catalog.fanout")
                 .doesNotContain("image.store");
-        assertThat(bulkheadSection).contains("None registered.");
-        assertThat(rateLimiterSection).contains("vision.identification");
+        assertThat(bulkheadSection).contains("vision.identification").doesNotContain("None registered.");
+        assertThat(rateLimiterSection).contains("vision.identification", "vision.identification.client");
     }
 }

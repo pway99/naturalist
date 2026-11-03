@@ -40,6 +40,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import java.nio.file.Path;
 import java.nio.file.Files;
@@ -484,8 +486,25 @@ class InsectIdentificationCommandImplTest {
             }
         };
 
+        var bulkheadEntries = new java.util.concurrent.atomic.AtomicInteger(0);
+        Bulkhead trackingBulkhead = new Bulkhead() {
+            @Override
+            public <T> T execute(java.util.function.Supplier<T> supplier) {
+                bulkheadEntries.incrementAndGet();
+                return supplier.get();
+            }
+
+            @Override
+            public void execute(Runnable runnable) {
+                execute(() -> {
+                    runnable.run();
+                    return null;
+                });
+            }
+        };
+
         var cmd = buildCommand(
-                new RejectingRateLimiterResilience(rejectOnSecondCall), trackingBudget, trackingVision);
+                new RejectingBulkheadResilience(rejectOnSecondCall, trackingBulkhead), trackingBudget, trackingVision);
 
         var metadata = new ImageMetadata("Chico, CA", null);
 
@@ -508,6 +527,9 @@ class InsectIdentificationCommandImplTest {
         assertThat(visionCalled.get())
                 .as("vision must not be called once the rate limiter rejects")
                 .isFalse();
+        assertThat(bulkheadEntries.get())
+                .as("the bulkhead must not be entered once the rate limiter rejects")
+                .isEqualTo(1);
     }
 
     private InsectIdentificationCommandImpl buildCommand(Resilience resilience, IdentificationBudget budget, VisionService vision) {
@@ -693,5 +715,116 @@ class InsectIdentificationCommandImplTest {
         var stored = store.read(InsectIdentificationCommandImpl.SPACE, images.getFirst().resourceName());
         assertThat(stored).isPresent();
         assertThat(stored.get().bytes()).isEqualTo(JPEG);
+    }
+
+    /**
+     * A {@link com.naturalist.resilience.Resilience} that mirrors
+     * {@link com.naturalist.resilience.Resilience#noOp()} except for {@code bulkhead}: by default
+     * its {@code execute} always throws {@link com.naturalist.resilience.BulkheadFullException};
+     * the two-argument form hands out the given rate limiter and bulkhead instead, so a test can
+     * observe the order of the gates.
+     */
+    private static final class RejectingBulkheadResilience implements Resilience {
+        private final RateLimiter limiter;
+
+        private final Bulkhead bulkhead;
+
+        RejectingBulkheadResilience() {
+            this(Resilience.noOp().rateLimiter("vision.identification"), new Bulkhead() {
+                @Override
+                public <T> T execute(java.util.function.Supplier<T> supplier) {
+                    throw new com.naturalist.resilience.BulkheadFullException(
+                            "Bulkhead full for strategy 'vision.identification'", "vision.identification");
+                }
+
+                @Override
+                public void execute(Runnable runnable) {
+                    execute(() -> {
+                        runnable.run();
+                        return null;
+                    });
+                }
+            });
+        }
+
+        RejectingBulkheadResilience(RateLimiter limiter, Bulkhead bulkhead) {
+            this.limiter = limiter;
+            this.bulkhead = bulkhead;
+        }
+
+        @Override
+        public Retry retry(String name) {
+            return Resilience.noOp().retry(name);
+        }
+
+        @Override
+        public Timeout timeout(String name) {
+            return Resilience.noOp().timeout(name);
+        }
+
+        @Override
+        public CircuitBreaker circuitBreaker(String name) {
+            return Resilience.noOp().circuitBreaker(name);
+        }
+
+        @Override
+        public Bulkhead bulkhead(String name) {
+            return bulkhead;
+        }
+
+        @Override
+        public RateLimiter rateLimiter(String name) {
+            return limiter;
+        }
+
+        @Override
+        public Set<String> retryNames() {
+            return Set.of();
+        }
+
+        @Override
+        public Set<String> timeoutNames() {
+            return Set.of();
+        }
+
+        @Override
+        public Set<String> circuitBreakerNames() {
+            return Set.of();
+        }
+
+        @Override
+        public Set<String> bulkheadNames() {
+            return Set.of("vision.identification");
+        }
+
+        @Override
+        public Set<String> rateLimiterNames() {
+            return Set.of("vision.identification");
+        }
+    }
+
+    /**
+     * A full bulkhead refuses the identification as {@code BUSY} before the budget is reserved,
+     * before the upload is stored and before vision runs, so a turned-away caller costs nothing.
+     */
+    @Test
+    void identify_bulkheadRejection_refusesBusy_beforeBudgetStoreAndVision() throws IOException {
+        var visionCalled = new AtomicBoolean(false);
+        VisionService trackingVision = (image, tool, prompt) -> {
+            visionCalled.set(true);
+            return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
+        };
+        var budgetReserveCalls = new AtomicInteger(0);
+        IdentificationBudget trackingBudget = naturalist -> budgetReserveCalls.incrementAndGet();
+        var cmd = buildCommand(new RejectingBulkheadResilience(), trackingBudget, trackingVision);
+
+        assertThatThrownBy(() -> cmd.identify(
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
+                        assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.BUSY));
+
+        assertThat(budgetReserveCalls.get()).as("budget.reserve() must not run once the bulkhead rejects").isZero();
+        assertThat(visionCalled.get()).isFalse();
+        assertThat(filesUnder(imageRoot)).as("nothing is stored for a refused identification").isEmpty();
     }
 }

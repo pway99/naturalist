@@ -444,6 +444,7 @@ public class InsectsController {
             return switch (refused.reason()) {
                 case RATE_LIMITED -> "redirect:/insects/identify?limit=RATE";
                 case BUDGET_EXHAUSTED -> "redirect:/insects/identify?limit=" + refused.detail();
+                case BUSY -> "redirect:/insects/identify?limit=BUSY";
             };
         }
     }

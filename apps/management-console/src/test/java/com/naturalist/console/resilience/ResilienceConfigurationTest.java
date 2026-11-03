@@ -78,4 +78,10 @@ class ResilienceConfigurationTest {
     void resolvesImageStoreTimeout() {
         assertThat(resilience.timeout("image.store")).isNotNull();
     }
+
+    @Test
+    void resolvesVisionIdentificationBulkhead() {
+        assertThat(resilience.bulkhead("vision.identification")).isNotNull();
+        assertThat(resilience.bulkheadNames()).containsExactly("vision.identification");
+    }
 }

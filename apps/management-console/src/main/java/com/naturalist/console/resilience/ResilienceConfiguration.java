@@ -42,7 +42,18 @@ import java.util.List;
  *       — so "3/min" genuinely means three identifications per minute. A
  *       caller over the limit is rejected immediately with the kernel
  *       {@code RateLimitExceededException}, never the vendor
- *       {@code RequestNotPermitted}, rather than queued.</li>
+ *       {@code RequestNotPermitted}, rather than queued. A {@code BulkheadConfig}
+ *       then allows two identifications in flight at once with zero wait, taken
+ *       in the same core class right after the rate gate; a third concurrent
+ *       call is refused with the kernel {@code BulkheadFullException} (surfaced
+ *       as {@code IdentificationRefused.Reason.BUSY}) before any budget is
+ *       reserved.</li>
+ *   <li><b>{@code vision.identification.client}</b> — the per-client ceiling
+ *       {@code IdentifyRateLimitFilter} takes on {@code POST /<domain>/identify}, after
+ *       authorization: two a minute per client (keyed by the remote address through
+ *       {@code RateLimiter.forKey}), shared across the organism domains and deliberately
+ *       below the global three, so one address can never hold every shared slot.
+ *       Rejections are {@code 429}, observed as {@code withinClientRate}.</li>
  *   <li><b>{@code auth.login}</b> / <b>{@code auth.login.client}</b> — the pair of
  *       ceilings {@code LoginRateLimitFilter} takes on {@code POST /login} ahead of the
  *       password check: ten attempts a minute per client (keyed by the remote address
@@ -159,5 +170,19 @@ public class ResilienceConfiguration {
     @Bean
     TimeoutConfig imageStoreTimeout() {
         return new TimeoutConfig(FilesystemImageStore.STRATEGY, Duration.ofSeconds(2));
+    }
+
+    @Bean
+    ResilienceConfig.BulkheadConfig visionBulkhead() {
+        // Two identifications in flight at once, zero wait: one more than a single honest use, and
+        // a ceiling on how many vision calls a burst can hold open against the model credential.
+        return new ResilienceConfig.BulkheadConfig("vision.identification", 2, Duration.ZERO);
+    }
+
+    @Bean
+    ResilienceConfig.RateLimiterConfig visionClientRateLimit() {
+        // Per-client ceiling on identification (IdentifyRateLimitFilter keys it by remote address):
+        // two a minute, below the global three, so one address can never hold every shared slot.
+        return new RateLimiterConfig("vision.identification.client", 2, Duration.ofMinutes(1), Duration.ZERO);
     }
 }

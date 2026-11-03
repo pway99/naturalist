@@ -19,6 +19,8 @@ import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
+import com.naturalist.resilience.Bulkhead;
+import com.naturalist.resilience.BulkheadFullException;
 import com.naturalist.resilience.RateLimitExceededException;
 import com.naturalist.resilience.RateLimiter;
 import com.naturalist.resilience.Resilience;
@@ -56,7 +58,7 @@ import com.naturalist.observation.OrganismObservation;
 import com.naturalist.observation.Identification;
 
 /**
- * Orchestrates the full insect identification flow: rate gate → budget
+ * Orchestrates the full insect identification flow: rate gate → bulkhead → budget
  * reservation → store the upload → vision identification → authority enrichment (best-effort)
  * → parent rank enrichment → feature resolution → citation creation →
  * transactional persistence. All external calls (vision, authority lookup,
@@ -66,9 +68,12 @@ import com.naturalist.observation.Identification;
  * <p>The {@code vision.identification} rate limit is acquired here, one
  * permit per identification call — not inside the vision adapter, and not
  * per vision turn — and strictly before {@link com.naturalist.usage.IdentificationBudget#reserve}
- * so a rate-rejected call never burns budget. Both gates surface as
- * {@link IdentificationRefused} (api vocabulary) and run before the upload is stored,
- * so a refused call stores nothing; a failure at any later stage deletes the stored upload.
+ * so a rate-rejected call never burns budget. The {@code vision.identification} bulkhead
+ * then caps how many identifications run at once; its permit is held for the rest of the
+ * call and released whether it returns or throws, and a full bulkhead also refuses before
+ * any budget is reserved. All three gates surface as {@link IdentificationRefused} (api
+ * vocabulary) and run before the upload is stored, so a refused call stores nothing; a
+ * failure at any later stage deletes the stored upload.
  *
  * <p>Authority lookups enrich the identification with citations and
  * grounded descriptions but never gate it — the vision result is
@@ -90,6 +95,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
     private final Observer observer = Observer.forClass(InsectIdentificationCommandImpl.class);
     private final RateLimiter rateLimiter;
+    private final Bulkhead bulkhead;
     private final IdentificationBudget budget;
     private final VisionService visionService;
     private final TextGenerationService textGenerationService;
@@ -124,6 +130,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                         .notNull(transaction, "transaction"))
                 .throwWhenInvalid();
         this.rateLimiter = resilience.rateLimiter(RATE_STRATEGY);
+        this.bulkhead = resilience.bulkhead(RATE_STRATEGY);
         this.budget = budget;
         this.visionService = visionService;
         this.textGenerationService = textGenerationService;
@@ -165,25 +172,13 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             throw new IdentificationRefused(IdentificationRefused.Reason.RATE_LIMITED, null, null);
         }
 
-        // 0b. BUDGET RESERVATION -- refuses before any vision spend; nothing stored
+        // 0b. BULKHEAD -- caps identifications in flight; a full bulkhead refuses before any
+        // budget reservation or vision spend. The permit is held through stages 0c-6 and
+        // released whether they return or throw.
         try {
-            budget.reserve(naturalist);
-        } catch (BudgetExceededException over) {
-            throw new IdentificationRefused(IdentificationRefused.Reason.BUDGET_EXHAUSTED,
-                    over.limitKind().name(), over.resetAt());
-        }
-
-        // 0c. STORE THE UPLOAD -- deleted again if any later stage fails
-        FileName storedFileName = imageStore.store(SPACE, upload);
-        try {
-            return catalogue(upload, metadata, naturalist, notes, storedFileName);
-        } catch (RuntimeException e) {
-            try {
-                imageStore.delete(SPACE, storedFileName);
-            } catch (RuntimeException deleteFailure) {
-                e.addSuppressed(deleteFailure);
-            }
-            throw e;
+            return bulkhead.execute(() -> reserveStoreAndCatalogue(upload, metadata, naturalist, notes));
+        } catch (BulkheadFullException full) {
+            throw new IdentificationRefused(IdentificationRefused.Reason.BUSY, null, null);
         }
     }
 
@@ -830,5 +825,29 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             candidates.add(new Identification.Candidate(scientificName, candidateCommonName, candidateConfidence));
         }
         return List.copyOf(candidates);
+    }
+
+    /** Stage 0c onward, run while holding a {@code vision.identification} bulkhead permit. */
+    private InsectRankName reserveStoreAndCatalogue(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist, @Nullable String notes) {
+        // 0c. BUDGET RESERVATION -- refuses before any vision spend; nothing stored
+        try {
+            budget.reserve(naturalist);
+        } catch (BudgetExceededException over) {
+            throw new IdentificationRefused(IdentificationRefused.Reason.BUDGET_EXHAUSTED,
+                    over.limitKind().name(), over.resetAt());
+        }
+
+        // 0d. STORE THE UPLOAD -- deleted again if any later stage fails
+        FileName storedFileName = imageStore.store(SPACE, upload);
+        try {
+            return catalogue(upload, metadata, naturalist, notes, storedFileName);
+        } catch (RuntimeException e) {
+            try {
+                imageStore.delete(SPACE, storedFileName);
+            } catch (RuntimeException deleteFailure) {
+                e.addSuppressed(deleteFailure);
+            }
+            throw e;
+        }
     }
 }

@@ -20,7 +20,12 @@ public final class IdentificationRefused extends RuntimeException {
     /** Why the attempt was refused. */
     public enum Reason {
         RATE_LIMITED,
-        BUDGET_EXHAUSTED
+        BUDGET_EXHAUSTED,
+        /**
+         * Too many identifications are already in flight; the caller may retry in a few seconds.
+         * Raised by the {@code vision.identification} bulkhead, before any budget is reserved.
+         */
+        BUSY
     }
 
     private final Reason reason;
