@@ -52,7 +52,7 @@ class SmtpEmailSenderTest {
             assertThatCode(() -> sender.send(MESSAGE)).doesNotThrowAnyException();
 
             // Swallowed for the caller, visible to the operator.
-            Counter undelivered = meters.find("naturalist.invariant.violation")
+            Counter undelivered = meters.find("naturalist.invariant.check").tag("outcome", "violated")
                     .tag("name", "SmtpEmailSender.send.delivered").counter();
             assertThat(undelivered).isNotNull();
             assertThat(undelivered.count()).isEqualTo(1);

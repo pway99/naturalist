@@ -236,15 +236,15 @@ class AccountCommandImplTest {
 
     private double violations(String decision) {
         // decision is "<method>.<predicate>"; the framework scopes it under the observing class.
-        Counter counter = meters.find("naturalist.invariant.violation")
+        Counter counter = meters.find("naturalist.invariant.check").tag("outcome", "violated")
                 .tag("name", "AccountCommandImpl." + decision).counter();
         return counter == null ? 0 : counter.count();
     }
 
     private double baseline(String decision) {
-        // ALWAYS mode: a decision that held is emitted as a valid observation — the baseline row.
-        Counter counter = meters.find("naturalist.observation")
-                .tag("name", "AccountCommandImpl." + decision).tag("valid", "true").counter();
+        // ALWAYS mode: a decision that held is emitted as a held check — the baseline row.
+        Counter counter = meters.find("naturalist.invariant.check").tag("outcome", "held")
+                .tag("name", "AccountCommandImpl." + decision).counter();
         return counter == null ? 0 : counter.count();
     }
 

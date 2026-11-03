@@ -17,10 +17,11 @@ import java.util.Objects;
  *
  * <p>Usage:
  * <pre>{@code
- * Metric.counter("naturalist.invariant.violation")
+ * Metric.counter("naturalist.invariant.check")
  *       .tag("constraint", "NotBlankConstraint")
  *       .tag("class", "CompoundQuery")
  *       .tag("method", "getByName")
+ *       .tag("outcome", "violated")
  *       .incrementCounter();
  * }</pre>
  */

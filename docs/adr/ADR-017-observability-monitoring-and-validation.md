@@ -54,12 +54,18 @@ for exception diagnostics — `InvariantViolationException` serialises everythin
 touches Micrometer types. `Metric.counter(name).tag(k,v).incrementCounter()` delegates
 to `io.micrometer.core.instrument.Metrics`.
 
-**Two meters**
+**One meter**
 
-- `naturalist.observation` — emitted in `ALWAYS` mode per constraint. Tags: `constraint`,
-  `class`, `method`, `valid`. High cardinality, opt-in.
-- `naturalist.invariant.violation` — emitted per failing constraint regardless of mode.
-  Tags: `constraint`, `class`, `method`. Low cardinality, always on.
+- `naturalist.invariant.check` — one increment per inspected constraint. Tags: `constraint`,
+  `class`, `method`, `name`, `outcome` (`held` | `violated`), `level`. The monitoring mode
+  selects which outcomes are emitted: `ON_FAILURE` emits `outcome=violated` only (low
+  cardinality, always on); `ALWAYS` emits `outcome=held` too (high cardinality, opt-in).
+  A violation is counted once, and an alert on `outcome=violated` reads the same in either
+  mode. Split on `outcome`, never `level` — `observe(Level.INFO)` tags both outcomes `info`.
+
+*Amended 2026-11-02:* replaces the earlier `naturalist.observation` (ALWAYS, `valid` tag) +
+`naturalist.invariant.violation` pair, which counted every violation twice under `ALWAYS`
+and borrowed the domain's "observation" vocabulary. Renamed before any deployment.
 
 **Naming.** Lowercase, dot-separated. `Metric` normalises invalid input (spaces/underscores →
 dots, consecutive dots collapse, null/blank → `"unknown"`). Tag values preserved verbatim.

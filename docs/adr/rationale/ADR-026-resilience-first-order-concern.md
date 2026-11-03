@@ -177,9 +177,8 @@ test JVM exposes the real classpath URLs to ArchUnit's classloader.
   upgrade rather than a behaviour change.
 - Resilience4j ships Micrometer integration. Wiring its metrics through
   the kernel's `Observable` pipeline (so `naturalist.resilience.*`
-  meters land on the same backend as `naturalist.observation` and
-  `naturalist.invariant.violation`) is adjacent work — out of scope
-  here, recorded as a follow-up.
+  meters land on the same backend as `naturalist.invariant.check`) is
+  adjacent work — out of scope here, recorded as a follow-up.
 
 ## Applicability Signals
 

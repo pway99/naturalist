@@ -89,7 +89,8 @@ class RegistrationRateLimitWebMvcTest {
     }
 
     private double violations(String name) {
-        Counter counter = meters.find("naturalist.invariant.violation").tag("name", name).counter();
+        Counter counter = meters.find("naturalist.invariant.check").tag("outcome", "violated")
+                .tag("name", name).counter();
         return counter == null ? 0 : counter.count();
     }
 }

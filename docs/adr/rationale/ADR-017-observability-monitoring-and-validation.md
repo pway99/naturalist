@@ -140,9 +140,9 @@ appropriate use of logging is for exception diagnostics, and even there the
 `InvariantViolationException` message already serialises scope and all violation names
 into a single readable string.
 
-Structured metrics carry tags (scope, constraint name, valid/invalid) that are
+Structured metrics carry tags (scope, constraint name, held/violated outcome) that are
 filterable, aggregatable, and alertable. Log lines do not. A metric counter
-`naturalist.invariant.violation{scope=CompoundQuery.getByName, constraint=name}`
+`naturalist.invariant.check{name=CompoundQuery.getByName.name, outcome=violated}`
 is machine-readable and dashboardable. A log line `"Invalid compound name: null"` is
 not.
 
@@ -157,10 +157,11 @@ the consumer uses directly. Domain code never touches Micrometer's `MeterRegistr
 and fires it:
 
 ```java
-Metric.counter("naturalist.invariant.violation")
+Metric.counter("naturalist.invariant.check")
     .tag("constraint", c.getClass().getSimpleName())
     .tag("class", c.source())
     .tag("method", c.methodName())
+    .tag("outcome", "violated")
     .incrementCounter();
 ```
 
@@ -170,19 +171,34 @@ The `Metric` builder enforces naming conventions (lowercase, dot-separated) and
 normalises invalid input, providing a discoverable API without requiring knowledge of
 Micrometer best practices.
 
-### Two meters, two concerns
+### One meter, mode-selected outcomes
 
-Observations and violations are separate counters with different tag sets and different
-cardinality profiles. Combining them would create noise — they serve different audiences.
+Every inspected constraint is one increment of **`naturalist.invariant.check`**, tagged
+`constraint` (type), `class` (source), `method`, `name`, `outcome` (`held` | `violated`)
+and `level`. The monitoring mode does not choose a meter; it chooses which outcomes are
+emitted:
 
-- **`naturalist.observation`** — emitted in `ALWAYS` mode for every constraint inspected.
-  Tags: `constraint` (type), `class` (source), `method`, `valid` (boolean). High
-  cardinality, opt-in per Observer. Drives state-distribution dashboards for
-  high-throughput data flows (sensor readings, telemetry).
-- **`naturalist.invariant.violation`** — emitted regardless of mode for every failing
-  constraint. Tags: `constraint` (type), `class` (source), `method`. No `valid` tag —
-  violations are definitionally invalid. Low cardinality, always on. Drives alerting
-  and canary analysis.
+- **`ON_FAILURE`** (default) emits `outcome=violated` only. Low cardinality, always on.
+  Drives alerting and canary analysis.
+- **`ALWAYS`** emits `outcome=held` as well. High cardinality, opt-in per Observer.
+  Drives state-distribution dashboards and pass-rate panels
+  (`violated / sum(check)`) for high-throughput or security-critical flows.
+
+Because both modes write the same meter, a violation is counted exactly once, and an
+alert on `outcome=violated` gives the same answer whether a class runs `ALWAYS` or
+`ON_FAILURE` — switching a class to `ALWAYS` for monitoring cannot move its alerts.
+Split on `outcome`, not `level`: `level` is the call site's severity, and under
+`observe(Level.INFO)` both outcomes carry `info`.
+
+*Renamed 2026-11-02.* This section originally described two meters:
+`naturalist.observation` (ALWAYS only, every constraint, a boolean `valid` tag) and
+`naturalist.invariant.violation` (every failing constraint, any mode). Under `ALWAYS` a
+violation incremented both, so summing them double-counted, and the switch from
+`ON_FAILURE` to `ALWAYS` changed which meter carried a class's held checks.
+`naturalist.observation` also collided with the domain's own *observation* vocabulary
+(`OrganismObservation`, field observations, `kernels/observation`). The two were
+collapsed into one meter with an `outcome` tag before any deployment, so no dashboard
+or alert migrated.
 
 ### Constraint diagnostic methods
 

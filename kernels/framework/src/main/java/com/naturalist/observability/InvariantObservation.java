@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
  *
  * <ul>
  *   <li>{@link #throwWhenInvalid()} — emit metrics and throw
- *       {@link InvariantViolationException} if any constraint fails. Violation
- *       metrics emitted from this path always carry {@code level=error} since
+ *       {@link InvariantViolationException} if any constraint fails. Violated
+ *       checks emitted from this path always carry {@code level=error} since
  *       an exception is about to be thrown.</li>
  *   <li>{@link #observe(Level)} — emit metrics only; no throw regardless of validity.
  *       The call site supplies the {@link Level} — only the call site knows
@@ -22,17 +22,20 @@ import java.util.stream.Collectors;
  *       warning ({@link Level#WARN}). Returns {@code this} so callers can inspect
  *       {@link #violations()} after.</li>
  * </ul>
- * <p>
- * Metric emission behaviour depends on the {@link Observer.MonitoringMode} supplied at
- * construction. With {@link Observer.MonitoringMode#ON_FAILURE}, only failing constraints
- * produce a metric. With {@link Observer.MonitoringMode#ALWAYS}, every inspected constraint
- * produces a metric — suitable for realtime traffic dashboards.
  *
- * <p>Every emitted metric carries a {@code level} tag — {@code error} when an
- * exception is being thrown, otherwise the call-site value passed to
- * {@link #observe(Level)}. ALWAYS-mode emissions from {@link #throwWhenInvalid()}
- * tag valid constraints {@code info} and invalid constraints {@code error} —
- * the validity of the individual constraint, not the validity of the batch.
+ * <p>Every emission is one increment of a single meter, {@code naturalist.invariant.check},
+ * per inspected constraint, tagged {@code outcome=held} or {@code outcome=violated}. The
+ * {@link Observer.MonitoringMode} supplied at construction decides which outcomes are
+ * emitted: {@link Observer.MonitoringMode#ON_FAILURE} emits the violated checks only;
+ * {@link Observer.MonitoringMode#ALWAYS} emits the held checks too — suitable for realtime
+ * traffic dashboards. A violation is never counted twice, and an alert on
+ * {@code outcome=violated} reads the same in either mode.
+ *
+ * <p>Every emitted metric also carries a {@code level} tag. A violated check takes
+ * {@code error} when an exception is being thrown, otherwise the call-site value passed to
+ * {@link #observe(Level)}; a held check is always {@code info}. Split on {@code outcome},
+ * not {@code level}, to separate held from violated — under {@code observe(Level.INFO)}
+ * both carry {@code info}.
  *
  * <p>Metrics are emitted via Micrometer's global {@code Metrics.globalRegistry} —
  * a {@code CompositeMeterRegistry} that delegates to all registered backends.
@@ -81,27 +84,29 @@ public class InvariantObservation {
 
     /**
      * Emit metrics and throw {@link InvariantViolationException} if any invariant is violated.
-     * Violation metrics carry {@code level=error} — the throw is the trigger, the level
-     * is fixed. With {@link Observer.MonitoringMode#ALWAYS}, an observation metric fires
-     * for every constraint inspected regardless of validity, tagged per-constraint:
-     * {@code level=error} for invalid, {@code level=info} for valid.
+     * Violated checks carry {@code level=error} — the throw is the trigger, the level is fixed.
+     * With {@link Observer.MonitoringMode#ALWAYS}, the held checks are emitted too, tagged
+     * {@code outcome=held} and {@code level=info}.
      */
     public void throwWhenInvalid() {
         Set<Constraint<?>> violated = violations();
-        emitThrowingMetrics(violated);
+        // Violations emit at ERROR — the throw is in flight. A held check is not the cause of
+        // any pending throw, so ALWAYS mode tags it INFO.
+        emitMetrics(Level.ERROR, Level.INFO);
         if (!violated.isEmpty()) {
             throw new InvariantViolationException(scope, violated);
         }
     }
 
     /**
-     * Emit metrics without throwing. The {@code level} tag carries {@code level} on every
-     * violation metric — only the call site knows whether this observation is informational or a
+     * Emit metrics without throwing. Every violated check carries {@code level} as its
+     * {@code level} tag — only the call site knows whether this observation is informational or a
      * warning, so the call site supplies it. Under {@link Observer.MonitoringMode#ALWAYS} the
-     * constraints that held are emitted too, tagged {@link Level#INFO}: a valid observation is
-     * baseline signal, never a warning, whatever level the call site chose for the violations —
-     * the same split {@link #throwWhenInvalid()} makes between {@code ERROR} and {@code INFO}.
-     * Returns {@code this} so callers can inspect the observation after metric emission:
+     * checks that held are emitted too, tagged {@code outcome=held} and {@link Level#INFO}: a held
+     * check is baseline signal, never a warning, whatever level the call site chose for the
+     * violations — the same split {@link #throwWhenInvalid()} makes between {@code ERROR} and
+     * {@code INFO}. Returns {@code this} so callers can inspect the observation after metric
+     * emission:
      *
      * <pre>{@code
      * InvariantObservation obs = observer.entity(e, "created").observe(Level.INFO);
@@ -110,7 +115,7 @@ public class InvariantObservation {
      */
     public InvariantObservation observe(Level level) {
         Level resolved = level == null ? Level.INFO : level;
-        emitMetrics(violations(), resolved, Level.INFO);
+        emitMetrics(resolved, Level.INFO);
         return this;
     }
 
@@ -118,36 +123,22 @@ public class InvariantObservation {
         return scope;
     }
 
-    private void emitThrowingMetrics(Set<Constraint<?>> violated) {
-        // throwWhenInvalid() always emits violations at ERROR — the throw is in flight.
-        // ALWAYS-mode observations are tagged per-constraint validity, since an inspected
-        // valid constraint is not the cause of any pending throw.
-        emitMetrics(violated, Level.ERROR, Level.INFO);
-    }
-
-    private void emitMetrics(Set<Constraint<?>> violated, Level violationLevel, Level validObservationLevel) {
+    private void emitMetrics(Level violationLevel, Level heldLevel) {
+        // One increment per inspected constraint, on one meter: ON_FAILURE emits the violated
+        // checks only, ALWAYS emits the held checks too. A violation is never counted twice.
         try {
-            if (monitoringMode == Observer.MonitoringMode.ALWAYS) {
-                for (Constraint<?> c : constraints) {
-                    Level perConstraint = c.isValid() ? validObservationLevel : violationLevel;
-                    Metric.counter("naturalist.observation")
-                            .tag("constraint", c.getClass().getSimpleName())
-                            .tag("class", c.source())
-                            .tag("method", c.methodName())
-                        .tag("name", c.name())
-                            .tag("valid", c.isValid())
-                            .tag("level", perConstraint.tagValue())
-                            .incrementCounter();
+            for (Constraint<?> c : constraints) {
+                boolean held = c.isValid();
+                if (held && monitoringMode != Observer.MonitoringMode.ALWAYS) {
+                    continue;
                 }
-            }
-
-            for (Constraint<?> c : violated) {
-                Metric.counter("naturalist.invariant.violation")
+                Metric.counter("naturalist.invariant.check")
                         .tag("constraint", c.getClass().getSimpleName())
                         .tag("class", c.source())
                         .tag("method", c.methodName())
-                    .tag("name", c.name())
-                        .tag("level", violationLevel.tagValue())
+                        .tag("name", c.name())
+                        .tag("outcome", held ? "held" : "violated")
+                        .tag("level", (held ? heldLevel : violationLevel).tagValue())
                         .incrementCounter();
             }
         } catch (Exception ignored) {
