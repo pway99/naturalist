@@ -338,6 +338,11 @@
             </dependency>
             <dependency>
                 <groupId>com.naturalist</groupId>
+                <artifactId>challenge-turnstile</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.naturalist</groupId>
                 <artifactId>mail-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>

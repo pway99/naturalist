@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.naturalist</groupId>
+        <artifactId>naturalist-adapters</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>challenge-turnstile</artifactId>
+    <name>adapters :: challenge-turnstile</name>
+
+    <description>
+        Human-verification adapter: implements the kernel ChallengeVerifier port over the
+        Cloudflare Turnstile siteverify endpoint, on the JDK HTTP client with no vendor SDK
+        (ADR-027 D6). Wired at the app composition root when the credential resolves; the
+        kernel's LogOnlyChallengeVerifier is the explicit dev and test opt-in otherwise.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>framework</artifactId>
+        </dependency>
+
+        <!-- TEST DEPENDENCIES -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

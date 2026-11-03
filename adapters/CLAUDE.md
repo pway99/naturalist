@@ -83,6 +83,14 @@ A module belongs in `adapters/` when **all** of the following are true:
   declared in one file. `apps/management-console` is the reference
   wiring; `MockPersistenceWiringTest` boots the context and guards it.
 
+- `challenge-turnstile/` — implements the kernel `ChallengeVerifier` port over the
+  Turnstile siteverify endpoint with the JDK HTTP client: no vendor SDK, so its only
+  dependency is `framework`. The credential is the `challenge-credential` secret,
+  resolved once at construction (ADR-028). Every call runs under the `challenge.verify`
+  strategy, which the composition root must register; a timeout, an open breaker or a
+  retryable vendor error comes back as `UNAVAILABLE`, never as an exception, and the
+  caller decides what that means (ADR-027 D6 fails closed).
+
 Future members anticipated by the runtime architecture refactor plan
 (`docs/plans/runtime-architecture-refactor.md`):
 `catalog-solr/` (production Solr-backed catalog).
