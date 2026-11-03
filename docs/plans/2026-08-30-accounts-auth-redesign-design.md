@@ -363,3 +363,45 @@ design records the end state; the near-term build carries only the adult shape.
 - **Deferred grant path for students** — joining grants `VISION` immediately; if abuse
   appears, add a teacher-approval step before `access=VISION` (the `requiresApproval`
   roster already models the hook).
+
+## Amendment 2026-11-02 — Cloudflare at the edge; abuse protection moves to its layer
+
+Decision record: [ADR-027](../adr/ADR-027-cloudflare-edge-and-abuse-protection.md);
+sequencing and tests: [`2026-11-02-cloudflare-edge-protection-plan.md`](2026-11-02-cloudflare-edge-protection-plan.md).
+Nothing above is reversed; the accounts domain, the security chain and the
+registration/verify flows stay as built. What changes is *where* abuse protection
+lives and what the hosting prerequisites are.
+
+- **Hosting platform** (open item above) is still undecided, but the edge is
+  decided: Cloudflare in front of `https://backyardnaturalist.app` (Free plan) for
+  TLS, the WAF, a per-IP flood valve on `/login`, `/register` and `/reset/request`,
+  and a Managed-Challenge rule on the two auth pages. The origin is reachable
+  **only** through a Cloudflare Tunnel connector, which works on every candidate
+  host and so does not wait on the hosting choice.
+- **The global limiters of `4aa4532` are demoted to backstops.** `auth.login`
+  300 → 600/min and `auth.register` 10 → 60/min, tripping only in a real flood.
+  The per-client control is the keyed pair `auth.login.client` (10/min) and
+  `auth.register.client` (3/min), keyed on the visitor's address, which the app
+  learns from `CF-Connecting-IP` via Tomcat's `RemoteIpValve` and trusts only from
+  the local connector. "Per-client keyed limiters", the follow-up `4aa4532` named,
+  is therefore **built, not dropped**, and must land after the client-address change.
+- **Turnstile is the bot and mail-bombing defense** on the registration form
+  (required) and the login form. Server-side verification is a kernel port
+  (`com.naturalist.challenge.ChallengeVerifier`) with a Cloudflare adapter
+  (`adapters/challenge-turnstile`) under ADR-026 resilience (2 s timeout, one
+  idempotent retry on transport failure only, circuit breaker) and ADR-017
+  observation of every verdict. **Fail closed**: an unavailable verifier refuses
+  the sign-up or sign-in, for the same reasons the email transport fails closed
+  (`e9761bf`). Dev and tests opt into `naturalist.challenge.log-only=true`, the
+  `naturalist.email.log-only` shape; with neither secret nor flag the app refuses
+  to boot.
+- **Registration flow, amended order**: Turnstile verdict (a missing token is
+  refused without an outbound call) → per-client permit → global permit → field
+  validation → BCrypt → the two-domain transaction → email → auto-login. Login:
+  `LoginRateLimitFilter` → `LoginChallengeFilter` → Spring's login filter, i.e.
+  permits first there; ADR-027 D7 records why the two orders differ. The `/reset/request` route of slice 6 inherits the edge
+  rule E1 and should take the same per-client/global pair and the Turnstile check
+  when it is built.
+- **Still open before hosting, unchanged by this amendment**: email provider;
+  PL-16 (image reads share the resilience executor); PL-17 (EXIF on raw uploads);
+  session termination on reset/suspend (slice 6).

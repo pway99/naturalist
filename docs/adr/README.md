@@ -27,6 +27,8 @@ Closed decisions are not revisited without a new ADR.
 | [ADR-022](rationale/ADR-022-entity-identity-unified.md)       | Entity Identity — `NamedEntity` (slug) and `Entity` (UUIDv7), Unified `Named<KEY>` Port | Accepted              |
 | [ADR-025](ADR-025-di-via-marker-annotations.md)               | DI via Marker Annotations                                                               | Accepted              |
 | [ADR-026](ADR-026-resilience-first-order-concern.md)          | Resilience as a First-Order Concern                                                     | Accepted              |
+| [ADR-027](ADR-027-cloudflare-edge-and-abuse-protection.md)         | Cloudflare at the Edge; Abuse Protection for Login and Registration                       | Accepted              |
+| [ADR-028](ADR-028-anthropic-credential-and-spend-protection.md) | Anthropic Credential Supply and Spend Protection                                      | Proposed              |
 
 ## Archived (rationale only, not in active read path)
 
