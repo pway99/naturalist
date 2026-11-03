@@ -55,6 +55,11 @@ class RegistrationTransaction {
      *  an unproven address, so an unbounded endpoint is a mail-bombing primitive. */
     static final String RATE_STRATEGY = "auth.register";
 
+    /** Per-client sign-up ceiling, keyed by the {@code clientKey} the controller derives from the
+     *  request ({@code ClientKey}); taken before the global one so a single script never spends
+     *  the system-wide budget. */
+    static final String CLIENT_RATE_STRATEGY = "auth.register.client";
+
     /** Server-side floor for a self-chosen password; the form's {@code minlength} mirrors it. */
     static final int MIN_PASSWORD_LENGTH = 8;
 
@@ -76,6 +81,7 @@ class RegistrationTransaction {
     private final NaturalistCommand naturalistCommand;
     private final PasswordEncoder passwordEncoder;
     private final RateLimiter registrations;
+    private final RateLimiter registrationsPerClient;
 
     RegistrationTransaction(AccountCommand accountCommand,
                             NaturalistCommand naturalistCommand,
@@ -85,6 +91,7 @@ class RegistrationTransaction {
         this.naturalistCommand = naturalistCommand;
         this.passwordEncoder = passwordEncoder;
         this.registrations = resilience.rateLimiter(RATE_STRATEGY);
+        this.registrationsPerClient = resilience.rateLimiter(CLIENT_RATE_STRATEGY);
     }
 
     /**
@@ -96,17 +103,31 @@ class RegistrationTransaction {
      * render per field — and propagates {@code DuplicateEmailException} (email taken) and the
      * naturalists domain's own {@code InvariantViolationException} (taken handle).
      *
+     * <p>Rate limits come first, before any validation or BCrypt work — an attacker's attempts,
+     * valid or not, are what the ceilings bound. The client's own budget
+     * ({@code auth.register.client}, keyed by {@code clientKey}) is spent before the system-wide
+     * one ({@code auth.register}), so one script is refused alone and never drains the budget
+     * honest sign-ups share. Either refusal is a {@code RateLimitExceededException} naming its
+     * strategy; the client key is logged by the caller, never tagged.
+     *
+     * @param clientKey who is asking, as {@code ClientKey.of(request)} spells it — opaque here.
      * @return the minted handles, the login email, and the raw verification token to email.
      */
     @Transactional
-    Result register(EmailAddress email, String rawPassword, String publicHandle,
+    Result register(String clientKey, EmailAddress email, String rawPassword, String publicHandle,
                     String givenName, @Nullable String familyName) {
         MethodObserver register = observer.forMethod("register");
 
-        // The permit is taken before any validation or BCrypt work: an attacker's attempts,
-        // valid or not, are what the ceiling exists to bound.
-        boolean permitted = acquirePermit();
-        register.arguments(i -> i.isTrue(permitted, "withinRate")).observe(Level.WARN);
+        register.arguments(i -> i.notBlank(clientKey, "clientKey")).throwWhenInvalid();
+        boolean clientPermitted = acquirePermit(registrationsPerClient.forKey(clientKey));
+        boolean permitted = !clientPermitted || acquirePermit(registrations);
+        register.arguments(i -> i
+                        .isTrue(clientPermitted, "withinClientRate")
+                        .isTrue(permitted, "withinRate"))
+                .observe(Level.WARN);
+        if (!clientPermitted) {
+            throw new RateLimitExceededException("registration rate limit exceeded for this client", CLIENT_RATE_STRATEGY);
+        }
         if (!permitted) {
             throw new RateLimitExceededException("registration rate limit exceeded", RATE_STRATEGY);
         }
@@ -130,9 +151,9 @@ class RegistrationTransaction {
         return new Result(registration.account(), naturalist, email, registration.rawToken());
     }
 
-    private boolean acquirePermit() {
+    private static boolean acquirePermit(RateLimiter limiter) {
         try {
-            registrations.execute(() -> { });
+            limiter.execute(() -> { });
             return true;
         } catch (RateLimitExceededException rejected) {
             return false;

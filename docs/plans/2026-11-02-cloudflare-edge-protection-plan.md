@@ -4,8 +4,9 @@
 - **Decision record:** [ADR-027](../adr/ADR-027-cloudflare-edge-and-abuse-protection.md)
   (read it first; this file only sequences the work and says how each piece is tested)
 - **Amends:** [`2026-08-30-accounts-auth-redesign-design.md`](2026-08-30-accounts-auth-redesign-design.md)
-- **Status:** planned, nothing built. PR 2 exists as the uncommitted
-  `keyed-rate-limits` worktree (`temp/wt-registration`).
+- **Status:** PRs 1 and 2 built on branch `keyed-rate-limits` (worktree
+  `temp/wt-registration`, on top of `main` at `5f725b0e`), awaiting merge to `main`.
+  PRs 3–7 not started.
 
 Fixed inputs: zone `backyardnaturalist.app`, Cloudflare **Free**, hosting undecided
 (origin lockdown is a tunnel, which works everywhere — ADR-027 D3).

@@ -79,7 +79,7 @@ public final class Resilience4jResilience implements Resilience {
                         new Resilience4jBulkhead(bulkheadRegistry.bulkhead(c.name(), toR4j(c))));
                 case RateLimiterConfig c -> rateLimiterMap.put(
                         c.name(),
-                        new Resilience4jRateLimiter(rateLimiterRegistry.rateLimiter(c.name(), toR4j(c))));
+                        new Resilience4jRateLimiter(rateLimiterRegistry.rateLimiter(c.name(), toR4j(c)), toR4j(c)));
             }
         }
 

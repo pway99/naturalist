@@ -138,5 +138,10 @@ final class NoOpResilience implements Resilience {
         public void execute(Runnable runnable) {
             runnable.run();
         }
+
+        @Override
+        public RateLimiter forKey(String key) {
+            return this;
+        }
     }
 }

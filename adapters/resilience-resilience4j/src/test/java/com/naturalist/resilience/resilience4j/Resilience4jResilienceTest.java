@@ -192,4 +192,48 @@ class Resilience4jResilienceTest {
         }
     }
 
+    @Test
+    void rateLimiter_forKey_givesEachKeyItsOwnBudget() {
+        Resilience resilience = new Resilience4jResilience(List.of(
+                new RateLimiterConfig("per-client", 1, Duration.ofMinutes(1), Duration.ZERO)));
+        RateLimiter strategy = resilience.rateLimiter("per-client");
+
+        assertThat(strategy.forKey("10.0.0.1").execute(() -> "a1")).isEqualTo("a1");
+        // A second key has its own budget: 10.0.0.1 spending its permit left this one untouched.
+        assertThat(strategy.forKey("10.0.0.2").execute(() -> "b1")).isEqualTo("b1");
+
+        assertThatThrownBy(() -> strategy.forKey("10.0.0.1").execute(() -> "a2"))
+                .isInstanceOf(RateLimitExceededException.class)
+                .hasMessageContaining("per-client")
+                .hasMessageNotContaining("10.0.0.1");
+        // forKey on a keyed limiter returns that same limiter, not a fresh "ignored" budget:
+        // 10.0.0.2's one permit is spent, so this is refused.
+        assertThatThrownBy(() -> strategy.forKey("10.0.0.2").forKey("ignored").execute(() -> "b2"))
+                .isInstanceOf(RateLimitExceededException.class);
+    }
+
+    @Test
+    void rateLimiter_forKey_isIndependentOfTheUnkeyedBudget() {
+        Resilience resilience = new Resilience4jResilience(List.of(
+                new RateLimiterConfig("paired", 1, Duration.ofMinutes(1), Duration.ZERO)));
+        RateLimiter strategy = resilience.rateLimiter("paired");
+
+        assertThat(strategy.execute(() -> "global")).isEqualTo("global");
+        assertThat(strategy.forKey("k").execute(() -> "keyed")).isEqualTo("keyed");
+
+        assertThatThrownBy(() -> strategy.execute(() -> "global-2"))
+                .isInstanceOf(RateLimitExceededException.class);
+        assertThatThrownBy(() -> strategy.forKey("k").execute(() -> "keyed-2"))
+                .isInstanceOf(RateLimitExceededException.class);
+    }
+
+    @Test
+    void rateLimiter_forKey_refusesABlankKey() {
+        Resilience resilience = new Resilience4jResilience(List.of(
+                new RateLimiterConfig("strict", 1, Duration.ofSeconds(1), Duration.ZERO)));
+
+        assertThatThrownBy(() -> resilience.rateLimiter("strict").forKey(" "))
+                .isInstanceOf(com.naturalist.exception.InvariantViolationException.class);
+    }
+
 }

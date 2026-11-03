@@ -1,6 +1,7 @@
 package com.naturalist.console.auth;
 
 import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.resilience.RateLimitExceededException;
 import com.naturalist.resilience.RateLimiter;
@@ -13,36 +14,45 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.lang.System.Logger;
 
 /**
- * Global ceiling on authentication attempts, ahead of Spring's login filter. {@code POST /login}
- * takes one {@code auth.login} permit (see {@code ResilienceConfiguration}); past the ceiling the
- * request is answered {@code 429 Too Many Requests} with {@code Retry-After} and never reaches
- * the password check — so a credential-stuffing run cannot burn a BCrypt round per guess
+ * Two ceilings on authentication attempts, ahead of Spring's login filter. {@code POST /login}
+ * first takes one {@code auth.login.client} permit for the request's {@link ClientKey} (ten a
+ * minute per client), then one {@code auth.login} permit system-wide (300 a minute); past
+ * either the request is answered {@code 429 Too Many Requests} with {@code Retry-After} and
+ * never reaches the password check — so one abuser is cut off on their own, and a
+ * credential-stuffing run that rotates addresses still cannot burn a BCrypt round per guess
  * without bound.
  *
- * <p>The ceiling is global, not per client: the kernel {@code RateLimiter} is name-scoped. That
- * caps system-wide CPU and bounds the {@code badCredentials} metric's worst case, but an
- * attacker who exhausts the budget also locks honest users out for the window — the limit is
- * sized so that never happens at honest rates, and the targeted response to one abuser is
- * {@code AccountCommand.suspend}. A per-client limiter is the planned follow-up.
+ * <p>Per-client first, deliberately: a single flooding client is refused by its own budget and
+ * never consumes the system-wide one, so honest users are untouched by it. Only the
+ * system-wide limiter sees a key-rotating attacker, which is why the pair exists
+ * ({@code RateLimiter.forKey}'s contract; the adapter evicts idle keys).
  *
- * <p>Every permit decision is observed as {@code withinRate} in
- * {@link Observer.MonitoringMode#ALWAYS}: the violations are the flood signal, the valid rows
- * the attempt baseline. Constructed by {@code SecurityConfiguration} directly (not a bean) so it
- * sits in the security chain exactly once; it declares {@code @Resilient} and reaches the facade
- * in its constructor, satisfying both resilience gates.
+ * <p>Both decisions are observed in {@link Observer.MonitoringMode#ALWAYS} —
+ * {@code withinClientRate} and {@code withinRate} — the violations the flood signal, the valid
+ * rows the attempt baseline. The client key is never a metric tag (unbounded cardinality); a
+ * client rejection logs it at {@code WARNING} instead. Constructed by
+ * {@code SecurityConfiguration} directly (not a bean) so it sits in the security chain exactly
+ * once; it declares {@code @Resilient} and reaches the facade in its constructor, satisfying
+ * both resilience gates.
  */
 public @Resilient(name = LoginRateLimitFilter.STRATEGY)
 final class LoginRateLimitFilter extends OncePerRequestFilter {
     static final String STRATEGY = "auth.login";
+    static final String CLIENT_STRATEGY = "auth.login.client";
+
+    private static final Logger LOG = System.getLogger(LoginRateLimitFilter.class.getName());
 
     private final Observer observer = Observer.forClass(getClass(), Observer.MonitoringMode.ALWAYS);
 
     private final RateLimiter limiter;
+    private final RateLimiter perClient;
 
     public LoginRateLimitFilter(Resilience resilience) {
         this.limiter = resilience.rateLimiter(STRATEGY);
+        this.perClient = resilience.rateLimiter(CLIENT_STRATEGY);
     }
 
     @Override
@@ -51,11 +61,19 @@ final class LoginRateLimitFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        boolean permitted = acquire();
-        observer.forMethod("doFilterInternal")
-                .arguments(i -> i.isTrue(permitted, "withinRate"))
+        MethodObserver doFilterInternal = observer.forMethod("doFilterInternal");
+        String client = ClientKey.of(request);
+        boolean clientPermitted = acquire(perClient.forKey(client));
+        // The system-wide permit is only spent once the client's own budget allowed the attempt.
+        boolean permitted = !clientPermitted || acquire(limiter);
+        doFilterInternal.arguments(i -> i
+                        .isTrue(clientPermitted, "withinClientRate")
+                        .isTrue(permitted, "withinRate"))
                 .observe(Level.WARN);
-        if (!permitted) {
+        if (!clientPermitted) {
+            LOG.log(Logger.Level.WARNING, "[auth.login.client] login attempts from {0} over the per-client ceiling", client);
+        }
+        if (!clientPermitted || !permitted) {
             response.setStatus(429);
             response.setHeader("Retry-After", "60");
             response.setContentType("text/plain;charset=UTF-8");
@@ -65,7 +83,7 @@ final class LoginRateLimitFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private boolean acquire() {
+    private static boolean acquire(RateLimiter limiter) {
         try {
             limiter.execute(() -> { });
             return true;

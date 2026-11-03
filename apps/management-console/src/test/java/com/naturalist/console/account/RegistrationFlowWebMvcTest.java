@@ -73,11 +73,23 @@ class RegistrationFlowWebMvcTest {
     @Autowired
     NaturalistQuery naturalistQuery;
 
+    /** Each test is a different person signing up, so each arrives from its own address — one
+     *  shared address would put the whole suite over the per-client {@code auth.register.client}
+     *  ceiling (that ceiling is {@code RegistrationClientRateLimitWebMvcTest}'s subject). */
+    private static final java.util.concurrent.atomic.AtomicInteger NEXT_CLIENT =
+            new java.util.concurrent.atomic.AtomicInteger(1);
+
     MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+        String client = "198.51.100." + NEXT_CLIENT.getAndIncrement();
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity())
+                .defaultRequest(get("/").with(request -> {
+                    request.setRemoteAddr(client);
+                    return request;
+                }))
+                .build();
         emailSender.sent.clear();
     }
 

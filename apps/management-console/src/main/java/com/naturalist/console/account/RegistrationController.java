@@ -3,6 +3,7 @@ package com.naturalist.console.account;
 import com.naturalist.account.AccountCommand;
 import com.naturalist.account.DuplicateEmailException;
 import com.naturalist.account.InvalidTokenException;
+import com.naturalist.console.auth.ClientKey;
 import com.naturalist.console.email.EmailProperties;
 import com.naturalist.ddd.EmailAddress;
 import com.naturalist.exception.InvariantViolationException;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +55,8 @@ import java.util.List;
  */
 @Controller
 class RegistrationController {
+
+    private static final Logger LOG = System.getLogger(RegistrationController.class.getName());
 
     private final RegistrationTransaction registration;
     private final EmailSender emailSender;
@@ -95,9 +99,10 @@ class RegistrationController {
                   @RequestParam(required = false) String familyName,
                   HttpServletRequest request, HttpServletResponse response, Model model) {
         RegistrationTransaction.Result result;
+        String client = ClientKey.of(request);
         try {
             result = registration.register(
-                    EmailAddress.of(email), password, publicHandle, givenName, blankToNull(familyName));
+                    client, EmailAddress.of(email), password, publicHandle, givenName, blankToNull(familyName));
         } catch (DuplicateEmailException alreadyRegistered) {
             return reRender(model, request,
                     "That email is already registered — try logging in instead.",
@@ -107,7 +112,11 @@ class RegistrationController {
             return reRender(model, request, invalidDetailsMessage(invalid),
                     email, publicHandle, givenName, familyName);
         } catch (RateLimitExceededException tooMany) {
-            // auth.register's global ceiling (observed by the transaction as withinRate).
+            // auth.register.client (per client) or auth.register (global) — observed by the
+            // transaction as withinClientRate / withinRate. The key is logged, never tagged.
+            if (RegistrationTransaction.CLIENT_RATE_STRATEGY.equals(tooMany.strategyName())) {
+                LOG.log(Logger.Level.WARNING, "[auth.register.client] sign-ups from {0} over the per-client ceiling", client);
+            }
             response.setStatus(429);
             response.setHeader("Retry-After", "60");
             return reRender(model, request,

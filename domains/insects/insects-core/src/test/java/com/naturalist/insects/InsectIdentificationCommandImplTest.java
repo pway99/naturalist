@@ -477,6 +477,11 @@ class InsectIdentificationCommandImplTest {
                     return null;
                 });
             }
+
+            @Override
+            public RateLimiter forKey(String key) {
+                return this;
+            }
         };
 
         var cmd = buildCommand(
@@ -551,6 +556,11 @@ class InsectIdentificationCommandImplTest {
                         runnable.run();
                         return null;
                     });
+                }
+
+                @Override
+                public RateLimiter forKey(String key) {
+                    return this;
                 }
             });
         }

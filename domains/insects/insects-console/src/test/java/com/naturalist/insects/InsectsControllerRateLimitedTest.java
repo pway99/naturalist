@@ -95,6 +95,11 @@ class InsectsControllerRateLimitedTest {
                     return null;
                 });
             }
+
+            @Override
+            public RateLimiter forKey(String key) {
+                return this;
+            }
         };
 
         @Override

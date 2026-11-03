@@ -43,19 +43,25 @@ import java.util.List;
  *       caller over the limit is rejected immediately with the kernel
  *       {@code RateLimitExceededException}, never the vendor
  *       {@code RequestNotPermitted}, rather than queued.</li>
- *   <li><b>{@code auth.login}</b> — a global ceiling of 300 {@code POST /login}
- *       attempts per minute, taken by {@code LoginRateLimitFilter} ahead of the
- *       password check, so a credential-stuffing run cannot burn one BCrypt round
- *       per guess without bound. Rejections are {@code 429} and observed as
- *       {@code withinRate}; the targeted response to one abuser is
- *       {@code AccountCommand.suspend}, not this limiter.</li>
- *   <li><b>{@code auth.register}</b> — a global ceiling of ten sign-ups per
- *       minute, taken by {@code RegistrationTransaction} before any validation
- *       or encoding: every registration emails an address nobody has proven they
- *       own, so an unbounded endpoint is a mail-bombing primitive. Both auth
- *       limiters are name-scoped (global), the kernel {@code RateLimiter} having
- *       no key; a per-client variant is the planned follow-up.</li>
+ *   <li><b>{@code auth.login}</b> / <b>{@code auth.login.client}</b> — the pair of
+ *       ceilings {@code LoginRateLimitFilter} takes on {@code POST /login} ahead of the
+ *       password check: ten attempts a minute per client (keyed by the remote address
+ *       through {@code RateLimiter.forKey}), then 300 a minute system-wide, so one abuser
+ *       is cut off on their own and a key-rotating run still cannot burn a BCrypt round
+ *       per guess without bound. Rejections are {@code 429}, observed as
+ *       {@code withinClientRate} / {@code withinRate}; the targeted response to one
+ *       persistent abuser remains {@code AccountCommand.suspend}.</li>
+ *   <li><b>{@code auth.register}</b> / <b>{@code auth.register.client}</b> — the same
+ *       pair for sign-ups, taken by {@code RegistrationTransaction} before any validation
+ *       or encoding: three a minute per client, ten a minute system-wide. Every
+ *       registration emails an address nobody has proven they own, so an unbounded
+ *       endpoint is a mail-bombing primitive.</li>
  * </ul>
+ *
+ * <p>What "client" means is a deployment decision, not a header the app reads:
+ * {@code HttpServletRequest.getRemoteAddr()} is the TCP peer unless Spring Boot's
+ * {@code server.forward-headers-strategy} is set for a trusted proxy. See
+ * {@code apps/CLAUDE.md}, "Client identity behind a proxy".
  *
  * <h2>Status — the marker is not load-bearing</h2>
  * There is no AOP weaver. {@code @Resilient} triggers no interception; a call
@@ -132,6 +138,22 @@ public class ResilienceConfiguration {
         // proven they own, so an unbounded /register is a mail-bombing primitive against third
         // parties. Ten a minute is far above any honest rate for this audience.
         return new RateLimiterConfig("auth.register", 10, Duration.ofMinutes(1), Duration.ZERO);
+    }
+
+    @Bean
+    ResilienceConfig.RateLimiterConfig authLoginClientRateLimit() {
+        // Per-client ceiling on authentication attempts (LoginRateLimitFilter keys it by remote
+        // address): ten guesses a minute is generous for a person who mistyped and useless for
+        // a dictionary. The global auth.login ceiling above still bounds a key-rotating attacker.
+        return new RateLimiterConfig("auth.login.client", 10, Duration.ofMinutes(1), Duration.ZERO);
+    }
+
+    @Bean
+    ResilienceConfig.RateLimiterConfig authRegisterClientRateLimit() {
+        // Per-client ceiling on sign-ups (RegistrationTransaction keys it by the client key the
+        // controller derives from the remote address): three a minute from one address covers
+        // a household or a classroom; more is a script. The global auth.register ceiling stays.
+        return new RateLimiterConfig("auth.register.client", 3, Duration.ofMinutes(1), Duration.ZERO);
     }
 
     @Bean

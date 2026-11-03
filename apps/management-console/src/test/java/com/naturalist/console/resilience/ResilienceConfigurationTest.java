@@ -63,6 +63,18 @@ class ResilienceConfigurationTest {
     }
 
     @Test
+    void resolvesAuthLoginClientRateLimiter() {
+        assertThat(resilience.rateLimiter("auth.login.client")).isNotNull();
+        assertThat(resilience.rateLimiterNames()).contains("auth.login.client");
+    }
+
+    @Test
+    void resolvesAuthRegisterClientRateLimiter() {
+        assertThat(resilience.rateLimiter("auth.register.client")).isNotNull();
+        assertThat(resilience.rateLimiterNames()).contains("auth.register.client");
+    }
+
+    @Test
     void resolvesImageStoreTimeout() {
         assertThat(resilience.timeout("image.store")).isNotNull();
     }

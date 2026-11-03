@@ -19,21 +19,21 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * {@link LoginRateLimitFilter} over the real Resilience4j adapter with a two-permit
- * {@code auth.login} limiter — no Spring context, no login flow: the question is only whether
- * the third attempt in the window is refused before it reaches the chain, whether other
- * requests are untouched, and whether the refusal is observed.
+ * {@link LoginRateLimitFilter} over the real Resilience4j adapter — no Spring context, no login
+ * flow. The global tests give {@code auth.login} two permits and the per-client ceiling room to
+ * spare; the per-client tests do the reverse. The questions: is an attempt over either ceiling
+ * refused before it reaches the chain, are other requests untouched, is one client's flood
+ * confined to that client, and is each refusal observed under its own name.
  */
 class LoginRateLimitFilterTest {
 
+    private static final String WITHIN_RATE = "LoginRateLimitFilter.doFilterInternal.withinRate";
+    private static final String WITHIN_CLIENT_RATE = "LoginRateLimitFilter.doFilterInternal.withinClientRate";
+
     private final SimpleMeterRegistry meters = new SimpleMeterRegistry();
-    private LoginRateLimitFilter filter;
 
     @BeforeEach
     void setUp() {
-        Resilience resilience = new Resilience4jResilience(List.of(
-                new RateLimiterConfig(LoginRateLimitFilter.STRATEGY, 2, Duration.ofMinutes(1), Duration.ZERO)));
-        filter = new LoginRateLimitFilter(resilience);
         Metrics.addRegistry(meters);
     }
 
@@ -44,19 +44,22 @@ class LoginRateLimitFilterTest {
 
     @Test
     void thirdLoginAttemptInTheWindow_is429_andNeverReachesTheChain() throws Exception {
-        assertThat(attemptLogin().getStatus()).isEqualTo(200);
-        assertThat(attemptLogin().getStatus()).isEqualTo(200);
+        LoginRateLimitFilter filter = filter(2, 100);
+        assertThat(attemptLogin(filter, "10.0.0.1").getStatus()).isEqualTo(200);
+        assertThat(attemptLogin(filter, "10.0.0.2").getStatus()).isEqualTo(200);
 
-        MockHttpServletResponse refused = attemptLogin();
+        MockHttpServletResponse refused = attemptLogin(filter, "10.0.0.3");
 
         assertThat(refused.getStatus()).isEqualTo(429);
         assertThat(refused.getHeader("Retry-After")).isEqualTo("60");
         assertThat(refused.getContentAsString()).contains("try again");
-        assertThat(violations("LoginRateLimitFilter.doFilterInternal.withinRate")).isEqualTo(1);
+        assertThat(violations(WITHIN_RATE)).isEqualTo(1);
+        assertThat(violations(WITHIN_CLIENT_RATE)).isZero();
     }
 
     @Test
     void requestsOtherThanLoginPost_areNotCounted() throws Exception {
+        LoginRateLimitFilter filter = filter(2, 2);
         for (int i = 0; i < 5; i++) {
             MockHttpServletRequest get = new MockHttpServletRequest("GET", "/login");
             get.setServletPath("/login");
@@ -64,15 +67,55 @@ class LoginRateLimitFilterTest {
             filter.doFilter(get, response, new MockFilterChain());
             assertThat(response.getStatus()).isEqualTo(200);
         }
-        // Still two permits left for real attempts.
-        assertThat(attemptLogin().getStatus()).isEqualTo(200);
-        assertThat(attemptLogin().getStatus()).isEqualTo(200);
-        assertThat(violations("LoginRateLimitFilter.doFilterInternal.withinRate")).isZero();
+        // Still two permits left, globally and for this client, for real attempts.
+        assertThat(attemptLogin(filter, "10.0.0.1").getStatus()).isEqualTo(200);
+        assertThat(attemptLogin(filter, "10.0.0.1").getStatus()).isEqualTo(200);
+        assertThat(violations(WITHIN_RATE)).isZero();
+        assertThat(violations(WITHIN_CLIENT_RATE)).isZero();
     }
 
-    private MockHttpServletResponse attemptLogin() throws Exception {
+    @Test
+    void oneClientOverItsCeiling_is429_whileAnotherClientIsAdmitted() throws Exception {
+        LoginRateLimitFilter filter = filter(100, 2);
+        assertThat(attemptLogin(filter, "10.0.0.1").getStatus()).isEqualTo(200);
+        assertThat(attemptLogin(filter, "10.0.0.1").getStatus()).isEqualTo(200);
+
+        MockHttpServletResponse refused = attemptLogin(filter, "10.0.0.1");
+
+        assertThat(refused.getStatus()).isEqualTo(429);
+        assertThat(refused.getHeader("Retry-After")).isEqualTo("60");
+        assertThat(attemptLogin(filter, "10.0.0.2").getStatus()).isEqualTo(200);
+        assertThat(violations(WITHIN_CLIENT_RATE)).isEqualTo(1);
+        // A client refusal is not also a global one: the global permit was never asked for.
+        assertThat(violations(WITHIN_RATE)).isZero();
+    }
+
+    @Test
+    void attemptsRefusedPerClient_doNotSpendTheGlobalBudget() throws Exception {
+        LoginRateLimitFilter filter = filter(2, 1);
+        assertThat(attemptLogin(filter, "10.0.0.1").getStatus()).isEqualTo(200);
+        for (int i = 0; i < 5; i++) {
+            assertThat(attemptLogin(filter, "10.0.0.1").getStatus()).isEqualTo(429);
+        }
+
+        // The flood took no global permits, so the second of the two is still there for someone else.
+        assertThat(attemptLogin(filter, "10.0.0.2").getStatus()).isEqualTo(200);
+        assertThat(attemptLogin(filter, "10.0.0.3").getStatus()).isEqualTo(429);
+        assertThat(violations(WITHIN_CLIENT_RATE)).isEqualTo(5);
+        assertThat(violations(WITHIN_RATE)).isEqualTo(1);
+    }
+
+    private static LoginRateLimitFilter filter(int globalPermits, int perClientPermits) {
+        Resilience resilience = new Resilience4jResilience(List.of(
+                new RateLimiterConfig(LoginRateLimitFilter.STRATEGY, globalPermits, Duration.ofMinutes(1), Duration.ZERO),
+                new RateLimiterConfig(LoginRateLimitFilter.CLIENT_STRATEGY, perClientPermits, Duration.ofMinutes(1), Duration.ZERO)));
+        return new LoginRateLimitFilter(resilience);
+    }
+
+    private static MockHttpServletResponse attemptLogin(LoginRateLimitFilter filter, String client) throws Exception {
         MockHttpServletRequest post = new MockHttpServletRequest("POST", "/login");
         post.setServletPath("/login");
+        post.setRemoteAddr(client);
         MockHttpServletResponse response = new MockHttpServletResponse();
         filter.doFilter(post, response, new MockFilterChain());
         return response;
