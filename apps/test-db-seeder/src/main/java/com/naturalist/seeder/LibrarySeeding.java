@@ -20,6 +20,11 @@ final class LibrarySeeding {
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/library.sql");
+        loadData(dataSource, database);
+    }
+
+    /** Loads the data only, into a schema that already exists. */
+    static void loadData(DataSource dataSource, NaturalistDatabase database) {
         ConceptSeeder.seed(dataSource, database);
         GlossaryTermSeeder.seed(dataSource, database);
         CitationSeeder.seed(dataSource, database);

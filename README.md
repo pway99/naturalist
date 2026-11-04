@@ -253,7 +253,7 @@ Skeletal organism domains awaiting activation, built on the same blueprint:
 | Module | Role |
 |--------|------|
 | [management-console](apps/management-console/README.md) | Spring Boot fat jar composing every active domain into one UI |
-| [test-db-seeder](apps/test-db-seeder/) | Seeds the local Postgres from the domain catalogs |
+| [test-db-seeder](apps/test-db-seeder/) | Seeds the local Postgres from the domain catalogs, and holds the deployment's database initializer |
 | [resilience-resilience4j](adapters/resilience-resilience4j/) | Vendor adapter for the kernel `Resilience` facade |
 | [spring-runtime](adapters/spring-runtime/) | Turns the `@DomainService` marker into Spring bean discovery |
 | [anthropic-vision](adapters/anthropic-vision/) + [anthropic-text-generation](adapters/anthropic-text-generation/) | LLM adapters behind the `vision` and `text-generation` ports |
@@ -264,7 +264,18 @@ Skeletal organism domains awaiting activation, built on the same blueprint:
 
 ## Running it
 
-Requires Java 25, Maven, and a local Postgres at
+With only Docker installed, this builds and runs the app with its own database and catalog, at
+<http://localhost:8080>. See the [local stack runbook](docs/runbooks/local-stack.md).
+
+```bash
+deploy/create-secrets.sh
+```
+
+```bash
+docker compose up --build
+```
+
+To build and run it directly, you need Java 25, Maven, and a local Postgres at
 `localhost:5432/naturalist_test` (user `postgres`), seeded with
 [`apps/test-db-seeder`](apps/test-db-seeder/).
 

@@ -1,0 +1,94 @@
+# The deployment, as it runs in production. No service publishes a port: the only way in is
+# cloudflared, and a published port would reach the app from the Docker gateway, an address Tomcat
+# trusts for forwarded headers (apps/CLAUDE.md, "Client identity behind a proxy").
+#
+#   Local:      docker compose up --build            (also loads compose.override.yaml)
+#   Production: docker compose -f compose.yaml -f compose.production.yaml up -d
+#
+# First run: deploy/create-secrets.sh, and see docs/runbooks/local-stack.md.
+
+name: naturalist
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: naturalist
+      POSTGRES_USER: naturalist
+      POSTGRES_PASSWORD_FILE: /run/secrets/database-credential
+    secrets:
+      - database-credential
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U naturalist -d naturalist"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    mem_limit: 512m
+
+  # One-shot. Safe on every start: see DeploymentDbInitializer.
+  db-init:
+    image: naturalist-db-init:${NATURALIST_VERSION:-local}
+    build:
+      context: .
+      target: db-init
+    environment:
+      JAVA_OPTS: >-
+        -Dnaturalist.db.url=jdbc:postgresql://db:5432/naturalist
+        -Dnaturalist.db.username=naturalist
+        -Dnaturalist.secrets.directory=/run/secrets
+        -Dnaturalist.images.root=/data/images
+        -Dnaturalist.seed-images=/opt/naturalist/seed-images
+    secrets:
+      - database-credential
+    volumes:
+      - images:/data/images
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    image: naturalist-app:${NATURALIST_VERSION:-local}
+    build:
+      context: .
+      target: app
+    restart: unless-stopped
+    environment:
+      SPRING_CONFIG_IMPORT: configtree:/run/secrets/app/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/naturalist
+      SPRING_DATASOURCE_USERNAME: naturalist
+      NATURALIST_ADMIN_USERNAME: ${NATURALIST_ADMIN_USERNAME:-admin}
+      NATURALIST_VISION_PROVIDER: ${NATURALIST_VISION_PROVIDER:-none}
+      NATURALIST_SECRETS_SOURCE: file
+      NATURALIST_SECRETS_DIRECTORY: /run/secrets
+    secrets:
+      - source: database-credential
+        target: app/spring.datasource.password
+      - source: admin-credential
+        target: app/naturalist.admin.password
+    volumes:
+      - images:/data/images
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/8080'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    mem_limit: 1536m
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:
+  images:
+
+secrets:
+  database-credential:
+    file: ./secrets/database-credential
+  admin-credential:
+    file: ./secrets/admin-credential

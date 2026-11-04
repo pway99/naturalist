@@ -15,6 +15,11 @@ final class UsageSeeding {
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/usage.sql");
+        loadData(dataSource, database);
+    }
+
+    /** Loads the data only, into a schema that already exists. */
+    static void loadData(DataSource dataSource, NaturalistDatabase database) {
         UsageCounterSeeder.seed(dataSource, database);
     }
 }

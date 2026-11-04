@@ -30,6 +30,11 @@ final class PlantsSeeding {
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/plants.sql");
+        loadData(dataSource, database);
+    }
+
+    /** Loads the data only, into a schema that already exists. */
+    static void loadData(DataSource dataSource, NaturalistDatabase database) {
         PlantOrderSeeder.seed(dataSource, database);
         PlantFamilySeeder.seed(dataSource, database);
         PlantGenusSeeder.seed(dataSource, database);

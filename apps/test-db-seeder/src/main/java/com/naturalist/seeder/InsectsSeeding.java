@@ -26,6 +26,11 @@ final class InsectsSeeding {
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/insects.sql");
+        loadData(dataSource, database);
+    }
+
+    /** Loads the data only, into a schema that already exists. */
+    static void loadData(DataSource dataSource, NaturalistDatabase database) {
         InsectOrderSeeder.seed(dataSource, database);
         InsectFamilySeeder.seed(dataSource, database);
         InsectGenusSeeder.seed(dataSource, database);

@@ -3,9 +3,8 @@
 What must happen before the app takes public traffic at `backyardnaturalist.app`, in order. This
 is a summary: each item links to the document that owns the detail. Status as of 2026-11-03.
 
-The packaged jar runs, and the abuse protection and spend ceilings are built. What remains is one
-code gap that blocks any deployment (a production database), two smaller code items, and the setup
-that only happens outside this repo.
+The packaged jar runs in Docker with its own database, and the abuse protection and spend ceilings
+are built. What remains is the code gaps below and the setup that only happens outside this repo.
 
 ## 1. Decide
 
@@ -19,13 +18,14 @@ that only happens outside this repo.
 
 ## 2. Close the code gaps
 
-- [ ] **Production database setup: blocks any deployment.** Nothing creates a production database
-  today. `apps/test-db-seeder` is the only loader, and it can't be used as it stands:
-  - Its schema files start with `DROP TABLE`, so running it against live data deletes that data.
-  - It also loads test fixtures, including five `oakvista.example` accounts.
-
-  Needed: a way to create the schema without dropping anything, a load of the public catalog only,
-  and a way to apply later schema changes, since the project has no migration tool.
+- [x] **Create a production database.** The `db-init` service creates the schema without dropping
+  anything and loads the public catalog with no accounts. It refuses a database it didn't initialize
+  ([local stack runbook](runbooks/local-stack.md)).
+- [ ] **Apply later schema changes: blocks the first schema change after launch.** The project has
+  no migration tool.
+- [ ] **Review the seed field observations before going public.** The catalog load includes them,
+  because catalog photos hang off them. They name real observers and places, such as a town, and they
+  appear on public pages.
 - [ ] **Strip photo metadata: blocks public hosting.** With JavaScript off, or on a direct POST,
   uploads keep their EXIF and GPS data and are served publicly with one-year caching
   ([PL-17](notes/parking-lot.md)).

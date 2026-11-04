@@ -18,6 +18,11 @@ final class ChemistrySeeding {
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/chemistry.sql");
+        loadData(dataSource, database);
+    }
+
+    /** Loads the data only, into a schema that already exists. */
+    static void loadData(DataSource dataSource, NaturalistDatabase database) {
         ElementSeeder.seed(dataSource, database);
         CompoundSeeder.seed(dataSource, database);
         ProductSeeder.seed(dataSource, database);

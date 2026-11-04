@@ -1,0 +1,15 @@
+**/target
+.git
+.github
+.claude
+.idea
+.worktrees
+.superpowers
+.env
+.env.*
+secrets
+data/*
+!data/images
+temp
+docs
+*.iml

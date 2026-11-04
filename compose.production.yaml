@@ -1,0 +1,44 @@
+# Production additions to compose.yaml. It carries no values of its own: each setting comes from
+# the host's .env file, and a missing one stops the deployment rather than defaulting.
+# Settings and their meaning: docs/hosting-readiness.md, section 4.
+
+services:
+  app:
+    environment:
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:?set the mail host}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:?set the mail port}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:?set the mail username}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      NATURALIST_EMAIL_FROM: ${NATURALIST_EMAIL_FROM:?set the sending address}
+      NATURALIST_EMAIL_PUBLIC_URL: https://backyardnaturalist.app
+      NATURALIST_CHALLENGE_SITE_KEY: ${NATURALIST_CHALLENGE_SITE_KEY:?set the challenge site key}
+      NATURALIST_CHALLENGE_EXPECTED_HOSTNAME: backyardnaturalist.app
+    secrets:
+      - source: database-credential
+        target: app/spring.datasource.password
+      - source: admin-credential
+        target: app/naturalist.admin.password
+      - source: mail-credential
+        target: app/spring.mail.password
+      - challenge-credential
+      - model-credential
+
+  # The only way in. It connects out to the edge and publishes nothing.
+  cloudflared:
+    image: cloudflare/cloudflared:2026.10.7
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?set the tunnel token}
+    depends_on:
+      app:
+        condition: service_healthy
+
+secrets:
+  mail-credential:
+    file: ./secrets/mail-credential
+  challenge-credential:
+    file: ./secrets/challenge-credential
+  model-credential:
+    file: ./secrets/model-credential
