@@ -5,6 +5,7 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.TemplateNotFoundException;
 import gg.jte.resolve.DirectoryCodeResolver;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,11 +18,16 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Wires the JTE template engine. Template roots are discovered from the
- * project layout — adding a new domain-console module requires no
- * configuration change here, only the standard
- * {@code <module>/src/main/jte} directory and a dependency entry in this
- * module's {@code pom.xml}.
+ * Wires the JTE template engine. By default it renders the templates the
+ * build compiled onto the classpath, which is the only mode a packaged jar
+ * can run: it has neither the sources nor a classpath javac can read.
+ *
+ * <p>With {@code gg.jte.development-mode} on ({@code spring-boot:run} and the
+ * app's tests), templates compile from source as they are edited, and their
+ * roots are discovered from the project layout. A new domain-console module
+ * needs the standard {@code <module>/src/main/jte} directory, a dependency
+ * entry in this module's {@code pom.xml}, and a line in that POM's
+ * {@code gather-templates} execution.
  *
  * <p>Two predictable parents are scanned:
  * <ul>
@@ -35,7 +41,10 @@ import java.util.stream.Stream;
 class JteConfiguration {
 
     @Bean
-    TemplateEngine jteTemplateEngine() {
+    TemplateEngine jteTemplateEngine(@Value("${gg.jte.development-mode:false}") boolean developmentMode) {
+        if (!developmentMode) {
+            return TemplateEngine.createPrecompiled(ContentType.Html);
+        }
         var projectRoot = findProjectRoot();
         var roots = discoverTemplateRoots(projectRoot);
         var resolvers = roots.stream()

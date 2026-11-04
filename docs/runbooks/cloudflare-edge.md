@@ -138,23 +138,34 @@ the rate limits protect login, so restore the settings and restart as soon as th
 
 ## Local check with test keys
 
-This has not been run yet. Cloudflare publishes test site keys and credentials that work on any
-hostname, in its Turnstile testing documentation.
+Run on 2026-11-03. Cloudflare publishes test site keys and credentials that work on any hostname,
+in its Turnstile testing documentation. They exercise the widget and the failure paths only: **a
+login or sign-up cannot succeed with them.** The always-passes credential answers `success: true`
+with no `action` and the hostname `example.com`, so the app refuses it as an action mismatch. That
+refusal is correct, so do not relax the check. Proving a success needs a real widget, with
+`localhost` added to its hostnames.
 
 1. Write the always-passes test credential to `temp/secrets/challenge-credential`. `temp/` is
    ignored by git.
-2. Start the app with these arguments, plus the usual local ones, leaving `expected-hostname`
-   unset, because test keys don't return your hostname:
+2. Start the app against a copy of the database, because the standing test database is a fixed
+   fixture and a sign-up would change it. Add
+   `--naturalist.admin.username`, `--naturalist.admin.password`, `--naturalist.vision.provider=none`
+   and `--naturalist.email.log-only=true` to these arguments, and leave `expected-hostname` unset:
 
    ```text
-   --naturalist.secrets.source=file --naturalist.secrets.directory=temp/secrets
-   --naturalist.challenge.site-key=<the always-passes test site key>
+   --spring.datasource.url=jdbc:postgresql://localhost:5432/<the copy>
+   --naturalist.secrets.source=file --naturalist.secrets.directory=<absolute path>/temp/secrets
+   --naturalist.challenge.site-key=<a test site key>
    ```
 
-3. Register and log in at `http://localhost:8080`.
-4. Repeat with the always-fails site key, and check for the failure message.
+3. Expect these results:
 
-If the always-passes key fails with `action-mismatch`, test keys don't echo the action. Check with
-a real widget instead, and do not relax the check.
+   | Site key | Widget | Submit |
+   |---|---|---|
+   | always passes | issues a token | "Please complete the verification and try again." on `/register` and `/login` |
+   | always fails | issues no token | the same message on `/login` |
+
+The message is the same in both rows, and the reason is recorded only on
+`naturalist.invariant.check` (`actionMatches`, `challengePassed`), not in the log.
 
 A local run without a credential needs only `--naturalist.challenge.log-only=true`.

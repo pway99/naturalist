@@ -328,12 +328,89 @@
                     </classpathDependencyExcludes>
                 </configuration>
             </plugin>
+            <!-- Templates live in eight modules and compile together, because the domain consoles
+                 share the app's layout. A jar cannot compile them at runtime (no plain classpath, no
+                 sources), so the build gathers them, compiles them and puts the classes in the jar.
+                 A template that does not compile now fails the build. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>gather-templates</id>
+                        <phase>generate-resources</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jte-sources</outputDirectory>
+                            <resources>
+                                <resource><directory>${project.basedir}/../../apps/management-console/src/main/jte</directory></resource>
+                                <resource><directory>${project.basedir}/../../domains/chemistry/chemistry-console/src/main/jte</directory></resource>
+                                <resource><directory>${project.basedir}/../../domains/garden/garden-console/src/main/jte</directory></resource>
+                                <resource><directory>${project.basedir}/../../domains/insects/insects-console/src/main/jte</directory></resource>
+                                <resource><directory>${project.basedir}/../../domains/library/library-console/src/main/jte</directory></resource>
+                                <resource><directory>${project.basedir}/../../domains/plants/plants-console/src/main/jte</directory></resource>
+                                <resource><directory>${project.basedir}/../../domains/soil/soil-console/src/main/jte</directory></resource>
+                                <resource><directory>${project.basedir}/../../domains/usage/usage-console/src/main/jte</directory></resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>package-compiled-templates</id>
+                        <phase>process-classes</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/jte-compiled</directory>
+                                    <includes><include>**/*.class</include></includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>gg.jte</groupId>
+                <artifactId>jte-maven-plugin</artifactId>
+                <version>${jte.version}</version>
+                <configuration>
+                    <sourceDirectory>${project.build.directory}/jte-sources</sourceDirectory>
+                    <targetDirectory>${project.build.directory}/jte-compiled</targetDirectory>
+                    <contentType>Html</contentType>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals><goal>precompile</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <packagedJar>${project.build.directory}/${project.build.finalName}.jar</packagedJar>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals><goal>integration-test</goal><goal>verify</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.naturalist.console.ConsoleApplication</mainClass>
+                    <!-- spring-boot:run only: templates recompile from source as they are edited.
+                         A packaged jar always uses the compiled classes. -->
+                    <systemPropertyVariables>
+                        <gg.jte.development-mode>true</gg.jte.development-mode>
+                    </systemPropertyVariables>
                 </configuration>
                 <!-- Bind `repackage` explicitly. It is NOT implicit here: the goal is bound to
                      the package phase by spring-boot-starter-parent's pluginManagement, and this

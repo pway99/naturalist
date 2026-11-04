@@ -115,6 +115,20 @@ Decisions in [ADR-027](../docs/adr/ADR-027-cloudflare-edge-and-abuse-protection.
   on a real port, since MockMvc never passes through the valve. The test `application.yml`
   replaces the main one wholesale, so it repeats the `server` block. Keep the two in step.
 
+## Templates in the packaged jar
+
+`management-console` gathers every console module's `src/main/jte` into one directory at build
+time, compiles it with `jte-maven-plugin`, and packages the classes. The packaged jar renders only
+those classes: a fat jar has no plain classpath for runtime compilation, and no source tree.
+Development mode (`spring-boot:run` and the app's tests) compiles from source instead.
+
+- **A new console module** needs a line in the POM's `gather-templates` execution.
+  `PackagedJarIT` fails if a template is missing from the jar, or if two modules share a template
+  path, since the copy overwrites silently.
+- **`PackagedJarIT` is the only test of the artifact itself.** It runs `java -jar` from outside the
+  source tree and needs the standing test database. Everything else here runs on a plain classpath
+  and cannot see a jar that starts cleanly and then fails to render.
+
 ## Resource discipline
 
 The deployment artifact ships only the app's own resources under

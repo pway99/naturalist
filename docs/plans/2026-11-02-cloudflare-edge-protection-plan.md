@@ -4,8 +4,9 @@
 - **Decision record:** [ADR-027](../adr/ADR-027-cloudflare-edge-and-abuse-protection.md)
   (read it first; this file only sequences the work and says how each piece is tested)
 - **Amends:** [`2026-08-30-accounts-auth-redesign-design.md`](2026-08-30-accounts-auth-redesign-design.md)
-- **Status:** PRs 1–7 built. Owed before hosting: the deployment itself, and the manual check
-  with test keys in the [runbook](../runbooks/cloudflare-edge.md).
+- **Status:** PRs 1–7 built. Owed before hosting: the deployment itself, and a success through a
+  real widget (the test keys cover only the failure paths; see the
+  [runbook](../runbooks/cloudflare-edge.md)).
 
 Fixed inputs: zone `backyardnaturalist.app`, Cloudflare **Free**, hosting undecided
 (origin lockdown is a tunnel, which works everywhere — ADR-027 D3).

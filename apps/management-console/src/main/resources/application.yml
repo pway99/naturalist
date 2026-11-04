@@ -47,9 +47,11 @@ server:
     # when building a context-root redirect.
     redirect-context-root: false
 
+# The packaged jar renders the templates the build compiled into it. spring-boot:run turns
+# development mode on from the POM, so templates recompile from source as they are edited.
 gg:
   jte:
-    development-mode: true
+    development-mode: false
     template-suffix: .jte
 
 # DBO fields are camelCase; MyBatis translates snake_case columns across on read

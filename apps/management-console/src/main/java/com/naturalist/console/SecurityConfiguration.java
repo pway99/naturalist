@@ -45,8 +45,10 @@ class SecurityConfiguration {
                 .addFilterAfter(new IdentifyRateLimitFilter(resilience, currentNaturalist, identificationBudget),
                         AuthorizationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        // Static assets + entry / self-service auth pages — open to everyone.
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**",
+                        // Static assets + entry / self-service auth pages — open to everyone. So is
+                        // /error: behind a login, a page that throws redirects to /login instead of
+                        // reporting the failure, and a broken login page redirects to itself.
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/error",
                                 "/login", "/register", "/verify", "/reset/**").permitAll()
                         // The paid vision feature: identification requires the VISION entitlement.
                         // (Anonymous callers are bounced to login; a signed-in BROWSE_ONLY

@@ -273,8 +273,14 @@ mvn install
 ```
 
 ```bash
-java -jar apps/management-console/target/management-console-1.0.0-SNAPSHOT.jar --naturalist.admin.username=admin --naturalist.admin.password=change-me --naturalist.vision.provider=none
+java -jar apps/management-console/target/management-console-1.0.0-SNAPSHOT.jar --naturalist.admin.username=admin --naturalist.admin.password=change-me --naturalist.vision.provider=none --naturalist.email.log-only=true --naturalist.challenge.log-only=true
 ```
+
+The two `log-only` flags are for a developer's machine only: they print emailed tokens and turn
+the bot challenge off. A deployment leaves them out and follows the
+[edge runbook](docs/runbooks/cloudflare-edge.md). To edit templates with live recompiling, use
+`mvn -pl apps/management-console spring-boot:run` with the same arguments in
+`-Dspring-boot.run.arguments`.
 
 To enable identification, pass `--naturalist.vision.provider=anthropic` and
 supply the `model-credential` secret: as the `MODEL_CREDENTIAL` environment
@@ -295,6 +301,7 @@ kernel facade · Micrometer · Jackson · ArchUnit · OpenRewrite · Anthropic A
 - [`docs/briefings/`](docs/briefings/README.md): short context briefings per domain
 - [`docs/resilience-policy.md`](docs/resilience-policy.md): cross-boundary resilience policy
 - [`docs/runbooks/secret-rotation.md`](docs/runbooks/secret-rotation.md): rotating deployment secrets by fingerprint
+- [`docs/runbooks/cloudflare-edge.md`](docs/runbooks/cloudflare-edge.md): standing up and checking the Cloudflare edge
 - [`docs/measurement-standards.md`](docs/measurement-standards.md): units across the catalog
 
 ## License
