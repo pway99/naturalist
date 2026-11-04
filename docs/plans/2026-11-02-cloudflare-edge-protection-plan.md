@@ -4,9 +4,8 @@
 - **Decision record:** [ADR-027](../adr/ADR-027-cloudflare-edge-and-abuse-protection.md)
   (read it first; this file only sequences the work and says how each piece is tested)
 - **Amends:** [`2026-08-30-accounts-auth-redesign-design.md`](2026-08-30-accounts-auth-redesign-design.md)
-- **Status:** PRs 1 and 2 built on branch `keyed-rate-limits` (worktree
-  `temp/wt-registration`, on top of `main` at `5f725b0e`), awaiting merge to `main`.
-  PRs 3–7 not started.
+- **Status:** PRs 1–7 built. Owed before hosting: the deployment itself, and the manual check
+  with test keys in the [runbook](../runbooks/cloudflare-edge.md).
 
 Fixed inputs: zone `backyardnaturalist.app`, Cloudflare **Free**, hosting undecided
 (origin lockdown is a tunnel, which works everywhere — ADR-027 D3).
@@ -22,7 +21,7 @@ Fixed inputs: zone `backyardnaturalist.app`, Cloudflare **Free**, hosting undeci
 | 4 | **Turnstile adapter** `adapters/challenge-turnstile`: `TurnstileChallengeVerifier`, siteverify client on `java.net.http`, response mapping, `@Resilient("challenge.verify")` via the programmatic facade; `adapters/CLAUDE.md` member entry; reactor pom | 3 | ~350 |
 | 5 | **Registration wiring**: `ChallengeConfiguration` (fail-closed boot, log-only opt-in, credential via `SecretProvider`, observed), `ChallengeProperties`, the three `challenge.verify` configs in `ResilienceConfiguration`, `RegistrationController.submit` verify-before-register, `register.jte` widget, test yml `log-only: true` | 4; 1 for a meaningful `remoteip` | ~350 |
 | 6 | **Login wiring**: `LoginChallengeFilter` after `LoginRateLimitFilter`, `login.jte` widget + `?challenge` / `?unavailable` messages (model attributes from `HomeController.login`) | 5 | ~200 |
-| 7 | **Ops runbook + backstop thresholds**: `docs/ops/cloudflare-edge.md` (below), `auth.login` 300 → 600, `auth.register` 10 → 60, work-tracker row closed | 2, 6 (thresholds assume the edge and Turnstile are live) | ~100 |
+| 7 | **Ops runbook + backstop thresholds**: `docs/runbooks/cloudflare-edge.md` (below), `auth.login` 300 → 600, `auth.register` 10 → 60, work-tracker row closed | 2, 6 (thresholds assume the edge and Turnstile are live) | ~100 |
 
 PRs 1–2 and 3–4 are independent chains and can be worked in parallel; 5 joins
 them. Each PR runs `mvn verify` plus the completeness gate
@@ -149,7 +148,12 @@ ask for `connect-src 'self'` only in pre-clearance mode, which the policy alread
   not been run, so what the vendor's test keys return is unconfirmed. If they produce
   `action-mismatch`, verify with a real widget; do not relax the check.
 
-## Ops runbook (`docs/ops/cloudflare-edge.md`, written in PR 7)
+## Ops runbook (written in PR 7 as [`docs/runbooks/cloudflare-edge.md`](../runbooks/cloudflare-edge.md))
+
+The runbook supersedes this outline. It moved beside the secret-rotation runbook, and it corrects
+two checks: custom rules run before rate limiting, so a script on `/login` meets E2 and E1 has to be
+proved on `/reset/request`; and a scripted `POST /register` meets E2 or CSRF before the challenge
+message, so that check happens in a browser.
 
 1. Zone `backyardnaturalist.app` on Cloudflare DNS; SSL/TLS: Always Use HTTPS,
    HSTS, min TLS 1.2 (ADR-027 E5).

@@ -58,14 +58,14 @@ import java.util.List;
  *   <li><b>{@code auth.login}</b> / <b>{@code auth.login.client}</b> — the pair of
  *       ceilings {@code LoginRateLimitFilter} takes on {@code POST /login} ahead of the
  *       password check: ten attempts a minute per client (keyed by the remote address
- *       through {@code RateLimiter.forKey}), then 300 a minute system-wide, so one abuser
+ *       through {@code RateLimiter.forKey}), then 600 a minute system-wide, so one abuser
  *       is cut off on their own and a key-rotating run still cannot burn a BCrypt round
  *       per guess without bound. Rejections are {@code 429}, observed as
  *       {@code withinClientRate} / {@code withinRate}; the targeted response to one
  *       persistent abuser remains {@code AccountCommand.suspend}.</li>
  *   <li><b>{@code auth.register}</b> / <b>{@code auth.register.client}</b> — the same
  *       pair for sign-ups, taken by {@code RegistrationTransaction} before any validation
- *       or encoding: three a minute per client, ten a minute system-wide. Every
+ *       or encoding: three a minute per client, sixty a minute system-wide. Every
  *       registration emails an address nobody has proven they own, so an unbounded
  *       endpoint is a mail-bombing primitive.</li>
  *   <li><b>{@code challenge.verify}</b> — the bot-challenge round trip: breaker around a
@@ -143,16 +143,18 @@ public class ResilienceConfiguration {
     ResilienceConfig.RateLimiterConfig authLoginRateLimit() {
         // Global ceiling on authentication attempts: caps the BCrypt CPU a credential-stuffing run
         // can burn and bounds the badCredentials metric's worst case. Sized so real users never
-        // see it; the targeted response to one abuser is AccountCommand.suspend, not this.
-        return new RateLimiterConfig("auth.login", 300, Duration.ofMinutes(1), Duration.ZERO);
+        // see it; the targeted response to one abuser is AccountCommand.suspend, not this. A
+        // backstop behind the edge and the challenge (ADR-027 D5): about ten hashes a second.
+        return new RateLimiterConfig("auth.login", 600, Duration.ofMinutes(1), Duration.ZERO);
     }
 
     @Bean
     ResilienceConfig.RateLimiterConfig authRegisterRateLimit() {
         // Global ceiling on sign-ups: each registration sends an email to an address nobody has
         // proven they own, so an unbounded /register is a mail-bombing primitive against third
-        // parties. Ten a minute is far above any honest rate for this audience.
-        return new RateLimiterConfig("auth.register", 10, Duration.ofMinutes(1), Duration.ZERO);
+        // parties. A backstop behind the edge and the challenge (ADR-027 D5): a workshop of thirty
+        // signing up together stays under it, and outbound mail stays bounded at sixty a minute.
+        return new RateLimiterConfig("auth.register", 60, Duration.ofMinutes(1), Duration.ZERO);
     }
 
     @Bean

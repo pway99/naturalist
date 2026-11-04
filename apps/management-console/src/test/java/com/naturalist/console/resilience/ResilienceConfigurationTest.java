@@ -91,4 +91,13 @@ class ResilienceConfigurationTest {
         assertThat(resilience.bulkhead("vision.identification")).isNotNull();
         assertThat(resilience.bulkheadNames()).containsExactly("vision.identification");
     }
+
+    /** ADR-027 D5: the edge and the challenge are the front line, so these only bound CPU and mail. */
+    @Test
+    void theGlobalAuthLimits_areBackstopsAtTheAdrValues() {
+        ResilienceConfiguration production = new ResilienceConfiguration();
+
+        assertThat(production.authLoginRateLimit().limitForPeriod()).isEqualTo(600);
+        assertThat(production.authRegisterRateLimit().limitForPeriod()).isEqualTo(60);
+    }
 }

@@ -52,7 +52,7 @@ The edge rule set:
 
 | # | Control | Setting |
 |---|---|---|
-| E1 | Rate limiting rule (the one) | Expression: `(http.request.uri.path in {"/login" "/register" "/reset/request"})`. Characteristic: IP. **More than 10 requests per 10 s → Block for 10 s.** Path-only on Free, so GET page loads count alongside POSTs; an honest login (1 GET + 1 POST, three tries) stays well under. This is a flood valve, not the per-client control — see D5. |
+| E1 | Rate limiting rule (the one) | Expression: `(http.request.uri.path in {"/login" "/register" "/reset/request"})`. Characteristic: IP. **More than 10 requests per 10 s → Block for 10 s.** Path-only on Free, so GET page loads count alongside POSTs; an honest login (1 GET + 1 POST, three tries) stays well under. This is a flood valve, not the per-client control — see D5. Custom rules run before rate limiting, so a client E2 challenges is stopped there; E1 counts cleared browsers and `/reset/request`. |
 | E2 | Custom rule, Managed Challenge | `(http.request.uri.path in {"/login" "/register"} and not cf.client.bot)` — Cloudflare's own sensitive-forms recipe. Interrupts headless clients before the origin sees them; a browser that passes on the GET carries `cf_clearance` into the POST. Known caveat: clearance is bound to the solving IP, so a client whose address changes mid-form is re-challenged. If the challenge-on-POST path ever loses form data in practice, narrow E2 to the GET pages: a bot still needs the page for its CSRF token. |
 | E3 | Bot Fight Mode | **On.** Zone-wide and unscoped, which is acceptable while the only clients are browsers; **turn off** (or move to Super Bot Fight Mode on Pro) when the deferred `/api/**` bearer-token chain gets non-browser clients. |
 | E4 | WAF managed rules | Free Managed Ruleset on (default). |
@@ -193,8 +193,9 @@ lockout.
   and the breaker bounds refusals to 30-second windows with a probe; (4) the
   violation rate is the operator's signal. The cost accepted: a Cloudflare
   siteverify outage pauses sign-ups and sign-ins, including the config admin's, for
-  its duration. Escape hatch for an incident: `naturalist.challenge.log-only=true`
-  and restart, which is loud on the dashboard.
+  its duration. Escape hatch for an incident: remove the `challenge-credential` secret
+  and the site key, set `naturalist.challenge.log-only=true`, and restart, which is loud
+  on the dashboard. The flag alone does nothing while the credential resolves.
 - **Opt-in dev/test mode, like `naturalist.email.log-only`**: with the
   `challenge-credential` secret resolvable through the kernel `SecretProvider`
   (`CHALLENGE_CREDENTIAL`, or `<dir>/challenge-credential`; ADR-028, the

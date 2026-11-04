@@ -9,6 +9,11 @@ read from the `MODEL_CREDENTIAL` environment variable (`naturalist.secrets.sourc
 environment`) or from `<directory>/model-credential` (`naturalist.secrets.source: file`). A
 secret is resolved once, at startup.
 
+The bot-challenge credential is `challenge-credential`, from `CHALLENGE_CREDENTIAL` or
+`<directory>/challenge-credential`, and it rotates the same way, from the widget's settings page
+([cloudflare-edge.md](cloudflare-edge.md)). A login that succeeds after the old one is deactivated
+proves the new one is live.
+
 A value is never written down, logged or shown. Its **fingerprint** is: the first eight hex
 digits of its SHA-256. Compute one locally:
 

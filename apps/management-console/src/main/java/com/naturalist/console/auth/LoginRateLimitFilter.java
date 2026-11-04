@@ -19,7 +19,7 @@ import java.io.IOException;
 /**
  * Two ceilings on authentication attempts, ahead of Spring's login filter. {@code POST /login}
  * first takes one {@code auth.login.client} permit for the request's {@link ClientKey} (ten a
- * minute per client), then one {@code auth.login} permit system-wide (300 a minute); past
+ * minute per client), then one {@code auth.login} permit system-wide (600 a minute); past
  * either the request is answered {@code 429 Too Many Requests} with {@code Retry-After} and
  * never reaches the password check — so one abuser is cut off on their own, and a
  * credential-stuffing run that rotates addresses still cannot burn a BCrypt round per guess
