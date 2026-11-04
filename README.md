@@ -301,6 +301,7 @@ kernel facade · Micrometer · Jackson · ArchUnit · OpenRewrite · Anthropic A
 - [`docs/briefings/`](docs/briefings/README.md): short context briefings per domain
 - [`docs/resilience-policy.md`](docs/resilience-policy.md): cross-boundary resilience policy
 - [`docs/runbooks/secret-rotation.md`](docs/runbooks/secret-rotation.md): rotating deployment secrets by fingerprint
+- [`docs/hosting-readiness.md`](docs/hosting-readiness.md): what must happen before public hosting
 - [`docs/runbooks/cloudflare-edge.md`](docs/runbooks/cloudflare-edge.md): standing up and checking the Cloudflare edge
 - [`docs/measurement-standards.md`](docs/measurement-standards.md): units across the catalog
 
