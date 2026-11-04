@@ -3,7 +3,9 @@ package com.naturalist.console;
 import com.naturalist.console.admin.AdminProperties;
 import com.naturalist.console.auth.CurrentNaturalist;
 import com.naturalist.console.auth.IdentifyRateLimitFilter;
+import com.naturalist.console.auth.LoginChallengeFilter;
 import com.naturalist.console.auth.LoginRateLimitFilter;
+import com.naturalist.console.challenge.ChallengeGate;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.usage.IdentificationBudget;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -28,11 +30,14 @@ class SecurityConfiguration {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, Resilience resilience,
                                     CurrentNaturalist currentNaturalist,
-                                    IdentificationBudget identificationBudget) throws Exception {
+                                    IdentificationBudget identificationBudget,
+                                    ChallengeGate challengeGate) throws Exception {
         return http
                 // Global ceiling on POST /login (auth.login): caps the BCrypt CPU a
                 // credential-stuffing run can burn; rejections are observed as withinRate.
                 .addFilterBefore(new LoginRateLimitFilter(resilience), UsernamePasswordAuthenticationFilter.class)
+                // The bot challenge, after the limits and before the password check (ADR-027 D7).
+                .addFilterAfter(new LoginChallengeFilter(challengeGate), LoginRateLimitFilter.class)
                 // Per-client ceiling on POST /<domain>/identify (vision.identification.client, two a
                 // minute per address). After AuthorizationFilter, so only a request that already
                 // passed authentication, CSRF and the VISION check spends a client permit; a

@@ -1,5 +1,7 @@
 @param String error = ""
 @param String logout = ""
+@param String challengeSiteKey = ""
+@param String challengeMessage = ""
 @param org.springframework.security.web.csrf.CsrfToken _csrf
 
 <!DOCTYPE html>
@@ -86,6 +88,10 @@
             <div class="error">Login failed. Please check your username and password.</div>
         @endif
 
+        @if(!challengeMessage.isEmpty())
+            <div class="error">${challengeMessage}</div>
+        @endif
+
         @if(!logout.isEmpty())
             <div class="logout">You have been logged out.</div>
         @endif
@@ -102,8 +108,14 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
+            @if(!challengeSiteKey.isEmpty())
+                <div class="cf-turnstile" data-sitekey="${challengeSiteKey}" data-action="login"></div>
+            @endif
             <button type="submit">Login</button>
         </form>
+        @if(!challengeSiteKey.isEmpty())
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        @endif
     </div>
 </div>
 

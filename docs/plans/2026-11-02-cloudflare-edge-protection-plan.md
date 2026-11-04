@@ -115,6 +115,13 @@ on client identity, the login/registration limiters and Turnstile. Agreed split:
 | Manual browser check (any PR ≥ 5) | Run the console with the Cloudflare test keys (`site-key 1x00000000000000000000AA`, `CHALLENGE_CREDENTIAL=1x0000000000000000000000000000000AA`) against the real siteverify endpoint; then with `2x…` keys to see the refusal; `3x…FF` to see the interactive widget. Needs internet, not an account. |
 | Edge rules E1–E5, tunnel | Cannot be tested without the zone. The runbook below carries the post-deploy checks. |
 
+### Found while building PR 6
+
+`LoginRateLimitFilter` matched on `getServletPath()`, which MockMvc leaves empty, so no full-chain
+test ever exercised it. Both login filters now use `LOGIN_ATTEMPT`, the `PathPatternRequestMatcher`
+form Spring's own login filter uses, and `LoginChallengeRealPortTest` proves the match on Tomcat.
+`IdentifyRateLimitFilter` already avoids `getServletPath()` for this reason.
+
 ### Owed by PR 5, found while building PRs 3 and 4
 
 Done in PR 5, except the manual test-key check. The worker pool took neither option below:

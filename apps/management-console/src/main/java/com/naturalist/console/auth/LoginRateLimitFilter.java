@@ -11,6 +11,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ final class LoginRateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        if (!("POST".equals(request.getMethod()) && "/login".equals(request.getServletPath()))) {
+        if (!LOGIN_ATTEMPT.matches(request)) {
             chain.doFilter(request, response);
             return;
         }
@@ -85,4 +86,11 @@ final class LoginRateLimitFilter extends OncePerRequestFilter {
             return false;
         }
     }
+
+    /**
+     * What Spring's login filter processes, matched the way it matches, so nothing it would
+     * authenticate can pass around this filter or {@link LoginChallengeFilter}.
+     */
+    static final RequestMatcher LOGIN_ATTEMPT = org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.withDefaults()
+            .matcher(org.springframework.http.HttpMethod.POST, "/login");
 }
