@@ -20,6 +20,20 @@ services:
       # 5433 so it never collides with the standing test database on 5432.
       - "127.0.0.1:5433:5432"
 
+  prometheus:
+    ports:
+      - "127.0.0.1:9090:9090"
+
+  alertmanager:
+    command:
+      - --config.file=/etc/alertmanager/config/local.yml
+      - --storage.path=/alertmanager
+    ports:
+      - "127.0.0.1:9093:9093"
+    depends_on:
+      mailpit:
+        condition: service_started
+
   mailpit:
     image: axllent/mailpit:v1.33
     restart: unless-stopped

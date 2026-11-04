@@ -264,8 +264,8 @@ Skeletal organism domains awaiting activation, built on the same blueprint:
 
 ## Running it
 
-With only Docker installed, this builds and runs the app with its own database and catalog, at
-<http://localhost:8080>. See the [local stack runbook](docs/runbooks/local-stack.md).
+With only Docker installed, this builds and runs the app with its own database, catalog, metrics
+and alerts, at <http://localhost:8080>. See the [local stack runbook](docs/runbooks/local-stack.md).
 
 ```bash
 deploy/create-secrets.sh

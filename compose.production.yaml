@@ -24,6 +24,23 @@ services:
       - challenge-credential
       - model-credential
 
+  # Loopback only, so the UI is reachable through an SSH tunnel and from nowhere else.
+  prometheus:
+    ports:
+      - "127.0.0.1:9090:9090"
+
+  alertmanager:
+    entrypoint: ["/etc/alertmanager/config/start-production.sh"]
+    environment:
+      SMTP_HOST: ${SPRING_MAIL_HOST:?set the mail host}
+      SMTP_PORT: ${SPRING_MAIL_PORT:?set the mail port}
+      SMTP_USERNAME: ${SPRING_MAIL_USERNAME:?set the mail username}
+      ALERT_EMAIL_FROM: ${NATURALIST_EMAIL_FROM:?set the sending address}
+      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:?set where alerts go}
+    secrets:
+      - mail-credential
+      - heartbeat-url
+
   # The only way in. It connects out to the edge and publishes nothing.
   cloudflared:
     image: cloudflare/cloudflared:2026.10.7
@@ -42,3 +59,6 @@ secrets:
     file: ./secrets/challenge-credential
   model-credential:
     file: ./secrets/model-credential
+  # The private address the outside check gives you. Anyone holding it can fake a heartbeat.
+  heartbeat-url:
+    file: ./secrets/heartbeat-url

@@ -140,8 +140,7 @@ is not an enforcement input.
 
 Each refusal is also observed as a WARN violation (`withinRate`, `notBusy`,
 `withinBudget`, `withinClientRate`) on `naturalist.invariant.check`. That is
-the spike signal. No metrics backend is wired yet, so the alert rule on it is
-set up with hosting; until then the counts exist only in-process.
+the spike signal. The alert rules on it are in `deploy/prometheus/alerts.yml`.
 
 ### Rotation is a rehearsed procedure, supported by code
 

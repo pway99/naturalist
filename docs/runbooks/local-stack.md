@@ -20,6 +20,8 @@ The first build downloads every Maven dependency and takes several minutes.
 | The app | <http://localhost:8080> |
 | Mail it sends, including verification links | <http://localhost:8025> |
 | Postgres | `localhost:5433`, database and user `naturalist` |
+| Prometheus | <http://localhost:9090> |
+| Alertmanager | <http://localhost:9093> |
 
 Sign in to the admin pages as `admin`, with the password in `secrets/admin-credential`. Set
 `NATURALIST_ADMIN_USERNAME` to use another name.
@@ -33,6 +35,8 @@ Sign in to the admin pages as `admin`, with the password in `secrets/admin-crede
 | `compose.override.yaml` | Local only, loaded automatically: published ports, a mail catcher, and the challenge in log-only mode |
 | `compose.production.yaml` | Production only: real mail, the real challenge, and `cloudflared` |
 | `deploy/create-secrets.sh` | Generates the local secrets in `secrets/`, which git ignores |
+| `deploy/prometheus/` | What Prometheus scrapes, the alert rules, and their tests |
+| `deploy/alertmanager/` | Where alerts go, locally and in production |
 
 ## Database initialization
 
@@ -55,6 +59,30 @@ schema needs a manual change to an existing database.
 If initialization fails partway, the database has tables but no record, so later starts refuse. On a
 database with nothing worth keeping, start again with the reset below.
 
+## Metrics and alerts
+
+Prometheus reads `/actuator/prometheus` from the app's management port, 8081, over the private
+Compose network. Only `health` and `prometheus` are exposed there. The public port refuses every
+actuator path, and the host can't reach 8081 because nothing publishes it.
+
+Violations are on `naturalist_invariant_check_total`. Try this in the Prometheus UI:
+
+```promql
+sum by (name) (naturalist_invariant_check_total{outcome="violated"})
+```
+
+Locally, alerts arrive in Mailpit. `ChallengeOff` always fires after about 5 minutes, because the
+local stack runs the challenge in log-only mode, so that email shows the whole path works. To see a
+rate-limit alert, send about 15 failed logins within a minute.
+
+Test the rules after changing them:
+
+```bash
+docker run --rm -v "$PWD/deploy/prometheus:/rules:ro" -w /rules --entrypoint promtool prom/prometheus:v3.13.5 test rules alerts.test.yml
+```
+
+Prometheus keeps 30 days of data, up to 1 GB.
+
 ## Stop and reset
 
 Stop the stack and keep the data:
@@ -63,7 +91,7 @@ Stop the stack and keep the data:
 docker compose down
 ```
 
-Stop the stack and **delete its database and photos**:
+Stop the stack and **delete its database, photos and metrics**:
 
 ```bash
 docker compose down -v
@@ -74,7 +102,9 @@ docker compose down -v
 - The bot challenge passes everything, because the real one needs the vendor's widget on the real
   hostname. Never use `compose.override.yaml` in production.
 - Mail stops at Mailpit, and there is no Cloudflare edge or tunnel.
-- The app has no metrics endpoint yet, so there is no Prometheus, Alertmanager or Grafana.
+- Alerts stop at Mailpit, and the heartbeat goes nowhere. Production sends the heartbeat to an outside
+  check, which reports the host dying.
+- There is no Grafana in either: it needs at least 512 MB, and the Prometheus UI covers the queries.
 - Vision identification is off. To try it, set `NATURALIST_VISION_PROVIDER` and add the
   `model-credential` secret as `compose.production.yaml` does.
 
@@ -84,3 +114,5 @@ Tomcat trusts forwarded client addresses from private-range peers, and a publish
 app from the Docker gateway, which is a private address. On a public host, a caller could then forge
 their address and dodge the rate limits. That's why `compose.yaml` publishes nothing and the
 override binds to `127.0.0.1` only.
+
+Never point the tunnel at port 8081 either: it serves metrics to anyone who can reach it.

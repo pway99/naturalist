@@ -19,6 +19,10 @@ jobs:
       NATURALIST_TEST_DB_PASSWORD: postgres
     steps:
       - uses: actions/checkout@v4
+      - name: Test the alert rules
+        run: >-
+          docker run --rm -v "$PWD/deploy/prometheus:/rules:ro" -w /rules --entrypoint promtool
+          prom/prometheus:v3.13.5 test rules alerts.test.yml
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '25' }
       - run: mvn -q -DskipTests install

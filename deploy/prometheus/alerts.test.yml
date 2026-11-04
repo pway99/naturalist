@@ -1,0 +1,144 @@
+# Proves the rules against the shapes the real counter takes. Run: docs/runbooks/local-stack.md.
+rule_files:
+  - alerts.yml
+
+evaluation_interval: 30s
+
+tests:
+  # The case a plain increase() misses: the counter first appears at 1 and never moves.
+  - name: a first violation fires, then clears
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="violated", name="LoginRateLimitFilter.doFilterInternal.withinRate"}'
+        values: "_x5 1x30"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: GlobalRateLimitHit
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: GlobalRateLimitHit
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              name: LoginRateLimitFilter.doFilterInternal.withinRate
+            exp_annotations:
+              summary: "A global limit was hit (LoginRateLimitFilter.doFilterInternal.withinRate). Something beat the edge and the challenge."
+      - eval_time: 25m
+        alertname: GlobalRateLimitHit
+        exp_alerts: []
+
+  - name: a counter that keeps rising fires
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="violated", name="InsectIdentificationCommandImpl.identify.withinBudget"}'
+        values: "1x20 2+1x10"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: IdentificationBudgetSpent
+        exp_alerts: []
+      - eval_time: 25m
+        alertname: IdentificationBudgetSpent
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              name: InsectIdentificationCommandImpl.identify.withinBudget
+            exp_annotations:
+              summary: "Identification refused a caller over budget (InsectIdentificationCommandImpl.identify.withinBudget)."
+
+  - name: a restart resets the counter and a new violation still fires
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="violated", name="InsectIdentificationCommandImpl.identify.notBusy"}'
+        values: "5x20 _x2 1x10"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: IdentificationBusy
+        exp_alerts: []
+      - eval_time: 24m
+        alertname: IdentificationBusy
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              name: InsectIdentificationCommandImpl.identify.notBusy
+            exp_annotations:
+              summary: "Identification refused callers because all its slots were busy (InsectIdentificationCommandImpl.identify.notBusy)."
+
+  - name: a held check never fires
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="held", name="LoginRateLimitFilter.doFilterInternal.withinRate"}'
+        values: "1+1x30"
+      - series: 'naturalist_invariant_check_total{outcome="held", name="ChallengeConfiguration.challengeVerifier.turnstile"}'
+        values: "1x30"
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: GlobalRateLimitHit
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: ChallengeOff
+        exp_alerts: []
+
+  - name: the standing challenge violation waits, then stays
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="violated", name="ChallengeConfiguration.challengeVerifier.turnstile"}'
+        values: "1x60"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: ChallengeOff
+        exp_alerts: []
+      - eval_time: 50m
+        alertname: ChallengeOff
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              outcome: violated
+              name: ChallengeConfiguration.challengeVerifier.turnstile
+            exp_annotations:
+              summary: The app is on the log-only verifier, so the bot challenge is off.
+
+  - name: an unreachable app pages after two minutes
+    interval: 1m
+    input_series:
+      - series: 'up{job="naturalist"}'
+        values: "1x5 0x10"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: AppDown
+        exp_alerts: []
+      - eval_time: 9m
+        alertname: AppDown
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              job: naturalist
+            exp_annotations:
+              summary: Prometheus can't reach the app.
+
+  - name: a few failed tokens are normal, a surge is not
+    interval: 1m
+    input_series:
+      - series: 'naturalist_invariant_check_total{outcome="violated", name="TurnstileChallengeVerifier.verify.challengePassed"}'
+        values: "1+0.2x20 5+5x10"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ChallengeFailureSurge
+        exp_alerts: []
+      - eval_time: 28m
+        alertname: ChallengeFailureSurge
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+            exp_annotations:
+              summary: Many challenge tokens are failing, so bots may be reaching the origin.
+
+  - name: the heartbeat always fires
+    interval: 1m
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: Watchdog
+        exp_alerts:
+          - exp_labels:
+              severity: heartbeat
+            exp_annotations:
+              summary: The alerting path is working.

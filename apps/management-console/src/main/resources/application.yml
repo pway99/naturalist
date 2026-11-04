@@ -47,6 +47,20 @@ server:
     # when building a context-root redirect.
     redirect-context-root: false
 
+# Metrics and health, on their own port so they never share a route with the public site. Nothing
+# publishes this port: Prometheus reaches it over the private network, and the tunnel points only at
+# server.port. Keep Boot's global registry binding on (the default): the framework kernel emits
+# through Metrics.globalRegistry, and turning it off silently records nothing (ADR-017).
+management:
+  server:
+    port: 8081
+  endpoints:
+    access:
+      max-permitted: read-only
+    web:
+      exposure:
+        include: health,prometheus
+
 # The packaged jar renders the templates the build compiled into it. spring-boot:run turns
 # development mode on from the POM, so templates recompile from source as they are edited.
 gg:

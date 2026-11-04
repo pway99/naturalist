@@ -22,7 +22,8 @@ The origin accepts no inbound traffic: every request arrives through a local `cl
 
 1. Create a tunnel in Zero Trust under Networks, Tunnels.
 2. Install `cloudflared` on the origin host, or as a sidecar, with the tunnel's token.
-3. Point the public hostname `backyardnaturalist.app` at `http://localhost:8080`.
+3. Point the public hostname `backyardnaturalist.app` at the app's port 8080: `http://app:8080` as a
+   Compose sidecar, or `http://localhost:8080` on the host. Never route to 8081, the metrics port.
 4. Allow no inbound 80, 443 or 8080 at the host firewall or platform ingress.
 
 The connector must stay local or on the pod network. The app trusts `CF-Connecting-IP` only from

@@ -1,0 +1,31 @@
+# Production. start-production.sh fills in the @VALUES@ from the environment, because Alertmanager
+# doesn't expand variables in its own configuration.
+global:
+  smtp_smarthost: "@SMTP_HOST@:@SMTP_PORT@"
+  smtp_from: "@ALERT_EMAIL_FROM@"
+  smtp_auth_username: "@SMTP_USERNAME@"
+  smtp_auth_password_file: /run/secrets/mail-credential
+
+route:
+  receiver: mail
+  group_by: [alertname]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  routes:
+    # The outside check alerts when these stop, which is what reports a dead host.
+    - matchers: [severity="heartbeat"]
+      receiver: outside-check
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 5m
+
+receivers:
+  - name: mail
+    email_configs:
+      - to: "@ALERT_EMAIL_TO@"
+        send_resolved: true
+  - name: outside-check
+    webhook_configs:
+      - url_file: /run/secrets/heartbeat-url
+        send_resolved: false

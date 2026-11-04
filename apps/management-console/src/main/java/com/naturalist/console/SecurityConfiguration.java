@@ -9,18 +9,24 @@ import com.naturalist.console.challenge.ChallengeGate;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.usage.IdentificationBudget;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -96,5 +102,29 @@ class SecurityConfiguration {
     @Bean
     PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    private static boolean onManagementServer(HttpServletRequest request) {
+        return WebServerApplicationContext.hasServerNamespace(
+                WebApplicationContextUtils.getWebApplicationContext(request.getServletContext()), "management");
+    }
+
+    /**
+     * The management server is open, because nothing can reach its port except over the private
+     * network, and it exposes only health and read-only metrics. Security's filter also runs there, so
+     * without this chain Prometheus would be redirected to the login page. An actuator path anywhere
+     * else is refused, including for a signed-in user, so setting the two ports equal by mistake
+     * cannot publish the metrics.
+     */
+    @Bean
+    @Order(org.springframework.core.Ordered.HIGHEST_PRECEDENCE)
+    SecurityFilterChain managementFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher(request -> onManagementServer(request)
+                        || request.getServletPath().startsWith("/actuator"))
+                .authorizeHttpRequests(auth -> auth.anyRequest().access((authentication, context) ->
+                        new AuthorizationDecision(onManagementServer(context.getRequest()))))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build();
     }
 }

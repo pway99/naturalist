@@ -44,13 +44,15 @@ class PackagedJarIT {
 
     @BeforeAll
     static void startTheJar() throws Exception {
-        try (ServerSocket socket = new ServerSocket(0)) {
+        try (ServerSocket socket = new ServerSocket(0); ServerSocket management = new ServerSocket(0)) {
             port = socket.getLocalPort();
+            managementPort = management.getLocalPort();
         }
         output = workingDirectory.resolve("app.log");
         String java = ProcessHandle.current().info().command().orElseThrow();
         app = new ProcessBuilder(List.of(java, "-jar", System.getProperty("packagedJar"),
                 "--server.port=" + port,
+                "--management.server.port=" + managementPort,
                 "--naturalist.admin.username=test-admin",
                 "--naturalist.admin.password=not-a-real-secret",
                 "--naturalist.vision.provider=none",
@@ -143,5 +145,38 @@ class PackagedJarIT {
         } catch (IOException e) {
             return "no app log: " + e.getMessage();
         }
+    }
+
+    private static int managementPort;
+
+    private static HttpResponse<String> getFromPort(int fromPort, String path) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder(URI.create("http://localhost:" + fromPort + path))
+                .timeout(Duration.ofSeconds(30))
+                .GET()
+                .build();
+        return HTTP.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    /**
+     * Log-only mode reports a turnstile violation at startup, so this counter has a value with no traffic.
+     * It only reaches the scrape if Boot's registry joined the global one the kernel emits through.
+     */
+    @Test
+    void theManagementPort_servesTheInvariantCounter() throws Exception {
+        HttpResponse<String> scrape = getFromPort(managementPort, "/actuator/prometheus");
+
+        assertThat(scrape.statusCode()).as(log()).isEqualTo(200);
+        assertThat(scrape.body())
+                .contains("naturalist_invariant_check_total{")
+                .contains("name=\"ChallengeConfiguration.challengeVerifier.turnstile\"")
+                .contains("outcome=\"violated\"");
+    }
+
+    @Test
+    void thePublicPort_servesNoMetrics() throws Exception {
+        HttpResponse<String> scrape = get("/actuator/prometheus");
+
+        assertThat(scrape.statusCode()).as(log()).isNotEqualTo(200);
+        assertThat(scrape.body()).doesNotContain("naturalist_invariant_check");
     }
 }

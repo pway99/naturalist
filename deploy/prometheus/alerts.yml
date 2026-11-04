@@ -1,0 +1,119 @@
+# Alerts on naturalist.invariant.check (ADR-017). Split on outcome, never level. What each decision
+# means is in docs/runbooks/cloudflare-edge.md, "What to watch", and ADR-028.
+#
+# Production emits violations only, so a counter doesn't exist until its first violation, and it then
+# appears at 1. increase() needs two samples and can't see that first one, so the "any violation"
+# rules add a second clause for a series that wasn't there 10 minutes ago.
+#
+# One known gap: after a restart, a violation that brings a counter back to the same value it had
+# before (1, restart, 1) looks unchanged, so it doesn't fire unless the counter rises again.
+#
+# Change these together with alerts.test.yml, and run the test in docs/runbooks/local-stack.md.
+
+groups:
+  - name: naturalist-availability
+    rules:
+      # Always firing. It reaches an outside check, which alerts if it stops: nothing on this host can
+      # report that the host itself has died.
+      - alert: Watchdog
+        expr: vector(1)
+        labels:
+          severity: heartbeat
+        annotations:
+          summary: The alerting path is working.
+
+      - alert: AppDown
+        expr: up{job="naturalist"} == 0
+        for: 2m
+        labels:
+          severity: page
+        annotations:
+          summary: Prometheus can't reach the app.
+
+  - name: naturalist-abuse-and-spend
+    rules:
+      - alert: GlobalRateLimitHit
+        expr: |
+          sum by (name) (increase(naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinRate"}[10m])) > 0
+          or
+          sum by (name) (
+            naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinRate"}
+            unless naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinRate"} offset 10m
+          )
+        labels:
+          severity: page
+        annotations:
+          summary: "A global limit was hit ({{ $labels.name }}). Something beat the edge and the challenge."
+
+      - alert: IdentificationBusy
+        expr: |
+          sum by (name) (increase(naturalist_invariant_check_total{outcome="violated", name=~".*\\.notBusy"}[10m])) > 0
+          or
+          sum by (name) (
+            naturalist_invariant_check_total{outcome="violated", name=~".*\\.notBusy"}
+            unless naturalist_invariant_check_total{outcome="violated", name=~".*\\.notBusy"} offset 10m
+          )
+        labels:
+          severity: page
+        annotations:
+          summary: "Identification refused callers because all its slots were busy ({{ $labels.name }})."
+
+      - alert: IdentificationBudgetSpent
+        expr: |
+          sum by (name) (increase(naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinBudget"}[10m])) > 0
+          or
+          sum by (name) (
+            naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinBudget"}
+            unless naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinBudget"} offset 10m
+          )
+        labels:
+          severity: page
+        annotations:
+          summary: "Identification refused a caller over budget ({{ $labels.name }})."
+
+      - alert: ClientRateLimitHit
+        expr: |
+          sum by (name) (increase(naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinClientRate"}[10m])) > 0
+          or
+          sum by (name) (
+            naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinClientRate"}
+            unless naturalist_invariant_check_total{outcome="violated", name=~".*\\.withinClientRate"} offset 10m
+          )
+        labels:
+          severity: ticket
+        annotations:
+          summary: "One address went over its limit ({{ $labels.name }})."
+
+  - name: naturalist-challenge
+    rules:
+      # A standing violation: the app reports it once at startup, and the counter stays at 1 until
+      # the next start. Local stacks fire this on purpose, because they run in log-only mode.
+      - alert: ChallengeOff
+        expr: naturalist_invariant_check_total{outcome="violated", name=~".*\\.turnstile"} > 0
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: The app is on the log-only verifier, so the bot challenge is off.
+
+      - alert: ChallengeBroken
+        expr: |
+          sum by (name) (increase(naturalist_invariant_check_total{outcome="violated", name=~".*\\.(hostnameChecked|credentialAccepted|serviceAvailable)"}[10m])) > 0
+          or
+          sum by (name) (
+            naturalist_invariant_check_total{outcome="violated", name=~".*\\.(hostnameChecked|credentialAccepted|serviceAvailable)"}
+            unless naturalist_invariant_check_total{outcome="violated", name=~".*\\.(hostnameChecked|credentialAccepted|serviceAvailable)"} offset 10m
+          )
+        labels:
+          severity: page
+        annotations:
+          summary: "Challenge verification is failing ({{ $labels.name }}). See the edge runbook."
+
+      # Some failed tokens are normal, so this one needs a surge. 20 is a starting guess: tune it
+      # against real traffic.
+      - alert: ChallengeFailureSurge
+        expr: sum(increase(naturalist_invariant_check_total{outcome="violated", name=~".*\\.challengePassed"}[10m])) > 20
+        labels:
+          severity: ticket
+        annotations:
+          summary: Many challenge tokens are failing, so bots may be reaching the origin.

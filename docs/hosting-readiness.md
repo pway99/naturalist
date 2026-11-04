@@ -1,7 +1,7 @@
 # Hosting readiness
 
 What must happen before the app takes public traffic at `backyardnaturalist.app`, in order. This
-is a summary: each item links to the document that owns the detail. Status as of 2026-11-03.
+is a summary: each item links to the document that owns the detail. Status as of 2026-11-04.
 
 The packaged jar runs in Docker with its own database, and the abuse protection and spend ceilings
 are built. What remains is the code gaps below and the setup that only happens outside this repo.
@@ -14,7 +14,7 @@ are built. What remains is the code gaps below and the setup that only happens o
 | Email provider | Undecided. It needs a sending domain with SPF and DKIM. |
 | Model spend limit | The secrets plan proposes $60 a month for the production workspace. |
 | Who gets identification | `naturalist.access.grant-policy` is `self-serve`, so every registrant gets `VISION`, within the usage budgets. Confirm this is right for launch. |
-| Metrics | The app has no actuator and no metrics backend. Choose how `naturalist.invariant.check` gets read and alerted on. |
+| Outside heartbeat check | Undecided. It receives the `Watchdog` alert every few minutes and must alert you when it stops, because nothing on the host can report the host dying. |
 
 ## 2. Close the code gaps
 
@@ -52,6 +52,7 @@ The first two need no host and can start now.
   injection.
 - [ ] **Tunnel** (edge runbook, step 2), with no inbound ports on the origin.
 - [ ] **Email:** the sending domain, and a real `naturalist.email.from`.
+- [ ] **Heartbeat:** create the outside check, and put its private address in `secrets/heartbeat-url`.
 
 ## 4. Configure the deployment
 
@@ -68,6 +69,7 @@ flag: they print emailed tokens and turn the challenge off.
 | `naturalist.secrets.source` | `environment` or `file`, depending on the host |
 | `naturalist.challenge.site-key`, `naturalist.challenge.expected-hostname` | From the widget, and `backyardnaturalist.app`, plus the `challenge-credential` secret |
 | `naturalist.images.root` | The persistent storage path |
+| `ALERT_EMAIL_TO` | Where alerts go. `compose.production.yaml` requires it |
 
 ## 5. Prove it before going public
 
@@ -88,8 +90,10 @@ Run these against the deployment while the address is still unannounced.
 - [ ] **Real email:** a verification message arrives and its link works.
 - [ ] **Credential rotation rehearsal** ([runbook](runbooks/secret-rotation.md)), then rotate after it.
 - [ ] **Restore a database backup** at least once.
-- [ ] **Alerts fire** on `withinRate`, `notBusy`, `withinBudget` and `withinClientRate` violations,
-  and on a standing `turnstile` violation.
+- [ ] **Alerts arrive by real email.** The rules are written and tested (below), but delivery has only
+  been seen in Mailpit.
+- [ ] **The heartbeat check alerts** when Alertmanager is stopped.
+- [ ] **The tunnel can't reach metrics:** `https://backyardnaturalist.app/actuator/prometheus` is refused.
 
 ## Already done
 
@@ -98,4 +102,6 @@ Run these against the deployment while the address is still unannounced.
 - Bot challenge on login and registration, failing closed, with per-client and global rate limits.
 - Secrets through `SecretProvider`, and layered spend ceilings for identification (ADR-028).
 - Client address trusted only from the local connector.
+- Metrics on a private port, read by Prometheus, with alerts through Alertmanager
+  ([local stack runbook](runbooks/local-stack.md)).
 - A [security review](notes/2026-11-03-security-review.md) with no findings at its reporting bar, apart from the items above.
