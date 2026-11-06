@@ -15,11 +15,9 @@ import java.util.function.Consumer;
  * per-rule usage counts {@link UsageCommand#reserve} needs to evaluate its
  * all-or-nothing check ({@link #reserveState(UsageCounterName, NaturalistName, Instant)}).
  *
- * <p>The adapter ({@code UsageQueryImpl} in {@code usage-core}) is named and shaped
- * like {@code InsectQueryImpl} specifically so it is recognised as a head-of-DAG
- * query by the N+1 no-fan-out select gate
- * (see {@code kernels/framework-test}'s {@code com.naturalist.test.query.nofanout}):
- * every batched repository read this port makes is now gated against fan-out.
+ * <p>Every repository read the adapter ({@code UsageQueryImpl} in {@code usage-core}) makes is
+ * gated against fan-out by the N+1 select gate (see {@code kernels/framework-test}'s
+ * {@code com.naturalist.test.query.nofanout}).
  */
 public interface UsageQuery {
 

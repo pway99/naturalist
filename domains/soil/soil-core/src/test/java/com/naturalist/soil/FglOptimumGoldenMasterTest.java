@@ -100,10 +100,11 @@ class FglOptimumGoldenMasterTest {
     }
 
     private void assertProjectionReproducesReport(SoilProfileName profileName) {
-        BigDecimal cec = cecOf(profileName);
+        LabAnalysis analysis = latestAnalysis(profileName);
+        BigDecimal cec = analysis.physicalCharacteristics().orElseThrow().cecMeqPer100g().value();
 
         for (CationTarget target : TARGETS) {
-            OptimumRange.Closed printed = closedRange(profileName, target.exchangeableRow());
+            OptimumRange.Closed printed = closedRange(analysis, profileName, target.exchangeableRow());
 
             assertThat(project(target.minPercentOfCec(), cec, target.equivalentWeight()))
                     .as("%s %s: %s%% of CEC %s", profileName.value(), target.exchangeableRow().value(),
@@ -132,7 +133,12 @@ class FglOptimumGoldenMasterTest {
     }
 
     private OptimumRange.Closed closedRange(SoilProfileName profileName, NutrientName nutrientName) {
-        ReportedOptimum optimum = latestAnalysis(profileName).reportedOptima()
+        return closedRange(latestAnalysis(profileName), profileName, nutrientName);
+    }
+
+    private static OptimumRange.Closed closedRange(LabAnalysis analysis, SoilProfileName profileName,
+                                                   NutrientName nutrientName) {
+        ReportedOptimum optimum = analysis.reportedOptima()
                 .forNutrient(nutrientName)
                 .orElseThrow();
         assertThat(optimum.range())

@@ -1,5 +1,6 @@
 package com.naturalist.plants.management;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -13,6 +14,6 @@ public final class PlantProgramTestContext {
     }
 
     public static PlantProgramQuery createQuery(NaturalistDatabase db) {
-        return new PlantProgramQueryImpl(new PlantProgramRepositoryMock(db));
+        return SelectTrace.traced(PlantProgramQuery.class, new PlantProgramQueryImpl(new PlantProgramRepositoryMock(db)));
     }
 }

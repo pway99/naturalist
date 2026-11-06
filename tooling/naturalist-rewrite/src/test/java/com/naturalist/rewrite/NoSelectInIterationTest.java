@@ -327,7 +327,7 @@ class NoSelectInIterationTest implements RewriteTest {
             srcMainJava(
                 java(
                     // the loop and the select are in different methods — cross-method fan-out,
-                    // delegated to the AspectJ runtime gate; this static recipe must not flag it.
+                    // delegated to the runtime N+1 gate; this static recipe must not flag it.
                     """
                     package com.naturalist.data;
                     import java.util.List;

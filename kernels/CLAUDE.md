@@ -66,22 +66,13 @@ BeforeEachCallback`: registered as a static `@RegisterExtension` field, it reset
 registry before each test; main-wired code uses `NaturalistDatabase.create()` and carries
 no JUnit coupling.
 
-An N+1 select-count gate lives alongside in `com.naturalist.test.query.nofanout` (AspectJ
-load-time-woven `SelectCountAspect` → `SelectCountRecorder` → `SelectGate`). It is
-**wired and ARMED** in `NaturalistTestExtension`: `beforeEach` arms the recorder,
-`afterEach` evaluates the per-test tally and throws `RepeatedSelectException` when one
-head-of-DAG query invocation repeats a repository select (an N+1). Gating is **per
-outermost query INVOCATION**, so a test that calls the same query N times (each doing one
-select) is not flagged — only a single invocation looping a select is. Whitelist a
-genuinely un-batchable repeat with `@AllowRepeatedSelect(query=…, select=…)` on the test
-method. See `docs/plans/2026-08-21-n-plus-one-select-gate-plan.md`.
-An RDBMS sibling of this gate lives in `kernels/persistence-test`
-(`com.naturalist.persistence.test.nofanout`): `RepositoryHeadAspect` (AspectJ head marker on
-`AbstractEntityRepository+`) + `MapperSelectInterceptor` (MyBatis `Executor.query` plugin) →
-`MapperSelectRecorder` → the same reused `SelectGate`. It is **wired and ARMED** in
-`RdbmsTestExtension` and fails an rdbms `*IT` when one repository method fires the same mapper
-`@Select` more than once. Same escape hatch (`@AllowRepeatedSelect`), same non-negotiable
-(never weaken it). See `docs/plans/2026-08-29-rdbms-mapper-select-fanout-gate-design.md`.
+An N+1 select gate lives alongside in `com.naturalist.test.query.nofanout` (`SelectTrace`). It
+is **wired and ARMED** in `NaturalistTestExtension`: each `TestEntitySource` read walks the stack
+to the `@Test` method and counts per (source, repository method), and `afterEach` throws
+`RepeatedSelectException` when one call from the test read a select twice. It sees Queries and
+Commands alike; `<domain>-core` is what it watches, and rdbms adapters are not traced. Test contexts
+hand out `SelectTrace.traced(...)` proxies, so a test may loop over their commands and queries. Allow a genuinely
+un-batchable repeat with `@SuppressRepeatedSelect(reason=…)` on the production method doing it.
 A static backstop `NoSelectInIteration` (composite `com.naturalist.EnforceQueryHygiene`)
 lives in `tooling/naturalist-rewrite`, flagging loop/stream fan-out of repository/query
 selects in main source; it is **ARMED** (2026-08-23) — folded into the `EnforceArchitecture`

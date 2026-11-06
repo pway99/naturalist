@@ -1,5 +1,6 @@
 package com.naturalist.garden;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -24,10 +25,10 @@ public class GardenTestContext {
     }
 
     public PlantingQuery plantingQuery() {
-        return plantingQuery;
+        return SelectTrace.traced(PlantingQuery.class, plantingQuery);
     }
 
     public PlantedZoneQuery plantedZoneQuery() {
-        return plantedZoneQuery;
+        return SelectTrace.traced(PlantedZoneQuery.class, plantedZoneQuery);
     }
 }

@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.authority.AuthorityContent;
 import com.naturalist.authority.AuthorityReference;
 import com.naturalist.authority.AuthoritySource;
@@ -149,15 +150,15 @@ class InsectsTestContextInternal {
     }
 
     InsectQuery insectQuery() {
-        return insectQuery;
+        return SelectTrace.traced(InsectQuery.class, insectQuery);
     }
 
     InsectViewQuery insectViewQuery() {
-        return insectViewQuery;
+        return SelectTrace.traced(InsectViewQuery.class, insectViewQuery);
     }
 
     InsectCommand insectCommand() {
-        return insectCommand;
+        return SelectTrace.traced(InsectCommand.class, insectCommand);
     }
 
     InsectEntityCommands entityCommands() {

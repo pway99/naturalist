@@ -1,5 +1,6 @@
 package com.naturalist.chemistry.compound;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -19,6 +20,6 @@ public final class CompoundQueryTestContextInternal {
     }
 
     public static CompoundQuery.CompoundEntityQuery createEntityQuery(NaturalistDatabase db) {
-        return new CompoundEntityQueryImpl(new CompoundEntityRepositoryMock(db));
+        return SelectTrace.traced(CompoundQuery.CompoundEntityQuery.class, new CompoundEntityQueryImpl(new CompoundEntityRepositoryMock(db)));
     }
 }

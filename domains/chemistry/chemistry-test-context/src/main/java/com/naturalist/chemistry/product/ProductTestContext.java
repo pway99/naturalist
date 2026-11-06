@@ -1,5 +1,6 @@
 package com.naturalist.chemistry.product;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -16,6 +17,6 @@ public final class ProductTestContext {
 
     public static ProductQuery createQuery(NaturalistDatabase db) {
         ProductRepository repository = new ProductEntityRepositoryMock(db);
-        return new ProductQueryImpl(repository);
+        return SelectTrace.traced(ProductQuery.class, new ProductQueryImpl(repository));
     }
 }

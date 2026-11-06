@@ -1,20 +1,15 @@
 package com.naturalist.data;
 
-import com.naturalist.test.query.nofanout.AllowRepeatedSelect;
-import com.naturalist.test.query.nofanout.SelectCountRecorder;
-import com.naturalist.test.query.nofanout.SelectGate;
+import com.naturalist.test.query.nofanout.SelectTrace;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * JUnit 5 lifecycle wrapper around {@link NaturalistDatabase}. Clears the source
  * registry before each test so methods start from a pristine catalog, and hosts the
- * N+1 select gate: arms {@link SelectCountRecorder} before each test and evaluates the
- * recorded tally against {@link SelectGate} after, honouring {@link AllowRepeatedSelect}.
+ * N+1 select gate: arms {@link SelectTrace} before each test and evaluates it after.
  *
  * <p>Register as a field-level extension on any test class that composes
  * {@link TestEntitySource}-backed repository mocks:
@@ -43,25 +38,15 @@ public class NaturalistTestExtension extends NaturalistDatabase
     @Override
     public void beforeEach(ExtensionContext context) {
         clear();
-        SelectCountRecorder.arm();
+        SelectTrace.arm();
     }
 
     @Override
     public void afterEach(ExtensionContext context) {
         try {
-            SelectGate.evaluate(SelectCountRecorder.snapshot(), allowlist(context));
+            SelectTrace.evaluate(context.getRequiredTestClass().getSimpleName() + "." + context.getRequiredTestMethod().getName());
         } finally {
-            SelectCountRecorder.disarm();
+            SelectTrace.disarm();
         }
-    }
-
-    private static List<AllowRepeatedSelect> allowlist(ExtensionContext context) {
-        return context.getTestMethod()
-                .map(NaturalistTestExtension::readAllowlist)
-                .orElseGet(List::of);
-    }
-
-    private static List<AllowRepeatedSelect> readAllowlist(Method method) {
-        return List.of(method.getAnnotationsByType(AllowRepeatedSelect.class));
     }
 }

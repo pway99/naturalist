@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.data.SuppressRepeatedSelect;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalist.authority.AuthorityContent;
@@ -230,7 +231,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         var combined = new ArrayList<RankFeatures>();
         combined.add(identifiedRankFeatures);
         combined.addAll(parentFeatures);
-        var featureResolution = resolveFeatures(combined, visionOutcome.reuse());
+        var featureResolution = resolveFeatures(combined, visionOutcome.reuse(), visionOutcome.candidateIds());
 
         // 5. CITATION PREPARATION + LIBRARY WRITES -- cross-domain, best-effort
         writeCitations(authorityRefs);
@@ -272,7 +273,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * proposed feature had a similar existing candidate, {@code reuse} is empty and turn 2
      * was skipped entirely — the byte-for-byte pre-reuse behavior.
      */
-    private record VisionOutcome(InsectIdentificationResult proposed, Map<String, String> reuse) {}
+    private record VisionOutcome(InsectIdentificationResult proposed, Map<String, String> reuse,
+                                 Map<String, InsectFeatureId> candidateIds) {}
 
     /**
      * Runs vision turn 1 (propose), searches each proposed feature value for similar
@@ -285,19 +287,19 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         var exchange = visionService.identify(image, toolSchema, systemPrompt);
         var proposed = parseResult(exchange.result());
 
-        // Similarity search over the proposed (turn-1) feature values. Each findSimilar
-        // is one batched corpus pass; per-invocation N+1 gating keeps the loop safe.
+        // Similarity search over the proposed (turn-1) feature values, one corpus pass for them all.
+        var normalized = proposed.features().stream()
+                .map(value -> value.trim().toLowerCase())
+                .filter(value -> !value.isBlank())
+                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
         var candidatesByProposed = new LinkedHashMap<String, List<String>>();
-        for (var value : proposed.features()) {
-            var normalized = value.trim().toLowerCase();
-            if (normalized.isBlank() || candidatesByProposed.containsKey(normalized)) continue;
-            var candidates = featureSearch.findSimilar(value, 5).stream()
-                    .map(FeatureSearch.FeatureMatch::value)
-                    .toList();
-            if (!candidates.isEmpty()) {
-                candidatesByProposed.put(normalized, candidates);
+        var candidateIds = new HashMap<String, InsectFeatureId>();
+        featureSearch.findSimilarToEach(normalized, 5).forEach((value, matches) -> {
+            if (!matches.isEmpty()) {
+                candidatesByProposed.put(value, matches.stream().map(FeatureSearch.FeatureMatch::value).toList());
+                matches.forEach(match -> candidateIds.putIfAbsent(match.value(), match.id()));
             }
-        }
+        });
 
         // Turn 2 only when at least one proposed value has candidates; otherwise the
         // no-match path is exactly the old single-turn behavior.
@@ -307,7 +309,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                     buildCandidatesJson(candidatesByProposed), buildResolveToolSchema());
             reuse = parseResolution(turn2.result());
         }
-        return new VisionOutcome(proposed, reuse);
+        return new VisionOutcome(proposed, reuse, candidateIds);
     }
 
     /**
@@ -456,6 +458,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         return enrichments;
     }
 
+    @SuppressRepeatedSelect(reason = "Checks before spending on the model; the transaction checks again because "
+            + "a concurrent identify may have added the rank meanwhile.")
     private void enrichIfNew(InsectRankName rankName, String displayName,
                              Map<InsectRankName, RankEnrichment> enrichments) {
         // Check existence by querying the appropriate rank
@@ -547,26 +551,12 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * within the call by {@code createdFeatures}.
      */
     private FeatureResolution resolveFeatures(List<RankFeatures> allRankFeatures,
-                                              Map<String, String> reuse) {
+                                              Map<String, String> reuse,
+                                              Map<String, InsectFeatureId> existingByValue) {
         var newFeatures = new ArrayList<InsectFeature>();
         var assignments = new ArrayList<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>();
         // Track features we've already created in this invocation
         var createdFeatures = new HashMap<String, InsectFeatureId>();
-
-        // Existing catalog features by normalized value -- built ONCE from a single batched
-        // corpus pass (never a per-feature select), so reuse targets resolve to their
-        // existing id inside the loop below without tripping the N+1 gate. Skipped entirely
-        // when there is nothing to reuse -- the no-candidate path stays a zero-corpus-query
-        // identify, exactly as it was before the reuse feature.
-        Map<String, InsectFeatureId> existingByValue;
-        if (reuse.isEmpty()) {
-            existingByValue = Map.of();
-        } else {
-            try (var corpus = insectQuery.features().corpus()) {
-                existingByValue = corpus.collect(Collectors.toMap(
-                        InsectFeature::value, InsectFeature::id, (a, b) -> a));
-            }
-        }
 
         for (var rankFeatures : allRankFeatures) {
             int ordinal = 0;
@@ -601,6 +591,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
     private static final InsectsDomain INSECTS_DOMAIN = new InsectsDomain();
 
+    @SuppressRepeatedSelect(reason = "Each citation attributes in its own transaction, so one failure leaves the "
+            + "others standing.")
     private void writeCitations(Map<InsectRankName, Set<AuthorityReference>> authorityRefs) {
         for (var entry : authorityRefs.entrySet()) {
             var rankName = entry.getKey();

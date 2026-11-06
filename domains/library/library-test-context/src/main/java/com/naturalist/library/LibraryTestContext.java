@@ -1,5 +1,6 @@
 package com.naturalist.library;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -53,26 +54,26 @@ public class LibraryTestContext {
     }
 
     public ConceptQuery conceptQuery() {
-        return conceptQuery;
+        return SelectTrace.traced(ConceptQuery.class, conceptQuery);
     }
 
     public GlossaryTermQuery glossaryTermQuery() {
-        return glossaryTermQuery;
+        return SelectTrace.traced(GlossaryTermQuery.class, glossaryTermQuery);
     }
 
     public CitationQuery citationQuery() {
-        return citationQuery;
+        return SelectTrace.traced(CitationQuery.class, citationQuery);
     }
 
     public CitationAssociationQuery citationAssociationQuery() {
-        return citationAssociationQuery;
+        return SelectTrace.traced(CitationAssociationQuery.class, citationAssociationQuery);
     }
 
     public CladeQuery cladeQuery() {
-        return cladeQuery;
+        return SelectTrace.traced(CladeQuery.class, cladeQuery);
     }
 
     public LibraryCommand libraryCommand() {
-        return libraryCommand;
+        return SelectTrace.traced(LibraryCommand.class, libraryCommand);
     }
 }

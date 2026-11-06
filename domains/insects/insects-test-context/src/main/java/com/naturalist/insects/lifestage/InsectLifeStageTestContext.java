@@ -1,5 +1,6 @@
 package com.naturalist.insects.lifestage;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -17,6 +18,6 @@ public final class InsectLifeStageTestContext {
     public static InsectLifeStageQuery createQuery(NaturalistDatabase db) {
         InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(db);
         InsectLifeStageQuery.LifeStageEntityQuery entityQuery = new InsectLifeStageEntityQueryImpl(repository);
-        return new InsectLifeStageQueryImpl(entityQuery);
+        return SelectTrace.traced(InsectLifeStageQuery.class, new InsectLifeStageQueryImpl(entityQuery));
     }
 }

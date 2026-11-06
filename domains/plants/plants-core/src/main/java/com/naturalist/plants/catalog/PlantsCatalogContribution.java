@@ -9,6 +9,7 @@ import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -86,7 +87,8 @@ public class PlantsCatalogContribution implements CatalogContribution {
 
     @Override
     public Stream<SearchableEntity> searchableEntities() {
-        return Stream.of(plantEntities(), orderEntities(), familyEntities(), genusEntities())
+        var allGenera = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage).toList();
+        return Stream.of(plantEntities(allGenera), orderEntities(), familyEntities(), genusEntities(allGenera))
                 .flatMap(s -> s);
     }
 
@@ -98,8 +100,8 @@ public class PlantsCatalogContribution implements CatalogContribution {
      * plant. A species whose genus is missing still contributes its slug and common names —
      * degraded, not absent.
      */
-    private Stream<SearchableEntity> plantEntities() {
-        Map<String, String> genusEpithets = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
+    private Stream<SearchableEntity> plantEntities(List<PlantGenus> allGenera) {
+        Map<String, String> genusEpithets = allGenera.stream()
                 .collect(Collectors.toMap(g -> g.name().value(), g -> g.genus().value()));
         return Pages.stream(ASSEMBLY_PAGE_SIZE, plants::findPage)
                 .map(plant -> toSearchablePlant(
@@ -116,8 +118,8 @@ public class PlantsCatalogContribution implements CatalogContribution {
                 .map(PlantsCatalogContribution::toSearchableFamily);
     }
 
-    private Stream<SearchableEntity> genusEntities() {
-        return Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
+    private static Stream<SearchableEntity> genusEntities(List<PlantGenus> allGenera) {
+        return allGenera.stream()
                 .map(PlantsCatalogContribution::toSearchableGenus);
     }
 

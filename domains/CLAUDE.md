@@ -219,9 +219,9 @@ Quick-reference constraints:
   `EntityName` sets. Reference: `InsectImageQueryImpl.forRankHierarchy` (subtree resolved in a
   handful of batched calls, not a per-node walk) and the `getByRankNames`/`getByParentNames`
   repository methods. **This is enforced at test time** by the N+1 no-fan-out gate
-  (`com.naturalist.test.query.nofanout`): a `RepeatedSelectException` in a test means a real
-  N+1 in the query it exercised. **Fix the fan-out to batch — never disable the gate, drop the
-  test's `@RegisterExtension NaturalistTestExtension`, or blanket-`@AllowRepeatedSelect` to
+  (`com.naturalist.test.query.nofanout`): a `RepeatedSelectException` in a test means one
+  call from the test read the same select twice: an N+1 in the query or command it exercised. **Fix the fan-out to batch — never disable the gate, drop the
+  test's `@RegisterExtension NaturalistTestExtension`, or blanket-`@SuppressRepeatedSelect` to
   make it pass** (root `CLAUDE.md` non-negotiable). See that package's `CLAUDE.md`.
 
 ### Repository Behavioral Contract

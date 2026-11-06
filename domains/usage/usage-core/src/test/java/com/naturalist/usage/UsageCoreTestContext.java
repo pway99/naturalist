@@ -1,5 +1,6 @@
 package com.naturalist.usage;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 import java.time.Clock;
@@ -39,11 +40,11 @@ class UsageCoreTestContext {
     }
 
     UsageQuery query() {
-        return query;
+        return SelectTrace.traced(UsageQuery.class, query);
     }
 
     UsageCommand command() {
-        return command;
+        return SelectTrace.traced(UsageCommand.class, command);
     }
 
     UsageRepository.CounterRepository counters() {

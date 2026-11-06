@@ -1,5 +1,6 @@
 package com.naturalist.plants.phytochemistry;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -13,6 +14,6 @@ public final class PhytochemicalConstituentTestContext {
     }
 
     public static PhytochemicalConstituentQuery createQuery(NaturalistDatabase db) {
-        return new PlantPhytochemicalConstituentQueryImpl(new PlantPhytochemicalConstituentRepositoryMock(db));
+        return SelectTrace.traced(PhytochemicalConstituentQuery.class, new PlantPhytochemicalConstituentQueryImpl(new PlantPhytochemicalConstituentRepositoryMock(db)));
     }
 }

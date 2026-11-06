@@ -1,5 +1,6 @@
 package com.naturalist.soil;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.soil.observation.LabAnalysisInfoQueries;
 import com.naturalist.soil.observation.LabAnalysisInfoQuery;
@@ -44,6 +45,6 @@ class SoilsTestContextInternal {
     }
 
     SoilProfileQuery soilProfileQuery() {
-        return soilProfileQuery;
+        return SelectTrace.traced(SoilProfileQuery.class, soilProfileQuery);
     }
 }

@@ -68,7 +68,6 @@
 
         <!-- Cross-cutting libraries -->
         <micrometer-version>1.17.1</micrometer-version>        <!-- Boot-managed -->
-        <aspectj.version>1.9.25.1</aspectj.version>            <!-- Boot-managed -->
         <resilience4j-version>2.4.0</resilience4j-version>
         <jspecify-version>1.0.1</jspecify-version>             <!-- Boot-managed -->
         <commons-lang3-version>3.20.0</commons-lang3-version>  <!-- Boot-managed -->
@@ -99,19 +98,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>weaver-agent-path</id>
-                        <goals>
-                            <goal>properties</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.openrewrite.maven</groupId>
                 <artifactId>rewrite-maven-plugin</artifactId>
@@ -145,13 +131,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
-                    <configuration>
-                        <!-- The sun-misc-unsafe-memory-access=allow flag silences the JEP-498
-                             warning aspectjweaver's load-time weaver triggers on JDK 25 (it calls
-                             the terminally-deprecated sun.misc.Unsafe::objectFieldOffset). Harmless;
-                             drop the flag once AspectJ stops using Unsafe. -->
-                        <argLine>-javaagent:${org.aspectj:aspectjweaver:jar} --sun-misc-unsafe-memory-access=allow</argLine>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -187,16 +166,6 @@
                 <groupId>com.tngtech.archunit</groupId>
                 <artifactId>archunit-junit5</artifactId>
                 <version>${archunit.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjrt</artifactId>
-                <version>${aspectj.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>${aspectj.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
@@ -827,13 +796,4 @@
         </dependencies>
     </dependencyManagement>
 
-    <dependencies>
-        <!-- Test-only: AspectJ load-time weaver, present on every module's test classpath so
-             the surefire -javaagent path resolves everywhere. Never in a production artifact. -->
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>

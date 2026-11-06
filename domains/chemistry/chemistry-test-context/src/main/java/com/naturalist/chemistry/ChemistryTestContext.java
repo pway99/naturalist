@@ -1,5 +1,6 @@
 package com.naturalist.chemistry;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.chemistry.compound.CompoundQuery;
 import com.naturalist.chemistry.compound.CompoundTestContext;
 import com.naturalist.chemistry.element.ElementQuery;
@@ -42,14 +43,14 @@ public class ChemistryTestContext {
     }
 
     public CompoundQuery compoundQuery() {
-        return compoundQuery;
+        return SelectTrace.traced(CompoundQuery.class, compoundQuery);
     }
 
     public ProductQuery productQuery() {
-        return productQuery;
+        return SelectTrace.traced(ProductQuery.class, productQuery);
     }
 
     public ElementQuery elementQuery() {
-        return elementQuery;
+        return SelectTrace.traced(ElementQuery.class, elementQuery);
     }
 }

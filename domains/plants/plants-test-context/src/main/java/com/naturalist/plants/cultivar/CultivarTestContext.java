@@ -1,5 +1,6 @@
 package com.naturalist.plants.cultivar;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -13,6 +14,6 @@ public final class CultivarTestContext {
     }
 
     public static CultivarQuery createQuery(NaturalistDatabase db) {
-        return new PlantCultivarQueryImpl(new PlantCultivarRepositoryMock(db));
+        return SelectTrace.traced(CultivarQuery.class, new PlantCultivarQueryImpl(new PlantCultivarRepositoryMock(db)));
     }
 }

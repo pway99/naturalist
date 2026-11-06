@@ -1,7 +1,9 @@
 package com.naturalist.featuresearch;
 
 import com.naturalist.ddd.EntityId;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Finds existing features whose text is similar to a candidate value — a
@@ -16,4 +18,7 @@ public interface FeatureSearch<ID extends EntityId> {
     List<FeatureMatch<ID>> findSimilar(String value, int limit);
 
     record FeatureMatch<ID extends EntityId>(ID id, String value, double score) {}
+
+    /** {@link #findSimilar} for many values in one pass over the features, keyed by value in the given order. */
+    Map<String, List<FeatureMatch<ID>>> findSimilarToEach(Collection<String> values, int limit);
 }

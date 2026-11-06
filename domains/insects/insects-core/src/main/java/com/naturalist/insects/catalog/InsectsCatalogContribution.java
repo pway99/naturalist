@@ -85,12 +85,13 @@ public class InsectsCatalogContribution implements CatalogContribution {
     public Stream<SearchableEntity> searchableEntities() {
         // Build the genus lookup once per stream so species token assembly can resolve
         // the parent genus's TaxonomicGenus epithet without re-querying per species.
-        Map<InsectGenusName, InsectGenusInfo> genusByName = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
+        var allGenera = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage).toList();
+        Map<InsectGenusName, InsectGenusInfo> genusByName = allGenera.stream()
                 .collect(Collectors.toMap(InsectGenusInfo::name, Function.identity()));
         return Stream.of(
                 speciesEntities(genusByName),
                 familyEntities(),
-                genusEntities(),
+                allGenera.stream().map(InsectsCatalogContribution::toSearchableGenus),
                 orderEntities()
         ).flatMap(s -> s);
     }
@@ -103,11 +104,6 @@ public class InsectsCatalogContribution implements CatalogContribution {
     private Stream<SearchableEntity> familyEntities() {
         return Pages.stream(ASSEMBLY_PAGE_SIZE, families::findPage)
                 .map(InsectsCatalogContribution::toSearchableFamily);
-    }
-
-    private Stream<SearchableEntity> genusEntities() {
-        return Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage)
-                .map(InsectsCatalogContribution::toSearchableGenus);
     }
 
     private static SearchableEntity toSearchableSpecies(InsectSpeciesInfo entity,

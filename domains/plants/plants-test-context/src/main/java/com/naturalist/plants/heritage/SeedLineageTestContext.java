@@ -1,5 +1,6 @@
 package com.naturalist.plants.heritage;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -13,6 +14,6 @@ public final class SeedLineageTestContext {
     }
 
     public static SeedLineageQuery createQuery(NaturalistDatabase db) {
-        return new PlantSeedLineageQueryImpl(new PlantSeedLineageRepositoryMock(db));
+        return SelectTrace.traced(SeedLineageQuery.class, new PlantSeedLineageQueryImpl(new PlantSeedLineageRepositoryMock(db)));
     }
 }

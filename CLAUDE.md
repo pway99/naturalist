@@ -188,9 +188,9 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
   (`kernels/framework-test` → `com.naturalist.test.query.nofanout`, surfaced as
   `RepeatedSelectException`), ArchUnit rules, and the `com.naturalist.Enforce*` OpenRewrite
   recipes. When one fails it is reporting a real defect in *your* code — fix that. Do NOT
-  disable or relax the check, remove a test's `@RegisterExtension`, narrow an aspect
-  pointcut or `aop.xml` weave scope, delete/soften the failing assertion, or blanket-
-  suppress to clear a red build. Suppression (e.g. `@AllowRepeatedSelect`) is a last resort
+  disable or relax the check, remove a test's `@RegisterExtension`, stop a
+  `TestEntitySource` read from recording, delete/soften the failing assertion, or blanket-
+  suppress to clear a red build. Suppression (e.g. `@SuppressRepeatedSelect`) is a last resort
   for a *single, genuinely un-satisfiable* case — applied per-site, with a written
   justification, never as a way to make a failing suite green.
 

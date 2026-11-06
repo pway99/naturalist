@@ -8,6 +8,7 @@ import com.naturalist.exception.ForeignKeyConstraintException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.exception.UniqueConstraintException;
 import com.naturalist.observability.Observer;
+import com.naturalist.test.query.nofanout.SelectTrace;
 import org.apache.commons.collections4.MapUtils;
 import org.jspecify.annotations.Nullable;
 
@@ -78,14 +79,17 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     }
 
     public Stream<ENTITY> entityStream() {
+        SelectTrace.record(getClass());
         return entityMap.values().stream();
     }
 
     public Optional<ENTITY> getByName(NAME name) {
+        SelectTrace.record(getClass());
         return Optional.ofNullable(entityMap.get(name));
     }
 
     public List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
+        SelectTrace.record(getClass());
         return entityMap.values().stream()
                 .filter(e -> nameSet.contains(e.key()))
                 .toList();
@@ -109,6 +113,9 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
      * Section 2).
      */
     public Page<ENTITY> pageOf(PageRequest pageRequest) {
+        if (pageRequest.pageNumber() == 0) { // later pages continue one read
+            SelectTrace.record(getClass());
+        }
         List<ENTITY> sorted = entityMap.values().stream()
                 .sorted(Comparator.comparing(e -> e.key().toString()))
                 .toList();

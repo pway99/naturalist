@@ -1,5 +1,6 @@
 package com.naturalist.garden;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
@@ -22,6 +23,6 @@ class GardenTestContextInternal {
     }
 
     PlantedZoneQuery plantedZoneQuery() {
-        return plantedZoneQuery;
+        return SelectTrace.traced(PlantedZoneQuery.class, plantedZoneQuery);
     }
 }

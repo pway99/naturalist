@@ -36,14 +36,12 @@ method (ADR-002). A concrete domain contract supplies only identity constants an
 entity-construction hooks; both the in-memory adapter and the RDBMS adapter
 implement the same interface, which is what guarantees they behave identically.
 
-**The N+1 select-count gate.** `com.naturalist.test.query.nofanout` holds an
-AspectJ load-time-woven `SelectCountAspect` → `SelectCountRecorder` → `SelectGate`.
-Wired into `NaturalistTestExtension`, it arms before each test and, after each,
-throws `RepeatedSelectException` when a single head-of-DAG query invocation
-repeats a repository select — the runtime signature of an N+1. Gating is per
-outermost invocation, so a test that legitimately calls a query N times is not
-flagged. A genuinely un-batchable repeat is whitelisted per-site with
-`@AllowRepeatedSelect`; the gate is never disabled to make a test pass.
+**The N+1 select gate.** `com.naturalist.test.query.nofanout.SelectTrace` is armed by
+`NaturalistTestExtension`. Each `TestEntitySource` read walks the stack back to the `@Test`
+method; after each test it throws `RepeatedSelectException`, with a clickable trace for each read
+site, when one call from the test read the same select twice. Test contexts hand out
+`SelectTrace.traced(...)` proxies, so a test may loop over their commands and queries. A genuinely un-batchable repeat is allowed
+with `@SuppressRepeatedSelect` on the production method doing it; the gate is never disabled to make a test pass.
 
 **Supporting types.** `RandomValue` (constrained random field values for
 fixtures), `TestDataHelper`, `UniqueConstraint`, and `ForeignKeyConstraint`.

@@ -4,6 +4,8 @@ import com.naturalist.insects.InsectFeatureId;   // a concrete EntityId for the 
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,5 +50,23 @@ class InMemoryFeatureSearchTest {
         var search = searchOver("hardened elytra");
         assertThat(search.findSimilar("", 5)).isEmpty();
         assertThat(search.findSimilar(null, 5)).isEmpty();
+    }
+
+    @Test
+    void searchesManyValuesInOneCorpusLoad() {
+        var loads = new AtomicInteger();
+        var hardened = new FeatureCorpus.Indexed<>(InsectFeatureId.create(), "hardened elytra");
+        var search = new InMemoryFeatureSearch<InsectFeatureId>(() -> {
+            loads.incrementAndGet();
+            return Stream.of(hardened);
+        });
+
+        var hits = search.findSimilarToEach(List.of("hardened black elytra", "six short legs", " "), 5);
+
+        assertThat(loads).hasValue(1);
+        assertThat(hits.keySet()).containsExactly("hardened black elytra", "six short legs", " ");
+        assertThat(hits.get("hardened black elytra")).extracting(FeatureSearch.FeatureMatch::value).containsExactly("hardened elytra");
+        assertThat(hits.get("six short legs")).isEmpty();
+        assertThat(hits.get(" ")).isEmpty();
     }
 }

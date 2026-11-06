@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.plants.cultivar.CultivarQuery;
 import com.naturalist.plants.cultivar.CultivarTestContext;
@@ -59,23 +60,23 @@ public class PlantsTestContext {
     }
 
     public PlantQuery plantQuery() {
-        return plantQuery;
+        return SelectTrace.traced(PlantQuery.class, plantQuery);
     }
 
     public CultivarQuery cultivarQuery() {
-        return cultivarQuery;
+        return SelectTrace.traced(CultivarQuery.class, cultivarQuery);
     }
 
     public SeedLineageQuery seedLineageQuery() {
-        return seedLineageQuery;
+        return SelectTrace.traced(SeedLineageQuery.class, seedLineageQuery);
     }
 
     public PlantProgramQuery plantProgramQuery() {
-        return plantProgramQuery;
+        return SelectTrace.traced(PlantProgramQuery.class, plantProgramQuery);
     }
 
     public PhytochemicalConstituentQuery phytochemicalConstituentQuery() {
-        return phytochemicalConstituentQuery;
+        return SelectTrace.traced(PhytochemicalConstituentQuery.class, phytochemicalConstituentQuery);
     }
 
     /**
