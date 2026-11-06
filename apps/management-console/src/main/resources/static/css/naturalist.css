@@ -2033,6 +2033,23 @@ figure.compound-depiction img {
 .site-logout {
     margin: 0;
 }
+.site-login-links {
+    color: var(--sepia-ink);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+.site-login {
+    color: var(--sepia-ink);
+    font-size: 0.9rem;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
 .site-logout button {
     width: auto;
     margin: 0;

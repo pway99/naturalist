@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.hamcrest.Matchers;
 
 /**
  * Verifies the shared header renders the logged-in naturalist and a logout control.
@@ -59,5 +60,33 @@ class HeaderWebMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Administrator")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("action=\"/logout\"")));
+    }
+
+    @Test
+    void home_anonymous_offersLoginAndRegistration() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(Matchers.containsString("class=\"site-login\" href=\"/login\"")))
+                .andExpect(content().string(Matchers.containsString("href=\"/register\"")))
+                .andExpect(content().string(Matchers.containsString("The engineering is the point")))
+                .andExpect(content().string(Matchers.not(Matchers.containsString("action=\"/logout\""))));
+    }
+
+    @Test
+    void home_signedIn_keepsTheStatementButOffersNoLogin() throws Exception {
+        mockMvc.perform(get("/").with(user("test-admin").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(Matchers.containsString("The engineering is the point")))
+                .andExpect(content().string(Matchers.not(Matchers.containsString("href=\"/login\""))))
+                .andExpect(content().string(Matchers.not(Matchers.containsString("href=\"/register\""))));
+    }
+
+    @Test
+    void home_namesTheSiteAndItsInspiration() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(Matchers.containsString("href=\"/\">The Backyard Naturalist</a>")))
+                .andExpect(content().string(Matchers.containsString("<h1>The Backyard Naturalist</h1>")))
+                .andExpect(content().string(Matchers.containsString("Gerald Durrell's <em>The Amateur Naturalist</em>")));
     }
 }

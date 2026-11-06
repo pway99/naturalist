@@ -1,4 +1,4 @@
-@param String title = "The Amateur Naturalist"
+@param String title = "The Backyard Naturalist"
 @param gg.jte.Content content
 @param String query = ""
 
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=30">
+    <link rel="stylesheet" href="/css/naturalist.css?v=31">
     <script src="/js/htmx.min.js" defer></script>
     <%-- Rotates stacked images on .card-image[data-rotate] tiles across all
          catalog cards. No-op on pages without rotating cards. --%>
@@ -34,7 +34,7 @@
 @endif
 <header class="site-header">
     <div class="container site-header-bar">
-        <a class="site-brand" href="/">The Amateur Naturalist</a>
+        <a class="site-brand" href="/">The Backyard Naturalist</a>
         <div class="site-search">
             @template.components.searchBox(query = query)
         </div>
@@ -80,6 +80,12 @@
                         <button type="submit">Log out</button>
                     </form>
                 </div>
+            </div>
+        @else
+            <div class="site-actions">
+                <span class="site-login-links">
+                    <a class="site-login" href="/login">Log in</a> <span aria-hidden="true">/</span> <a class="site-login" href="/register">Join</a>
+                </span>
             </div>
         @endif
     </div>

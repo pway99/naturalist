@@ -145,7 +145,7 @@ class RegistrationController {
                 .path("/verify").queryParam("token", result.rawToken()).toUriString();
         emailSender.send(new EmailMessage(
                 result.email(),
-                "Verify your email — The Amateur Naturalist",
+                "Verify your email — The Backyard Naturalist",
                 "Welcome! Confirm your email address to unlock vision identification:\n\n"
                         + verifyUrl + "\n\nIf you didn't sign up, you can ignore this message."));
 

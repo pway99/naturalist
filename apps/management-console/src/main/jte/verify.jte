@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email verification — The Amateur Naturalist</title>
+    <title>Email verification — The Backyard Naturalist</title>
     <link rel="stylesheet" href="/css/pico.min.css">
     <link rel="stylesheet" href="/css/naturalist.css">
     <style>
@@ -69,7 +69,7 @@
 <body>
 <div class="auth-container">
     <div class="auth-card">
-        <h1>The Amateur Naturalist</h1>
+        <h1>The Backyard Naturalist</h1>
 
         @if(confirm)
             <p>Press the button to confirm your email address. (Opening this link does not confirm

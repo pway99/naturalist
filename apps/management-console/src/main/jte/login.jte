@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — The Amateur Naturalist</title>
+    <title>Login — The Backyard Naturalist</title>
     <link rel="stylesheet" href="/css/pico.min.css">
     <link rel="stylesheet" href="/css/naturalist.css">
     <style>
@@ -82,7 +82,7 @@
 <body>
 <div class="login-container">
     <div class="login-card">
-        <h1>The Amateur Naturalist</h1>
+        <h1>The Backyard Naturalist</h1>
 
         @if(!error.isEmpty())
             <div class="error">Login failed. Please check your username and password.</div>
@@ -113,6 +113,7 @@
             @endif
             <button type="submit">Login</button>
         </form>
+        <p><a href="/register">New here? Join</a></p>
         @if(!challengeSiteKey.isEmpty())
             <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
         @endif
