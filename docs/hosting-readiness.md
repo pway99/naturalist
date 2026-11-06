@@ -1,7 +1,8 @@
 # Hosting readiness
 
-What must happen before the app takes public traffic at `backyardnaturalist.app`, in order. This
-is a summary: each item links to the document that owns the detail. Status as of 2026-11-04.
+What must happen before the app takes public traffic at `backyardnaturalist.app`. This is a summary:
+each item links to the document that owns the detail. The
+[work plan](plans/2026-11-05-public-launch-work-plan.md) owns the order. Status as of 2026-11-05.
 
 The packaged jar runs in Docker with its own database, and the abuse protection and spend ceilings
 are built. What remains is the code gaps below and the setup that only happens outside this repo.
@@ -36,7 +37,8 @@ are built. What remains is the code gaps below and the setup that only happens o
   never verified after 24 hours, but forgotten passwords would remain unrecoverable.
 - [ ] **Measure image reads under load.** Nothing caps concurrent `image.store` work except its
   callers, so measure a gallery-sized read ([PL-16](notes/parking-lot.md)).
-- [ ] **Push `main`.** All of this work exists only locally, and CI hasn't run `PackagedJarIT` yet.
+- [ ] **Get CI running.** `main` is pushed, but GitHub shows no CI runs, so `PackagedJarIT` and the
+  alert rule tests haven't run there.
 
 ## 3. Set up outside the repo
 
