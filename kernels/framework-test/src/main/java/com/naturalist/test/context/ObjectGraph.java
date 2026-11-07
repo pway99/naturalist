@@ -16,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -29,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -100,7 +102,15 @@ public final class ObjectGraph {
     /** A new graph over {@code db}, with one fresh instance of every registered {@link TestContext}. */
     public static ObjectGraph create(NaturalistDatabase db) {
         ObjectGraph graph = new ObjectGraph(new State(db), null);
-        for (TestContext context : ServiceLoader.load(TestContext.class)) {
+        for (Class<? extends TestContext> type : contextTypes()) {
+            TestContext context;
+            try {
+                Constructor<? extends TestContext> constructor = type.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                context = constructor.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new TestGraphException("cannot create test context " + type.getName(), e);
+            }
             context.attach(graph);
             Provisions provisions = new Provisions();
             context.provisions(provisions);
@@ -271,20 +281,14 @@ public final class ObjectGraph {
     }
 
     private Object construct(Class<?> impl) {
-        checkReachable(impl);
-        Constructor<?>[] constructors = impl.getDeclaredConstructors();
+        REACHABLE.get(impl);
+        java.lang.reflect.Executable builder = BUILDERS.get(impl).orElseThrow(() -> new TestGraphException(impl.getName()
+                + ": no single constructor; provide it in " + requester.getClass().getSimpleName()));
         try {
-            if (constructors.length == 1) {
-                Constructor<?> constructor = tracing(constructors[0]);
-                constructor.setAccessible(true);
+            if (builder instanceof Constructor<?> constructor) {
                 return constructor.newInstance(arguments(constructor.getParameterTypes()));
             }
-            Method factory = factoryMethod(impl);
-            if (factory == null) {
-                throw new TestGraphException(impl.getName() + ": no single constructor; provide it in "
-                        + requester.getClass().getSimpleName());
-            }
-            factory.setAccessible(true);
+            Method factory = (Method) builder;
             return factory.invoke(null, arguments(factory.getParameterTypes()));
         } catch (InvocationTargetException e) {
             throw new TestGraphException("building " + impl.getName() + " threw " + e.getCause(), e.getCause());
@@ -479,5 +483,55 @@ public final class ObjectGraph {
             }
         }
         return false;
+    }
+
+    /**
+     * How each class is built, chosen once per JVM: its single constructor (the traced subclass's when it is traced) or
+     * its single static {@code create} / {@code of}, made accessible; empty when it has neither.
+     */
+    private static final ClassValue<Optional<Executable>> BUILDERS = new ClassValue<>() {
+        @Override
+        protected java.util.Optional<java.lang.reflect.Executable> computeValue(Class<?> impl) {
+            Constructor<?>[] constructors = impl.getDeclaredConstructors();
+            java.lang.reflect.Executable builder;
+            if (constructors.length == 1) {
+                try {
+                    builder = tracing(constructors[0]);
+                } catch (NoSuchMethodException e) {
+                    throw new TestGraphException("cannot build " + impl.getName(), e);
+                }
+            } else {
+                builder = factoryMethod(impl);
+                if (builder == null) {
+                    return java.util.Optional.empty();
+                }
+            }
+            builder.setAccessible(true);
+            return java.util.Optional.of(builder);
+        }
+    };
+
+    /** {@link #checkReachable} once per class and JVM; a failing check is not cached, so it fails again. */
+    private static final ClassValue<Boolean> REACHABLE = new ClassValue<>() {
+        @Override
+        protected Boolean computeValue(Class<?> type) {
+            checkReachable(type);
+            return Boolean.TRUE;
+        }
+    };
+
+    /** The registered {@link TestContext} classes, read from the service files once per JVM; see {@link #contextTypes()}. */
+    private static volatile List<Class<? extends TestContext>> contextTypes;
+
+    /** The registered context classes; each graph still makes fresh instances of them. */
+    private static List<Class<? extends TestContext>> contextTypes() {
+        List<Class<? extends TestContext>> types = contextTypes;
+        if (types == null) {
+            types = ServiceLoader.load(TestContext.class).stream()
+                    .<Class<? extends TestContext>>map(ServiceLoader.Provider::type)
+                    .toList();
+            contextTypes = types;
+        }
+        return types;
     }
 }
