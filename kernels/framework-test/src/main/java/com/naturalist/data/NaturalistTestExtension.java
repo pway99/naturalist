@@ -1,10 +1,25 @@
 package com.naturalist.data;
 
+import com.naturalist.test.context.Fake;
+import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.RegisteredFake;
+import com.naturalist.test.context.TestContext;
+import com.naturalist.test.context.TestGraphException;
+import com.naturalist.test.context.Wired;
 import com.naturalist.test.query.nofanout.SelectTrace;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JUnit 5 lifecycle wrapper around {@link NaturalistDatabase}. Clears the source
@@ -23,9 +38,18 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * constructors expecting the plain registry (e.g. {@code new InsectSpeciesRepositoryMock(db)}).
  * Main-wired code (console bootstraps, CLI tools) uses {@link NaturalistDatabase#create()}
  * and carries no JUnit coupling.
+ *
+ * <p>It is also the access point for anything under test in a {@code *-core} module:
+ * {@link #get} hands out one wired, traced instance per type from an {@link ObjectGraph} built
+ * under the registered {@link TestContext}s, and before each test every {@link Fake} field is
+ * handed to the context of the test's own package and every {@link Wired} field is filled.
+ * Each test's fakes are appended to {@code target/test-context-fakes.txt}.
  */
 public class NaturalistTestExtension extends NaturalistDatabase
         implements BeforeEachCallback, AfterEachCallback {
+
+    /** This test's object graph, created on first use and dropped before each test. */
+    private ObjectGraph graph;
 
     private NaturalistTestExtension() {
         super();
@@ -38,15 +62,106 @@ public class NaturalistTestExtension extends NaturalistDatabase
     @Override
     public void beforeEach(ExtensionContext context) {
         clear();
+        graph = null;
+        inject(context.getRequiredTestInstance());
         SelectTrace.arm();
     }
 
     @Override
     public void afterEach(ExtensionContext context) {
         try {
+            recordFakes(context);
             SelectTrace.evaluate(context.getRequiredTestClass().getSimpleName() + "." + context.getRequiredTestMethod().getName());
         } finally {
             SelectTrace.disarm();
+        }
+    }
+
+    /** The one {@code type} of this test's object graph, wired and traced. */
+    public <T> T get(Class<T> type) {
+        return graph().get(type);
+    }
+
+    /** This test's instance of a registered test context, to hand it a fake before the first {@code get}. */
+    public <C extends TestContext> C context(Class<C> type) {
+        return graph().context(type);
+    }
+
+    private ObjectGraph graph() {
+        if (graph == null) {
+            graph = ObjectGraph.create(this);
+        }
+        return graph;
+    }
+
+    /**
+     * Hands every {@code @Fake} field of the test to the context of the test's own package, then fills every
+     * {@code @Wired} field from the graph. Runs before the test's own {@code @BeforeEach} methods.
+     */
+    private void inject(Object test) {
+        List<Field> fakes = new ArrayList<>();
+        List<Field> wired = new ArrayList<>();
+        for (Class<?> type = test.getClass(); type != null && type != Object.class; type = type.getSuperclass()) {
+            for (Field field : type.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Fake.class)) {
+                    fakes.add(field);
+                }
+                if (field.isAnnotationPresent(Wired.class)) {
+                    wired.add(field);
+                }
+            }
+        }
+        for (Field field : fakes) {
+            field.setAccessible(true);
+            Object value = read(field, test);
+            if (value == null) {
+                throw new TestGraphException("@Fake " + field + " is null; set it in its initialiser");
+            }
+            handOver(graph().owner(test.getClass().getPackageName()), field.getType(), value);
+        }
+        for (Field field : wired) {
+            if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                throw new TestGraphException("@Wired " + field + " must be neither final nor static");
+            }
+            field.setAccessible(true);
+            try {
+                field.set(test, graph().get(field.getType()));
+            } catch (IllegalAccessException e) {
+                throw new TestGraphException("cannot set @Wired " + field, e);
+            }
+        }
+    }
+
+    private static Object read(Field field, Object test) {
+        try {
+            return field.get(test);
+        } catch (IllegalAccessException e) {
+            throw new TestGraphException("cannot read @Fake " + field, e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void handOver(TestContext context, Class<?> type, Object fake) {
+        context.fake((Class<Object>) type, fake);
+    }
+
+    /** Appends this test's fakes to {@code target/test-context-fakes.txt}, one tab-separated line each. */
+    private void recordFakes(ExtensionContext context) {
+        if (graph == null || graph.fakes().isEmpty()) {
+            return;
+        }
+        String test = context.getRequiredTestClass().getSimpleName() + "#" + context.getRequiredTestMethod().getName();
+        StringBuilder lines = new StringBuilder();
+        for (RegisteredFake fake : graph.fakes()) {
+            lines.append(test).append('\t').append(fake.context()).append('\t').append(fake.type().getName())
+                    .append('\t').append(fake.fakeClass().getName()).append('\n');
+        }
+        Path report = Path.of("target", "test-context-fakes.txt");
+        try {
+            Files.createDirectories(report.getParent());
+            Files.writeString(report, lines, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 }

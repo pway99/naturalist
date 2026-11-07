@@ -8,6 +8,7 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectsDomain;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -33,17 +34,10 @@ class CitationAttributionTransactionTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CitationRepository citationRepository = new CitationRepositoryMock(nte);
-    CitationAssociationRepository citationAssociationRepository = new CitationAssociationRepositoryMock(nte);
-
-    LibraryCommand.CitationCommand citationCommand = new CitationCommandImpl(citationRepository);
-    LibraryCommand.CitationAssociationCommand citationAssociationCommand =
-            new CitationAssociationCommandImpl(citationAssociationRepository);
-    CitationAssociationQuery citationAssociationQuery =
-            new CitationAssociationQueryImpl(citationAssociationRepository);
-
-    CitationAttributionTransaction transaction =
-            new CitationAttributionTransaction(citationRepository, citationCommand, citationAssociationCommand);
+    @Wired CitationRepository citationRepository;
+    @Wired LibraryCommand.CitationCommand citationCommand;
+    @Wired CitationAssociationQuery citationAssociationQuery;
+    @Wired CitationAttributionTransaction transaction;
 
     private static OnlineSource citation(String slug) {
         return new OnlineSource(

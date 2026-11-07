@@ -2,6 +2,7 @@ package com.naturalist.library;
 
 import com.naturalist.authority.CitationName;
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -14,8 +15,7 @@ class CitationQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CitationRepository repository = new CitationRepositoryMock(nte);
-    CitationQuery citationQuery = new CitationQueryImpl(repository);
+    @Wired CitationQuery citationQuery;
 
     @Test
     void findByNameSet_happyPath() {

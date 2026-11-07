@@ -80,13 +80,19 @@ public final class SelectTrace {
         if (SCOPE.get().armed && calledByTest()) {
             nextInvocation();
         }
+        if (!method.canAccess(target)) {
+            method.setAccessible(true); // a package-private port, such as a repository a test graph wraps
+        }
         Object result;
         try {
             result = method.invoke(target, args);
         } catch (InvocationTargetException e) {
             throw e.getCause();
         }
-        return isPort(method.getReturnType()) && result != null ? tracedPort(method.getReturnType(), result) : result;
+        if (result == null || Proxy.isProxyClass(result.getClass())) {
+            return result; // already traced: keep the instance a graph handed out
+        }
+        return isPort(method.getReturnType()) ? tracedPort(method.getReturnType(), result) : result;
     }
 
     private static boolean isPort(Class<?> type) {
