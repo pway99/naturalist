@@ -71,7 +71,14 @@ is **wired and ARMED** in `NaturalistTestExtension`: each `TestEntitySource` rea
 to the `@Test` method and counts per (source, repository method), and `afterEach` throws
 `RepeatedSelectException` when one call from the test read a select twice. It sees Queries and
 Commands alike; `<domain>-core` is what it watches, and rdbms adapters are not traced. Test contexts
-hand out `SelectTrace.traced(...)` proxies, so a test may loop over their commands and queries. Allow a genuinely
+hand out traced objects, so a test may loop over their commands and queries.
+
+The `com.naturalist.test.context` package builds those contexts: `TestContext`, `Provisions`,
+`ObjectGraph`, `PackageScan`, and the `@Wired` / `@Fake` field annotations that
+`NaturalistTestExtension` fills before each test (`get` and `context` serve per-method fakes). Ports are
+handed out as `SelectTrace` JDK proxies, non-final classes as ByteBuddy `SelectTrace.Traced` subclasses.
+Contexts are discovered through `META-INF/services/com.naturalist.test.context.TestContext`; fakes are
+logged to `target/test-context-fakes.txt`. See `domains/CLAUDE.md` "Test Contexts". Allow a genuinely
 un-batchable repeat with `@SuppressRepeatedSelect(reason=…)` on the production method doing it.
 A static backstop `NoSelectInIteration` (composite `com.naturalist.EnforceQueryHygiene`)
 lives in `tooling/naturalist-rewrite`, flagging loop/stream fan-out of repository/query

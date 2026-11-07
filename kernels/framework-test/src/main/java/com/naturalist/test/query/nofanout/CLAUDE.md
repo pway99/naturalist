@@ -83,6 +83,9 @@ this gate cannot see. This gate catches fan-out composed across methods. Keep bo
   not watched: `<domain>-core` is the layer that matters, and adapters stay thin by the hexagonal rule.
   The AspectJ gate and its rdbms sibling were retired for this on 2026-11-05.
 - **Tested code only.** A path no test exercises is not traced; the static gate covers some of that.
+- **Known widening.** Every intercepted method on a traced object resets the count when the test calls it
+  directly, so a lazy per-element select inside a test loop that also calls a traced object is not caught.
+  The same was true for proxied ports.
 - **Single thread.** A read on a spawned thread is not counted, so the gate can miss an N+1 there but
   never fails falsely.
 - `SelectTraceTest` tests the tracer directly (stateful/lifecycle carve-out). Its fixtures are top-level

@@ -1,6 +1,19 @@
 # Dynamic Test Contexts — Design
 
-**Status:** approved by Pat 2026-11-07; next step is the implementation plan.
+**Status:** approved by Pat 2026-11-07; pilot (insects and library) shipped on branch
+`feature/dynamic-test-contexts`. Other domains roll out later.
+
+**Shipped — decisions taken during execution:**
+
+- One proxy per (object, port).
+- A JDK proxy is returned unchanged only when it is `SelectTrace`'s own.
+- Non-final concrete classes are traced as ByteBuddy `SelectTrace.Traced` subclasses; final classes are plain.
+- A test's own package context is its requester.
+- Cross-domain test dependencies go through `-test-context`: `*TestContextInternal` is the registered context
+  holding a package's knowledge, `*TestContext` the public facade, and a core's tests reach another domain
+  only through its `-test-context` (insects reaches library through `library-test-context`, never
+  `library-core`).
+- Facade `create()` overloads hand over only the arguments the caller passed.
 
 ## Why
 

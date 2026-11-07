@@ -145,6 +145,37 @@ Reference implementation: `InsectSpeciesTestEntitySource` + `insects/species/ins
 
 ## Test Contexts
 
+### Dynamic test contexts (insects and library; other domains still hand-wire)
+
+A `<domain>-core` test no longer builds its graph by hand. It registers
+`@RegisterExtension NaturalistTestExtension`, declares what it uses as `@Wired` fields and its
+substitutions as `@Fake` fields, and the extension fills them before each test:
+
+```java
+@Fake VisionService vision = new ScriptedVisionService(SAMPLE_RESULT_JSON);
+@Wired InsectQuery insectQuery;
+```
+
+`nte.get(X.class)` and `nte.context(...).fake(...)` are for fakes that vary per test method.
+Design: [`docs/plans/2026-11-07-dynamic-test-context-design.md`](../docs/plans/2026-11-07-dynamic-test-context-design.md).
+
+- **One context per package**, in `<domain>-core/src/test`, named `*TestContextInternal`, registered in
+  `META-INF/services/com.naturalist.test.context.TestContext` and shipped in the core's test-jar.
+  It holds that package's knowledge of how its classes are built.
+- **`*TestContextInternal` holds a package's knowledge and is the registered context. `*TestContext`
+  (`<domain>-test-context`) is the public facade, and the only module other domains depend on.** The facade
+  keeps its public API and serves Spring adapter tests.
+- **A core module depends only on other domains' apis in main code. Its tests reach another domain only
+  through that domain's `-test-context`.** Insects reaches library through `library-test-context`, never
+  `library-core`.
+- Every object the graph hands out is traced for the N+1 gate (see
+  `kernels/framework-test/.../nofanout/CLAUDE.md`).
+- Domains not yet converted (chemistry, garden, plants, soil, usage, accounts, naturalists) keep the
+  hand-wired contexts described below until their own rollout plan. What is left is surveyed in
+  [`docs/notes/2026-11-07-hand-built-test-graphs.md`](../docs/notes/2026-11-07-hand-built-test-graphs.md).
+
+### Hand-wired contexts (domains not yet converted)
+
 Each domain has a `<Domain>sTestContext` class in `<domain>-test-context/src/main/java/`
 that simulates DI by constructing the full object graph — mock repositories, `*QueryImpl`
 adapters, `*CommandImpl` adapters, and `Transaction` subclasses — then exposing the
