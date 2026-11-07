@@ -171,6 +171,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     }
 
     public void insert(ENTITY entity) {
+        SelectTrace.recordWrite();
         insertCommon(entity);
         NAME name = entity.key();
         if (!originFile.containsKey(name)) {
@@ -191,6 +192,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     }
 
     public void update(ENTITY entity) {
+        SelectTrace.recordWrite();
         observer.arguments("update", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
         NAME name = entity.key();
         if (name == null || !entityMap.containsKey(name)) {
@@ -239,6 +241,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
      * it is the caller's responsibility.
      */
     public ENTITY save(ENTITY entity) {
+        SelectTrace.recordWrite();
         final ENTITY argument = entity;
         observer.arguments("save", i -> i.namedEntity(argument, "entity")).throwWhenInvalid();
 

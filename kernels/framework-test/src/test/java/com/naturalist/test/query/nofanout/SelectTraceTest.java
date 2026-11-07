@@ -30,6 +30,8 @@ class SelectTraceTest {
         nte.getNamed(FooSource.class).insert(new Foo("p"));
     }
 
+    private static final List<Bar> NEW_BARS = List.of(new Bar("x", "p"), new Bar("y", "p"), new Bar("z", "p"));
+
     private void assertRepeated(String expected) {
         assertThatThrownBy(() -> SelectTrace.evaluate("test"))
                 .isInstanceOf(RepeatedSelectException.class)
@@ -182,4 +184,23 @@ class SelectTraceTest {
         assertRepeated("FooSource.byKey read 3 times");
     }
 
+    @Test
+    void doesNotCountAReadInARepositoryMethodThatWrites() {
+        command.addAllIfNew(NEW_BARS);
+    }
+
+    @Test
+    void stillCountsARepositoryMethodThatOnlyReadsBesideOneThatWrites() {
+        command.addIfNewAndReadInLoop(NEW_BARS);
+        assertRepeated("BarSource.byKey read 3 times");
+    }
+
+    @Test
+    void countsAReadBeforeAWriteThatNeverHappens() {
+        command.addAllIfNew(NEW_BARS);
+        SelectTrace.evaluate("test");
+        SelectTrace.arm();
+        command.addAllIfNew(NEW_BARS);
+        assertRepeated("BarSource.addIfNew read 3 times");
+    }
 }

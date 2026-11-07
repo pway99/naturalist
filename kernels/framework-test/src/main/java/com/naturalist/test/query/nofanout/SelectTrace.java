@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -34,8 +35,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * a loop in the unit under test, so it fails too: batch the call or take the object from a context.
  *
  * <p>Not counted: reads under a write (foreign key checks), reads outside a test method, a test
- * calling a repository directly, continuation pages of a paged read, and any read made under a
- * method declared {@link SuppressRepeatedSelect}.
+ * calling a repository directly, continuation pages of a paged read, any read made under a method
+ * declared {@link SuppressRepeatedSelect}, and any read by a repository method seen writing during
+ * the test, because a stack walk at the read cannot know a write is coming.
  */
 public final class SelectTrace {
 
@@ -54,6 +56,7 @@ public final class SelectTrace {
         s.armed = true;
         nextInvocation();
         s.repeats.clear();
+        s.writers.clear();
     }
 
     public static void disarm() {
@@ -128,6 +131,17 @@ public final class SelectTrace {
         }
     }
 
+    /** Marks the repository method making this write, so its reads are not reported. */
+    public static void recordWrite() {
+        Scope s = SCOPE.get();
+        if (s.armed) {
+            StackFrame repository = repositoryFrame(WALKER.walk(stream -> stream.skip(1).toList()));
+            if (repository != null) {
+                s.writers.add(repositoryMethod(repository));
+            }
+        }
+    }
+
     private static void trace(Scope s, Class<?> source) {
         List<StackFrame> frames = WALKER.walk(stream -> stream.skip(2).toList());
         int testIndex = testFrameIndex(frames);
@@ -144,22 +158,36 @@ public final class SelectTrace {
             s.counts.clear();
         }
         StackFrame site = null;
-        String select = "";
         for (int i = 0; i < testIndex; i++) {
-            StackFrame frame = frames.get(i);
-            Class<?> declaring = frame.getDeclaringClass();
-            if (AbstractEntityRepository.class.isAssignableFrom(declaring)) {
-                select = frame.getMethodName();
-            } else if (isUnitFrame(declaring)) {
+            Class<?> declaring = frames.get(i).getDeclaringClass();
+            if (isUnitFrame(declaring) && !AbstractEntityRepository.class.isAssignableFrom(declaring)) {
                 if (!outermost(declaring).equals(testClass)) {
-                    site = frame;
+                    site = frames.get(i);
                 }
                 break; // a test class here means the test called the repository directly
             }
         }
         if (site != null) {
-            count(s, source, select, site, frames, testIndex);
+            count(s, source, repositoryFrame(frames), frames, testIndex);
         }
+    }
+
+    /** The outermost repository frame beneath the unit under test, or null when none made this call. */
+    private static StackFrame repositoryFrame(List<StackFrame> frames) {
+        StackFrame repository = null;
+        for (StackFrame frame : frames) {
+            Class<?> declaring = frame.getDeclaringClass();
+            if (AbstractEntityRepository.class.isAssignableFrom(declaring)) {
+                repository = frame;
+            } else if (isUnitFrame(declaring)) {
+                break;
+            }
+        }
+        return repository;
+    }
+
+    private static String repositoryMethod(StackFrame repository) {
+        return repository.getClassName() + "#" + repository.getMethodName();
     }
 
     /** The test method's index, or -1 for a read under a write or outside any test method. */
@@ -205,10 +233,12 @@ public final class SelectTrace {
         });
     }
 
-    private static void count(Scope s, Class<?> source, String select, StackFrame site,
+    private static void count(Scope s, Class<?> source, StackFrame repository,
                               List<StackFrame> frames, int testIndex) {
-        Hit hit = s.counts.computeIfAbsent(source.getName() + "|" + select,
-                k -> new Hit(source.getSimpleName(), select));
+        String select = repository == null ? "" : repository.getMethodName();
+        String repositoryMethod = repository == null ? "" : repositoryMethod(repository);
+        Hit hit = s.counts.computeIfAbsent(source.getName() + "|" + repositoryMethod,
+                k -> new Hit(source.getSimpleName(), select, repositoryMethod));
         hit.count++;
         hit.sites.add(trail(frames, testIndex));
         if (hit.count == 2) {
@@ -288,7 +318,11 @@ public final class SelectTrace {
     /** Fails the test on any repeat, naming every line that made the read. */
     public static void evaluate(String testName) {
         StringBuilder out = new StringBuilder();
-        for (Hit hit : SCOPE.get().repeats) {
+        Scope s = SCOPE.get();
+        for (Hit hit : s.repeats) {
+            if (s.writers.contains(hit.repositoryMethod)) {
+                continue;
+            }
             out.append("N+1 select: ").append(hit.source).append('.').append(hit.select)
                     .append(" read ").append(hit.count).append(" times by one call in ").append(testName).append('\n');
             hit.sites.forEach(trail -> {
@@ -304,12 +338,14 @@ public final class SelectTrace {
     private static final class Hit {
         final String source;
         final String select;
+        final String repositoryMethod;
         final Set<List<StackTraceElement>> sites = new LinkedHashSet<>();
         int count;
 
-        Hit(String source, String select) {
+        Hit(String source, String select, String repositoryMethod) {
             this.source = source;
             this.select = select;
+            this.repositoryMethod = repositoryMethod;
         }
     }
 
@@ -318,5 +354,6 @@ public final class SelectTrace {
         String position;
         final Map<String, Hit> counts = new LinkedHashMap<>();
         final List<Hit> repeats = new ArrayList<>();
+        final Set<String> writers = new HashSet<>();
     }
 }

@@ -53,6 +53,16 @@ class BarRepository extends AbstractTestEntityRepository<String, Bar, BarSource>
     void add(Bar bar) {
         testEntitySource().insert(bar);
     }
+
+    void addIfNew(Bar bar) {
+        if (testEntitySource().getByName(bar.key()).isEmpty()) {
+            testEntitySource().insert(bar);
+        }
+    }
+
+    Optional<Bar> byKey(String key) {
+        return testEntitySource().getByName(key);
+    }
 }
 
 class FooLookup {
@@ -172,6 +182,17 @@ class BarCommand {
 
     void addAll(List<Bar> toAdd) {
         toAdd.forEach(bars::add);
+    }
+
+    void addAllIfNew(List<Bar> toAdd) {
+        toAdd.forEach(bars::addIfNew);
+    }
+
+    void addIfNewAndReadInLoop(List<Bar> toAdd) {
+        for (Bar bar : toAdd) {
+            bars.addIfNew(bar);
+            bars.byKey(bar.key());
+        }
     }
 
     void readInLoop(List<Bar> toAdd) {

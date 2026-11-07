@@ -22,6 +22,12 @@ included), a test calling a repository directly, and later pages of a paged read
 
 **Commands are covered too**, not only Queries. Writes may repeat freely.
 
+**Repository methods that read before writing are not reported.** `TestEntitySource.insert`, `update` and
+`save` mark the repository method making the write, and repeats of that method's reads are dropped when the
+test ends. A stack walk at the read cannot see a write coming, so this is decided at the end of the test, per
+test. A method that only writes sometimes still counts in a test where it never wrote: a loop of `addIfNew`
+over rows that all exist fails, and that is a real repeated read.
+
 ## Test contexts wrap what they hand out
 
 Test context accessors and query factories return `SelectTrace.traced(Port.class, target)`. That JDK
