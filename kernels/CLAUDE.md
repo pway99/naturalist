@@ -76,7 +76,8 @@ hand out traced objects, so a test may loop over their commands and queries.
 The `com.naturalist.test.context` package builds those contexts: `TestContext`, `Provisions`,
 `ObjectGraph`, `PackageScan`, and the `@Wired` / `@Fake` field annotations that
 `NaturalistTestExtension` fills before each test (`get` and `context` serve per-method fakes). Ports are
-handed out as `SelectTrace` JDK proxies, non-final classes as ByteBuddy `SelectTrace.Traced` subclasses.
+handed out as `SelectTrace` JDK proxies, non-final classes the graph builds through a constructor as ByteBuddy
+`SelectTrace.Traced` subclasses.
 Contexts are discovered through `META-INF/services/com.naturalist.test.context.TestContext`; fakes are
 logged to `target/test-context-fakes.txt`. See `domains/CLAUDE.md` "Test Contexts". Allow a genuinely
 un-batchable repeat with `@SuppressRepeatedSelect(reason=…)` on the production method doing it.

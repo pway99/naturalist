@@ -53,12 +53,23 @@ final class PackageScan {
             throw new TestGraphException("cannot scan package " + packageName, e);
         }
         List<Class<?>> candidates = new ArrayList<>();
+        List<String> unlinked = new ArrayList<>();
         for (String name : classNames) {
-            Class<?> type = load(name, loader);
-            if (type != null && (type.isAnnotationPresent(DomainService.class) || type.isAnnotationPresent(MockDomainService.class))) {
+            Class<?> type;
+            try {
+                type = Class.forName(name, false, loader);
+            } catch (ClassNotFoundException e) {
+                throw new TestGraphException("listed but cannot load " + name, e);
+            } catch (LinkageError e) {
+                // its supertypes are not on this class path; kept so a resolution failure can name it
+                unlinked.add(name + " (" + e + ")");
+                continue;
+            }
+            if (type.isAnnotationPresent(DomainService.class) || type.isAnnotationPresent(MockDomainService.class)) {
                 candidates.add(type);
             }
         }
+        UNLINKED.put(packageName, List.copyOf(unlinked));
         return List.copyOf(candidates);
     }
 
@@ -93,19 +104,21 @@ final class PackageScan {
         return file.endsWith(".class") && !file.equals("package-info.class") && !file.equals("module-info.class");
     }
 
-    /** The class, or null when it cannot be linked here (its supertypes are not on this class path). */
-    private static Class<?> load(String name, ClassLoader loader) {
-        try {
-            return Class.forName(name, false, loader);
-        } catch (ClassNotFoundException e) {
-            throw new TestGraphException("listed but cannot load " + name, e);
-        } catch (LinkageError e) {
-            return null;
-        }
-    }
-
     private static ClassLoader loader() {
         ClassLoader context = Thread.currentThread().getContextClassLoader();
         return context != null ? context : PackageScan.class.getClassLoader();
+    }
+
+    /** Per package, each listed class that failed to link here and why, so a later resolution failure can say so. */
+    private static final Map<String, List<String>> UNLINKED = new ConcurrentHashMap<>();
+
+    /**
+     * For an error message: the classes of {@code packageName} that were listed but failed to link here, with
+     * the error each threw, or the empty string when every listed class linked.
+     */
+    static String unlinked(String packageName) {
+        candidates(packageName);
+        List<String> unlinked = UNLINKED.getOrDefault(packageName, List.of());
+        return unlinked.isEmpty() ? "" : "; listed but could not link " + unlinked;
     }
 }

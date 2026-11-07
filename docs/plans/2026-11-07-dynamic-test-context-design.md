@@ -7,12 +7,17 @@
 
 - One proxy per (object, port).
 - A JDK proxy is returned unchanged only when it is `SelectTrace`'s own.
-- Non-final concrete classes are traced as ByteBuddy `SelectTrace.Traced` subclasses; final classes are plain.
+- Non-final concrete classes the graph builds reflectively, through their constructor, are ByteBuddy
+  `SelectTrace.Traced` subclasses (ruling R8); final classes, static `create` / `of` results, context-provided
+  objects and fakes are plain. The facades hand some of these out (`InsectsTestContext`'s
+  `catalogIdentificationTransaction()` and `addPhotoTransaction()` return Traced subclasses). Spring console
+  configs currently pass only interfaces to Spring, so CGLIB re-proxying a ByteBuddy subclass is latent and
+  unexercised.
 - A test's own package context is its requester.
-- Cross-domain test dependencies go through `-test-context`: `*TestContextInternal` is the registered context
-  holding a package's knowledge, `*TestContext` the public facade, and a core's tests reach another domain
-  only through its `-test-context` (insects reaches library through `library-test-context`, never
-  `library-core`).
+- `*TestContextInternal` is the registered context holding a package's knowledge; `*TestContext` is the public
+  facade, and the only module other domains depend on.
+- A core's main code depends only on other domains' apis; its tests reach another domain only through that
+  domain's `-test-context` (insects reaches library through `library-test-context`, never `library-core`).
 - Facade `create()` overloads hand over only the arguments the caller passed.
 
 ## Why
@@ -179,9 +184,10 @@ These came out of the builder check. They follow from the conversation but Pat d
 - **All `*-core` modules are in scope**, accounts and naturalists included. `AccountCommandImpl` carries `@Transactional`
   on its multi-entity writes and is a direct target of the reachability check.
 - **External contexts keep their public API.** `InsectsTestContext.create(...)` and its typed accessors stay as a
-  thin layer over the shared wiring, so console `@TestConfiguration` classes do not change. Those contexts keep
-  returning JDK-proxied ports as today, and only the extension path uses subclass proxies, so Spring never
-  receives a ByteBuddy subclass to proxy again.
+  thin layer over the shared wiring, so console `@TestConfiguration` classes do not change. Their port accessors
+  return JDK-proxied ports as today, but an accessor typed as a concrete class returns the graph's ByteBuddy
+  `Traced` subclass (`catalogIdentificationTransaction()`, `addPhotoTransaction()`). The console configs pass only
+  interfaces to Spring today, so Spring re-proxying a ByteBuddy subclass is possible but unexercised (see Shipped).
 - **The reachability check knows one advice annotation: `jakarta.transaction.Transactional`.** The domain and the
   kernel `Transaction` base use only that one (verified 2026-11-07; `AccountCommandImpl` and the console's
   `RegistrationTransaction` both import it). A violation throws when the object is first built, naming the class

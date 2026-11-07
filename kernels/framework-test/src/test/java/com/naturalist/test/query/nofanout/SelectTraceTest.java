@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Set;
+import org.assertj.core.api.Assertions;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -202,5 +203,14 @@ class SelectTraceTest {
         SelectTrace.arm();
         command.addAllIfNew(NEW_BARS);
         assertRepeated("BarSource.addIfNew read 3 times");
+    }
+
+    /** The Traced subclass's entry advice starts a new count only when the test, not the unit, is its caller. */
+    @Test
+    void aCallFromTheUnitToAGraphBuiltTracedClassDoesNotStartANewCount() {
+        GraphFooLookup lookup = nte.get(GraphFooLookup.class);
+        Assertions.assertThat(lookup).isInstanceOf(SelectTrace.Traced.class);
+        new GraphFooCaller(lookup).loop(KEYS);
+        assertRepeated("FooSource.byKey read 3 times");
     }
 }

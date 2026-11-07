@@ -37,8 +37,8 @@
 
     <build>
         <plugins>
-            <!-- Ships library's test context (LibraryTestContextInternal and its services entry)
-                 to other modules' tests in the test-jar. -->
+            <!-- Ships library's test context (LibraryTestContextInternal and its services entry) to
+                 library-test-context in the test-jar, and nothing else: the test classes stay private here. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -47,6 +47,12 @@
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*TestContextInternal*</include>
+                                <include>META-INF/services/**</include>
+                            </includes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -30,16 +30,27 @@ over rows that all exist fails, and that is a real repeated read.
 
 ## Test contexts wrap what they hand out
 
-- **The graph wraps everything it builds.** A port (a non-sealed `com.naturalist` interface) is handed
-  out as a `SelectTrace.traced` JDK proxy. A non-final concrete class is built, once, as a ByteBuddy
-  subclass that implements `SelectTrace.Traced` and enters each of its overridable methods through
-  `SelectTrace.TraceAdvice`. Either way a call the test makes starts a new count, so tests can loop over
+- **Two meanings of "port".** The *graph's* port is any non-sealed `com.naturalist` interface: whatever the
+  graph hands out under such a type, built or context-provided, is a `SelectTrace.traced` JDK proxy, one per
+  type. *Return wrapping* is narrower: a traced proxy wraps what a method returns only when the return type
+  passes `SelectTrace.isPort`, a `*Query` or `*Command` interface.
+- **Only classes built through a constructor become `Traced` subclasses.** A non-final concrete class the
+  graph builds reflectively through its constructor is built, once, as a ByteBuddy subclass that implements
+  `SelectTrace.Traced` and enters each of its overridable methods through `SelectTrace.TraceAdvice`. A static
+  `create` / `of` result and anything a context provides are plain objects (still proxied when handed out
+  under a graph port). Either wrapper makes a call from the test start a new count, so tests can loop over
   context commands, queries and transactions with plain calls. Before building a class the graph checks
-  that a proxy can reach every `@jakarta.transaction.Transactional` method, and fails with
-  `TestGraphException` when one is final, private or static, or the class is final.
+  that a proxy can reach every `@jakarta.transaction.Transactional` method (a class-level one inherited from
+  a superclass included), and fails with `TestGraphException` naming the class and, for an inherited
+  method, the class that declares it, when one is final, private or static, or the class is final.
+- **The class name you see is the subclass.** `getClass()` of a graph-built object is a `…$ByteBuddy$…`
+  subclass, so `Observer.forClass(getClass())` names (metric tags, observation points) show that name in
+  tests.
 - **`final` classes are not traced.** They are built plain, and a loop over one in a test fails like a
   loop in the unit under test. So does an object a test builds itself or a context provides from its own
-  factory, and anything Spring wires in a console test: batch the call or take the object from the graph.
+  factory under a concrete type, and anything Spring wires in a console test: batch the call or take the
+  object from the graph. **Fakes are handed out untraced** as well: that can only cause a false failure,
+  never hide a fan-out.
 - **A wrapper resets the count only when the test is the direct caller.** A call made from inside the unit
   under test, a self-call on a `Traced` object, or a test callback the unit runs never resets, so a loop
   in the unit still fails. Ports a traced call returns are wrapped too, and an object already traced (a

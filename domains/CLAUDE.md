@@ -170,8 +170,10 @@ Design: [`docs/plans/2026-11-07-dynamic-test-context-design.md`](../docs/plans/2
   `library-core`.
 - Every object the graph hands out is traced for the N+1 gate (see
   `kernels/framework-test/.../nofanout/CLAUDE.md`).
-- Domains not yet converted (chemistry, garden, plants, soil, usage, accounts, naturalists) keep the
-  hand-wired contexts described below until their own rollout plan. What is left is surveyed in
+- Domains not yet converted keep the hand-wired contexts described below until their own rollout plan:
+  chemistry, garden, plants, soil and usage have a `<domain>-test-context` module, and chemistry, garden
+  and soil also a hand-wired `*TestContextInternal` in core. Accounts and naturalists have no test
+  context at all. What is left is surveyed in
   [`docs/notes/2026-11-07-hand-built-test-graphs.md`](../docs/notes/2026-11-07-hand-built-test-graphs.md).
 
 ### Hand-wired contexts (domains not yet converted)
@@ -187,38 +189,33 @@ The pattern works because the test-context class lives in the **same package** a
 constructors are visible to it. Consumers — controller bootstraps, integration tests —
 see only the public contract and never wire dependencies directly.
 
-### TestContextInternal — breaking the Maven cycle
+### TestContextInternal — breaking the Maven cycle (legacy, hand-wired)
+
+This is the **legacy hand-wired pattern**, kept only by the domains not yet converted (chemistry, garden,
+soil). Insects and library no longer follow it: their `*TestContextInternal` classes are registered
+dynamic contexts, described in "Dynamic test contexts" above, and are not a reference for this section.
 
 `<domain>-test-context` depends on `<domain>-core` (compile scope) to access the
 package-private implementations. This means `<domain>-core` **cannot** depend on
 `<domain>-test-context` (even at test scope) — Maven rejects the direct cycle.
 
-When a `<domain>-core` test needs the full wired object graph (e.g. testing a
-`Transaction` or `Command` that touches multiple repositories), it uses a
-**`<Domain>sTestContextInternal`** class in `<domain>-core/src/test/java/`. This
-class follows the identical pattern — same package, same split-package access to
-package-private impls, same public contract — but lives in core's own test classpath
+When a `<domain>-core` test of an unconverted domain needs a wired object graph, it uses a
+**`<Domain>TestContextInternal`** class in `<domain>-core/src/test/java/`. This
+class follows the same pattern — same package, same split-package access to
+package-private impls — but lives in core's own test classpath
 instead of a separate module.
 
 Rules:
 
-- **Naming:** `<Domain>sTestContextInternal` — the `Internal` suffix distinguishes it
-  from the module-level `<Domain>sTestContext`.
-- **Scope:** package-private class, visible only to tests in `<domain>-core`.
-- **No-op stubs for cross-domain queries:** the internal context may stub out
-  cross-domain dependencies (citations, life stages) that the test doesn't exercise,
-  rather than pulling in their full test contexts.
-- **Not a replacement.** `<Domain>sTestContext` in `<domain>-test-context/` remains
+- **Naming:** `<Domain>TestContextInternal` — the `Internal` suffix distinguishes it
+  from the module-level `<Domain>TestContext`.
+- **Scope:** visible only to tests in `<domain>-core`.
+- **Another domain's services are never stubbed** in the internal context: take them from that domain's
+  `-test-context` (rule 1 of the dynamic design: only outside-world ports get a stand-in).
+- **Not a replacement.** `<Domain>TestContext` in `<domain>-test-context/` remains
   the canonical wiring used by console controllers and integration tests in other
   modules. The internal variant exists only to serve `<domain>-core`'s own tests.
-- **Both go away** when Spring DI replaces the manual composition.
-
-Tests in `<domain>-core` that only need a single repository or query (e.g.
-`SpeciesQueryImplTest`) continue to wire their dependencies directly — the internal
-test context is for tests that need the **full assembled graph**.
-
-Reference implementation: `InsectsTestContext` + `InsectsTestContextInternal` in the
-insects domain.
+- **Both go away** when the domain converts to dynamic test contexts.
 
 ## Repository Architecture
 

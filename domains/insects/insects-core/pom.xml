@@ -89,8 +89,9 @@
 
     <build>
         <plugins>
-            <!-- Ships insects' test contexts (InsectsTestContextInternal, InsectLifeStageTestContextInternal
-                 and their services entry) to other modules' tests in the test-jar. -->
+            <!-- Ships insects' test contexts (InsectsTestContextInternal, InsectLifeStageTestContextInternal,
+                 InsectsCatalogTestContextInternal) and their services entry to insects-test-context in the
+                 test-jar, and nothing else: the test classes and fixtures stay private to this module. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -99,6 +100,12 @@
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*TestContextInternal*</include>
+                                <include>META-INF/services/**</include>
+                            </includes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

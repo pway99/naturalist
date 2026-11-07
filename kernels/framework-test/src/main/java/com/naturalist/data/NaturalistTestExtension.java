@@ -64,17 +64,31 @@ public class NaturalistTestExtension extends NaturalistDatabase
         clear();
         graph = null;
         testPackage = context.getRequiredTestClass().getPackageName();
-        inject(context.getRequiredTestInstance());
+        for (Object instance : context.getRequiredTestInstances().getAllInstances()) {
+            inject(instance);
+        }
         SelectTrace.arm();
     }
 
     @Override
     public void afterEach(ExtensionContext context) {
+        RuntimeException failure = null;
         try {
-            recordFakes(context);
             SelectTrace.evaluate(context.getRequiredTestClass().getSimpleName() + "." + context.getRequiredTestMethod().getName());
+        } catch (RuntimeException e) {
+            failure = e;
+            throw e;
         } finally {
-            SelectTrace.disarm();
+            try {
+                recordFakes(context);
+            } catch (UncheckedIOException e) {
+                if (failure == null) {
+                    throw e;
+                }
+                failure.addSuppressed(e);
+            } finally {
+                SelectTrace.disarm();
+            }
         }
     }
 
@@ -118,7 +132,7 @@ public class NaturalistTestExtension extends NaturalistDatabase
             if (value == null) {
                 throw new TestGraphException("@Fake " + field + " is null; set it in its initialiser");
             }
-            handOver(graph().owner(test.getClass().getPackageName()), field.getType(), value);
+            handOver(graph().owner(test.getClass().getPackageName()), portOf(field, value), value);
         }
         for (Field field : wired) {
             if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
@@ -171,4 +185,27 @@ public class NaturalistTestExtension extends NaturalistDatabase
      * {@code @Wired} fields and {@link #get} calls. Null outside a test.
      */
     private String testPackage;
+
+    /**
+     * The port a {@code @Fake} field replaces: its annotation's value, which the field's value must be an
+     * instance of, or else the field's declared type, which must then be an interface or abstract class.
+     * Fakes register under that exact type, so a field declared as a concrete fake class would replace nothing.
+     */
+    private static Class<?> portOf(Field field, Object value) {
+        Class<?> port = field.getAnnotation(Fake.class).value();
+        if (port != Void.class) {
+            if (!port.isInstance(value)) {
+                throw new TestGraphException("@Fake(" + port.getSimpleName() + ".class) " + field + " holds a "
+                        + value.getClass().getName() + ", which is not a " + port.getName());
+            }
+            return port;
+        }
+        Class<?> declared = field.getType();
+        if (!declared.isInterface() && !Modifier.isAbstract(declared.getModifiers())) {
+            throw new TestGraphException("@Fake " + field + " is declared as the concrete " + declared.getName()
+                    + ", so it would replace nothing; declare the field as the port type it stands in for,"
+                    + " or use @Fake(Port.class)");
+        }
+        return declared;
+    }
 }

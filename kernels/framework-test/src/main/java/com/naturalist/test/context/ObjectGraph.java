@@ -54,12 +54,22 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
  * that package that is {@code T} or implements it, built through its single constructor (or its single
  * static {@code create} / {@code of}) with its parameters resolved for the owning context.
  *
- * <p>Everything the graph builds is traced, so each call a test makes on it starts a new count. A
- * {@code com.naturalist} interface that is not sealed is handed out wrapped by {@link SelectTrace#traced},
- * one proxy per type, so every requester shares it. A non-final concrete class is built, once, as a
- * {@link SelectTrace.Traced} subclass generated in its own package; a {@code final} class is built plain and
- * untraced. Before building a class the graph checks that a proxy can reach every method it marks
- * {@code @jakarta.transaction.Transactional}.
+ * <p>What the graph hands out is traced, so each call a test makes on it starts a new count. Two senses of
+ * "port" meet here. The graph's port is any {@code com.naturalist} interface that is not sealed: whatever is
+ * asked for as one, built or provided, is handed out wrapped by {@link SelectTrace#traced}, one proxy per type,
+ * so every requester shares it. That proxy in turn wraps what its methods return only when the return type is a
+ * return-wrapping port ({@code SelectTrace.isPort}: a {@code *Query} or {@code *Command} interface).
+ *
+ * <p>Only a non-final concrete class the graph builds through its constructor is built, once, as a
+ * {@link SelectTrace.Traced} subclass generated in its own package; its {@code getClass()} is then a
+ * {@code ...$ByteBuddy$...} subclass, which is what {@code Observer.forClass(getClass())} names show in tests.
+ * Never a Traced subclass, though still proxied when asked for as a graph port: a {@code final} class (or a
+ * sealed, record, enum, anonymous or local one), the result of a static {@code create} / {@code of}, and
+ * anything a context provides. A fake is handed out as it is, untraced: that can only cause a false failure,
+ * never hide a fan-out.
+ *
+ * <p>Before building a class the graph checks that a proxy can reach every method it marks
+ * {@code @jakarta.transaction.Transactional}, a class-level one inherited from a superclass included.
  */
 public final class ObjectGraph {
 
@@ -129,7 +139,9 @@ public final class ObjectGraph {
 
     <T> void registerFake(TestContext context, Class<T> type, T fake) {
         if (type == null || fake == null) {
-            throw new TestGraphException(context.getClass().getSimpleName() + ": a fake needs a type and a value");
+            throw new TestGraphException(context.getClass().getSimpleName() + ": a fake needs a type and a value; got "
+                    + (type == null ? "no type" : "type " + type.getName())
+                    + (fake == null ? " with a null value" : " with a " + fake.getClass().getName()));
         }
         if (!type.isInstance(fake)) {
             throw new TestGraphException(fake.getClass().getName() + " is not a " + type.getName());
@@ -220,7 +232,8 @@ public final class ObjectGraph {
                 return type;
             }
             throw new TestGraphException(type.getName()
-                    + " is not a @DomainService or @MockDomainService class; provide it in " + context);
+                    + " is not a @DomainService or @MockDomainService class; provide it in " + context
+                    + PackageScan.unlinked(owner.getClass().getPackageName()));
         }
         List<Class<?>> matches = candidates.stream()
                 .filter(candidate -> isConcrete(candidate) && type.isAssignableFrom(candidate))
@@ -228,7 +241,7 @@ public final class ObjectGraph {
         if (matches.size() != 1) {
             throw new TestGraphException(context + " finds " + matches.size() + " candidates for "
                     + type.getName() + " " + matches.stream().map(Class::getName).toList()
-                    + "; provide one in " + context);
+                    + "; provide one in " + context + PackageScan.unlinked(owner.getClass().getPackageName()));
         }
         return matches.getFirst();
     }
@@ -391,17 +404,20 @@ public final class ObjectGraph {
 
     /**
      * Fails when a method of {@code type} or a {@code com.naturalist} superclass carries
-     * {@code @jakarta.transaction.Transactional}, on itself or on its class, where a proxy cannot reach it; warns
-     * once on Spring's {@code @Transactional}. Annotations are matched by type name, so no Spring dependency is needed.
+     * {@code @jakarta.transaction.Transactional}, on itself or on its class (an {@code @Inherited} class-level one
+     * from a superclass included), where a proxy cannot reach it; the message names the class that declares the
+     * method when that is a superclass. Warns once on Spring's {@code @Transactional}. Annotations are matched by
+     * type name, so no Spring dependency is needed.
      */
     private static void checkReachable(Class<?> type) {
         for (Class<?> owner = type; owner != null && owner.getName().startsWith("com.naturalist."); owner = owner.getSuperclass()) {
-            boolean jakartaClass = carries(owner, JAKARTA_TRANSACTIONAL);
+            boolean jakartaClass = carriesOrInherits(owner, JAKARTA_TRANSACTIONAL);
             boolean springClass = carries(owner, SPRING_TRANSACTIONAL);
             for (Method method : owner.getDeclaredMethods()) {
                 int modifiers = method.getModifiers();
                 boolean proxied = !method.isSynthetic() && !Modifier.isPrivate(modifiers) && !Modifier.isStatic(modifiers);
-                String site = type.getName() + "#" + method.getName();
+                String site = type.getName() + "#" + method.getName()
+                        + (owner == type ? "" : " (declared in " + owner.getName() + ")");
                 if (carries(method, JAKARTA_TRANSACTIONAL) || jakartaClass && proxied) {
                     String reason = unreachable(type, modifiers);
                     if (reason != null) {
@@ -450,5 +466,18 @@ public final class ObjectGraph {
             return new ObjectGraph(state, null);
         }
         return new ObjectGraph(state, owner(packageName));
+    }
+
+    /**
+     * Whether {@code type} carries {@code annotation} or inherits it from a superclass; {@link Class#getAnnotations}
+     * follows {@code @Inherited}, which {@code @jakarta.transaction.Transactional} is.
+     */
+    private static boolean carriesOrInherits(Class<?> type, String annotation) {
+        for (Annotation present : type.getAnnotations()) {
+            if (present.annotationType().getName().equals(annotation)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
