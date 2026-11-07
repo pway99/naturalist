@@ -19,6 +19,12 @@
 - A core's main code depends only on other domains' apis; its tests reach another domain only through that
   domain's `-test-context` (insects reaches library through `library-test-context`, never `library-core`).
 - Facade `create()` overloads hand over only the arguments the caller passed.
+- Outside-world ports (types whose package has no context) have one provider per graph: the test's own
+  context, else the only context providing them; two providers and no choice fail loudly. Before this,
+  each context's provisions reached only its own package's classes, so another domain's class asking for
+  the port failed and the workaround, providing it again, broke one instance per type (2026-11-07 review).
+- ByteBuddy is excluded from `management-console`'s `framework-test` dependency, and `PackagedJarIT` checks
+  it stays out of the jar (2026-11-07 review).
 
 ## Why
 

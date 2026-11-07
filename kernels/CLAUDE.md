@@ -78,6 +78,9 @@ The `com.naturalist.test.context` package builds those contexts: `TestContext`, 
 `NaturalistTestExtension` fills before each test (`get` and `context` serve per-method fakes). Ports are
 handed out as `SelectTrace` JDK proxies, non-final classes the graph builds through a constructor as ByteBuddy
 `SelectTrace.Traced` subclasses.
+An outside-world port, a type whose package has no context, has one provider per graph: the test's own
+context, else the only context that provides it. ByteBuddy is excluded from `management-console`, which
+ships `framework-test` for `TestEntitySource` but never builds a graph; `PackagedJarIT` keeps it out.
 Contexts are discovered through `META-INF/services/com.naturalist.test.context.TestContext`; fakes are
 logged to `target/test-context-fakes.txt`. See `domains/CLAUDE.md` "Test Contexts". Allow a genuinely
 un-batchable repeat with `@SuppressRepeatedSelect(reason=…)` on the production method doing it.

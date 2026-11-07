@@ -119,10 +119,18 @@
              test-scoped packages a jar that dies with NoClassDefFoundError:
              com/naturalist/data/TestEntitySource on boot.
              This resolves itself with Phase 4 of the external-authority seam — a real EOL client
-             replacing the mock — not with scope surgery here. -->
+             replacing the mock — not with scope surgery here.
+             ByteBuddy is excluded: only the test object graph uses it, to build its traced subclasses, and
+             nothing here builds a graph. PackagedJarIT checks that it stays out of the jar. -->
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>framework-test</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.bytebuddy</groupId>
+                    <artifactId>byte-buddy</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- DOMAIN CONSOLE MODULES -->

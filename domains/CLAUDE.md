@@ -168,6 +168,10 @@ Design: [`docs/plans/2026-11-07-dynamic-test-context-design.md`](../docs/plans/2
 - **A core module depends only on other domains' apis in main code. Its tests reach another domain only
   through that domain's `-test-context`.** Insects reaches library through `library-test-context`, never
   `library-core`.
+- **Outside-world ports have one provider per graph.** A type whose package has no context of its own
+  (`Resilience`, `ImageStore`, `VisionService`, ...) comes from the test's own context when it provides one,
+  otherwise from the only registered context that does, so every domain's classes share one instance. Two
+  providers and no choice by the test's own context fail loudly: provide the port there to choose.
 - Every object the graph hands out is traced for the N+1 gate (see
   `kernels/framework-test/.../nofanout/CLAUDE.md`).
 - Domains not yet converted keep the hand-wired contexts described below until their own rollout plan:

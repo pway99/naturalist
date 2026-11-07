@@ -179,4 +179,16 @@ class PackagedJarIT {
         assertThat(scrape.statusCode()).as(log()).isNotEqualTo(200);
         assertThat(scrape.body()).doesNotContain("naturalist_invariant_check");
     }
+
+    /**
+     * framework-test ships for TestEntitySource (see the POM), but the test graph's subclass proxies never run in
+     * the app, so the library that generates them stays out of the deployable.
+     */
+    @Test
+    void theTestGraphLibrary_isNotInTheJar() throws Exception {
+        try (ZipFile zip = new ZipFile(System.getProperty("packagedJar"))) {
+            assertThat(zip.stream().map(ZipEntry::getName).filter(name -> name.startsWith("BOOT-INF/lib/byte-buddy")))
+                    .isEmpty();
+        }
+    }
 }

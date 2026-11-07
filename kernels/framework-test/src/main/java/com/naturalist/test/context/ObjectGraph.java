@@ -56,6 +56,11 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
  * that package that is {@code T} or implements it, built through its single constructor (or its single
  * static {@code create} / {@code of}) with its parameters resolved for the owning context.
  *
+ * <p>A type whose package has no context of its own, an outside-world port such as {@code Resilience}, is
+ * the exception: after a fake, it comes from one provider for the whole graph, the test's own context when
+ * it provides one and otherwise the only context that does. Every domain's classes then share one instance,
+ * and two providers with no choice by the test's own context fail loudly.
+ *
  * <p>What the graph hands out is traced, so each call a test makes on it starts a new count. Two senses of
  * "port" meet here. The graph's port is any {@code com.naturalist} interface that is not sealed: whatever is
  * asked for as one, built or provided, is handed out wrapped by {@link SelectTrace#traced}, one proxy per type,
@@ -176,11 +181,12 @@ public final class ObjectGraph {
         if (state.requests.contains(type)) {
             throw new TestGraphException("cycle: " + chain() + " > " + type.getSimpleName());
         }
-        boolean byRequester = requester != null && state.contexts.get(requester).factory(type) != null;
-        TestContext owner = byRequester ? requester : ownerOf(type);
+        TestContext provider = state.byPackage.containsKey(type.getPackageName()) ? null : providerOf(type);
+        boolean byRequester = provider == null && requester != null && state.contexts.get(requester).factory(type) != null;
+        TestContext owner = provider != null ? provider : byRequester ? requester : ownerOf(type);
         state.requests.push(type);
         try {
-            Object resolved = byRequester || state.contexts.get(owner).factory(type) != null
+            Object resolved = provider != null || byRequester || state.contexts.get(owner).factory(type) != null
                     ? provided(owner, type)
                     : built(type, owner);
             state.resolved.add(type);
@@ -362,6 +368,9 @@ public final class ObjectGraph {
         State(NaturalistDatabase db) {
             this.db = db;
         }
+
+        /** The context of the test's own package, which chooses the outside-world ports for the whole graph; null when none. */
+        TestContext root;
     }
 
     /**
@@ -462,14 +471,16 @@ public final class ObjectGraph {
 
     /**
      * This graph as asked by the context registered for {@code packageName}, so what that context provides
-     * resolves first, as it does for the classes of its own package. With no context registered there, the
-     * requests come from no context.
+     * resolves first, as it does for the classes of its own package. That context also becomes the graph's root:
+     * it chooses the outside-world ports for every class in the graph (see {@link #providerOf}). With no context
+     * registered there, the requests come from no context.
      */
     public ObjectGraph requestedFrom(String packageName) {
         if (state.byPackage.getOrDefault(packageName, List.of()).isEmpty()) {
             return new ObjectGraph(state, null);
         }
-        return new ObjectGraph(state, owner(packageName));
+        state.root = owner(packageName);
+        return new ObjectGraph(state, state.root);
     }
 
     /**
@@ -533,5 +544,29 @@ public final class ObjectGraph {
             contextTypes = types;
         }
         return types;
+    }
+
+    /**
+     * The one context that provides {@code type}, a type whose package has no context of its own (an
+     * outside-world port such as {@code Resilience} or {@code ImageStore}): the test's own context when it
+     * provides one, otherwise the only registered context that does. One provider per graph means one instance,
+     * whichever domain's class asks for it.
+     */
+    private TestContext providerOf(Class<?> type) {
+        if (state.root != null && state.contexts.get(state.root).factory(type) != null) {
+            return state.root;
+        }
+        List<TestContext> providers = state.contexts.entrySet().stream()
+                .filter(entry -> entry.getValue().factory(type) != null)
+                .map(Map.Entry::getKey)
+                .toList();
+        if (providers.size() == 1) {
+            return providers.getFirst();
+        }
+        String names = providers.stream().map(c -> c.getClass().getSimpleName()).toList().toString();
+        throw new TestGraphException(providers.isEmpty()
+                ? "no test context provides " + type.getName() + " (requested by " + chain()
+                        + ") and its package has no context of its own; provide it in the test's own context"
+                : type.getName() + " is provided by " + names + "; the test's own context must provide it to choose one");
     }
 }
