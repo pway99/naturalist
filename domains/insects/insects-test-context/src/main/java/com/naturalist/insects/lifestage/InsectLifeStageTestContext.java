@@ -1,14 +1,13 @@
 package com.naturalist.insects.lifestage;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
+import com.naturalist.test.context.ObjectGraph;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
- * Assembly helper for the insect life stage sub-context. Lives in
- * {@code com.naturalist.insects.lifestage} so it can instantiate the
- * package-private {@link InsectLifeStageQueryImpl} and
- * {@link InsectLifeStageEntityQueryImpl} adapters alongside the protected-constructor
- * {@link InsectLifeStageEntityRepositoryMock}.
+ * External test context of the insect life stage sub-context: a facade over a fresh {@link ObjectGraph},
+ * which builds {@code InsectLifeStageQueryImpl}, its {@code InsectLifeStageEntityQueryImpl} and the
+ * {@code InsectLifeStageEntityRepositoryMock} by reflection under insects-core's
+ * {@code InsectLifeStageTestContextInternal}. The wiring lives there once.
  */
 public final class InsectLifeStageTestContext {
 
@@ -16,8 +15,6 @@ public final class InsectLifeStageTestContext {
     }
 
     public static InsectLifeStageQuery createQuery(NaturalistDatabase db) {
-        InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(db);
-        InsectLifeStageQuery.LifeStageEntityQuery entityQuery = new InsectLifeStageEntityQueryImpl(repository);
-        return SelectTrace.traced(InsectLifeStageQuery.class, new InsectLifeStageQueryImpl(entityQuery));
+        return ObjectGraph.create(db).get(InsectLifeStageQuery.class);
     }
 }

@@ -1,52 +1,24 @@
 package com.naturalist.library;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
+import com.naturalist.test.context.ObjectGraph;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
- * Pre-wired, in-memory read surface for the library bounded context. Mirrors
- * {@code ChemistryTestContext} — colocated in {@code com.naturalist.library}
- * so it can assemble the package-private {@link ConceptRepositoryMock} and the
- * package-private {@code ConceptQueryImpl} without promoting either to public.
+ * Pre-wired, in-memory read and write surface for the library bounded context, for other domains'
+ * tests and external adapters. A facade over one {@link ObjectGraph} per {@link #create} call: the
+ * wiring lives once, in library-core's {@code LibraryTestContextInternal} and the graph's reflection over
+ * the {@code @DomainService} and {@code @MockDomainService} classes, and each accessor hands out what the
+ * graph builds, already traced.
  *
- * <p>Read seam only. Not a JUnit extension — consumers needing per-method reset
- * wrap a {@code NaturalistTestExtension} alongside this context.
+ * <p>Not a JUnit extension — consumers needing per-method reset wrap a {@code NaturalistTestExtension}
+ * alongside this context.
  */
 public class LibraryTestContext {
 
-    private final ConceptQuery conceptQuery;
-    private final GlossaryTermQuery glossaryTermQuery;
-    private final CitationQuery citationQuery;
-    private final CitationAssociationQuery citationAssociationQuery;
-    private final CladeQuery cladeQuery;
-    private final LibraryCommand libraryCommand;
+    private final ObjectGraph graph;
 
     private LibraryTestContext(NaturalistDatabase db) {
-        ConceptRepository conceptRepository = new ConceptRepositoryMock(db);
-        this.conceptQuery = new ConceptQueryImpl(conceptRepository);
-
-        GlossaryTermRepository glossaryTermRepository = new GlossaryTermRepositoryMock(db);
-        this.glossaryTermQuery = new GlossaryTermQueryImpl(glossaryTermRepository);
-
-        CitationRepository citationRepository = new CitationRepositoryMock(db);
-        this.citationQuery = new CitationQueryImpl(citationRepository);
-
-        CitationAssociationRepository citationAssociationRepository =
-                new CitationAssociationRepositoryMock(db);
-        this.citationAssociationQuery =
-                new CitationAssociationQueryImpl(citationAssociationRepository);
-
-        this.cladeQuery = new CladeQueryImpl();
-
-        LibraryCommand.CitationCommand citationCommand =
-                new CitationCommandImpl(citationRepository);
-        LibraryCommand.CitationAssociationCommand citationAssociationCommand =
-                new CitationAssociationCommandImpl(citationAssociationRepository);
-        CitationAttributionTransaction citationAttributionTransaction =
-                new CitationAttributionTransaction(
-                        citationRepository, citationCommand, citationAssociationCommand);
-        this.libraryCommand = new LibraryCommandImpl(
-                citationCommand, citationAssociationCommand, citationAttributionTransaction);
+        this.graph = ObjectGraph.create(db);
     }
 
     public static LibraryTestContext create(NaturalistDatabase db) {
@@ -54,26 +26,26 @@ public class LibraryTestContext {
     }
 
     public ConceptQuery conceptQuery() {
-        return SelectTrace.traced(ConceptQuery.class, conceptQuery);
+        return graph.get(ConceptQuery.class);
     }
 
     public GlossaryTermQuery glossaryTermQuery() {
-        return SelectTrace.traced(GlossaryTermQuery.class, glossaryTermQuery);
+        return graph.get(GlossaryTermQuery.class);
     }
 
     public CitationQuery citationQuery() {
-        return SelectTrace.traced(CitationQuery.class, citationQuery);
+        return graph.get(CitationQuery.class);
     }
 
     public CitationAssociationQuery citationAssociationQuery() {
-        return SelectTrace.traced(CitationAssociationQuery.class, citationAssociationQuery);
+        return graph.get(CitationAssociationQuery.class);
     }
 
     public CladeQuery cladeQuery() {
-        return SelectTrace.traced(CladeQuery.class, cladeQuery);
+        return graph.get(CladeQuery.class);
     }
 
     public LibraryCommand libraryCommand() {
-        return SelectTrace.traced(LibraryCommand.class, libraryCommand);
+        return graph.get(LibraryCommand.class);
     }
 }

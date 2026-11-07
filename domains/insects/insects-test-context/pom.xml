@@ -40,5 +40,11 @@
             <groupId>com.naturalist</groupId>
             <artifactId>observation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>insects-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
     </dependencies>
 </project>

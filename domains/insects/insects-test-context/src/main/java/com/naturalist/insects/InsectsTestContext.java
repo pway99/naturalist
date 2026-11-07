@@ -1,141 +1,50 @@
 package com.naturalist.insects;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
+import com.naturalist.test.context.ObjectGraph;
 import com.naturalist.authority.ExternalAuthority;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.featuresearch.FeatureCorpus;
-import com.naturalist.featuresearch.FeatureSearch;
-import com.naturalist.featuresearch.InMemoryFeatureSearch;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
-import com.naturalist.insects.lifestage.InsectLifeStageTestContext;
-import com.naturalist.library.CitationAssociationQuery;
-import com.naturalist.library.CitationQuery;
-import com.naturalist.library.LibraryTestContext;
 import com.naturalist.observation.ImageStore;
-import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
-import com.naturalist.textgeneration.NoOpTextGenerationService;
 import com.naturalist.usage.IdentificationBudget;
-import com.naturalist.vision.NoOpVisionService;
 import com.naturalist.vision.VisionService;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-
 /**
- * Pre-wired, in-memory read and write surface for the insects bounded context.
- * Colocates into {@code com.naturalist.insects} so it can assemble the
- * package-private namespace internals ({@link InsectRepository},
- * {@link InsectSpeciesRepositoryMock}, {@link InsectImageRepositoryMock}, and the
- * {@code *QueryImpl} / {@code *CommandImpl} adapters in {@code insects-core})
- * without promoting any of them to public.
+ * Pre-wired, in-memory read and write surface for the insects bounded context, for other domains'
+ * tests and external adapters. A facade over one {@link ObjectGraph} per {@code create} call: the wiring
+ * lives once, in insects-core's {@link InsectsTestContextInternal} (and library's and life stage's
+ * internal contexts) plus the graph's reflection over the {@code @DomainService} and
+ * {@code @MockDomainService} classes. Each accessor returns what the graph builds, already traced.
  *
- * <p>Two surfaces are re-exposed to consumers:
- * <ul>
- *   <li>{@link #insectQuery()} — the public {@link InsectQuery} namespace for reads.</li>
- *   <li>{@link #insectCommand()} — the public {@link InsectCommand} namespace for writes
- *       (insert / update).</li>
- * </ul>
- * Bulk test-data seeding still goes through the supplied {@link NaturalistDatabase}
- * and the domain's {@code *TestEntitySource} classes — the command surface exists for
- * exercising the public write port end-to-end, not for fixture loading.
+ * <p>Each {@code create} overload hands {@link InsectsTestContextInternal} only the outside-world ports
+ * its caller passed ({@link ImageStore}, {@link Resilience}, {@link IdentificationBudget},
+ * {@link VisionService}, {@link ExternalAuthority}) as fakes, which replace those types everywhere in the
+ * graph; every port not passed is the internal context's default, which lives there alone.
+ *
+ * <p>Bulk test-data seeding still goes through the supplied {@link NaturalistDatabase} and the domain's
+ * {@code *TestEntitySource} classes — the command surface exists for exercising the public write port
+ * end-to-end, not for fixture loading.
  *
  * <p><b>Not a JUnit extension.</b> Consumers that need per-method reset wrap a
- * {@code NaturalistTestExtension} (from {@code framework-test}) alongside
- * this context. Keeping the extension concern out of this class preserves use
- * from non-test contexts (e.g. console bootstraps during pre-RDBMS development).
+ * {@code NaturalistTestExtension} (from {@code framework-test}) alongside this context.
  */
 public class InsectsTestContext {
-    private final InsectQuery insectQuery;
-    private final InsectViewQuery insectViewQuery;
-    private final InsectCommand insectCommand;
-    private final InsectEntityCommands entityCommands;
-    private final InsectLifeStageQuery insectLifeStageQuery;
-    private final InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
-    private final InsectAddPhotoTransaction addPhotoTransaction;
+    private final ObjectGraph graph;
 
-    private InsectsTestContext(NaturalistDatabase db, ImageStore imageStore, Resilience resilience,
-                               IdentificationBudget budget, VisionService visionService,
-                               ExternalAuthority authority) {
-        InsectRepository repository = InsectRepository.create(
-                new InsectSpeciesRepositoryMock(db),
-                new InsectImageRepositoryMock(db),
-                new InsectFamilyRepositoryMock(db),
-                new InsectGenusRepositoryMock(db),
-                new InsectFunctionalRoleRepositoryMock(db),
-                new InsectOrderRepositoryMock(db),
-                new InsectFeatureRepositoryMock(db),
-                new InsectFeatureAssignmentRepositoryMock(db),
-                new InsectObservationRepositoryMock(db));
-        InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(repository.familyRepository);
-        InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(repository.genusRepository, familyQuery);
-        InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(repository.speciesRepository, genusQuery);
-        InsectQuery.ImageQuery imageQuery = new InsectImageQueryImpl(
-                repository.imageRepository, speciesQuery, genusQuery, familyQuery);
-        InsectQuery.ObservationQuery observationQuery =
-                new InsectObservationQueryImpl(repository.observationRepository);
-        InsectQuery.FunctionalRoleQuery functionalRoleQuery =
-                new InsectFunctionalRoleQueryImpl(repository.functionalRoleRepository);
-        InsectQuery.OrderQuery orderQuery = new InsectOrderQueryImpl(repository.orderRepository);
-        LibraryTestContext libraryContext = LibraryTestContext.create(db);
-        CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
-        CitationQuery libraryCitationQuery = libraryContext.citationQuery();
-        this.insectLifeStageQuery = InsectLifeStageTestContext.createQuery(db);
-        InsectAncestryResolver ancestryResolver =
-                new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
-        InsectCitationQueryImpl citationQuery = new InsectCitationQueryImpl(
-                citationAssociationQuery, libraryCitationQuery, ancestryResolver);
-        InsectFeatureQueryImpl featureQuery = new InsectFeatureQueryImpl(
-                repository.featureRepository, repository.featureAssignmentRepository, ancestryResolver);
-        this.insectQuery = new InsectQueryImpl(
-                speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
-                orderQuery, citationQuery, featureQuery,
-                this.insectLifeStageQuery, observationQuery);
-        this.insectViewQuery = new InsectViewQueryImpl(this.insectQuery);
-        InsectCommand.SpeciesCommand speciesCommand = new InsectSpeciesCommandImpl(repository.speciesRepository);
-        InsectCommand.ImageCommand imageCommand = new InsectImageCommandImpl(repository.imageRepository);
-        InsectCommand.ObservationCommand observationCommand =
-                new InsectObservationCommandImpl(repository.observationRepository);
-        InsectCommand.OrderCommand orderCommand = new InsectOrderCommandImpl(repository.orderRepository);
-        InsectCommand.FamilyCommand familyCommand = new InsectFamilyCommandImpl(repository.familyRepository);
-        InsectCommand.GenusCommand genusCommand = new InsectGenusCommandImpl(repository.genusRepository);
-        InsectCommand.FeatureCommand featureCommand =
-                new InsectFeatureCommandImpl(repository.featureRepository);
-        InsectCommand.FeatureAssignmentCommand featureAssignmentCommand =
-                new InsectFeatureAssignmentCommandImpl(repository.featureAssignmentRepository);
-        this.entityCommands = new InsectEntityCommands(
-                speciesCommand, imageCommand, observationCommand,
-                orderCommand, familyCommand, genusCommand,
-                featureCommand, featureAssignmentCommand);
-        this.addPhotoTransaction = new InsectAddPhotoTransaction(this.entityCommands);
-        this.catalogIdentificationTransaction = new InsectCatalogIdentificationTransaction(
-                this.entityCommands, this.insectQuery);
-        InsectQuery wiredQuery = this.insectQuery;
-        FeatureSearch<InsectFeatureId> featureSearch = new InMemoryFeatureSearch<>(() -> wiredQuery.features().corpus()
-                .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
-        InsectCommand.IdentificationCommand identificationCommand = new InsectIdentificationCommandImpl(
-                resilience, budget, visionService, new NoOpTextGenerationService(), authority,
-                libraryContext.libraryCommand(), this.insectQuery, featureSearch, imageStore,
-                this.catalogIdentificationTransaction);
-        this.insectCommand = new InsectCommandImpl(this.entityCommands,
-                new InsectSightingCommandImpl(observationCommand, observationQuery),
-                new InsectPhotoCommandImpl(imageStore, this.addPhotoTransaction),
-                identificationCommand);
+    private InsectsTestContext(ObjectGraph graph) {
+        this.graph = graph;
     }
 
+    /** Every outside-world port is {@link InsectsTestContextInternal}'s default. */
     public static InsectsTestContext create(NaturalistDatabase db) {
-        try {
-            return create(db, new FilesystemImageStore(
-                    Files.createTempDirectory("insects-images"), Resilience.noOp()));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return new InsectsTestContext(ObjectGraph.create(db));
     }
 
+    /** Hands over {@code imageStore}; every other outside-world port is the internal context's default. */
     public static InsectsTestContext create(NaturalistDatabase db, ImageStore imageStore) {
-        return create(db, imageStore, Resilience.noOp(), IdentificationBudget.noOp(),
-                new NoOpVisionService(), new NoOpExternalAuthority());
+        ObjectGraph graph = ObjectGraph.create(db);
+        graph.context(InsectsTestContextInternal.class).fake(ImageStore.class, imageStore);
+        return new InsectsTestContext(graph);
     }
 
     /**
@@ -146,39 +55,46 @@ public class InsectsTestContext {
     public static InsectsTestContext create(NaturalistDatabase db, ImageStore imageStore, Resilience resilience,
                                             IdentificationBudget budget, VisionService visionService,
                                             ExternalAuthority authority) {
-        return new InsectsTestContext(db, imageStore, resilience, budget, visionService, authority);
+        ObjectGraph graph = ObjectGraph.create(db);
+        InsectsTestContextInternal context = graph.context(InsectsTestContextInternal.class);
+        context.fake(ImageStore.class, imageStore);
+        context.fake(Resilience.class, resilience);
+        context.fake(IdentificationBudget.class, budget);
+        context.fake(VisionService.class, visionService);
+        context.fake(ExternalAuthority.class, authority);
+        return new InsectsTestContext(graph);
     }
 
-    /** The context's default {@link ExternalAuthority}: a no-op, for tests that never reach enrichment. */
+    /** A no-op {@link ExternalAuthority}, for callers of the full overload that never reach enrichment. */
     public static ExternalAuthority noOpAuthority() {
         return new NoOpExternalAuthority();
     }
 
     public InsectQuery insectQuery() {
-        return SelectTrace.traced(InsectQuery.class, insectQuery);
+        return graph.get(InsectQuery.class);
     }
 
     public InsectViewQuery insectViewQuery() {
-        return SelectTrace.traced(InsectViewQuery.class, insectViewQuery);
+        return graph.get(InsectViewQuery.class);
     }
 
     public InsectCommand insectCommand() {
-        return SelectTrace.traced(InsectCommand.class, insectCommand);
+        return graph.get(InsectCommand.class);
     }
 
     public InsectEntityCommands entityCommands() {
-        return entityCommands;
+        return graph.get(InsectEntityCommands.class);
     }
 
     public InsectLifeStageQuery insectLifeStageQuery() {
-        return SelectTrace.traced(InsectLifeStageQuery.class, insectLifeStageQuery);
+        return graph.get(InsectLifeStageQuery.class);
     }
 
     public InsectCatalogIdentificationTransaction catalogIdentificationTransaction() {
-        return catalogIdentificationTransaction;
+        return graph.get(InsectCatalogIdentificationTransaction.class);
     }
 
     public InsectAddPhotoTransaction addPhotoTransaction() {
-        return addPhotoTransaction;
+        return graph.get(InsectAddPhotoTransaction.class);
     }
 }

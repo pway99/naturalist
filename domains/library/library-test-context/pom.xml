@@ -25,5 +25,11 @@
             <groupId>com.naturalist</groupId>
             <artifactId>library-repository-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
     </dependencies>
 </project>
