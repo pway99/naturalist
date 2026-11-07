@@ -72,10 +72,10 @@ public class NaturalistTestExtension extends NaturalistDatabase
 
     @Override
     public void afterEach(ExtensionContext context) {
-        RuntimeException failure = null;
+        Throwable failure = null;
         try {
             SelectTrace.evaluate(context.getRequiredTestClass().getSimpleName() + "." + context.getRequiredTestMethod().getName());
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | Error e) {
             failure = e;
             throw e;
         } finally {
