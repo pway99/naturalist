@@ -2,6 +2,7 @@ package com.naturalist.insects.lifestage;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -13,9 +14,8 @@ class InsectLifeStageQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(nte);
-    InsectLifeStageQuery.LifeStageEntityQuery lifeStageEntityQuery = new InsectLifeStageEntityQueryImpl(repository);
-    InsectLifeStageQuery query = new InsectLifeStageQueryImpl(lifeStageEntityQuery);
+    @Wired InsectLifeStageQuery.LifeStageEntityQuery lifeStageEntityQuery;
+    @Wired InsectLifeStageQuery query;
 
     @Test
     void accessors_returnNonNullDelegates() {

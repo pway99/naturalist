@@ -5,6 +5,7 @@ import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectEntityCollections.FunctionalRoleCollection;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -22,8 +23,7 @@ class InsectFunctionalRoleQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFunctionalRoleRepositoryMock repository = new InsectFunctionalRoleRepositoryMock(nte);
-    InsectQuery.FunctionalRoleQuery query = new InsectFunctionalRoleQueryImpl(repository);
+    @Wired InsectQuery.FunctionalRoleQuery query;
 
     @Override
     public EntityQuery<InsectFunctionalRoleId, InsectFunctionalRole, FunctionalRoleCollection> query() {

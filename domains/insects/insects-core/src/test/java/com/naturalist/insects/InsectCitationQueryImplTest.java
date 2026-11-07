@@ -2,9 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
-import com.naturalist.library.CitationAssociationQuery;
-import com.naturalist.library.CitationQuery;
-import com.naturalist.library.LibraryTestContext;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -16,22 +14,7 @@ class InsectCitationQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
-
-    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
-    InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
-
-    LibraryTestContext libraryContext = LibraryTestContext.create(nte);
-    CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
-    CitationQuery citationQuery = libraryContext.citationQuery();
-
-    InsectAncestryResolver ancestryResolver = new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
-
-    InsectCitationQueryImpl insectCitationQuery = new InsectCitationQueryImpl(
-            citationAssociationQuery, citationQuery, ancestryResolver);
+    @Wired InsectCitationQueryImpl insectCitationQuery;
 
     @Test
     void findByRankName_rejectsNull() {

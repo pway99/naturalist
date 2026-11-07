@@ -1,6 +1,8 @@
 package com.naturalist.insects;
 
 import com.naturalist.authority.AuthorityContent;
+import com.naturalist.textgeneration.TextGenerationService;
+import com.naturalist.featuresearch.FeatureSearch;
 import com.naturalist.authority.AuthorityReference;
 import com.naturalist.authority.AuthoritySource;
 import com.naturalist.authority.CitationName;
@@ -9,11 +11,9 @@ import com.naturalist.authority.OnlineSource;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.PageRequest;
 import com.naturalist.ddd.EntityName;
-import com.naturalist.featuresearch.FeatureCorpus;
-import com.naturalist.featuresearch.FeatureSearch;
-import com.naturalist.featuresearch.InMemoryFeatureSearch;
 import com.naturalist.identification.IdentificationRefused;
-import com.naturalist.library.LibraryTestContext;
+import com.naturalist.library.CitationAssociationQuery;
+import com.naturalist.library.LibraryCommand;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
@@ -25,7 +25,6 @@ import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Retry;
 import com.naturalist.resilience.Timeout;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
-import com.naturalist.textgeneration.NoOpTextGenerationService;
 import com.naturalist.usage.BudgetExceededException;
 import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.usage.LimitKind;
@@ -148,18 +147,7 @@ class InsectIdentificationCommandImplTest {
         }
     };
 
-    /**
-     * Builds the same in-memory search the console composition root wires, but backed
-     * by this test's {@link #query} so the corpus reflects
-     * {@link InsectFeatureTestEntitySource} data plus whatever the test itself persists.
-     */
-    private FeatureSearch<InsectFeatureId> buildFeatureSearch() {
-        return new InMemoryFeatureSearch<>(() ->
-                query.features().corpus()
-                        .map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value())));
-    }
-
-    private InsectIdentificationCommandImpl buildCommand(VisionService vision) {
+    private InsectCommand.IdentificationCommand buildCommand(VisionService vision) {
         return buildCommand(com.naturalist.resilience.Resilience.noOp(), com.naturalist.usage.IdentificationBudget.noOp(), vision);
     }
 
@@ -335,18 +323,7 @@ class InsectIdentificationCommandImplTest {
 
     @Test
     void identify_persistsCitationAssociationWhenCitationAlreadyExists() {
-        var libraryContext = LibraryTestContext.create(nte);
-        var cmd = new InsectIdentificationCommandImpl(
-                Resilience.noOp(),
-                IdentificationBudget.noOp(),
-                stubService,
-                new NoOpTextGenerationService(),
-                STUB_AUTHORITY,
-                libraryContext.libraryCommand(),
-                query,
-                buildFeatureSearch(),
-                store,
-                catalogIdentificationTransaction);
+        var cmd = buildCommand(stubService);
 
         // Pre-seed the deterministic citation slug the command derives for the
         // identified species rank ("test-testus-fabricatus" = source id "test" +
@@ -360,12 +337,12 @@ class InsectIdentificationCommandImplTest {
                 new AuthorityReference(new AuthoritySource("test", "Test Authority"),
                         URI.create("https://test.example.com/testus-fabricatus")),
                 "Pre-existing citation", null, null, null);
-        libraryContext.libraryCommand().citations().insert(preExisting);
+        nte.get(LibraryCommand.class).citations().insert(preExisting);
 
         cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
                 NaturalistName.of("pat"), null);
 
-        var associations = libraryContext.citationAssociationQuery().findByCitationName(citationName);
+        var associations = nte.get(CitationAssociationQuery.class).findByCitationName(citationName);
         assertThat(associations.size()).isEqualTo(1);
     }
 
@@ -536,18 +513,38 @@ class InsectIdentificationCommandImplTest {
                 .isEqualTo(1);
     }
 
-    private InsectIdentificationCommandImpl buildCommand(Resilience resilience, IdentificationBudget budget, VisionService vision) {
-        var libraryContext = LibraryTestContext.create(nte);
+    /**
+     * The graph's identification command, after handing this test's resilience, budget, vision service, stub
+     * authority and image store to the insects context. The graph builds the command once, so a test calls this
+     * once.
+     */
+    private InsectCommand.IdentificationCommand buildCommand(Resilience resilience, IdentificationBudget budget, VisionService vision) {
+        InsectsTestContextInternal context = nte.context(InsectsTestContextInternal.class);
+        context.fake(Resilience.class, resilience);
+        context.fake(IdentificationBudget.class, budget);
+        context.fake(VisionService.class, vision);
+        context.fake(ExternalAuthority.class, STUB_AUTHORITY);
+        context.fake(ImageStore.class, store);
+        return nte.get(InsectCommand.IdentificationCommand.class);
+    }
+
+    /**
+     * A second, third or fourth command in one test, each over its own resilience and budget. The test's graph
+     * holds one command, so these are wired by hand; every other argument is the one the graph gives the
+     * graph-built command.
+     */
+    @SuppressWarnings("unchecked")
+    private InsectIdentificationCommandImpl handBuiltCommand(Resilience resilience, IdentificationBudget budget, VisionService vision) {
         return new InsectIdentificationCommandImpl(
                 resilience,
                 budget,
                 vision,
-                new NoOpTextGenerationService(),
-                STUB_AUTHORITY,
-                libraryContext.libraryCommand(),
+                nte.get(TextGenerationService.class),
+                nte.get(ExternalAuthority.class),
+                nte.get(LibraryCommand.class),
                 query,
-                buildFeatureSearch(),
-                store,
+                (FeatureSearch<InsectFeatureId>) nte.get(FeatureSearch.class),
+                nte.get(ImageStore.class),
                 catalogIdentificationTransaction);
     }
 
@@ -861,9 +858,9 @@ class InsectIdentificationCommandImplTest {
             assertThat(refused).as("a permitted identification records no refusal").isEmpty();
 
             for (var cmd : List.of(
-                    buildCommand(new RejectingRateLimiterResilience(), recording, stubService),
-                    buildCommand(new RejectingBulkheadResilience(), recording, stubService),
-                    buildCommand(Resilience.noOp(), overBudget, stubService))) {
+                    handBuiltCommand(new RejectingRateLimiterResilience(), recording, stubService),
+                    handBuiltCommand(new RejectingBulkheadResilience(), recording, stubService),
+                    handBuiltCommand(Resilience.noOp(), overBudget, stubService))) {
                 assertThatThrownBy(() -> cmd.identify(
                         ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), pat, null))
                         .isInstanceOf(IdentificationRefused.class);

@@ -5,6 +5,7 @@ import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectEntityCollections.GenusCollection;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -19,10 +20,7 @@ class InsectGenusQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectGenusRepositoryMock repository = new InsectGenusRepositoryMock(nte);
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
-    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery query = new InsectGenusQueryImpl(repository, familyQuery);
+    @Wired InsectQuery.GenusQuery query;
 
     @Override
     public EntityQuery<InsectGenusName, InsectGenusInfo, GenusCollection> query() {

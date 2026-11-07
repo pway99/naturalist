@@ -63,6 +63,7 @@ public class NaturalistTestExtension extends NaturalistDatabase
     public void beforeEach(ExtensionContext context) {
         clear();
         graph = null;
+        testPackage = context.getRequiredTestClass().getPackageName();
         inject(context.getRequiredTestInstance());
         SelectTrace.arm();
     }
@@ -89,7 +90,7 @@ public class NaturalistTestExtension extends NaturalistDatabase
 
     private ObjectGraph graph() {
         if (graph == null) {
-            graph = ObjectGraph.create(this);
+            graph = ObjectGraph.create(this).requestedFrom(testPackage);
         }
         return graph;
     }
@@ -164,4 +165,10 @@ public class NaturalistTestExtension extends NaturalistDatabase
             throw new UncheckedIOException(e);
         }
     }
+
+    /**
+     * The package of the running test class: its registered context is the requester of the test's own
+     * {@code @Wired} fields and {@link #get} calls. Null outside a test.
+     */
+    private String testPackage;
 }

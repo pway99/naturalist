@@ -9,6 +9,7 @@ import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Instant;
@@ -20,16 +21,8 @@ class InsectImageCommandImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectImageRepositoryMock repository = new InsectImageRepositoryMock(nte);
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
-    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
-    InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
-    InsectCommand.ImageCommand command = new InsectImageCommandImpl(repository);
-    InsectQuery.ImageQuery query = new InsectImageQueryImpl(
-            repository, speciesQuery, genusQuery, familyQuery);
+    @Wired InsectCommand.ImageCommand command;
+    @Wired InsectQuery.ImageQuery query;
 
     @Override
     public EntityCommand<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> command() {

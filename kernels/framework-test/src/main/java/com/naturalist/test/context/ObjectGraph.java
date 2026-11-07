@@ -47,7 +47,8 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
  * One test's object graph, assembled by reflection under the guidance of every registered
  * {@link TestContext}. One instance per class per graph; one graph and one fake registry per test.
  *
- * <p>A type {@code T} asked for by context {@code R} (the test itself has none) resolves to, in order:
+ * <p>A type {@code T} asked for by context {@code R} (for the test itself, the context of the test class's
+ * package, or none; see {@link #requestedFrom}) resolves to, in order:
  * a fake a test handed to a context; what {@code R} provides; what the context owning {@code T}'s
  * package provides; and otherwise the one {@code @DomainService} / {@code @MockDomainService} class of
  * that package that is {@code T} or implements it, built through its single constructor (or its single
@@ -437,5 +438,17 @@ public final class ObjectGraph {
             }
         }
         return false;
+    }
+
+    /**
+     * This graph as asked by the context registered for {@code packageName}, so what that context provides
+     * resolves first, as it does for the classes of its own package. With no context registered there, the
+     * requests come from no context.
+     */
+    public ObjectGraph requestedFrom(String packageName) {
+        if (state.byPackage.getOrDefault(packageName, List.of()).isEmpty()) {
+            return new ObjectGraph(state, null);
+        }
+        return new ObjectGraph(state, owner(packageName));
     }
 }

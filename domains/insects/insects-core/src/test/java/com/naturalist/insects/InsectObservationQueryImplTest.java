@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -12,8 +13,7 @@ class InsectObservationQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectQuery.ObservationQuery query =
-            new InsectObservationQueryImpl(new InsectObservationRepositoryMock(nte));
+    @Wired InsectQuery.ObservationQuery query;
 
     @Test
     void forNaturalist_returnsOnlyThatNaturalistsObservations() {

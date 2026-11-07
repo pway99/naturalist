@@ -1,2 +1,3 @@
 com.naturalist.insects.InsectsTestContextInternal
 com.naturalist.insects.lifestage.InsectLifeStageTestContextInternal
+com.naturalist.insects.catalog.InsectsCatalogTestContextInternal

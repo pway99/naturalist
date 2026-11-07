@@ -1,6 +1,7 @@
 package com.naturalist.library;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -13,8 +14,7 @@ class ConceptQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    ConceptRepository repository = new ConceptRepositoryMock(nte);
-    ConceptQuery conceptQuery = new ConceptQueryImpl(repository);
+    @Wired ConceptQuery conceptQuery;
 
     @Test
     void getByNameReturnsTheConcept() {

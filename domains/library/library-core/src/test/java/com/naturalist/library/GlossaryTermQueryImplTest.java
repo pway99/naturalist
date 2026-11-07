@@ -1,6 +1,7 @@
 package com.naturalist.library;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -13,8 +14,7 @@ class GlossaryTermQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    GlossaryTermRepository repository = new GlossaryTermRepositoryMock(nte);
-    GlossaryTermQuery glossaryTermQuery = new GlossaryTermQueryImpl(repository);
+    @Wired GlossaryTermQuery glossaryTermQuery;
 
     @Test
     void getByNameReturnsTheTerm() {

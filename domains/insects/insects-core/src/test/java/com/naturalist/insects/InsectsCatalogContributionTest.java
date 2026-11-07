@@ -6,6 +6,7 @@ import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Pages;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.catalog.InsectsCatalogContribution;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -15,26 +16,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Lives in {@code com.naturalist.insects} (not {@code .catalog}) so the test
- * can see the package-private {@link InsectSpeciesQueryImpl} and the
- * package-private {@link InsectSpeciesRepositoryMock} without exposing either to
- * the wider test classpath.
+ * The contribution and the insect queries it reads come from the test graph: the contribution through
+ * {@code InsectsCatalogTestContextInternal}, the queries through {@link InsectsTestContextInternal}.
  */
 class InsectsCatalogContributionTest {
 
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final InsectQuery.FamilyQuery familyQuery =
-            new InsectFamilyQueryImpl(new InsectFamilyRepositoryMock(nte));
-    private final InsectQuery.GenusQuery genusQuery =
-            new InsectGenusQueryImpl(new InsectGenusRepositoryMock(nte), familyQuery);
-    private final InsectQuery.SpeciesQuery speciesQuery =
-            new InsectSpeciesQueryImpl(new InsectSpeciesRepositoryMock(nte), genusQuery);
-    private final InsectQuery.OrderQuery orderQuery =
-            new InsectOrderQueryImpl(new InsectOrderRepositoryMock(nte));
-    private final InsectsCatalogContribution contribution =
-            new InsectsCatalogContribution(speciesQuery, familyQuery, genusQuery, orderQuery);
+    @Wired InsectQuery.FamilyQuery familyQuery;
+    @Wired InsectQuery.GenusQuery genusQuery;
+    @Wired InsectQuery.SpeciesQuery speciesQuery;
+    @Wired InsectQuery.OrderQuery orderQuery;
+    @Wired InsectsCatalogContribution contribution;
 
     @Test
     void domainIsInsects() {

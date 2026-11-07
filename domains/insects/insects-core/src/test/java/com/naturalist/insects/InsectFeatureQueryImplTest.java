@@ -4,6 +4,7 @@ import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.taxonomy.LinealRank;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.taxonomy.OrganismFeatureView;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -17,21 +18,9 @@ class InsectFeatureQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
-    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(nte);
-    InsectFeatureAssignmentRepositoryMock assignmentRepository =
-            new InsectFeatureAssignmentRepositoryMock(nte);
-
-    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
-    InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
-    InsectAncestryResolver ancestryResolver =
-            new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
-
-    InsectFeatureQueryImpl featureQuery = new InsectFeatureQueryImpl(
-            featureRepository, assignmentRepository, ancestryResolver);
+    @Wired InsectFeatureRepositoryMock featureRepository;
+    @Wired InsectFeatureAssignmentRepositoryMock assignmentRepository;
+    @Wired InsectFeatureQueryImpl featureQuery;
 
     @Test
     void findByRankName_groupsAncestorFirst_familyGroupLast() {

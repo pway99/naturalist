@@ -13,10 +13,9 @@ import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeSta
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.insects.lifestage.InsectLifeStageTestEntitySource;
 import com.naturalist.insects.lifestage.LifeStage;
-import com.naturalist.library.CitationAssociationQuery;
-import com.naturalist.library.CitationQuery;
-import com.naturalist.library.LibraryTestContext;
 import com.naturalist.observability.Observer;
+import com.naturalist.test.context.Wired;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,35 +34,14 @@ class InsectFactoryTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
-    InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(nte);
-    InsectOrderRepositoryMock orderRepository = new InsectOrderRepositoryMock(nte);
-
-    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
-    InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
-    InsectQuery.ImageQuery imageQuery = new InsectImageQueryImpl(
-            imageRepository, speciesQuery, genusQuery, familyQuery);
-    InsectQuery.OrderQuery orderQuery = new InsectOrderQueryImpl(orderRepository);
-
-    LibraryTestContext libraryContext = LibraryTestContext.create(nte);
-    CitationAssociationQuery citationAssociationQuery = libraryContext.citationAssociationQuery();
-    CitationQuery libraryCitationQuery = libraryContext.citationQuery();
-
-    InsectAncestryResolver ancestryResolver = new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
-    InsectCitationQueryImpl citationQuery = new InsectCitationQueryImpl(
-            citationAssociationQuery, libraryCitationQuery, ancestryResolver);
-
-    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(nte);
-    InsectFeatureAssignmentRepositoryMock assignmentRepository =
-            new InsectFeatureAssignmentRepositoryMock(nte);
-    InsectFeatureQueryImpl featureQuery = new InsectFeatureQueryImpl(
-            featureRepository, assignmentRepository, ancestryResolver);
-
-    InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(nte);
-    InsectQuery.FunctionalRoleQuery roleQuery = new InsectFunctionalRoleQueryImpl(functionalRoleRepository);
+    @Wired InsectQuery.SpeciesQuery speciesQuery;
+    @Wired InsectQuery.ImageQuery imageQuery;
+    @Wired InsectQuery.GenusQuery genusQuery;
+    @Wired InsectQuery.FamilyQuery familyQuery;
+    @Wired InsectQuery.OrderQuery orderQuery;
+    @Wired InsectCitationQueryImpl citationQuery;
+    @Wired InsectFeatureQueryImpl featureQuery;
+    @Wired InsectQuery.FunctionalRoleQuery roleQuery;
 
     /**
      * Stub lifestage query — returns empty collections. InsectLifeStageQueryImpl is
@@ -99,9 +77,15 @@ class InsectFactoryTest {
         }
     };
 
-    InsectFactory factory = new InsectFactory(
-            speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
-            lifeStageQuery, citationQuery, featureQuery, roleQuery);
+    InsectFactory factory;
+
+    /** The factory under test, over the graph's queries and the stub life-stage query above. */
+    @BeforeEach
+    void buildFactory() {
+        factory = new InsectFactory(
+                speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
+                lifeStageQuery, citationQuery, featureQuery, roleQuery);
+    }
 
     @Test
     void buildByName_rejectsNull() {

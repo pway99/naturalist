@@ -8,6 +8,7 @@ import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.insects.TestInsectsIdentifiers;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -22,8 +23,7 @@ class InsectLifeStageEntityQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectLifeStageEntityRepositoryMock repository = new InsectLifeStageEntityRepositoryMock(nte);
-    InsectLifeStageQuery.LifeStageEntityQuery query = new InsectLifeStageEntityQueryImpl(repository);
+    @Wired InsectLifeStageQuery.LifeStageEntityQuery query;
 
     @Override
     public EntityQuery<LifeStageName, LifeStage, LifeStageCollection> query() {

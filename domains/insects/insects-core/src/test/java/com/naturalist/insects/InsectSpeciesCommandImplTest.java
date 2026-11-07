@@ -9,6 +9,7 @@ import com.naturalist.data.TestEntitySource;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.insects.InsectEntityCollections.SpeciesCollection;
 import com.naturalist.taxonomy.TaxonomicSpecies;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
@@ -20,11 +21,8 @@ class InsectSpeciesCommandImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectSpeciesRepositoryMock repository = new InsectSpeciesRepositoryMock(nte);
-    InsectCommand.SpeciesCommand command = new InsectSpeciesCommandImpl(repository);
-    InsectQuery.GenusQuery genusQuery =
-            new InsectGenusQueryImpl(new InsectGenusRepositoryMock(nte), new InsectFamilyQueryImpl(new InsectFamilyRepositoryMock(nte)));
-    InsectQuery.SpeciesQuery query = new InsectSpeciesQueryImpl(repository, genusQuery);
+    @Wired InsectCommand.SpeciesCommand command;
+    @Wired InsectQuery.SpeciesQuery query;
 
     @Override
     public EntityCommand<InsectSpeciesName, InsectSpeciesInfo> command() {

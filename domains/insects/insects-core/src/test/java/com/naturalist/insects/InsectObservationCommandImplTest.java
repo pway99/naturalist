@@ -7,6 +7,7 @@ import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.insects.InsectEntityCollections.ObservationCollection;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Instant;
@@ -20,9 +21,8 @@ class InsectObservationCommandImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectObservationRepositoryMock repository = new InsectObservationRepositoryMock(nte);
-    InsectCommand.ObservationCommand command = new InsectObservationCommandImpl(repository);
-    InsectQuery.ObservationQuery query = new InsectObservationQueryImpl(repository);
+    @Wired InsectCommand.ObservationCommand command;
+    @Wired InsectQuery.ObservationQuery query;
 
     @Override
     public EntityCommand<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> command() {

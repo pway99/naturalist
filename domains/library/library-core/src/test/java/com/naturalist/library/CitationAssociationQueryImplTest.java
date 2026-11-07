@@ -7,6 +7,7 @@ import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectFamilyName;
 import com.naturalist.insects.InsectOrderName;
 import com.naturalist.insects.InsectsDomain;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -20,8 +21,7 @@ class CitationAssociationQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CitationAssociationRepositoryMock repository = new CitationAssociationRepositoryMock(nte);
-    CitationAssociationQueryImpl query = new CitationAssociationQueryImpl(repository);
+    @Wired CitationAssociationQueryImpl query;
 
     @Test
     void findByCitationName_rejectsNull() {
