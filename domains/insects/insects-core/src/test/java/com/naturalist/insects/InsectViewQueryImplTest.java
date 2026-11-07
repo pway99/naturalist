@@ -6,6 +6,7 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.ImageUpload;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -24,9 +25,9 @@ class InsectViewQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
-
-    InsectViewQuery views = context.insectViewQuery();
+    @Wired InsectViewQuery views;
+    @Wired InsectQuery insectQuery;
+    @Wired InsectCommand insectCommand;
 
     InsectRankName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
 
@@ -34,7 +35,7 @@ class InsectViewQueryImplTest {
     void rankPage_noViewer_carriesTheSameInsectAsGetByName() {
         InsectViews.RankPage page = views.rankPage(species, null).orElseThrow();
 
-        assertThat(page.insect()).isEqualTo(context.insectQuery().getByName(species).orElseThrow());
+        assertThat(page.insect()).isEqualTo(insectQuery.getByName(species).orElseThrow());
         assertThat(page.viewer()).isEqualTo(InsectViews.Viewer.anonymous());
     }
 
@@ -46,12 +47,12 @@ class InsectViewQueryImplTest {
         assertThat(page.viewer().ownImages().stream().toList()).isEmpty();
         assertThat(page.viewer().ownObservationByImage()).isEmpty();
         assertThat(page.insect().observations().stream().toList())
-                .isEqualTo(context.insectQuery().getByName(species).orElseThrow().observations().stream().toList());
+                .isEqualTo(insectQuery.getByName(species).orElseThrow().observations().stream().toList());
     }
 
     @Test
     void rankPage_viewerWithPhotoObservation() {
-        context.insectCommand().photos().add(species, ImageUpload.of(JPEG), FLORA, "on the pipevine", null);
+        insectCommand.photos().add(species, ImageUpload.of(JPEG), FLORA, "on the pipevine", null);
 
         InsectViews.RankPage page = views.rankPage(species, FLORA).orElseThrow();
 
@@ -77,7 +78,7 @@ class InsectViewQueryImplTest {
         assertThatThrownBy(() -> views.rankPage(null, FLORA)).isInstanceOf(InvariantViolationException.class);
     }
     private void sighting(InsectSpeciesName name) {
-        context.insectCommand().sightings().record(name, FLORA, null);
+        insectCommand.sightings().record(name, FLORA, null);
     }
 
     @Test
@@ -184,10 +185,10 @@ class InsectViewQueryImplTest {
     void familyCards_carryOrderLabelAndSubtreeImages() {
         Page<InsectViews.RankCard> page = views.familyCards(PageRequest.first(100));
         assertThat(page.content()).isNotEmpty();
-        Map<InsectFamilyName, InsectFamilyInfo> families = context.insectQuery().families()
+        Map<InsectFamilyName, InsectFamilyInfo> families = insectQuery.families()
                 .findByNameSet(page.content().stream().map(c -> (InsectFamilyName) c.name()).collect(Collectors.toSet()))
                 .stream().collect(Collectors.toMap(InsectFamilyInfo::name, Function.identity()));
-        Map<InsectOrderName, InsectOrderInfo> orders = context.insectQuery().orders()
+        Map<InsectOrderName, InsectOrderInfo> orders = insectQuery.orders()
                 .findByNameSet(families.values().stream().map(InsectFamilyInfo::orderName).collect(Collectors.toSet()))
                 .stream().collect(Collectors.toMap(InsectOrderInfo::name, Function.identity()));
         for (InsectViews.RankCard card : page.content()) {
@@ -209,10 +210,10 @@ class InsectViewQueryImplTest {
     void genusCards_carryFamilyLabel() {
         Page<InsectViews.RankCard> page = views.genusCards(PageRequest.first(100));
         assertThat(page.content()).isNotEmpty();
-        Map<InsectGenusName, InsectGenusInfo> genera = context.insectQuery().genera()
+        Map<InsectGenusName, InsectGenusInfo> genera = insectQuery.genera()
                 .findByNameSet(page.content().stream().map(c -> (InsectGenusName) c.name()).collect(Collectors.toSet()))
                 .stream().collect(Collectors.toMap(InsectGenusInfo::name, Function.identity()));
-        Map<InsectFamilyName, InsectFamilyInfo> families = context.insectQuery().families()
+        Map<InsectFamilyName, InsectFamilyInfo> families = insectQuery.families()
                 .findByNameSet(genera.values().stream().map(InsectGenusInfo::familyName).collect(Collectors.toSet()))
                 .stream().collect(Collectors.toMap(InsectFamilyInfo::name, Function.identity()));
         for (InsectViews.RankCard card : page.content()) {
@@ -228,7 +229,7 @@ class InsectViewQueryImplTest {
     void orderCards_haveNoParent() {
         Page<InsectViews.RankCard> page = views.orderCards(PageRequest.first(100));
         assertThat(page.content()).isNotEmpty();
-        Map<InsectOrderName, InsectOrderInfo> orders = context.insectQuery().orders()
+        Map<InsectOrderName, InsectOrderInfo> orders = insectQuery.orders()
                 .findByNameSet(page.content().stream().map(c -> (InsectOrderName) c.name()).collect(Collectors.toSet()))
                 .stream().collect(Collectors.toMap(InsectOrderInfo::name, Function.identity()));
         for (InsectViews.RankCard card : page.content()) {

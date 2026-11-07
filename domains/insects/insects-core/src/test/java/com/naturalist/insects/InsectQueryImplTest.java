@@ -1,17 +1,13 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
-import com.naturalist.data.Page;
-import com.naturalist.data.PageRequest;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
-import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
-import com.naturalist.insects.lifestage.LifeStage;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,98 +17,17 @@ class InsectQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectSpeciesRepositoryMock speciesRepository = new InsectSpeciesRepositoryMock(nte);
-    InsectImageRepositoryMock imageRepository = new InsectImageRepositoryMock(nte);
-    InsectFamilyRepositoryMock familyRepository = new InsectFamilyRepositoryMock(nte);
-    InsectGenusRepositoryMock genusRepository = new InsectGenusRepositoryMock(nte);
-    InsectFunctionalRoleRepositoryMock functionalRoleRepository = new InsectFunctionalRoleRepositoryMock(nte);
-    InsectOrderRepositoryMock orderRepository = new InsectOrderRepositoryMock(nte);
-    InsectFeatureRepositoryMock featureRepository = new InsectFeatureRepositoryMock(nte);
-    InsectFeatureAssignmentRepositoryMock featureAssignmentRepository = new InsectFeatureAssignmentRepositoryMock(nte);
-    InsectObservationRepositoryMock observationRepository = new InsectObservationRepositoryMock(nte);
-    InsectQuery.ObservationQuery observationQuery = new InsectObservationQueryImpl(observationRepository);
-    InsectQuery.FamilyQuery familyQuery = new InsectFamilyQueryImpl(familyRepository);
-    InsectQuery.GenusQuery genusQuery = new InsectGenusQueryImpl(genusRepository, familyQuery);
-    InsectQuery.SpeciesQuery speciesQuery = new InsectSpeciesQueryImpl(speciesRepository, genusQuery);
-    InsectQuery.ImageQuery imageQuery = new InsectImageQueryImpl(
-            imageRepository, speciesQuery, genusQuery, familyQuery);
-    InsectQuery.FunctionalRoleQuery functionalRoleQuery = new InsectFunctionalRoleQueryImpl(functionalRoleRepository);
-    InsectQuery.OrderQuery orderQuery = new InsectOrderQueryImpl(orderRepository);
-    com.naturalist.library.CitationAssociationQuery citationAssociationQuery =
-            new com.naturalist.library.CitationAssociationQuery() {
-                @Override
-                public com.naturalist.library.CitationAssociationCollection findByCitationName(
-                        com.naturalist.authority.CitationName citationName) {
-                    return com.naturalist.library.CitationAssociationCollection.empty();
-                }
-
-                @Override
-                public com.naturalist.library.CitationAssociationCollection findBySubject(
-                        com.naturalist.catalog.EntityRef subject) {
-                    return com.naturalist.library.CitationAssociationCollection.empty();
-                }
-
-                @Override
-                public com.naturalist.library.CitationAssociationCollection findBySubjects(
-                        java.util.Set<com.naturalist.catalog.EntityRef> subjects) {
-                    return com.naturalist.library.CitationAssociationCollection.empty();
-                }
-            };
-    com.naturalist.library.CitationQuery libraryCitationQuery =
-            new com.naturalist.library.CitationQuery() {
-                @Override
-                public java.util.Optional<com.naturalist.authority.Citation> getByName(
-                        com.naturalist.authority.CitationName name) {
-                    return java.util.Optional.empty();
-                }
-
-                @Override
-                public com.naturalist.library.CitationCollection findByNameSet(
-                        java.util.Set<com.naturalist.authority.CitationName> nameSet) {
-                    return com.naturalist.library.CitationCollection.empty();
-                }
-
-                @Override
-                public com.naturalist.data.Page<com.naturalist.authority.Citation> findPage(
-                        com.naturalist.data.PageRequest pageRequest) {
-                    return new com.naturalist.data.Page<>(
-                            java.util.List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
-                }
-            };
-    InsectLifeStageQuery insectLifeStageQuery = new InsectLifeStageQuery() {
-        @Override
-        public LifeStageEntityQuery lifeStages() {
-            return new LifeStageEntityQuery() {
-                @Override
-                public LifeStageCollection forParentName(InsectRankName parentName) {
-                    return LifeStageCollection.empty();
-                }
-
-                @Override
-                public Optional<LifeStage> getByName(com.naturalist.insects.LifeStageName name) {
-                    return Optional.empty();
-                }
-
-                @Override
-                public LifeStageCollection findByNameSet(Set<com.naturalist.insects.LifeStageName> names) {
-                    return LifeStageCollection.empty();
-                }
-
-                @Override
-                public Page<LifeStage> findPage(PageRequest pageRequest) {
-                    return new Page<>(java.util.List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
-                }
-            };
-        }
-    };
-    InsectAncestryResolver ancestryResolver = new InsectAncestryResolver(speciesQuery, genusQuery, familyQuery);
-    InsectCitationQueryImpl citationQuery =
-            new InsectCitationQueryImpl(citationAssociationQuery, libraryCitationQuery, ancestryResolver);
-    InsectFeatureQueryImpl featureQuery =
-            new InsectFeatureQueryImpl(featureRepository, featureAssignmentRepository, ancestryResolver);
-    InsectQuery insectQuery = new InsectQueryImpl(
-            speciesQuery, imageQuery, familyQuery, genusQuery, functionalRoleQuery,
-            orderQuery, citationQuery, featureQuery, insectLifeStageQuery, observationQuery);
+    @Wired InsectQuery insectQuery;
+    @Wired InsectQuery.SpeciesQuery speciesQuery;
+    @Wired InsectQuery.ImageQuery imageQuery;
+    @Wired InsectQuery.FamilyQuery familyQuery;
+    @Wired InsectQuery.GenusQuery genusQuery;
+    @Wired InsectQuery.FunctionalRoleQuery functionalRoleQuery;
+    @Wired InsectQuery.OrderQuery orderQuery;
+    @Wired InsectQuery.ObservationQuery observationQuery;
+    @Wired InsectCitationQueryImpl citationQuery;
+    @Wired InsectFeatureQueryImpl featureQuery;
+    @Wired InsectLifeStageQuery insectLifeStageQuery;
 
     @Test
     void accessors_returnNonNullDelegates() {

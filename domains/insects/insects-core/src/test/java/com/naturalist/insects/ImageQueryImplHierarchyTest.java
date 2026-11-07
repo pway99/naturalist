@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -11,8 +12,7 @@ class ImageQueryImplHierarchyTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
-    InsectQuery query = context.insectQuery();
+    @Wired InsectQuery query;
 
     @Test
     void forRankHierarchy_species_returnsSpeciesImages() {

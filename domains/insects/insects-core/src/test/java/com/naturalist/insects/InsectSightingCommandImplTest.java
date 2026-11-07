@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -18,8 +19,8 @@ class InsectSightingCommandImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
-    InsectCommand.SightingCommand sightings = context.insectCommand().sightings();
+    @Wired InsectCommand.SightingCommand sightings;
+    @Wired InsectQuery insectQuery;
     InsectRankName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
 
     private InsectObservationId recordedBy(NaturalistName who, String notes) {
@@ -27,14 +28,14 @@ class InsectSightingCommandImplTest {
     }
 
     private String notesOf(InsectObservationId id) {
-        return context.insectQuery().observations().getByName(id).orElseThrow().notes();
+        return insectQuery.observations().getByName(id).orElseThrow().notes();
     }
 
     @Test
     void record_insertsObservationForNaturalist() {
         var id = recordedBy(PAT, "seen today");
 
-        var observation = context.insectQuery().observations().getByName(id);
+        var observation = insectQuery.observations().getByName(id);
         assertThat(observation).isPresent();
         assertThat(observation.get().observedBy()).isEqualTo(PAT);
         assertThat(observation.get().subject()).isEqualTo(species);

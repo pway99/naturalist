@@ -85,5 +85,30 @@
             <artifactId>image-store-filesystem</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>library-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Ships insects' test contexts (InsectsTestContextInternal, InsectLifeStageTestContextInternal
+                 and their services entry) to other modules' tests in the test-jar. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

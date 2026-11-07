@@ -34,6 +34,7 @@ import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
 import com.naturalist.vision.VisionExchange;
 import com.naturalist.vision.VisionService;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -84,8 +85,8 @@ class InsectIdentificationCommandImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
-    InsectQuery query = context.insectQuery();
+    @Wired InsectQuery query;
+    @Wired InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
 
     private final VisionService stubService = (image, tool, prompt) ->
             fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
@@ -345,7 +346,7 @@ class InsectIdentificationCommandImplTest {
                 query,
                 buildFeatureSearch(),
                 store,
-                context.catalogIdentificationTransaction());
+                catalogIdentificationTransaction);
 
         // Pre-seed the deterministic citation slug the command derives for the
         // identified species rank ("test-testus-fabricatus" = source id "test" +
@@ -547,7 +548,7 @@ class InsectIdentificationCommandImplTest {
                 query,
                 buildFeatureSearch(),
                 store,
-                context.catalogIdentificationTransaction());
+                catalogIdentificationTransaction);
     }
 
     private static List<Path> filesUnder(Path root) throws IOException {

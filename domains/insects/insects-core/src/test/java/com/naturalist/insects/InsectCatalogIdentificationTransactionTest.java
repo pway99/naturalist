@@ -11,6 +11,7 @@ import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
 import com.naturalist.taxonomy.TaxonomicOrder;
 import com.naturalist.taxonomy.TaxonomicSpecies;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -28,9 +29,8 @@ class InsectCatalogIdentificationTransactionTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    InsectsTestContextInternal context = InsectsTestContextInternal.create(nte);
-    InsectQuery query = context.insectQuery();
-    InsectCatalogIdentificationTransaction transaction = context.catalogIdentificationTransaction();
+    @Wired InsectQuery query;
+    @Wired InsectCatalogIdentificationTransaction transaction;
 
     @Test
     void executePersistsSpeciesAndParentRanksAndImageAndObservation() {

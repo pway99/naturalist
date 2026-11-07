@@ -7,12 +7,13 @@ import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
-import org.junit.jupiter.api.BeforeEach;
+import com.naturalist.test.context.Fake;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -31,21 +32,12 @@ class InsectPhotoCommandImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @TempDir
-    Path imageRoot;
+    Path imageRoot = newImageRoot();
 
-    ImageStore store;
-    InsectsTestContextInternal context;
-    InsectCommand.PhotoCommand command;
-    InsectQuery query;
-
-    @BeforeEach
-    void setUp() {
-        store = new FilesystemImageStore(imageRoot, Resilience.noOp());
-        context = InsectsTestContextInternal.create(nte, store);
-        command = context.insectCommand().photos();
-        query = context.insectQuery();
-    }
+    @Fake ImageStore store = new FilesystemImageStore(imageRoot, Resilience.noOp());
+    @Wired InsectEntityCommands entityCommands;
+    @Wired InsectCommand.PhotoCommand command;
+    @Wired InsectQuery query;
 
     @Test
     void add_withNaturalist_insertsImageAndObservation() {
@@ -135,7 +127,7 @@ class InsectPhotoCommandImplTest {
     @Test
     void add_persistFailure_deletesStoredFile() throws IOException {
         var species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var throwing = new InsectAddPhotoTransaction(context.entityCommands()) {
+        var throwing = new InsectAddPhotoTransaction(entityCommands) {
             @Override
             protected void doExecute(PhotoAddition addition) {
                 throw new IllegalStateException("boom");
@@ -148,6 +140,15 @@ class InsectPhotoCommandImplTest {
                 .hasMessage("boom");
 
         assertThat(filesUnder(imageRoot)).isEmpty();
+    }
+
+    /** A fresh image root per test, made before the {@code @Fake} store that writes under it. */
+    private static Path newImageRoot() {
+        try {
+            return Files.createTempDirectory("insects-photo-command");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private static java.util.List<Path> filesUnder(Path root) throws IOException {

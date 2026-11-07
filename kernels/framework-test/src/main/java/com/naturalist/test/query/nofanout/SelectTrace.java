@@ -9,10 +9,12 @@ import org.junit.jupiter.api.TestTemplate;
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -102,7 +104,20 @@ public final class SelectTrace {
 
     @SuppressWarnings("unchecked")
     private static <T> T tracedPort(Class<?> port, Object target) {
-        return (T) traced((Class<Object>) port, target);
+        synchronized (WRAPPERS) {
+            Map<Class<?>, Wrapper> byPort = WRAPPERS.get(target);
+            if (byPort == null) {
+                byPort = new HashMap<>();
+                WRAPPERS.put(target, byPort);
+            }
+            Wrapper cached = byPort.get(port);
+            Object proxy = cached == null || cached.target().get() != target ? null : cached.proxy().get();
+            if (proxy == null) {
+                proxy = traced((Class<Object>) port, target);
+                byPort.put(port, new Wrapper(new java.lang.ref.WeakReference<>(target), new java.lang.ref.WeakReference<>(proxy)));
+            }
+            return (T) proxy;
+        }
     }
 
     /** Whether only test code stands between this wrapped call and the test method. */
@@ -362,4 +377,16 @@ public final class SelectTrace {
         final List<Hit> repeats = new ArrayList<>();
         final Set<String> writers = new HashSet<>();
     }
+
+    /** One cached wrapper: the target it wraps and its proxy, both held weakly. */
+    private record Wrapper(WeakReference<Object> target, WeakReference<Object> proxy) {
+    }
+
+    /**
+     * The proxy {@link #tracedPort} made for each (target, port), so a port a traced call returns is the same
+     * instance every time. Weak keys let targets be collected; the proxy is held weakly too, because it
+     * references its target. A WeakHashMap matches keys by equals, so a hit is used only when its target is the
+     * same instance.
+     */
+    private static final Map<Object, Map<Class<?>, Wrapper>> WRAPPERS = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
 }
