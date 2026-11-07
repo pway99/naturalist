@@ -2,7 +2,19 @@ package com.naturalist.test.context;
 
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.test.query.nofanout.SelectTrace;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.asm.Advice;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
+import net.bytebuddy.implementation.SuperMethodCall;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatchers;
 
+import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,7 +32,16 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
+
+import static net.bytebuddy.matcher.ElementMatchers.isAbstract;
+import static net.bytebuddy.matcher.ElementMatchers.isFinal;
+import static net.bytebuddy.matcher.ElementMatchers.isPrivate;
+import static net.bytebuddy.matcher.ElementMatchers.isStatic;
+import static net.bytebuddy.matcher.ElementMatchers.isSynthetic;
+import static net.bytebuddy.matcher.ElementMatchers.isVisibleTo;
+import static net.bytebuddy.matcher.ElementMatchers.not;
 
 /**
  * One test's object graph, assembled by reflection under the guidance of every registered
@@ -32,11 +53,29 @@ import java.util.function.Supplier;
  * that package that is {@code T} or implements it, built through its single constructor (or its single
  * static {@code create} / {@code of}) with its parameters resolved for the owning context.
  *
- * <p>A {@code com.naturalist} interface that is not sealed is handed out wrapped by
- * {@link SelectTrace#traced}, one proxy per type, so every requester shares it. Concrete classes are
- * handed out plain.
+ * <p>Everything the graph builds is traced, so each call a test makes on it starts a new count. A
+ * {@code com.naturalist} interface that is not sealed is handed out wrapped by {@link SelectTrace#traced},
+ * one proxy per type, so every requester shares it. A non-final concrete class is built, once, as a
+ * {@link SelectTrace.Traced} subclass generated in its own package; a {@code final} class is built plain and
+ * untraced. Before building a class the graph checks that a proxy can reach every method it marks
+ * {@code @jakarta.transaction.Transactional}.
  */
 public final class ObjectGraph {
+
+    private static final String JAKARTA_TRANSACTIONAL = "jakarta.transaction.Transactional";
+
+    private static final String SPRING_TRANSACTIONAL = "org.springframework.transaction.annotation.Transactional";
+
+    /** The sites already warned about, so each Spring {@code @Transactional} is reported once per run. */
+    private static final Set<String> SPRING_WARNINGS = ConcurrentHashMap.newKeySet();
+
+    /** The traced subclass of each class a graph builds, generated once per class for the whole run. */
+    private static final ClassValue<Class<?>> TRACED_SUBCLASSES = new ClassValue<>() {
+        @Override
+        protected Class<?> computeValue(Class<?> type) {
+            return tracedSubclass(type);
+        }
+    };
 
     private final State state;
     /** The context this view asks for; null when the test itself asks. */
@@ -218,10 +257,11 @@ public final class ObjectGraph {
     }
 
     private Object construct(Class<?> impl) {
+        checkReachable(impl);
         Constructor<?>[] constructors = impl.getDeclaredConstructors();
         try {
             if (constructors.length == 1) {
-                Constructor<?> constructor = constructors[0];
+                Constructor<?> constructor = tracing(constructors[0]);
                 constructor.setAccessible(true);
                 return constructor.newInstance(arguments(constructor.getParameterTypes()));
             }
@@ -304,5 +344,98 @@ public final class ObjectGraph {
         State(NaturalistDatabase db) {
             this.db = db;
         }
+    }
+
+    /**
+     * A {@link SelectTrace.Traced} subclass of {@code type}, defined in its package, whose every overridable
+     * method declared by {@code type} or a {@code com.naturalist} superclass enters through
+     * {@link SelectTrace.TraceAdvice} before it runs the original.
+     */
+    private static Class<?> tracedSubclass(Class<?> type) {
+        Set<String> owners = new HashSet<>();
+        for (Class<?> owner = type; owner != null && owner.getName().startsWith("com.naturalist."); owner = owner.getSuperclass()) {
+            owners.add(owner.getName());
+        }
+        ElementMatcher<TypeDescription> declaredByOwner = declaring -> owners.contains(declaring.getName());
+        try {
+            return new ByteBuddy()
+                    .subclass(type, ConstructorStrategy.Default.IMITATE_SUPER_CLASS)
+                    .implement(SelectTrace.Traced.class)
+                    .method(ElementMatchers.<MethodDescription>isDeclaredBy(declaredByOwner)
+                            .and(isVisibleTo(TypeDescription.ForLoadedType.of(type)))
+                            .and(not(isPrivate())).and(not(isStatic())).and(not(isFinal()))
+                            .and(not(isAbstract())).and(not(isSynthetic())))
+                    .intercept(Advice.to(SelectTrace.TraceAdvice.class).wrap(SuperMethodCall.INSTANCE))
+                    .make()
+                    .load(type.getClassLoader(),
+                            ClassLoadingStrategy.UsingLookup.of(MethodHandles.privateLookupIn(type, MethodHandles.lookup())))
+                    .getLoaded();
+        } catch (IllegalAccessException e) {
+            throw new TestGraphException("cannot trace " + type.getName() + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * The same constructor on the class's {@link SelectTrace.Traced} subclass, so the object is built once, as
+     * the subclass. A class that cannot be subclassed, a {@code final} one above all, is built plain and untraced.
+     */
+    private static Constructor<?> tracing(Constructor<?> constructor) throws NoSuchMethodException {
+        Class<?> type = constructor.getDeclaringClass();
+        if (Modifier.isFinal(type.getModifiers()) || type.isSealed() || type.isEnum() || type.isRecord()
+                || type.isAnonymousClass() || type.isLocalClass() || Modifier.isPrivate(constructor.getModifiers())) {
+            return constructor;
+        }
+        return TRACED_SUBCLASSES.get(type).getDeclaredConstructor(constructor.getParameterTypes());
+    }
+
+    /**
+     * Fails when a method of {@code type} or a {@code com.naturalist} superclass carries
+     * {@code @jakarta.transaction.Transactional}, on itself or on its class, where a proxy cannot reach it; warns
+     * once on Spring's {@code @Transactional}. Annotations are matched by type name, so no Spring dependency is needed.
+     */
+    private static void checkReachable(Class<?> type) {
+        for (Class<?> owner = type; owner != null && owner.getName().startsWith("com.naturalist."); owner = owner.getSuperclass()) {
+            boolean jakartaClass = carries(owner, JAKARTA_TRANSACTIONAL);
+            boolean springClass = carries(owner, SPRING_TRANSACTIONAL);
+            for (Method method : owner.getDeclaredMethods()) {
+                int modifiers = method.getModifiers();
+                boolean proxied = !method.isSynthetic() && !Modifier.isPrivate(modifiers) && !Modifier.isStatic(modifiers);
+                String site = type.getName() + "#" + method.getName();
+                if (carries(method, JAKARTA_TRANSACTIONAL) || jakartaClass && proxied) {
+                    String reason = unreachable(type, modifiers);
+                    if (reason != null) {
+                        throw new TestGraphException(site
+                                + " carries @jakarta.transaction.Transactional but a proxy cannot reach it: " + reason);
+                    }
+                }
+                if ((carries(method, SPRING_TRANSACTIONAL) || springClass && proxied) && SPRING_WARNINGS.add(site)) {
+                    System.err.println("WARN test-context: Spring @Transactional on " + site
+                            + "; core uses jakarta.transaction.Transactional");
+                }
+            }
+        }
+    }
+
+    /** Why a proxy of {@code type} cannot reach a method with {@code modifiers}, or null when it can. */
+    private static String unreachable(Class<?> type, int modifiers) {
+        if (Modifier.isFinal(type.getModifiers())) {
+            return "the class is final";
+        }
+        if (Modifier.isFinal(modifiers)) {
+            return "the method is final";
+        }
+        if (Modifier.isPrivate(modifiers)) {
+            return "the method is private";
+        }
+        return Modifier.isStatic(modifiers) ? "the method is static" : null;
+    }
+
+    private static boolean carries(AnnotatedElement element, String annotation) {
+        for (Annotation declared : element.getDeclaredAnnotations()) {
+            if (declared.annotationType().getName().equals(annotation)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

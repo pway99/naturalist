@@ -293,4 +293,39 @@ class InsectCatalogIdentificationTransactionTest {
                 "Eupeodes fumipennis is a Syrphid fly whose larvae are voracious aphid predators.",
                 "E. fumipennis is a Palearctic-Nearctic hover fly with larval aphidophagy.");
     }
+
+    /**
+     * A transaction the graph hands out is traced: each call the test makes is its own count, so a
+     * loop over two identifications reads each parent rank once per call, never twice in one.
+     */
+    @Test
+    void twoCallsFromTheTestAreTwoCounts() {
+        var fromGraph = nte.get(InsectCatalogIdentificationTransaction.class);
+        var secondSpeciesName = InsectSpeciesName.of("fabricatus-tertius");
+        var secondObsId = InsectObservationId.create();
+        var secondSpecies = new InsectSpeciesInfo(
+                secondSpeciesName, GENUS_NAME,
+                TaxonomicSpecies.of("tertius"),
+                description(),
+                Set.of(CommonName.of("Third Test Fly")),
+                null, null, null, null, null, null, null, null, null);
+        var secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+                InsectImageId.create(), secondSpeciesName, Instant.now(),
+                FileName.of("IMG_0030.jpg"), secondObsId);
+        var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
+                secondObsId, NaturalistName.of("pat"), secondSpeciesName,
+                Instant.now(), null, null, null);
+        var second = new CatalogIdentification(
+                new IdentifiedRankEntity.Species(secondSpecies),
+                taxonomy(), secondImage, secondObs,
+                List.of(), List.of(), Map.of());
+
+        for (var identification : List.of(catalogIdentification(), second)) {
+            fromGraph.execute(identification);
+        }
+
+        assertThat(query.species().getByName(secondSpeciesName)).isPresent();
+        assertThat(query.images().forParentName(secondSpeciesName).stream().toList()).hasSize(1);
+        assertThat(query.observations().getByName(secondObsId)).isPresent();
+    }
 }

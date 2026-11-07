@@ -30,6 +30,11 @@
             <artifactId>assertj-core</artifactId>
             <version>${assertj-version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

@@ -30,17 +30,20 @@ over rows that all exist fails, and that is a real repeated read.
 
 ## Test contexts wrap what they hand out
 
-Test context accessors and query factories return `SelectTrace.traced(Port.class, target)`. That JDK
-proxy starts a new count when a test calls the port, so tests can loop over context commands and queries
-with plain calls. A call made from inside the unit under test, or from a test callback the unit runs,
-never resets, so a loop in the unit still fails. Commands and queries the port returns are wrapped too.
-
-**New context accessor returning a `*Query` or `*Command`? Wrap it.** Forgetting can only cause a false
-failure, never a missed N+1, because of the rule below.
-
-A test that builds an `*Impl` itself is not wrapped. There a loop with a single reading call has the
-same stack as a loop in the unit under test, so it fails: batch the call or take the object from a
-context. Spring-wired console tests and concrete accessors (transactions) behave the same way.
+- **The graph wraps everything it builds.** A port (a non-sealed `com.naturalist` interface) is handed
+  out as a `SelectTrace.traced` JDK proxy. A non-final concrete class is built, once, as a ByteBuddy
+  subclass that implements `SelectTrace.Traced` and enters each of its overridable methods through
+  `SelectTrace.TraceAdvice`. Either way a call the test makes starts a new count, so tests can loop over
+  context commands, queries and transactions with plain calls. Before building a class the graph checks
+  that a proxy can reach every `@jakarta.transaction.Transactional` method, and fails with
+  `TestGraphException` when one is final, private or static, or the class is final.
+- **`final` classes are not traced.** They are built plain, and a loop over one in a test fails like a
+  loop in the unit under test. So does an object a test builds itself or a context provides from its own
+  factory, and anything Spring wires in a console test: batch the call or take the object from the graph.
+- **A wrapper resets the count only when the test is the direct caller.** A call made from inside the unit
+  under test, a self-call on a `Traced` object, or a test callback the unit runs never resets, so a loop
+  in the unit still fails. Ports a traced call returns are wrapped too, and an object already traced (a
+  `Traced` instance or one of `SelectTrace`'s own proxies) is returned as it is.
 
 ## ⛔ Do NOT weaken this gate to make a test pass
 

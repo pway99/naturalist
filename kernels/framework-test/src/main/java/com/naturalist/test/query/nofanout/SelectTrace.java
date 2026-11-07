@@ -3,6 +3,7 @@ package com.naturalist.test.query.nofanout;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.SuppressRepeatedSelect;
 import com.naturalist.data.TestEntitySource;
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 
@@ -10,6 +11,7 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -32,9 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * meaning a different chain of test frames and bytecode indexes. A repeat inside one call all
  * arrives from one position, so it is caught wherever it happens in the unit under test.
  *
- * <p>{@link #traced} sees that call start, so a test may loop over a command or query a test
- * context hands it. Without it, a loop with a single reading call in the test has the same stack as
- * a loop in the unit under test, so it fails too: batch the call or take the object from a context.
+ * <p>A test graph's wrappers see that call start, so a test may loop over anything a test context
+ * hands it: {@link #traced} proxies for its commands and queries, and {@link Traced} subclasses, entered
+ * through {@link #enterTraced}, for the concrete classes it builds. A wrapper starts a new count only
+ * when the test is its direct caller. Without one, a loop with a single reading call in the test has
+ * the same stack as a loop in the unit under test, so it fails too: batch the call or take the object
+ * from a context.
  *
  * <p>Not counted: reads under a write (foreign key checks), reads outside a test method, a test
  * calling a repository directly, continuation pages of a paged read, any read made under a method
@@ -71,8 +76,7 @@ public final class SelectTrace {
      * queries it returns are wrapped too.
      */
     public static <T> T traced(Class<T> port, T target) {
-        return port.cast(Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[]{port},
-                (proxy, method, args) -> invoke(target, proxy, method, args)));
+        return port.cast(Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[]{port}, new Handler(target)));
     }
 
     private static Object invoke(Object target, Object proxy, Method method, Object[] args) throws Throwable {
@@ -91,7 +95,7 @@ public final class SelectTrace {
         } catch (InvocationTargetException e) {
             throw e.getCause();
         }
-        if (result == null || Proxy.isProxyClass(result.getClass())) {
+        if (result == null || isTraced(result)) {
             return result; // already traced: keep the instance a graph handed out
         }
         return isPort(method.getReturnType()) ? tracedPort(method.getReturnType(), result) : result;
@@ -198,8 +202,8 @@ public final class SelectTrace {
         StackFrame repository = null;
         for (StackFrame frame : frames) {
             Class<?> declaring = frame.getDeclaringClass();
-            if (AbstractEntityRepository.class.isAssignableFrom(declaring)) {
-                repository = frame;
+            if (AbstractEntityRepository.class.isAssignableFrom(declaring) && !isWrapperFrame(declaring)) {
+                repository = frame; // a Traced subclass is skipped, so the repository itself is named
             } else if (isUnitFrame(declaring)) {
                 break;
             }
@@ -291,7 +295,8 @@ public final class SelectTrace {
     }
 
     private static boolean isWrapperFrame(Class<?> declaring) {
-        return declaring == SelectTrace.class || Proxy.isProxyClass(declaring);
+        return declaring.getNestHost() == SelectTrace.class || Proxy.isProxyClass(declaring)
+                || Traced.class.isAssignableFrom(declaring);
     }
 
     private static List<StackTraceElement> trail(List<StackFrame> frames, int testIndex) {
@@ -389,4 +394,46 @@ public final class SelectTrace {
      * same instance.
      */
     private static final Map<Object, Map<Class<?>, Wrapper>> WRAPPERS = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
+
+    /**
+     * Marks a class a test graph generated to trace a concrete class it builds: each overridden method
+     * enters through {@link TraceAdvice}, so a call from the test starts a new count.
+     */
+    public interface Traced {
+    }
+
+    /**
+     * Entry of a {@link Traced} method: starts a new count when the test made this call, as
+     * {@link #traced} does for a port.
+     */
+    public static void enterTraced() {
+        if (SCOPE.get().armed && calledByTest()) {
+            nextInvocation();
+        }
+    }
+
+    /** The ByteBuddy advice inlined at the entry of every {@link Traced} method. */
+    public static final class TraceAdvice {
+        private TraceAdvice() {
+        }
+
+        @Advice.OnMethodEnter
+        static void enter() {
+            enterTraced();
+        }
+    }
+
+    /** The handler of every proxy {@link #traced} makes, so {@link #isTraced} can tell them from other proxies. */
+    private record Handler(Object target) implements InvocationHandler {
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            return SelectTrace.invoke(target, proxy, method, args);
+        }
+    }
+
+    /** Whether {@code value} is already traced: a {@link Traced} graph object or a proxy {@link #traced} made. */
+    private static boolean isTraced(Object value) {
+        return value instanceof Traced
+                || Proxy.isProxyClass(value.getClass()) && Proxy.getInvocationHandler(value) instanceof Handler;
+    }
 }
