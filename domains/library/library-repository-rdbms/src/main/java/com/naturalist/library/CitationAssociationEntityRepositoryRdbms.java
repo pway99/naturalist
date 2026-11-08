@@ -8,7 +8,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -97,32 +98,38 @@ class CitationAssociationEntityRepositoryRdbms
 
     @Override
     public List<CitationAssociation> getByCitationName(CitationName citationName) {
-        Observer.forClass(CitationAssociationEntityRepositoryRdbms.class)
-                .arguments("getByCitationName", i -> i.entityName(citationName, "citationName"))
+        MethodObserver getByCitationName = observer().forMethod("getByCitationName");
+        getByCitationName.arguments(i -> i.entityName(citationName, "citationName"))
                 .throwWhenInvalid();
-        return mapper.selectByCitationName(citationName.value()).stream()
+        var result = mapper.selectByCitationName(citationName.value()).stream()
                 .map(d -> d.toEntity(resolver)).toList();
+        getByCitationName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<CitationAssociation> getBySubject(EntityRef subject) {
-        Observer.forClass(CitationAssociationEntityRepositoryRdbms.class)
-                .arguments("getBySubject", i -> i.valueObject(subject, "subject"))
+        MethodObserver getBySubject = observer().forMethod("getBySubject");
+        getBySubject.arguments(i -> i.valueObject(subject, "subject"))
                 .throwWhenInvalid();
-        return mapper.selectBySubject(
+        var result = mapper.selectBySubject(
                         subject.domain().value(), resolver.rankOf(subject), subject.name().value()).stream()
                 .map(d -> d.toEntity(resolver)).toList();
+        getBySubject.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<CitationAssociation> getBySubjects(Set<EntityRef> subjects) {
-        Observer.forClass(CitationAssociationEntityRepositoryRdbms.class)
-                .arguments("getBySubjects", i -> i.observableCollection(subjects, "subjects"))
+        MethodObserver getBySubjects = observer().forMethod("getBySubjects");
+        getBySubjects.arguments(i -> i.observableCollection(subjects, "subjects"))
                 .throwWhenInvalid();
         if (subjects.isEmpty()) return List.of();
         List<CitationSubjectKey> keys = subjects.stream()
                 .map(s -> new CitationSubjectKey(s.domain().value(), resolver.rankOf(s), s.name().value()))
                 .toList();
-        return mapper.selectBySubjects(keys).stream().map(d -> d.toEntity(resolver)).toList();
+        var result = mapper.selectBySubjects(keys).stream().map(d -> d.toEntity(resolver)).toList();
+        getBySubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }
