@@ -47,10 +47,23 @@
              org.springframework.boot.webmvc.test.autoconfigure), not in
              spring-boot-test-autoconfigure. This starter is the aggregate that brings back
              the pre-4 slice-test stack — starter-test, starter-webmvc, spring-boot-webmvc-test,
-             starter-jackson-test — so consoles still declare one test dependency. -->
+             starter-jackson-test — so consoles still declare one test dependency.
+             Mockito is excluded: no test stubs a domain service (the test contexts build real
+             ones), and with Mockito present Spring's reset listener boots its inline mock maker,
+             which self-attaches a Java agent the JDK will soon refuse. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-junit-jupiter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
