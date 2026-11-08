@@ -4,14 +4,12 @@ import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.habitat.HabitatZone;
 import com.naturalist.habitat.VerticalLayer;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,8 @@ import java.util.stream.Collectors;
  * {@code layers}, and the ordered {@code supportingPlants}) loaded in one batched query per child
  * type keyed on the species-name set — a page of species costs six selects, not six-per-species.
  * Writes persist the parent then the children (each child insert nested-selects the parent id from
- * the name); an update replaces the child rows wholesale. The seven owned value objects are
+ * the name); an update replaces the child rows wholesale. Each write spans six tables, so it runs
+ * through {@link InsectSpeciesTransaction} as one transaction. The seven owned value objects are
  * reconstructed only when their null-group presence condition holds, so an all-null species (every
  * species but {@code battus-philenor} in the seed) round-trips with all VOs absent.
  */
@@ -38,9 +37,11 @@ class InsectSpeciesEntityRepositoryRdbms
         implements InsectRepository.SpeciesRepository {
 
     private final InsectSpeciesMapper mapper;
+    private final InsectSpeciesTransaction transaction;
 
-    InsectSpeciesEntityRepositoryRdbms(InsectSpeciesMapper mapper) {
+    InsectSpeciesEntityRepositoryRdbms(InsectSpeciesMapper mapper, InsectSpeciesTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -81,35 +82,17 @@ class InsectSpeciesEntityRepositoryRdbms
 
     @Override
     protected void doInsert(InsectSpeciesInfo entity) {
-        InsectSpeciesDbo dbo = InsectSpeciesDbo.from(entity);   // validates the parent scalars + throws
-        int inserted;
-        try {
-            inserted = mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        if (inserted == 0) throw new EntityNotFoundException(entity);   // referenced genus absent
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(InsectSpeciesInfo entity) {
-        InsectSpeciesDbo dbo = InsectSpeciesDbo.from(entity);
-        if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
-        String name = entity.name().value();
-        mapper.deleteCommonNames(name);
-        mapper.deleteProtectedStages(name);
-        mapper.deleteHabitatZones(name);
-        mapper.deleteHabitatLayers(name);
-        mapper.deleteSupportingPlants(name);
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected InsectSpeciesInfo doSave(InsectSpeciesInfo entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -137,35 +120,6 @@ class InsectSpeciesEntityRepositoryRdbms
         var result = assemble(parents, names);
         getByGenusNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertChildren(InsectSpeciesInfo s) {
-        InsectSpeciesName name = s.name();
-        for (CommonName commonName : s.commonNames()) {
-            mapper.insertCommonName(InsectSpeciesCommonNameDbo.from(name, commonName));
-        }
-        if (s.chemicalDefense() != null) {
-            for (LifeStageKind stage : s.chemicalDefense().protectedStages()) {
-                mapper.insertProtectedStage(InsectSpeciesProtectedStageDbo.from(name, stage));
-            }
-        }
-        if (s.habitatProfile() != null) {
-            for (HabitatZone zone : s.habitatProfile().zones()) {
-                mapper.insertHabitatZone(InsectSpeciesHabitatZoneDbo.from(name, zone));
-            }
-            if (s.habitatProfile().layers() != null) {
-                for (VerticalLayer layer : s.habitatProfile().layers()) {
-                    mapper.insertHabitatLayer(InsectSpeciesHabitatLayerDbo.from(name, layer));
-                }
-            }
-        }
-        if (s.gardenConnections() != null) {
-            List<String> supportingPlants = s.gardenConnections().supportingPlants();
-            for (int ordinal = 0; ordinal < supportingPlants.size(); ordinal++) {
-                mapper.insertSupportingPlant(
-                        InsectSpeciesSupportingPlantDbo.from(name, ordinal, supportingPlants.get(ordinal)));
-            }
-        }
     }
 
     /** Assemble aggregates from parent rows + one batched load per child table. */
