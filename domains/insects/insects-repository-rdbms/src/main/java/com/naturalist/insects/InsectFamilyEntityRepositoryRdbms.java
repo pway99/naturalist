@@ -7,7 +7,8 @@ import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -102,24 +103,28 @@ class InsectFamilyEntityRepositoryRdbms
 
     @Override
     public List<InsectFamilyInfo> getByOrderName(InsectOrderName orderName) {
-        Observer.forClass(InsectFamilyEntityRepositoryRdbms.class)
-                .arguments("getByOrderName", i -> i.entityName(orderName, "orderName"))
+        MethodObserver getByOrderName = observer().forMethod("getByOrderName");
+        getByOrderName.arguments(i -> i.entityName(orderName, "orderName"))
                 .throwWhenInvalid();
         List<InsectFamilyDbo> parents = mapper.selectByOrderName(orderName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        return assemble(parents, names);
+        var result = assemble(parents, names);
+        getByOrderName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<InsectFamilyInfo> getByOrderNames(Set<InsectOrderName> orderNames) {
-        Observer.forClass(InsectFamilyEntityRepositoryRdbms.class)
-                .arguments("getByOrderNames", i -> i.entityNameCollection(orderNames, "orderNames"))
+        MethodObserver getByOrderNames = observer().forMethod("getByOrderNames");
+        getByOrderNames.arguments(i -> i.entityNameCollection(orderNames, "orderNames"))
                 .throwWhenInvalid();
         if (orderNames.isEmpty()) return List.of();
         Set<String> orderSlugs = orderNames.stream().map(InsectOrderName::value).collect(Collectors.toSet());
         List<InsectFamilyDbo> parents = mapper.selectByOrderNameSet(orderSlugs);
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        return assemble(parents, names);
+        var result = assemble(parents, names);
+        getByOrderNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     private void insertChildren(InsectFamilyInfo f) {

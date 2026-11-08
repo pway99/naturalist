@@ -7,6 +7,8 @@ import com.naturalist.naturalist.NaturalistName;
 
 import java.util.List;
 import java.util.Set;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.OrganismObservation;
 
 @MockDomainService
@@ -20,21 +22,27 @@ class InsectObservationRepositoryMock
 
     @Override
     public List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalist(NaturalistName observedBy) {
-        observer().arguments("getByNaturalist", i -> i.identifier(observedBy, "observedBy"))
+        MethodObserver getByNaturalist = observer().forMethod("getByNaturalist");
+        getByNaturalist.arguments(i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(o -> o.observedBy().equals(observedBy))
                 .toList();
+        getByNaturalist.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalistAndSubjects(NaturalistName observedBy, Set<InsectRankName> subjects) {
-        observer().arguments("getByNaturalistAndSubjects", i -> i
+        MethodObserver getByNaturalistAndSubjects = observer().forMethod("getByNaturalistAndSubjects");
+        getByNaturalistAndSubjects.arguments(i -> i
                         .identifier(observedBy, "observedBy")
                         .identifierSet(subjects, "subjects"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(o -> o.observedBy().equals(observedBy) && subjects.contains(o.subject()))
                 .toList();
+        getByNaturalistAndSubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

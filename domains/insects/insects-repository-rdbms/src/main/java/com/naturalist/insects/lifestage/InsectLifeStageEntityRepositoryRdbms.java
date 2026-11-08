@@ -11,7 +11,8 @@ import com.naturalist.infrastructure.DomainService;
 import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageName;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.plants.PlantSpeciesName;
 
@@ -107,10 +108,12 @@ class InsectLifeStageEntityRepositoryRdbms
 
     @Override
     public List<LifeStage> getByParentName(InsectRankName parentName) {
-        Observer.forClass(InsectLifeStageEntityRepositoryRdbms.class)
-                .arguments("getByParentName", i -> i.identifier(parentName, "parentName"))
+        MethodObserver getByParentName = observer().forMethod("getByParentName");
+        getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        return assemble(mapper.selectByParentName(parentName.rank().name(), parentName.value()));
+        var result = assemble(mapper.selectByParentName(parentName.rank().name(), parentName.value()));
+        getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     private void insertChildren(LifeStage s) {

@@ -7,7 +7,8 @@ import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.Identification;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.persistence.RdbmsExceptions;
@@ -101,23 +102,27 @@ class InsectObservationEntityRepositoryRdbms
 
     @Override
     public List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalist(NaturalistName observedBy) {
-        Observer.forClass(InsectObservationEntityRepositoryRdbms.class)
-                .arguments("getByNaturalist", i -> i.identifier(observedBy, "observedBy"))
+        MethodObserver getByNaturalist = observer().forMethod("getByNaturalist");
+        getByNaturalist.arguments(i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
-        return assemble(mapper.selectByNaturalist(observedBy.value()));
+        var result = assemble(mapper.selectByNaturalist(observedBy.value()));
+        getByNaturalist.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<OrganismObservation<InsectObservationId, InsectRankName>> getByNaturalistAndSubjects(
             NaturalistName observedBy, Set<InsectRankName> subjects) {
-        Observer.forClass(InsectObservationEntityRepositoryRdbms.class)
-                .arguments("getByNaturalistAndSubjects", i -> i.identifier(observedBy, "observedBy"))
+        MethodObserver getByNaturalistAndSubjects = observer().forMethod("getByNaturalistAndSubjects");
+        getByNaturalistAndSubjects.arguments(i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
         if (subjects.isEmpty()) return List.of();
         List<InsectRankKey> keys = subjects.stream()
                 .map(s -> new InsectRankKey(s.rank().name(), s.value()))
                 .toList();
-        return assemble(mapper.selectByNaturalistAndSubjects(observedBy.value(), keys));
+        var result = assemble(mapper.selectByNaturalistAndSubjects(observedBy.value(), keys));
+        getByNaturalistAndSubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     private void insertCandidates(OrganismObservation<InsectObservationId, InsectRankName> entity) {

@@ -6,6 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
@@ -98,31 +100,40 @@ class InsectFeatureAssignmentEntityRepositoryRdbms
     @Override
     public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>
     getByRankName(InsectRankName rankName) {
-        observer().arguments("getByRankName", i -> i.identifier(rankName, "rankName"))
+        MethodObserver getByRankName = observer().forMethod("getByRankName");
+        getByRankName.arguments(i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
-        return mapper.selectByRank(rankName.rank().name(), rankName.value()).stream()
+        var result = mapper.selectByRank(rankName.rank().name(), rankName.value()).stream()
                 .map(InsectFeatureAssignmentDbo::toEntity).toList();
+        getByRankName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>
     getByRankNames(Set<InsectRankName> rankNames) {
-        observer().arguments("getByRankNames", i -> i.observableCollection(rankNames, "rankNames"))
+        MethodObserver getByRankNames = observer().forMethod("getByRankNames");
+        getByRankNames.arguments(i -> i.observableCollection(rankNames, "rankNames"))
                 .throwWhenInvalid();
         if (rankNames.isEmpty()) return List.of();
         List<InsectRankKey> keys = rankNames.stream()
                 .map(r -> new InsectRankKey(r.rank().name(), r.value()))
                 .toList();
-        return mapper.selectByRankKeys(keys).stream()
+        var result = mapper.selectByRankKeys(keys).stream()
                 .map(InsectFeatureAssignmentDbo::toEntity).toList();
+        getByRankNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>
     getByFeatureId(InsectFeatureId featureId) {
-        observer().arguments("getByFeatureId", i -> i.entityId(featureId, "featureId"))
+        MethodObserver getByFeatureId = observer().forMethod("getByFeatureId");
+        getByFeatureId.arguments(i -> i.entityId(featureId, "featureId"))
                 .throwWhenInvalid();
-        return mapper.selectByFeatureId(featureId.value().toString()).stream()
+        var result = mapper.selectByFeatureId(featureId.value().toString()).stream()
                 .map(InsectFeatureAssignmentDbo::toEntity).toList();
+        getByFeatureId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

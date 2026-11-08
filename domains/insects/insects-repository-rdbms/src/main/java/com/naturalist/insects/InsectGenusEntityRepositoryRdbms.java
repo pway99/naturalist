@@ -7,7 +7,8 @@ import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -101,24 +102,28 @@ class InsectGenusEntityRepositoryRdbms
 
     @Override
     public List<InsectGenusInfo> getByFamilyName(InsectFamilyName familyName) {
-        Observer.forClass(InsectGenusEntityRepositoryRdbms.class)
-                .arguments("getByFamilyName", i -> i.entityName(familyName, "familyName"))
+        MethodObserver getByFamilyName = observer().forMethod("getByFamilyName");
+        getByFamilyName.arguments(i -> i.entityName(familyName, "familyName"))
                 .throwWhenInvalid();
         List<InsectGenusDbo> parents = mapper.selectByFamilyName(familyName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        return assemble(parents, names);
+        var result = assemble(parents, names);
+        getByFamilyName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<InsectGenusInfo> getByFamilyNames(Set<InsectFamilyName> familyNames) {
-        Observer.forClass(InsectGenusEntityRepositoryRdbms.class)
-                .arguments("getByFamilyNames", i -> i.entityNameCollection(familyNames, "familyNames"))
+        MethodObserver getByFamilyNames = observer().forMethod("getByFamilyNames");
+        getByFamilyNames.arguments(i -> i.entityNameCollection(familyNames, "familyNames"))
                 .throwWhenInvalid();
         if (familyNames.isEmpty()) return List.of();
         Set<String> familySlugs = familyNames.stream().map(InsectFamilyName::value).collect(Collectors.toSet());
         List<InsectGenusDbo> parents = mapper.selectByFamilyNameSet(familySlugs);
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        return assemble(parents, names);
+        var result = assemble(parents, names);
+        getByFamilyNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     private void insertChildren(InsectGenusInfo g) {

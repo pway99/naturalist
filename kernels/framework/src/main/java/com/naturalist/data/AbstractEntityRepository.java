@@ -1,6 +1,8 @@
 package com.naturalist.data;
 
 import com.naturalist.ddd.Named;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 
 import java.util.List;
@@ -60,20 +62,29 @@ public abstract class AbstractEntityRepository<
 
     @Override
     public final Optional<ENTITY> getByName(NAME name) {
-        observer.arguments("getByName", i -> i.identifier(name, "name")).throwWhenInvalid();
-        return doGetByName(name);
+        MethodObserver getByName = observer.forMethod("getByName");
+        getByName.arguments(i -> i.identifier(name, "name")).throwWhenInvalid();
+        var result = doGetByName(name);
+        getByName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public final List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
-        observer.arguments("getByEntityNameSet", i -> i.identifierSet(nameSet, "nameSet")).throwWhenInvalid();
-        return doGetByNameSet(nameSet);
+        MethodObserver getByEntityNameSet = observer.forMethod("getByEntityNameSet");
+        getByEntityNameSet.arguments(i -> i.identifierSet(nameSet, "nameSet")).throwWhenInvalid();
+        var result = doGetByNameSet(nameSet);
+        getByEntityNameSet.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public final Page<ENTITY> getPage(PageRequest pageRequest) {
-        observer.arguments("getPage", i -> i.valueObject(pageRequest, "pageRequest")).throwWhenInvalid();
-        return doGetPage(pageRequest);
+        MethodObserver getPage = observer.forMethod("getPage");
+        getPage.arguments(i -> i.valueObject(pageRequest, "pageRequest")).throwWhenInvalid();
+        var result = doGetPage(pageRequest);
+        getPage.state(s -> s.observableCollection(result.content(), "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override

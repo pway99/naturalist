@@ -3,6 +3,8 @@ package com.naturalist.insects;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 import java.util.List;
@@ -21,31 +23,37 @@ class InsectFeatureAssignmentRepositoryMock
 
     @Override
     public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByRankName(InsectRankName rankName) {
-        observer().arguments("getByRankName",
-                        i -> i.identifier(rankName, "rankName"))
+        MethodObserver getByRankName = observer().forMethod("getByRankName");
+        getByRankName.arguments(i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(a -> a.rankName().equals(rankName))
                 .toList();
+        getByRankName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByRankNames(Set<InsectRankName> rankNames) {
-        observer().arguments("getByRankNames",
-                        i -> i.observableCollection(rankNames, "rankNames"))
+        MethodObserver getByRankNames = observer().forMethod("getByRankNames");
+        getByRankNames.arguments(i -> i.observableCollection(rankNames, "rankNames"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(a -> rankNames.contains(a.rankName()))
                 .toList();
+        getByRankNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByFeatureId(InsectFeatureId featureId) {
-        observer().arguments("getByFeatureId",
-                        i -> i.entityId(featureId, "featureId"))
+        MethodObserver getByFeatureId = observer().forMethod("getByFeatureId");
+        getByFeatureId.arguments(i -> i.entityId(featureId, "featureId"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(a -> a.featureId().equals(featureId))
                 .toList();
+        getByFeatureId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

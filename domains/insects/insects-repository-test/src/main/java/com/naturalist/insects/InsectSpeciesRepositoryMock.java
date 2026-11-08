@@ -3,6 +3,8 @@ package com.naturalist.insects;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Set;
@@ -18,21 +20,25 @@ class InsectSpeciesRepositoryMock
 
     @Override
     public List<InsectSpeciesInfo> getByGenusName(InsectGenusName genusName) {
-        observer().arguments("getByGenusName",
-                        i -> i.entityName(genusName, "genusName"))
+        MethodObserver getByGenusName = observer().forMethod("getByGenusName");
+        getByGenusName.arguments(i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(s -> genusName.equals(s.genusName()))
                 .toList();
+        getByGenusName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<InsectSpeciesInfo> getByGenusNames(Set<InsectGenusName> genusNames) {
-        observer().arguments("getByGenusNames",
-                        i -> i.entityNameCollection(genusNames, "genusNames"))
+        MethodObserver getByGenusNames = observer().forMethod("getByGenusNames");
+        getByGenusNames.arguments(i -> i.entityNameCollection(genusNames, "genusNames"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(s -> genusNames.contains(s.genusName()))
                 .toList();
+        getByGenusNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

@@ -241,6 +241,15 @@ Quick-reference constraints:
 - Cross-domain joins are prohibited; cross-domain FK enforcement is deferred to the RDBMS layer
 - Each repository manages its own secondary indexes. No cross-repository queries within a
   sub-context. No cross-sub-context repository access.
+- **A read observes what it returns, and never throws on it.** A repository read is a producer
+  (ADR-017): an invalid entity read from storage is counted and handed to the consumer, which
+  decides whether the invalid aspects matter to it. Each domain-specific read takes one
+  `MethodObserver m = observer().forMethod("getByX")`, validates its arguments through it, and
+  ends `m.state(s -> s.observableCollection(result, "result")).observe(Level.WARN)` (an
+  `Optional` read uses `namedEntityOrNull(result.orElse(null), "result")`). The inherited
+  `getByName` / `getByEntityNameSet` / `getPage` already do this in `AbstractEntityRepository`,
+  scoped to the concrete adapter class. Rdbms adapters and mocks both observe. Reference:
+  `InsectFeatureAssignmentEntityRepositoryRdbms`. Rolled out in insects; other domains follow.
 - **Fan-out must batch — never per-element in a loop.** Calling a repository or query once
   per element of a prior result (`for` / `stream().map` / `computeIfAbsent` / recursive
   descent) is an N+1 that scales with catalog size and degrades production; it passes on

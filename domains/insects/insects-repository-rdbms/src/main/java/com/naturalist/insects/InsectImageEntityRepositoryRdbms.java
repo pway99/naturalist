@@ -6,7 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.persistence.RdbmsExceptions;
 
@@ -92,23 +93,27 @@ class InsectImageEntityRepositoryRdbms
     @Override
     public List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> getByParentName(
             InsectRankName parentName) {
-        Observer.forClass(InsectImageEntityRepositoryRdbms.class)
-                .arguments("getByParentName", i -> i.identifier(parentName, "parentName"))
+        MethodObserver getByParentName = observer().forMethod("getByParentName");
+        getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        return mapper.selectByParentName(parentName.rank().name(), parentName.value()).stream()
+        var result = mapper.selectByParentName(parentName.rank().name(), parentName.value()).stream()
                 .map(InsectImageDbo::toEntity).toList();
+        getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> getByParentNames(
             Set<InsectRankName> parentNames) {
-        Observer.forClass(InsectImageEntityRepositoryRdbms.class)
-                .arguments("getByParentNames", i -> i.observableCollection(parentNames, "parentNames"))
+        MethodObserver getByParentNames = observer().forMethod("getByParentNames");
+        getByParentNames.arguments(i -> i.observableCollection(parentNames, "parentNames"))
                 .throwWhenInvalid();
         if (parentNames.isEmpty()) return List.of();
         List<InsectRankKey> keys = parentNames.stream()
                 .map(p -> new InsectRankKey(p.rank().name(), p.value()))
                 .toList();
-        return mapper.selectByParentNames(keys).stream().map(InsectImageDbo::toEntity).toList();
+        var result = mapper.selectByParentNames(keys).stream().map(InsectImageDbo::toEntity).toList();
+        getByParentNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

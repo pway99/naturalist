@@ -3,6 +3,8 @@ package com.naturalist.insects;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,31 +21,37 @@ class InsectFunctionalRoleRepositoryMock
 
     @Override
     public List<InsectFunctionalRole> getByGuild(FunctionalGuild guild) {
-        observer().arguments("getByGuild",
-                        i -> i.notNull(guild, "guild"))
+        MethodObserver getByGuild = observer().forMethod("getByGuild");
+        getByGuild.arguments(i -> i.notNull(guild, "guild"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(role -> role.guilds().contains(guild))
                 .toList();
+        getByGuild.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public Optional<InsectFunctionalRole> getByParentName(InsectRankName parentName) {
-        observer().arguments("getByParentName",
-                        i -> i.identifier(parentName, "parentName"))
+        MethodObserver getByParentName = observer().forMethod("getByParentName");
+        getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(role -> role.parentName().equals(parentName))
                 .findFirst();
+        getByParentName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<InsectFunctionalRole> getByParentNames(Set<InsectRankName> parentNames) {
-        observer().arguments("getByParentNames",
-                        i -> i.observableCollection(parentNames, "parentNames"))
+        MethodObserver getByParentNames = observer().forMethod("getByParentNames");
+        getByParentNames.arguments(i -> i.observableCollection(parentNames, "parentNames"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(role -> parentNames.contains(role.parentName()))
                 .toList();
+        getByParentNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }
