@@ -6,7 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.zone.ZoneName;
@@ -90,26 +91,32 @@ class PlantingEntityRepositoryRdbms
 
     @Override
     public List<Planting> getByZoneName(ZoneName zoneName) {
-        Observer.forClass(PlantingEntityRepositoryRdbms.class)
-                .arguments("getByZoneName", i -> i.identifier(zoneName, "zoneName"))
+        MethodObserver getByZoneName = observer().forMethod("getByZoneName");
+        getByZoneName.arguments(i -> i.identifier(zoneName, "zoneName"))
                 .throwWhenInvalid();
-        return mapper.selectByZoneName(zoneName.value()).stream().map(PlantingDbo::toEntity).toList();
+        var result = mapper.selectByZoneName(zoneName.value()).stream().map(PlantingDbo::toEntity).toList();
+        getByZoneName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<Planting> getBySubZoneName(SubZoneName subZoneName) {
-        Observer.forClass(PlantingEntityRepositoryRdbms.class)
-                .arguments("getBySubZoneName", i -> i.identifier(subZoneName, "subZoneName"))
+        MethodObserver getBySubZoneName = observer().forMethod("getBySubZoneName");
+        getBySubZoneName.arguments(i -> i.identifier(subZoneName, "subZoneName"))
                 .throwWhenInvalid();
-        return mapper.selectBySubZoneName(subZoneName.value()).stream().map(PlantingDbo::toEntity).toList();
+        var result = mapper.selectBySubZoneName(subZoneName.value()).stream().map(PlantingDbo::toEntity).toList();
+        getBySubZoneName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<Planting> getByPlantName(PlantRankName plantName) {
-        Observer.forClass(PlantingEntityRepositoryRdbms.class)
-                .arguments("getByPlantName", i -> i.identifier(plantName, "plantName"))
+        MethodObserver getByPlantName = observer().forMethod("getByPlantName");
+        getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        return mapper.selectByPlantName(plantName.rank().name(), plantName.value()).stream()
+        var result = mapper.selectByPlantName(plantName.rank().name(), plantName.value()).stream()
                 .map(PlantingDbo::toEntity).toList();
+        getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }
