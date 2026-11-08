@@ -12,6 +12,7 @@ import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
+import com.naturalist.test.TestDirectories;
 import com.naturalist.test.context.Provisions;
 import com.naturalist.test.context.TestContext;
 import com.naturalist.textgeneration.NoOpTextGenerationService;
@@ -22,7 +23,6 @@ import com.naturalist.vision.VisionService;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.util.Set;
 
 /**
@@ -81,7 +81,7 @@ public class InsectsTestContextInternal extends TestContext {
 
     private static ImageStore tempImageStore() {
         try {
-            return new FilesystemImageStore(Files.createTempDirectory("insects-images"), Resilience.noOp());
+            return new FilesystemImageStore(TestDirectories.create("insects-images"), Resilience.noOp());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

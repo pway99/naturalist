@@ -5,13 +5,13 @@ import com.naturalist.library.LibraryTestContext;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.spring.console.ConsoleSliceRenderConfiguration;
+import com.naturalist.test.TestDirectories;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -65,7 +65,7 @@ class InsectsControllerTestConfig {
 
     private static Path createImageRoot() {
         try {
-            return Files.createTempDirectory("insects-images");
+            return TestDirectories.create("insects-images");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

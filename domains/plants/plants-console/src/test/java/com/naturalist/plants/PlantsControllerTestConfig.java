@@ -4,13 +4,13 @@ import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
+import com.naturalist.test.TestDirectories;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SpringBootConfiguration
@@ -27,7 +27,7 @@ class PlantsControllerTestConfig {
 
     private static Path createImageRoot() {
         try {
-            return Files.createTempDirectory("plants-images");
+            return TestDirectories.create("plants-images");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -7,6 +7,7 @@ import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
+import com.naturalist.test.TestDirectories;
 import com.naturalist.test.context.Fake;
 import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
@@ -145,7 +146,7 @@ class InsectPhotoCommandImplTest {
     /** A fresh image root per test, made before the {@code @Fake} store that writes under it. */
     private static Path newImageRoot() {
         try {
-            return Files.createTempDirectory("insects-photo-command");
+            return TestDirectories.create("insects-photo-command");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
