@@ -7,7 +7,8 @@ import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -100,12 +101,14 @@ class PlantFamilyEntityRepositoryRdbms
 
     @Override
     public List<PlantFamily> getByOrderName(PlantOrderName orderName) {
-        Observer.forClass(PlantFamilyEntityRepositoryRdbms.class)
-                .arguments("getByOrderName", i -> i.entityName(orderName, "orderName"))
+        MethodObserver getByOrderName = observer().forMethod("getByOrderName");
+        getByOrderName.arguments(i -> i.entityName(orderName, "orderName"))
                 .throwWhenInvalid();
         List<PlantFamilyDbo> parents = mapper.selectByOrderName(orderName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        return assemble(parents, names);
+        var result = assemble(parents, names);
+        getByOrderName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     private void insertChildren(PlantFamily f) {

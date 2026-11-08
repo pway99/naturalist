@@ -249,7 +249,7 @@ Quick-reference constraints:
   `Optional` read uses `namedEntityOrNull(result.orElse(null), "result")`). The inherited
   `getByName` / `getByEntityNameSet` / `getPage` already do this in `AbstractEntityRepository`,
   scoped to the concrete adapter class. Rdbms adapters and mocks both observe. Reference:
-  `InsectFeatureAssignmentEntityRepositoryRdbms`. Rolled out in insects; other domains follow.
+  `InsectFeatureAssignmentEntityRepositoryRdbms`. Rolled out in insects and plants; other domains follow.
 - **Fan-out must batch — never per-element in a loop.** Calling a repository or query once
   per element of a prior result (`for` / `stream().map` / `computeIfAbsent` / recursive
   descent) is an N+1 that scales with catalog size and degrades production; it passes on

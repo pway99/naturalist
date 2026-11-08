@@ -3,6 +3,8 @@ package com.naturalist.plants;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 
 import java.util.Optional;
 
@@ -18,10 +20,13 @@ class PlantEcologicalRoleRepositoryMock
 
     @Override
     public Optional<PlantEcologicalRole> getByPlantName(PlantRankName plantName) {
-        observer().arguments("getByPlantName", i -> i.identifier(plantName, "plantName"))
+        MethodObserver getByPlantName = observer().forMethod("getByPlantName");
+        getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(role -> plantName.equals(role.plantName()))
                 .findFirst();
+        getByPlantName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
+        return result;
     }
 }

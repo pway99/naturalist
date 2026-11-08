@@ -6,7 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.plants.PlantRankName;
 
@@ -90,10 +91,12 @@ class PlantProgramEntityRepositoryRdbms
 
     @Override
     public List<PlantProgram> getByPlantName(PlantRankName plantRankName) {
-        Observer.forClass(PlantProgramEntityRepositoryRdbms.class)
-                .arguments("getByPlantName", i -> i.identifier(plantRankName, "plantName"))
+        MethodObserver getByPlantName = observer().forMethod("getByPlantName");
+        getByPlantName.arguments(i -> i.identifier(plantRankName, "plantName"))
                 .throwWhenInvalid();
-        return mapper.selectByPlantName(plantRankName.rank().name(), plantRankName.value())
+        var result = mapper.selectByPlantName(plantRankName.rank().name(), plantRankName.value())
                 .stream().map(PlantProgramDbo::toEntity).toList();
+        getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

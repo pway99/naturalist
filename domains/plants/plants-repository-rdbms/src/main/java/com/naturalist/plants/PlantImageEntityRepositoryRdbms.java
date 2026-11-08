@@ -6,7 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.persistence.RdbmsExceptions;
 
@@ -93,10 +94,12 @@ class PlantImageEntityRepositoryRdbms
     @Override
     public List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> getByParentName(
             PlantRankName parentName) {
-        Observer.forClass(PlantImageEntityRepositoryRdbms.class)
-                .arguments("getByParentName", i -> i.identifier(parentName, "parentName"))
+        MethodObserver getByParentName = observer().forMethod("getByParentName");
+        getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        return mapper.selectByParentName(parentName.rank().name(), parentName.value()).stream()
+        var result = mapper.selectByParentName(parentName.rank().name(), parentName.value()).stream()
                 .map(PlantImageDbo::toEntity).toList();
+        getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

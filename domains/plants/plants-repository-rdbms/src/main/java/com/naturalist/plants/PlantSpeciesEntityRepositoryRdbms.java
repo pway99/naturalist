@@ -8,7 +8,8 @@ import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -105,24 +106,28 @@ class PlantSpeciesEntityRepositoryRdbms
 
     @Override
     public List<PlantSpecies> getByGenusName(PlantGenusName genusName) {
-        Observer.forClass(PlantSpeciesEntityRepositoryRdbms.class)
-                .arguments("getByGenusName", i -> i.entityName(genusName, "genusName"))
+        MethodObserver getByGenusName = observer().forMethod("getByGenusName");
+        getByGenusName.arguments(i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
         List<PlantSpeciesDbo> parents = mapper.selectByGenusName(genusName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        return assemble(parents, names);
+        var result = assemble(parents, names);
+        getByGenusName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<PlantSpecies> getByGenusNames(Set<PlantGenusName> genusNames) {
-        Observer.forClass(PlantSpeciesEntityRepositoryRdbms.class)
-                .arguments("getByGenusNames", i -> i.entityNameCollection(genusNames, "genusNames"))
+        MethodObserver getByGenusNames = observer().forMethod("getByGenusNames");
+        getByGenusNames.arguments(i -> i.entityNameCollection(genusNames, "genusNames"))
                 .throwWhenInvalid();
         if (genusNames.isEmpty()) return List.of();
         Set<String> genusSlugs = genusNames.stream().map(PlantGenusName::value).collect(Collectors.toSet());
         List<PlantSpeciesDbo> parents = mapper.selectByGenusNames(genusSlugs);
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        return assemble(parents, names);
+        var result = assemble(parents, names);
+        getByGenusNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     private void insertChildren(PlantSpecies s) {

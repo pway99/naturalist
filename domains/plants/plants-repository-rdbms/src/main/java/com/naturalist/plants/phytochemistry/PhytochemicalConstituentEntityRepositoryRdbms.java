@@ -7,6 +7,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.phytochemistry.role.PhytochemicalRole;
@@ -104,18 +106,24 @@ class PhytochemicalConstituentEntityRepositoryRdbms
 
     @Override
     public List<PhytochemicalConstituent> getByPlantName(PlantRankName plantName) {
-        observer().arguments("getByPlantName", i -> i.identifier(plantName, "plantName")).throwWhenInvalid();
+        MethodObserver getByPlantName = observer().forMethod("getByPlantName");
+        getByPlantName.arguments(i -> i.identifier(plantName, "plantName")).throwWhenInvalid();
         List<String> names = mapper.selectNamesByPlant(plantName.rank().name(), plantName.value());
         if (names.isEmpty()) return List.of();
-        return assemble(mapper.selectByNameSet(names), Set.copyOf(names));
+        var result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
+        getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<PhytochemicalConstituent> getByCompoundName(CompoundName compoundName) {
-        observer().arguments("getByCompoundName", i -> i.entityName(compoundName, "compoundName")).throwWhenInvalid();
+        MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
+        getByCompoundName.arguments(i -> i.entityName(compoundName, "compoundName")).throwWhenInvalid();
         List<String> names = mapper.selectNamesByCompound(compoundName.value());
         if (names.isEmpty()) return List.of();
-        return assemble(mapper.selectByNameSet(names), Set.copyOf(names));
+        var result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
+        getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     private void insertChildren(PhytochemicalConstituent c) {
