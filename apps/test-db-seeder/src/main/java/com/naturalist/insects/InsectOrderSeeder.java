@@ -16,7 +16,8 @@ public final class InsectOrderSeeder {
         var entities = database.getNamed(InsectOrderTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, InsectOrderMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new InsectOrderEntityRepositoryRdbms(session.getMapper(InsectOrderMapper.class));
+            var repo = new InsectOrderEntityRepositoryRdbms(session.getMapper(InsectOrderMapper.class),
+                    new InsectOrderTransaction(session.getMapper(InsectOrderMapper.class)));
             entities.forEach(repo::insert);
             session.commit();
         }

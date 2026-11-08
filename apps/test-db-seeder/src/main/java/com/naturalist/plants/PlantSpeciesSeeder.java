@@ -16,7 +16,8 @@ public final class PlantSpeciesSeeder {
         var entities = database.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, PlantSpeciesMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new PlantSpeciesEntityRepositoryRdbms(session.getMapper(PlantSpeciesMapper.class));
+            var repo = new PlantSpeciesEntityRepositoryRdbms(session.getMapper(PlantSpeciesMapper.class),
+                    new PlantSpeciesTransaction(session.getMapper(PlantSpeciesMapper.class)));
             entities.forEach(repo::insert);
             session.commit();
         }

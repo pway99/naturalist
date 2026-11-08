@@ -16,7 +16,8 @@ public final class PhytochemicalConstituentSeeder {
         var entities = database.getNamed(PlantPhytochemicalConstituentTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, PhytochemicalConstituentMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new PhytochemicalConstituentEntityRepositoryRdbms(session.getMapper(PhytochemicalConstituentMapper.class));
+            var repo = new PhytochemicalConstituentEntityRepositoryRdbms(session.getMapper(PhytochemicalConstituentMapper.class),
+                    new PhytochemicalConstituentTransaction(session.getMapper(PhytochemicalConstituentMapper.class)));
             entities.forEach(repo::insert);
             session.commit();
         }

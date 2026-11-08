@@ -3,11 +3,7 @@ package com.naturalist.plants;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
-import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +16,9 @@ import java.util.stream.Collectors;
  * {@code commonNames} loaded in one batched query keyed on the order-name set, so a page of orders
  * costs two selects, not two-per-order — no N+1. Writes persist the parent then its common-name
  * children; an update replaces the child rows wholesale.
+ *
+ * <p>Each write spans several tables, so it runs through {@link PlantOrderTransaction} as one
+ * transaction.
  */
 @DomainService
 class PlantOrderEntityRepositoryRdbms
@@ -27,9 +26,11 @@ class PlantOrderEntityRepositoryRdbms
         implements PlantRepository.OrderRepository {
 
     private final PlantOrderMapper mapper;
+    private final PlantOrderTransaction transaction;
 
-    PlantOrderEntityRepositoryRdbms(PlantOrderMapper mapper) {
+    PlantOrderEntityRepositoryRdbms(PlantOrderMapper mapper, PlantOrderTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -70,36 +71,18 @@ class PlantOrderEntityRepositoryRdbms
 
     @Override
     protected void doInsert(PlantOrder entity) {
-        PlantOrderDbo dbo = PlantOrderDbo.from(entity);   // validates the parent scalars + throws
-        try {
-            mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(PlantOrder entity) {
-        PlantOrderDbo dbo = PlantOrderDbo.from(entity);
-        if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
-        mapper.deleteCommonNames(entity.name().value());
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected PlantOrder doSave(PlantOrder entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
-    }
-
-    private void insertChildren(PlantOrder o) {
-        PlantOrderName name = o.name();
-        for (CommonName commonName : o.commonNames()) {
-            mapper.insertCommonName(PlantOrderCommonNameDbo.from(name, commonName));
-        }
     }
 
     /** Assemble records from parent rows + one batched common-name load. */

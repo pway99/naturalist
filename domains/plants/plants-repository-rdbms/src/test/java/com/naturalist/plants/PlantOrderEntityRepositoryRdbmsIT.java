@@ -16,6 +16,7 @@ class PlantOrderEntityRepositoryRdbmsIT implements PlantOrderRepositoryTest {
 
     @Override
     public PlantRepository.OrderRepository repository() {
-        return new PlantOrderEntityRepositoryRdbms(rdbms.mapper(PlantOrderMapper.class));
+        return new PlantOrderEntityRepositoryRdbms(rdbms.mapper(PlantOrderMapper.class),
+                new PlantOrderTransaction(rdbms.mapper(PlantOrderMapper.class)));
     }
 }

@@ -5,12 +5,10 @@ import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +23,9 @@ import java.util.stream.Collectors;
  * inserts zero rows, which becomes {@link EntityNotFoundException}. Reads assemble each parent with
  * its {@code commonNames} and {@code nativeBioregions} loaded in one batched query per child type
  * keyed on the species-name set — a page of species costs three selects, not three-per-species.
+ *
+ * <p>Each write spans several tables, so it runs through {@link PlantSpeciesTransaction} as one
+ * transaction.
  */
 @DomainService
 class PlantSpeciesEntityRepositoryRdbms
@@ -32,9 +33,12 @@ class PlantSpeciesEntityRepositoryRdbms
         implements PlantRepository.SpeciesRepository {
 
     private final PlantSpeciesMapper mapper;
+    private final PlantSpeciesTransaction transaction;
 
-    PlantSpeciesEntityRepositoryRdbms(PlantSpeciesMapper mapper) {
+    PlantSpeciesEntityRepositoryRdbms(PlantSpeciesMapper mapper,
+            PlantSpeciesTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -75,32 +79,17 @@ class PlantSpeciesEntityRepositoryRdbms
 
     @Override
     protected void doInsert(PlantSpecies entity) {
-        PlantSpeciesDbo dbo = PlantSpeciesDbo.from(entity);   // validates the parent scalars + throws
-        int inserted;
-        try {
-            inserted = mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        if (inserted == 0) throw new EntityNotFoundException(entity);   // referenced genus absent
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(PlantSpecies entity) {
-        PlantSpeciesDbo dbo = PlantSpeciesDbo.from(entity);
-        if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
-        String name = entity.name().value();
-        mapper.deleteCommonNames(name);
-        mapper.deleteNativeBioregions(name);
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected PlantSpecies doSave(PlantSpecies entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -128,16 +117,6 @@ class PlantSpeciesEntityRepositoryRdbms
         var result = assemble(parents, names);
         getByGenusNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertChildren(PlantSpecies s) {
-        PlantSpeciesName name = s.name();
-        for (CommonName commonName : s.commonNames()) {
-            mapper.insertCommonName(PlantSpeciesCommonNameDbo.from(name, commonName));
-        }
-        for (Bioregion bioregion : s.nativeBioregions()) {
-            mapper.insertNativeBioregion(PlantSpeciesNativeBioregionDbo.from(name, bioregion));
-        }
     }
 
     /** Assemble records from parent rows + one batched load per child table. */

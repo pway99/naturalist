@@ -16,6 +16,7 @@ class InsectObservationEntityRepositoryRdbmsIT implements InsectObservationEntit
 
     @Override
     public InsectRepository.ObservationRepository repository() {
-        return new InsectObservationEntityRepositoryRdbms(rdbms.mapper(InsectObservationMapper.class));
+        return new InsectObservationEntityRepositoryRdbms(rdbms.mapper(InsectObservationMapper.class),
+                new InsectObservationTransaction(rdbms.mapper(InsectObservationMapper.class)));
     }
 }

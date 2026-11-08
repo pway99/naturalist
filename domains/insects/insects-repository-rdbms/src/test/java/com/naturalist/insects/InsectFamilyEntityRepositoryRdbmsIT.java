@@ -17,6 +17,7 @@ class InsectFamilyEntityRepositoryRdbmsIT implements InsectFamilyRepositoryTest 
 
     @Override
     public InsectRepository.FamilyRepository repository() {
-        return new InsectFamilyEntityRepositoryRdbms(rdbms.mapper(InsectFamilyMapper.class));
+        return new InsectFamilyEntityRepositoryRdbms(rdbms.mapper(InsectFamilyMapper.class),
+                new InsectFamilyTransaction(rdbms.mapper(InsectFamilyMapper.class)));
     }
 }

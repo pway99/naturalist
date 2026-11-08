@@ -16,6 +16,7 @@ class PhytochemicalConstituentEntityRepositoryRdbmsIT implements PlantPhytochemi
 
     @Override
     public PhytochemicalConstituentRepository repository() {
-        return new PhytochemicalConstituentEntityRepositoryRdbms(rdbms.mapper(PhytochemicalConstituentMapper.class));
+        return new PhytochemicalConstituentEntityRepositoryRdbms(rdbms.mapper(PhytochemicalConstituentMapper.class),
+                new PhytochemicalConstituentTransaction(rdbms.mapper(PhytochemicalConstituentMapper.class)));
     }
 }

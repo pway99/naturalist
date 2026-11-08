@@ -3,8 +3,6 @@ package com.naturalist.insects.lifestage;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.habitat.HabitatZone;
 import com.naturalist.habitat.VerticalLayer;
 import com.naturalist.infrastructure.DomainService;
@@ -13,7 +11,6 @@ import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.plants.PlantSpeciesName;
 
 import java.util.List;
@@ -27,6 +24,9 @@ import java.util.stream.Collectors;
  * its six child tables loaded in one batched query each (keyed on the life-stage-name set) — a page costs
  * seven selects, not seven-per-stage. Writes persist the parent then the applicable child rows; an update
  * replaces the child rows wholesale. The polymorphic parent reference is stored flat and rebuilt in-module.
+ *
+ * <p>Each write spans several tables, so it runs through {@link InsectLifeStageTransaction} as one
+ * transaction.
  */
 @DomainService
 class InsectLifeStageEntityRepositoryRdbms
@@ -34,9 +34,12 @@ class InsectLifeStageEntityRepositoryRdbms
         implements LifeStageRepository.LifeStageEntityRepository {
 
     private final InsectLifeStageMapper mapper;
+    private final InsectLifeStageTransaction transaction;
 
-    InsectLifeStageEntityRepositoryRdbms(InsectLifeStageMapper mapper) {
+    InsectLifeStageEntityRepositoryRdbms(InsectLifeStageMapper mapper,
+            InsectLifeStageTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -75,34 +78,17 @@ class InsectLifeStageEntityRepositoryRdbms
 
     @Override
     protected void doInsert(LifeStage entity) {
-        InsectLifeStageDbo dbo = InsectLifeStageDbo.from(entity);
-        try {
-            mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(LifeStage entity) {
-        InsectLifeStageDbo dbo = InsectLifeStageDbo.from(entity);
-        if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
-        String name = entity.name().value();
-        mapper.deleteWindows(name);
-        mapper.deleteHabitatZones(name);
-        mapper.deleteHabitatLayers(name);
-        mapper.deleteHostPlants(name);
-        mapper.deleteParasitoidHosts(name);
-        mapper.deleteNectarSources(name);
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected LifeStage doSave(LifeStage entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -114,39 +100,6 @@ class InsectLifeStageEntityRepositoryRdbms
         var result = assemble(mapper.selectByParentName(parentName.rank().name(), parentName.value()));
         getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertChildren(LifeStage s) {
-        String name = s.name().value();
-        List<StagePhenology.ActivityWindow> windows = s.phenology().windows();
-        for (int i = 0; i < windows.size(); i++) {
-            mapper.insertWindow(InsectLifeStageWindowDbo.from(name, i, windows.get(i)));
-        }
-        for (HabitatZone zone : s.habitat().profile().zones()) {
-            mapper.insertHabitatZone(InsectLifeStageHabitatZoneDbo.from(name, zone));
-        }
-        Set<VerticalLayer> layers = s.habitat().profile().layers();
-        if (layers != null) {
-            for (VerticalLayer layer : layers) {
-                mapper.insertHabitatLayer(InsectLifeStageHabitatLayerDbo.from(name, layer));
-            }
-        }
-        if (s instanceof LarvaStage l) {
-            List<PlantSpeciesName> hosts = l.hostPlants();
-            for (int i = 0; i < hosts.size(); i++) {
-                mapper.insertHostPlant(InsectLifeStageHostPlantDbo.from(name, i, hosts.get(i)));
-            }
-            List<InsectSpeciesName> parasitoids = l.parasitoidHosts();
-            for (int i = 0; i < parasitoids.size(); i++) {
-                mapper.insertParasitoidHost(InsectLifeStageParasitoidHostDbo.from(name, i, parasitoids.get(i)));
-            }
-        }
-        if (s instanceof AdultStage a) {
-            List<PlantSpeciesName> nectar = a.nectarSources();
-            for (int i = 0; i < nectar.size(); i++) {
-                mapper.insertNectarSource(InsectLifeStageNectarSourceDbo.from(name, i, nectar.get(i)));
-            }
-        }
     }
 
     private List<LifeStage> assemble(List<InsectLifeStageDbo> parents) {

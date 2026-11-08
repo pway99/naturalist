@@ -3,12 +3,10 @@ package com.naturalist.insects;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +23,9 @@ import java.util.stream.Collectors;
  * The single-column {@code UNIQUE(parent_name)} (one role per organism) surfaces a duplicate taxon on
  * insert as {@link PrimaryKeyConstraintException}. The set-based {@link #getByParentNames} resolves
  * the whole parent set in a single batched query, so it is never an N+1.
+ *
+ * <p>Each write spans several tables, so it runs through {@link InsectFunctionalRoleTransaction} as
+ * one transaction.
  */
 @DomainService
 class InsectFunctionalRoleEntityRepositoryRdbms
@@ -32,9 +33,12 @@ class InsectFunctionalRoleEntityRepositoryRdbms
         implements InsectRepository.FunctionalRoleRepository {
 
     private final InsectFunctionalRoleMapper mapper;
+    private final InsectFunctionalRoleTransaction transaction;
 
-    InsectFunctionalRoleEntityRepositoryRdbms(InsectFunctionalRoleMapper mapper) {
+    InsectFunctionalRoleEntityRepositoryRdbms(InsectFunctionalRoleMapper mapper,
+            InsectFunctionalRoleTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -73,28 +77,17 @@ class InsectFunctionalRoleEntityRepositoryRdbms
 
     @Override
     protected void doInsert(InsectFunctionalRole entity) {
-        InsectFunctionalRoleDbo dbo = InsectFunctionalRoleDbo.from(entity);   // validates + throws
-        try {
-            mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertGuilds(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(InsectFunctionalRole entity) {
-        InsectFunctionalRoleDbo dbo = InsectFunctionalRoleDbo.from(entity);
-        if (mapper.updateById(dbo) == 0) throw new EntityNotFoundException(entity);
-        mapper.deleteGuilds(entity.id().value().toString());
-        insertGuilds(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected InsectFunctionalRole doSave(InsectFunctionalRole entity) {
-        if (mapper.selectById(entity.id().value().toString()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -132,13 +125,6 @@ class InsectFunctionalRoleEntityRepositoryRdbms
         var result = assemble(mapper.selectByParentNames(keys));
         getByParentNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertGuilds(InsectFunctionalRole entity) {
-        String id = entity.id().value().toString();
-        for (FunctionalGuild guild : entity.guilds()) {
-            mapper.insertGuild(InsectFunctionalRoleGuildDbo.from(id, guild));
-        }
     }
 
     /** Assemble entities from parent rows + one batched load of their guild rows (grouped by id). */

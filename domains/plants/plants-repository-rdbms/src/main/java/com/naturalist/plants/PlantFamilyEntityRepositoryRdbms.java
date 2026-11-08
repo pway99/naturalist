@@ -4,12 +4,9 @@ import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
-import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +19,9 @@ import java.util.stream.Collectors;
  * and recovered by JOIN on read; a family whose order is absent inserts zero rows, which the adapter
  * turns into a loud {@link EntityNotFoundException}. Reads assemble the parent with its
  * {@code commonNames} loaded in one batched query keyed on the family-name set — no N+1.
+ *
+ * <p>Each write spans several tables, so it runs through {@link PlantFamilyTransaction} as one
+ * transaction.
  */
 @DomainService
 class PlantFamilyEntityRepositoryRdbms
@@ -29,9 +29,11 @@ class PlantFamilyEntityRepositoryRdbms
         implements PlantRepository.FamilyRepository {
 
     private final PlantFamilyMapper mapper;
+    private final PlantFamilyTransaction transaction;
 
-    PlantFamilyEntityRepositoryRdbms(PlantFamilyMapper mapper) {
+    PlantFamilyEntityRepositoryRdbms(PlantFamilyMapper mapper, PlantFamilyTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -72,30 +74,17 @@ class PlantFamilyEntityRepositoryRdbms
 
     @Override
     protected void doInsert(PlantFamily entity) {
-        PlantFamilyDbo dbo = PlantFamilyDbo.from(entity);   // validates the parent scalars + throws
-        int inserted;
-        try {
-            inserted = mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        if (inserted == 0) throw new EntityNotFoundException(entity);   // referenced order absent
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(PlantFamily entity) {
-        PlantFamilyDbo dbo = PlantFamilyDbo.from(entity);
-        if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
-        mapper.deleteCommonNames(entity.name().value());
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected PlantFamily doSave(PlantFamily entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -109,13 +98,6 @@ class PlantFamilyEntityRepositoryRdbms
         var result = assemble(parents, names);
         getByOrderName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertChildren(PlantFamily f) {
-        PlantFamilyName name = f.name();
-        for (CommonName commonName : f.commonNames()) {
-            mapper.insertCommonName(PlantFamilyCommonNameDbo.from(name, commonName));
-        }
     }
 
     /** Assemble records from parent rows + one batched common-name load. */

@@ -16,6 +16,7 @@ class PlantGenusEntityRepositoryRdbmsIT implements PlantGenusRepositoryTest {
 
     @Override
     public PlantRepository.GenusRepository repository() {
-        return new PlantGenusEntityRepositoryRdbms(rdbms.mapper(PlantGenusMapper.class));
+        return new PlantGenusEntityRepositoryRdbms(rdbms.mapper(PlantGenusMapper.class),
+                new PlantGenusTransaction(rdbms.mapper(PlantGenusMapper.class)));
     }
 }

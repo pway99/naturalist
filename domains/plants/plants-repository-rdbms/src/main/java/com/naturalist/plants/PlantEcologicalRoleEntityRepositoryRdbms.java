@@ -3,12 +3,10 @@ package com.naturalist.plants;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +22,9 @@ import java.util.stream.Collectors;
  * role rows (which carry the parent's own id directly); an update replaces the role rows wholesale.
  * The {@code UNIQUE(plant_rank, plant_name)} surfaces a duplicate taxon on insert as
  * {@link PrimaryKeyConstraintException}.
+ *
+ * <p>Each write spans several tables, so it runs through {@link PlantEcologicalRoleTransaction} as
+ * one transaction.
  */
 @DomainService
 class PlantEcologicalRoleEntityRepositoryRdbms
@@ -31,9 +32,12 @@ class PlantEcologicalRoleEntityRepositoryRdbms
         implements PlantRepository.EcologicalRoleRepository {
 
     private final PlantEcologicalRoleMapper mapper;
+    private final PlantEcologicalRoleTransaction transaction;
 
-    PlantEcologicalRoleEntityRepositoryRdbms(PlantEcologicalRoleMapper mapper) {
+    PlantEcologicalRoleEntityRepositoryRdbms(PlantEcologicalRoleMapper mapper,
+            PlantEcologicalRoleTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -72,28 +76,17 @@ class PlantEcologicalRoleEntityRepositoryRdbms
 
     @Override
     protected void doInsert(PlantEcologicalRole entity) {
-        PlantEcologicalRoleDbo dbo = PlantEcologicalRoleDbo.from(entity);   // validates + throws
-        try {
-            mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertRoles(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(PlantEcologicalRole entity) {
-        PlantEcologicalRoleDbo dbo = PlantEcologicalRoleDbo.from(entity);
-        if (mapper.updateById(dbo) == 0) throw new EntityNotFoundException(entity);
-        mapper.deleteRoles(entity.id().value().toString());
-        insertRoles(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected PlantEcologicalRole doSave(PlantEcologicalRole entity) {
-        if (mapper.selectById(entity.id().value().toString()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -107,13 +100,6 @@ class PlantEcologicalRoleEntityRepositoryRdbms
         var result = Optional.of(assemble(List.of(parent)).get(0));
         getByPlantName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertRoles(PlantEcologicalRole entity) {
-        String id = entity.id().value().toString();
-        for (PlantRole role : entity.roles()) {
-            mapper.insertRole(PlantEcologicalRoleRoleDbo.from(id, role));
-        }
     }
 
     /** Assemble entities from parent rows + one batched load of their role rows (grouped by id). */

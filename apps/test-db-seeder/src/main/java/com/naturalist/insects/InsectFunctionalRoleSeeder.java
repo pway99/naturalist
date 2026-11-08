@@ -16,7 +16,8 @@ public final class InsectFunctionalRoleSeeder {
         var entities = database.getNamed(InsectFunctionalRoleTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, InsectFunctionalRoleMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new InsectFunctionalRoleEntityRepositoryRdbms(session.getMapper(InsectFunctionalRoleMapper.class));
+            var repo = new InsectFunctionalRoleEntityRepositoryRdbms(session.getMapper(InsectFunctionalRoleMapper.class),
+                    new InsectFunctionalRoleTransaction(session.getMapper(InsectFunctionalRoleMapper.class)));
             entities.forEach(repo::insert);
             session.commit();
         }

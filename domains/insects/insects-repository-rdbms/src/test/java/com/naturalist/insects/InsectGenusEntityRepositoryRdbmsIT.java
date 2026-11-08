@@ -17,6 +17,7 @@ class InsectGenusEntityRepositoryRdbmsIT implements InsectGenusRepositoryTest {
 
     @Override
     public InsectRepository.GenusRepository repository() {
-        return new InsectGenusEntityRepositoryRdbms(rdbms.mapper(InsectGenusMapper.class));
+        return new InsectGenusEntityRepositoryRdbms(rdbms.mapper(InsectGenusMapper.class),
+                new InsectGenusTransaction(rdbms.mapper(InsectGenusMapper.class)));
     }
 }

@@ -16,6 +16,7 @@ class InsectLifeStageEntityRepositoryRdbmsIT implements InsectLifeStageEntityRep
 
     @Override
     public LifeStageRepository.LifeStageEntityRepository repository() {
-        return new InsectLifeStageEntityRepositoryRdbms(rdbms.mapper(InsectLifeStageMapper.class));
+        return new InsectLifeStageEntityRepositoryRdbms(rdbms.mapper(InsectLifeStageMapper.class),
+                new InsectLifeStageTransaction(rdbms.mapper(InsectLifeStageMapper.class)));
     }
 }

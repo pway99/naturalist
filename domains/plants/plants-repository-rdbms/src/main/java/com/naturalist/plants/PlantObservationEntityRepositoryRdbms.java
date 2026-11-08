@@ -3,15 +3,12 @@ package com.naturalist.plants;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.Identification;
 import com.naturalist.observation.OrganismObservation;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +22,9 @@ import java.util.stream.Collectors;
  * (keyed on the observation-id set), so a page costs two selects, not two-per-observation. The
  * polymorphic {@code subject} and the naturalist {@code observedBy} are stored flat and rebuilt
  * in-module. {@code getByNaturalistAndSubjects} resolves a whole subject set in one query.
+ *
+ * <p>Each write spans several tables, so it runs through {@link PlantObservationTransaction} as one
+ * transaction.
  */
 @DomainService
 class PlantObservationEntityRepositoryRdbms
@@ -32,9 +32,12 @@ class PlantObservationEntityRepositoryRdbms
         implements PlantRepository.ObservationRepository {
 
     private final PlantObservationMapper mapper;
+    private final PlantObservationTransaction transaction;
 
-    PlantObservationEntityRepositoryRdbms(PlantObservationMapper mapper) {
+    PlantObservationEntityRepositoryRdbms(PlantObservationMapper mapper,
+            PlantObservationTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -75,29 +78,18 @@ class PlantObservationEntityRepositoryRdbms
 
     @Override
     protected void doInsert(OrganismObservation<PlantObservationId, PlantRankName> entity) {
-        PlantObservationDbo dbo = PlantObservationDbo.from(entity);   // validates + throws
-        try {
-            mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertCandidates(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(OrganismObservation<PlantObservationId, PlantRankName> entity) {
-        PlantObservationDbo dbo = PlantObservationDbo.from(entity);
-        if (mapper.updateById(dbo) == 0) throw new EntityNotFoundException(entity);
-        mapper.deleteCandidates(entity.id().value().toString());
-        insertCandidates(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected OrganismObservation<PlantObservationId, PlantRankName> doSave(
             OrganismObservation<PlantObservationId, PlantRankName> entity) {
-        if (mapper.selectById(entity.id().value().toString()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -124,16 +116,6 @@ class PlantObservationEntityRepositoryRdbms
         var result = assemble(mapper.selectByNaturalistAndSubjects(observedBy.value(), keys));
         getByNaturalistAndSubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertCandidates(OrganismObservation<PlantObservationId, PlantRankName> entity) {
-        Identification identification = entity.identification();
-        if (identification == null) return;
-        String id = entity.id().value().toString();
-        List<Identification.Candidate> alternatives = identification.alternatives();
-        for (int i = 0; i < alternatives.size(); i++) {
-            mapper.insertCandidate(PlantObservationCandidateDbo.from(id, i, alternatives.get(i)));
-        }
     }
 
     /** Assemble observations from parent rows + one batched candidate load, grouped/ordered by ordinal. */

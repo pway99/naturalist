@@ -3,11 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
-import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +16,9 @@ import java.util.stream.Collectors;
  * {@code commonNames} loaded in one batched query keyed on the order-name set, so a page of orders
  * costs two selects, not two-per-order — no N+1. Writes persist the parent then its common-name
  * children; an update replaces the child rows wholesale.
+ *
+ * <p>Each write spans several tables, so it runs through {@link InsectOrderTransaction} as one
+ * transaction.
  */
 @DomainService
 class InsectOrderEntityRepositoryRdbms
@@ -27,9 +26,11 @@ class InsectOrderEntityRepositoryRdbms
         implements InsectRepository.OrderRepository {
 
     private final InsectOrderMapper mapper;
+    private final InsectOrderTransaction transaction;
 
-    InsectOrderEntityRepositoryRdbms(InsectOrderMapper mapper) {
+    InsectOrderEntityRepositoryRdbms(InsectOrderMapper mapper, InsectOrderTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -70,36 +71,18 @@ class InsectOrderEntityRepositoryRdbms
 
     @Override
     protected void doInsert(InsectOrderInfo entity) {
-        InsectOrderDbo dbo = InsectOrderDbo.from(entity);   // validates the parent scalars + throws
-        try {
-            mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(InsectOrderInfo entity) {
-        InsectOrderDbo dbo = InsectOrderDbo.from(entity);
-        if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
-        mapper.deleteCommonNames(entity.name().value());
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected InsectOrderInfo doSave(InsectOrderInfo entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
-    }
-
-    private void insertChildren(InsectOrderInfo o) {
-        InsectOrderName name = o.name();
-        for (CommonName commonName : o.commonNames()) {
-            mapper.insertCommonName(InsectOrderCommonNameDbo.from(name, commonName));
-        }
     }
 
     /** Assemble records from parent rows + one batched common-name load. */

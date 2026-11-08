@@ -23,7 +23,8 @@ public final class CompoundSeeder {
         SqlSessionFactory factory =
                 MyBatisSupport.sessionFactory(dataSource, CompoundMapper.class, DepictionMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var compoundRepo = new CompoundEntityRepositoryRdbms(session.getMapper(CompoundMapper.class));
+            var compoundRepo = new CompoundEntityRepositoryRdbms(session.getMapper(CompoundMapper.class),
+                    new CompoundTransaction(session.getMapper(CompoundMapper.class)));
             compounds.forEach(compoundRepo::insert);
 
             var depictionRepo = new DepictionEntityRepositoryRdbms(session.getMapper(DepictionMapper.class));

@@ -16,7 +16,8 @@ public final class PlantEcologicalRoleSeeder {
         var entities = database.getNamed(PlantEcologicalRoleTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, PlantEcologicalRoleMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new PlantEcologicalRoleEntityRepositoryRdbms(session.getMapper(PlantEcologicalRoleMapper.class));
+            var repo = new PlantEcologicalRoleEntityRepositoryRdbms(session.getMapper(PlantEcologicalRoleMapper.class),
+                    new PlantEcologicalRoleTransaction(session.getMapper(PlantEcologicalRoleMapper.class)));
             entities.forEach(repo::insert);
             session.commit();
         }

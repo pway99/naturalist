@@ -16,6 +16,7 @@ class PlantObservationEntityRepositoryRdbmsIT implements PlantObservationReposit
 
     @Override
     public PlantRepository.ObservationRepository repository() {
-        return new PlantObservationEntityRepositoryRdbms(rdbms.mapper(PlantObservationMapper.class));
+        return new PlantObservationEntityRepositoryRdbms(rdbms.mapper(PlantObservationMapper.class),
+                new PlantObservationTransaction(rdbms.mapper(PlantObservationMapper.class)));
     }
 }

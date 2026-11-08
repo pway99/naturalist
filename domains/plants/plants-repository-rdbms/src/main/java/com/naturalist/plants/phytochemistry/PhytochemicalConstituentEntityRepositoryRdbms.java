@@ -4,12 +4,9 @@ import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 import com.naturalist.plants.PlantRankName;
 import com.naturalist.plants.phytochemistry.role.PhytochemicalRole;
 
@@ -26,6 +23,9 @@ import java.util.stream.Collectors;
  * — no N+1. Writes persist the parent then the children (child inserts nested-select the parent id
  * from the name); an update replaces the child rows wholesale. The reverse {@link #getByPlantName}
  * / {@link #getByCompoundName} resolve the matching constituent names, then assemble them.
+ *
+ * <p>Each write spans several tables, so it runs through {@link
+ * PhytochemicalConstituentTransaction} as one transaction.
  */
 @DomainService
 class PhytochemicalConstituentEntityRepositoryRdbms
@@ -33,9 +33,12 @@ class PhytochemicalConstituentEntityRepositoryRdbms
         implements PhytochemicalConstituentRepository {
 
     private final PhytochemicalConstituentMapper mapper;
+    private final PhytochemicalConstituentTransaction transaction;
 
-    PhytochemicalConstituentEntityRepositoryRdbms(PhytochemicalConstituentMapper mapper) {
+    PhytochemicalConstituentEntityRepositoryRdbms(PhytochemicalConstituentMapper mapper,
+            PhytochemicalConstituentTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -77,30 +80,17 @@ class PhytochemicalConstituentEntityRepositoryRdbms
 
     @Override
     protected void doInsert(PhytochemicalConstituent entity) {
-        PhytochemicalConstituentDbo dbo = PhytochemicalConstituentDbo.from(entity);   // validates + throws
-        try {
-            mapper.insertConstituent(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(PhytochemicalConstituent entity) {
-        PhytochemicalConstituentDbo dbo = PhytochemicalConstituentDbo.from(entity);
-        if (mapper.updateConstituent(dbo) == 0) throw new EntityNotFoundException(entity);
-        String name = entity.name().value();
-        mapper.deleteRoles(name);
-        mapper.deleteTissues(name);
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected PhytochemicalConstituent doSave(PhytochemicalConstituent entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -124,16 +114,6 @@ class PhytochemicalConstituentEntityRepositoryRdbms
         var result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
         getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertChildren(PhytochemicalConstituent c) {
-        PhytochemicalConstituentName name = c.name();
-        for (PhytochemicalRole role : c.roles()) {
-            mapper.insertRole(PhytochemicalConstituentRoleDbo.from(name, role));
-        }
-        for (PlantTissue tissue : c.tissues()) {
-            mapper.insertTissue(PhytochemicalConstituentTissueDbo.from(name, tissue));
-        }
     }
 
     /** Assemble entities from parent rows + one batched load per child table. */

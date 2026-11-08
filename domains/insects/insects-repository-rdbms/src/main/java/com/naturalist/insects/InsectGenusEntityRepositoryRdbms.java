@@ -4,12 +4,9 @@ import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
-import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +20,9 @@ import java.util.stream.Collectors;
  * turns into {@link EntityNotFoundException}. Reads assemble the parent with its {@code commonNames}
  * loaded in one batched query keyed on the genus-name set — no N+1. The {@link #getByFamilyName} /
  * {@link #getByFamilyNames} queries each cost two selects regardless of the family-set size.
+ *
+ * <p>Each write spans several tables, so it runs through {@link InsectGenusTransaction} as one
+ * transaction.
  */
 @DomainService
 class InsectGenusEntityRepositoryRdbms
@@ -30,9 +30,11 @@ class InsectGenusEntityRepositoryRdbms
         implements InsectRepository.GenusRepository {
 
     private final InsectGenusMapper mapper;
+    private final InsectGenusTransaction transaction;
 
-    InsectGenusEntityRepositoryRdbms(InsectGenusMapper mapper) {
+    InsectGenusEntityRepositoryRdbms(InsectGenusMapper mapper, InsectGenusTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -73,30 +75,17 @@ class InsectGenusEntityRepositoryRdbms
 
     @Override
     protected void doInsert(InsectGenusInfo entity) {
-        InsectGenusDbo dbo = InsectGenusDbo.from(entity);   // validates the parent scalars + throws
-        int inserted;
-        try {
-            inserted = mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        if (inserted == 0) throw new EntityNotFoundException(entity);   // referenced family absent
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(InsectGenusInfo entity) {
-        InsectGenusDbo dbo = InsectGenusDbo.from(entity);
-        if (mapper.updateByName(dbo) == 0) throw new EntityNotFoundException(entity);
-        mapper.deleteCommonNames(entity.name().value());
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected InsectGenusInfo doSave(InsectGenusInfo entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -124,13 +113,6 @@ class InsectGenusEntityRepositoryRdbms
         var result = assemble(parents, names);
         getByFamilyNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertChildren(InsectGenusInfo g) {
-        InsectGenusName name = g.name();
-        for (CommonName commonName : g.commonNames()) {
-            mapper.insertCommonName(InsectGenusCommonNameDbo.from(name, commonName));
-        }
     }
 
     /** Assemble records from parent rows + one batched common-name load. */

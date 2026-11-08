@@ -5,10 +5,7 @@ import com.naturalist.chemistry.element.PeriodicElement;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +19,9 @@ import java.util.stream.Collectors;
  * compounds costs four selects, not four-per-compound — no N+1. Writes persist the parent then the
  * children (child inserts nested-select the parent id from the name); an update replaces the
  * child rows wholesale.
+ *
+ * <p>Each write spans several tables, so it runs through {@link CompoundTransaction} as one
+ * transaction.
  */
 @DomainService
 class CompoundEntityRepositoryRdbms
@@ -29,9 +29,11 @@ class CompoundEntityRepositoryRdbms
         implements CompoundRepository.CompoundEntityRepository {
 
     private final CompoundMapper mapper;
+    private final CompoundTransaction transaction;
 
-    CompoundEntityRepositoryRdbms(CompoundMapper mapper) {
+    CompoundEntityRepositoryRdbms(CompoundMapper mapper, CompoundTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -72,45 +74,18 @@ class CompoundEntityRepositoryRdbms
 
     @Override
     protected void doInsert(Compound entity) {
-        CompoundDbo dbo = CompoundDbo.from(entity);   // validates the parent scalars + throws
-        try {
-            mapper.insertCompound(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(Compound entity) {
-        CompoundDbo dbo = CompoundDbo.from(entity);
-        if (mapper.updateCompound(dbo) == 0) throw new EntityNotFoundException(entity);
-        String name = entity.name().value();
-        mapper.deleteFunctionalRoles(name);
-        mapper.deleteConstituentElements(name);
-        mapper.deleteProperties(name);
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected Compound doSave(Compound entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
-    }
-
-    private void insertChildren(Compound c) {
-        CompoundName name = c.name();
-        for (FunctionalRole role : c.compoundInfo().functionalRoles()) {
-            mapper.insertFunctionalRole(CompoundFunctionalRoleDbo.from(name, role));
-        }
-        for (PeriodicElement element : c.compoundInfo().constituentElements()) {
-            mapper.insertConstituentElement(CompoundConstituentElementDbo.from(name, element));
-        }
-        for (Map.Entry<String, String> property : c.properties().entrySet()) {
-            mapper.insertProperty(CompoundPropertyDbo.from(name, property.getKey(), property.getValue()));
-        }
     }
 
     /** Assemble aggregates from parent rows + one batched load per child table. */

@@ -16,6 +16,7 @@ class InsectOrderEntityRepositoryRdbmsIT implements InsectOrderRepositoryTest {
 
     @Override
     public InsectRepository.OrderRepository repository() {
-        return new InsectOrderEntityRepositoryRdbms(rdbms.mapper(InsectOrderMapper.class));
+        return new InsectOrderEntityRepositoryRdbms(rdbms.mapper(InsectOrderMapper.class),
+                new InsectOrderTransaction(rdbms.mapper(InsectOrderMapper.class)));
     }
 }

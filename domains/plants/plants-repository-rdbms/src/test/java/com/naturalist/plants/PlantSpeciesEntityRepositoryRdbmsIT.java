@@ -17,6 +17,7 @@ class PlantSpeciesEntityRepositoryRdbmsIT implements PlantSpeciesRepositoryTest 
 
     @Override
     public PlantRepository.SpeciesRepository repository() {
-        return new PlantSpeciesEntityRepositoryRdbms(rdbms.mapper(PlantSpeciesMapper.class));
+        return new PlantSpeciesEntityRepositoryRdbms(rdbms.mapper(PlantSpeciesMapper.class),
+                new PlantSpeciesTransaction(rdbms.mapper(PlantSpeciesMapper.class)));
     }
 }

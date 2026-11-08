@@ -16,6 +16,7 @@ class PlantFamilyEntityRepositoryRdbmsIT implements PlantFamilyRepositoryTest {
 
     @Override
     public PlantRepository.FamilyRepository repository() {
-        return new PlantFamilyEntityRepositoryRdbms(rdbms.mapper(PlantFamilyMapper.class));
+        return new PlantFamilyEntityRepositoryRdbms(rdbms.mapper(PlantFamilyMapper.class),
+                new PlantFamilyTransaction(rdbms.mapper(PlantFamilyMapper.class)));
     }
 }

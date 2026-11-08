@@ -3,15 +3,12 @@ package com.naturalist.insects;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observation.Identification;
 import com.naturalist.observation.OrganismObservation;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +21,9 @@ import java.util.stream.Collectors;
  * batched query per page (keyed on the observation-id set); the polymorphic {@code subject} and naturalist
  * {@code observedBy} are stored flat and rebuilt in-module. {@code getByNaturalistAndSubjects} resolves a
  * whole subject set in one query.
+ *
+ * <p>Each write spans several tables, so it runs through {@link InsectObservationTransaction} as
+ * one transaction.
  */
 @DomainService
 class InsectObservationEntityRepositoryRdbms
@@ -31,9 +31,12 @@ class InsectObservationEntityRepositoryRdbms
         implements InsectRepository.ObservationRepository {
 
     private final InsectObservationMapper mapper;
+    private final InsectObservationTransaction transaction;
 
-    InsectObservationEntityRepositoryRdbms(InsectObservationMapper mapper) {
+    InsectObservationEntityRepositoryRdbms(InsectObservationMapper mapper,
+            InsectObservationTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -74,29 +77,18 @@ class InsectObservationEntityRepositoryRdbms
 
     @Override
     protected void doInsert(OrganismObservation<InsectObservationId, InsectRankName> entity) {
-        InsectObservationDbo dbo = InsectObservationDbo.from(entity);
-        try {
-            mapper.insert(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertCandidates(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(OrganismObservation<InsectObservationId, InsectRankName> entity) {
-        InsectObservationDbo dbo = InsectObservationDbo.from(entity);
-        if (mapper.updateById(dbo) == 0) throw new EntityNotFoundException(entity);
-        mapper.deleteCandidates(entity.id().value().toString());
-        insertCandidates(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected OrganismObservation<InsectObservationId, InsectRankName> doSave(
             OrganismObservation<InsectObservationId, InsectRankName> entity) {
-        if (mapper.selectById(entity.id().value().toString()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -123,16 +115,6 @@ class InsectObservationEntityRepositoryRdbms
         var result = assemble(mapper.selectByNaturalistAndSubjects(observedBy.value(), keys));
         getByNaturalistAndSubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertCandidates(OrganismObservation<InsectObservationId, InsectRankName> entity) {
-        Identification identification = entity.identification();
-        if (identification == null) return;
-        String id = entity.id().value().toString();
-        List<Identification.Candidate> alternatives = identification.alternatives();
-        for (int i = 0; i < alternatives.size(); i++) {
-            mapper.insertCandidate(InsectObservationCandidateDbo.from(id, i, alternatives.get(i)));
-        }
     }
 
     private List<OrganismObservation<InsectObservationId, InsectRankName>> assemble(List<InsectObservationDbo> parents) {

@@ -4,12 +4,9 @@ import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.exception.EntityNotFoundException;
-import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
-import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +19,9 @@ import java.util.stream.Collectors;
  * ({@code product_compound}) and properties loaded one batched query each; writes persist the
  * parent then the children (child inserts nested-select the numeric ids from names). The reverse
  * {@link #getByCompoundName} resolves the product names for a compound, then assembles them.
+ *
+ * <p>Each write spans several tables, so it runs through {@link ProductTransaction} as one
+ * transaction.
  */
 @DomainService
 class ProductEntityRepositoryRdbms
@@ -29,9 +29,11 @@ class ProductEntityRepositoryRdbms
         implements ProductRepository {
 
     private final ProductMapper mapper;
+    private final ProductTransaction transaction;
 
-    ProductEntityRepositoryRdbms(ProductMapper mapper) {
+    ProductEntityRepositoryRdbms(ProductMapper mapper, ProductTransaction transaction) {
         this.mapper = mapper;
+        this.transaction = transaction;
     }
 
     @Override
@@ -72,30 +74,17 @@ class ProductEntityRepositoryRdbms
 
     @Override
     protected void doInsert(Product entity) {
-        ProductDbo dbo = ProductDbo.from(entity);   // validates + throws
-        try {
-            mapper.insertProduct(dbo);
-        } catch (RuntimeException e) {
-            if (RdbmsExceptions.isUniqueViolation(e)) throw new PrimaryKeyConstraintException(entity);
-            throw e;
-        }
-        insertChildren(entity);
+        transaction.insert(entity);
     }
 
     @Override
     protected void doUpdate(Product entity) {
-        ProductDbo dbo = ProductDbo.from(entity);
-        if (mapper.updateProduct(dbo) == 0) throw new EntityNotFoundException(entity);
-        String name = entity.name().value();
-        mapper.deleteProductCompounds(name);
-        mapper.deleteProductProperties(name);
-        insertChildren(entity);
+        transaction.update(entity);
     }
 
     @Override
     protected Product doSave(Product entity) {
-        if (mapper.selectByName(entity.name().value()) != null) doUpdate(entity);
-        else doInsert(entity);
+        transaction.save(entity);
         return entity;
     }
 
@@ -109,18 +98,6 @@ class ProductEntityRepositoryRdbms
         var result = assemble(mapper.selectByNameSet(productNames), Set.copyOf(productNames));
         getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
-    }
-
-    private void insertChildren(Product entity) {
-        ProductName name = entity.name();
-        for (CompoundName compound : entity.compounds()) {
-            if (mapper.insertProductCompound(ProductCompoundDbo.from(name, compound)) == 0) {
-                throw new EntityNotFoundException(entity);   // referenced compound absent
-            }
-        }
-        for (Map.Entry<String, String> property : entity.properties().entrySet()) {
-            mapper.insertProductProperty(ProductPropertyDbo.from(name, property.getKey(), property.getValue()));
-        }
     }
 
     private List<Product> assemble(List<ProductDbo> parents, Set<String> names) {

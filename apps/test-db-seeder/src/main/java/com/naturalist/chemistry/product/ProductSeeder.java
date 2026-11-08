@@ -19,7 +19,8 @@ public final class ProductSeeder {
         var products = database.getNamed(ProductTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, ProductMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new ProductEntityRepositoryRdbms(session.getMapper(ProductMapper.class));
+            var repo = new ProductEntityRepositoryRdbms(session.getMapper(ProductMapper.class),
+                    new ProductTransaction(session.getMapper(ProductMapper.class)));
             products.forEach(repo::insert);
             session.commit();
         }

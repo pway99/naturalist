@@ -16,6 +16,7 @@ class InsectFunctionalRoleEntityRepositoryRdbmsIT implements InsectFunctionalRol
 
     @Override
     public InsectRepository.FunctionalRoleRepository repository() {
-        return new InsectFunctionalRoleEntityRepositoryRdbms(rdbms.mapper(InsectFunctionalRoleMapper.class));
+        return new InsectFunctionalRoleEntityRepositoryRdbms(rdbms.mapper(InsectFunctionalRoleMapper.class),
+                new InsectFunctionalRoleTransaction(rdbms.mapper(InsectFunctionalRoleMapper.class)));
     }
 }

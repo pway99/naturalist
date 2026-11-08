@@ -16,7 +16,8 @@ public final class InsectGenusSeeder {
         var entities = database.getNamed(InsectGenusTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, InsectGenusMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new InsectGenusEntityRepositoryRdbms(session.getMapper(InsectGenusMapper.class));
+            var repo = new InsectGenusEntityRepositoryRdbms(session.getMapper(InsectGenusMapper.class),
+                    new InsectGenusTransaction(session.getMapper(InsectGenusMapper.class)));
             entities.forEach(repo::insert);
             session.commit();
         }

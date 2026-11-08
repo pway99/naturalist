@@ -15,6 +15,7 @@ class CompoundEntityRepositoryRdbmsIT implements CompoundEntityRepositoryTest {
 
     @Override
     public CompoundRepository.CompoundEntityRepository repository() {
-        return new CompoundEntityRepositoryRdbms(rdbms.mapper(CompoundMapper.class));
+        return new CompoundEntityRepositoryRdbms(rdbms.mapper(CompoundMapper.class),
+                new CompoundTransaction(rdbms.mapper(CompoundMapper.class)));
     }
 }

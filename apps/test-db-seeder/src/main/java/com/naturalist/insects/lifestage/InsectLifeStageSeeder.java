@@ -16,7 +16,8 @@ public final class InsectLifeStageSeeder {
         var entities = database.getNamed(InsectLifeStageTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, InsectLifeStageMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new InsectLifeStageEntityRepositoryRdbms(session.getMapper(InsectLifeStageMapper.class));
+            var repo = new InsectLifeStageEntityRepositoryRdbms(session.getMapper(InsectLifeStageMapper.class),
+                    new InsectLifeStageTransaction(session.getMapper(InsectLifeStageMapper.class)));
             entities.forEach(repo::insert);
             session.commit();
         }

@@ -15,6 +15,7 @@ class ProductEntityRepositoryRdbmsIT implements ProductEntityRepositoryTest {
 
     @Override
     public ProductRepository repository() {
-        return new ProductEntityRepositoryRdbms(rdbms.mapper(ProductMapper.class));
+        return new ProductEntityRepositoryRdbms(rdbms.mapper(ProductMapper.class),
+                new ProductTransaction(rdbms.mapper(ProductMapper.class)));
     }
 }
