@@ -81,8 +81,9 @@ handed out as `SelectTrace` JDK proxies, non-final classes the graph builds thro
 An outside-world port, a type whose package has no context, has one provider per graph: the test's own
 context, else the only context that provides it. ByteBuddy is excluded from `management-console`, which
 ships `framework-test` for `TestEntitySource` but never builds a graph; `PackagedJarIT` keeps it out.
-Contexts are discovered through `META-INF/services/com.naturalist.test.context.TestContext`; fakes are
-logged to `target/test-context-fakes.txt`. See `domains/CLAUDE.md` "Test Contexts". Allow a genuinely
+Contexts are discovered through `META-INF/services/com.naturalist.test.context.TestContext`. A fake stays in
+the graph's memory, and only an outside-world port takes one: faking a type whose package has a test context
+(a domain service) throws. See `domains/CLAUDE.md` "Test Contexts". Allow a genuinely
 un-batchable repeat with `@SuppressRepeatedSelect(reason=…)` on the production method doing it.
 A static backstop `NoSelectInIteration` (composite `com.naturalist.EnforceQueryHygiene`)
 lives in `tooling/naturalist-rewrite`, flagging loop/stream fan-out of repository/query

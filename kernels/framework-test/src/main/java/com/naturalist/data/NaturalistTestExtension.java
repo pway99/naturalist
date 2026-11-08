@@ -2,7 +2,6 @@ package com.naturalist.data;
 
 import com.naturalist.test.context.Fake;
 import com.naturalist.test.context.ObjectGraph;
-import com.naturalist.test.context.RegisteredFake;
 import com.naturalist.test.context.TestContext;
 import com.naturalist.test.context.TestGraphException;
 import com.naturalist.test.context.Wired;
@@ -10,14 +9,8 @@ import com.naturalist.test.query.nofanout.SelectTrace;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +36,7 @@ import java.util.List;
  * {@link #get} hands out one wired, traced instance per type from an {@link ObjectGraph} built
  * under the registered {@link TestContext}s, and before each test every {@link Fake} field is
  * handed to the context of the test's own package and every {@link Wired} field is filled.
- * Each test's fakes are appended to {@code target/test-context-fakes.txt}.
+ * A fake stays in the graph's memory; one for a domain service fails as it is handed over.
  */
 public class NaturalistTestExtension extends NaturalistDatabase
         implements BeforeEachCallback, AfterEachCallback {
@@ -72,23 +65,10 @@ public class NaturalistTestExtension extends NaturalistDatabase
 
     @Override
     public void afterEach(ExtensionContext context) {
-        Throwable failure = null;
         try {
             SelectTrace.evaluate(context.getRequiredTestClass().getSimpleName() + "." + context.getRequiredTestMethod().getName());
-        } catch (RuntimeException | Error e) {
-            failure = e;
-            throw e;
         } finally {
-            try {
-                recordFakes(context);
-            } catch (UncheckedIOException e) {
-                if (failure == null) {
-                    throw e;
-                }
-                failure.addSuppressed(e);
-            } finally {
-                SelectTrace.disarm();
-            }
+            SelectTrace.disarm();
         }
     }
 
@@ -158,26 +138,6 @@ public class NaturalistTestExtension extends NaturalistDatabase
     @SuppressWarnings("unchecked")
     private static void handOver(TestContext context, Class<?> type, Object fake) {
         context.fake((Class<Object>) type, fake);
-    }
-
-    /** Appends this test's fakes to {@code target/test-context-fakes.txt}, one tab-separated line each. */
-    private void recordFakes(ExtensionContext context) {
-        if (graph == null || graph.fakes().isEmpty()) {
-            return;
-        }
-        String test = context.getRequiredTestClass().getSimpleName() + "#" + context.getRequiredTestMethod().getName();
-        StringBuilder lines = new StringBuilder();
-        for (RegisteredFake fake : graph.fakes()) {
-            lines.append(test).append('\t').append(fake.context()).append('\t').append(fake.type().getName())
-                    .append('\t').append(fake.fakeClass().getName()).append('\n');
-        }
-        Path report = Path.of("target", "test-context-fakes.txt");
-        try {
-            Files.createDirectories(report.getParent());
-            Files.writeString(report, lines, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
     /**

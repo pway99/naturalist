@@ -161,6 +161,11 @@ public final class ObjectGraph {
         if (!type.isInstance(fake)) {
             throw new TestGraphException(fake.getClass().getName() + " is not a " + type.getName());
         }
+        if (state.byPackage.containsKey(type.getPackageName())) {
+            throw new TestGraphException(type.getName() + " is a domain service built by "
+                    + owner(type.getPackageName()).getClass().getSimpleName()
+                    + ", so a test runs the real one; only an outside-world port, whose package has no test context, takes a fake");
+        }
         if (state.resolved.contains(type)) {
             throw new TestGraphException(type.getName() + " was already built; hand the fake over before the first get");
         }

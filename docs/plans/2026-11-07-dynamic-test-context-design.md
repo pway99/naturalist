@@ -147,7 +147,7 @@ bug. Under rule 7 it does not need its own proxy: the command ports it holds are
 - One access point for everything under test in core.
 - No wiring written twice; adding an implementation adds no wiring unless it is unusual (rule 4).
 - The whole graph traced, closing D3 from the SelectTrace follow-ups.
-- Every fake registered and reportable.
+- Every fake registered, and only outside-world ports faked (enforced when the fake is handed over).
 - Proxy-reachability defects caught in the owning module.
 
 ## Non-goals
@@ -180,7 +180,9 @@ These came out of the builder check. They follow from the conversation but Pat d
 
 - **One graph and one fake registry per test, shared across contexts.** This is the Spring analogy: one
   application context. When plants and insects both reach library, they share one `LibraryCommand`. A fake
-  replaces its type everywhere in the graph. "Reportable" means one list per test, printed at the end of the run.
+  replaces its type everywhere in the graph. "Reportable" first meant a file of every test's fakes; it was
+  dropped (2026-11-07 review): nothing read it, and rule 1 is now an error instead, thrown when a test hands
+  over a fake for a type whose package has a test context.
 - **Resolution order for a parameter:** (1) a fake the test handed to a context; (2) what the requesting context
   chooses to provide; (3) the owning package's context; (4) reflection over the owning package's candidates. The
   requesting context therefore decides outside-world ports, as Pat said. Kernel ports with no context of their
