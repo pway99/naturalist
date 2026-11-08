@@ -7,7 +7,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -91,9 +92,11 @@ class NaturalistEntityRepositoryRdbms
 
     @Override
     public Optional<Naturalist> getByAccount(AccountName account) {
-        Observer.forClass(NaturalistEntityRepositoryRdbms.class)
-                .arguments("getByAccount", i -> i.entityName(account, "account"))
+        MethodObserver getByAccount = observer().forMethod("getByAccount");
+        getByAccount.arguments(i -> i.entityName(account, "account"))
                 .throwWhenInvalid();
-        return Optional.ofNullable(mapper.selectByAccount(account.value())).map(NaturalistDbo::toEntity);
+        var result = Optional.ofNullable(mapper.selectByAccount(account.value())).map(NaturalistDbo::toEntity);
+        getByAccount.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
+        return result;
     }
 }
