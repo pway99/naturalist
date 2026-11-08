@@ -6,7 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -87,24 +88,32 @@ class UsageAlertEntityRepositoryRdbms
 
     @Override
     public Optional<UsageAlert> findDedupKey(UsageCounterName counter, AlertScope scope, AlertKind kind, String period) {
-        Observer.forClass(UsageAlertEntityRepositoryRdbms.class)
-                .arguments("findDedupKey", i -> i
+        MethodObserver findDedupKey = observer().forMethod("findDedupKey");
+        findDedupKey.arguments(i -> i
                         .identifier(counter, "counter")
                         .notNull(scope, "scope")
                         .notNull(kind, "kind")
                         .notBlank(period, "period"))
                 .throwWhenInvalid();
-        return Optional.ofNullable(mapper.selectDedupKey(counter.value(), scope.name(), kind.name(), period))
+        var result = Optional.ofNullable(mapper.selectDedupKey(counter.value(), scope.name(), kind.name(), period))
                 .map(UsageAlertDbo::toEntity);
+        findDedupKey.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<UsageAlert> getUnacknowledged() {
-        return mapper.selectUnacknowledged().stream().map(UsageAlertDbo::toEntity).toList();
+        MethodObserver getUnacknowledged = observer().forMethod("getUnacknowledged");
+        var result = mapper.selectUnacknowledged().stream().map(UsageAlertDbo::toEntity).toList();
+        getUnacknowledged.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<UsageAlert> getUnsent() {
-        return mapper.selectUnsent().stream().map(UsageAlertDbo::toEntity).toList();
+        MethodObserver getUnsent = observer().forMethod("getUnsent");
+        var result = mapper.selectUnsent().stream().map(UsageAlertDbo::toEntity).toList();
+        getUnsent.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

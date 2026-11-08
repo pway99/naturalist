@@ -4,6 +4,8 @@ import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
@@ -22,14 +24,17 @@ class UsageEventRepositoryMock
     public List<UsageEvent> findByCounterSince(UsageCounterName counter,
                                                @Nullable NaturalistName naturalist,
                                                Instant since) {
-        observer().arguments("findByCounterSince", i -> i
+        MethodObserver findByCounterSince = observer().forMethod("findByCounterSince");
+        findByCounterSince.arguments(i -> i
                         .identifier(counter, "counter")
                         .notNull(since, "since"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(e -> e.counterName().equals(counter)
                         && !e.instant().isBefore(since)
                         && (naturalist == null || e.naturalist().equals(naturalist)))
                 .toList();
+        findByCounterSince.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

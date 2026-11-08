@@ -251,7 +251,9 @@ Quick-reference constraints:
   scoped to the concrete adapter class. Rdbms adapters and mocks both observe. Reference:
   `InsectFeatureAssignmentEntityRepositoryRdbms`. A read returning names rather than entities observes them with
   `entityNameCollection(result, "result")` (`DepictionEntityRepositoryRdbms.getAllDepictedCompoundNames`).
-  Rolled out in insects, plants, chemistry, library, soil and garden; other domains follow.
+  A no-argument read takes its `MethodObserver` all the same
+  (`UsageAlertEntityRepositoryRdbms.getUnsent`). Rolled out in insects, plants, chemistry, library, soil, garden
+  and usage; other domains follow.
 - **Fan-out must batch — never per-element in a loop.** Calling a repository or query once
   per element of a prior result (`for` / `stream().map` / `computeIfAbsent` / recursive
   descent) is an N+1 that scales with catalog size and degrades production; it passes on
