@@ -3,6 +3,8 @@ package com.naturalist.chemistry.compound;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,18 +20,24 @@ class DepictionEntityRepositoryMock
 
     @Override
     public Optional<CompoundDepiction> getByCompoundName(CompoundName compoundName) {
-        observer().arguments("getByCompoundName", i -> i
+        MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
+        getByCompoundName.arguments(i -> i
                         .identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(depiction -> depiction.compoundName().equals(compoundName))
                 .findFirst();
+        getByCompoundName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<CompoundName> getAllDepictedCompoundNames() {
-        return testEntitySource().entityStream()
+        MethodObserver getAllDepictedCompoundNames = observer().forMethod("getAllDepictedCompoundNames");
+        var result = testEntitySource().entityStream()
                 .map(CompoundDepiction::compoundName)
                 .toList();
+        getAllDepictedCompoundNames.state(s -> s.entityNameCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

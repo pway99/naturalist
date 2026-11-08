@@ -4,6 +4,8 @@ import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
 
@@ -18,11 +20,14 @@ class ProductEntityRepositoryMock
 
     @Override
     public List<Product> getByCompoundName(CompoundName compoundName) {
-        observer().arguments("getByCompoundName", i -> i
+        MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
+        getByCompoundName.arguments(i -> i
                         .identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(product -> product.compounds().contains(compoundName))
                 .toList();
+        getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

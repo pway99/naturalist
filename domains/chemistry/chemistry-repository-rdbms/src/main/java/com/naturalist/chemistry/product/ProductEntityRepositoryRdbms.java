@@ -7,7 +7,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -100,12 +101,14 @@ class ProductEntityRepositoryRdbms
 
     @Override
     public List<Product> getByCompoundName(CompoundName compoundName) {
-        Observer.forClass(ProductEntityRepositoryRdbms.class)
-                .arguments("getByCompoundName", i -> i.identifier(compoundName, "compoundName"))
+        MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
+        getByCompoundName.arguments(i -> i.identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
         List<String> productNames = mapper.selectProductNamesByCompoundName(compoundName.value());
         if (productNames.isEmpty()) return List.of();
-        return assemble(mapper.selectByNameSet(productNames), Set.copyOf(productNames));
+        var result = assemble(mapper.selectByNameSet(productNames), Set.copyOf(productNames));
+        getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     private void insertChildren(Product entity) {
