@@ -1,12 +1,12 @@
 package com.naturalist.plants.cultivar;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Same-package assembly seam for the cultivar sub-context. Lives here (not folded into
- * {@code PlantsTestContext}) because PlantCultivarQueryImpl and PlantCultivarRepositoryMock are
- * package-private in this package; the root-package PlantsTestContext cannot reach them.
+ * External test context of the cultivar sub-context: a facade over a fresh {@link ObjectGraph}, which
+ * builds the package's query implementation and repository mock by reflection under plants-core's
+ * {@code CultivarTestContextInternal}. The wiring lives there once.
  */
 public final class CultivarTestContext {
 
@@ -14,6 +14,6 @@ public final class CultivarTestContext {
     }
 
     public static CultivarQuery createQuery(NaturalistDatabase db) {
-        return SelectTrace.traced(CultivarQuery.class, new PlantCultivarQueryImpl(new PlantCultivarRepositoryMock(db)));
+        return ObjectGraph.create(db).get(CultivarQuery.class);
     }
 }

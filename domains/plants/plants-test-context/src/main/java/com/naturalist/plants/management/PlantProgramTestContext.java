@@ -1,12 +1,12 @@
 package com.naturalist.plants.management;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Same-package assembly seam for the management sub-context. Lives here (not folded into
- * {@code PlantsTestContext}) because PlantProgramQueryImpl and PlantProgramRepositoryMock are
- * package-private in this package; the root-package PlantsTestContext cannot reach them.
+ * External test context of the management sub-context: a facade over a fresh {@link ObjectGraph}, which
+ * builds the package's query implementation and repository mock by reflection under plants-core's
+ * {@code PlantProgramTestContextInternal}. The wiring lives there once.
  */
 public final class PlantProgramTestContext {
 
@@ -14,6 +14,6 @@ public final class PlantProgramTestContext {
     }
 
     public static PlantProgramQuery createQuery(NaturalistDatabase db) {
-        return SelectTrace.traced(PlantProgramQuery.class, new PlantProgramQueryImpl(new PlantProgramRepositoryMock(db)));
+        return ObjectGraph.create(db).get(PlantProgramQuery.class);
     }
 }

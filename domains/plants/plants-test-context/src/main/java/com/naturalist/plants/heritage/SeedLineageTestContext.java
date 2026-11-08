@@ -1,12 +1,12 @@
 package com.naturalist.plants.heritage;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Same-package assembly seam for the heritage sub-context. Lives here (not folded into
- * {@code PlantsTestContext}) because PlantSeedLineageQueryImpl and PlantSeedLineageRepositoryMock are
- * package-private in this package; the root-package PlantsTestContext cannot reach them.
+ * External test context of the heritage sub-context: a facade over a fresh {@link ObjectGraph}, which
+ * builds the package's query implementation and repository mock by reflection under plants-core's
+ * {@code SeedLineageTestContextInternal}. The wiring lives there once.
  */
 public final class SeedLineageTestContext {
 
@@ -14,6 +14,6 @@ public final class SeedLineageTestContext {
     }
 
     public static SeedLineageQuery createQuery(NaturalistDatabase db) {
-        return SelectTrace.traced(SeedLineageQuery.class, new PlantSeedLineageQueryImpl(new PlantSeedLineageRepositoryMock(db)));
+        return ObjectGraph.create(db).get(SeedLineageQuery.class);
     }
 }

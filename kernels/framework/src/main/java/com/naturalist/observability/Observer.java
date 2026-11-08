@@ -69,7 +69,13 @@ public class Observer {
         if (referenceClass == null) {
             throw new IllegalArgumentException("referenceClass must not be null");
         }
-        this.referenceClass = referenceClass;
+        // A synthetic class, one a tool generated (a test graph's traced subclass), is named for the class it extends,
+        // so its metrics read as the production class's do.
+        Class<?> named = referenceClass;
+        while (named.isSynthetic() && named.getSuperclass() != null) {
+            named = named.getSuperclass();
+        }
+        this.referenceClass = named;
         this.monitoringMode = monitoringMode == null ? MonitoringMode.ON_FAILURE : monitoringMode;
     }
 

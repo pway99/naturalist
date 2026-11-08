@@ -1,6 +1,7 @@
 package com.naturalist.soil;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.garden.CropTypeName;
 import com.naturalist.soil.observation.LabAnalysis;
@@ -34,7 +35,7 @@ class SoilProfileFactoryTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    SoilProfileQuery query = SoilsTestContextInternal.create(nte).soilProfileQuery();
+    @Wired SoilProfileQuery query;
 
     @Test
     void getBySoilProfileName_nullArgument_throws() {

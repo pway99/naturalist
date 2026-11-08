@@ -3,6 +3,7 @@ package com.naturalist.naturalist;
 import com.naturalist.account.AccountName;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -12,8 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link NaturalistCommandImpl}. Wires the command over the in-memory
- * mock ({@code naturalists.json} seeds five naturalists) so {@code create} and {@code rename}
+ * Behavioral contract for {@link NaturalistCommandImpl}. The test graph builds the command over the
+ * in-memory mock ({@code naturalists.json} seeds five naturalists) so {@code create} and {@code rename}
  * are exercised without any RDBMS dependency.
  */
 class NaturalistCommandImplTest {
@@ -21,10 +22,11 @@ class NaturalistCommandImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final NaturalistRepository.NaturalistEntityRepository naturalists =
-            new NaturalistEntityRepositoryMock(nte);
+    @Wired
+    NaturalistRepository.NaturalistEntityRepository naturalists;
 
-    private final NaturalistCommand command = new NaturalistCommandImpl(naturalists);
+    @Wired
+    NaturalistCommand command;
 
     @Test
     void create_persistsNaturalistAndReturnsMintedName() {

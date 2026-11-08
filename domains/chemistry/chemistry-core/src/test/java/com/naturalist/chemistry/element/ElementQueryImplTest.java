@@ -2,6 +2,7 @@ package com.naturalist.chemistry.element;
 
 import com.naturalist.chemistry.TestChemistryIdentifiers;
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -14,8 +15,8 @@ class ElementQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    ElementRepository repository = new ElementEntityRepositoryMock(nte);
-    ElementQuery elementQuery = new ElementQueryImpl(repository);
+    @Wired ElementRepository repository;
+    @Wired ElementQuery elementQuery;
 
     @Test
     void findByNameSet_happyPath() {

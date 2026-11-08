@@ -1,6 +1,7 @@
 package com.naturalist.soil;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import com.naturalist.soil.observation.AssessmentSource;
 import com.naturalist.soil.observation.LabAnalysis;
 import com.naturalist.soil.observation.NutrientCategory;
@@ -23,7 +24,7 @@ class SoilProfileViewTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final SoilProfileQuery query = SoilsTestContextInternal.create(nte).soilProfileQuery();
+    @Wired SoilProfileQuery query;
 
     private LabAnalysis box1() {
         return query.getBySoilProfileName(TestSoilIdentifiers.SoilProfiles.Box1.name)

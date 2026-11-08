@@ -1,16 +1,22 @@
 package com.naturalist.plants;
 
 import com.naturalist.catalog.EntityRef;
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.insects.InsectOrderName;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PlantsEntityRefResolverTest {
 
-    private final PlantsEntityRefResolver resolver = new PlantsEntityRefResolver();
+    @RegisterExtension
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
+
+    @Wired PlantsEntityRefResolver resolver;
 
     @Test
     void domainIsPlants() {

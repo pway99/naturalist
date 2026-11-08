@@ -1,6 +1,7 @@
 package com.naturalist.soil;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import com.naturalist.soil.observation.LabAnalysis;
 import com.naturalist.soil.observation.NutrientName;
 import com.naturalist.soil.observation.Nutrients;
@@ -43,7 +44,7 @@ class FglOptimumGoldenMasterTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final SoilProfileQuery query = SoilsTestContextInternal.create(nte).soilProfileQuery();
+    @Wired SoilProfileQuery query;
 
     /**
      * Converts meq/100g of a cation to lbs/1000 ft². Empirically 0.91872, which is a soil mass of

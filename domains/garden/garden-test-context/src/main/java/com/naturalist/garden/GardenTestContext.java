@@ -1,23 +1,24 @@
 package com.naturalist.garden;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Pre-wired, in-memory read surface for the garden bounded context: assembles the planting query
- * and the {@code PlantedZoneFactory}, exposing the {@link PlantedZoneQuery} (a bed and what is in it)
- * and the {@link PlantingQuery}. Lives in package {@code com.naturalist.garden} for split-package
- * access to garden-core's package-private impls. Goes away when Spring DI replaces the manual
- * composition.
+ * Pre-wired, in-memory read surface for the garden bounded context, exposing the {@link PlantedZoneQuery}
+ * (a bed and what is in it) and the {@link PlantingQuery}. A facade over one {@link ObjectGraph} per
+ * {@link #create} call: the wiring lives once, in garden-core's {@code GardenTestContextInternal} plus the
+ * graph's reflection over the {@code @DomainService} and {@code @MockDomainService} classes. Each accessor
+ * returns what the graph builds, already traced.
+ *
+ * <p>Test data goes into the supplied database through the garden {@code *TestEntitySource} classes; do not
+ * grow write methods on this class.
  */
 public class GardenTestContext {
 
-    private final PlantingQuery plantingQuery;
-    private final PlantedZoneQuery plantedZoneQuery;
+    private final ObjectGraph graph;
 
     private GardenTestContext(NaturalistDatabase db) {
-        this.plantingQuery = new PlantingQueryImpl(new PlantingEntityRepositoryMock(db));
-        this.plantedZoneQuery = new PlantedZoneQueryImpl(new PlantedZoneFactory(plantingQuery));
+        this.graph = ObjectGraph.create(db);
     }
 
     public static GardenTestContext create(NaturalistDatabase db) {
@@ -25,10 +26,10 @@ public class GardenTestContext {
     }
 
     public PlantingQuery plantingQuery() {
-        return SelectTrace.traced(PlantingQuery.class, plantingQuery);
+        return graph.get(PlantingQuery.class);
     }
 
     public PlantedZoneQuery plantedZoneQuery() {
-        return SelectTrace.traced(PlantedZoneQuery.class, plantedZoneQuery);
+        return graph.get(PlantedZoneQuery.class);
     }
 }

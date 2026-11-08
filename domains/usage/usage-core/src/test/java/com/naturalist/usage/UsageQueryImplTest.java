@@ -2,6 +2,8 @@ package com.naturalist.usage;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.test.context.Fake;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -22,22 +24,27 @@ class UsageQueryImplTest {
 
     private static final UsageCounterName IDENTIFICATION = UsageCounterName.of("identification");
 
-    private final Clock clock =
-            Clock.fixed(Instant.parse("2026-08-25T10:00:00Z"), ZoneOffset.UTC);
-
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
+    @Fake
+    Clock clock = Clock.fixed(Instant.parse("2026-08-25T10:00:00Z"), ZoneOffset.UTC);
+
+    @Wired
+    UsageQuery query;
+
+    @Wired
+    UsageRepository.EventRepository events;
+
     @Test
     void reserveStateAndSnapshotCountTodaysEvents() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
         NaturalistName patrickWay = NaturalistName.of("patrick-way");
         Instant now = clock.instant();
 
-        context.events().insert(new UsageEvent(UsageEventId.create(), IDENTIFICATION, patrickWay, now));
-        context.events().insert(new UsageEvent(UsageEventId.create(), IDENTIFICATION, patrickWay, now));
+        events.insert(new UsageEvent(UsageEventId.create(), IDENTIFICATION, patrickWay, now));
+        events.insert(new UsageEvent(UsageEventId.create(), IDENTIFICATION, patrickWay, now));
 
-        UsageQuery.ReserveState state = context.query().reserveState(IDENTIFICATION, patrickWay, now);
+        UsageQuery.ReserveState state = query.reserveState(IDENTIFICATION, patrickWay, now);
         assertThat(state.counters())
                 .anySatisfy(cu -> {
                     assertThat(cu.rule().scope()).isEqualTo(UsageScope.PER_USER);
@@ -50,7 +57,7 @@ class UsageQueryImplTest {
                     assertThat(cu.used()).isEqualTo(2);
                 });
 
-        UsageSnapshot snapshot = context.query().snapshot();
+        UsageSnapshot snapshot = query.snapshot();
         assertThat(snapshot.dailyUsed()).isEqualTo(2);
         assertThat(snapshot.users()).containsExactly(new UsageSnapshot.UserUsage("patrick-way", 2, 10));
     }

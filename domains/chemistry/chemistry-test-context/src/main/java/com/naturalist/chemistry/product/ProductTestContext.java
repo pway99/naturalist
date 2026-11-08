@@ -1,14 +1,12 @@
 package com.naturalist.chemistry.product;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Assembly helper for the product sub-context. Lives in
- * {@code com.naturalist.chemistry.product} so it can instantiate the
- * package-private {@link ProductRepository} alongside the package-private
- * {@code ProductEntityRepositoryMock} and the package-private
- * {@code ProductQueryImpl} adapter in {@code chemistry-core}.
+ * The product sub-context's query over its own {@link ObjectGraph}. The wiring lives in chemistry-core's
+ * {@code ProductTestContextInternal} and the graph's reflection over the {@code @DomainService} and
+ * {@code @MockDomainService} classes; the query comes back already traced.
  */
 public final class ProductTestContext {
 
@@ -16,7 +14,6 @@ public final class ProductTestContext {
     }
 
     public static ProductQuery createQuery(NaturalistDatabase db) {
-        ProductRepository repository = new ProductEntityRepositoryMock(db);
-        return SelectTrace.traced(ProductQuery.class, new ProductQueryImpl(repository));
+        return ObjectGraph.create(db).get(ProductQuery.class);
     }
 }

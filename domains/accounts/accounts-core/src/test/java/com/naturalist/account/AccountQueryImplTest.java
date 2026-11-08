@@ -5,6 +5,7 @@ import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -14,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link AccountQueryImpl} — the inherited
+ * Behavioral contract for {@link AccountQueryImpl}, built by the test graph — the inherited
  * {@link EntityQueryContractTest} cases for {@code getByName} / {@code findByNameSet},
  * plus the {@code getByEmail} finder. Known constants match the {@code account/accounts.json}
  * fixtures.
@@ -25,8 +26,8 @@ class AccountQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    AccountRepositoryMock repository = new AccountRepositoryMock(nte);
-    AccountQuery query = new AccountQueryImpl(repository);
+    @Wired
+    AccountQuery query;
 
     @Override
     public EntityQuery<AccountName, Account, AccountCollection> query() {

@@ -5,6 +5,8 @@ import com.naturalist.test.query.nofanout.SelectTrace;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.description.modifier.SyntheticState;
+import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
@@ -69,7 +71,8 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
  *
  * <p>Only a non-final concrete class the graph builds through its constructor is built, once, as a
  * {@link SelectTrace.Traced} subclass generated in its own package; its {@code getClass()} is then a
- * {@code ...$ByteBuddy$...} subclass, which is what {@code Observer.forClass(getClass())} names show in tests.
+ * synthetic {@code ...$ByteBuddy$...} subclass, which {@code Observer} names for the class it extends, so an
+ * {@code Observer.forClass(getClass())} metric or observation point reads as it does in production.
  * Never a Traced subclass, though still proxied when asked for as a graph port: a {@code final} class (or a
  * sealed, record, enum, anonymous or local one), the result of a static {@code create} / {@code of}, and
  * anything a context provides. A fake is handed out as it is, untraced: that can only cause a false failure,
@@ -392,6 +395,7 @@ public final class ObjectGraph {
         try {
             return new ByteBuddy()
                     .subclass(type, ConstructorStrategy.Default.IMITATE_SUPER_CLASS)
+                    .modifiers(Visibility.PUBLIC, SyntheticState.SYNTHETIC)
                     .implement(SelectTrace.Traced.class)
                     .method(ElementMatchers.<MethodDescription>isDeclaredBy(declaredByOwner)
                             .and(isVisibleTo(TypeDescription.ForLoadedType.of(type)))

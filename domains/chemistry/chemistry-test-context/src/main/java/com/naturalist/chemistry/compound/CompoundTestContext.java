@@ -1,15 +1,12 @@
 package com.naturalist.chemistry.compound;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Assembly helper for the compound sub-context. Lives in
- * {@code com.naturalist.chemistry.compound} so it can instantiate the
- * package-private {@link CompoundRepository} namespace alongside the
- * package-private mocks ({@code CompoundEntityRepositoryMock},
- * {@code DepictionEntityRepositoryMock}) and the package-private
- * {@code *QueryImpl} adapters in {@code chemistry-core}.
+ * The compound sub-context's query over its own {@link ObjectGraph}. The wiring lives in chemistry-core's
+ * {@code CompoundTestContextInternal} and the graph's reflection over the {@code @DomainService} and
+ * {@code @MockDomainService} classes; the query comes back already traced.
  */
 public final class CompoundTestContext {
 
@@ -17,13 +14,6 @@ public final class CompoundTestContext {
     }
 
     public static CompoundQuery createQuery(NaturalistDatabase db) {
-        CompoundRepository repository = CompoundRepository.create(
-                new CompoundEntityRepositoryMock(db),
-                new DepictionEntityRepositoryMock(db));
-        CompoundQuery.CompoundEntityQuery compoundEntityQuery =
-                new CompoundEntityQueryImpl(repository.compoundRepository());
-        CompoundQuery.DepictionQuery depictionQuery =
-                new DepictionQueryImpl(repository.depictionRepository());
-        return SelectTrace.traced(CompoundQuery.class, new CompoundQueryImpl(compoundEntityQuery, depictionQuery));
+        return ObjectGraph.create(db).get(CompoundQuery.class);
     }
 }

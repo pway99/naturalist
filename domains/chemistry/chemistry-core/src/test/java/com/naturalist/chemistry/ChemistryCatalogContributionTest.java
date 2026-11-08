@@ -7,14 +7,12 @@ import com.naturalist.chemistry.TestChemistryIdentifiers.Elements;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Products;
 import com.naturalist.chemistry.catalog.ChemistryCatalogContribution;
 import com.naturalist.chemistry.compound.CompoundQuery;
-import com.naturalist.chemistry.compound.CompoundQueryTestContextInternal;
 import com.naturalist.chemistry.element.ElementQuery;
-import com.naturalist.chemistry.element.ElementQueryTestContextInternal;
 import com.naturalist.chemistry.product.ProductQuery;
-import com.naturalist.chemistry.product.ProductQueryTestContextInternal;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Pages;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -24,22 +22,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Lives in {@code com.naturalist.chemistry} (not {@code .catalog}) and uses the
- * package-friendly {@code *QueryTestContextInternal} classes in each sub-package so a
- * single test can wire both compounds and products without exposing either
- * sub-context's package-private mocks and adapters.
+ * The contribution and the three queries it reads come from the dynamic test context, over the seeded
+ * compound, product and element repository mocks.
  */
 class ChemistryCatalogContributionTest {
 
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final CompoundQuery.CompoundEntityQuery compounds =
-            CompoundQueryTestContextInternal.createEntityQuery(nte);
-    private final ProductQuery products = ProductQueryTestContextInternal.createQuery(nte);
-    private final ElementQuery elements = ElementQueryTestContextInternal.createQuery(nte);
-    private final ChemistryCatalogContribution contribution =
-            new ChemistryCatalogContribution(compounds, products, elements);
+    @Wired CompoundQuery.CompoundEntityQuery compounds;
+    @Wired ProductQuery products;
+    @Wired ElementQuery elements;
+    @Wired ChemistryCatalogContribution contribution;
 
     @Test
     void domainIsChemistry() {

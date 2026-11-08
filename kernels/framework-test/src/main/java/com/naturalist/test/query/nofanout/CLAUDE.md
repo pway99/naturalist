@@ -43,9 +43,10 @@ over rows that all exist fails, and that is a real repeated read.
   that a proxy can reach every `@jakarta.transaction.Transactional` method (a class-level one inherited from
   a superclass included), and fails with `TestGraphException` naming the class and, for an inherited
   method, the class that declares it, when one is final, private or static, or the class is final.
-- **The class name you see is the subclass.** `getClass()` of a graph-built object is a `…$ByteBuddy$…`
-  subclass, so `Observer.forClass(getClass())` names (metric tags, observation points) show that name in
-  tests.
+- **Metric names stay the production class's.** `getClass()` of a graph-built object is a synthetic
+  `…$ByteBuddy$…` subclass, and `Observer` names a synthetic class for the class it extends, so
+  `Observer.forClass(getClass())` metric tags and observation points read as they do in production.
+  `getClass()` itself (in a stack trace, say) still shows the subclass.
 - **`final` classes are not traced.** They are built plain, and a loop over one in a test fails like a
   loop in the unit under test. So does an object a test builds itself or a context provides from its own
   factory under a concrete type, and anything Spring wires in a console test: batch the call or take the

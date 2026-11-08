@@ -1,17 +1,12 @@
 package com.naturalist.chemistry.element;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Assembly helper for the element sub-context. Lives in
- * {@code com.naturalist.chemistry.element} so it can instantiate the
- * package-private {@link ElementRepository} implementation
- * ({@code ElementEntityRepositoryMock}) and the package-private
- * {@code ElementQueryImpl} adapter in {@code chemistry-core}.
- * <p>
- * Mirrors {@code ProductTestContext} — one entity in the package, so the
- * N=1 collapse applies and there is no namespace to assemble.
+ * The element sub-context's query over its own {@link ObjectGraph}. The wiring lives in chemistry-core's
+ * {@code ElementTestContextInternal} and the graph's reflection over the {@code @DomainService} and
+ * {@code @MockDomainService} classes; the query comes back already traced.
  */
 public final class ElementTestContext {
 
@@ -19,6 +14,6 @@ public final class ElementTestContext {
     }
 
     public static ElementQuery createQuery(NaturalistDatabase db) {
-        return SelectTrace.traced(ElementQuery.class, new ElementQueryImpl(new ElementEntityRepositoryMock(db)));
+        return ObjectGraph.create(db).get(ElementQuery.class);
     }
 }

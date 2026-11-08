@@ -1,12 +1,12 @@
 package com.naturalist.plants.phytochemistry;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Same-package assembly seam for the phytochemistry sub-context. Lives here (not folded into
- * {@code PlantsTestContext}) because PlantPhytochemicalConstituentQueryImpl and PlantPhytochemicalConstituentRepositoryMock are
- * package-private in this package; the root-package PlantsTestContext cannot reach them.
+ * External test context of the phytochemistry sub-context: a facade over a fresh {@link ObjectGraph}, which
+ * builds the package's query implementation and repository mock by reflection under plants-core's
+ * {@code PhytochemistryTestContextInternal}. The wiring lives there once.
  */
 public final class PhytochemicalConstituentTestContext {
 
@@ -14,6 +14,6 @@ public final class PhytochemicalConstituentTestContext {
     }
 
     public static PhytochemicalConstituentQuery createQuery(NaturalistDatabase db) {
-        return SelectTrace.traced(PhytochemicalConstituentQuery.class, new PlantPhytochemicalConstituentQueryImpl(new PlantPhytochemicalConstituentRepositoryMock(db)));
+        return ObjectGraph.create(db).get(PhytochemicalConstituentQuery.class);
     }
 }

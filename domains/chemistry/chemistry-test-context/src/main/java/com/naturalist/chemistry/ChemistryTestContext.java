@@ -1,20 +1,17 @@
 package com.naturalist.chemistry;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.chemistry.compound.CompoundQuery;
-import com.naturalist.chemistry.compound.CompoundTestContext;
 import com.naturalist.chemistry.element.ElementQuery;
-import com.naturalist.chemistry.element.ElementTestContext;
 import com.naturalist.chemistry.product.ProductQuery;
-import com.naturalist.chemistry.product.ProductTestContext;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Pre-wired, in-memory read surface for the chemistry bounded context. Mirrors
- * {@code InsectsTestContext} — colocates the cross-sub-context wiring so the
- * package-private adapters in {@code chemistry-core} and the package-private
- * mocks in {@code chemistry-repository-test} can be assembled without
- * promoting any of them to public.
+ * Pre-wired, in-memory read surface for the chemistry bounded context, for other modules' tests and
+ * console slices. A facade over one {@link ObjectGraph} per {@link #create} call: the wiring lives once,
+ * in chemistry-core's {@code *TestContextInternal} classes (compound, element, product, catalog) plus the
+ * graph's reflection over the {@code @DomainService} and {@code @MockDomainService} classes. Each accessor
+ * returns what the graph builds, already traced.
  *
  * <p><b>Read seam only.</b> Write-side test-data manipulation goes through
  * the supplied {@link NaturalistDatabase} and the domain's
@@ -22,20 +19,14 @@ import com.naturalist.data.NaturalistDatabase;
  *
  * <p><b>Not a JUnit extension.</b> Consumers that need per-method reset wrap
  * a {@code NaturalistTestExtension} (from {@code framework-test})
- * alongside this context. Keeping the extension concern out preserves use
- * from non-test contexts (e.g. console bootstraps during pre-RDBMS
- * development).
+ * alongside this context.
  */
 public class ChemistryTestContext {
 
-    private final CompoundQuery compoundQuery;
-    private final ProductQuery productQuery;
-    private final ElementQuery elementQuery;
+    private final ObjectGraph graph;
 
     private ChemistryTestContext(NaturalistDatabase db) {
-        this.compoundQuery = CompoundTestContext.createQuery(db);
-        this.productQuery = ProductTestContext.createQuery(db);
-        this.elementQuery = ElementTestContext.createQuery(db);
+        this.graph = ObjectGraph.create(db);
     }
 
     public static ChemistryTestContext create(NaturalistDatabase db) {
@@ -43,14 +34,14 @@ public class ChemistryTestContext {
     }
 
     public CompoundQuery compoundQuery() {
-        return SelectTrace.traced(CompoundQuery.class, compoundQuery);
+        return graph.get(CompoundQuery.class);
     }
 
     public ProductQuery productQuery() {
-        return SelectTrace.traced(ProductQuery.class, productQuery);
+        return graph.get(ProductQuery.class);
     }
 
     public ElementQuery elementQuery() {
-        return SelectTrace.traced(ElementQuery.class, elementQuery);
+        return graph.get(ElementQuery.class);
     }
 }

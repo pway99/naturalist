@@ -33,4 +33,29 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Ships accounts' test contexts (the *TestContextInternal classes and their services entry) in the
+                 test-jar, and nothing else: the test classes stay private here. No accounts-test-context facade
+                 consumes it yet; console tests get accounts from Spring. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*TestContextInternal*</include>
+                                <include>META-INF/services/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

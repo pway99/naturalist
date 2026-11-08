@@ -2,6 +2,7 @@ package com.naturalist.chemistry.compound;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -13,11 +14,9 @@ class CompoundQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    CompoundEntityRepositoryMock compoundRepository = new CompoundEntityRepositoryMock(nte);
-    DepictionEntityRepositoryMock depictionRepository = new DepictionEntityRepositoryMock(nte);
-    CompoundQuery.CompoundEntityQuery compoundEntityQuery = new CompoundEntityQueryImpl(compoundRepository);
-    CompoundQuery.DepictionQuery depictionQuery = new DepictionQueryImpl(depictionRepository);
-    CompoundQuery compoundQuery = new CompoundQueryImpl(compoundEntityQuery, depictionQuery);
+    @Wired CompoundQuery.CompoundEntityQuery compoundEntityQuery;
+    @Wired CompoundQuery.DepictionQuery depictionQuery;
+    @Wired CompoundQuery compoundQuery;
 
     @Test
     void accessors_returnNonNullDelegates() {

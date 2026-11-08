@@ -145,7 +145,7 @@ Reference implementation: `InsectSpeciesTestEntitySource` + `insects/species/ins
 
 ## Test Contexts
 
-### Dynamic test contexts (insects and library; other domains still hand-wire)
+### Dynamic test contexts (every domain whose core has code)
 
 A `<domain>-core` test no longer builds its graph by hand. It registers
 `@RegisterExtension NaturalistTestExtension`, declares what it uses as `@Wired` fields and its
@@ -174,15 +174,14 @@ Design: [`docs/plans/2026-11-07-dynamic-test-context-design.md`](../docs/plans/2
   providers and no choice by the test's own context fail loudly: provide the port there to choose.
 - Every object the graph hands out is traced for the N+1 gate (see
   `kernels/framework-test/.../nofanout/CLAUDE.md`).
-- Domains not yet converted keep the hand-wired contexts described below until their own rollout plan:
-  chemistry, garden, plants, soil and usage have a `<domain>-test-context` module, and chemistry, garden
-  and soil also a hand-wired `*TestContextInternal` in core. Accounts and naturalists have no test
-  context at all. What is left is surveyed in
+- Every domain whose `<domain>-core` has code is converted: insects, library, plants, usage, chemistry, soil,
+  garden, accounts and naturalists (the other cores, apiary to zone, are still empty shells). Accounts and naturalists have contexts but no `-test-context` facade, since no
+  test outside their cores builds their objects. What is left is surveyed in
   [`docs/notes/2026-11-07-hand-built-test-graphs.md`](../docs/notes/2026-11-07-hand-built-test-graphs.md).
 
-### Hand-wired contexts (domains not yet converted)
+### Hand-wired contexts (legacy; no domain uses them now)
 
-Each domain has a `<Domain>sTestContext` class in `<domain>-test-context/src/main/java/`
+Before the dynamic contexts, each domain had a `<Domain>sTestContext` class in `<domain>-test-context/src/main/java/`
 that simulates DI by constructing the full object graph — mock repositories, `*QueryImpl`
 adapters, `*CommandImpl` adapters, and `Transaction` subclasses — then exposing the
 assembled result through public methods (`insectQuery()`, `insectCommand()`,
@@ -195,9 +194,10 @@ see only the public contract and never wire dependencies directly.
 
 ### TestContextInternal — breaking the Maven cycle (legacy, hand-wired)
 
-This is the **legacy hand-wired pattern**, kept only by the domains not yet converted (chemistry, garden,
-soil). Insects and library no longer follow it: their `*TestContextInternal` classes are registered
-dynamic contexts, described in "Dynamic test contexts" above, and are not a reference for this section.
+This is the **legacy hand-wired pattern**. No domain follows it any more: insects, library, plants, usage,
+chemistry, soil, garden, accounts and naturalists all register their `*TestContextInternal` classes as
+dynamic contexts, described in
+"Dynamic test contexts" above, which are not a reference for this section. It is kept for the history only.
 
 `<domain>-test-context` depends on `<domain>-core` (compile scope) to access the
 package-private implementations. This means `<domain>-core` **cannot** depend on

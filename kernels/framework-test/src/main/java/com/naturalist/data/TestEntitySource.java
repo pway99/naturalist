@@ -65,6 +65,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
     private final Map<NAME, String> originFile = new HashMap<>();
     private @Nullable String defaultInsertFile;
     protected final NaturalistDatabase database;
+    private int reads;
 
     protected TestEntitySource(NaturalistDatabase database) {
         this.database = database;
@@ -78,18 +79,33 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         return List.of();
     }
 
-    public Stream<ENTITY> entityStream() {
+    /**
+     * How many reads this source has served in the current test: {@code entityStream}, {@code getByName},
+     * {@code getByEntityNameSet} and a first {@code pageOf} page each count one. A test proves that a path
+     * never consults the data, a role gate say, by asserting it stays zero, without a stub of the query.
+     */
+    public int reads() {
+        return reads;
+    }
+
+    /** One read: counted here and handed to the N+1 select gate. */
+    private void read() {
+        reads++;
         SelectTrace.record(getClass());
+    }
+
+    public Stream<ENTITY> entityStream() {
+        read();
         return entityMap.values().stream();
     }
 
     public Optional<ENTITY> getByName(NAME name) {
-        SelectTrace.record(getClass());
+        read();
         return Optional.ofNullable(entityMap.get(name));
     }
 
     public List<ENTITY> getByEntityNameSet(Set<NAME> nameSet) {
-        SelectTrace.record(getClass());
+        read();
         return entityMap.values().stream()
                 .filter(e -> nameSet.contains(e.key()))
                 .toList();
@@ -114,7 +130,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
      */
     public Page<ENTITY> pageOf(PageRequest pageRequest) {
         if (pageRequest.pageNumber() == 0) { // later pages continue one read
-            SelectTrace.record(getClass());
+            read();
         }
         List<ENTITY> sorted = entityMap.values().stream()
                 .sorted(Comparator.comparing(e -> e.key().toString()))

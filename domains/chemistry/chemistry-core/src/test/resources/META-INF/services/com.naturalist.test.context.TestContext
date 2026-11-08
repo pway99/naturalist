@@ -1,0 +1,4 @@
+com.naturalist.chemistry.catalog.ChemistryCatalogTestContextInternal
+com.naturalist.chemistry.compound.CompoundTestContextInternal
+com.naturalist.chemistry.element.ElementTestContextInternal
+com.naturalist.chemistry.product.ProductTestContextInternal

@@ -1,23 +1,30 @@
 package com.naturalist.console.auth;
 
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.naturalist.Naturalist;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.ResilienceConfig.RateLimiterConfig;
 import com.naturalist.resilience.resilience4j.Resilience4jResilience;
-import com.naturalist.usage.IdentificationBudget;
+import com.naturalist.usage.UsageCounterName;
+import com.naturalist.usage.UsageEvent;
+import com.naturalist.usage.UsageEventTestEntitySource;
+import com.naturalist.usage.UsagesTestContext;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import java.time.Clock;
 import java.time.Duration;
-import java.util.ArrayList;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,14 +35,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * permits a minute per client address on {@code POST /<domain>/identify}: is the third
  * redirected to the identify page's {@code RATE} notice before it reaches the chain, does each address keep its own budget, do the organism domains
  * share one budget per address, are other requests untouched, and is each refusal observed --
- * and recorded against the signed-in naturalist, if there is one.
+ * and recorded against the signed-in naturalist, if there is one. The refusal is recorded by the real
+ * usage {@code IdentificationBudget} from {@link UsagesTestContext}, and read back from the usage event log.
  */
 class IdentifyRateLimitFilterTest {
 
     private static final String WITHIN_CLIENT_RATE = "IdentifyRateLimitFilter.doFilterInternal.withinClientRate";
 
+    private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-08-25T10:00:00Z"), ZoneOffset.UTC);
+
+    @RegisterExtension
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
+
     private final SimpleMeterRegistry meters = new SimpleMeterRegistry();
-    private final List<NaturalistName> refused = new ArrayList<>();
     private Optional<NaturalistName> signedIn = Optional.empty();
     private IdentifyRateLimitFilter filter;
 
@@ -47,11 +59,8 @@ class IdentifyRateLimitFilterTest {
             @Override public Optional<NaturalistName> name() { return signedIn; }
             @Override public Optional<Naturalist> naturalist() { return Optional.empty(); }
         };
-        IdentificationBudget recording = new IdentificationBudget() {
-            @Override public void reserve(NaturalistName naturalist) { }
-            @Override public void refused(NaturalistName naturalist) { refused.add(naturalist); }
-        };
-        filter = new IdentifyRateLimitFilter(resilience, current, recording);
+        filter = new IdentifyRateLimitFilter(resilience, current,
+                UsagesTestContext.create(nte, 80, CLOCK).identificationBudget());
         Metrics.addRegistry(meters);
     }
 
@@ -116,11 +125,11 @@ class IdentifyRateLimitFilterTest {
         signedIn = Optional.of(pat);
         identify("10.0.0.1", "/insects/identify");
         identify("10.0.0.1", "/insects/identify");
-        assertThat(refused).as("permitted requests record no refusal").isEmpty();
+        assertThat(refusals()).as("permitted requests record no refusal").isEmpty();
 
         identify("10.0.0.1", "/insects/identify");
 
-        assertThat(refused).containsExactly(pat);
+        assertThat(refusals()).containsExactly(pat);
     }
 
     @Test
@@ -129,7 +138,7 @@ class IdentifyRateLimitFilterTest {
         identify("10.0.0.1", "/insects/identify");
 
         assertThat(identify("10.0.0.1", "/insects/identify").getStatus()).isEqualTo(303);
-        assertThat(refused).isEmpty();
+        assertThat(refusals()).isEmpty();
     }
 
     private MockHttpServletResponse identify(String client, String path) throws Exception {
@@ -143,6 +152,14 @@ class IdentifyRateLimitFilterTest {
         var response = new MockHttpServletResponse();
         filter.doFilter(request, response, chain);
         return response;
+    }
+
+    /** The naturalists named by the usage event log's refusal events, in the order they were recorded. */
+    private List<NaturalistName> refusals() {
+        return nte.getNamed(UsageEventTestEntitySource.class).entityStream()
+                .filter(e -> e.counterName().equals(UsageCounterName.of("identification-refused")))
+                .map(UsageEvent::naturalist)
+                .toList();
     }
 
     private double violations(String name) {

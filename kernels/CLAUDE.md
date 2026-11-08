@@ -79,8 +79,10 @@ The `com.naturalist.test.context` package builds those contexts: `TestContext`, 
 handed out as `SelectTrace` JDK proxies, non-final classes the graph builds through a constructor as ByteBuddy
 `SelectTrace.Traced` subclasses.
 An outside-world port, a type whose package has no context, has one provider per graph: the test's own
-context, else the only context that provides it. ByteBuddy is excluded from `management-console`, which
-ships `framework-test` for `TestEntitySource` but never builds a graph; `PackagedJarIT` keeps it out.
+context, else the only context that provides it. ByteBuddy is excluded from `management-console`'s compile-scope
+`framework-test`, which ships for `TestEntitySource`: the app never builds a graph. Its tests do, through
+test-scoped domain `-test-context` facades, with ByteBuddy declared again at test scope; `PackagedJarIT`
+keeps it out of the jar.
 Contexts are discovered through `META-INF/services/com.naturalist.test.context.TestContext`. A fake stays in
 the graph's memory, and only an outside-world port takes one: faking a type whose package has a test context
 (a domain service) throws. See `domains/CLAUDE.md` "Test Contexts". Allow a genuinely

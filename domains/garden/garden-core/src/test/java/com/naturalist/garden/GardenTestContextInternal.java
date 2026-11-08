@@ -1,28 +1,14 @@
 package com.naturalist.garden;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
-import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.test.context.TestContext;
 
 /**
- * Full-graph test wiring for {@code garden-core} tests: constructs the planting query and the
- * aggregate factory, exposing the {@link PlantedZoneQuery} — mirroring the module-level
- * {@code GardenTestContext} but living in core's own test classpath to avoid the Maven cycle
- * (garden-test-context depends on garden-core, so the reverse is impossible).
+ * The test context of {@code com.naturalist.garden}. It declares no provisions: the graph builds
+ * {@link PlantingQueryImpl}, {@link PlantedZoneFactory} and {@link PlantedZoneQueryImpl} (all three are
+ * {@code @DomainService}, as production wires them) and the {@code PlantingEntityRepositoryMock} by
+ * reflection.
  */
-class GardenTestContextInternal {
-
-    private final PlantedZoneQuery plantedZoneQuery;
-
-    private GardenTestContextInternal(NaturalistDatabase db) {
-        PlantingQuery plantingQuery = new PlantingQueryImpl(new PlantingEntityRepositoryMock(db));
-        this.plantedZoneQuery = new PlantedZoneQueryImpl(new PlantedZoneFactory(plantingQuery));
-    }
-
-    static GardenTestContextInternal create(NaturalistDatabase db) {
-        return new GardenTestContextInternal(db);
-    }
-
-    PlantedZoneQuery plantedZoneQuery() {
-        return SelectTrace.traced(PlantedZoneQuery.class, plantedZoneQuery);
+public class GardenTestContextInternal extends TestContext {
+    public GardenTestContextInternal() {
     }
 }

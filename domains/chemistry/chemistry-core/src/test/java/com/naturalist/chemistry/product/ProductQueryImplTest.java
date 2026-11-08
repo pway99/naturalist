@@ -3,6 +3,7 @@ package com.naturalist.chemistry.product;
 import com.naturalist.chemistry.TestChemistryIdentifiers;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -15,8 +16,8 @@ class ProductQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    ProductRepository repository = new ProductEntityRepositoryMock(nte);
-    ProductQuery productQuery = new ProductQueryImpl(repository);
+    @Wired ProductRepository repository;
+    @Wired ProductQuery productQuery;
 
     @Test
     void findByNameSet_happyPath() {

@@ -1,0 +1,6 @@
+com.naturalist.plants.PlantsTestContextInternal
+com.naturalist.plants.catalog.PlantsCatalogTestContextInternal
+com.naturalist.plants.cultivar.CultivarTestContextInternal
+com.naturalist.plants.heritage.SeedLineageTestContextInternal
+com.naturalist.plants.management.PlantProgramTestContextInternal
+com.naturalist.plants.phytochemistry.PhytochemistryTestContextInternal

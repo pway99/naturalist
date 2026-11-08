@@ -225,11 +225,17 @@ domain prefix and `Entity` infix (`FamilyQuery`, `GenusRepository`, `SpeciesColl
 species accessor `species()`, matching insects. The four single-entity sub-contexts are
 N=1-collapsed (M5, 2026-08-16).
 
-**One deliberate deviation from the M5 plan:** the four `<Entity>TestContext` factories
-were *not* folded into `PlantsTestContext`. They live in their sub-context packages to
-reach the package-private `*QueryImpl`/`*RepositoryMock`; the root-package
-`PlantsTestContext` cannot (insects avoids this only because its impls share the root
-package). Each `*TestContext` was simplified to `new <Entity>QueryImpl(new <Entity>RepositoryMock(db))`.
+**Test contexts are dynamic, one per package.** plants-core's tests take what they use as `@Wired`
+fields from `NaturalistTestExtension` (`domains/CLAUDE.md`, "Dynamic test contexts"). Six
+`*TestContextInternal` classes in `plants-core/src/test`, one per package (`PlantsTestContextInternal`,
+`catalog/PlantsCatalogTestContextInternal`, `cultivar/CultivarTestContextInternal`,
+`heritage/SeedLineageTestContextInternal`, `management/PlantProgramTestContextInternal`,
+`phytochemistry/PhytochemistryTestContextInternal`), are registered in the core's services file and
+shipped in its test-jar. Only `PlantsTestContextInternal` declares a provision: `PlantFactory`, which is no
+`@DomainService` (production builds it inside `PlantQueryImpl`), over the graph's real queries. The
+`plants-test-context` facades (`PlantsTestContext` and the four sub-context `<Entity>TestContext` factories)
+keep their public API and are thin layers over `ObjectGraph.create(db)`; the sub-context factories stay
+in their packages only so consumers keep compiling, not to reach package-private classes.
 
 ## Domain-specific invariants
 
@@ -349,8 +355,8 @@ described in `kernels/CLAUDE.md`: `PlantSpeciesTest`, `PlantOrderTest`,
 `PlantProgramTest`, `PhytochemicalConstituentTest`.
 
 Repository contract tests live in `plants-repository-test/`. Mocks are
-package-private — the test contexts, mock tests, and `plants-core` tests that
-construct them all live in the same package by design:
+package-private and marked `@MockDomainService`: the mock tests construct them in the
+same package, and the dynamic test contexts build them by reflection:
 
 - `PlantSpeciesRepositoryTest`, `PlantSpeciesRepositoryMock`, `PlantSpeciesRepositoryMockTest`
 - `PlantOrderRepositoryTest`, `PlantOrderRepositoryMock`, `PlantOrderRepositoryMockTest`

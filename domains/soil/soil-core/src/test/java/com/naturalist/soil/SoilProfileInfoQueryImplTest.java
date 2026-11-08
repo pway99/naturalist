@@ -3,6 +3,7 @@ package com.naturalist.soil;
 import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
@@ -13,8 +14,7 @@ class SoilProfileInfoQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    SoilProfileInfoQuery query =
-            new SoilProfileInfoQueryImpl(new SoilProfileInfoEntityRepositoryMock(nte));
+    @Wired SoilProfileInfoQuery query;
 
     @Override
     public EntityQuery<SoilProfileName, SoilProfileInfo, SoilProfileInfoCollection> query() {

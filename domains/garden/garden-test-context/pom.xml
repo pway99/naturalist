@@ -24,5 +24,11 @@
             <groupId>com.naturalist</groupId>
             <artifactId>garden-repository-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>garden-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
     </dependencies>
 </project>

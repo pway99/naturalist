@@ -3,6 +3,8 @@ package com.naturalist.usage;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.test.context.Fake;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -30,32 +32,50 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * usage/usage-counters.json}) carries three active rules for the {@code
  * identification} counter — PER_USER/CALENDAR_DAY limit 10, GLOBAL/CALENDAR_DAY
  * limit 50, GLOBAL/SINCE limit 650 — scenarios that need a tighter limit adjust
- * the relevant seeded rule via {@link #withLimit} before reserving.
+ * the relevant seeded rule via {@link #withLimit} before reserving. The entitled
+ * branch is covered by {@link UsageCommandEntitlementTest}, which chooses who is
+ * entitled before the command is built.
  */
 class UsageCommandImplTest {
 
     private static final UsageScope PER_USER = UsageScope.PER_USER;
     private static final UsageScope GLOBAL = UsageScope.GLOBAL;
 
-    private final Clock clock =
-            Clock.fixed(Instant.parse("2026-08-25T10:00:00Z"), ZoneOffset.UTC);
-
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private static void withLimit(UsageCoreTestContext context, UsageScope scope, WindowKind windowKind, int limit) {
-        UsageCounter rule = context.counters().findByCounterName(UsageCounterName.of("identification")).stream()
+    @Fake
+    Clock clock = Clock.fixed(Instant.parse("2026-08-25T10:00:00Z"), ZoneOffset.UTC);
+
+    @Wired
+    UsageCommand command;
+
+    @Wired
+    UsageQuery query;
+
+    @Wired
+    IdentificationBudget identificationBudget;
+
+    @Wired
+    UsageRepository.CounterRepository counters;
+
+    @Wired
+    UsageRepository.EventRepository events;
+
+    @Wired
+    UsageRepository.AlertRepository alerts;
+
+    private void withLimit(UsageScope scope, WindowKind windowKind, int limit) {
+        UsageCounter rule = counters.findByCounterName(UsageCounterName.of("identification")).stream()
                 .filter(c -> c.scope() == scope && c.windowKind() == windowKind)
                 .findFirst()
                 .orElseThrow();
-        context.counters().save(rule.withLimit(limit));
+        counters.save(rule.withLimit(limit));
     }
 
     @Test
     void per_user_daily_quota_blocks_after_limit() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
-        withLimit(context, PER_USER, WindowKind.CALENDAR_DAY, 2);
-        UsageCommand command = context.command();
+        withLimit(PER_USER, WindowKind.CALENDAR_DAY, 2);
         NaturalistName pat = NaturalistName.of("pat");
 
         command.reserve(pat);
@@ -66,15 +86,13 @@ class UsageCommandImplTest {
                 .extracting(ex -> ((BudgetExceededException) ex).limitKind())
                 .isEqualTo(LimitKind.PER_USER);
 
-        assertThat(context.events().findByCounterSince(
+        assertThat(events.findByCounterSince(
                 UsageCounterName.of("identification"), null, Instant.EPOCH)).hasSize(2);
     }
 
     @Test
     void global_daily_cap_blocks_across_users() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
-        withLimit(context, GLOBAL, WindowKind.CALENDAR_DAY, 2);
-        UsageCommand command = context.command();
+        withLimit(GLOBAL, WindowKind.CALENDAR_DAY, 2);
 
         command.reserve(NaturalistName.of("naturalist-a"));
         command.reserve(NaturalistName.of("naturalist-b"));
@@ -87,22 +105,18 @@ class UsageCommandImplTest {
 
     @Test
     void rejected_reserve_inserts_no_event() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
-        withLimit(context, PER_USER, WindowKind.CALENDAR_DAY, 1);
-        UsageCommand command = context.command();
+        withLimit(PER_USER, WindowKind.CALENDAR_DAY, 1);
         NaturalistName pat = NaturalistName.of("pat");
 
         command.reserve(pat);
         assertThatThrownBy(() -> command.reserve(pat)).isInstanceOf(BudgetExceededException.class);
 
-        assertThat(context.query().snapshot().dailyUsed()).isEqualTo(1);
+        assertThat(query.snapshot().dailyUsed()).isEqualTo(1);
     }
 
     @Test
     void warning_and_hard_stop_alerts_recorded_once() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
-        withLimit(context, GLOBAL, WindowKind.SINCE, 5);
-        UsageCommand command = context.command();
+        withLimit(GLOBAL, WindowKind.SINCE, 5);
 
         for (int i = 0; i < 5; i++) {
             command.reserve(NaturalistName.of("monthly-user-" + i));
@@ -113,30 +127,14 @@ class UsageCommandImplTest {
                     .isInstanceOf(BudgetExceededException.class);
         }
 
-        List<UsageAlert> alerts = context.alerts().getUnacknowledged();
-        assertThat(alerts).filteredOn(a -> a.kind() == AlertKind.WARNING).hasSize(1);
-        assertThat(alerts).filteredOn(a -> a.kind() == AlertKind.HARD_STOP).hasSize(1);
-    }
-
-    @Test
-    void entitled_naturalist_bypasses_public_rules() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(
-                nte, naturalist -> true, 80, clock);
-        withLimit(context, GLOBAL, WindowKind.CALENDAR_DAY, 0);
-        UsageCommand command = context.command();
-        NaturalistName entitled = NaturalistName.of("entitled-naturalist");
-
-        command.reserve(entitled);
-
-        assertThat(context.events().findByCounterSince(
-                UsageCounterName.of("identification"), entitled, Instant.EPOCH)).hasSize(1);
+        List<UsageAlert> unacknowledged = alerts.getUnacknowledged();
+        assertThat(unacknowledged).filteredOn(a -> a.kind() == AlertKind.WARNING).hasSize(1);
+        assertThat(unacknowledged).filteredOn(a -> a.kind() == AlertKind.HARD_STOP).hasSize(1);
     }
 
     @Test
     void concurrent_reserves_do_not_overshoot() throws InterruptedException {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
-        withLimit(context, GLOBAL, WindowKind.CALENDAR_DAY, 100);
-        UsageCommand command = context.command();
+        withLimit(GLOBAL, WindowKind.CALENDAR_DAY, 100);
 
         int threadCount = 16;
         int totalAttempts = 500;
@@ -170,37 +168,33 @@ class UsageCommandImplTest {
      */
     @Test
     void refused_recordsOneRefusalEventForTheNaturalist_andSpendsNoBudget() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
         NaturalistName pat = NaturalistName.of("pat");
 
-        context.command().refused(pat);
+        command.refused(pat);
 
-        assertThat(context.events().findByCounterSince(UsageCounterName.of("identification-refused"), pat, Instant.EPOCH))
+        assertThat(events.findByCounterSince(UsageCounterName.of("identification-refused"), pat, Instant.EPOCH))
                 .singleElement()
                 .satisfies(e -> assertThat(e.instant()).isEqualTo(clock.instant()));
-        assertThat(context.events().findByCounterSince(UsageCounterName.of("identification"), null, Instant.EPOCH))
+        assertThat(events.findByCounterSince(UsageCounterName.of("identification"), null, Instant.EPOCH))
                 .isEmpty();
     }
 
     @Test
     void refused_nullNaturalist_isRejected() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
-
-        assertThatThrownBy(() -> context.command().refused(null))
+        assertThatThrownBy(() -> command.refused(null))
                 .isInstanceOf(InvariantViolationException.class);
-        assertThat(context.events().findByCounterSince(UsageCounterName.of("identification-refused"), null, Instant.EPOCH))
+        assertThat(events.findByCounterSince(UsageCounterName.of("identification-refused"), null, Instant.EPOCH))
                 .isEmpty();
     }
 
     /** The narrow seam insects holds records a refusal through the command, not as a no-op. */
     @Test
     void identificationBudgetSeam_forwardsRefused() {
-        UsageCoreTestContext context = UsageCoreTestContext.create(nte, 80, clock);
         NaturalistName pat = NaturalistName.of("pat");
 
-        new IdentificationBudgetImpl(context.command()).refused(pat);
+        identificationBudget.refused(pat);
 
-        assertThat(context.events().findByCounterSince(UsageCounterName.of("identification-refused"), pat, Instant.EPOCH))
+        assertThat(events.findByCounterSince(UsageCounterName.of("identification-refused"), pat, Instant.EPOCH))
                 .hasSize(1);
     }
 }

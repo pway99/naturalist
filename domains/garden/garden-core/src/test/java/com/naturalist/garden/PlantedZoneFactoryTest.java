@@ -2,6 +2,7 @@ package com.naturalist.garden;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.test.context.Wired;
 import com.naturalist.zone.subzone.SubZoneName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -20,7 +21,7 @@ class PlantedZoneFactoryTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final PlantedZoneQuery query = GardenTestContextInternal.create(nte).plantedZoneQuery();
+    @Wired PlantedZoneQuery query;
 
     private static final SubZoneName SOUTH_ROW = SubZoneName.of("backyard-south");
 

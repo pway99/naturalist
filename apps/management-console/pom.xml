@@ -121,7 +121,9 @@
              This resolves itself with Phase 4 of the external-authority seam — a real EOL client
              replacing the mock — not with scope surgery here.
              ByteBuddy is excluded: only the test object graph uses it, to build its traced subclasses, and
-             nothing here builds a graph. PackagedJarIT checks that it stays out of the jar. -->
+             main code never builds a graph. Tests do, through the test-scoped domain test-contexts below,
+             and get ByteBuddy from the test-scoped dependency there. PackagedJarIT checks that it stays out
+             of the jar. -->
         <dependency>
             <groupId>com.naturalist</groupId>
             <artifactId>framework-test</artifactId>
@@ -288,6 +290,21 @@
             <groupId>com.naturalist</groupId>
             <artifactId>usage-repository-test</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Domain test-contexts: real, graph-built domain services over a test's own database, for the
+             plain unit tests here that need one (no Spring context). The graph builds its traced
+             subclasses with ByteBuddy, excluded from framework-test above for the jar's sake, so it is
+             declared again at test scope, where it never reaches the jar. -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>usage-test-context</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
             <scope>test</scope>
         </dependency>
 

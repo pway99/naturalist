@@ -11,6 +11,7 @@ import com.naturalist.plants.PlantsDomain;
 import com.naturalist.plants.TestPlantsIdentifiers.PlantGenera;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
 import com.naturalist.plants.catalog.PlantsCompoundReferences;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -21,10 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Lives in {@code com.naturalist.plants.phytochemistry} (not {@code .catalog})
- * so the test can see the package-private {@link PlantPhytochemicalConstituentQueryImpl}
- * and the package-private {@link PlantPhytochemicalConstituentRepositoryMock}
- * without exposing either to the wider test classpath.
+ * The provider comes from the dynamic test context, over the real constituent query and its seeded
+ * repository mock.
  */
 class PlantsCompoundReferencesTest {
 
@@ -34,11 +33,7 @@ class PlantsCompoundReferencesTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final PhytochemicalConstituentRepository repository =
-            new PlantPhytochemicalConstituentRepositoryMock(nte);
-    private final PhytochemicalConstituentQuery entityQuery =
-            new PlantPhytochemicalConstituentQueryImpl(repository);
-    private final PlantsCompoundReferences provider = new PlantsCompoundReferences(entityQuery);
+    @Wired PlantsCompoundReferences provider;
 
     @Test
     void domainIsPlants() {

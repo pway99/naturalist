@@ -1,44 +1,49 @@
 package com.naturalist.console.auth;
 
+import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.usage.AlertKind;
+import com.naturalist.usage.AlertScope;
 import com.naturalist.usage.UsageAlert;
 import com.naturalist.usage.UsageAlertId;
-import com.naturalist.usage.UsageQuery;
-import com.naturalist.usage.UsageSnapshot;
+import com.naturalist.usage.UsageAlertTestEntitySource;
+import com.naturalist.usage.UsageCounterName;
+import com.naturalist.usage.UsagesTestContext;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * {@link NaturalistHeaderInterceptor} over the real usage query from {@link UsagesTestContext}. The seeded
+ * alert catalog is empty, so a test that needs a pending alert inserts one into the usage alert source.
+ */
 class NaturalistHeaderInterceptorTest {
 
-    /** No unacknowledged alerts — every existing assertion in this class predates the banner. */
-    private static final UsageQuery NO_ALERTS = new UsageQuery() {
-        @Override
-        public UsageSnapshot snapshot() {
-            throw new UnsupportedOperationException();
-        }
+    private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-08-25T10:00:00Z"), ZoneOffset.UTC);
 
-        @Override
-        public List<UsageAlert> activeAlerts() {
-            return List.of();
-        }
+    @RegisterExtension
+    NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-        @Override
-        public UsageQuery.ReserveState reserveState(
-                com.naturalist.usage.UsageCounterName counter, NaturalistName naturalist, java.time.Instant now) {
-            throw new UnsupportedOperationException();
-        }
-    };
+    private NaturalistHeaderInterceptor interceptor;
 
-    private final NaturalistHeaderInterceptor interceptor = new NaturalistHeaderInterceptor(NO_ALERTS);
+    @BeforeEach
+    void setUp() {
+        interceptor = new NaturalistHeaderInterceptor(UsagesTestContext.create(nte, 80, CLOCK).usageQuery());
+    }
 
     @AfterEach
     void clear() {
@@ -47,11 +52,7 @@ class NaturalistHeaderInterceptorTest {
 
     @Test
     void publishesNaturalistSlug_forNaturalistPrincipal() {
-        var principal = new NaturalistPrincipal(
-                NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
-                "{bcrypt}x", false, true);
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(principal, "n/a", principal.getAuthorities()));
+        setNaturalistAuthentication();
         var request = new MockHttpServletRequest();
 
         interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
@@ -69,25 +70,25 @@ class NaturalistHeaderInterceptorTest {
 
     @Test
     void publishesInsectSectionAndLensAndUri() {
-        var request = new org.springframework.mock.web.MockHttpServletRequest("GET", "/insects/species");
+        var request = new MockHttpServletRequest("GET", "/insects/species");
         request.setQueryString("page=2");
-        var session = new org.springframework.mock.web.MockHttpSession();
+        var session = new MockHttpSession();
         session.setAttribute("insects.collectionLens", true);
         request.setSession(session);
 
-        interceptor.preHandle(request, new org.springframework.mock.web.MockHttpServletResponse(), new Object());
+        interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
 
-        org.assertj.core.api.Assertions.assertThat(request.getAttribute("insectSection")).isEqualTo(true);
-        org.assertj.core.api.Assertions.assertThat(request.getAttribute("collectionLens")).isEqualTo(true);
-        org.assertj.core.api.Assertions.assertThat(request.getAttribute("requestUri")).isEqualTo("/insects/species?page=2");
+        assertThat(request.getAttribute("insectSection")).isEqualTo(true);
+        assertThat(request.getAttribute("collectionLens")).isEqualTo(true);
+        assertThat(request.getAttribute("requestUri")).isEqualTo("/insects/species?page=2");
     }
 
     @Test
     void insectSectionFalse_offInsectsPath() {
-        var request = new org.springframework.mock.web.MockHttpServletRequest("GET", "/chemistry");
-        interceptor.preHandle(request, new org.springframework.mock.web.MockHttpServletResponse(), new Object());
-        org.assertj.core.api.Assertions.assertThat(request.getAttribute("insectSection")).isEqualTo(false);
-        org.assertj.core.api.Assertions.assertThat(request.getAttribute("collectionLens")).isEqualTo(false);
+        var request = new MockHttpServletRequest("GET", "/chemistry");
+        interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
+        assertThat(request.getAttribute("insectSection")).isEqualTo(false);
+        assertThat(request.getAttribute("collectionLens")).isEqualTo(false);
     }
 
     @Test
@@ -100,44 +101,60 @@ class NaturalistHeaderInterceptorTest {
 
     @Test
     void usageAlertsPending_true_whenAdminAndAnActiveAlertExists() {
+        insertPendingAlert();
         setAdminAuthentication();
         var request = new MockHttpServletRequest();
 
-        new NaturalistHeaderInterceptor(oneAlert())
-                .preHandle(request, new MockHttpServletResponse(), new Object());
+        interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
 
         assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(true);
+        assertThat(alertReads()).as("the admin path is the one that reads them").isPositive();
     }
 
-    /**
-     * The banner must not leak operational alert state — or even call {@link
-     * UsageQuery#activeAlerts()} — for a visitor who isn't ROLE_ADMIN. Uses
-     * a monitor that fails the test if {@code activeAlerts()} is invoked at
-     * all, proving the interceptor short-circuits on the role check first.
-     */
+    /** The banner must not leak operational alert state to a visitor who isn't ROLE_ADMIN, with an alert pending. */
     @Test
     void usageAlertsPending_false_forAnonymous_evenWithAlertsPending() {
+        insertPendingAlert();
         var request = new MockHttpServletRequest();
 
-        new NaturalistHeaderInterceptor(explodesIfActiveAlertsCalled())
-                .preHandle(request, new MockHttpServletResponse(), new Object());
+        interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
 
         assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(false);
+        assertThat(alertReads()).as("a visitor who isn't ROLE_ADMIN never consults the alerts").isZero();
     }
 
     @Test
     void usageAlertsPending_false_forNaturalistRole_evenWithAlertsPending() {
+        insertPendingAlert();
+        setNaturalistAuthentication();
+        var request = new MockHttpServletRequest();
+
+        interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
+
+        assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(false);
+        assertThat(alertReads()).as("a naturalist who isn't ROLE_ADMIN never consults the alerts").isZero();
+    }
+
+    /** One unacknowledged, unemailed monthly warning: what the admin banner reports as pending. */
+    private void insertPendingAlert() {
+        nte.getNamed(UsageAlertTestEntitySource.class).insert(new UsageAlert(
+                UsageAlertId.create(),
+                UsageCounterName.of("identification"),
+                AlertScope.MONTHLY,
+                AlertKind.WARNING,
+                "monthly-2026-08",
+                "monthly identification budget WARNING: 1/2 used",
+                CLOCK.instant(),
+                false,
+                false));
+    }
+
+    private static void setNaturalistAuthentication() {
         var principal = new NaturalistPrincipal(
                 NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
                 "{bcrypt}x", false, true);
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(principal, "n/a", principal.getAuthorities()));
-        var request = new MockHttpServletRequest();
-
-        new NaturalistHeaderInterceptor(explodesIfActiveAlertsCalled())
-                .preHandle(request, new MockHttpServletResponse(), new Object());
-
-        assertThat(request.getAttribute("usageAlertsPending")).isEqualTo(false);
     }
 
     private static void setAdminAuthentication() {
@@ -146,54 +163,8 @@ class NaturalistHeaderInterceptorTest {
                         "naturalist", "n/a", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
     }
 
-    private static UsageQuery oneAlert() {
-        return new UsageQuery() {
-            @Override
-            public UsageSnapshot snapshot() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<UsageAlert> activeAlerts() {
-                return List.of(new UsageAlert(
-                        UsageAlertId.create(),
-                        com.naturalist.usage.UsageCounterName.of("identification"),
-                        com.naturalist.usage.AlertScope.MONTHLY,
-                        com.naturalist.usage.AlertKind.WARNING,
-                        "monthly-2026-08",
-                        "monthly identification budget WARNING: 1/2 used",
-                        java.time.Instant.now(),
-                        false,
-                        false));
-            }
-
-            @Override
-            public UsageQuery.ReserveState reserveState(
-                    com.naturalist.usage.UsageCounterName counter, NaturalistName naturalist, java.time.Instant now) {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
-
-    private static UsageQuery explodesIfActiveAlertsCalled() {
-        return new UsageQuery() {
-            @Override
-            public UsageSnapshot snapshot() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<UsageAlert> activeAlerts() {
-                throw new AssertionError(
-                        "activeAlerts() must not be called for a non-ADMIN request — the interceptor "
-                                + "should short-circuit on the role check first");
-            }
-
-            @Override
-            public UsageQuery.ReserveState reserveState(
-                    com.naturalist.usage.UsageCounterName counter, NaturalistName naturalist, java.time.Instant now) {
-                throw new UnsupportedOperationException();
-            }
-        };
+    /** The reads of the usage alert source in this test; the role gate is proved by its staying zero. */
+    private int alertReads() {
+        return nte.getNamed(UsageAlertTestEntitySource.class).reads();
     }
 }

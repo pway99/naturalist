@@ -1,44 +1,25 @@
 package com.naturalist.soil;
 
-import com.naturalist.test.query.nofanout.SelectTrace;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.soil.observation.LabAnalysisInfoQueries;
-import com.naturalist.soil.observation.LabAnalysisInfoQuery;
-import com.naturalist.soil.observation.NutrientReadingQueries;
-import com.naturalist.soil.observation.NutrientReadingQuery;
-import com.naturalist.soil.observation.ReportedOptimumQueries;
-import com.naturalist.soil.observation.ReportedOptimumQuery;
-import com.naturalist.soil.observation.ReportedRecommendationQueries;
-import com.naturalist.soil.observation.ReportedRecommendationQuery;
-import com.naturalist.soil.observation.SoilPhysicalCharacteristicsQueries;
-import com.naturalist.soil.observation.SoilPhysicalCharacteristicsQuery;
+import com.naturalist.test.context.ObjectGraph;
 
 /**
- * Pre-wired, in-memory read surface for the soil bounded context: assembles the entity queries and
- * the {@code SoilProfileFactory}, exposing the {@link SoilProfileQuery} (assembled profile) and the
- * {@link SoilProfileInfoQuery} (profile enumeration). Lives in package {@code com.naturalist.soil}
- * for split-package access to soil-core's package-private impls. Goes away when Spring DI replaces
- * the manual composition.
+ * Pre-wired, in-memory read surface for the soil bounded context, exposing the {@link SoilProfileQuery}
+ * (assembled profile) and the {@link SoilProfileInfoQuery} (profile enumeration). A facade over one
+ * {@link ObjectGraph} per {@link #create} call: the wiring lives once, in soil-core's
+ * {@code SoilsTestContextInternal} and {@code SoilObservationTestContextInternal} plus the graph's reflection
+ * over the {@code @DomainService} and {@code @MockDomainService} classes. Each accessor returns what the graph
+ * builds, already traced.
+ *
+ * <p>Test data goes into the supplied database through the soil {@code *TestEntitySource} classes; do not
+ * grow write methods on this class.
  */
 public class SoilTestContext {
 
-    private final SoilProfileInfoQuery soilProfileInfoQuery;
-    private final SoilProfileQuery soilProfileQuery;
+    private final ObjectGraph graph;
 
     private SoilTestContext(NaturalistDatabase db) {
-        this.soilProfileInfoQuery =
-                new SoilProfileInfoQueryImpl(new SoilProfileInfoEntityRepositoryMock(db));
-        LabAnalysisInfoQuery labAnalysisInfoQuery = LabAnalysisInfoQueries.create(db);
-        NutrientReadingQuery nutrientReadingQuery = NutrientReadingQueries.create(db);
-        SoilPhysicalCharacteristicsQuery physicalCharacteristicsQuery =
-                SoilPhysicalCharacteristicsQueries.create(db);
-        ReportedOptimumQuery reportedOptimumQuery = ReportedOptimumQueries.create(db);
-        ReportedRecommendationQuery reportedRecommendationQuery =
-                ReportedRecommendationQueries.create(db);
-        SoilProfileFactory factory = new SoilProfileFactory(
-                soilProfileInfoQuery, labAnalysisInfoQuery, nutrientReadingQuery,
-                physicalCharacteristicsQuery, reportedOptimumQuery, reportedRecommendationQuery);
-        this.soilProfileQuery = new SoilProfileQueryImpl(factory);
+        this.graph = ObjectGraph.create(db);
     }
 
     public static SoilTestContext create(NaturalistDatabase db) {
@@ -46,10 +27,10 @@ public class SoilTestContext {
     }
 
     public SoilProfileQuery soilProfileQuery() {
-        return SelectTrace.traced(SoilProfileQuery.class, soilProfileQuery);
+        return graph.get(SoilProfileQuery.class);
     }
 
     public SoilProfileInfoQuery soilProfileInfoQuery() {
-        return SelectTrace.traced(SoilProfileInfoQuery.class, soilProfileInfoQuery);
+        return graph.get(SoilProfileInfoQuery.class);
     }
 }

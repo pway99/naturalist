@@ -11,6 +11,7 @@ import com.naturalist.chemistry.catalog.ChemistryCompoundReferences;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -21,18 +22,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Lives in {@code com.naturalist.chemistry.product} (not {@code .catalog}) so
- * the test can see the package-private {@link ProductEntityRepositoryMock} and
- * {@link ProductQueryImpl} directly.
+ * The provider comes from the dynamic test context, over the real product query and its seeded
+ * repository mock.
  */
 class ChemistryCompoundReferencesTest {
 
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final ProductRepository repository = new ProductEntityRepositoryMock(nte);
-    private final ProductQuery products = new ProductQueryImpl(repository);
-    private final ChemistryCompoundReferences provider = new ChemistryCompoundReferences(products);
+    @Wired ChemistryCompoundReferences provider;
 
     @Test
     void domainIsChemistry() {

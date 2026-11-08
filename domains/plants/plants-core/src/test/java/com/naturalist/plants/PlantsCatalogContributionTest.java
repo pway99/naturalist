@@ -9,6 +9,7 @@ import com.naturalist.ddd.EntityName;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.plants.TestPlantsIdentifiers.Plants;
 import com.naturalist.plants.catalog.PlantsCatalogContribution;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -20,26 +21,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Lives in {@code com.naturalist.plants} (not {@code .catalog}) so the test can
- * see the package-private {@link PlantSpeciesQueryImpl} and the package-private
- * {@link PlantSpeciesRepositoryMock} without exposing either to the wider test
- * classpath.
+ * The contribution and the four rank queries it reads come from the dynamic test context, over the
+ * seeded repository mocks; the queries are also asserted against directly, for the entity counts.
  */
 class PlantsCatalogContributionTest {
 
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final PlantQuery.GenusQuery genusQuery =
-            new PlantGenusQueryImpl(new PlantGenusRepositoryMock(nte));
-    private final PlantQuery.SpeciesQuery entityQuery =
-            new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(nte), genusQuery);
-    private final PlantQuery.OrderQuery orderQuery =
-            new PlantOrderQueryImpl(new PlantOrderRepositoryMock(nte));
-    private final PlantQuery.FamilyQuery familyQuery =
-            new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(nte));
-    private final PlantsCatalogContribution contribution =
-            new PlantsCatalogContribution(entityQuery, orderQuery, familyQuery, genusQuery);
+    @Wired PlantQuery.SpeciesQuery entityQuery;
+    @Wired PlantQuery.OrderQuery orderQuery;
+    @Wired PlantQuery.FamilyQuery familyQuery;
+    @Wired PlantQuery.GenusQuery genusQuery;
+    @Wired PlantsCatalogContribution contribution;
 
     @Test
     void domainIsPlants() {

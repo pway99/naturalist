@@ -2,6 +2,7 @@ package com.naturalist.plants;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.taxonomy.OrganismFeatureView;
+import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -15,22 +16,14 @@ class PlantFeatureQueryImplTest {
     @RegisterExtension
     final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private PlantFeatureQueryImpl featureQuery() {
-        PlantQuery.GenusQuery genusQuery = new PlantGenusQueryImpl(new PlantGenusRepositoryMock(nte));
-        PlantQuery.SpeciesQuery speciesQuery =
-                new PlantSpeciesQueryImpl(new PlantSpeciesRepositoryMock(nte), genusQuery);
-        PlantQuery.FamilyQuery familyQuery = new PlantFamilyQueryImpl(new PlantFamilyRepositoryMock(nte));
-        PlantAncestryResolver resolver = new PlantAncestryResolver(speciesQuery, genusQuery, familyQuery);
-        return new PlantFeatureQueryImpl(
-                new PlantFeatureRepositoryMock(nte), new PlantFeatureAssignmentRepositoryMock(nte), resolver);
-    }
+    @Wired PlantFeatureQueryImpl featureQuery;
 
     @Test
     void findByRankName_composesAncestryFirst_ordinalOrderedWithinGroup() {
         // Seeded: ORDER asterales=[composite inflorescence]; FAMILY asteraceae=[ray florets(0),
         // composite inflorescence(1)]; GENUS helianthus=[ray florets]. Ancestor-first.
         OrganismFeatureView<PlantRankName, PlantFeature> view =
-                featureQuery().findByRankName(PlantGenusName.of("helianthus"));
+                featureQuery.findByRankName(PlantGenusName.of("helianthus"));
 
         assertThat(view.subject()).isEqualTo(PlantGenusName.of("helianthus"));
         assertThat(view.groups().stream().map(g -> g.rank()))
@@ -48,20 +41,20 @@ class PlantFeatureQueryImplTest {
     void findByRankName_noAssignmentsInLineage_returnsEmptyGroups() {
         // piperales carries no feature assignments anywhere in its lineage.
         OrganismFeatureView<PlantRankName, PlantFeature> view =
-                featureQuery().findByRankName(PlantOrderName.of("piperales"));
+                featureQuery.findByRankName(PlantOrderName.of("piperales"));
         assertThat(view.groups()).isEmpty();
     }
 
     @Test
     void findByRankName_rejectsNull() {
-        assertThat(catchThrowable(() -> featureQuery().findByRankName(null)))
+        assertThat(catchThrowable(() -> featureQuery.findByRankName(null)))
                 .isInstanceOf(com.naturalist.exception.InvariantViolationException.class);
     }
 
     @Test
     void findByFeature_returnsRanksCarryingTheFeature() {
         // "ray florets" (026cc…0001) is assigned at FAMILY asteraceae and GENUS helianthus.
-        assertThat(featureQuery().findByFeature(TestPlantsIdentifiers.PlantFeatures.RayFlorets))
+        assertThat(featureQuery.findByFeature(TestPlantsIdentifiers.PlantFeatures.RayFlorets))
                 .containsExactlyInAnyOrder(
                         PlantFamilyName.of("asteraceae"),
                         PlantGenusName.of("helianthus"));
@@ -69,7 +62,7 @@ class PlantFeatureQueryImplTest {
 
     @Test
     void findByFeature_rejectsNull() {
-        assertThat(catchThrowable(() -> featureQuery().findByFeature(null)))
+        assertThat(catchThrowable(() -> featureQuery.findByFeature(null)))
                 .isInstanceOf(com.naturalist.exception.InvariantViolationException.class);
     }
 }

@@ -2,6 +2,8 @@ package com.naturalist.account;
 
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.test.context.Fake;
+import com.naturalist.test.context.Wired;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -11,59 +13,83 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Behavioral contract for {@link AccountCommandImpl}. Wires the command over the in-memory mocks
- * with a fixed {@link Clock} and a deterministic fake {@link SecureTokens} so expiry and token
- * redemption are exercised without wall-clock or real randomness. The seeded catalog
- * ({@code accounts.json}, {@code email-verification-tokens.json}) supplies the duplicate-email case.
+ * Behavioral contract for {@link AccountCommandImpl}, built by the test graph over the in-memory mocks
+ * with production's {@link SecureTokens} and the policy {@link AccountsTestContextInternal} provides:
+ * self-serve unless a test chooses another before the command is built, which is why the command comes
+ * from {@code nte.get} and not a {@code @Wired} field. Time is a {@code @Fake Clock} the test moves
+ * forward, so expiry is exercised without the wall clock. The seeded catalog ({@code accounts.json},
+ * {@code email-verification-tokens.json}) supplies the duplicate-email case.
  */
 class AccountCommandImplTest {
 
     private static final Instant MINT_TIME = Instant.parse("2026-09-01T10:00:00Z");
 
-    private final Clock clock = Clock.fixed(MINT_TIME, ZoneOffset.UTC);
-
-    /** Deterministic fake: raw values are sequential, the hash is a stable transform of the raw. */
-    private final SecureTokens fakeTokens = new SecureTokens() {
-        private int counter = 0;
-
-        @Override
-        public MintedToken mint() {
-            String raw = "raw-token-" + (++counter);
-            return new MintedToken(raw, hash(raw));
-        }
-
-        @Override
-        public String hash(String rawValue) {
-            return "hash:" + rawValue;
-        }
-    };
-
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    private final AccountRepository.AccountEntityRepository accounts = new AccountRepositoryMock(nte);
-    private final AccountRepository.VerificationTokenRepository tokens =
-            new EmailVerificationTokenRepositoryMock(nte);
+    @Fake(Clock.class)
+    MovingClock clock = new MovingClock(MINT_TIME);
 
-    private AccountCommand command(AccountPolicy policy) {
-        return new AccountCommandImpl(accounts, tokens, fakeTokens, clock, policy);
+    @Wired
+    AccountRepository.AccountEntityRepository accounts;
+
+    @Wired
+    AccountRepository.VerificationTokenRepository tokens;
+
+    @Wired
+    SecureTokens secureTokens;
+
+    /** The graph's command, built on first use under the policy chosen so far (self-serve by default). */
+    private AccountCommand command() {
+        return nte.get(AccountCommand.class);
     }
 
-    private AccountCommand commandAt(AccountPolicy policy, Instant at) {
-        return new AccountCommandImpl(
-                accounts, tokens, fakeTokens, Clock.fixed(at, ZoneOffset.UTC), policy);
+    /** The graph's command under {@code policy}; call before anything else has built the command. */
+    private AccountCommand command(AccountPolicy policy) {
+        nte.context(AccountsTestContextInternal.class).policy(policy);
+        return command();
+    }
+
+    /** A fixed clock the test moves forward, so one command sees a token minted and later expired. */
+    static final class MovingClock extends Clock {
+        private Instant now;
+
+        MovingClock(Instant start) {
+            this.now = start;
+        }
+
+        void advance(Duration by) {
+            now = now.plus(by);
+        }
+
+        @Override
+        public ZoneId getZone() {
+            return ZoneOffset.UTC;
+        }
+
+        @Override
+        public Clock withZone(ZoneId zone) {
+            return Clock.fixed(now, zone);
+        }
+
+        @Override
+        public Instant instant() {
+            return now;
+        }
     }
 
     @Test
     void register_createsUnverifiedBrowseOnlyActiveAccount() {
-        command(AccountPolicy.selfServe()).register("newbie@example.org", "{bcrypt}$2a$10$hash");
+        command().register("newbie@example.org", "{bcrypt}$2a$10$hash");
 
         Account account = accounts.getByEmail("newbie@example.org").orElseThrow();
         assertThat(account.emailVerified()).isFalse();
@@ -73,23 +99,21 @@ class AccountCommandImplTest {
 
     @Test
     void register_returnsRawTokenAndPersistsOnlyItsHash() {
-        AccountCommand.Registration reg =
-                command(AccountPolicy.selfServe()).register("newbie@example.org", "hash");
+        AccountCommand.Registration reg = command().register("newbie@example.org", "hash");
 
         assertThat(reg.rawToken()).isNotBlank();
-        assertThat(tokens.getByTokenHash(fakeTokens.hash(reg.rawToken()))).isPresent();
+        assertThat(tokens.getByTokenHash(secureTokens.hash(reg.rawToken()))).isPresent();
     }
 
     @Test
     void register_rejectsDuplicateEmail() {
-        assertThatThrownBy(() ->
-                command(AccountPolicy.selfServe()).register("gerald.durrell@oakvista.example", "hash"))
+        assertThatThrownBy(() -> command().register("gerald.durrell@oakvista.example", "hash"))
                 .isInstanceOf(DuplicateEmailException.class);
     }
 
     @Test
     void register_rejectsMalformedEmail() {
-        assertThatThrownBy(() -> command(AccountPolicy.selfServe()).register("not-an-email", "hash"))
+        assertThatThrownBy(() -> command().register("not-an-email", "hash"))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("email");
     }
@@ -120,13 +144,13 @@ class AccountCommandImplTest {
 
     @Test
     void verifyEmail_rejectsUnknownToken() {
-        assertThatThrownBy(() -> command(AccountPolicy.selfServe()).verifyEmail("never-minted"))
+        assertThatThrownBy(() -> command().verifyEmail("never-minted"))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
     void verifyEmail_rejectsAlreadyConsumedToken() {
-        AccountCommand cmd = command(AccountPolicy.selfServe());
+        AccountCommand cmd = command();
         AccountCommand.Registration reg = cmd.register("once@example.org", "hash");
         cmd.verifyEmail(reg.rawToken());
 
@@ -136,18 +160,18 @@ class AccountCommandImplTest {
 
     @Test
     void verifyEmail_rejectsExpiredToken() {
-        AccountCommand.Registration reg =
-                command(AccountPolicy.selfServe()).register("late@example.org", "hash");
+        AccountCommand cmd = command();
+        AccountCommand.Registration reg = cmd.register("late@example.org", "hash");
 
         // token TTL is 24h from MINT_TIME; verify 25h later
-        AccountCommand later = commandAt(AccountPolicy.selfServe(), MINT_TIME.plusSeconds(25 * 3600));
-        assertThatThrownBy(() -> later.verifyEmail(reg.rawToken()))
+        clock.advance(Duration.ofHours(25));
+        assertThatThrownBy(() -> cmd.verifyEmail(reg.rawToken()))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
     void verifyEmail_rejectsBlankToken() {
-        assertThatThrownBy(() -> command(AccountPolicy.selfServe()).verifyEmail(""))
+        assertThatThrownBy(() -> command().verifyEmail(""))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("rawToken");
     }
@@ -179,7 +203,7 @@ class AccountCommandImplTest {
 
     @Test
     void beginPasswordReset_existingEmail_returnsToken() {
-        AccountCommand cmd = command(AccountPolicy.selfServe());
+        AccountCommand cmd = command();
         cmd.register("resetme@example.org", "old-hash");
 
         assertThat(cmd.beginPasswordReset("resetme@example.org")).isPresent();
@@ -187,13 +211,12 @@ class AccountCommandImplTest {
 
     @Test
     void beginPasswordReset_unknownEmail_returnsEmpty() {
-        assertThat(command(AccountPolicy.selfServe()).beginPasswordReset("ghost@example.org"))
-                .isEmpty();
+        assertThat(command().beginPasswordReset("ghost@example.org")).isEmpty();
     }
 
     @Test
     void resetPassword_setsNewPasswordHash() {
-        AccountCommand cmd = command(AccountPolicy.selfServe());
+        AccountCommand cmd = command();
         cmd.register("resetme@example.org", "old-hash");
         String rawToken = cmd.beginPasswordReset("resetme@example.org").orElseThrow();
 
@@ -205,7 +228,7 @@ class AccountCommandImplTest {
 
     @Test
     void resetPassword_rejectsVerificationToken() {
-        AccountCommand cmd = command(AccountPolicy.selfServe());
+        AccountCommand cmd = command();
         AccountCommand.Registration reg = cmd.register("mixed@example.org", "hash");
 
         // reg.rawToken() is a VERIFY_EMAIL token — the wrong purpose for a reset
@@ -215,8 +238,7 @@ class AccountCommandImplTest {
 
     @Test
     void resetPassword_rejectsUnknownToken() {
-        assertThatThrownBy(() ->
-                command(AccountPolicy.selfServe()).resetPassword("never-minted", "new-hash"))
+        assertThatThrownBy(() -> command().resetPassword("never-minted", "new-hash"))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
@@ -236,22 +258,28 @@ class AccountCommandImplTest {
 
     private double violations(String decision) {
         // decision is "<method>.<predicate>"; the framework scopes it under the observing class.
-        Counter counter = meters.find("naturalist.invariant.check").tag("outcome", "violated")
-                .tag("name", "AccountCommandImpl." + decision).counter();
-        return counter == null ? 0 : counter.count();
+        return checks("violated", decision);
     }
 
     private double baseline(String decision) {
         // ALWAYS mode: a decision that held is emitted as a held check — the baseline row.
-        Counter counter = meters.find("naturalist.invariant.check").tag("outcome", "held")
+        return checks("held", decision);
+    }
+
+    /**
+     * The count of {@code AccountCommandImpl.<decision>} checks with {@code outcome}, under the production class's
+     * name: the graph's traced subclass is synthetic, and {@code Observer} names a synthetic class for the class it
+     * extends.
+     */
+    private double checks(String outcome, String decision) {
+        Counter counter = meters.find("naturalist.invariant.check").tag("outcome", outcome)
                 .tag("name", "AccountCommandImpl." + decision).counter();
         return counter == null ? 0 : counter.count();
     }
 
     @Test
     void register_duplicateEmail_isObservedAsEmailUnregisteredViolation() {
-        assertThatThrownBy(() ->
-                command(AccountPolicy.selfServe()).register("gerald.durrell@oakvista.example", "hash"))
+        assertThatThrownBy(() -> command().register("gerald.durrell@oakvista.example", "hash"))
                 .isInstanceOf(DuplicateEmailException.class);
 
         assertThat(violations("register.emailUnregistered")).isEqualTo(1);
@@ -260,7 +288,7 @@ class AccountCommandImplTest {
 
     @Test
     void register_newEmail_isObservedAsBaseline() {
-        command(AccountPolicy.selfServe()).register("newbie@example.org", "hash");
+        command().register("newbie@example.org", "hash");
 
         assertThat(baseline("register.emailUnregistered")).isEqualTo(1);
         assertThat(violations("register.emailUnregistered")).isZero();
@@ -270,7 +298,7 @@ class AccountCommandImplTest {
 
     @Test
     void verifyEmail_eachInvalidTokenCause_isObservedUnderItsOwnName() {
-        AccountCommand cmd = command(AccountPolicy.selfServe());
+        AccountCommand cmd = command();
 
         // unknown: never minted
         assertThatThrownBy(() -> cmd.verifyEmail("never-minted")).isInstanceOf(InvalidTokenException.class);
@@ -282,16 +310,16 @@ class AccountCommandImplTest {
         assertThatThrownBy(() -> cmd.verifyEmail(once.rawToken())).isInstanceOf(InvalidTokenException.class);
         assertThat(violations("verifyEmail.isConsumed")).isEqualTo(1);
 
-        // expired: 25h after a 24h TTL
-        AccountCommand.Registration late = cmd.register("late@example.org", "hash");
-        AccountCommand later = commandAt(AccountPolicy.selfServe(), MINT_TIME.plusSeconds(25 * 3600));
-        assertThatThrownBy(() -> later.verifyEmail(late.rawToken())).isInstanceOf(InvalidTokenException.class);
-        assertThat(violations("verifyEmail.isExpired")).isEqualTo(1);
-
         // wrong purpose: a verification token offered as a reset
         AccountCommand.Registration mixed = cmd.register("mixed@example.org", "hash");
         assertThatThrownBy(() -> cmd.resetPassword(mixed.rawToken(), "new-hash")).isInstanceOf(InvalidTokenException.class);
         assertThat(violations("resetPassword.hasPurpose")).isEqualTo(1);
+
+        // expired: 25h after a 24h TTL
+        AccountCommand.Registration late = cmd.register("late@example.org", "hash");
+        clock.advance(Duration.ofHours(25));
+        assertThatThrownBy(() -> cmd.verifyEmail(late.rawToken())).isInstanceOf(InvalidTokenException.class);
+        assertThat(violations("verifyEmail.isExpired")).isEqualTo(1);
 
         // the message never distinguishes them; only the metric names do
         assertThat(violations("verifyEmail.hasPurpose")).isZero();
@@ -300,14 +328,14 @@ class AccountCommandImplTest {
 
     @Test
     void beginPasswordReset_unknownEmail_isObservedThoughTheResponseIsIdentical() {
-        assertThat(command(AccountPolicy.selfServe()).beginPasswordReset("ghost@example.org")).isEmpty();
+        assertThat(command().beginPasswordReset("ghost@example.org")).isEmpty();
 
         assertThat(violations("beginPasswordReset.emailRegistered")).isEqualTo(1);
     }
 
     @Test
     void verifyEmail_suspendedAccount_isRejectedAndObserved() {
-        AccountCommand cmd = command(AccountPolicy.selfServe());
+        AccountCommand cmd = command();
         AccountCommand.Registration reg = cmd.register("banned@example.org", "hash");
         Account account = accounts.getByEmail("banned@example.org").orElseThrow();
         accounts.update(account.withStatus(AccountStatus.SUSPENDED));
@@ -320,7 +348,7 @@ class AccountCommandImplTest {
 
     @Test
     void suspend_andReinstate_flipStatusAndAreObserved() {
-        AccountCommand cmd = command(AccountPolicy.selfServe());
+        AccountCommand cmd = command();
         cmd.register("troublemaker@example.org", "hash");
         AccountName name = accounts.getByEmail("troublemaker@example.org").orElseThrow().name();
 
@@ -336,7 +364,7 @@ class AccountCommandImplTest {
 
     @Test
     void suspend_unknownAccount_isRejectedAndObserved() {
-        assertThatThrownBy(() -> command(AccountPolicy.selfServe()).suspend(AccountName.create()))
+        assertThatThrownBy(() -> command().suspend(AccountName.create()))
                 .isInstanceOf(AccountNotFoundException.class);
 
         assertThat(violations("suspend.accountKnown")).isEqualTo(1);
