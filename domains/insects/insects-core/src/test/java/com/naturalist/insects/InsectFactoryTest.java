@@ -2,27 +2,22 @@ package com.naturalist.insects;
 
 import com.naturalist.RandomValue;
 import com.naturalist.data.NaturalistTestExtension;
-import com.naturalist.data.Page;
-import com.naturalist.data.PageRequest;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.insects.lifestage.AdultStage;
 import com.naturalist.insects.lifestage.EggStage;
 import com.naturalist.insects.lifestage.LarvaStage;
-import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
-import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.insects.lifestage.InsectLifeStageTestEntitySource;
 import com.naturalist.insects.lifestage.LifeStage;
+import com.naturalist.insects.lifestage.StageHabitat;
+import com.naturalist.insects.lifestage.StagePhenology;
 import com.naturalist.observability.Observer;
 import com.naturalist.test.context.Wired;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -34,58 +29,8 @@ class InsectFactoryTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery.SpeciesQuery speciesQuery;
-    @Wired InsectQuery.ImageQuery imageQuery;
-    @Wired InsectQuery.GenusQuery genusQuery;
-    @Wired InsectQuery.FamilyQuery familyQuery;
-    @Wired InsectQuery.OrderQuery orderQuery;
-    @Wired InsectCitationQueryImpl citationQuery;
-    @Wired InsectFeatureQueryImpl featureQuery;
-    @Wired InsectQuery.FunctionalRoleQuery roleQuery;
-
-    /**
-     * Stub lifestage query — returns empty collections. InsectLifeStageQueryImpl is
-     * package-private inside {@code com.naturalist.insects.lifestage} and not accessible
-     * here; insects-test-context depends on insects-core and cannot be reversed. The
-     * factory's invariant check for non-null lifeStages is satisfied by the empty
-     * collection, and the test assertions target the rank chain and citations.
-     */
-    InsectLifeStageQuery lifeStageQuery = new InsectLifeStageQuery() {
-        @Override
-        public LifeStageEntityQuery lifeStages() {
-            return new LifeStageEntityQuery() {
-                @Override
-                public LifeStageCollection forParentName(InsectRankName parentName) {
-                    return LifeStageCollection.empty();
-                }
-
-                @Override
-                public Optional<LifeStage> getByName(com.naturalist.insects.LifeStageName name) {
-                    return Optional.empty();
-                }
-
-                @Override
-                public LifeStageCollection findByNameSet(Set<com.naturalist.insects.LifeStageName> names) {
-                    return LifeStageCollection.empty();
-                }
-
-                @Override
-                public Page<LifeStage> findPage(PageRequest pageRequest) {
-                    return new Page<>(java.util.List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
-                }
-            };
-        }
-    };
-
-    InsectFactory factory;
-
-    /** The factory under test, over the graph's queries and the stub life-stage query above. */
-    @BeforeEach
-    void buildFactory() {
-        factory = new InsectFactory(
-                speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
-                lifeStageQuery, citationQuery, featureQuery, roleQuery);
-    }
+    /** Provided by {@link InsectsTestContextInternal} over the graph's real queries, life stages included. */
+    @Wired InsectFactory factory;
 
     @Test
     void buildByName_rejectsNull() {
@@ -220,16 +165,10 @@ class InsectFactoryTest {
     }
 
     @Test
-    void buildByName_lifeStagesFollowMetabolySequence() {
+    void buildByName_holometabolousSpeciesHasAllFourStagesInSequence() {
         InsectSpeciesName name = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        List<LifeStage> reversed = nte.getNamed(InsectLifeStageTestEntitySource.class)
-                .entityStream()
-                .filter(stage -> stage.parentName().equals(name))
-                .sorted(Comparator.comparingInt((LifeStage stage) -> stage.kind().ordinal()).reversed())
-                .toList();
-        assertThat(reversed).extracting(LifeStage::kind).first().isEqualTo(LifeStageKind.ADULT);
 
-        Insect insect = factoryWithStages(reversed).buildByName(name).orElseThrow();
+        Insect insect = factory.buildByName(name).orElseThrow();
 
         assertThat(insect.lifeStages().stream().map(LifeStage::kind).toList())
                 .containsExactly(LifeStageKind.EGG, LifeStageKind.LARVA, LifeStageKind.PUPA, LifeStageKind.ADULT);
@@ -238,50 +177,28 @@ class InsectFactoryTest {
     /**
      * A hemimetabolous sequence is egg, nymph, adult: it differs from enum order once a larva is present, so only
      * the factory's {@code orderedBy(sequence)} produces this order, not repository order and not an ordinal sort.
+     * The stages are inserted larva, adult, egg, borrowing a fixture stage's phenology and habitat to stay valid.
      */
     @Test
     void buildByName_lifeStagesFollowTheSpeciesSequenceNotEnumOrder() {
         InsectSpeciesName name = TestInsectsIdentifiers.InsectSpecies.PeriplanetaAmericana.name;
+        InsectLifeStageTestEntitySource stages = nte.getNamed(InsectLifeStageTestEntitySource.class);
+        LifeStage valid = stages.getByName(LifeStageName.of(
+                TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name, LifeStageKind.EGG)).orElseThrow();
+        StagePhenology phenology = valid.phenology();
+        StageHabitat habitat = valid.habitat();
         Description description = new Description(
                 RandomValue.string(), RandomValue.string(), RandomValue.string(), RandomValue.string());
-        List<LifeStage> repositoryOrder = List.of(
-                new LarvaStage(LifeStageName.of(name, LifeStageKind.LARVA), name, null, null, null, description,
-                        null, List.of(), List.of(), null, null),
-                new AdultStage(LifeStageName.of(name, LifeStageKind.ADULT), name, null, null, null, description,
-                        null, List.of(), null, null),
-                new EggStage(LifeStageName.of(name, LifeStageKind.EGG), name, null, null, null, description,
-                        null, null, null));
+        stages.insert(new LarvaStage(LifeStageName.of(name, LifeStageKind.LARVA), name, phenology, habitat, null,
+                description, null, List.of(), List.of(), null, null));
+        stages.insert(new AdultStage(LifeStageName.of(name, LifeStageKind.ADULT), name, phenology, habitat, null,
+                description, null, List.of(), null, null));
+        stages.insert(new EggStage(LifeStageName.of(name, LifeStageKind.EGG), name, phenology, habitat, null,
+                description, null, null, null));
 
-        Insect insect = factoryWithStages(repositoryOrder).buildByName(name).orElseThrow();
+        Insect insect = factory.buildByName(name).orElseThrow();
 
         assertThat(insect.lifeStages().stream().map(LifeStage::kind).toList())
                 .containsExactly(LifeStageKind.EGG, LifeStageKind.ADULT, LifeStageKind.LARVA);
-    }
-
-    private InsectFactory factoryWithStages(List<LifeStage> stages) {
-        InsectLifeStageQuery stub = () -> new InsectLifeStageQuery.LifeStageEntityQuery() {
-            @Override
-            public LifeStageCollection forParentName(InsectRankName parentName) {
-                return LifeStageCollection.of(stages);
-            }
-
-            @Override
-            public Optional<LifeStage> getByName(LifeStageName stageName) {
-                return Optional.empty();
-            }
-
-            @Override
-            public LifeStageCollection findByNameSet(Set<LifeStageName> names) {
-                return LifeStageCollection.empty();
-            }
-
-            @Override
-            public Page<LifeStage> findPage(PageRequest pageRequest) {
-                return new Page<>(List.of(), pageRequest.pageNumber(), pageRequest.pageSize(), 0, false);
-            }
-        };
-        return new InsectFactory(
-                speciesQuery, imageQuery, genusQuery, familyQuery, orderQuery,
-                stub, citationQuery, featureQuery, roleQuery);
     }
 }

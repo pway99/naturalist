@@ -8,6 +8,7 @@ import com.naturalist.ddd.EntityName;
 import com.naturalist.featuresearch.FeatureCorpus;
 import com.naturalist.featuresearch.FeatureSearch;
 import com.naturalist.featuresearch.InMemoryFeatureSearch;
+import com.naturalist.insects.lifestage.InsectLifeStageQuery;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.resilience.Resilience;
@@ -27,8 +28,10 @@ import java.util.Set;
 /**
  * The test context of {@code com.naturalist.insects}. The graph builds the package's
  * {@code @DomainService} implementations and {@code @MockDomainService} repository mocks by reflection;
- * this context provides only the outside-world ports the identification and photo paths need, as
+ * this context provides the outside-world ports the identification and photo paths need, as
  * no-ops, plus the feature search the console composition root wires over {@link InsectQuery}.
+ * It also provides {@link InsectFactory}, which is no {@code @DomainService} (production builds it
+ * inside {@link InsectQueryImpl}), from the same queries the graph builds.
  * Library classes come from library's own context; life-stage classes from
  * {@link com.naturalist.insects.lifestage.InsectLifeStageTestContextInternal}.
  */
@@ -68,6 +71,12 @@ public class InsectsTestContextInternal extends TestContext {
         p.provide(ExternalAuthority.class, g -> NO_OP_AUTHORITY);
         p.provide((Class) FeatureSearch.class, g -> new InMemoryFeatureSearch<>(() -> g.get(InsectQuery.class)
                 .features().corpus().map(f -> new FeatureCorpus.Indexed<>(f.id(), f.value()))));
+        p.provide(InsectFactory.class, g -> new InsectFactory(
+                g.get(InsectQuery.SpeciesQuery.class), g.get(InsectQuery.ImageQuery.class),
+                g.get(InsectQuery.GenusQuery.class), g.get(InsectQuery.FamilyQuery.class),
+                g.get(InsectQuery.OrderQuery.class), g.get(InsectLifeStageQuery.class),
+                g.get(InsectCitationQueryImpl.class), g.get(InsectFeatureQueryImpl.class),
+                g.get(InsectQuery.FunctionalRoleQuery.class)));
     }
 
     private static ImageStore tempImageStore() {

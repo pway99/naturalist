@@ -32,19 +32,22 @@ That gives 15 lines. Two more kinds of construction fall outside the pattern and
 | File:line | What it builds | Why the context cannot build it |
 |---|---|---|
 | `insects/InsectsCatalogContributionTest.java:40, 47, 54, 61` | `InsectsCatalogContribution` with one query `null` | Constructor null-rejection test. The contribution itself is now `@Wired`. |
-| `insects/InsectFactoryTest.java:85` (`@BeforeEach`) | `InsectFactory` over the graph's queries plus a stub `InsectLifeStageQuery` | `InsectFactory` is neither a `@DomainService` nor a `@MockDomainService`: production builds it inside `InsectQueryImpl`'s constructor. The stub life-stage query is the test's own, too. |
-| `insects/InsectFactoryTest.java:283` (`factoryWithStages`) | A second `InsectFactory` per test, over a stub that returns given stages | The same, plus a second instance in one test. |
+
+`InsectFactoryTest`'s two sites (a `@BeforeEach` factory over a stub `InsectLifeStageQuery`, and a second
+factory per test over a stub returning given stages) are gone (2026-11-07). `InsectsTestContextInternal` now
+provides `InsectFactory`, which is no `@DomainService`, from the graph's queries, the real life-stage query
+included. The ordering test inserts its stages into `InsectLifeStageTestEntitySource` instead of stubbing. The
+stub had been hiding stages that failed the `LifeStage` invariants (no phenology, no habitat).
 
 ## Does this argue for a `com.naturalist.Enforce*` recipe?
 
 Here is the evidence. That decision is Pat's.
 
-After the refactor, every remaining site in these two modules is one of four shapes:
+After the refactor, every remaining site in these two modules is one of three shapes:
 
 - **A constructor null-rejection test** (16 sites).
 - **An anonymous override** (1 site), plus the impl built over it (1 site).
-- **A second instance of a type in the same test** (1 helper, plus the second `InsectFactory`).
-- **A class the graph cannot build by design** (`InsectFactory`).
+- **A second instance of a type in the same test** (1 helper).
 
 None is a test re-deriving the context's own wiring, which is what a recipe would exist to stop.
 
