@@ -4,6 +4,8 @@
 **Status:** Design (refines the brief; ready for an implementation plan)
 **Refines:** [`2026-08-28-console-restructuring-repository-implies-console-design.md`](2026-08-28-console-restructuring-repository-implies-console-design.md)
 (the rough hand-off brief). Where this doc and the brief disagree, this doc wins.
+**Note (2026-11-07):** the brief's `@MockBean` slices are superseded. No test stubs a domain query or
+command; collaborators come from the domain's `-test-context` facade (`domains/CLAUDE.md`, "Test Contexts").
 
 ## One-line goal
 

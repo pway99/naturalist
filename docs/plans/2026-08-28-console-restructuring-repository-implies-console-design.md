@@ -2,6 +2,10 @@
 
 **Date:** 2026-08-28
 **Status:** Rough design brief (hand-off for a fresh session to refine into a plan)
+**Superseded in part (2026-11-07):** its `@MockBean` slices are not the pattern. No test stubs a domain
+query or command, with Mockito or by hand: controller slices take real queries from the domain's
+`-test-context` facade over its fixtures, and core tests take them from the dynamic test contexts
+(`domains/CLAUDE.md`, "Test Contexts"). The refining design below already drops `@MockBean`.
 **Author intent:** capture the target architecture + the open questions; a new session
 brainstorms the details and writes the implementation plan.
 
@@ -67,7 +71,8 @@ the composition root.
 
 2. **Domain controller tests → `@WebMvcTest` slices in the `-console` modules.** Move the
    insects/usage controller integration tests down into their `-console` modules as
-   `@WebMvcTest` slices that `@MockBean` the domain query — no scan, no DB, fast. Each
+   `@WebMvcTest` slices that `@MockBean` the domain query — no scan, no DB, fast (superseded: the
+   slices take the real query from the domain's `-test-context` facade instead; see Status). Each
    `-console` module gains `spring-boot-starter-test`. management-console stops carrying
    domain-specific controller tests.
 
@@ -127,7 +132,8 @@ and can follow.
   defines beans from the mock repositories." Shared is far less churn across 22 tests;
   per-test is maximally isolated. Recommend prototyping the shared approach first.
 - **`@WebMvcTest` vs `@SpringBootTest` for the relocated domain tests.** `@WebMvcTest` +
-  `@MockBean` query is the idiomatic, DB-free slice; confirm it covers what the current
+  `@MockBean` query is the idiomatic, DB-free slice (superseded: a real query from the `-test-context`
+  facade, see Status); confirm it covers what the current
   full-context insects tests assert (security filters, nav, catalog links may need
   `@Import`s or a slice config).
 - **What exactly moves for `usage`/`naturalists`.** Inventory the `console/usage` and
