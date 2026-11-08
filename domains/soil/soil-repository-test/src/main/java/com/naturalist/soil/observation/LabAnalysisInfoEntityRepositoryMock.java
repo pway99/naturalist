@@ -3,6 +3,8 @@ package com.naturalist.soil.observation;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.soil.SoilProfileName;
 
 import java.util.List;
@@ -21,11 +23,13 @@ class LabAnalysisInfoEntityRepositoryMock
 
     @Override
     public List<LabAnalysisInfo> getBySoilProfileName(SoilProfileName soilProfileName) {
-        observer().arguments("getBySoilProfileName",
-                        i -> i.entityName(soilProfileName, "soilProfileName"))
+        MethodObserver getBySoilProfileName = observer().forMethod("getBySoilProfileName");
+        getBySoilProfileName.arguments(i -> i.entityName(soilProfileName, "soilProfileName"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(analysis -> soilProfileName.equals(analysis.soilProfileName()))
                 .toList();
+        getBySoilProfileName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

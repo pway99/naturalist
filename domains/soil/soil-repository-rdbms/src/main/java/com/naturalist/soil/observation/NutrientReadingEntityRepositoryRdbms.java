@@ -6,7 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -87,29 +88,35 @@ class NutrientReadingEntityRepositoryRdbms
 
     @Override
     public List<NutrientReading> getByLabAnalysisId(LabAnalysisId labAnalysisId) {
-        Observer.forClass(NutrientReadingEntityRepositoryRdbms.class)
-                .arguments("getByLabAnalysisId", i -> i.identifier(labAnalysisId, "labAnalysisId"))
+        MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
+        getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        return mapper.selectByLabAnalysisId(labAnalysisId.value().toString()).stream()
+        var result = mapper.selectByLabAnalysisId(labAnalysisId.value().toString()).stream()
                 .map(NutrientReadingDbo::toEntity).toList();
+        getByLabAnalysisId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<NutrientReading> getByLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
-        Observer.forClass(NutrientReadingEntityRepositoryRdbms.class)
-                .arguments("getByLabAnalysisIds", i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+        MethodObserver getByLabAnalysisIds = observer().forMethod("getByLabAnalysisIds");
+        getByLabAnalysisIds.arguments(i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
                 .throwWhenInvalid();
         if (labAnalysisIds.isEmpty()) return List.of();
         List<String> ids = labAnalysisIds.stream().map(id -> id.value().toString()).toList();
-        return mapper.selectByLabAnalysisIds(ids).stream().map(NutrientReadingDbo::toEntity).toList();
+        var result = mapper.selectByLabAnalysisIds(ids).stream().map(NutrientReadingDbo::toEntity).toList();
+        getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<NutrientReading> getByNutrientName(NutrientName nutrientName) {
-        Observer.forClass(NutrientReadingEntityRepositoryRdbms.class)
-                .arguments("getByNutrientName", i -> i.entityName(nutrientName, "nutrientName"))
+        MethodObserver getByNutrientName = observer().forMethod("getByNutrientName");
+        getByNutrientName.arguments(i -> i.entityName(nutrientName, "nutrientName"))
                 .throwWhenInvalid();
-        return mapper.selectByNutrientName(nutrientName.value()).stream()
+        var result = mapper.selectByNutrientName(nutrientName.value()).stream()
                 .map(NutrientReadingDbo::toEntity).toList();
+        getByNutrientName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }

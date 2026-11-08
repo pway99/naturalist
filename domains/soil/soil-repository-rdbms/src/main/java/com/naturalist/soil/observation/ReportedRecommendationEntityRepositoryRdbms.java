@@ -6,7 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -90,29 +91,35 @@ class ReportedRecommendationEntityRepositoryRdbms
 
     @Override
     public List<ReportedRecommendation> getByLabAnalysisId(LabAnalysisId labAnalysisId) {
-        Observer.forClass(ReportedRecommendationEntityRepositoryRdbms.class)
-                .arguments("getByLabAnalysisId", i -> i.identifier(labAnalysisId, "labAnalysisId"))
+        MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
+        getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        return mapper.selectByLabAnalysisId(labAnalysisId.value().toString()).stream()
+        var result = mapper.selectByLabAnalysisId(labAnalysisId.value().toString()).stream()
                 .map(ReportedRecommendationDbo::toEntity).toList();
+        getByLabAnalysisId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<ReportedRecommendation> getByLabAnalysisIds(Set<LabAnalysisId> labAnalysisIds) {
-        Observer.forClass(ReportedRecommendationEntityRepositoryRdbms.class)
-                .arguments("getByLabAnalysisIds", i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
+        MethodObserver getByLabAnalysisIds = observer().forMethod("getByLabAnalysisIds");
+        getByLabAnalysisIds.arguments(i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
                 .throwWhenInvalid();
         if (labAnalysisIds.isEmpty()) return List.of();
         List<String> ids = labAnalysisIds.stream().map(id -> id.value().toString()).toList();
-        return mapper.selectByLabAnalysisIds(ids).stream().map(ReportedRecommendationDbo::toEntity).toList();
+        var result = mapper.selectByLabAnalysisIds(ids).stream().map(ReportedRecommendationDbo::toEntity).toList();
+        getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 
     @Override
     public List<ReportedRecommendation> getByInputName(RecommendedInputName inputName) {
-        Observer.forClass(ReportedRecommendationEntityRepositoryRdbms.class)
-                .arguments("getByInputName", i -> i.entityName(inputName, "inputName"))
+        MethodObserver getByInputName = observer().forMethod("getByInputName");
+        getByInputName.arguments(i -> i.entityName(inputName, "inputName"))
                 .throwWhenInvalid();
-        return mapper.selectByInputName(inputName.value()).stream()
+        var result = mapper.selectByInputName(inputName.value()).stream()
                 .map(ReportedRecommendationDbo::toEntity).toList();
+        getByInputName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
+        return result;
     }
 }
