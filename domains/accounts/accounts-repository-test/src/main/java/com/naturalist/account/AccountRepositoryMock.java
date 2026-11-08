@@ -3,6 +3,8 @@ package com.naturalist.account;
 import com.naturalist.data.AbstractTestEntityRepository;
 import com.naturalist.data.MockDomainService;
 import com.naturalist.data.NaturalistDatabase;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 
 import java.util.Optional;
 
@@ -22,10 +24,13 @@ class AccountRepositoryMock
 
     @Override
     public Optional<Account> getByEmail(String email) {
-        observer().arguments("getByEmail", i -> i.email(email, "email"))
+        MethodObserver getByEmail = observer().forMethod("getByEmail");
+        getByEmail.arguments(i -> i.email(email, "email"))
                 .throwWhenInvalid();
-        return testEntitySource().entityStream()
+        var result = testEntitySource().entityStream()
                 .filter(account -> email.equals(account.email()))
                 .findFirst();
+        getByEmail.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
+        return result;
     }
 }

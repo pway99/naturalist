@@ -6,7 +6,8 @@ import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.persistence.RdbmsExceptions;
 
 import java.util.List;
@@ -90,9 +91,11 @@ class AccountEntityRepositoryRdbms
 
     @Override
     public Optional<Account> getByEmail(String email) {
-        Observer.forClass(AccountEntityRepositoryRdbms.class)
-                .arguments("getByEmail", i -> i.email(email, "email"))
+        MethodObserver getByEmail = observer().forMethod("getByEmail");
+        getByEmail.arguments(i -> i.email(email, "email"))
                 .throwWhenInvalid();
-        return Optional.ofNullable(mapper.selectByEmail(email)).map(AccountDbo::toEntity);
+        var result = Optional.ofNullable(mapper.selectByEmail(email)).map(AccountDbo::toEntity);
+        getByEmail.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
+        return result;
     }
 }
