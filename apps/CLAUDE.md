@@ -124,7 +124,8 @@ Development mode (`spring-boot:run` and the app's tests) compiles from source in
 
 - **A new console module** needs a line in the POM's `gather-templates` execution.
   `PackagedJarIT` fails if a template is missing from the jar, or if two modules share a template
-  path, since the copy overwrites silently.
+  path, since the copy overwrites silently. Its source-side count covers this checkout only: a directory
+  below the root holding its own `.git` (a worktree under `.claude/worktrees/`, a clone in `temp/`) is skipped.
 - **`PackagedJarIT` is the only test of the artifact itself.** It runs `java -jar` from outside the
   source tree and needs the standing test database. Everything else here runs on a plain classpath
   and cannot see a jar that starts cleanly and then fails to render.

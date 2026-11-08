@@ -102,6 +102,7 @@ class PackagedJarIT {
             inSource = files.filter(file -> file.toString().endsWith(".jte"))
                     .filter(file -> file.toString().contains("/src/main/jte/"))
                     .filter(file -> !file.toString().contains("/target/"))
+                    .filter(file -> !inANestedCheckout(projectRoot, file))
                     .count();
         }
         long inJar;
@@ -190,5 +191,19 @@ class PackagedJarIT {
             assertThat(zip.stream().map(ZipEntry::getName).filter(name -> name.startsWith("BOOT-INF/lib/byte-buddy")))
                     .isEmpty();
         }
+    }
+
+    /**
+     * A checkout inside this one, such as a git worktree under {@code .claude/worktrees/}, holds its own copy of every
+     * template, so it is not part of this source tree. A {@code .git} file or directory below the root marks one.
+     */
+    private static boolean inANestedCheckout(Path projectRoot, Path file) {
+        for (Path directory = file.getParent(); directory != null && !directory.equals(projectRoot);
+                directory = directory.getParent()) {
+            if (Files.exists(directory.resolve(".git"))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
