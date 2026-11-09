@@ -39,6 +39,24 @@ class GridCellTest {
     }
 
     @Test
+    void exactBoundaries_atSouthernLatitudeAndEasternLongitude_belongToTheCellTheyOpen() {
+        assertThat(GridCell.of(new Coordinates(-45.5, 0))).isEqualTo(GridCell.of(-1092, 0));
+        assertThat(GridCell.of(new Coordinates(0, 151.25))).isEqualTo(GridCell.of(0, 3630));
+    }
+
+    @Test
+    void pointsBeyondTheGlobe_andNonFiniteValues_snapToInvalidCells() {
+        assertThat(GridCell.of(new Coordinates(91, 0)).isValid()).isFalse();
+        assertThat(GridCell.of(new Coordinates(-91, 0)).isValid()).isFalse();
+        assertThat(GridCell.of(new Coordinates(0, 181)).isValid()).isFalse();
+        assertThat(GridCell.of(new Coordinates(0, -181)).isValid()).isFalse();
+        assertThat(GridCell.of(new Coordinates(Double.NaN, Double.NaN)).isValid()).isFalse();
+        assertThat(GridCell.of(new Coordinates(Double.POSITIVE_INFINITY, 0)).isValid()).isFalse();
+        assertThat(GridCell.of(new Coordinates(0, Double.NEGATIVE_INFINITY)).isValid()).isFalse();
+        assertThat(GridCell.of(new Coordinates(0, Double.NaN)).isValid()).isFalse();
+    }
+
+    @Test
     void poles_andAntimeridian_clampToTheLastCell() {
         assertThat(GridCell.of(new Coordinates(90, 180))).isEqualTo(GridCell.of(2159, 4319));
         assertThat(GridCell.of(new Coordinates(-90, -180))).isEqualTo(GridCell.of(-2160, -4320));

@@ -42,11 +42,30 @@ public record GridCell(int latIndex, int lonIndex) implements ValueObject {
     public record Bounds(double south, double north, double west, double east) {
     }
 
-    /** The cell that contains {@code c}; latitude 90 and longitude 180 clamp to the last cell. */
+    /**
+     * The cell that contains {@code c}. Latitude exactly 90 and longitude exactly 180 have no cell
+     * to open and clamp to the last one. Any other point beyond the globe, and a point whose
+     * latitude or longitude is not a finite number, snaps to a cell whose {@link #isValid()} is
+     * false rather than to a plausible place.
+     */
     public static GridCell of(Coordinates c) {
-        int lat = (int) Math.floor(c.latitude() * CELLS_PER_DEGREE);
-        int lon = (int) Math.floor(c.longitude() * CELLS_PER_DEGREE);
-        return new GridCell(Math.min(lat, MAX_LAT_INDEX), Math.min(lon, MAX_LON_INDEX));
+        return new GridCell(
+                indexOf(c.latitude(), 90.0, MAX_LAT_INDEX),
+                indexOf(c.longitude(), 180.0, MAX_LON_INDEX));
+    }
+
+    private static int indexOf(double degrees, double edge, int lastIndex) {
+        if (!Double.isFinite(degrees)) return lastIndex + 1;
+        if (degrees == edge) return lastIndex;
+        return (int) Math.floor(degrees * CELLS_PER_DEGREE);
+    }
+
+    private static boolean latInRange(int index) {
+        return index >= MIN_LAT_INDEX && index <= MAX_LAT_INDEX;
+    }
+
+    private static boolean lonInRange(int index) {
+        return index >= MIN_LON_INDEX && index <= MAX_LON_INDEX;
     }
 
     /** The cell with these indices, exactly as given. */
@@ -78,8 +97,8 @@ public record GridCell(int latIndex, int lonIndex) implements ValueObject {
     @Override
     public Consumer<? extends Constraints> invariants() {
         return c -> c
-                .isTrue(latIndex >= MIN_LAT_INDEX && latIndex <= MAX_LAT_INDEX, "latIndex")
-                .isTrue(lonIndex >= MIN_LON_INDEX && lonIndex <= MAX_LON_INDEX, "lonIndex");
+                .isTrue(latInRange(latIndex), "latIndex")
+                .isTrue(lonInRange(lonIndex), "lonIndex");
     }
 
     /**
@@ -89,7 +108,6 @@ public record GridCell(int latIndex, int lonIndex) implements ValueObject {
      */
     @JsonIgnore
     public boolean isValid() {
-        return latIndex >= MIN_LAT_INDEX && latIndex <= MAX_LAT_INDEX
-                && lonIndex >= MIN_LON_INDEX && lonIndex <= MAX_LON_INDEX;
+        return latInRange(latIndex) && lonInRange(lonIndex);
     }
 }
