@@ -67,7 +67,7 @@
                 <div class="form-group">
                     <label for="capturedAt">Date observed</label>
                     <input type="text" id="capturedAt" name="capturedAt"
-                           placeholder="auto-detected from photo">
+                           placeholder="YYYY-MM-DDTHH:MM:SSZ">
                 </div>
 
                 <div class="form-group">

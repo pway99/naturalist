@@ -27,9 +27,11 @@ are built. What remains is the code gaps below and the setup that only happens o
 - [ ] **Review the seed field observations before going public.** The catalog load includes them,
   because catalog photos hang off them. They name real observers and places, such as a town, and they
   appear on public pages.
-- [ ] **Strip photo metadata: blocks public hosting.** With JavaScript off, or on a direct POST,
-  uploads keep their EXIF and GPS data and are served publicly with one-year caching
-  ([PL-17](notes/parking-lot.md)).
+- [x] **Strip photo metadata: blocks public hosting.** Done 2026-11-09: every upload is stripped of
+  EXIF, XMP, IPTC and comments (orientation kept) in the insects commands and again in
+  `FilesystemImageStore.store`, and the seed photos were rewritten. Only a coarse 2.5' grid cell is
+  kept as the observation's area ([PL-17](notes/parking-lot-resolved.md),
+  [design](plans/2026-11-08-photo-location-privacy-design.md)).
 - [ ] **Account recovery.** There is no password reset, and `/reset/**` has no controller behind it.
   Someone who registers another person's email can lock them out of that address
   ([S1](notes/2026-11-03-security-review.md)). Reset would fix this, including ending sessions on

@@ -21,7 +21,7 @@ site is public.
 
 | # | Item | Who | Size | Note |
 |---|---|---|---|---|
-| 1.1 | Strip photo metadata on upload ([PL-17](../notes/parking-lot.md)) | Claude | S–M | Option (a): rewrite metadata only, and test that GPS is never served back. Doesn't prevent using location later (phase 5). |
+| 1.1 | ✅ 2026-11-09 Strip photo metadata on upload ([PL-17](../notes/parking-lot-resolved.md)) | Claude | S–M | Metadata-only rewrite in the insects commands and in the image store; seed photos rewritten. The app keeps only a coarse grid-cell area ([design](2026-11-08-photo-location-privacy-design.md), [plan](2026-11-08-photo-location-privacy-plan.md)). |
 | 1.2 | Review the seed field observations | Pat | S–M | They name real observers and places on public pages. Only Pat can judge what stays. |
 | 1.3 | **new** Find out why 11 of 22 insect seed photos are missing | Claude | S | `db-init` reports them and still succeeds. Decide whether a missing photo should fail it. |
 | 1.4 | **new** Keep the alert address private: remove it from `application.yml`, and read it from a `secrets/alert-email` file for both the app and Alertmanager | Claude | S | Replaces `ALERT_EMAIL_TO`. Use a new dedicated address, because the current one is already in public git history. Needed before sharing the image. |
@@ -75,7 +75,7 @@ All from section 5 of the checklist, run against the deployment.
 |---|---|---|---|
 | 5.1 | Migration tool | M | Decision B. Blocks the first schema change. |
 | 5.2 | Tune alert thresholds against real traffic | S | Most fire on any single violation, and `ChallengeFailureSurge` at 20 is a guess. |
-| 5.3 | Use photo location for identification | L | Needs 5.1, because it changes the observation record. Test on real phones first, and store only what the user confirms. |
+| 5.3 | Pre-filter candidate species from the catalog by area | M | Location capture, storage and the prompt context shipped with 1.1 (the observation's `area` cell). Still to test on a real phone. |
 
 **Not planned unless wanted:** Grafana, an admin metrics page, automated tests for `db-init`, a
 `--web.external-url` for Alertmanager's email links, and an alert for the local

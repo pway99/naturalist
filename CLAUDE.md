@@ -71,6 +71,7 @@ kernels/
   catalog-inmem/      — in-memory reference adapter for catalog
   identification/     — IdentificationRefused (port-level refusal; pipeline joins later)
   image-store-filesystem/ — ImageStore over a directory root with classpath fallback for seed photos
+  observation-test/   — ImageFixtures: synthetic JPEG/PNG/WebP bytes with and without metadata (test-scoped by consumers)
 domains/
   identifiers/        — typed names (EntityName subclasses) and typed ids
                         (EntityId subclasses) only

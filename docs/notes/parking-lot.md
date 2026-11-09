@@ -157,15 +157,6 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
-## PL-17 — Raw uploads with JavaScript off keep EXIF/GPS and are served publicly with one-year caching
-
-**Raised:** 2026-11-01.
-**Where:** Surfaced in the whole-branch review of insects-ports slice 1 (image store). The add-photo and identify forms resize the photo client-side before upload, which re-encodes it and drops its metadata — but only when JavaScript runs. With JavaScript off (or a direct POST) the original bytes are stored as-is by `ImageStore.store`, EXIF and GPS coordinates included, and `GET /insects/images/{filename}` serves them to anyone with `Cache-Control: public, max-age=31536000, immutable`. The slice-1 design bans server-side transcoding, so the server never strips anything. The MVP goal says images stay on the user's device; a raw upload breaks that promise silently, and the one-year cache means a later fix cannot recall copies already cached.
-**Blocking:** No for local use; yes before public hosting.
-**Resolution path:** Decide between (a) stripping EXIF in the upload use case — a metadata-only rewrite (drop APP1/EXIF segments for JPEG, `eXIf`/text chunks for PNG, `EXIF`/`XMP` chunks for WebP) that is not transcoding and keeps the design's ban intact — or (b) rejecting uploads that were not resized client-side (e.g. over a pixel or byte ceiling the resize guarantees), with a friendly error telling the user to enable JavaScript. Either way, add a test that an uploaded JPEG carrying GPS EXIF is never served back with it.
-
----
-
 ## Conventions
 
 - New entries get the next `PL-N` ID; numbers are never reused.
