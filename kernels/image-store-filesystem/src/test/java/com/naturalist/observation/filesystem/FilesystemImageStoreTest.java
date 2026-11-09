@@ -99,6 +99,27 @@ class FilesystemImageStoreTest {
     }
 
     @Test
+    void store_refusesAnUploadThatStripsToANonImage() throws IOException {
+        byte[] exif = ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7);
+        byte[] bytes = new byte[2 + exif.length + 4];
+        bytes[0] = (byte) 0xFF;
+        bytes[1] = (byte) 0xD8;
+        System.arraycopy(exif, 0, bytes, 2, exif.length);
+        System.arraycopy(new byte[]{0x12, 0x34, 0x56, 0x78}, 0, bytes, 2 + exif.length, 4);
+        ImageUpload upload = ImageUpload.of(bytes);
+        assertThat(upload.isValid()).isTrue();
+
+        assertThatThrownBy(() -> store.store("insects", upload)).isInstanceOf(InvariantViolationException.class);
+
+        Path space = root.resolve("insects");
+        if (Files.exists(space)) {
+            try (Stream<Path> files = Files.list(space)) {
+                assertThat(files.toList()).isEmpty();
+            }
+        }
+    }
+
+    @Test
     void read_missingIsEmpty() {
         assertThat(store.read("insects", FileName.of("nope.jpg"))).isEmpty();
     }

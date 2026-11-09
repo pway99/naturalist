@@ -51,6 +51,8 @@ class ImageUploadStripTest {
 
     private static final byte[] SOI = {(byte) 0xFF, (byte) 0xD8};
 
+    private static final byte[] GARBAGE = {0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, (byte) 0xF0};
+
     private static final byte[] TINY_JPEG =
             {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -177,6 +179,61 @@ class ImageUploadStripTest {
         assertThat(violations("ImageUpload.withoutMetadata.wellFormed")).isEqualTo(1);
     }
 
+    @Test
+    void jpeg_exifApp1RunningPastTheEnd_isDroppedWithEverythingAfterIt() {
+        byte[] in = concat(SOI, app0Jfif(), overrun(app1Exif(ByteOrder.BIG_ENDIAN, 6, 45.5, -122.7)), GARBAGE);
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(concat(SOI, app0Jfif()));
+        assertThat(violations("ImageUpload.withoutMetadata.wellFormed")).isEqualTo(1);
+    }
+
+    @Test
+    void jpeg_exifApp1RunningPastTheEnd_rightAfterSoi_stripsToNoImageAtAll() {
+        byte[] in = concat(SOI, overrun(app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7)), GARBAGE);
+        assertThat(ImageUpload.of(in).isValid()).isTrue();
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(SOI);
+        assertThat(out.isValid()).isFalse();
+    }
+
+    @Test
+    void jpeg_bytesAfterEoi_areDropped() {
+        byte[] image = jpeg(app0Jfif(), app2Icc());
+        byte[] motionPhoto = concat(image, new byte[]{0, 0, 0, 0x18, 'f', 't', 'y', 'p', 'm', 'p', '4', '2'});
+
+        ImageUpload out = ImageUpload.of(motionPhoto).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(image);
+        assertThat(violations("ImageUpload.withoutMetadata.trailer")).isEqualTo(1);
+    }
+
+    @Test
+    void jpeg_scanWithStuffedBytesAndRestarts_isKeptWhole() {
+        byte[] scan = {(byte) 0xFF, (byte) 0xDA, 0x00, 0x02,
+                0x12, (byte) 0xFF, 0x00, 0x34, (byte) 0xFF, (byte) 0xD0, 0x56, (byte) 0xFF, (byte) 0xFF, (byte) 0xD9};
+        byte[] in = concat(SOI, app0Jfif(), com("x"), scan);
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(concat(SOI, app0Jfif(), scan));
+        assertThat(totalViolations()).isZero();
+    }
+
+    @Test
+    void jpeg_commentBetweenScans_isDropped() {
+        byte[] firstScan = {(byte) 0xFF, (byte) 0xDA, 0x00, 0x02, 0x12, 0x34};
+        byte[] secondScan = {(byte) 0xFF, (byte) 0xDA, 0x00, 0x02, 0x56, 0x78, (byte) 0xFF, (byte) 0xD9};
+        byte[] in = concat(SOI, app0Jfif(), firstScan, com("taken at home"), secondScan);
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(concat(SOI, app0Jfif(), firstScan, secondScan));
+    }
+
     // ---- PNG ----------------------------------------------------------------------------------
 
     @Test
@@ -193,6 +250,28 @@ class ImageUploadStripTest {
     }
 
     @Test
+    void png_bytesAfterIend_areDropped() {
+        byte[] image = png(ihdr(), idat(), iend());
+
+        ImageUpload out = ImageUpload.of(concat(image, GARBAGE)).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(image);
+        assertThat(violations("ImageUpload.withoutMetadata.trailer")).isEqualTo(1);
+    }
+
+    @Test
+    void png_textChunkRunningPastTheEnd_isDroppedWithEverythingAfterIt() {
+        byte[] text = text("Comment", "taken at home");
+        text[3] = (byte) 0x7F;  // the chunk now claims more data than the file holds
+        byte[] in = concat(png(ihdr(), idat()), text, iend());
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(png(ihdr(), idat()));
+        assertThat(violations("ImageUpload.withoutMetadata.wellFormed")).isEqualTo(1);
+    }
+
+    @Test
     void png_withoutMetadata_isUnchanged() {
         byte[] in = png(ihdr(), idat(), iend());
 
@@ -204,6 +283,7 @@ class ImageUploadStripTest {
     @Test
     void webp_dropsExifAndXmp_fixesRiffSizeAndVp8xFlags() {
         byte[] in = webp(true, true);
+        assertThat(riffChunks(in).get(0).payload()[0] & 0b1100).isEqualTo(0b1100);
 
         byte[] out = ImageUpload.of(in).withoutMetadata().bytes();
 
@@ -223,14 +303,31 @@ class ImageUploadStripTest {
 
     @Test
     void webp_oddLengthChunk_paddingHandled() {
-        byte[] in = webp(false, true);
-        // The XMP packet is odd in length, so its chunk, the last, ends in a padding byte.
-        assertThat(in.length % 2).isZero();
+        List<RiffChunk> plain = riffChunks(webp(false, false));
+        RiffChunk vp8x = plain.get(0);
+        RiffChunk vp8l = plain.get(1);
+        RiffChunk xmp = riffChunks(webp(false, true)).get(2);
+        assertThat(xmp.fourCc()).isEqualTo("XMP ");
+        assertThat(xmp.payload().length % 2).isOne();
+        byte[] flags = vp8x.payload().clone();
+        flags[0] |= 0x04;
+        // The padded XMP chunk sits between the header and the image, so the image must survive its removal.
+        byte[] in = riff(new RiffChunk("VP8X", flags), xmp, vp8l);
 
         byte[] out = ImageUpload.of(in).withoutMetadata().bytes();
 
+        assertThat(riffChunks(out)).containsExactly(vp8x, vp8l);
         assertThat(out).isEqualTo(webp(false, false));
-        assertThat(riffChunks(out)).extracting(RiffChunk::fourCc).containsExactly("VP8X", "VP8L");
+    }
+
+    @Test
+    void webp_bytesBeyondTheRiffSize_areDropped() {
+        byte[] image = webp(false, false);
+
+        ImageUpload out = ImageUpload.of(concat(image, GARBAGE)).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(image);
+        assertThat(violations("ImageUpload.withoutMetadata.trailer")).isEqualTo(1);
     }
 
     @Test
@@ -322,6 +419,29 @@ class ImageUploadStripTest {
             pos += 8 + size + (size & 1);
         }
         return chunks;
+    }
+
+    /** A WebP of {@code chunks} in order, each padded to even length, under a RIFF size that counts them. */
+    private static byte[] riff(RiffChunk... chunks) {
+        int body = 4;
+        for (RiffChunk chunk : chunks) body += 8 + chunk.payload().length + chunk.payload().length % 2;
+        ByteBuffer b = ByteBuffer.allocate(8 + body).order(ByteOrder.LITTLE_ENDIAN)
+                .put("RIFF".getBytes(StandardCharsets.US_ASCII)).putInt(body)
+                .put("WEBP".getBytes(StandardCharsets.US_ASCII));
+        for (RiffChunk chunk : chunks) {
+            b.put(chunk.fourCc().getBytes(StandardCharsets.US_ASCII)).putInt(chunk.payload().length)
+                    .put(chunk.payload());
+            if (chunk.payload().length % 2 == 1) b.put((byte) 0);
+        }
+        return b.array();
+    }
+
+    /** {@code segment} with its length field claiming far more than the bytes that follow. */
+    private static byte[] overrun(byte[] segment) {
+        byte[] out = segment.clone();
+        out[2] = (byte) 0x7F;
+        out[3] = (byte) 0xFF;
+        return out;
     }
 
     private static int riffSize(byte[] webp) {

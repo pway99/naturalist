@@ -2,6 +2,7 @@ package com.naturalist.observation.filesystem;
 
 import com.naturalist.data.FileName;
 import com.naturalist.ddd.EntityId;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
@@ -18,7 +19,8 @@ import java.util.Optional;
 
 /**
  * {@link ImageStore} over a directory root. {@code store} writes the upload, stripped of its
- * metadata, to {@code <root>/<space>/<uuidv7><ext>}; {@code read} looks there first and then
+ * metadata and refused when the strip leaves no image of the same kind, to
+ * {@code <root>/<space>/<uuidv7><ext>}; {@code read} looks there first and then
  * falls back to the classpath resource {@code <space>/images/<name>}, which is how seed photos
  * shipped inside a jar are served. Every filesystem call runs under the {@link #STRATEGY} timeout.
  */
@@ -40,13 +42,15 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public FileName store(String space, ImageUpload upload) {
-        observer.arguments("store", i -> i.notBlank(space, "space").valueObject(upload, "upload"))
-                .throwWhenInvalid();
+        MethodObserver m = observer.forMethod("store");
+        m.arguments(i -> i.notBlank(space, "space").valueObject(upload, "upload")).throwWhenInvalid();
+        ImageUpload stripped = upload.withoutMetadata();
+        m.arguments(i -> i.isTrue(stripped.isValid() && stripped.mediaType().equals(upload.mediaType()),
+                "strippedIsTheSameImage")).throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
         if (!directory.startsWith(root.normalize()) || directory.equals(root.normalize())) {
             throw new IllegalArgumentException("space escapes the store root: " + space);
         }
-        ImageUpload stripped = upload.withoutMetadata();
         String name = EntityId.newUUID() + stripped.extension();
         resilience.timeout(STRATEGY).execute(() -> {
             try {

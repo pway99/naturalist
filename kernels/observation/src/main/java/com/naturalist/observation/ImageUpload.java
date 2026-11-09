@@ -63,13 +63,17 @@ public record ImageUpload(byte[] bytes) implements ValueObject {
     /**
      * This upload with its metadata removed, so what is stored says nothing the picture does not:
      * a JPEG loses its Exif and XMP {@code APP1}, IPTC {@code APP13} and {@code COM} segments, a
-     * PNG its {@code eXIf} and text chunks, a WebP its {@code EXIF} and {@code XMP } chunks. The
-     * one tag kept is a JPEG's Exif orientation, written back alone, so the picture still stands
-     * the right way up. Everything a decoder reads is copied byte for byte; nothing is re-encoded.
-     * Stripping a stripped upload changes nothing. When the container is malformed, the blocks
-     * read before the fault are still removed, the rest is kept as it stands, and the fault is
-     * observed. Returns this upload when there was nothing to remove, and for bytes that are not
-     * a recognised image.
+     * PNG its {@code eXIf} and text chunks, a WebP its {@code EXIF} and {@code XMP } chunks, and
+     * every format loses whatever follows the image's terminator. The one tag kept is a JPEG's
+     * Exif orientation, written back alone, so the picture still stands the right way up.
+     * Everything a decoder reads is copied byte for byte; nothing is re-encoded. Stripping a
+     * stripped upload changes nothing.
+     *
+     * <p>When the container is malformed, the fault is observed: from a metadata block the walk
+     * broke on, the rest is dropped; from any other, it is kept as it stands. The result can
+     * therefore fail {@link #isValid()} when this upload was not really an image, and a caller
+     * that stores it validates it first. Returns this upload when there was nothing to remove,
+     * and for bytes that are not a recognised image.
      */
     public ImageUpload withoutMetadata() {
         if (mediaType() == null) return this;

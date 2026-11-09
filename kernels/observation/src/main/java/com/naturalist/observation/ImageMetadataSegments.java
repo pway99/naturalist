@@ -8,35 +8,43 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Finds the metadata blocks in an upload's container, reads the few Exif tags the app cares about,
- * and strips the rest. The Exif block is a TIFF structure wherever it lives: in a JPEG
- * {@code APP1} segment after the {@code Exif\0\0} header, in a PNG {@code eXIf} chunk, or in a
- * WebP {@code EXIF} chunk.
+ * Walks an upload's container block by block, reads the few Exif tags the app cares about, and
+ * strips the rest. The Exif block is a TIFF structure wherever it lives: in a JPEG {@code APP1}
+ * segment after the {@code Exif\0\0} header, in a PNG {@code eXIf} chunk, or in a WebP
+ * {@code EXIF} chunk. Reading and stripping share one walk, {@link Blocks}, so they never
+ * disagree about where a block starts, where it ends, or where the image does.
  *
  * <p>Every read is bounds-checked against the bytes actually present, so a truncated, corrupt or
- * hostile file never throws: a read comes back empty, a strip stops where the walk lost its
- * footing and copies the rest as it stands, and either is observed as a violation of
- * {@code wellFormed} through the caller's {@link MethodObserver}, so it is scoped to the
- * {@link ImageUpload} method a reader can open. An image that simply carries no Exif, or Exif
- * without the tag asked for, is empty and not observed.
+ * hostile file never throws. A read that loses its footing comes back empty; a strip keeps what
+ * it walked and decides about the rest by what the walk broke on (see {@link #withoutMetadata}).
+ * Either is observed as a violation of {@code wellFormed} through the caller's
+ * {@link MethodObserver}, so it is scoped to the {@link ImageUpload} method a reader can open. An
+ * image that simply carries no Exif, or Exif without the tag asked for, is empty and not
+ * observed.
  */
 final class ImageMetadataSegments {
 
     private static final Observer observer = Observer.forClass(ImageMetadataSegments.class);
 
-    private static final int APP0 = 0xE0;
+    private static final String APP0 = "FFE0";
 
-    private static final int APP1 = 0xE1;
+    private static final String APP1 = "FFE1";
 
-    private static final int APP13 = 0xED;
+    private static final String APP13 = "FFED";
 
-    private static final int COM = 0xFE;
+    private static final String COM = "FFFE";
 
-    private static final int SOS = 0xDA;
+    private static final String SOS = "FFDA";
+
+    private static final String EOI = "FFD9";
+
+    /** The entropy-coded data after a start-of-scan header, as one block. */
+    private static final String SCAN = "scan";
 
     private static final byte[] EXIF_HEADER = {'E', 'x', 'i', 'f', 0, 0};
 
@@ -47,12 +55,6 @@ final class ImageMetadataSegments {
     private static final byte[] WEBP = {'W', 'E', 'B', 'P'};
 
     private static final byte[] PNG_SIGNATURE = {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
-
-    /** The PNG chunks that carry Exif or free text: a place, a name, a caption, a timestamp. */
-    private static final Set<String> PNG_METADATA = Set.of("eXIf", "tEXt", "zTXt", "iTXt");
-
-    /** The WebP chunks that carry Exif or XMP. */
-    private static final Set<String> WEBP_METADATA = Set.of("EXIF", "XMP ");
 
     /** The {@code VP8X} flag bits that announce an {@code EXIF} (bit 3) and an {@code XMP } (bit 2) chunk. */
     private static final int VP8X_EXIF_AND_XMP = 0b1100;
@@ -71,21 +73,19 @@ final class ImageMetadataSegments {
     }
 
     /**
-     * The TIFF payload of the image's Exif block: a JPEG Exif {@code APP1}, a PNG {@code eXIf}
-     * chunk or a WebP {@code EXIF} chunk. Empty for any other format and for an image without one.
+     * The TIFF payload of the image's Exif block: a JPEG Exif {@code APP1} before the first scan,
+     * a PNG {@code eXIf} chunk or a WebP {@code EXIF} chunk. Empty for any other format and for an
+     * image without one.
      */
     static Optional<byte[]> exifTiff(byte[] image, MethodObserver m) {
-        try {
-            Bytes bytes = new Bytes(image == null ? new byte[0] : image, ByteOrder.BIG_ENDIAN);
-            if (bytes.startsWith(0, JPEG_SOI)) return jpegExif(bytes);
-            if (bytes.startsWith(0, PNG_SIGNATURE)) return pngExif(bytes);
-            if (bytes.startsWith(0, RIFF) && bytes.startsWith(8, WEBP)) {
-                return webpExif(bytes.withOrder(ByteOrder.LITTLE_ENDIAN));
-            }
-            return Optional.empty();
-        } catch (Malformed e) {
-            return malformed(m);
+        Blocks blocks = Blocks.of(image);
+        if (blocks == null) return Optional.empty();
+        for (Block block; (block = blocks.next()) != null; ) {
+            if (block.type().equals(SOS)) return Optional.empty();
+            Optional<byte[]> tiff = blocks.exif(block);
+            if (tiff.isPresent()) return tiff;
         }
+        return blocks.stop().broke() ? malformed(m) : Optional.empty();
     }
 
     /** The orientation tag ({@code 0x0112}) of IFD0, the value a viewer rotates the picture by. */
@@ -126,23 +126,91 @@ final class ImageMetadataSegments {
     }
 
     /**
-     * The image with its metadata blocks removed and everything else copied byte for byte: a JPEG
-     * loses every {@code APP1} (Exif and XMP), {@code APP13} (IPTC) and {@code COM}; a PNG its
-     * {@code eXIf}, {@code tEXt}, {@code zTXt} and {@code iTXt} chunks; a WebP its {@code EXIF} and
-     * {@code XMP } chunks, with the RIFF size and the {@code VP8X} flags brought into line. A JPEG
-     * keeps its Exif orientation, rewritten as {@link #orientationOnlyApp1}, so the picture still
-     * stands the right way up. Returns {@code image} itself when there was nothing to remove, and
-     * for any other format.
+     * The image with its metadata blocks removed and every other block copied byte for byte: a
+     * JPEG loses every {@code APP1} (Exif and XMP), {@code APP13} (IPTC) and {@code COM}, before
+     * the scan or after it; a PNG its {@code eXIf}, {@code tEXt}, {@code zTXt} and {@code iTXt}
+     * chunks; a WebP its {@code EXIF} and {@code XMP } chunks, with the RIFF size and the
+     * {@code VP8X} flags brought into line. A JPEG keeps its Exif orientation, rewritten as
+     * {@link #orientationOnlyApp1} after the {@code APP0} segments that open the file, or straight
+     * after {@code SOI} when none does; that is where a stripped image's own {@code APP1} sits, so
+     * stripping it again changes nothing.
+     *
+     * <p>The image ends at its terminator: JPEG {@code EOI}, PNG {@code IEND}, the WebP RIFF
+     * extent. Whatever follows, a phone's trailer or a motion photo's video, is dropped and
+     * observed as {@code trailer}. When the walk breaks on a block, it is observed as
+     * {@code wellFormed}; the rest of the image from that block on is dropped when the block is a
+     * metadata type and copied as it stands otherwise, since nothing says it is not image data.
+     * So a strip can leave bytes that no longer sniff as an image, when the input was not really
+     * one; the caller validates what comes back. Returns {@code image} itself when there was
+     * nothing to remove, and for any other format.
      */
     static byte[] withoutMetadata(byte[] image, MethodObserver m) {
-        if (image == null) return null;
-        Bytes bytes = new Bytes(image, ByteOrder.BIG_ENDIAN);
-        if (bytes.startsWith(0, JPEG_SOI)) return jpegWithoutMetadata(bytes, m);
-        if (bytes.startsWith(0, PNG_SIGNATURE)) return pngWithoutMetadata(bytes, m);
-        if (bytes.startsWith(0, RIFF) && bytes.startsWith(8, WEBP)) {
-            return webpWithoutMetadata(bytes.withOrder(ByteOrder.LITTLE_ENDIAN), m);
+        Blocks blocks = Blocks.of(image);
+        if (blocks == null) return image;
+        Format format = blocks.format();
+        byte[] window = blocks.image();
+        ByteArrayOutputStream leadingApp0 = new ByteArrayOutputStream();
+        ByteArrayOutputStream kept = new ByteArrayOutputStream(window.length);
+        boolean removed = false;
+        boolean exifSeen = false;
+        Optional<Integer> orientation = Optional.empty();
+        int flagsAt = -1;
+        for (Block block; (block = blocks.next()) != null; ) {
+            if (format.metadata().contains(block.type())) {
+                removed = true;
+                Optional<byte[]> tiff = format == Format.JPEG && !exifSeen ? blocks.exif(block) : Optional.empty();
+                if (tiff.isPresent()) {
+                    exifSeen = true;
+                    orientation = orientation(tiff.get(), m);
+                }
+                continue;
+            }
+            if (block.type().equals(APP0) && kept.size() == 0) {
+                block.copyTo(window, leadingApp0);
+                continue;
+            }
+            if (block.type().equals("VP8X") && block.payloadEnd() > block.payload()) flagsAt = kept.size() + 8;
+            block.copyTo(window, kept);
         }
-        return image;
+        boolean droppedRest = finish(blocks.stop(), window, image.length, format, kept, m);
+        if (!removed && !droppedRest) return image;
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream(window.length);
+        out.write(window, 0, (int) blocks.start());
+        out.writeBytes(leadingApp0.toByteArray());
+        orientation.filter(o -> o >= 2 && o <= 8).map(ImageMetadataSegments::orientationOnlyApp1)
+                .ifPresent(out::writeBytes);
+        int keptAt = out.size();
+        out.writeBytes(kept.toByteArray());
+        byte[] stripped = out.toByteArray();
+        if (format == Format.WEBP) {
+            if (flagsAt >= 0) stripped[keptAt + flagsAt] &= (byte) ~VP8X_EXIF_AND_XMP;
+            ByteBuffer.wrap(stripped).order(ByteOrder.LITTLE_ENDIAN).putInt(4, stripped.length - 8);
+        }
+        return stripped;
+    }
+
+    /**
+     * Settles what follows the last block a strip walked: the rest of a broken image (copied, or
+     * dropped when the walk broke on a metadata block) and any bytes past the image's end (always
+     * dropped). True when something was dropped.
+     */
+    private static boolean finish(Stop stop, byte[] window, int length, Format format,
+                                  ByteArrayOutputStream kept, MethodObserver m) {
+        boolean dropped = false;
+        int imageEnd = window.length;
+        if (stop.broke()) {
+            violation(m, "wellFormed");
+            if (stop.brokenOn() != null && format.metadata().contains(stop.brokenOn())) dropped = true;
+            else kept.write(window, (int) stop.at(), window.length - (int) stop.at());
+        } else {
+            imageEnd = (int) stop.at();
+        }
+        if (length > imageEnd) {
+            violation(m, "trailer");
+            dropped = true;
+        }
+        return dropped;
     }
 
     /**
@@ -155,7 +223,7 @@ final class ImageMetadataSegments {
                 .throwWhenInvalid();
         int tiffLength = 8 + 2 + 12 + 4;
         return ByteBuffer.allocate(4 + EXIF_HEADER.length + tiffLength).order(ByteOrder.BIG_ENDIAN)
-                .put((byte) 0xFF).put((byte) APP1).putShort((short) (2 + EXIF_HEADER.length + tiffLength))
+                .put((byte) 0xFF).put((byte) 0xE1).putShort((short) (2 + EXIF_HEADER.length + tiffLength))
                 .put(EXIF_HEADER)
                 .put((byte) 'M').put((byte) 'M').putShort((short) 42).putInt(8)
                 .putShort((short) 1)
@@ -167,193 +235,222 @@ final class ImageMetadataSegments {
 
     // ---- containers ---------------------------------------------------------------------------
 
+    /** The three containers, each with the block types that carry metadata. */
+    private enum Format {
+        JPEG(Set.of(APP1, APP13, COM)),
+        PNG(Set.of("eXIf", "tEXt", "zTXt", "iTXt")),
+        WEBP(Set.of("EXIF", "XMP "));
+
+        private final Set<String> metadata;
+
+        Format(Set<String> metadata) {
+            this.metadata = metadata;
+        }
+
+        Set<String> metadata() {
+            return metadata;
+        }
+    }
+
     /**
-     * Walks the segments from offset 2. Stops at start-of-scan, after which there is no more
-     * metadata; a marker that is not {@code FF xx}, a length below 2, a segment running past the
-     * array or bytes ending before start-of-scan are malformed.
+     * One block of a container: a JPEG segment (its type the marker, {@code FFE1}) or the
+     * entropy-coded data of a scan, a PNG chunk, a RIFF chunk. It spans {@code start} to
+     * {@code end}, header, CRC and padding included; its payload is {@code payload} to
+     * {@code payloadEnd}.
      */
-    private static Optional<byte[]> jpegExif(Bytes b) {
-        long pos = 2;
-        while (true) {
+    private record Block(String type, long start, long payload, long payloadEnd, long end) {
+
+        void copyTo(byte[] image, ByteArrayOutputStream out) {
+            out.write(image, (int) start, (int) (end - start));
+        }
+    }
+
+    /**
+     * Where a walk ended: at the end of the image ({@code at} is one past its terminator, or the
+     * end of the bytes), or broken at the block starting at {@code at}, whose type is
+     * {@code brokenOn} when the walk read that far, else {@code null}.
+     */
+    private record Stop(long at, boolean broke, String brokenOn) {
+    }
+
+    /**
+     * The blocks of one container in file order, as an iterator: {@link #next} hands out each block
+     * once it is known to lie within the bytes, and {@code null} when the walk has ended, after
+     * which {@link #stop} says how. The walk never throws.
+     *
+     * <ul>
+     *   <li>JPEG, from offset 2: length-bearing segments; after each start-of-scan header, the
+     *   entropy-coded data up to the next marker (stuffed {@code FF 00}, restart markers and fill
+     *   bytes are part of it) as one {@link #SCAN} block; {@code EOI} ends the image. A marker that
+     *   is not {@code FF xx}, a length below 2, a segment running past the bytes, or bytes ending
+     *   before {@code EOI} other than inside a scan break the walk.</li>
+     *   <li>PNG, after the signature: chunks (length, type, data, CRC) up to {@code IEND}, which
+     *   ends the image; bytes ending before it break the walk.</li>
+     *   <li>WebP, after the {@code WEBP} form type: chunks (four-character code, size, payload, a
+     *   padding byte after an odd payload) to the RIFF extent, {@code 8 +} the RIFF size, which is
+     *   where the image ends.</li>
+     * </ul>
+     */
+    private static final class Blocks {
+
+        private final Format format;
+
+        private final Bytes b;
+
+        private final long start;
+
+        private long pos;
+
+        private boolean inScan;
+
+        private String pending;
+
+        private Stop stop;
+
+        private Blocks(Format format, Bytes b, long start) {
+            this.format = format;
+            this.b = b;
+            this.start = start;
+            this.pos = start;
+        }
+
+        /** The walk over {@code image}, or {@code null} when it is not a JPEG, PNG or WebP. */
+        static Blocks of(byte[] image) {
+            Bytes bytes = new Bytes(image == null ? new byte[0] : image, ByteOrder.BIG_ENDIAN);
+            if (bytes.startsWith(0, JPEG_SOI)) return new Blocks(Format.JPEG, bytes, JPEG_SOI.length);
+            if (bytes.startsWith(0, PNG_SIGNATURE)) return new Blocks(Format.PNG, bytes, PNG_SIGNATURE.length);
+            if (bytes.startsWith(0, RIFF) && bytes.startsWith(8, WEBP)) {
+                Bytes le = bytes.withOrder(ByteOrder.LITTLE_ENDIAN);
+                long extent = Math.max(12, Math.min(8 + le.u32(4), image.length));
+                byte[] riff = extent < image.length ? Arrays.copyOf(image, (int) extent) : image;
+                return new Blocks(Format.WEBP, new Bytes(riff, ByteOrder.LITTLE_ENDIAN), 12);
+            }
+            return null;
+        }
+
+        Format format() {
+            return format;
+        }
+
+        /** The bytes the walk covers: the whole upload, or a WebP's RIFF extent. */
+        byte[] image() {
+            return b.data();
+        }
+
+        /** Where the first block starts: after {@code SOI}, the PNG signature or the RIFF header. */
+        long start() {
+            return start;
+        }
+
+        Stop stop() {
+            return stop;
+        }
+
+        Block next() {
+            if (stop != null) return null;
+            try {
+                return switch (format) {
+                    case JPEG -> nextJpeg();
+                    case PNG -> nextPng();
+                    case WEBP -> nextWebp();
+                };
+            } catch (Malformed e) {
+                stop = new Stop(pos, true, pending);
+                return null;
+            }
+        }
+
+        /**
+         * The TIFF block {@code block} carries, when it is the format's Exif block: an
+         * {@code APP1} opening with {@code Exif\0\0}, an {@code eXIf} or an {@code EXIF} chunk.
+         * Neither of the last two calls for the JPEG header, but some writers repeat it there; it
+         * is skipped.
+         */
+        Optional<byte[]> exif(Block block) {
+            boolean headed = block.payloadEnd() - block.payload() >= EXIF_HEADER.length
+                    && b.startsWith(block.payload(), EXIF_HEADER);
+            long from = headed ? block.payload() + EXIF_HEADER.length : block.payload();
+            boolean exif = switch (format) {
+                case JPEG -> block.type().equals(APP1) && headed;
+                case PNG -> block.type().equals("eXIf");
+                case WEBP -> block.type().equals("EXIF");
+            };
+            return exif ? Optional.of(b.slice(from, block.payloadEnd())) : Optional.empty();
+        }
+
+        private Block nextJpeg() {
+            if (inScan) {
+                inScan = false;
+                Block scan = bare(SCAN, scanEnd(pos));
+                if (scan.end() == b.data().length) stop = new Stop(scan.end(), false, null);
+                return scan;
+            }
+            pending = null;
             if (b.u8(pos) != 0xFF) throw new Malformed();
-            int marker = b.u8(pos + 1);
-            if (marker == SOS) return Optional.empty();
+            pending = String.format("FF%02X", b.u8(pos + 1));
+            if (pending.equals(EOI)) {
+                Block eoi = bare(EOI, pos + 2);
+                stop = new Stop(eoi.end(), false, null);
+                return eoi;
+            }
             int length = b.u16(pos + 2);
             if (length < 2) throw new Malformed();
-            long payload = pos + 4;
-            long end = pos + 2 + length;
-            b.require(payload, length - 2);
-            if (marker == APP1 && isExif(b, payload, end)) {
-                return Optional.of(b.slice(payload + EXIF_HEADER.length, end));
-            }
-            pos = end;
+            b.require(pos + 4, length - 2);
+            Block segment = new Block(pending, pos, pos + 4, pos + 2 + length, pos + 2 + length);
+            pos = segment.end();
+            inScan = pending.equals(SOS);
+            return segment;
         }
-    }
 
-    /**
-     * The JPEG walk of {@link #jpegExif}, copying the segments it keeps. The orientation of the
-     * first Exif {@code APP1}, when it is anything but the default 1, goes back in as
-     * {@link #orientationOnlyApp1} after the {@code APP0} segments that open the file, or straight
-     * after {@code SOI} when none does; that is where the stripped image's own {@code APP1} sits,
-     * so stripping it again changes nothing. From start-of-scan, or from wherever the walk found
-     * the bytes malformed, the rest is copied as it stands.
-     */
-    private static byte[] jpegWithoutMetadata(Bytes b, MethodObserver m) {
-        byte[] image = b.data();
-        ByteArrayOutputStream leadingApp0 = new ByteArrayOutputStream();
-        ByteArrayOutputStream kept = new ByteArrayOutputStream();
-        boolean removed = false;
-        boolean exifSeen = false;
-        Optional<Integer> orientation = Optional.empty();
-        long pos = 2;
-        try {
-            while (true) {
-                if (b.u8(pos) != 0xFF) throw new Malformed();
-                int marker = b.u8(pos + 1);
-                if (marker == SOS) break;
-                int length = b.u16(pos + 2);
-                if (length < 2) throw new Malformed();
-                long payload = pos + 4;
-                long end = pos + 2 + length;
-                b.require(payload, length - 2);
-                if (marker == APP1 || marker == APP13 || marker == COM) {
-                    removed = true;
-                    if (marker == APP1 && !exifSeen && isExif(b, payload, end)) {
-                        exifSeen = true;
-                        orientation = orientation(b.slice(payload + EXIF_HEADER.length, end), m);
-                    }
-                } else if (marker == APP0 && kept.size() == 0) {
-                    leadingApp0.write(image, (int) pos, length + 2);
-                } else {
-                    kept.write(image, (int) pos, length + 2);
+        /** The end of the entropy-coded data from {@code from}: the next marker, or the end of the bytes. */
+        private long scanEnd(long from) {
+            byte[] d = b.data();
+            long i = from;
+            while (i + 1 < d.length) {
+                if ((d[(int) i] & 0xFF) != 0xFF) {
+                    i++;
+                    continue;
                 }
-                pos = end;
+                int next = d[(int) i + 1] & 0xFF;
+                if (next == 0x00 || (next >= 0xD0 && next <= 0xD7)) i += 2;
+                else if (next == 0xFF) i++;
+                else return i;
             }
-        } catch (Malformed e) {
-            malformed(m);
+            return d.length;
         }
-        if (!removed) return image;
-        ByteArrayOutputStream out = new ByteArrayOutputStream(image.length);
-        out.write(image, 0, JPEG_SOI.length);
-        out.writeBytes(leadingApp0.toByteArray());
-        orientation.filter(o -> o >= 2 && o <= 8).map(ImageMetadataSegments::orientationOnlyApp1)
-                .ifPresent(out::writeBytes);
-        out.writeBytes(kept.toByteArray());
-        out.write(image, (int) pos, image.length - (int) pos);
-        return out.toByteArray();
-    }
 
-    /** Walks the chunks after the signature (length, type, data, CRC) up to {@code IEND}. */
-    private static Optional<byte[]> pngExif(Bytes b) {
-        long pos = PNG_SIGNATURE.length;
-        while (true) {
+        private Block nextPng() {
+            pending = null;
             long length = b.u32(pos);
-            String type = b.ascii(pos + 4, 4);
-            long data = pos + 8;
-            b.require(data, length + 4);
-            if (type.equals("eXIf")) return Optional.of(exifPayload(b, data, data + length));
-            if (type.equals("IEND")) return Optional.empty();
-            pos = data + length + 4;
+            pending = b.ascii(pos + 4, 4);
+            b.require(pos + 8, length + 4);
+            Block chunk = new Block(pending, pos, pos + 8, pos + 8 + length, pos + 8 + length + 4);
+            pos = chunk.end();
+            if (pending.equals("IEND")) stop = new Stop(chunk.end(), false, null);
+            return chunk;
         }
-    }
 
-    /**
-     * The PNG walk of {@link #pngExif}, copying every chunk it keeps whole, CRC and all; after
-     * {@code IEND}, or from wherever the walk found the bytes malformed, the rest is copied as it
-     * stands.
-     */
-    private static byte[] pngWithoutMetadata(Bytes b, MethodObserver m) {
-        byte[] image = b.data();
-        ByteArrayOutputStream out = new ByteArrayOutputStream(image.length);
-        out.write(image, 0, PNG_SIGNATURE.length);
-        boolean removed = false;
-        long pos = PNG_SIGNATURE.length;
-        try {
-            while (true) {
-                long length = b.u32(pos);
-                String type = b.ascii(pos + 4, 4);
-                b.require(pos + 8, length + 4);
-                long end = pos + 8 + length + 4;
-                if (PNG_METADATA.contains(type)) removed = true;
-                else out.write(image, (int) pos, (int) (end - pos));
-                pos = end;
-                if (type.equals("IEND")) break;
+        private Block nextWebp() {
+            if (pos >= b.data().length) {
+                stop = new Stop(pos, false, null);
+                return null;
             }
-        } catch (Malformed e) {
-            malformed(m);
-        }
-        if (!removed) return image;
-        out.write(image, (int) pos, image.length - (int) pos);
-        return out.toByteArray();
-    }
-
-    /**
-     * Walks the RIFF chunks after the {@code WEBP} form type (four-character code, size, payload,
-     * a padding byte after an odd payload) to the end of the bytes.
-     */
-    private static Optional<byte[]> webpExif(Bytes b) {
-        long pos = 12;
-        while (pos < b.data().length) {
-            String fourCc = b.ascii(pos, 4);
+            pending = null;  // until the type is read, a break is on no known type
+            pending = b.ascii(pos, 4);
             long size = b.u32(pos + 4);
-            long payload = pos + 8;
-            b.require(payload, size);
-            if (fourCc.equals("EXIF")) return Optional.of(exifPayload(b, payload, payload + size));
-            pos = payload + size + (size & 1);
+            b.require(pos + 8, size);
+            long end = Math.min(pos + 8 + size + (size & 1), b.data().length);
+            Block chunk = new Block(pending, pos, pos + 8, pos + 8 + size, end);
+            pos = end;
+            return chunk;
         }
-        return Optional.empty();
-    }
 
-    /**
-     * The WebP walk of {@link #webpExif}, copying every chunk it keeps with its padding byte; from
-     * wherever the walk found the bytes malformed, the rest is copied as it stands. When a chunk
-     * went, the RIFF size is set to what remains, and the {@code VP8X} flags stop announcing Exif
-     * and XMP.
-     */
-    private static byte[] webpWithoutMetadata(Bytes b, MethodObserver m) {
-        byte[] image = b.data();
-        ByteArrayOutputStream out = new ByteArrayOutputStream(image.length);
-        out.write(image, 0, 12);
-        boolean removed = false;
-        int flagsAt = -1;
-        long pos = 12;
-        try {
-            while (pos < image.length) {
-                String fourCc = b.ascii(pos, 4);
-                long size = b.u32(pos + 4);
-                long payload = pos + 8;
-                b.require(payload, size);
-                long end = Math.min(payload + size + (size & 1), image.length);
-                if (WEBP_METADATA.contains(fourCc)) {
-                    removed = true;
-                } else {
-                    if (fourCc.equals("VP8X") && size > 0) flagsAt = out.size() + 8;
-                    out.write(image, (int) pos, (int) (end - pos));
-                }
-                pos = end;
-            }
-        } catch (Malformed e) {
-            malformed(m);
+        /** A block without a length field, from here to {@code end}: a bare marker or a scan's data. */
+        private Block bare(String type, long end) {
+            Block block = new Block(type, pos, pos, end, end);
+            pos = end;
+            return block;
         }
-        if (!removed) return image;
-        out.write(image, (int) pos, image.length - (int) pos);
-        byte[] stripped = out.toByteArray();
-        if (flagsAt >= 0) stripped[flagsAt] &= (byte) ~VP8X_EXIF_AND_XMP;
-        ByteBuffer.wrap(stripped).order(ByteOrder.LITTLE_ENDIAN).putInt(4, stripped.length - 8);
-        return stripped;
-    }
-
-    /** True when the block from {@code from} to {@code to} opens with {@code Exif\0\0}. */
-    private static boolean isExif(Bytes b, long from, long to) {
-        return to - from >= EXIF_HEADER.length && b.startsWith(from, EXIF_HEADER);
-    }
-
-    /**
-     * The TIFF block in a PNG {@code eXIf} or WebP {@code EXIF} payload. Neither format calls for
-     * the JPEG {@code Exif\0\0} header, but some writers repeat it there; it is skipped.
-     */
-    private static byte[] exifPayload(Bytes b, long from, long to) {
-        return b.slice(isExif(b, from, to) ? from + EXIF_HEADER.length : from, to);
     }
 
     // ---- TIFF ---------------------------------------------------------------------------------
@@ -404,8 +501,12 @@ final class ImageMetadataSegments {
     }
 
     private static <T> Optional<T> malformed(MethodObserver m) {
-        m.state(c -> c.isTrue(false, "wellFormed")).observe(Level.INFO);
+        violation(m, "wellFormed");
         return Optional.empty();
+    }
+
+    private static void violation(MethodObserver m, String name) {
+        m.state(c -> c.isTrue(false, name)).observe(Level.INFO);
     }
 
     // ---- reading ------------------------------------------------------------------------------
