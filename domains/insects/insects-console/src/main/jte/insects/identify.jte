@@ -4,6 +4,7 @@
 @param String identified = null
 @param String limit = null
 @param boolean imageError = false
+@param boolean areaError = false
 
 !{var csrfName = _csrf != null ? _csrf.getParameterName() : "";}
 !{var csrfValue = _csrf != null ? _csrf.getToken() : "";}
@@ -33,6 +34,9 @@
             @endif
             @if(imageError)
                 <p class="error">That file is not a JPEG, PNG or WebP photo under 20 MB.</p>
+            @endif
+            @if(areaError)
+                <p class="error">The area could not be read; the photo was not added.</p>
             @endif
             <p>Upload a photo and Claude will suggest an identification.
                You can verify the result against authoritative references.</p>

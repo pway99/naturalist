@@ -151,7 +151,7 @@ class InsectsControllerBusyTest {
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
         var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
-        assertThat(controller().identify(image, null, null, null, request))
+        assertThat(controller().identify(image, null, null, null, null, null, request))
                 .isEqualTo("redirect:/insects/identify?limit=BUSY");
     }
 }

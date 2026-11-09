@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 
@@ -404,6 +405,9 @@ public class InsectsController {
         if ("image".equals(error)) {
             model.addAttribute("imageError", true);
         }
+        if ("area".equals(error)) {
+            model.addAttribute("areaError", true);
+        }
         return "insects/identify";
     }
 
@@ -412,6 +416,8 @@ public class InsectsController {
                     @RequestParam(name = "location", required = false) String location,
                     @RequestParam(name = "capturedAt", required = false) String capturedAt,
                     @RequestParam(name = "notes", required = false) String notes,
+                    @RequestParam(name = "areaLat", required = false) String areaLat,
+                    @RequestParam(name = "areaLon", required = false) String areaLon,
                     HttpServletRequest request) throws IOException {
         var me = currentNaturalist(request);
         if (me.isEmpty()) {
@@ -430,11 +436,22 @@ public class InsectsController {
             return "redirect:/insects/identify?error=image";
         }
 
+        GridCell area;
+        try {
+            area = postedArea(areaLat, areaLon).orElse(null);
+        } catch (IllegalArgumentException unreadable) {
+            return "redirect:/insects/identify?error=area";
+        }
+        if (area != null && !area.isValid()) {
+            // A claimed cell outside the lattice -- nothing is stored.
+            return "redirect:/insects/identify?error=area";
+        }
+
         try {
             var rankName = insectCommand.identification().identify(
                     upload,
                     new com.naturalist.vision.ImageMetadata(location, capturedInstant),
-                    me.get(), notes, null);
+                    me.get(), notes, area);
             return "redirect:/insects/" + rankName.value();
         } catch (com.naturalist.identification.IdentificationRefused refused) {
             // The rate gate and the budget both live behind insectCommand.identification()
@@ -594,6 +611,9 @@ public class InsectsController {
         if ("image".equals(error)) {
             model.addAttribute("imageError", true);
         }
+        if ("area".equals(error)) {
+            model.addAttribute("areaError", true);
+        }
         model.addAttribute("page", rankPage.get());
         model.addAttribute("lens", collectionLensOn(request) && viewer.isPresent());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -634,6 +654,8 @@ public class InsectsController {
                     @RequestParam("image") MultipartFile imageFile,
                     @RequestParam(name = "location", required = false) String location,
                     @RequestParam(name = "notes", required = false) String notes,
+                    @RequestParam(name = "areaLat", required = false) String areaLat,
+                    @RequestParam(name = "areaLon", required = false) String areaLon,
                     HttpServletRequest request) throws IOException {
         var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
@@ -641,8 +663,40 @@ public class InsectsController {
         if (!upload.isValid()) {
             return "redirect:/insects/" + name + "?error=image";
         }
-        insectCommand.photos().add(species, upload, me.orElse(null), notes, location, null);
+        GridCell area;
+        try {
+            area = postedArea(areaLat, areaLon).orElse(null);
+        } catch (IllegalArgumentException unreadable) {
+            return "redirect:/insects/" + name + "?error=area";
+        }
+        if (area != null && !area.isValid()) {
+            // A claimed cell outside the lattice -- nothing is stored.
+            return "redirect:/insects/" + name + "?error=area";
+        }
+        insectCommand.photos().add(species, upload, me.orElse(null), notes, location, area);
         return "redirect:/insects/" + name;
+    }
+
+    /**
+     * Translates the posted {@code areaLat}/{@code areaLon} form fields into the cell the client
+     * derived on the device. Neither posted (or both blank) is no claim -- the command then derives
+     * the area from the photo; both posted is a claim, which the caller must still check for
+     * validity. Translation only: this never reads the photo and holds no rule about which source
+     * wins.
+     *
+     * @throws IllegalArgumentException when only one of the two is posted, or either is not an integer
+     */
+    private static java.util.Optional<GridCell> postedArea(@Nullable String areaLat, @Nullable String areaLon) {
+        boolean noLat = areaLat == null || areaLat.isBlank();
+        boolean noLon = areaLon == null || areaLon.isBlank();
+        if (noLat && noLon) {
+            return java.util.Optional.empty();
+        }
+        if (noLat || noLon) {
+            throw new IllegalArgumentException("a posted area needs both areaLat and areaLon");
+        }
+        return java.util.Optional.of(GridCell.of(
+                Integer.parseInt(areaLat.trim()), Integer.parseInt(areaLon.trim())));
     }
 
     @PostMapping("/{name}/notes")
