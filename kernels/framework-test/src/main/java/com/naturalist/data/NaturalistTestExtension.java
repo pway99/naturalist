@@ -1,7 +1,7 @@
 package com.naturalist.data;
 
 import com.naturalist.test.context.Fake;
-import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.TestGraph;
 import com.naturalist.test.context.TestContext;
 import com.naturalist.test.context.TestGraphException;
 import com.naturalist.test.context.Wired;
@@ -33,7 +33,7 @@ import java.util.List;
  * and carries no JUnit coupling.
  *
  * <p>It is also the access point for anything under test in a {@code *-core} module:
- * {@link #get} hands out one wired, traced instance per type from an {@link ObjectGraph} built
+ * {@link #get} hands out one wired, traced instance per type from an {@link TestGraph} built
  * under the registered {@link TestContext}s, and before each test every {@link Fake} field is
  * handed to the context of the test's own package and every {@link Wired} field is filled.
  * A fake stays in the graph's memory; one for a domain service fails as it is handed over.
@@ -42,7 +42,7 @@ public class NaturalistTestExtension extends NaturalistDatabase
         implements BeforeEachCallback, AfterEachCallback {
 
     /** This test's object graph, created on first use and dropped before each test. */
-    private ObjectGraph graph;
+    private TestGraph graph;
 
     private NaturalistTestExtension() {
         super();
@@ -82,9 +82,9 @@ public class NaturalistTestExtension extends NaturalistDatabase
         return graph().context(type);
     }
 
-    private ObjectGraph graph() {
+    private TestGraph graph() {
         if (graph == null) {
-            graph = ObjectGraph.create(this).requestedFrom(testPackage);
+            graph = TestGraph.create(this).requestedFrom(testPackage);
         }
         return graph;
     }

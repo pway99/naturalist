@@ -5,11 +5,11 @@ import com.naturalist.plants.cultivar.CultivarQuery;
 import com.naturalist.plants.heritage.SeedLineageQuery;
 import com.naturalist.plants.management.PlantProgramQuery;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
-import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.TestGraph;
 
 /**
  * Pre-wired, in-memory read surface for the plants bounded context, for other modules' tests and
- * external adapters. A facade over one {@link ObjectGraph} per {@link #create} call: the wiring lives
+ * external adapters. A facade over one {@link TestGraph} per {@link #create} call: the wiring lives
  * once, in plants-core's {@code PlantsTestContextInternal} and its sub-context siblings (cultivar,
  * heritage, management, phytochemistry, catalog) plus the graph's reflection over the
  * {@code @DomainService} and {@code @MockDomainService} classes. Each accessor returns what the graph
@@ -24,10 +24,10 @@ import com.naturalist.test.context.ObjectGraph;
  */
 public class PlantsTestContext {
 
-    private final ObjectGraph graph;
+    private final TestGraph graph;
 
     private PlantsTestContext(NaturalistDatabase db) {
-        this.graph = ObjectGraph.create(db);
+        this.graph = TestGraph.create(db);
     }
 
     public static PlantsTestContext create(NaturalistDatabase db) {

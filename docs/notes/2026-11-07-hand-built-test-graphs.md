@@ -88,7 +88,7 @@ fields:
   impls and mocks.
 
 The `plants-test-context` facades (`PlantsTestContext` and the four sub-context `*TestContext` factories)
-keep their public API and are now facades over `ObjectGraph.create(db)`.
+keep their public API and are now facades over `TestGraph.create(db)`.
 
 What is still hand-built in plants-core: the five constructor null-rejection tests (four in
 `PlantsCatalogContributionTest`, one in `PlantsCompoundReferencesTest`). The newly traced graph found no
@@ -115,7 +115,7 @@ the command from `nte.get` (a `@Wired` command would be built before the test co
 proves a non-entitled naturalist is still refused under the same zero cap.
 
 The `usage-test-context` facade `UsagesTestContext` keeps `create(db, warningPercent, clock)` and its three
-accessors, and is now a facade over `ObjectGraph.create(db)`: it sets the warning percent on the context and
+accessors, and is now a facade over `TestGraph.create(db)`: it sets the warning percent on the context and
 hands the caller's clock over as the graph's `Clock` fake. `identificationBudget()` is now traced too.
 
 What remains: `EntitlementLookup` lives in `com.naturalist.usage`, which has a context, so a test cannot
@@ -141,7 +141,7 @@ sub-queries, and the trace hands those instances back as they are.
 
 The `chemistry-test-context` facades (`ChemistryTestContext` and the `CompoundTestContext`,
 `ElementTestContext` and `ProductTestContext` factories) keep their public API and are now facades over
-`ObjectGraph.create(db)`. Plants needed no change: it reaches chemistry only through the `CompoundName`
+`TestGraph.create(db)`. Plants needed no change: it reaches chemistry only through the `CompoundName`
 identifier.
 
 What is still hand-built: seven constructor null-rejection tests (three in `ChemistryCatalogContributionTest`,
@@ -161,7 +161,7 @@ nothing else used them. Five test classes moved to `@Wired` fields: `FglOptimumG
 `observation/LabAnalysisInfoQueryImplTest`.
 
 `SoilTestContext` keeps `create(db)`, `soilProfileQuery()` and `soilProfileInfoQuery()` and is now a facade
-over `ObjectGraph.create(db)`. Nothing in soil-core is hand-built any more. The newly traced graph found no
+over `TestGraph.create(db)`. Nothing in soil-core is hand-built any more. The newly traced graph found no
 N+1 (the factory's per-analysis fan-out was already batched), and no fixture data broke an invariant.
 
 ## Garden (converted 2026-11-07)
@@ -170,7 +170,7 @@ garden-core now has one registered context, `GardenTestContextInternal`, rewritt
 of that name, with no provisions: `PlantingQueryImpl`, `PlantedZoneFactory` and `PlantedZoneQueryImpl` are all
 `@DomainService` in production. `PlantedZoneFactoryTest` takes its `PlantedZoneQuery` as a `@Wired` field.
 `GardenTestContext` keeps `create(db)`, `plantingQuery()` and `plantedZoneQuery()` and is now a facade over
-`ObjectGraph.create(db)`. Nothing in garden-core is hand-built. No N+1, no invariant failure.
+`TestGraph.create(db)`. Nothing in garden-core is hand-built. No N+1, no invariant failure.
 
 ## Accounts (converted 2026-11-07)
 

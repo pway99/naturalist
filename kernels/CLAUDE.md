@@ -74,7 +74,7 @@ Commands alike; `<domain>-core` is what it watches, and rdbms adapters are not t
 hand out traced objects, so a test may loop over their commands and queries.
 
 The `com.naturalist.test.context` package builds those contexts: `TestContext`, `Provisions`,
-`ObjectGraph`, `PackageScan`, and the `@Wired` / `@Fake` field annotations that
+`TestGraph`, `PackageScan`, and the `@Wired` / `@Fake` field annotations that
 `NaturalistTestExtension` fills before each test (`get` and `context` serve per-method fakes). Ports are
 handed out as `SelectTrace` JDK proxies, non-final classes the graph builds through a constructor as ByteBuddy
 `SelectTrace.Traced` subclasses.

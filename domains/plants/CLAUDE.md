@@ -234,7 +234,7 @@ fields from `NaturalistTestExtension` (`domains/CLAUDE.md`, "Dynamic test contex
 shipped in its test-jar. Only `PlantsTestContextInternal` declares a provision: `PlantFactory`, which is no
 `@DomainService` (production builds it inside `PlantQueryImpl`), over the graph's real queries. The
 `plants-test-context` facades (`PlantsTestContext` and the four sub-context `<Entity>TestContext` factories)
-keep their public API and are thin layers over `ObjectGraph.create(db)`; the sub-context factories stay
+keep their public API and are thin layers over `TestGraph.create(db)`; the sub-context factories stay
 in their packages only so consumers keep compiling, not to reach package-private classes.
 
 ## Domain-specific invariants

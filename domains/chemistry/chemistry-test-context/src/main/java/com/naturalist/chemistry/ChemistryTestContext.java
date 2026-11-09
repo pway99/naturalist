@@ -4,11 +4,11 @@ import com.naturalist.chemistry.compound.CompoundQuery;
 import com.naturalist.chemistry.element.ElementQuery;
 import com.naturalist.chemistry.product.ProductQuery;
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.TestGraph;
 
 /**
  * Pre-wired, in-memory read surface for the chemistry bounded context, for other modules' tests and
- * console slices. A facade over one {@link ObjectGraph} per {@link #create} call: the wiring lives once,
+ * console slices. A facade over one {@link TestGraph} per {@link #create} call: the wiring lives once,
  * in chemistry-core's {@code *TestContextInternal} classes (compound, element, product, catalog) plus the
  * graph's reflection over the {@code @DomainService} and {@code @MockDomainService} classes. Each accessor
  * returns what the graph builds, already traced.
@@ -23,10 +23,10 @@ import com.naturalist.test.context.ObjectGraph;
  */
 public class ChemistryTestContext {
 
-    private final ObjectGraph graph;
+    private final TestGraph graph;
 
     private ChemistryTestContext(NaturalistDatabase db) {
-        this.graph = ObjectGraph.create(db);
+        this.graph = TestGraph.create(db);
     }
 
     public static ChemistryTestContext create(NaturalistDatabase db) {

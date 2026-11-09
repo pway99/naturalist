@@ -9,13 +9,13 @@ import java.util.function.Function;
  * what it asks for resolves under that context's own provisions first.
  */
 public final class Provisions {
-    private final Map<Class<?>, Function<ObjectGraph, ?>> factories = new LinkedHashMap<>();
+    private final Map<Class<?>, Function<TestGraph, ?>> factories = new LinkedHashMap<>();
 
     Provisions() {
     }
 
     /** Builds {@code type} with {@code factory}, once per graph, instead of by reflection. */
-    public <T> void provide(Class<T> type, Function<ObjectGraph, T> factory) {
+    public <T> void provide(Class<T> type, Function<TestGraph, T> factory) {
         if (type == null || factory == null) {
             throw new TestGraphException("provide needs a type and a factory");
         }
@@ -25,7 +25,7 @@ public final class Provisions {
     }
 
     /** The factory for {@code type}, or null when this context leaves it to reflection. */
-    Function<ObjectGraph, ?> factory(Class<?> type) {
+    Function<TestGraph, ?> factory(Class<?> type) {
         return factories.get(type);
     }
 }

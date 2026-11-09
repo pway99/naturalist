@@ -6,7 +6,7 @@
 reflection under the guidance of each package's test context; insects and library are converted as the pilot.
 
 **Architecture:** `kernels/framework-test` gains `com.naturalist.test.context`: a `TestContext` base, an
-`ObjectGraph` that resolves types by the design's resolution order, a package-only scan for `@DomainService` /
+`TestGraph` that resolves types by the design's resolution order, a package-only scan for `@DomainService` /
 `@MockDomainService`, and tracing of everything it builds (JDK proxies for ports, ByteBuddy subclasses for concrete
 classes). Each package's one context lives in `<domain>-core/src/test` and ships to other modules in the core's
 test-jar; `<domain>-test-context` keeps its public API as a thin facade over the graph for Spring adapter tests.
@@ -50,7 +50,7 @@ test-jar; `<domain>-test-context` keeps its public API as a thin facade over the
 
 **Files:**
 - Create in `kernels/framework-test/src/main/java/com/naturalist/test/context/`: `TestContext.java`,
-  `Provisions.java`, `ObjectGraph.java`, `PackageScan.java`, `TestGraphException.java`, `RegisteredFake.java`,
+  `Provisions.java`, `TestGraph.java`, `PackageScan.java`, `TestGraphException.java`, `RegisteredFake.java`,
   `Wired.java`, `Fake.java`
 - Modify: `kernels/framework-test/src/main/java/com/naturalist/data/NaturalistTestExtension.java`
 - Modify: `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectTrace.java` (`invoke`)
@@ -66,8 +66,8 @@ test-jar; `<domain>-test-context` keeps its public API as a thin facade over the
     (default empty), `public final <T> void fake(Class<T> type, T fake)`. Its package is
     `getClass().getPackageName()`. Discovered with `ServiceLoader.load(TestContext.class)`; needs a public no-arg
     constructor.
-  - `public final class Provisions` with `public <T> void provide(Class<T> type, Function<ObjectGraph, T> factory)`.
-  - `public final class ObjectGraph` with `public static ObjectGraph create(NaturalistDatabase db)`,
+  - `public final class Provisions` with `public <T> void provide(Class<T> type, Function<TestGraph, T> factory)`.
+  - `public final class TestGraph` with `public static TestGraph create(NaturalistDatabase db)`,
     `public <T> T get(Class<T> type)`, `public <C extends TestContext> C context(Class<C> type)`,
     `public List<RegisteredFake> fakes()`.
   - `public record RegisteredFake(String context, Class<?> type, Class<?> fakeClass)`.
@@ -83,7 +83,7 @@ test-jar; `<domain>-test-context` keeps its public API as a thin facade over the
   with `Class.forName(name, false, loader)`. Keep classes annotated `com.naturalist.infrastructure.DomainService` or
   `com.naturalist.data.MockDomainService`. Cache per package in a static `ConcurrentHashMap`.
 
-- [ ] **Step 2: Implement `ObjectGraph.get` with this resolution order** for type `T` requested by context `R`.
+- [ ] **Step 2: Implement `TestGraph.get` with this resolution order** for type `T` requested by context `R`.
   The test itself has no `R`.
   1. A fake for `T` → that fake.
   2. `R`'s provisions contain `T` → build once, cache by `(R, T)`.
@@ -106,7 +106,7 @@ test-jar; `<domain>-test-context` keeps its public API as a thin facade over the
   throws `TestGraphException("<T> was already built; hand the fake over before the first get")`. Every fake is
   recorded as a `RegisteredFake`.
 
-- [ ] **Step 3: Extension.** Add `get` and `context`, delegating to a lazily created `ObjectGraph.create(this)`.
+- [ ] **Step 3: Extension.** Add `get` and `context`, delegating to a lazily created `TestGraph.create(this)`.
   In `afterEach`, before `SelectTrace.evaluate`, append one line per `graph.fakes()` entry to
   `target/test-context-fakes.txt`, creating the file if needed:
   `<TestClass>#<method>\t<context simple name>\t<type FQN>\t<fake class FQN>`.
@@ -211,7 +211,7 @@ test-jar; `<domain>-test-context` keeps its public API as a thin facade over the
 - Modify: root `pom.xml`: the `byte-buddy.version` property and its `dependencyManagement` entry
 - Modify: `kernels/framework-test/pom.xml`: a compile dependency on `net.bytebuddy:byte-buddy`
 - Modify: `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/SelectTrace.java`
-- Modify: `kernels/framework-test/src/main/java/com/naturalist/test/context/ObjectGraph.java`
+- Modify: `kernels/framework-test/src/main/java/com/naturalist/test/context/TestGraph.java`
 - Modify: `kernels/framework-test/src/main/java/com/naturalist/test/query/nofanout/CLAUDE.md`
 - Test: `domains/insects/insects-core/src/test/java/com/naturalist/insects/InsectCatalogIdentificationTransactionTest.java`
 
@@ -237,7 +237,7 @@ test-jar; `<domain>-test-context` keeps its public API as a thin facade over the
   `~/.m2/repository/org/springframework/boot/spring-boot-dependencies/<spring-boot.version>/spring-boot-dependencies-<spring-boot.version>.pom`
   and pin it as `byte-buddy.version` with `<!-- Boot-managed -->`.
 
-- [ ] **Step 4: Build concrete classes as tracing subclasses in `ObjectGraph`.** For a non-final concrete class `C`:
+- [ ] **Step 4: Build concrete classes as tracing subclasses in `TestGraph`.** For a non-final concrete class `C`:
   - Generate `new ByteBuddy().subclass(C, ConstructorStrategy.Default.IMITATE_SUPER_CLASS).implement(SelectTrace.Traced.class)`.
   - Intercept every non-private, non-static, non-final instance method declared by `C` or a `com.naturalist.`
     superclass with `Advice.to(SelectTrace.TraceAdvice.class).wrap(SuperMethodCall.INSTANCE)`.
@@ -284,11 +284,11 @@ test-jar; `<domain>-test-context` keeps its public API as a thin facade over the
   `domains/library/library-test-context/src/main/java/com/naturalist/library/LibraryTestContext.java`
 
 **Interfaces:**
-- Consumes: `ObjectGraph.create`, `ObjectGraph.get`, `ObjectGraph.context(...).fake(...)`.
+- Consumes: `TestGraph.create`, `TestGraph.get`, `TestGraph.context(...).fake(...)`.
 - Produces: unchanged public signatures. Every `create(...)` overload and every accessor keeps its name, parameters
   and return type.
 
-- [ ] **Step 1: Re-implement the facades.** Each `create(...)` builds `ObjectGraph.create(db)` and hands each
+- [ ] **Step 1: Re-implement the facades.** Each `create(...)` builds `TestGraph.create(db)` and hands each
   overload argument to `InsectsTestContextInternal` as a fake for its type: `ImageStore`, `Resilience`,
   `IdentificationBudget`, `VisionService`, `ExternalAuthority`. Each accessor returns `graph.get(<type>)`. The
   `noOpAuthority()` static stays. `LibraryTestContext` and `InsectLifeStageTestContext` do the same with no fakes.

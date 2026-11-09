@@ -1,12 +1,12 @@
 package com.naturalist.soil;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.TestGraph;
 
 /**
  * Pre-wired, in-memory read surface for the soil bounded context, exposing the {@link SoilProfileQuery}
  * (assembled profile) and the {@link SoilProfileInfoQuery} (profile enumeration). A facade over one
- * {@link ObjectGraph} per {@link #create} call: the wiring lives once, in soil-core's
+ * {@link TestGraph} per {@link #create} call: the wiring lives once, in soil-core's
  * {@code SoilsTestContextInternal} and {@code SoilObservationTestContextInternal} plus the graph's reflection
  * over the {@code @DomainService} and {@code @MockDomainService} classes. Each accessor returns what the graph
  * builds, already traced.
@@ -16,10 +16,10 @@ import com.naturalist.test.context.ObjectGraph;
  */
 public class SoilTestContext {
 
-    private final ObjectGraph graph;
+    private final TestGraph graph;
 
     private SoilTestContext(NaturalistDatabase db) {
-        this.graph = ObjectGraph.create(db);
+        this.graph = TestGraph.create(db);
     }
 
     public static SoilTestContext create(NaturalistDatabase db) {

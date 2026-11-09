@@ -1,11 +1,11 @@
 package com.naturalist.garden;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.TestGraph;
 
 /**
  * Pre-wired, in-memory read surface for the garden bounded context, exposing the {@link PlantedZoneQuery}
- * (a bed and what is in it) and the {@link PlantingQuery}. A facade over one {@link ObjectGraph} per
+ * (a bed and what is in it) and the {@link PlantingQuery}. A facade over one {@link TestGraph} per
  * {@link #create} call: the wiring lives once, in garden-core's {@code GardenTestContextInternal} plus the
  * graph's reflection over the {@code @DomainService} and {@code @MockDomainService} classes. Each accessor
  * returns what the graph builds, already traced.
@@ -15,10 +15,10 @@ import com.naturalist.test.context.ObjectGraph;
  */
 public class GardenTestContext {
 
-    private final ObjectGraph graph;
+    private final TestGraph graph;
 
     private GardenTestContext(NaturalistDatabase db) {
-        this.graph = ObjectGraph.create(db);
+        this.graph = TestGraph.create(db);
     }
 
     public static GardenTestContext create(NaturalistDatabase db) {

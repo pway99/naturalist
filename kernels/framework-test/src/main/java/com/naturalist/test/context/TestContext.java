@@ -1,7 +1,7 @@
 package com.naturalist.test.context;
 
 /**
- * A package's test context: it guides how {@link ObjectGraph} builds the classes of its own Java package
+ * A package's test context: it guides how {@link TestGraph} builds the classes of its own Java package
  * ({@code getClass().getPackageName()}) and is where a test hands over its fakes. Register a concrete
  * subclass, which needs a public no-arg constructor, in
  * {@code META-INF/services/com.naturalist.test.context.TestContext}; one graph holds one instance of each.
@@ -10,7 +10,7 @@ package com.naturalist.test.context;
  * {@code @DomainService} and {@code @MockDomainService} classes by reflection.
  */
 public abstract class TestContext {
-    private ObjectGraph graph;
+    private TestGraph graph;
 
     protected TestContext() {
     }
@@ -33,7 +33,7 @@ public abstract class TestContext {
         graph.registerFake(this, type, fake);
     }
 
-    final void attach(ObjectGraph graph) {
+    final void attach(TestGraph graph) {
         this.graph = graph;
     }
 }

@@ -1,11 +1,11 @@
 package com.naturalist.library;
 
-import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.TestGraph;
 import com.naturalist.data.NaturalistDatabase;
 
 /**
  * Pre-wired, in-memory read and write surface for the library bounded context, for other domains'
- * tests and external adapters. A facade over one {@link ObjectGraph} per {@link #create} call: the
+ * tests and external adapters. A facade over one {@link TestGraph} per {@link #create} call: the
  * wiring lives once, in library-core's {@code LibraryTestContextInternal} and the graph's reflection over
  * the {@code @DomainService} and {@code @MockDomainService} classes, and each accessor hands out what the
  * graph builds, already traced.
@@ -15,10 +15,10 @@ import com.naturalist.data.NaturalistDatabase;
  */
 public class LibraryTestContext {
 
-    private final ObjectGraph graph;
+    private final TestGraph graph;
 
     private LibraryTestContext(NaturalistDatabase db) {
-        this.graph = ObjectGraph.create(db);
+        this.graph = TestGraph.create(db);
     }
 
     public static LibraryTestContext create(NaturalistDatabase db) {

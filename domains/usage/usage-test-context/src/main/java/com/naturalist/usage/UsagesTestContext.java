@@ -1,13 +1,13 @@
 package com.naturalist.usage;
 
 import com.naturalist.data.NaturalistDatabase;
-import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.TestGraph;
 
 import java.time.Clock;
 
 /**
  * Pre-wired, in-memory usage bounded context for other modules' tests and console slices. A facade over one
- * {@link ObjectGraph} per {@link #create} call: the wiring lives once, in usage-core's
+ * {@link TestGraph} per {@link #create} call: the wiring lives once, in usage-core's
  * {@code UsagesTestContextInternal} plus the graph's reflection over the {@code @DomainService} and
  * {@code @MockDomainService} classes. Each accessor returns what the graph builds, already traced.
  *
@@ -22,10 +22,10 @@ import java.time.Clock;
  */
 public class UsagesTestContext {
 
-    private final ObjectGraph graph;
+    private final TestGraph graph;
 
     private UsagesTestContext(NaturalistDatabase db, int warningPercent, Clock clock) {
-        this.graph = ObjectGraph.create(db);
+        this.graph = TestGraph.create(db);
         UsagesTestContextInternal context = graph.context(UsagesTestContextInternal.class);
         context.warningPercent(warningPercent);
         context.fake(Clock.class, clock);

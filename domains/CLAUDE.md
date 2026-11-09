@@ -172,6 +172,12 @@ Design: [`docs/plans/2026-11-07-dynamic-test-context-design.md`](../docs/plans/2
   (`Resilience`, `ImageStore`, `VisionService`, ...) comes from the test's own context when it provides one,
   otherwise from the only registered context that does, so every domain's classes share one instance. Two
   providers and no choice by the test's own context fail loudly: provide the port there to choose.
+- **The graph is a DAG, and `TestGraph` enforces it.** Each type is built once and shared, so a dependency
+  that two paths reach (a diamond) is one instance. A cycle is refused: requesting a type that is already being
+  resolved fails with `cycle: A > B > A`, and building a class that is already under construction fails with
+  `cycle building`, each a `TestGraphException` naming the chain. The graph builds only through constructors and
+  static factories, so a back-edge between domain services fails the first core test that reaches it, before the
+  composition root or a console test meets it. Fix the dependency rather than routing around the check.
 - Every object the graph hands out is traced for the N+1 gate (see
   `kernels/framework-test/.../nofanout/CLAUDE.md`).
 - Every domain whose `<domain>-core` has code is converted: insects, library, plants, usage, chemistry, soil,

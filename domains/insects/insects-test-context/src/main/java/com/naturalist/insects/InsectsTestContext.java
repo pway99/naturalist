@@ -1,6 +1,6 @@
 package com.naturalist.insects;
 
-import com.naturalist.test.context.ObjectGraph;
+import com.naturalist.test.context.TestGraph;
 import com.naturalist.authority.ExternalAuthority;
 import com.naturalist.data.NaturalistDatabase;
 import com.naturalist.insects.lifestage.InsectLifeStageQuery;
@@ -11,7 +11,7 @@ import com.naturalist.vision.VisionService;
 
 /**
  * Pre-wired, in-memory read and write surface for the insects bounded context, for other domains'
- * tests and external adapters. A facade over one {@link ObjectGraph} per {@code create} call: the wiring
+ * tests and external adapters. A facade over one {@link TestGraph} per {@code create} call: the wiring
  * lives once, in insects-core's {@link InsectsTestContextInternal} (and library's and life stage's
  * internal contexts) plus the graph's reflection over the {@code @DomainService} and
  * {@code @MockDomainService} classes. Each accessor returns what the graph builds, already traced.
@@ -29,20 +29,20 @@ import com.naturalist.vision.VisionService;
  * {@code NaturalistTestExtension} (from {@code framework-test}) alongside this context.
  */
 public class InsectsTestContext {
-    private final ObjectGraph graph;
+    private final TestGraph graph;
 
-    private InsectsTestContext(ObjectGraph graph) {
+    private InsectsTestContext(TestGraph graph) {
         this.graph = graph;
     }
 
     /** Every outside-world port is {@link InsectsTestContextInternal}'s default. */
     public static InsectsTestContext create(NaturalistDatabase db) {
-        return new InsectsTestContext(ObjectGraph.create(db));
+        return new InsectsTestContext(TestGraph.create(db));
     }
 
     /** Hands over {@code imageStore}; every other outside-world port is the internal context's default. */
     public static InsectsTestContext create(NaturalistDatabase db, ImageStore imageStore) {
-        ObjectGraph graph = ObjectGraph.create(db);
+        TestGraph graph = TestGraph.create(db);
         graph.context(InsectsTestContextInternal.class).fake(ImageStore.class, imageStore);
         return new InsectsTestContext(graph);
     }
@@ -55,7 +55,7 @@ public class InsectsTestContext {
     public static InsectsTestContext create(NaturalistDatabase db, ImageStore imageStore, Resilience resilience,
                                             IdentificationBudget budget, VisionService visionService,
                                             ExternalAuthority authority) {
-        ObjectGraph graph = ObjectGraph.create(db);
+        TestGraph graph = TestGraph.create(db);
         InsectsTestContextInternal context = graph.context(InsectsTestContextInternal.class);
         context.fake(ImageStore.class, imageStore);
         context.fake(Resilience.class, resilience);

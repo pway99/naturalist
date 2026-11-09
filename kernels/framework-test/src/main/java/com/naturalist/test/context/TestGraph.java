@@ -81,7 +81,7 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
  * <p>Before building a class the graph checks that a proxy can reach every method it marks
  * {@code @jakarta.transaction.Transactional}, a class-level one inherited from a superclass included.
  */
-public final class ObjectGraph {
+public final class TestGraph {
 
     private static final String JAKARTA_TRANSACTIONAL = "jakarta.transaction.Transactional";
 
@@ -102,14 +102,14 @@ public final class ObjectGraph {
     /** The context this view asks for; null when the test itself asks. */
     private final TestContext requester;
 
-    private ObjectGraph(State state, TestContext requester) {
+    private TestGraph(State state, TestContext requester) {
         this.state = state;
         this.requester = requester;
     }
 
     /** A new graph over {@code db}, with one fresh instance of every registered {@link TestContext}. */
-    public static ObjectGraph create(NaturalistDatabase db) {
-        ObjectGraph graph = new ObjectGraph(new State(db), null);
+    public static TestGraph create(NaturalistDatabase db) {
+        TestGraph graph = new TestGraph(new State(db), null);
         for (Class<? extends TestContext> type : contextTypes()) {
             TestContext context;
             try {
@@ -227,7 +227,7 @@ public final class ObjectGraph {
         if (cached != null) {
             return cached;
         }
-        Object value = state.contexts.get(context).factory(type).apply(new ObjectGraph(state, context));
+        Object value = state.contexts.get(context).factory(type).apply(new TestGraph(state, context));
         if (!type.isInstance(value)) {
             throw new TestGraphException(context.getClass().getSimpleName() + " provided "
                     + (value == null ? "null" : value.getClass().getName()) + " for " + type.getName());
@@ -285,7 +285,7 @@ public final class ObjectGraph {
             throw new TestGraphException("cycle building " + impl.getName() + ": " + chain());
         }
         try {
-            Object built = new ObjectGraph(state, owner).construct(impl);
+            Object built = new TestGraph(state, owner).construct(impl);
             state.instances.put(impl, built);
             state.resolved.add(impl);
             return built;
@@ -484,12 +484,12 @@ public final class ObjectGraph {
      * it chooses the outside-world ports for every class in the graph (see {@link #providerOf}). With no context
      * registered there, the requests come from no context.
      */
-    public ObjectGraph requestedFrom(String packageName) {
+    public TestGraph requestedFrom(String packageName) {
         if (state.byPackage.getOrDefault(packageName, List.of()).isEmpty()) {
-            return new ObjectGraph(state, null);
+            return new TestGraph(state, null);
         }
         state.root = owner(packageName);
-        return new ObjectGraph(state, state.root);
+        return new TestGraph(state, state.root);
     }
 
     /**

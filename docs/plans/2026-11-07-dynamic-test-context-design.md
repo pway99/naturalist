@@ -85,7 +85,9 @@ that scans the classpath, but keep only its rules: no Spring, no classpath scan,
    `InsectQueryImplTest` disappear, replaced by the real life-stage and library services on their own mocks.
 2. **One instance per type.** Each type is built once and shared across the graph (the graph is a diamond:
    `FamilyQuery` feeds genus, species, image and the ancestry resolver). The extension already resets every
-   `TestEntitySource` before each test; adapters hold no state of their own.
+   `TestEntitySource` before each test; adapters hold no state of their own. The graph is also a DAG:
+   a request that closes a cycle fails with a `TestGraphException` naming the chain, so a back-edge between
+   domain services fails the first test that reaches it.
 3. **A context scans only its own package.** It finds the `@DomainService` and `@MockDomainService` classes in its
    own Java package, once per test JVM. It never looks outside that package, and there is no classpath-wide scan.
    For a requested interface it supplies the one candidate in its package. Two candidates, or none, is a loud
