@@ -1,6 +1,6 @@
 # Photo location privacy: strip metadata, keep a coarse area
 
-**Status:** design, awaiting approval. Closes launch item 1.1 ([work plan](2026-11-05-public-launch-work-plan.md)),
+**Status:** approved 2026-11-08, ready to plan. Closes launch item 1.1 ([work plan](2026-11-05-public-launch-work-plan.md)),
 [PL-17](../notes/parking-lot.md), and pulls the location half of item 5.3 forward.
 
 ## Intent
@@ -219,17 +219,21 @@ feature arrives this becomes *"in the Portland quadrangle"* with the bounds as a
   area at all on the JavaScript-on path. Launch item 5.3 asked for a phone test; it is still
   worthwhile here.
 
-## Open questions (from the builder review, awaiting Pat)
+## Decisions from the builder review (Pat, 2026-11-08)
 
-1. **EXIF Orientation.** Dropping the whole `APP1` also drops tag `0x0112`, so a portrait phone
-   photo uploaded with JavaScript off displays sideways (browsers rotate from that tag; the canvas
-   path is unaffected because it draws the already-oriented bitmap). Options: accept sideways
-   display on the JavaScript-off path; or have `withoutMetadata()` emit a minimal `APP1` holding only
-   Orientation (a fixed ~40-byte TIFF template, its own tests); or rotate pixels (banned).
-2. **Committed seed photos.** All 18 seed JPEGs under `*-repository-test/.../images/` carry EXIF
-   (Orientation, ICC, IPTC digest, no GPS) and are served through `ImageStore.read`'s classpath
-   fallback. Either the `read` guarantee is scoped to uploads, or the seed files are rewritten once
-   with the same `withoutMetadata()` (which depends on question 1 to keep them upright).
+1. **EXIF Orientation is kept.** Dropping the whole `APP1` would also drop tag `0x0112`, so a
+   portrait phone photo uploaded with JavaScript off would display sideways (browsers rotate from
+   that tag; the canvas path is unaffected because it draws the already-oriented bitmap). So
+   `withoutMetadata()` reads the Orientation value before removing the `APP1` and, when it is present
+   and not the default `1`, writes back a minimal `APP1`: the `Exif\0\0` header and a TIFF holding one
+   IFD0 with the single Orientation entry (a fixed-shape ~40-byte structure, big-endian). No other
+   tag survives. Tests cover each of the eight orientation values, absence, and the default.
+2. **The 18 committed seed JPEGs are rewritten once** with the same `withoutMetadata()` (a one-off
+   run, e.g. a throwaway test or `jshell` script, not a build step), so they keep their Orientation
+   and lose everything else. The `ImageStore.read` guarantee then holds for seed photos and uploads
+   alike, with no strip on `read`. A test over the classpath seed directories asserts every file is
+   already stripped (`withoutMetadata()` is the identity on it), so a future seed photo cannot
+   reintroduce metadata.
 
 ## Follow-ups this enables
 
