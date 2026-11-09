@@ -283,12 +283,22 @@ To build and run it directly, you need Java 25, Maven, and a local Postgres at
 mvn install
 ```
 
+Start a mail catcher first, so verification emails and alerts land in an inbox at
+<http://localhost:8025> instead of leaving the machine (the Compose stack runs this same Mailpit
+for you):
+
 ```bash
-java -jar apps/management-console/target/management-console-1.0.0-SNAPSHOT.jar --naturalist.admin.username=admin --naturalist.admin.password=change-me --naturalist.vision.provider=none --naturalist.email.log-only=true --naturalist.challenge.log-only=true
+docker run --rm -p 127.0.0.1:1025:1025 -p 127.0.0.1:8025:8025 axllent/mailpit:v1.33
 ```
 
-The two `log-only` flags are for a developer's machine only: they print emailed tokens and turn
-the bot challenge off. A deployment leaves them out and follows the
+```bash
+java -jar apps/management-console/target/management-console-1.0.0-SNAPSHOT.jar --naturalist.admin.username=admin --naturalist.admin.password=change-me --naturalist.vision.provider=none --spring.mail.host=localhost --spring.mail.port=1025 --naturalist.challenge.log-only=true
+```
+
+The `spring.mail.*` pair and the `log-only` flag are for a developer's machine only: they send
+mail to the catcher and turn the bot challenge off. Without any mail catcher,
+`--naturalist.email.log-only=true` in place of the `spring.mail.*` pair prints the emailed tokens
+to the log instead. A deployment leaves all of these out and follows the
 [edge runbook](docs/runbooks/cloudflare-edge.md). To edit templates with live recompiling, use
 `mvn -pl apps/management-console spring-boot:run` with the same arguments in
 `-Dspring-boot.run.arguments`.
