@@ -249,6 +249,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 observationId, naturalist, rankName, capturedAt,
                 (notes == null || notes.isBlank()) ? null : notes,
                 image.metadata().location(),
+                null,
                 visionResult.identification());
 
         var descriptionMap = new HashMap<InsectRankName, Description>();

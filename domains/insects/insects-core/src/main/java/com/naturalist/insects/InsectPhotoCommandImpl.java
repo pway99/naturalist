@@ -59,6 +59,7 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
                     observationId, naturalist, subject, Instant.now(),
                     (notes == null || notes.isBlank()) ? null : notes,
                     (location == null || location.isBlank()) ? null : location,
+                    null,
                     null);
         }
 

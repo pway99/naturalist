@@ -81,7 +81,7 @@ class PhotoAdditionTest {
                 NaturalistName.of("pat"),
                 InsectSpeciesName.of("wrong-species"),
                 Instant.now(),
-                null, null, null);
+                null, null, null, null);
         PhotoAddition addition = new PhotoAddition(image(OBSERVATION_ID), wrongSubject);
 
         InvariantObservation result = mo.observable(addition, "photoAddition");
@@ -100,7 +100,7 @@ class PhotoAdditionTest {
                 FileName.of("IMG_GENUS.jpg"), obsId);
         var genusObservation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 obsId, NaturalistName.of("pat"), genusName,
-                Instant.now(), null, null, null);
+                Instant.now(), null, null, null, null);
         PhotoAddition addition = new PhotoAddition(genusImage, genusObservation);
 
         InvariantObservation result = mo.observable(addition, "photoAddition");
@@ -119,6 +119,6 @@ class PhotoAdditionTest {
     private static OrganismObservation<InsectObservationId, InsectRankName> observation() {
         return new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID, NaturalistName.of("pat"), SPECIES_NAME,
-                Instant.now(), null, null, null);
+                Instant.now(), null, null, null, null);
     }
 }

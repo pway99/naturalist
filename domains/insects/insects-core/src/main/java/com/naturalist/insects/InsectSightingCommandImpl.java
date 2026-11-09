@@ -33,7 +33,7 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
                 .throwWhenInvalid();
         var id = InsectObservationId.create();
         observations.insert(new OrganismObservation<InsectObservationId, InsectRankName>(
-                id, naturalist, subject, Instant.now(), blankToNull(notes), null, null));
+                id, naturalist, subject, Instant.now(), blankToNull(notes), null, null, null));
         return id;
     }
 

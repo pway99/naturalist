@@ -4,6 +4,7 @@ import com.naturalist.data.EntityRepositoryTest;
 import com.naturalist.data.TestEntitySource;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.OrganismObservation;
 import org.junit.jupiter.api.Test;
 
@@ -53,6 +54,7 @@ interface PlantObservationRepositoryTest
                 Instant.parse("2026-07-10T09:00:00Z"),
                 "new observation",
                 null,
+                null,
                 null);
     }
 
@@ -63,6 +65,7 @@ interface PlantObservationRepositoryTest
                 PATRICK,
                 TestPlantsIdentifiers.PlantGenera.Trifolium.name,
                 Instant.parse("2026-07-11T09:00:00Z"),
+                null,
                 null,
                 null,
                 null);
@@ -78,7 +81,20 @@ interface PlantObservationRepositoryTest
                 Instant.parse("2026-07-12T09:00:00Z"),
                 "changed",
                 "north bed",
+                null,
                 null);
+    }
+
+    @Test
+    default void insertWithArea_readsBackTheSameCell() {
+        var cell = GridCell.of(1092, -2945);
+        var entity = newEntity().withArea(cell);
+
+        repository().insert(entity);
+
+        var persisted = repository().getByName(entity.key()).orElseThrow();
+        assertThat(persisted.area()).isEqualTo(cell);
+        assertEntityEquals(persisted, entity);
     }
 
     @Test

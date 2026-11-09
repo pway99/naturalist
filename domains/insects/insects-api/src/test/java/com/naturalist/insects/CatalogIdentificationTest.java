@@ -116,7 +116,7 @@ class CatalogIdentificationTest {
                 NaturalistName.of("pat"),
                 InsectSpeciesName.of("wrong-species"),
                 Instant.now(),
-                null, null, null);
+                null, null, null, null);
         CatalogIdentification id = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(species()), taxonomy(), image(), wrongSubject,
                 List.of(), List.of(), Map.of());
@@ -191,7 +191,7 @@ class CatalogIdentificationTest {
                 NaturalistName.of("pat"),
                 SPECIES_NAME,
                 Instant.now(),
-                null, null, null);
+                null, null, null, null);
     }
 
     private static Description description() {

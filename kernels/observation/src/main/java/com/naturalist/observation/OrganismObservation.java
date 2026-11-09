@@ -19,7 +19,9 @@ import java.util.function.Consumer;
  * organism domains. Records that a naturalist ({@code observedBy}) encountered an organism
  * at a taxonomic rank ({@code subject}) at a point in time. Photographic evidence is optional
  * and lives on each domain's image entity via an observation link. {@code identification}
- * carries an optional machine (vision) result; a manual sighting leaves it null.
+ * carries an optional machine (vision) result; a manual sighting leaves it null. {@code area} is
+ * the optional coarse {@link GridCell} the observation was made in, the only form of position the
+ * observation keeps; null means none was recorded.
  *
  * <p>{@code subject} is a domain permit ({@code InsectSpeciesName}, {@code PlantGenusName}, …)
  * widened to {@link RankName}. It serializes as a self-describing {@code {"rank":…,"value":…}}
@@ -35,6 +37,7 @@ public record OrganismObservation<ID extends EntityId, R extends RankName>(
         Instant observedOn,
         @Nullable String notes,
         @Nullable String location,
+        @Nullable GridCell area,
         @Nullable Identification identification
 ) implements Entity<ID> {
 
@@ -45,14 +48,19 @@ public record OrganismObservation<ID extends EntityId, R extends RankName>(
                 .identifier(observedBy, "observedBy")
                 .identifier(subject, "subject")
                 .notNull(observedOn, "observedOn")
+                .valueObjectOrNull(area, "area")
                 .valueObjectOrNull(identification, "identification");
     }
 
     public OrganismObservation<ID, R> withNotes(@Nullable String notes) {
-        return new OrganismObservation<>(id, observedBy, subject, observedOn, notes, location, identification);
+        return new OrganismObservation<>(id, observedBy, subject, observedOn, notes, location, area, identification);
     }
 
     public OrganismObservation<ID, R> withSubject(R subject) {
-        return new OrganismObservation<>(id, observedBy, subject, observedOn, notes, location, identification);
+        return new OrganismObservation<>(id, observedBy, subject, observedOn, notes, location, area, identification);
+    }
+
+    public OrganismObservation<ID, R> withArea(@Nullable GridCell area) {
+        return new OrganismObservation<>(id, observedBy, subject, observedOn, notes, location, area, identification);
     }
 }
