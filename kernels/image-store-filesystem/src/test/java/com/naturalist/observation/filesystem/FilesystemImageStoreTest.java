@@ -4,12 +4,14 @@ import com.naturalist.data.FileName;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.StoredImage;
+import com.naturalist.observation.test.ImageFixtures;
 import com.naturalist.resilience.Resilience;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -81,6 +83,19 @@ class FilesystemImageStoreTest {
         assertThat(read).isPresent();
         assertThat(read.get().bytes()).isEqualTo(JPEG);
         assertThat(read.get().mediaType()).isEqualTo("image/jpeg");
+    }
+
+    @Test
+    void store_stripsMetadata_readReturnsNone() {
+        byte[] withGps = ImageFixtures.jpeg(ImageFixtures.app0Jfif(),
+                ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, 6, 45.5, -122.7));
+        FileName name = store.store("insects", ImageUpload.of(withGps));
+
+        StoredImage stored = store.read("insects", name).orElseThrow();
+
+        ImageUpload upload = ImageUpload.of(stored.bytes());
+        assertThat(upload.gps()).isEmpty();
+        assertThat(upload.withoutMetadata()).isEqualTo(upload);
     }
 
     @Test

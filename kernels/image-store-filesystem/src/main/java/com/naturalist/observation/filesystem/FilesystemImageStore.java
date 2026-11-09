@@ -17,10 +17,10 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 /**
- * {@link ImageStore} over a directory root. {@code store} writes
- * {@code <root>/<space>/<uuidv7><ext>}; {@code read} looks there first and then falls back
- * to the classpath resource {@code <space>/images/<name>}, which is how seed photos shipped
- * inside a jar are served. Every filesystem call runs under the {@link #STRATEGY} timeout.
+ * {@link ImageStore} over a directory root. {@code store} writes the upload, stripped of its
+ * metadata, to {@code <root>/<space>/<uuidv7><ext>}; {@code read} looks there first and then
+ * falls back to the classpath resource {@code <space>/images/<name>}, which is how seed photos
+ * shipped inside a jar are served. Every filesystem call runs under the {@link #STRATEGY} timeout.
  */
 @Resilient(name = FilesystemImageStore.STRATEGY)
 public final class FilesystemImageStore implements ImageStore {
@@ -46,11 +46,12 @@ public final class FilesystemImageStore implements ImageStore {
         if (!directory.startsWith(root.normalize()) || directory.equals(root.normalize())) {
             throw new IllegalArgumentException("space escapes the store root: " + space);
         }
-        String name = EntityId.newUUID() + upload.extension();
+        ImageUpload stripped = upload.withoutMetadata();
+        String name = EntityId.newUUID() + stripped.extension();
         resilience.timeout(STRATEGY).execute(() -> {
             try {
                 Files.createDirectories(directory);
-                Files.write(directory.resolve(name), upload.bytes());
+                Files.write(directory.resolve(name), stripped.bytes());
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

@@ -1,0 +1,353 @@
+package com.naturalist.observation;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.naturalist.observation.test.ImageFixtures.app0Jfif;
+import static com.naturalist.observation.test.ImageFixtures.app13Iptc;
+import static com.naturalist.observation.test.ImageFixtures.app14Adobe;
+import static com.naturalist.observation.test.ImageFixtures.app1Exif;
+import static com.naturalist.observation.test.ImageFixtures.app1Xmp;
+import static com.naturalist.observation.test.ImageFixtures.app2Icc;
+import static com.naturalist.observation.test.ImageFixtures.chunk;
+import static com.naturalist.observation.test.ImageFixtures.com;
+import static com.naturalist.observation.test.ImageFixtures.exif;
+import static com.naturalist.observation.test.ImageFixtures.idat;
+import static com.naturalist.observation.test.ImageFixtures.iend;
+import static com.naturalist.observation.test.ImageFixtures.ihdr;
+import static com.naturalist.observation.test.ImageFixtures.jpeg;
+import static com.naturalist.observation.test.ImageFixtures.png;
+import static com.naturalist.observation.test.ImageFixtures.text;
+import static com.naturalist.observation.test.ImageFixtures.tiff;
+import static com.naturalist.observation.test.ImageFixtures.webp;
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * {@link ImageUpload#withoutMetadata()} over real bytes: each container loses the blocks that can
+ * carry a place, a person or a caption, keeps everything a decoder needs byte for byte, and keeps
+ * a JPEG's orientation as the one Exif tag left. The tests read the output back as segments,
+ * chunks and RIFF chunks of their own rather than trusting the stripper's walk.
+ */
+class ImageUploadStripTest {
+
+    private static final int APP0 = 0xE0;
+
+    private static final int APP2 = 0xE2;
+
+    private static final int APP14 = 0xEE;
+
+    private static final byte[] SOI = {(byte) 0xFF, (byte) 0xD8};
+
+    private static final byte[] TINY_JPEG =
+            {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    private final SimpleMeterRegistry meters = new SimpleMeterRegistry();
+
+    @BeforeEach
+    void setUp() {
+        Metrics.addRegistry(meters);
+    }
+
+    @AfterEach
+    void tearDown() {
+        Metrics.removeRegistry(meters);
+    }
+
+    // ---- JPEG ---------------------------------------------------------------------------------
+
+    @Test
+    void jpeg_dropsExifXmpIptcAndComments_keepsJfifIccAdobe() {
+        byte[] in = jpeg(app0Jfif(), app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7), app1Xmp(), app2Icc(),
+                app13Iptc(), app14Adobe(), com("x"));
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(markers(out.bytes())).containsExactly(APP0, APP2, APP14);
+        assertThat(segments(out.bytes())).containsExactly(app0Jfif(), app2Icc(), app14Adobe());
+        assertThat(out.gps()).isEmpty();
+        assertThat(fromStartOfScan(out.bytes())).isEqualTo(fromStartOfScan(in));
+        assertThat(totalViolations()).isZero();
+    }
+
+    @Test
+    void jpeg_keepsOrientationAsTheOnlyExifTag() {
+        byte[] in = jpeg(app0Jfif(), app1Exif(ByteOrder.LITTLE_ENDIAN, 6, 45.5, -122.7));
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(segments(out.bytes())).containsExactly(app0Jfif(), ImageMetadataSegments.orientationOnlyApp1(6));
+        assertThat(out.gps()).isEmpty();
+        assertThat(fromStartOfScan(out.bytes())).isEqualTo(fromStartOfScan(in));
+    }
+
+    @Test
+    void orientationOnlyApp1_isAnExifSegmentWithOneTag() {
+        byte[] expected = {
+                (byte) 0xFF, (byte) 0xE1, 0x00, 0x22,
+                'E', 'x', 'i', 'f', 0, 0,
+                'M', 'M', 0x00, 0x2A, 0x00, 0x00, 0x00, 0x08,
+                0x00, 0x01,
+                0x01, 0x12, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x06, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00};
+        assertThat(ImageMetadataSegments.orientationOnlyApp1(6)).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4, 5, 6, 7, 8})
+    void jpeg_everyOrientationValueSurvives(int orientation) {
+        byte[] in = jpeg(app0Jfif(), app1Exif(ByteOrder.BIG_ENDIAN, orientation, 45.5, -122.7));
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        if (orientation == 1) {
+            assertThat(segments(out.bytes())).containsExactly(app0Jfif());
+        } else {
+            assertThat(segments(out.bytes()))
+                    .containsExactly(app0Jfif(), ImageMetadataSegments.orientationOnlyApp1(orientation));
+        }
+    }
+
+    @Test
+    void jpeg_withoutApp0_orientationFollowsStartOfImage() {
+        byte[] in = jpeg(app2Icc(), app1Exif(ByteOrder.BIG_ENDIAN, 3, 45.5, -122.7));
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(segments(out.bytes())).containsExactly(ImageMetadataSegments.orientationOnlyApp1(3), app2Icc());
+    }
+
+    @Test
+    void jpeg_twoApp1Segments_bothRemoved_orientationFromTheExifOne() {
+        byte[] in = jpeg(app0Jfif(), app1Xmp(), app1Exif(ByteOrder.BIG_ENDIAN, 8, 45.5, -122.7));
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(segments(out.bytes())).containsExactly(app0Jfif(), ImageMetadataSegments.orientationOnlyApp1(8));
+        assertThat(out.gps()).isEmpty();
+    }
+
+    @Test
+    void jpeg_isIdempotent() {
+        byte[] in = jpeg(app0Jfif(), app1Exif(ByteOrder.LITTLE_ENDIAN, 6, 45.5, -122.7), app1Xmp(), app2Icc(),
+                com("x"));
+
+        ImageUpload once = ImageUpload.of(in).withoutMetadata();
+        ImageUpload twice = once.withoutMetadata();
+
+        assertThat(twice.bytes()).isEqualTo(once.bytes());
+        assertThat(twice).isSameAs(once);
+    }
+
+    @Test
+    void jpeg_withoutMetadata_isUnchanged() {
+        byte[] in = jpeg(app0Jfif(), app2Icc(), app14Adobe());
+
+        assertThat(ImageUpload.of(in).withoutMetadata().bytes()).isEqualTo(in);
+    }
+
+    @Test
+    void tinyJpegFromTheSuites_isUnchanged() {
+        ImageUpload out = ImageUpload.of(TINY_JPEG.clone()).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(TINY_JPEG);
+        assertThat(violations("ImageUpload.withoutMetadata.wellFormed")).isEqualTo(1);
+    }
+
+    @Test
+    void jpeg_corruptAfterExif_stripsWhatItParsed_copiesTheRest() {
+        byte[] corrupt = {0x12, 0x34, 0x56, 0x78};
+        byte[] in = concat(SOI, app0Jfif(), app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7), corrupt);
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(concat(SOI, app0Jfif(), corrupt));
+        assertThat(violations("ImageUpload.withoutMetadata.wellFormed")).isEqualTo(1);
+    }
+
+    // ---- PNG ----------------------------------------------------------------------------------
+
+    @Test
+    void png_dropsExifAndTextChunks_keepsTheRest() {
+        byte[] in = png(ihdr(), exif(tiff(ByteOrder.BIG_ENDIAN, 6, 45.5, -122.7)), text("Comment", "x"),
+                chunk("zTXt", new byte[]{'k', 0, 0, 0x78, (byte) 0x9C, 0x03, 0, 0, 0, 0, 1}),
+                chunk("iTXt", new byte[]{'k', 0, 0, 0, 0, 0, 'x'}), idat(), iend());
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(pngChunkTypes(out.bytes())).containsExactly("IHDR", "IDAT", "IEND");
+        assertThat(out.bytes()).isEqualTo(png(ihdr(), idat(), iend()));
+        assertThat(out.gps()).isEmpty();
+    }
+
+    @Test
+    void png_withoutMetadata_isUnchanged() {
+        byte[] in = png(ihdr(), idat(), iend());
+
+        assertThat(ImageUpload.of(in).withoutMetadata().bytes()).isEqualTo(in);
+    }
+
+    // ---- WebP ---------------------------------------------------------------------------------
+
+    @Test
+    void webp_dropsExifAndXmp_fixesRiffSizeAndVp8xFlags() {
+        byte[] in = webp(true, true);
+
+        byte[] out = ImageUpload.of(in).withoutMetadata().bytes();
+
+        List<RiffChunk> chunks = riffChunks(out);
+        assertThat(chunks).extracting(RiffChunk::fourCc).containsExactly("VP8X", "VP8L");
+        assertThat(riffSize(out)).isEqualTo(out.length - 8);
+        assertThat(chunks.get(0).payload()[0] & 0b1100).isZero();
+        assertThat(chunks.get(0).payload()[0] & 0x10).isEqualTo(0x10);
+        assertThat(chunks.get(1)).isEqualTo(riffChunks(in).get(1));
+        assertThat(ImageUpload.of(out).gps()).isEmpty();
+    }
+
+    @Test
+    void webp_strippedIsTheMetadataFreeEncoding() {
+        assertThat(ImageUpload.of(webp(true, true)).withoutMetadata().bytes()).isEqualTo(webp(false, false));
+    }
+
+    @Test
+    void webp_oddLengthChunk_paddingHandled() {
+        byte[] in = webp(false, true);
+        // The XMP packet is odd in length, so its chunk, the last, ends in a padding byte.
+        assertThat(in.length % 2).isZero();
+
+        byte[] out = ImageUpload.of(in).withoutMetadata().bytes();
+
+        assertThat(out).isEqualTo(webp(false, false));
+        assertThat(riffChunks(out)).extracting(RiffChunk::fourCc).containsExactly("VP8X", "VP8L");
+    }
+
+    @Test
+    void webp_withoutMetadata_isUnchanged() {
+        byte[] in = webp(false, false);
+
+        assertThat(ImageUpload.of(in).withoutMetadata().bytes()).isEqualTo(in);
+    }
+
+    // ---- all formats --------------------------------------------------------------------------
+
+    @Test
+    void mediaType_andValidity_preservedAfterStrip() {
+        List<ImageUpload> uploads = List.of(
+                ImageUpload.of(jpeg(app0Jfif(), app1Exif(ByteOrder.BIG_ENDIAN, 6, 45.5, -122.7), com("x"))),
+                ImageUpload.of(png(ihdr(), exif(tiff(ByteOrder.BIG_ENDIAN, 6, 45.5, -122.7)), idat(), iend())),
+                ImageUpload.of(webp(true, true)));
+
+        for (ImageUpload upload : uploads) {
+            ImageUpload stripped = upload.withoutMetadata();
+            assertThat(stripped).isNotEqualTo(upload);
+            assertThat(stripped.mediaType()).isEqualTo(upload.mediaType());
+            assertThat(stripped.isValid()).isTrue();
+            assertThat(stripped.withoutMetadata()).isEqualTo(stripped);
+        }
+        assertThat(totalViolations()).isZero();
+    }
+
+    // ---- reading the output back --------------------------------------------------------------
+
+    /** The marker of every segment between {@code SOI} and start-of-scan. */
+    private static List<Integer> markers(byte[] jpeg) {
+        List<Integer> markers = new ArrayList<>();
+        for (byte[] segment : segments(jpeg)) markers.add(segment[1] & 0xFF);
+        return markers;
+    }
+
+    /** Every whole segment, marker and length included, between {@code SOI} and start-of-scan. */
+    private static List<byte[]> segments(byte[] jpeg) {
+        List<byte[]> segments = new ArrayList<>();
+        int pos = 2;
+        while ((jpeg[pos + 1] & 0xFF) != 0xDA) {
+            int length = ((jpeg[pos + 2] & 0xFF) << 8) | (jpeg[pos + 3] & 0xFF);
+            segments.add(Arrays.copyOfRange(jpeg, pos, pos + 2 + length));
+            pos += 2 + length;
+        }
+        return segments;
+    }
+
+    /** Start-of-scan to the end: the entropy-coded data and {@code EOI}. */
+    private static byte[] fromStartOfScan(byte[] jpeg) {
+        int pos = 2;
+        for (byte[] segment : segments(jpeg)) pos += segment.length;
+        return Arrays.copyOfRange(jpeg, pos, jpeg.length);
+    }
+
+    private static List<String> pngChunkTypes(byte[] png) {
+        List<String> types = new ArrayList<>();
+        ByteBuffer b = ByteBuffer.wrap(png);
+        int pos = 8;
+        while (pos < png.length) {
+            int length = b.getInt(pos);
+            types.add(new String(png, pos + 4, 4, StandardCharsets.US_ASCII));
+            pos += 12 + length;
+        }
+        return types;
+    }
+
+    private record RiffChunk(String fourCc, byte[] payload) {
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof RiffChunk c && fourCc.equals(c.fourCc) && Arrays.equals(payload, c.payload);
+        }
+
+        @Override
+        public int hashCode() {
+            return fourCc.hashCode() * 31 + Arrays.hashCode(payload);
+        }
+    }
+
+    private static List<RiffChunk> riffChunks(byte[] webp) {
+        List<RiffChunk> chunks = new ArrayList<>();
+        ByteBuffer b = ByteBuffer.wrap(webp).order(ByteOrder.LITTLE_ENDIAN);
+        int pos = 12;
+        while (pos < webp.length) {
+            int size = b.getInt(pos + 4);
+            chunks.add(new RiffChunk(new String(webp, pos, 4, StandardCharsets.US_ASCII),
+                    Arrays.copyOfRange(webp, pos + 8, pos + 8 + size)));
+            pos += 8 + size + (size & 1);
+        }
+        return chunks;
+    }
+
+    private static int riffSize(byte[] webp) {
+        return ByteBuffer.wrap(webp).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
+    }
+
+    private double violations(String name) {
+        Counter counter = meters.find("naturalist.invariant.check").tag("outcome", "violated")
+                .tag("name", name).counter();
+        return counter == null ? 0 : counter.count();
+    }
+
+    private double totalViolations() {
+        return meters.find("naturalist.invariant.check").tag("outcome", "violated").counters().stream()
+                .mapToDouble(Counter::count).sum();
+    }
+
+    private static byte[] concat(byte[]... parts) {
+        int length = 0;
+        for (byte[] part : parts) length += part.length;
+        byte[] out = new byte[length];
+        int at = 0;
+        for (byte[] part : parts) {
+            System.arraycopy(part, 0, out, at, part.length);
+            at += part.length;
+        }
+        return out;
+    }
+}

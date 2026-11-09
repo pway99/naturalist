@@ -1,5 +1,7 @@
 package com.naturalist.observation;
 
+import com.naturalist.observability.MethodObserver;
+import com.naturalist.observability.Observer;
 import com.naturalist.observation.test.ImageFixtures;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
@@ -33,6 +35,8 @@ import static org.assertj.core.api.Assertions.within;
  * without throwing.
  */
 class ImageUploadGpsTest {
+
+    private static final Observer observer = Observer.forClass(ImageUploadGpsTest.class);
 
     private final SimpleMeterRegistry meters = new SimpleMeterRegistry();
 
@@ -71,7 +75,9 @@ class ImageUploadGpsTest {
     void jpeg_exifWithoutGpsIfd_isEmpty() {
         byte[] image = jpeg(app1Exif(ByteOrder.BIG_ENDIAN, 6, null, null));
         assertThat(ImageUpload.of(image).gps()).isEmpty();
-        assertThat(ImageMetadataSegments.exifTiff(image).flatMap(ImageMetadataSegments::orientation)).contains(6);
+        MethodObserver m = observer.forMethod("jpeg_exifWithoutGpsIfd_isEmpty");
+        assertThat(ImageMetadataSegments.exifTiff(image, m).flatMap(t -> ImageMetadataSegments.orientation(t, m)))
+                .contains(6);
         assertThat(totalViolations()).isZero();
     }
 
@@ -86,7 +92,7 @@ class ImageUploadGpsTest {
         byte[] whole = jpeg(app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68));
         byte[] truncated = Arrays.copyOf(whole, 40);
         assertThat(ImageUpload.of(truncated).gps()).isEmpty();
-        assertThat(violations("ImageUpload.exifTiff.wellFormed")).isEqualTo(1);
+        assertThat(violations("ImageUpload.gps.wellFormed")).isEqualTo(1);
     }
 
     @Test
@@ -112,6 +118,18 @@ class ImageUploadGpsTest {
         assertThat(fix).isPresent();
         assertThat(fix.get().latitude()).isCloseTo(45.52, within(1e-6));
         assertThat(fix.get().longitude()).isCloseTo(-122.68, within(1e-6));
+    }
+
+    @Test
+    void png_eXIfChunkWithExifHeader_reads() {
+        // Against the PNG spec, some writers keep the JPEG Exif header in front of the TIFF block.
+        byte[] headed = concat("Exif\0\0".getBytes(StandardCharsets.US_ASCII),
+                tiff(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68));
+        var fix = ImageUpload.of(png(ihdr(), exif(headed), idat(), iend())).gps();
+        assertThat(fix).isPresent();
+        assertThat(fix.get().latitude()).isCloseTo(45.52, within(1e-6));
+        assertThat(fix.get().longitude()).isCloseTo(-122.68, within(1e-6));
+        assertThat(totalViolations()).isZero();
     }
 
     @Test
