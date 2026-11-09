@@ -1132,6 +1132,34 @@ main > section:not(.life-stages) a:hover {
     color: var(--pico-color);
 }
 
+.image-gallery .obs-area {
+    display: block;
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--pico-muted-color);
+}
+
+/* The coarse area derived from a chosen photo's GPS tag (image-upload.js shows
+   it; the exact coordinates never leave the device). Pico styles p and button
+   in forms, so display and margin are declared outright. */
+.area-line {
+    display: block;
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+}
+
+.area-line[hidden] {
+    display: none;
+}
+
+.area-line button {
+    display: inline-block;
+    width: auto;
+    margin: 0 0 0 0.5rem;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.8rem;
+}
+
 /* Read-only vision identification — visually distinct from the
    naturalist's own editable notes below it. */
 .obs-identification {

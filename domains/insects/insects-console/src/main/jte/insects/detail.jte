@@ -124,6 +124,9 @@
             <div class="form-group">
                 <input type="file" name="image" accept="image/*" capture="environment" required>
             </div>
+            <input type="hidden" name="areaLat" value="">
+            <input type="hidden" name="areaLon" value="">
+            <p id="area-line" class="area-line" hidden>Area: <span id="area-text"></span> <button type="button" id="area-clear">Clear</button></p>
             <div class="form-group">
                 <input type="text" name="location" placeholder="Location (e.g. Oak Vista, Chico, CA)">
             </div>

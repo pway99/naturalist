@@ -54,6 +54,10 @@
                 <img id="image-preview" style="display:none; max-width:400px; margin:1rem 0;"
                      alt="Preview">
 
+                <input type="hidden" name="areaLat" value="">
+                <input type="hidden" name="areaLon" value="">
+                <p id="area-line" class="area-line" hidden>Area: <span id="area-text"></span> <button type="button" id="area-clear">Clear</button></p>
+
                 <div class="form-group">
                     <label for="location">Location</label>
                     <input type="text" id="location" name="location"

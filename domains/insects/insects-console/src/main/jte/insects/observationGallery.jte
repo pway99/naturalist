@@ -29,6 +29,9 @@
                             @if(obs.location() != null)
                                 <p class="obs-location">${obs.location()}</p>
                             @endif
+                            @if(obs.area() != null)
+                                <p class="obs-area">Observed in the area ${obs.area().describe()}</p>
+                            @endif
                             @if(obs.identification() != null)
                                 !{var id = obs.identification();}
                                 <div class="obs-identification">
