@@ -40,33 +40,33 @@
 **Interfaces:**
 - Produces:
   - `record Coordinates(double latitude, double longitude) implements ValueObject` — invariants: `latitude` in `[-90, 90]`, `longitude` in `[-180, 180]`.
-  - `record GridCell(int latIndex, int lonIndex) implements ValueObject`
-    - `static GridCell of(Coordinates c)` and `static GridCell of(double latitude, double longitude)` → `floor(x × 24)`; latitude 90.0 clamps to index 2159, longitude 180.0 to 4319.
-    - `static Optional<GridCell> ofIndices(int latIndex, int lonIndex)` → empty when out of range (observed, not thrown).
+  - `record GridCell(int latIndex, int lonIndex) implements ValueObject` — the project's value-object idiom (`FileName`, `ImageUpload`): factories always construct, validity is a property.
+    - `static GridCell of(Coordinates c)` → `floor(x × 24)`; latitude 90.0 clamps to index 2159, longitude 180.0 to 4319.
+    - `static GridCell of(int latIndex, int lonIndex)` → constructs as given; an out-of-range pair is a cell whose `isValid()` is false.
+    - `boolean isValid()` → both indices in range (the same conditions as `invariants()`, as a plain predicate, like `ImageUpload.isValid()`).
     - `record Bounds(double south, double north, double west, double east)`; `Bounds bounds()`.
-    - `GridCell quadrangle()` → `(Math.floorDiv(latIndex, 3), Math.floorDiv(lonIndex, 3))` (the 7.5′ quad, still a `GridCell` by index on the coarser lattice).
     - `String describe()` → `"%.2f–%.2f°%s, %.2f–%.2f°%s"` (`Locale.ROOT`): latitude south edge then north edge as absolute values with `N` when `south >= 0` else `S`; longitude west edge then east edge as absolute values with `E` when `west >= 0` else `W`. Portland → `45.50–45.54°N, 122.71–122.67°W`.
     - invariants: index ranges.
+    - No `quadrangle()`: USGS naming is a non-goal; the 3×3 nesting is a documented property of the lattice, nothing more.
 
 - [ ] **Step 1: Write the failing tests**
 
 ```java
 class GridCellTest {
     @Test void portland_snapsToCell1092_minus2945() {
-        var cell = GridCell.of(45.52, -122.68);
-        assertThat(cell).isEqualTo(new GridCell(1092, -2945));
+        var cell = GridCell.of(new Coordinates(45.52, -122.68));
+        assertThat(cell).isEqualTo(GridCell.of(1092, -2945));
         assertThat(cell.bounds().south()).isCloseTo(45.5, within(1e-9));
         assertThat(cell.bounds().north()).isCloseTo(45.5 + 1.0 / 24, within(1e-9));
         assertThat(cell.bounds().west()).isCloseTo(-2945.0 / 24, within(1e-9));
         assertThat(cell.describe()).isEqualTo("45.50–45.54°N, 122.71–122.67°W");
     }
     @Test void southernWestern_pointHasNegativeIndices_andSWLetters()      // -33.87, 151.21 (Sydney) → S, E; -22.9, -43.2 → S, W
-    @Test void exactBoundary_belongsToTheCellItOpens()                    // of(45.5, -122.75) == new GridCell(1092, -2946)
-    @Test void poles_andAntimeridian_clampToTheLastCell()                 // of(90, 180) == (2159, 4319); of(-90, -180) == (-2160, -4320)
-    @Test void equatorStraddle_describesHemisphereBySouthEdge()           // new GridCell(-1, 0).describe() startsWith "0.04–0.00°S, 0.00–0.04°E"
-    @Test void quadrangle_nestsThreeByThree_includingAcrossZero()         // cells (0,0),(1,0),(2,0) → quad (0,0); (-1,0) → (-1,0); (1092,-2945) → (364,-982)
-    @Test void ofIndices_outOfRange_isEmpty()                             // ofIndices(2160, 0), ofIndices(0, -4321) → empty; ofIndices(0,0) → present
-    @Test void coordinates_outOfRange_failInvariants()                    // new Coordinates(91, 0).observer()... isNotValid (see ImageUploadTest for the idiom)
+    @Test void exactBoundary_belongsToTheCellItOpens()                    // (45.5, -122.75) → GridCell.of(1092, -2946)
+    @Test void poles_andAntimeridian_clampToTheLastCell()                 // (90, 180) → (2159, 4319); (-90, -180) → (-2160, -4320)
+    @Test void equatorStraddle_describesHemisphereBySouthEdge()           // GridCell.of(-1, 0).describe() startsWith "0.04–0.00°S, 0.00–0.04°E"
+    @Test void outOfRangeIndices_construct_butAreNotValid()               // GridCell.of(2160, 0).isValid() false; GridCell.of(0, -4321) false; GridCell.of(0, 0) true; invariants report "latIndex"/"lonIndex"
+    @Test void coordinates_outOfRange_failInvariants()                    // new Coordinates(91, 0) → invariants violated (see ImageUploadTest for the idiom)
     @Test void gridCell_roundTripsThroughJackson()                        // new ObjectMapper().writeValueAsString / readValue → equal
 }
 ```
@@ -96,12 +96,16 @@ git commit -m "feat(observation): GridCell, the 2.5-minute cell an observation m
 
 **Files:**
 - Modify: `kernels/observation/src/main/java/com/naturalist/observation/ImageUpload.java`
+- Modify: `kernels/observation/src/main/java/com/naturalist/observation/GridCell.java` (add `resolve`)
 - Create: `kernels/observation/src/main/java/com/naturalist/observation/ImageMetadataSegments.java` (package-private helper: locates the TIFF block per format, walks IFDs)
-- Create: `kernels/observation/src/test/java/com/naturalist/observation/ImageFixtures.java` (test helper that assembles images byte by byte)
-- Test: `kernels/observation/src/test/java/com/naturalist/observation/ImageUploadGpsTest.java`
+- Create module: `kernels/observation-test/` — `pom.xml` (artifact `observation-test`, depends on `kernels/observation`; no `<properties>`, no version literals), registered in `kernels/pom.xml` `<modules>`. Shared test support lives in a `*-test` module's **main** source set, as `framework-test` and `<domain>-repository-test` do; the reactor's test-jars carry only `TestContextInternal` classes and nothing else.
+- Create: `kernels/observation-test/src/main/java/com/naturalist/observation/test/ImageFixtures.java`
+- Test: `kernels/observation-test/src/test/java/com/naturalist/observation/ImageUploadGpsTest.java` (the kernel's byte-level tests live beside the fixtures they are built from; `kernels/observation` keeps its own existing tests)
+- Add `kernels/observation-test` as a test-scoped dependency wherever a later task needs a fixture: `kernels/image-store-filesystem` (Task 3), `apps/management-console` (Task 4), `domains/insects/insects-core` (Task 7), `domains/insects/insects-console` (Task 8). Test scope never enters the DAG rules (the `catalog-inmem` precedent).
 
 **Interfaces:**
 - Produces: `Optional<Coordinates> ImageUpload.gps()`.
+- Produces: `static @Nullable GridCell GridCell.resolve(@Nullable GridCell claimed, ImageUpload upload)` → `claimed` when given, else `upload.gps().map(GridCell::of).orElse(null)`. Javadoc: *the cell the client already derived on the device wins; a photo uploaded without one is read for its EXIF fix; neither leaves the area null.* This is the one place the rule lives; commands call it, adapters never do.
 - Produces (test helper, reused by Tasks 3, 4, 7, 8):
   - `static byte[] ImageFixtures.jpeg(byte[]... segments)` → `FF D8` + segments + `FF DA 00 02` + 4 data bytes + `FF D9`.
   - `static byte[] ImageFixtures.app0Jfif()`, `app1Exif(ByteOrder order, Integer orientation, Double lat, Double lon)` (builds TIFF header, IFD0 with optional `0x0112` and `0x8825` GPS pointer, GPS IFD with tags 1–4 as rationals), `app1Xmp()`, `app2Icc()`, `app13Iptc()`, `app14Adobe()`, `com(String)`.
@@ -124,28 +128,31 @@ class ImageUploadGpsTest {
     @Test void png_eXIfChunk_reads()                      // png(ihdr(), exif(tiff(...)), idat(), iend())
     @Test void webp_exifChunk_reads()                     // webp(true, false) carrying tiff with gps
     @Test void noMetadata_isEmpty()                       // jpeg(app0Jfif())
+    @Test void resolve_claimedWins()                      // GridCell.resolve(GridCell.of(1000,-2000), gpsJpegAtPortland) == (1000,-2000)
+    @Test void resolve_nullClaim_readsExif()              // GridCell.resolve(null, gpsJpegAtPortland) == (1092,-2945)
+    @Test void resolve_nullClaim_noGps_isNull()           // GridCell.resolve(null, plainJpeg) == null
 }
 ```
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `mvn -q -o test -pl kernels/observation -Dtest=ImageUploadGpsTest`
-Expected: compilation failure, `gps()` / `ImageFixtures` not found.
+Run: `mvn -q -o install -DskipTests -pl kernels/observation && mvn -q -o test -pl kernels/observation-test -Dtest=ImageUploadGpsTest`
+Expected: compilation failure, `gps()` / `resolve` / `ImageFixtures` not found (after the module skeleton exists; create the module first so the failure is the test's, not the build's).
 
-- [ ] **Step 3: Implement `ImageFixtures`, `ImageMetadataSegments`, and `ImageUpload.gps()`**
+- [ ] **Step 3: Implement `ImageFixtures`, `ImageMetadataSegments`, `ImageUpload.gps()` and `GridCell.resolve`**
 
 `gps()` = `ImageMetadataSegments.exifTiff(bytes).flatMap(ImageMetadataSegments::gps)`; any parse failure inside is caught at the segment layer, observed as a `gps` violation on `Observer.forClass(ImageUpload.class)` at `Level.DEBUG`, and yields empty. GPS decoding: tags `1` (`N`/`S`), `2` (3 rationals), `3` (`E`/`W`), `4` (3 rationals); degrees + minutes/60 + seconds/3600, negated for `S`/`W`. Segment walk for JPEG: from offset 2, read marker and 16-bit length; stop at `SOS` (`FF DA`) or at any marker that is not `FF xx`, any length `< 2`, or any segment running past the array.
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `mvn -q -o test -pl kernels/observation`
-Expected: all observation kernel tests pass, including the existing `ImageUploadTest`.
+Run: `mvn -q -o install -DskipTests -pl kernels/observation && mvn -q -o test -pl kernels/observation,kernels/observation-test`
+Expected: all pass, including the existing `ImageUploadTest`.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add kernels/observation
-git commit -m "feat(observation): read EXIF GPS from an upload, for the JavaScript-off path"
+git add kernels/pom.xml kernels/observation kernels/observation-test
+git commit -m "feat(observation): read EXIF GPS from an upload, and resolve an observation's area from it"
 ```
 
 ---
@@ -157,7 +164,7 @@ git commit -m "feat(observation): read EXIF GPS from an upload, for the JavaScri
 - Modify: `kernels/observation/src/main/java/com/naturalist/observation/ImageMetadataSegments.java`
 - Modify: `kernels/observation/src/main/java/com/naturalist/observation/ImageStore.java` (Javadoc contract)
 - Modify: `kernels/image-store-filesystem/src/main/java/com/naturalist/observation/filesystem/FilesystemImageStore.java` (`store` applies `upload.withoutMetadata()`)
-- Test: `kernels/observation/src/test/java/com/naturalist/observation/ImageUploadStripTest.java`
+- Test: `kernels/observation-test/src/test/java/com/naturalist/observation/ImageUploadStripTest.java`
 - Test: `kernels/image-store-filesystem/src/test/java/com/naturalist/observation/filesystem/FilesystemImageStoreTest.java` (add one test)
 
 **Interfaces:**
@@ -200,7 +207,7 @@ In `FilesystemImageStoreTest`:
 }
 ```
 
-(`ImageFixtures` is in `kernels/observation`'s test sources. Expose it by attaching a `test-jar` from `kernels/observation` (`maven-jar-plugin` `test-jar` goal in its pom) and adding it as a `<type>test-jar</type>` test-scoped dependency here, and later in `insects-core` (Task 7) and `insects-console` (Task 8). `pom.xml` changes only, no version literals.)
+(`ImageFixtures` comes from `kernels/observation-test` (Task 2); add it to this module's pom as a test-scoped dependency. No test-jars: the reactor's test-jars carry only `TestContextInternal` classes.)
 
 - [ ] **Step 2: Run to verify failure**
 
@@ -303,14 +310,14 @@ git commit -m "chore(seed): strip metadata from the seed photos; guard that none
 **Interfaces:**
 - Produces: `OrganismObservation(ID id, NaturalistName observedBy, R subject, Instant observedOn, @Nullable String notes, @Nullable String location, @Nullable GridCell area, @Nullable Identification identification)`; `withArea(@Nullable GridCell)`.
 
-- [ ] **Step 1: Write the failing tests** in `OrganismObservationTest`: `area_isOptional` (null valid), `area_roundTripsAndWithAreaReplaces`, and in `InsectObservationEntityRepositoryTest` (contract, both mock and rdbms implement): `insertWithArea_readsBackTheSameCell` using `new GridCell(1092, -2945)`.
+- [ ] **Step 1: Write the failing tests** in `OrganismObservationTest`: `area_isOptional` (null valid), `area_roundTripsAndWithAreaReplaces`, and in `InsectObservationEntityRepositoryTest` (contract, both mock and rdbms implement): `insertWithArea_readsBackTheSameCell` using `GridCell.of(1092, -2945)`.
 
 - [ ] **Step 2: Run to verify failure**
 
 Run: `mvn -q -o test -pl kernels/observation -Dtest=OrganismObservationTest`
 Expected: compilation failure (arity).
 
-- [ ] **Step 3: Change the record and fix every constructor site** listed above (the rdbms DBOs are Task 6; the reactor will not fully compile until Task 6 lands — compile only up to `insects-repository-test`/`plants-repository-test` here).
+- [ ] **Step 3: Change the record, then enumerate the constructor sites yourself** — `grep -rn 'new OrganismObservation<' --include='*.java' domains kernels apps | grep -v /target/` and `grep -rln 'OrganismObservation' --include='*.jte' domains apps`. The file list above is the plan's; the grep is the truth (a record-arity change breaks every site, and plans miss some). Fix every site (the rdbms DBOs are Task 6; the reactor will not fully compile until Task 6 lands — compile only up to `insects-repository-test`/`plants-repository-test` here).
 
 - [ ] **Step 4: Run to verify pass**
 
@@ -341,7 +348,7 @@ git commit -m "feat(observation): an observation may carry a GridCell area"
 Run: `mvn -q -o install -DskipTests && mvn -q -o verify -pl domains/insects/insects-repository-rdbms -Dit.test=InsectObservationEntityRepositoryRdbmsIT` (use the module's actual IT class name; standing Postgres on 5432 required)
 Expected: FAIL — `insertWithArea_readsBackTheSameCell` reads back null (or the DBO does not compile).
 
-- [ ] **Step 2: Add the columns, DBO fields, and mapper SQL** in both domains. `toEntity`: `areaLat == null ? null : new GridCell(areaLat, areaLon)`.
+- [ ] **Step 2: Add the columns, DBO fields, and mapper SQL** in both domains. `toEntity`: `areaLat == null ? null : GridCell.of(areaLat, areaLon)`.
 
 - [ ] **Step 3: Recreate the standing test database** (schema changed; it is a fixed fixture)
 
@@ -375,7 +382,6 @@ git commit -m "feat(rdbms): persist the observation area as two nullable cell in
   - `InsectCommand.PhotoCommand.add(InsectRankName subject, ImageUpload upload, @Nullable NaturalistName naturalist, @Nullable String notes, @Nullable String location, @Nullable GridCell area)`
   - `InsectCommand.IdentificationCommand.identify(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist, @Nullable String notes, @Nullable GridCell area)`
   - Javadoc on both, verbatim: *`area` is the cell the client already derived on the device; when null, the command derives it from the upload's EXIF GPS before stripping, and an upload with neither leaves the observation's area null.* The command owns this rule; adapters only translate.
-  - Package-private `static @Nullable GridCell InsectIdentificationCommandImpl.resolveArea(@Nullable GridCell claimed, ImageUpload rawUpload)` → `claimed != null ? claimed : rawUpload.gps().map(GridCell::of).orElse(null)`; shared with `InsectPhotoCommandImpl` (put it on a package-private `ObservationAreas` helper in `insects-core` if sharing a static across the two impls reads better).
   - Package-private `static String InsectIdentificationCommandImpl.locationContext(@Nullable String typed, @Nullable GridCell area)` → `null` when both absent; the typed text alone; or typed text (if any) + `" "` + `"Photographed within " + area.describe() + ". Treat this as the observation's location: rule out species whose known range does not include it."`
 
 - [ ] **Step 1: Write the failing tests**
@@ -388,11 +394,11 @@ private final VisionService capturing = (image, tool, prompt) -> { seenByVision.
 
 @Test void identify_sendsTheAreaSentence_andStrippedBytes_toVision()
     // upload = ImageUpload.of(ImageFixtures.jpeg(app0Jfif(), app1Exif(BE, 6, 45.52, -122.68)))
-    // identify(upload, new ImageMetadata("Chico, CA", null), pat, null, new GridCell(1092, -2945))
+    // identify(upload, new ImageMetadata("Chico, CA", null), pat, null, GridCell.of(1092, -2945))
     // seenByVision.metadata().location() == "Chico, CA Photographed within 45.50–45.54°N, 122.71–122.67°W. Treat this as the observation's location: rule out species whose known range does not include it."
     // ImageUpload.of(seenByVision.bytes()).gps() isEmpty
 @Test void identify_persistsTheArea_andKeepsTypedLocationSeparate()
-    // observation.area() == new GridCell(1092, -2945); observation.location() == "Chico, CA"
+    // observation.area() == GridCell.of(1092, -2945); observation.location() == "Chico, CA"
 @Test void identify_claimedAreaWinsOverExif()
     // GPS JPEG at Portland + area (1000, -2000) → observation.area() == (1000, -2000)
 @Test void identify_nullArea_derivesTheCellFromExif()
@@ -411,7 +417,7 @@ Expected: compilation failure (new parameter).
 
 - [ ] **Step 3: Implement**
 
-Both commands, in this order after argument observation: `area = resolveArea(area, upload);` then `upload = upload.withoutMetadata();` — the EXIF is read for the cell and then gone. Identification: build `Image` from the stripped upload with `new ImageMetadata(locationContext(metadata.location(), area), metadata.capturedAt())`; the observation gets `metadata.location()` (typed only) and `area`. `buildSystemPrompt` receives the same composed context. Photo command: observation gets `area`. Update the two API Javadocs.
+Both commands, in this order after argument observation: `area = GridCell.resolve(area, upload);` then `upload = upload.withoutMetadata();` — the EXIF is read for the cell and then gone. Identification: build `Image` from the stripped upload with `new ImageMetadata(locationContext(metadata.location(), area), metadata.capturedAt())`; the observation gets `metadata.location()` (typed only) and `area`. `buildSystemPrompt` receives the same composed context. Photo command: observation gets `area`. Update the two API Javadocs.
 
 - [ ] **Step 4: Run to verify pass**
 
@@ -435,8 +441,8 @@ git commit -m "feat(insects): commands strip uploads, carry the area, and hand i
 - Test: `domains/insects/insects-console/src/test/java/com/naturalist/insects/ObservationAreaWebMvcTest.java`
 
 **Interfaces:**
-- Consumes: Task 7 signatures; `GridCell.ofIndices`. The controller never calls `gps()` and holds no precedence rule — that is the command's (Task 7).
-- Produces: request params `areaLat`, `areaLon` (optional) on `POST /insects/identify` and `POST /insects/{name}/images`. Translation only, in a private `Optional<GridCell> postedArea(@Nullable String areaLat, @Nullable String areaLon)`: both absent/blank → `Optional.empty()` (the command will derive from EXIF); both present and integers in range → the cell; anything else (one missing, non-numeric, out of range) → `IllegalArgumentException`, which the handler turns into `redirect:…?error=area` with nothing stored. Same shape as `ImageUpload.of(bytes)` + `isValid()` → `?error=image` today.
+- Consumes: Task 7 signatures; `GridCell.of(int, int)` + `isValid()`. The controller never calls `gps()` or `GridCell.resolve` and holds no precedence rule — that is the command's (Task 7).
+- Produces: request params `areaLat`, `areaLon` (optional) on `POST /insects/identify` and `POST /insects/{name}/images`. Translation only, in a private `Optional<GridCell> postedArea(@Nullable String areaLat, @Nullable String areaLon)`: both absent/blank → `Optional.empty()` (the command will derive from EXIF); both present and parseable → `GridCell.of(lat, lon)`, and if `!isValid()` the handler returns `redirect:…?error=area` with nothing stored; one missing or non-numeric → the same redirect. Same shape as `ImageUpload.of(bytes)` + `isValid()` → `?error=image` today.
 
 - [ ] **Step 1: Write the failing tests** (model on `InsectsCatalogWebMvcTest`; `InsectsControllerTestConfig.IMAGE_STORE` and `DATABASE` are available)
 
