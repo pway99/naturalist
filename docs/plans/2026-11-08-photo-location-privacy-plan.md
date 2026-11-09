@@ -4,7 +4,7 @@
 
 **Goal:** No stored or served photo carries metadata; an observation may carry a 2.5′ grid cell as its area, used for identification and shown publicly; exact coordinates never persist and never leave the device when JavaScript runs.
 
-**Architecture:** `GridCell` and the EXIF read/strip are pure functions in `kernels/observation`. The insects commands own the flow (strip first, store, send to vision with the area sentence, persist the area); the controller only resolves the area from posted cell indices or EXIF and stays thin; `FilesystemImageStore.store` strips again as the storage-boundary guarantee. The browser mirrors two lines of floor arithmetic to show the area and post only the cell.
+**Architecture:** `GridCell` and the EXIF read/strip are pure functions in `kernels/observation`. The insects commands own the flow (resolve the area from the client's cell or the upload's EXIF, strip, store, send to vision with the area sentence, persist the area); the controller only translates the posted cell indices into a `GridCell` and stays thin; `FilesystemImageStore.store` strips again as the storage-boundary guarantee. The browser mirrors two lines of floor arithmetic to show the area and post only the cell.
 
 **Tech Stack:** Java 25, Maven reactor, JUnit 5 + AssertJ, `NaturalistTestExtension` / `@Wired` / `@Fake`, MyBatis + Postgres, JTE, plain JavaScript, ArchUnit.
 
@@ -25,7 +25,7 @@
 1. A JPEG whose segment walk hits a malformed length (the test suites' `TINY_JPEG`: `FF D8 FF E0 00 00…`) — `withoutMetadata()` must return it byte-identical and `gps()` must return empty, not throw. (Task 3, Task 2)
 2. A JPEG with *two* `APP1` segments (Exif then XMP, as phones emit) — both removed, orientation taken from the Exif one. (Task 3)
 3. A WebP with `EXIF` chunk and an odd-length chunk payload (RIFF pads to even) — RIFF size and `VP8X` flags correct after removal. (Task 3)
-4. Posted `areaLat`/`areaLon` present but not integers, or only one of the two — treated as no posted cell, fall through to EXIF. (Task 8)
+4. Posted `areaLat`/`areaLon` not integers, out of range, or only one of the two — the request is refused with `?error=area` and nothing is stored; the command's EXIF fallback applies only when no cell was posted at all. (Task 8, Task 7)
 5. A cell straddling the equator or antimeridian edge (`latIndex = -1`, `lonIndex = 4319`) — `describe()` prints sensible hemisphere letters and `bounds()` stays within ±90/±180. (Task 1)
 
 ---
@@ -374,6 +374,8 @@ git commit -m "feat(rdbms): persist the observation area as two nullable cell in
 - Produces:
   - `InsectCommand.PhotoCommand.add(InsectRankName subject, ImageUpload upload, @Nullable NaturalistName naturalist, @Nullable String notes, @Nullable String location, @Nullable GridCell area)`
   - `InsectCommand.IdentificationCommand.identify(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist, @Nullable String notes, @Nullable GridCell area)`
+  - Javadoc on both, verbatim: *`area` is the cell the client already derived on the device; when null, the command derives it from the upload's EXIF GPS before stripping, and an upload with neither leaves the observation's area null.* The command owns this rule; adapters only translate.
+  - Package-private `static @Nullable GridCell InsectIdentificationCommandImpl.resolveArea(@Nullable GridCell claimed, ImageUpload rawUpload)` → `claimed != null ? claimed : rawUpload.gps().map(GridCell::of).orElse(null)`; shared with `InsectPhotoCommandImpl` (put it on a package-private `ObservationAreas` helper in `insects-core` if sharing a static across the two impls reads better).
   - Package-private `static String InsectIdentificationCommandImpl.locationContext(@Nullable String typed, @Nullable GridCell area)` → `null` when both absent; the typed text alone; or typed text (if any) + `" "` + `"Photographed within " + area.describe() + ". Treat this as the observation's location: rule out species whose known range does not include it."`
 
 - [ ] **Step 1: Write the failing tests**
@@ -391,12 +393,16 @@ private final VisionService capturing = (image, tool, prompt) -> { seenByVision.
     // ImageUpload.of(seenByVision.bytes()).gps() isEmpty
 @Test void identify_persistsTheArea_andKeepsTypedLocationSeparate()
     // observation.area() == new GridCell(1092, -2945); observation.location() == "Chico, CA"
-@Test void identify_withoutArea_leavesLocationContextAsTyped_andAreaNull()
+@Test void identify_claimedAreaWinsOverExif()
+    // GPS JPEG at Portland + area (1000, -2000) → observation.area() == (1000, -2000)
+@Test void identify_nullArea_derivesTheCellFromExif()
+    // GPS JPEG at Portland + area null → observation.area() == (1092, -2945); vision context carries the Portland sentence
+@Test void identify_nullArea_andNoGps_leavesAreaNull_andContextAsTyped()
 @Test void identify_storedImageCarriesNoMetadata()   // read the stored FileName back through the ImageStore fake → gps() empty
 @Test void locationContext_bothNull_isNull()
 ```
 
-In `InsectPhotoCommandImplTest`: `add_persistsAreaOnTheObservation`, `add_storesStrippedBytes`.
+In `InsectPhotoCommandImplTest`: `add_persistsClaimedArea`, `add_nullArea_derivesFromExif`, `add_storesStrippedBytes`.
 
 - [ ] **Step 2: Run to verify failure**
 
@@ -405,7 +411,7 @@ Expected: compilation failure (new parameter).
 
 - [ ] **Step 3: Implement**
 
-Both commands: first statement after argument observation is `upload = upload.withoutMetadata();`. Identification: build `Image` from the stripped upload with `new ImageMetadata(locationContext(metadata.location(), area), metadata.capturedAt())`; the observation gets `metadata.location()` (typed only) and `area`. `buildSystemPrompt` receives the same composed context. Photo command: observation gets `area`. Update the two API Javadocs.
+Both commands, in this order after argument observation: `area = resolveArea(area, upload);` then `upload = upload.withoutMetadata();` — the EXIF is read for the cell and then gone. Identification: build `Image` from the stripped upload with `new ImageMetadata(locationContext(metadata.location(), area), metadata.capturedAt())`; the observation gets `metadata.location()` (typed only) and `area`. `buildSystemPrompt` receives the same composed context. Photo command: observation gets `area`. Update the two API Javadocs.
 
 - [ ] **Step 4: Run to verify pass**
 
@@ -421,7 +427,7 @@ git commit -m "feat(insects): commands strip uploads, carry the area, and hand i
 
 ---
 
-### Task 8: Controller resolves the area; slice tests
+### Task 8: Controller translates the posted cell; slice tests
 
 **Files:**
 - Modify: `domains/insects/insects-console/src/main/java/com/naturalist/insects/InsectsController.java` (`identify` at ~410, `addImage` at ~633)
@@ -429,22 +435,24 @@ git commit -m "feat(insects): commands strip uploads, carry the area, and hand i
 - Test: `domains/insects/insects-console/src/test/java/com/naturalist/insects/ObservationAreaWebMvcTest.java`
 
 **Interfaces:**
-- Consumes: Task 7 signatures; `GridCell.ofIndices`, `ImageUpload.gps()`.
-- Produces: request params `areaLat`, `areaLon` (optional) on `POST /insects/identify` and `POST /insects/{name}/images`; private `@Nullable GridCell resolveArea(@Nullable String areaLat, @Nullable String areaLon, ImageUpload upload)` returning `Optional.empty()`-equivalent `null`, and a sentinel for "posted but invalid" that the handler turns into `redirect:…?error=area`.
+- Consumes: Task 7 signatures; `GridCell.ofIndices`. The controller never calls `gps()` and holds no precedence rule — that is the command's (Task 7).
+- Produces: request params `areaLat`, `areaLon` (optional) on `POST /insects/identify` and `POST /insects/{name}/images`. Translation only, in a private `Optional<GridCell> postedArea(@Nullable String areaLat, @Nullable String areaLon)`: both absent/blank → `Optional.empty()` (the command will derive from EXIF); both present and integers in range → the cell; anything else (one missing, non-numeric, out of range) → `IllegalArgumentException`, which the handler turns into `redirect:…?error=area` with nothing stored. Same shape as `ImageUpload.of(bytes)` + `isValid()` → `?error=image` today.
 
 - [ ] **Step 1: Write the failing tests** (model on `InsectsCatalogWebMvcTest`; `InsectsControllerTestConfig.IMAGE_STORE` and `DATABASE` are available)
 
 ```java
 @WebMvcTest class ObservationAreaWebMvcTest {
-    @Test void addImage_postedCell_winsOverExif()
-        // multipart with GPS JPEG (45.52,-122.68) + areaLat=1000 areaLon=-2000 → observation area == (1000,-2000)
-    @Test void addImage_noJavaScript_areaComesFromExif_andServedBytesHaveNoMetadata()
-        // GPS JPEG only → area == (1092,-2945); GET the stored image → ImageUpload.of(bytes).gps() empty and no APP1 with GPS
+    @Test void addImage_postedCell_reachesTheObservation()
+        // multipart with a plain JPEG + areaLat=1092 areaLon=-2945 → observation area == (1092,-2945)
+    @Test void addImage_noCellPosted_commandDerivesFromExif_andServedBytesHaveNoMetadata()
+        // GPS JPEG (45.52,-122.68), no area params → area == (1092,-2945); GET the stored image → ImageUpload.of(bytes).gps() empty
+        // (the derivation is the command's, tested in Task 7; this is the end-to-end check through the real wiring)
     @Test void addImage_noGps_noCell_areaIsNull()
     @Test void addImage_outOfRangeCell_redirectsWithAreaError()     // areaLat=2160 → redirectedUrl("/insects/battus-philenor?error=area"); nothing stored
-    @Test void addImage_nonNumericOrHalfCell_fallsThroughToExif()    // areaLat="abc" alone, or only areaLon → behaves as no posted cell
-    @Test void identify_passesTheAreaToTheCommand()                  // with the test config's identification fake, assert the area argument (see InsectsControllerTestConfig for how commands are faked)
-    @Test void detail_rendersAreaError()                             // GET ?error=area contains "area"
+    @Test void addImage_nonNumericCell_redirectsWithAreaError()     // areaLat="abc", areaLon="1"
+    @Test void addImage_halfCell_redirectsWithAreaError()           // only areaLon posted
+    @Test void identify_passesThePostedCellToTheCommand()           // with the test config's identification fake, assert the area argument (see InsectsControllerTestConfig for how commands are faked)
+    @Test void detail_rendersAreaError()                            // GET ?error=area contains "area"
 }
 ```
 
@@ -455,7 +463,7 @@ Find the observation via `InsectsControllerTestConfig`'s wired `InsectQuery` (or
 Run: `mvn -q -o test -pl domains/insects/insects-console -Dtest=ObservationAreaWebMvcTest`
 Expected: FAIL (params ignored; signatures).
 
-- [ ] **Step 3: Implement** `resolveArea`: both params present and parse as `int` → `GridCell.ofIndices(...)`, empty → error sentinel; otherwise `upload.gps().map(GridCell::of).orElse(null)`. Pass to the commands. Add the `?error=area` copy: *"The area could not be read; the photo was not added."*
+- [ ] **Step 3: Implement** `postedArea` as specified and pass `postedArea(...).orElse(null)` to both commands. Add the `?error=area` copy: *"The area could not be read; the photo was not added."*
 
 - [ ] **Step 4: Run to verify pass**
 
