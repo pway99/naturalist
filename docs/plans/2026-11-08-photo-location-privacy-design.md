@@ -129,9 +129,12 @@ The reader runs on the original file (before the canvas resize drops the EXIF). 
 is resolved once, in order: a posted cell (validated), else `upload.gps().map(GridCell::of)` for the
 JavaScript-off path, else none. The raw fix is a local variable and nothing more.
 
-**The strip happens in the controller, immediately after `gps()`**, and only the stripped
-`ImageUpload` is handed to the command (my call, after review). The identification command builds the
-vision `Image` from the upload it receives, so stripping only at the store would still send the raw
+**The strip happens in the commands**, as their first act on the upload (my call, after review;
+moved from the controller at planning so the guarantee lives in core, where the pattern puts
+behaviour, and the controller stays thin). The controller reads `gps()` from the raw upload only to
+resolve the area, then hands the raw upload on; `InsectIdentificationCommandImpl` and
+`InsectPhotoCommandImpl` call `withoutMetadata()` before anything else, so both the stored file and
+the vision `Image` are built from stripped bytes. Stripping only at the store would still send the raw
 bytes, GPS included, to the vendor on the JavaScript-off path; `ImageDownscaler` passes a
 small-enough JPEG through untouched. The storage-boundary strip stays as the second layer, idempotent
 on already-stripped bytes. The identification command test asserts the vision request's bytes carry
