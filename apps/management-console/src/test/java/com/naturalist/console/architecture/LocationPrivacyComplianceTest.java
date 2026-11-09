@@ -49,6 +49,6 @@ class LocationPrivacyComplianceTest {
                 .or(assignableTo(NamedEntity.class))
                 .or(assignableTo(Aggregate.class))
                 .or(assignableTo(ReadModel.class))
-                .as("an Entity, NamedEntity, Aggregate or ReadModel");
+                .as("a persisted domain type (Entity, NamedEntity, Aggregate or ReadModel)");
     }
 }

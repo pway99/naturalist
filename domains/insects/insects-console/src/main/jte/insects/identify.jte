@@ -36,7 +36,7 @@
                 <p class="error">That file is not a JPEG, PNG or WebP photo under 20 MB.</p>
             @endif
             @if(areaError)
-                <p class="error">The area could not be read; the photo was not added.</p>
+                <p class="error">The area could not be read; nothing was identified.</p>
             @endif
             <p>Upload a photo and Claude will suggest an identification.
                You can verify the result against authoritative references.</p>
@@ -56,7 +56,7 @@
 
                 <input type="hidden" name="areaLat" value="">
                 <input type="hidden" name="areaLon" value="">
-                <p id="area-line" class="area-line" hidden>Area: <span id="area-text"></span> <button type="button" id="area-clear">Clear</button></p>
+                <p id="area-line" class="area-line" aria-live="polite" hidden>Area: <span id="area-text"></span> <button type="button" id="area-clear">Clear</button></p>
 
                 <div class="form-group">
                     <label for="location">Location</label>

@@ -45,7 +45,7 @@ public final class FilesystemImageStore implements ImageStore {
         MethodObserver m = observer.forMethod("store");
         m.arguments(i -> i.notBlank(space, "space").valueObject(upload, "upload")).throwWhenInvalid();
         ImageUpload stripped = upload.withoutMetadata();
-        m.arguments(i -> i.isTrue(stripped.isValid() && stripped.mediaType().equals(upload.mediaType()),
+        m.state(i -> i.isTrue(stripped.isValid() && stripped.mediaType().equals(upload.mediaType()),
                 "strippedIsTheSameImage")).throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
         if (!directory.startsWith(root.normalize()) || directory.equals(root.normalize())) {

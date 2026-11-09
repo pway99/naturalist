@@ -166,6 +166,34 @@ class ImageUploadGpsTest {
     }
 
     @Test
+    void jpeg_zeroZeroFix_isNoFix() {
+        assertThat(ImageUpload.of(jpeg(app1Exif(ByteOrder.BIG_ENDIAN, null, 0.0, 0.0))).gps()).isEmpty();
+        assertThat(violations("ImageUpload.gps.noFix")).isEqualTo(1);
+        // The equator or the prime meridian alone is a real place.
+        assertThat(ImageUpload.of(jpeg(app1Exif(ByteOrder.BIG_ENDIAN, null, 0.0, 9.19))).gps()).isPresent();
+        assertThat(ImageUpload.of(jpeg(app1Exif(ByteOrder.LITTLE_ENDIAN, null, 51.48, 0.0))).gps()).isPresent();
+        assertThat(violations("ImageUpload.gps.noFix")).isEqualTo(1);
+    }
+
+    @Test
+    void jpeg_fillBytesBeforeExif_reads() {
+        byte[] fill = {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+        var fix = ImageUpload.of(jpeg(app0Jfif(), fill, app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68))).gps();
+        assertThat(fix).isPresent();
+        assertThat(fix.get().latitude()).isCloseTo(45.52, within(1e-6));
+        assertThat(totalViolations()).isZero();
+    }
+
+    @Test
+    void jpeg_junkByteBeforeExif_reads_andObserved() {
+        var fix = ImageUpload.of(jpeg(app0Jfif(), new byte[]{0x00},
+                app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68))).gps();
+        assertThat(fix).isPresent();
+        assertThat(fix.get().longitude()).isCloseTo(-122.68, within(1e-6));
+        assertThat(violations("ImageUpload.gps.junk")).isEqualTo(1);
+    }
+
+    @Test
     void resolve_claimedWins() {
         assertThat(GridCell.resolve(GridCell.of(1000, -2000), GPS_JPEG_AT_PORTLAND))
                 .isEqualTo(GridCell.of(1000, -2000));

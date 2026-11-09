@@ -9,7 +9,9 @@ import java.util.Optional;
  * ("insects", "plants"). An invalid {@link ImageUpload} is the caller's defect: observe it
  * before calling {@link #store}. {@code store} never trusts a client-supplied name; it
  * mints the stored file name itself. Every image a store writes is stripped first
- * ({@link ImageUpload#withoutMetadata()}), and an upload that strips to something other than
+ * ({@link ImageUpload#withoutMetadata()}: a JPEG keeps only its {@code APP0}, {@code APP2} and
+ * {@code APP14} application segments and its codec segments, a PNG or WebP loses its Exif, XMP
+ * and text chunks, and every format loses the bytes after its end), and an upload that strips to something other than
  * the same kind of image is refused like any other invalid one, with nothing written. Images a
  * store serves without having written them, such as seed photos shipped on the classpath, are
  * stripped once where they are kept, not on every {@link #read}.

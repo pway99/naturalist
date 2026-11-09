@@ -190,7 +190,8 @@ CREATE TABLE insect_observation (
     area_lat                 INTEGER,
     area_lon                 INTEGER,
     identification_confidence DOUBLE PRECISION,
-    identification_evidence  TEXT
+    identification_evidence  TEXT,
+    CONSTRAINT insect_observation_area_pair CHECK ((area_lat IS NULL) = (area_lon IS NULL))
 );
 CREATE TABLE insect_observation_candidate (
     observation_id  UUID             NOT NULL REFERENCES insect_observation(id),

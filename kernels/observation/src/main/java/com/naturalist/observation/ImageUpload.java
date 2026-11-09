@@ -52,7 +52,8 @@ public record ImageUpload(byte[] bytes) implements ValueObject {
     /**
      * The point the camera recorded in the upload's Exif GPS tags, read from a JPEG {@code APP1},
      * a PNG {@code eXIf} or a WebP {@code EXIF} block. Empty when the upload carries no fix, and
-     * when the metadata is truncated or corrupt or decodes to no point on the globe: a bad fix is
+     * when the metadata is truncated or corrupt, decodes to no point on the globe, or is exactly
+     * 0°, 0°, which firmware writes when it had no fix: a bad fix is
      * observed, never thrown and never handed on.
      */
     public Optional<Coordinates> gps() {
@@ -62,8 +63,10 @@ public record ImageUpload(byte[] bytes) implements ValueObject {
 
     /**
      * This upload with its metadata removed, so what is stored says nothing the picture does not:
-     * a JPEG loses its Exif and XMP {@code APP1}, IPTC {@code APP13} and {@code COM} segments, a
-     * PNG its {@code eXIf} and text chunks, a WebP its {@code EXIF} and {@code XMP } chunks, and
+     * a JPEG loses every application segment except {@code APP0} (JFIF), {@code APP2} (ICC) and
+     * {@code APP14} (Adobe), so its Exif and XMP {@code APP1}, JUMBF and C2PA {@code APP11} and
+     * IPTC {@code APP13} go, and every {@code COM} segment, and bytes between segments that are
+     * not a marker; a PNG its {@code eXIf} and text chunks, a WebP its {@code EXIF} and {@code XMP } chunks, and
      * every format loses whatever follows the image's terminator. The one tag kept is a JPEG's
      * Exif orientation, written back alone, so the picture still stands the right way up.
      * Everything a decoder reads is copied byte for byte; nothing is re-encoded. Stripping a

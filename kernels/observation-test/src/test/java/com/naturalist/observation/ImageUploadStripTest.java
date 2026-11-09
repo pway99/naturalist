@@ -30,6 +30,7 @@ import static com.naturalist.observation.test.ImageFixtures.iend;
 import static com.naturalist.observation.test.ImageFixtures.ihdr;
 import static com.naturalist.observation.test.ImageFixtures.jpeg;
 import static com.naturalist.observation.test.ImageFixtures.png;
+import static com.naturalist.observation.test.ImageFixtures.segment;
 import static com.naturalist.observation.test.ImageFixtures.text;
 import static com.naturalist.observation.test.ImageFixtures.tiff;
 import static com.naturalist.observation.test.ImageFixtures.webp;
@@ -52,6 +53,11 @@ class ImageUploadStripTest {
     private static final byte[] SOI = {(byte) 0xFF, (byte) 0xD8};
 
     private static final byte[] GARBAGE = {0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, (byte) 0xF0};
+
+    /** Three {@code FF} fill bytes; before a marker's own {@code FF} they make a run of four. */
+    private static final byte[] FILL = {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+
+    private static final byte[] EXIF_HEADER = "Exif\0\0".getBytes(StandardCharsets.US_ASCII);
 
     private static final byte[] TINY_JPEG =
             {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -81,6 +87,95 @@ class ImageUploadStripTest {
         assertThat(segments(out.bytes())).containsExactly(app0Jfif(), app2Icc(), app14Adobe());
         assertThat(out.gps()).isEmpty();
         assertThat(fromStartOfScan(out.bytes())).isEqualTo(fromStartOfScan(in));
+        assertThat(totalViolations()).isZero();
+    }
+
+    @Test
+    void jpeg_dropsEveryUnlistedAppSegment_keepsJfifIccAdobe() {
+        byte[] quantisationTable = segment(0xDB, new byte[65]);
+        byte[] app3 = segment(0xE3, "META".getBytes(StandardCharsets.US_ASCII));
+        byte[] app11Jumbf = segment(0xEB, concat("JP".getBytes(StandardCharsets.US_ASCII),
+                new byte[]{0, 1, 0, 0, 0, 1, 0, 0, 0, 0x20}, "jumbc2pa".getBytes(StandardCharsets.US_ASCII)));
+        byte[] app12 = segment(0xEC, "Ducky\0camera text".getBytes(StandardCharsets.US_ASCII));
+        byte[] app15 = segment(0xEF, "maker".getBytes(StandardCharsets.US_ASCII));
+        byte[] in = jpeg(app0Jfif(), app2Icc(), app3, app11Jumbf, app12, app14Adobe(), app15, quantisationTable);
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(markers(out.bytes())).containsExactly(APP0, APP2, APP14, 0xDB);
+        assertThat(segments(out.bytes())).containsExactly(app0Jfif(), app2Icc(), app14Adobe(), quantisationTable);
+        assertThat(fromStartOfScan(out.bytes())).isEqualTo(fromStartOfScan(in));
+        assertThat(totalViolations()).isZero();
+    }
+
+    @Test
+    void jpeg_fillBytesBeforeExif_stillStripped() {
+        byte[] in = jpeg(app0Jfif(), FILL, app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7));
+        assertThat(ImageUpload.of(in).gps()).isPresent();
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(indexOf(out.bytes(), EXIF_HEADER)).isNegative();
+        assertThat(out.bytes()).isEqualTo(jpeg(app0Jfif()));
+        assertThat(out.gps()).isEmpty();
+        assertThat(totalViolations()).isZero();
+    }
+
+    @Test
+    void jpeg_fillBytesBeforeApp0_stillStripped() {
+        byte[] in = jpeg(FILL, app0Jfif(), app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7));
+        assertThat(ImageUpload.of(in).gps()).isPresent();
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(indexOf(out.bytes(), EXIF_HEADER)).isNegative();
+        assertThat(out.bytes()).isEqualTo(jpeg(FILL, app0Jfif()));
+        assertThat(totalViolations()).isZero();
+    }
+
+    @Test
+    void jpeg_junkByteBeforeExif_stillStripped() {
+        byte[] in = jpeg(app0Jfif(), new byte[]{0x00}, app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7));
+        assertThat(ImageUpload.of(in).gps()).isPresent();
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(indexOf(out.bytes(), EXIF_HEADER)).isNegative();
+        assertThat(out.bytes()).isEqualTo(jpeg(app0Jfif()));
+        assertThat(violations("ImageUpload.withoutMetadata.junk")).isEqualTo(1);
+    }
+
+    @Test
+    void jpeg_junkBeforeAnImageSegment_isDropped() {
+        byte[] in = jpeg(app0Jfif(), new byte[]{0x12, (byte) 0xFF, 0x00, 0x34}, app2Icc());
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(jpeg(app0Jfif(), app2Icc()));
+        assertThat(violations("ImageUpload.withoutMetadata.junk")).isEqualTo(1);
+    }
+
+    @Test
+    void jpeg_restartMarkerBeforeExif_stillStripped() {
+        byte[] restart = {(byte) 0xFF, (byte) 0xD0};
+        byte[] in = jpeg(app0Jfif(), restart, app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7));
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(indexOf(out.bytes(), EXIF_HEADER)).isNegative();
+        assertThat(out.bytes()).isEqualTo(jpeg(app0Jfif(), restart));
+        assertThat(totalViolations()).isZero();
+    }
+
+    @Test
+    void jpeg_fillBytesBeforeSos_scanKeptIntact() {
+        byte[] in = jpeg(app0Jfif(), com("x"), FILL);
+
+        ImageUpload out = ImageUpload.of(in).withoutMetadata();
+
+        assertThat(out.bytes()).isEqualTo(jpeg(app0Jfif(), FILL));
+        byte[] scanToEnd = Arrays.copyOfRange(in, in.length - 10, in.length);
+        assertThat(Arrays.copyOfRange(out.bytes(), out.bytes().length - 10, out.bytes().length)).isEqualTo(scanToEnd);
         assertThat(totalViolations()).isZero();
     }
 
@@ -457,6 +552,13 @@ class ImageUploadStripTest {
     private double totalViolations() {
         return meters.find("naturalist.invariant.check").tag("outcome", "violated").counters().stream()
                 .mapToDouble(Counter::count).sum();
+    }
+
+    private static int indexOf(byte[] haystack, byte[] needle) {
+        for (int i = 0; i + needle.length <= haystack.length; i++) {
+            if (Arrays.equals(haystack, i, i + needle.length, needle, 0, needle.length)) return i;
+        }
+        return -1;
     }
 
     private static byte[] concat(byte[]... parts) {

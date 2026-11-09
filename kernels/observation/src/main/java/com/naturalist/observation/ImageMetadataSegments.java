@@ -39,6 +39,16 @@ final class ImageMetadataSegments {
 
     private static final String COM = "FFFE";
 
+    /**
+     * The JPEG segments a strip drops: every {@code COM}, and every {@code APPn} but {@code APP0}
+     * (JFIF), {@code APP2} (ICC profile) and {@code APP14} (Adobe colour transform), which a
+     * decoder reads. The rest carry what a camera, an editor or a phone says about the picture:
+     * Exif and XMP in {@code APP1}, JUMBF and C2PA content credentials (which can embed Exif
+     * again) in {@code APP11}, maker text in {@code APP12}, IPTC in {@code APP13}, and others.
+     */
+    private static final Set<String> JPEG_METADATA = Set.of(APP1, "FFE3", "FFE4", "FFE5", "FFE6", "FFE7",
+            "FFE8", "FFE9", "FFEA", "FFEB", "FFEC", APP13, "FFEF", COM);
+
     private static final String SOS = "FFDA";
 
     private static final String EOI = "FFD9";
@@ -78,7 +88,7 @@ final class ImageMetadataSegments {
      * image without one.
      */
     static Optional<byte[]> exifTiff(byte[] image, MethodObserver m) {
-        Blocks blocks = Blocks.of(image);
+        Blocks blocks = Blocks.of(image, m);
         if (blocks == null) return Optional.empty();
         for (Block block; (block = blocks.next()) != null; ) {
             if (block.type().equals(SOS)) return Optional.empty();
@@ -103,9 +113,11 @@ final class ImageMetadataSegments {
     /**
      * The GPS fix: latitude from tags 1 ({@code N}/{@code S}) and 2, longitude from tags 3
      * ({@code E}/{@code W}) and 4, each three rationals of degrees, minutes and seconds. Empty when
-     * IFD0 has no GPS IFD or the GPS IFD lacks either coordinate. A fix that decodes to no point on
-     * the globe, which is what a zero denominator or a corrupt rational gives, is observed against
-     * the {@link Coordinates} invariants and returned empty, never handed on.
+     * IFD0 has no GPS IFD or the GPS IFD lacks either coordinate. A fix of exactly 0°, 0° is what
+     * some firmware writes when it has no fix at all, so it is observed as {@code noFix} and
+     * returned empty rather than placing the picture in the Gulf of Guinea. A fix that decodes to
+     * no point on the globe, which is what a zero denominator or a corrupt rational gives, is
+     * observed against the {@link Coordinates} invariants and returned empty, never handed on.
      */
     static Optional<Coordinates> gps(byte[] tiff, MethodObserver m) {
         Coordinates fix;
@@ -117,6 +129,10 @@ final class ImageMetadataSegments {
             Optional<Double> lat = coordinate(t, gpsIfd, 1, 'N', 'S');
             Optional<Double> lon = coordinate(t, gpsIfd, 3, 'E', 'W');
             if (lat.isEmpty() || lon.isEmpty()) return Optional.empty();
+            if (lat.get() == 0.0 && lon.get() == 0.0) {
+                violation(m, "noFix");
+                return Optional.empty();
+            }
             fix = new Coordinates(lat.get(), lon.get());
         } catch (Malformed e) {
             return malformed(m);
@@ -127,25 +143,31 @@ final class ImageMetadataSegments {
 
     /**
      * The image with its metadata blocks removed and every other block copied byte for byte: a
-     * JPEG loses every {@code APP1} (Exif and XMP), {@code APP13} (IPTC) and {@code COM}, before
-     * the scan or after it; a PNG its {@code eXIf}, {@code tEXt}, {@code zTXt} and {@code iTXt}
-     * chunks; a WebP its {@code EXIF} and {@code XMP } chunks, with the RIFF size and the
-     * {@code VP8X} flags brought into line. A JPEG keeps its Exif orientation, rewritten as
+     * JPEG keeps only {@code APP0} (JFIF), {@code APP2} (ICC) and {@code APP14} (Adobe) of its
+     * {@code APPn} segments, losing {@code APP1} (Exif and XMP), {@code APP11} (JUMBF and C2PA),
+     * {@code APP13} (IPTC) and every other one, and every {@code COM}, before the scan or after
+     * it, while every codec segment (tables, frame and scan headers, restart interval) stays; a
+     * PNG loses its {@code eXIf}, {@code tEXt}, {@code zTXt} and {@code iTXt} chunks; a WebP its
+     * {@code EXIF} and {@code XMP } chunks, with the RIFF size and the {@code VP8X} flags brought
+     * into line. A JPEG keeps its Exif orientation, rewritten as
      * {@link #orientationOnlyApp1} after the {@code APP0} segments that open the file, or straight
      * after {@code SOI} when none does; that is where a stripped image's own {@code APP1} sits, so
      * stripping it again changes nothing.
      *
      * <p>The image ends at its terminator: JPEG {@code EOI}, PNG {@code IEND}, the WebP RIFF
      * extent. Whatever follows, a phone's trailer or a motion photo's video, is dropped and
-     * observed as {@code trailer}. When the walk breaks on a block, it is observed as
-     * {@code wellFormed}; the rest of the image from that block on is dropped when the block is a
-     * metadata type and copied as it stands otherwise, since nothing says it is not image data.
+     * observed as {@code trailer}. Between JPEG segments, {@code FF} fill bytes are kept with the
+     * segment they precede, and bytes that are not a marker at all are skipped to the next one,
+     * the way a decoder resynchronises, dropped and observed as {@code junk}. When the walk breaks
+     * on a block, it is observed as {@code wellFormed}; the rest of the image from that block on
+     * is dropped when the block is a metadata type and copied as it stands otherwise, since
+     * nothing says it is not image data.
      * So a strip can leave bytes that no longer sniff as an image, when the input was not really
      * one; the caller validates what comes back. Returns {@code image} itself when there was
      * nothing to remove, and for any other format.
      */
     static byte[] withoutMetadata(byte[] image, MethodObserver m) {
-        Blocks blocks = Blocks.of(image);
+        Blocks blocks = Blocks.of(image, m);
         if (blocks == null) return image;
         Format format = blocks.format();
         byte[] window = blocks.image();
@@ -173,7 +195,7 @@ final class ImageMetadataSegments {
             block.copyTo(window, kept);
         }
         boolean droppedRest = finish(blocks.stop(), window, image.length, format, kept, m);
-        if (!removed && !droppedRest) return image;
+        if (!removed && !droppedRest && !blocks.skippedJunk()) return image;
 
         ByteArrayOutputStream out = new ByteArrayOutputStream(window.length);
         out.write(window, 0, (int) blocks.start());
@@ -235,9 +257,9 @@ final class ImageMetadataSegments {
 
     // ---- containers ---------------------------------------------------------------------------
 
-    /** The three containers, each with the block types that carry metadata. */
+    /** The three containers, each with the block types that carry metadata, which a strip drops. */
     private enum Format {
-        JPEG(Set.of(APP1, APP13, COM)),
+        JPEG(JPEG_METADATA),
         PNG(Set.of("eXIf", "tEXt", "zTXt", "iTXt")),
         WEBP(Set.of("EXIF", "XMP "));
 
@@ -281,9 +303,14 @@ final class ImageMetadataSegments {
      * <ul>
      *   <li>JPEG, from offset 2: length-bearing segments; after each start-of-scan header, the
      *   entropy-coded data up to the next marker (stuffed {@code FF 00}, restart markers and fill
-     *   bytes are part of it) as one {@link #SCAN} block; {@code EOI} ends the image. A marker that
-     *   is not {@code FF xx}, a length below 2, a segment running past the bytes, or bytes ending
-     *   before {@code EOI} other than inside a scan break the walk.</li>
+     *   bytes are part of it) as one {@link #SCAN} block; {@code EOI} ends the image. Before a
+     *   marker, any number of {@code FF} fill bytes belong to the block the marker opens (T.81
+     *   B.1.1.2); bytes that do not open a marker are skipped to the next {@code FF xx} with
+     *   {@code xx} neither {@code 00} nor {@code FF}, as libjpeg does, and observed as
+     *   {@code junk}, so whatever follows them is still walked. A restart marker or {@code TEM}
+     *   between segments carries no length and is a block of its own, as a decoder skips it. A
+     *   run of junk with no marker after it, a length below 2, a segment running past the bytes,
+     *   or bytes ending before {@code EOI} other than inside a scan break the walk.</li>
      *   <li>PNG, after the signature: chunks (length, type, data, CRC) up to {@code IEND}, which
      *   ends the image; bytes ending before it break the walk.</li>
      *   <li>WebP, after the {@code WEBP} form type: chunks (four-character code, size, payload, a
@@ -297,6 +324,10 @@ final class ImageMetadataSegments {
 
         private final Bytes b;
 
+        private final MethodObserver m;
+
+        private boolean skippedJunk;
+
         private final long start;
 
         private long pos;
@@ -307,23 +338,27 @@ final class ImageMetadataSegments {
 
         private Stop stop;
 
-        private Blocks(Format format, Bytes b, long start) {
+        private Blocks(Format format, Bytes b, long start, MethodObserver m) {
             this.format = format;
             this.b = b;
             this.start = start;
+            this.m = m;
             this.pos = start;
         }
 
-        /** The walk over {@code image}, or {@code null} when it is not a JPEG, PNG or WebP. */
-        static Blocks of(byte[] image) {
+        /**
+         * The walk over {@code image}, or {@code null} when it is not a JPEG, PNG or WebP; what it
+         * skips is observed through {@code m}.
+         */
+        static Blocks of(byte[] image, MethodObserver m) {
             Bytes bytes = new Bytes(image == null ? new byte[0] : image, ByteOrder.BIG_ENDIAN);
-            if (bytes.startsWith(0, JPEG_SOI)) return new Blocks(Format.JPEG, bytes, JPEG_SOI.length);
-            if (bytes.startsWith(0, PNG_SIGNATURE)) return new Blocks(Format.PNG, bytes, PNG_SIGNATURE.length);
+            if (bytes.startsWith(0, JPEG_SOI)) return new Blocks(Format.JPEG, bytes, JPEG_SOI.length, m);
+            if (bytes.startsWith(0, PNG_SIGNATURE)) return new Blocks(Format.PNG, bytes, PNG_SIGNATURE.length, m);
             if (bytes.startsWith(0, RIFF) && bytes.startsWith(8, WEBP)) {
                 Bytes le = bytes.withOrder(ByteOrder.LITTLE_ENDIAN);
                 long extent = Math.max(12, Math.min(8 + le.u32(4), image.length));
                 byte[] riff = extent < image.length ? Arrays.copyOf(image, (int) extent) : image;
-                return new Blocks(Format.WEBP, new Bytes(riff, ByteOrder.LITTLE_ENDIAN), 12);
+                return new Blocks(Format.WEBP, new Bytes(riff, ByteOrder.LITTLE_ENDIAN), 12, m);
             }
             return null;
         }
@@ -344,6 +379,11 @@ final class ImageMetadataSegments {
 
         Stop stop() {
             return stop;
+        }
+
+        /** True when the walk skipped bytes that were neither a block nor fill: the strip drops them. */
+        boolean skippedJunk() {
+            return skippedJunk;
         }
 
         Block next() {
@@ -386,20 +426,44 @@ final class ImageMetadataSegments {
                 return scan;
             }
             pending = null;
-            if (b.u8(pos) != 0xFF) throw new Malformed();
-            pending = String.format("FF%02X", b.u8(pos + 1));
+            long at = pos;
+            while (at + 1 < b.data().length && b.u8(at) == 0xFF && b.u8(at + 1) == 0xFF) at++;
+            if (b.u8(at) != 0xFF || b.u8(at + 1) == 0x00) {
+                long marker = nextMarker(at);
+                if (marker < 0) throw new Malformed();
+                violation(m, "junk");
+                skippedJunk = true;
+                pos = marker;
+                at = marker;
+            }
+            int code = b.u8(at + 1);
+            pending = String.format("FF%02X", code);
             if (pending.equals(EOI)) {
-                Block eoi = bare(EOI, pos + 2);
+                Block eoi = bare(EOI, at + 2);
                 stop = new Stop(eoi.end(), false, null);
                 return eoi;
             }
-            int length = b.u16(pos + 2);
+            if ((code >= 0xD0 && code <= 0xD7) || code == 0x01) return bare(pending, at + 2);
+            int length = b.u16(at + 2);
             if (length < 2) throw new Malformed();
-            b.require(pos + 4, length - 2);
-            Block segment = new Block(pending, pos, pos + 4, pos + 2 + length, pos + 2 + length);
+            b.require(at + 4, length - 2);
+            Block segment = new Block(pending, pos, at + 4, at + 2 + length, at + 2 + length);
             pos = segment.end();
             inScan = pending.equals(SOS);
             return segment;
+        }
+
+        /**
+         * Where the next marker starts at or after {@code from}: an {@code FF} followed by
+         * neither {@code 00} nor {@code FF}, the last of a fill run. {@code -1} when none does.
+         */
+        private long nextMarker(long from) {
+            byte[] d = b.data();
+            for (long i = from; i + 1 < d.length; i++) {
+                int next = d[(int) i + 1] & 0xFF;
+                if ((d[(int) i] & 0xFF) == 0xFF && next != 0x00 && next != 0xFF) return i;
+            }
+            return -1;
         }
 
         /** The end of the entropy-coded data from {@code from}: the next marker, or the end of the bytes. */

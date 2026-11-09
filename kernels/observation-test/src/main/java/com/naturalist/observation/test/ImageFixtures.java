@@ -109,7 +109,11 @@ public final class ImageFixtures {
         return segment(0xFE, text.getBytes(StandardCharsets.UTF_8));
     }
 
-    private static byte[] segment(int marker, byte[] payload) {
+    /**
+     * A length-bearing JPEG segment: {@code FF}, {@code marker}, the big-endian length (payload
+     * plus the two length bytes) and {@code payload}.
+     */
+    public static byte[] segment(int marker, byte[] payload) {
         return ByteBuffer.allocate(4 + payload.length)
                 .put((byte) 0xFF).put((byte) marker).putShort((short) (payload.length + 2)).put(payload)
                 .array();

@@ -3,10 +3,14 @@
 
     var CELLS_PER_DEGREE = 24; // the 2.5-arc-minute lattice; mirrors the server's GridCell
 
+    var EXIF_HEAD_BYTES = 256 * 1024;
+
     /**
      * Reads the GPS fix from a JPEG's EXIF block. The coordinates stay in this
      * function: callers turn them into a coarse cell and discard them.
      * Resolves {lat, lng} (decimal degrees), or {} when there is no usable fix.
+     * Only the head of the file is read: the Exif APP1 is at most 64 KB and sits
+     * before the image data.
      */
     function readExif(file) {
         return new Promise(function (resolve) {
@@ -15,20 +19,28 @@
                 resolve(readExifFromArrayBuffer(e.target.result));
             };
             reader.onerror = function () { resolve({}); };
-            reader.readAsArrayBuffer(file);
+            reader.readAsArrayBuffer(file.slice(0, EXIF_HEAD_BYTES));
         });
     }
 
-    /** Walks the JPEG segments for the Exif APP1 (skipping e.g. an XMP APP1) and parses its GPS fix. */
+    /**
+     * Walks the JPEG segments for the Exif APP1 (skipping e.g. an XMP APP1) and parses its GPS fix.
+     * The walk is the server's (ImageMetadataSegments): FF fill bytes before a marker are skipped,
+     * bytes that open no marker are skipped to the next FF xx (xx neither 00 nor FF), and a
+     * restart marker or TEM between segments carries no length.
+     */
     function readExifFromArrayBuffer(buffer) {
         try {
             var view = new DataView(buffer);
             if (view.getUint16(0) !== 0xFFD8) return {}; // not a JPEG
             var offset = 2;
             while (offset + 4 <= view.byteLength) {
-                if (view.getUint8(offset) !== 0xFF) return {};
+                var lead = view.getUint8(offset);
+                var code = view.getUint8(offset + 1);
+                if (lead === 0xFF && code === 0xFF) { offset += 1; continue; } // fill byte
+                if (lead !== 0xFF || code === 0x00) { offset += 1; continue; } // junk: resync on the next marker
+                if ((code >= 0xD0 && code <= 0xD7) || code === 0x01) { offset += 2; continue; } // no length
                 var marker = view.getUint16(offset);
-                if (marker === 0xFFFF) { offset += 1; continue; } // fill byte
                 if (marker === 0xFFDA || marker === 0xFFD9) return {}; // image data or end: no Exif seen
                 var size = view.getUint16(offset + 2);
                 if (size < 2) return {};
@@ -80,6 +92,7 @@
             else if (lonLetter !== 'E') return {};
 
             if (!isFinite(lat) || !isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return {};
+            if (lat === 0 && lng === 0) return {}; // what firmware writes when it had no fix
             return { lat: lat, lng: lng };
         } catch (err) {
             return {};

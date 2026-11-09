@@ -81,7 +81,7 @@ interface PlantObservationRepositoryTest
                 Instant.parse("2026-07-12T09:00:00Z"),
                 "changed",
                 "north bed",
-                null,
+                GridCell.of(1092, -2945),
                 null);
     }
 
