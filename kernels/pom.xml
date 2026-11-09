@@ -30,6 +30,7 @@
         <module>image-store-filesystem</module>
         <module>taxonomy</module>
         <module>observation</module>
+        <module>observation-test</module>
         <module>persistence</module>
         <module>persistence-test</module>
         <module>text-generation</module>

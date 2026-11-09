@@ -3,6 +3,7 @@ package com.naturalist.observation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -71,6 +72,16 @@ public record GridCell(int latIndex, int lonIndex) implements ValueObject {
     /** The cell with these indices, exactly as given. */
     public static GridCell of(int latIndex, int lonIndex) {
         return new GridCell(latIndex, lonIndex);
+    }
+
+    /**
+     * The area an observation made from {@code upload} records. The cell the client already
+     * derived on the device wins; a photo uploaded without one is read for its EXIF fix; neither
+     * leaves the area null. This is the one place the rule lives: commands call it, adapters
+     * never do.
+     */
+    public static @Nullable GridCell resolve(@Nullable GridCell claimed, ImageUpload upload) {
+        return claimed != null ? claimed : upload.gps().map(GridCell::of).orElse(null);
     }
 
     public Bounds bounds() {

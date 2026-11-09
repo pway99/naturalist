@@ -4,6 +4,7 @@ import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -42,6 +43,16 @@ public record ImageUpload(byte[] bytes) implements ValueObject {
             case "image/png" -> ".png";
             default -> ".webp";
         };
+    }
+
+    /**
+     * The point the camera recorded in the upload's Exif GPS tags, read from a JPEG {@code APP1},
+     * a PNG {@code eXIf} or a WebP {@code EXIF} block. Empty when the upload carries no fix, and
+     * when the metadata is truncated or corrupt or decodes to no point on the globe: a bad fix is
+     * observed, never thrown and never handed on.
+     */
+    public Optional<Coordinates> gps() {
+        return ImageMetadataSegments.exifTiff(bytes).flatMap(ImageMetadataSegments::gps);
     }
 
     private boolean startsWith(byte[] prefix, int offset) {
