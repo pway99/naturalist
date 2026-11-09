@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Constraints;
 import com.naturalist.observability.Observer;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.Identification;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.persistence.Dbo;
@@ -19,7 +20,8 @@ import java.util.function.Consumer;
  * {@link InsectObservationId}. Polymorphic {@link InsectRankName} subject stored as a {@code subject_rank}
  * discriminator + {@code subject} slug (no FK; up to 96 chars for a subspecies) and rebuilt in-module via
  * {@link InsectRankName#of(String, LinealRank)}. {@code observedBy} is a cross-domain naturalist slug (no
- * FK). The nullable owned {@link Identification} flattens to the confidence/evidence column group; its
+ * FK). The nullable {@link GridCell} area is the {@code area_lat}/{@code area_lon} pair, both null
+ * when absent. The nullable owned {@link Identification} flattens to the confidence/evidence column group; its
  * {@code alternatives} are the {@link InsectObservationCandidateDbo} child table.
  */
 @DboSchema(table = "insect_observation", primaryKey = "id", entity = OrganismObservation.class)
@@ -31,6 +33,8 @@ final class InsectObservationDbo implements Dbo {
     Instant observedOn;
     String notes;
     String location;
+    Integer areaLat;
+    Integer areaLon;
     Double identificationConfidence;
     String identificationEvidence;
 
@@ -43,6 +47,11 @@ final class InsectObservationDbo implements Dbo {
         d.observedOn = o.observedOn();
         d.notes = o.notes();
         d.location = o.location();
+        GridCell area = o.area();
+        if (area != null) {
+            d.areaLat = area.latIndex();
+            d.areaLon = area.lonIndex();
+        }
         Identification ident = o.identification();
         if (ident != null) {
             d.identificationConfidence = ident.confidence();
@@ -64,6 +73,7 @@ final class InsectObservationDbo implements Dbo {
                 observedOn,
                 notes,
                 location,
+                areaLat == null ? null : GridCell.of(areaLat, areaLon),
                 identification);
     }
 
@@ -75,6 +85,7 @@ final class InsectObservationDbo implements Dbo {
                     .maxLength(observedBy, 64, "observedBy")
                 .notBlank(subjectRank, "subjectRank").maxLength(subjectRank, 16, "subjectRank")
                 .notNull(subject, "subject").kebabFormat(subject, "subject").maxLength(subject, 96, "subject")
-                .notNull(observedOn, "observedOn");
+                .notNull(observedOn, "observedOn")
+                .isTrue((areaLat == null) == (areaLon == null), "areaLatAndLonTogether");
     }
 }

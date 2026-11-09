@@ -139,6 +139,8 @@ CREATE TABLE plant_observation (
     observed_on              TIMESTAMPTZ  NOT NULL,
     notes                    TEXT,
     location                 TEXT,
+    area_lat                 INTEGER,                          -- GridCell latIndex, null together with area_lon
+    area_lon                 INTEGER,                          -- GridCell lonIndex
     identification_confidence DOUBLE PRECISION,               -- null group: absent when no Identification
     identification_evidence  TEXT
 );

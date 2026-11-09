@@ -187,6 +187,8 @@ CREATE TABLE insect_observation (
     observed_on              TIMESTAMPTZ  NOT NULL,
     notes                    TEXT,
     location                 TEXT,
+    area_lat                 INTEGER,
+    area_lon                 INTEGER,
     identification_confidence DOUBLE PRECISION,
     identification_evidence  TEXT
 );
