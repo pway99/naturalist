@@ -37,8 +37,10 @@ are built. What remains is the code gaps below and the setup that only happens o
   never verified after 24 hours, but forgotten passwords would remain unrecoverable.
 - [ ] **Measure image reads under load.** Nothing caps concurrent `image.store` work except its
   callers, so measure a gallery-sized read ([PL-16](notes/parking-lot.md)).
-- [ ] **Get CI running.** `main` is pushed, but GitHub shows no CI runs, so `PackagedJarIT` and the
-  alert rule tests haven't run there.
+- [x] **Get CI running.** Done 2026-11-08: the repository's Actions were behind the Actions tab's
+  "enable workflows" gate, which drops push events silently while the API still reports Actions
+  enabled. The first run (`b50a2e3f`) passed in 4m22s, `PackagedJarIT` and the alert rule tests
+  included. `ci` now also runs by hand (`gh workflow run ci`).
 
 ## 3. Set up outside the repo
 

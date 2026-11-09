@@ -12,7 +12,7 @@ Sizes are rough guesses: **S** is under a session, **M** is about one session, *
 
 | # | Item | Who | Size |
 |---|---|---|---|
-| 0.1 | **new** Find out why CI has never run. GitHub Actions is enabled and `ci` is active, but the repo shows 0 runs and `73a2a20b` has 0 checks. `PackagedJarIT` and the alert rule tests have never run there. | Claude | S |
+| 0.1 | ✅ 2026-11-08 **new** Find out why CI has never run. The repository's Actions were behind the Actions tab's "enable workflows" gate: push events were dropped silently while the API reported Actions enabled. Enabled by Pat; first run `b50a2e3f` green in 4m22s, `PackagedJarIT` and the alert rule tests included. `ci` gained `workflow_dispatch`. | Claude | S |
 
 ## Phase 1: Fix the code
 
