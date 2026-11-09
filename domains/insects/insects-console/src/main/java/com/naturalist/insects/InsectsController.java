@@ -434,7 +434,7 @@ public class InsectsController {
             var rankName = insectCommand.identification().identify(
                     upload,
                     new com.naturalist.vision.ImageMetadata(location, capturedInstant),
-                    me.get(), notes);
+                    me.get(), notes, null);
             return "redirect:/insects/" + rankName.value();
         } catch (com.naturalist.identification.IdentificationRefused refused) {
             // The rate gate and the budget both live behind insectCommand.identification()
@@ -641,7 +641,7 @@ public class InsectsController {
         if (!upload.isValid()) {
             return "redirect:/insects/" + name + "?error=image";
         }
-        insectCommand.photos().add(species, upload, me.orElse(null), notes, location);
+        insectCommand.photos().add(species, upload, me.orElse(null), notes, location, null);
         return "redirect:/insects/" + name;
     }
 

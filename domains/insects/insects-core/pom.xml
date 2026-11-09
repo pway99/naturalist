@@ -85,6 +85,11 @@
             <artifactId>image-store-filesystem</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>observation-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
