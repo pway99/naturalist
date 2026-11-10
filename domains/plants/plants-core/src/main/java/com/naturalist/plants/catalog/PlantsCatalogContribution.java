@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Forward-direction catalog contribution for the plants domain — emits one
@@ -146,7 +147,7 @@ public class PlantsCatalogContribution implements CatalogContribution {
     private static Stream<String> tokensFor(PlantSpecies plant, String genusEpithet) {
         Stream.Builder<String> tokens = Stream.builder();
         tokens.add(plant.name().value());
-        if (genusEpithet != null && !genusEpithet.isBlank()) {
+        if (StringUtils.isNotBlank(genusEpithet)) {
             String species = plant.epithet().value();
             tokens.add(genusEpithet);
             tokens.add(genusEpithet + " " + species);

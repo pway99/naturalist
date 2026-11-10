@@ -622,7 +622,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 try {
                     var citationSlug = ref.source().id() + "-" + rankName.value();
                     var citationName = CitationName.of(citationSlug);
-                    var title = capitalize(rankName.value()) + " -- " + ref.source().displayName();
+                    var title = StringUtils.capitalize(rankName.value()) + " -- " + ref.source().displayName();
                     var citation = new OnlineSource(
                             citationName, ref, title, null, null, null);
                     var attribution = new CitationAttribution(
@@ -646,11 +646,6 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 }
             }
         }
-    }
-
-    private static String capitalize(String s) {
-        if (s == null || s.isEmpty()) return s;
-        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
     // ----- tool schema + parsing (unchanged from Task 6) -----

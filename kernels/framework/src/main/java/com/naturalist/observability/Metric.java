@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A named metric with typed tags, following Micrometer naming conventions:
@@ -86,7 +87,7 @@ public final class Metric {
      * underscores become dots. Null or blank input becomes "unknown".
      */
     static String normalizeName(String input) {
-        if (input == null || input.isBlank()) {
+        if (StringUtils.isBlank(input)) {
             return "unknown";
         }
         return input.strip()

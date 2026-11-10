@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -49,7 +50,7 @@ class CladeTest {
     void everyPermitHasANonBlankSlug() {
         assertThat(ALL)
                 .extracting(Clade::slug)
-                .allMatch(s -> s != null && !s.isBlank());
+                .allMatch(StringUtils::isNotBlank);
     }
 
     @Test
@@ -62,7 +63,7 @@ class CladeTest {
     void everyPermitHasANonBlankDisplayName() {
         assertThat(ALL)
                 .extracting(Clade::displayName)
-                .allMatch(s -> s != null && !s.isBlank());
+                .allMatch(StringUtils::isNotBlank);
     }
 
     @Test

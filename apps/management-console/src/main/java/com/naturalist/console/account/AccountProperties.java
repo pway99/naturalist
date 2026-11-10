@@ -1,6 +1,7 @@
 package com.naturalist.console.account;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Property-bound deployment policy under {@code naturalist.access.*} for how vision access is
@@ -13,7 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record AccountProperties(String grantPolicy) {
 
     public AccountProperties {
-        if (grantPolicy == null || grantPolicy.isBlank()) {
+        if (StringUtils.isBlank(grantPolicy)) {
             grantPolicy = "self-serve";
         }
     }

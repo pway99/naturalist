@@ -12,6 +12,7 @@ import com.naturalist.secrets.SecretProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Selects the {@link ChallengeVerifier} at the composition root, failing closed like
@@ -33,7 +34,7 @@ class ChallengeConfiguration {
     ChallengeVerifier challengeVerifier(SecretProvider secrets, ChallengeProperties properties, Resilience resilience) {
         boolean secret = secrets.lookup(TurnstileChallengeVerifier.CREDENTIAL).isPresent();
         boolean logOnly = properties.logOnly();
-        boolean siteKey = properties.siteKey() != null && !properties.siteKey().isBlank();
+        boolean siteKey = StringUtils.isNotBlank(properties.siteKey());
         observer.forMethod("challengeVerifier").state((Constraints c) -> c
                 .isTrue(secret || logOnly, "secretConfigured")
                 .isTrue(secret, "turnstile")

@@ -4,6 +4,7 @@ import com.naturalist.observability.Constraint;
 
 import java.util.Collection;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Thrown when one or more invariants are violated during argument validation or entity
@@ -46,7 +47,7 @@ public class InvariantViolationException extends RuntimeException {
                     .append(v.getClass().getSimpleName())
                     .append(" [").append(v.name()).append("]");
             String err = v.errorMessage();
-            if (err != null && !err.isEmpty()) {
+            if (StringUtils.isNotEmpty(err)) {
                 sb.append(": ").append(err);
             }
         }

@@ -3,6 +3,7 @@ package com.naturalist.console;
 import java.util.Locale;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@code naturalist.vision.provider}: {@code none} or {@code anthropic} (ADR-028). It has no
@@ -12,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("naturalist.vision")
 public record VisionProperties(String provider) {
     public VisionProperties {
-        if (provider == null || provider.isBlank()) {
+        if (StringUtils.isBlank(provider)) {
             throw new IllegalArgumentException("naturalist.vision.provider must be set: none or anthropic");
         }
         String normalized = provider.strip().toLowerCase(Locale.ROOT);

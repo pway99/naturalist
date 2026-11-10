@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.nio.file.Path;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Selects the deployment-secret source by {@code naturalist.secrets.source} (ADR-028),
@@ -23,7 +24,7 @@ class SecretsConfiguration {
         return switch (properties.source()) {
             case "environment" -> EnvironmentSecretProvider.fromProcess();
             case "file" -> {
-                if (properties.directory() == null || properties.directory().isBlank()) {
+                if (StringUtils.isBlank(properties.directory())) {
                     throw new IllegalStateException(
                             "naturalist.secrets.source=file requires naturalist.secrets.directory");
                 }

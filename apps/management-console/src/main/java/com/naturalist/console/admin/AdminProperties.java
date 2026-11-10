@@ -1,6 +1,7 @@
 package com.naturalist.console.admin;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Property-bound credentials for the {@code /admin/**} surface.
@@ -16,11 +17,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record AdminProperties(String username, String password) {
 
     public AdminProperties {
-        if (username == null || username.isBlank()) {
+        if (StringUtils.isBlank(username)) {
             throw new IllegalArgumentException(
                     "naturalist.admin.username must be set and non-blank");
         }
-        if (password == null || password.isBlank()) {
+        if (StringUtils.isBlank(password)) {
             throw new IllegalArgumentException(
                     "naturalist.admin.password must be set and non-blank");
         }

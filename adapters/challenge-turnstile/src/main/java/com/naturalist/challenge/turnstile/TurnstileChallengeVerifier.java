@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@link ChallengeVerifier} over the Turnstile siteverify endpoint, on the JDK HTTP client
@@ -91,7 +92,7 @@ public final class TurnstileChallengeVerifier implements ChallengeVerifier {
     public ChallengeVerdict verify(ChallengeSubmission submission) {
         MethodObserver m = observer.forMethod("verify");
         m.arguments(i -> i.valueObject(submission, "submission")).throwWhenInvalid();
-        ChallengeVerdict verdict = submission.token() == null || submission.token().isBlank()
+        ChallengeVerdict verdict = StringUtils.isBlank(submission.token())
                 ? ChallengeVerdict.failed("missing-token")
                 : verifyWithVendor(submission);
         observeDecision(m, verdict);
@@ -184,7 +185,7 @@ public final class TurnstileChallengeVerifier implements ChallengeVerifier {
     }
 
     private boolean hostnameExpected() {
-        return config.expectedHostname() != null && !config.expectedHostname().isBlank();
+        return StringUtils.isNotBlank(config.expectedHostname());
     }
 
     private static String encode(String value) {

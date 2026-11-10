@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Public self-registration and email verification. Both routes are {@code permitAll} in
@@ -162,7 +163,7 @@ class RegistrationController {
     @GetMapping("/verify")
     String verifyPrompt(@RequestParam(value = "token", required = false) String token,
                         HttpServletRequest request, Model model) {
-        if (token == null || token.isBlank()) {
+        if (StringUtils.isBlank(token)) {
             model.addAttribute("confirm", false);
             model.addAttribute("success", false);
             model.addAttribute("message", "This verification link is missing its token.");
@@ -259,7 +260,7 @@ class RegistrationController {
     }
 
     private static String blankToNull(String value) {
-        return value == null || value.isBlank() ? null : value;
+        return StringUtils.defaultIfBlank(value, null);
     }
 
     private static String nullToBlank(String value) {

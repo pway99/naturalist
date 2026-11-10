@@ -11,6 +11,7 @@ import com.naturalist.resilience.Resilient;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * In-memory {@link Catalog} assembled from a list of {@link CatalogContribution}s
@@ -90,17 +91,17 @@ final class InMemoryCatalog implements Catalog {
 
     @Override
     public Optional<EntityRef> findBySlug(String slug) {
-        if (slug == null || slug.isBlank()) return Optional.empty();
+        if (StringUtils.isBlank(slug)) return Optional.empty();
         return Optional.ofNullable(refBySlug.get(slug.trim().toLowerCase()));
     }
 
     private static void addAll(Map<String, Set<EntityRef>> index, String token, EntityRef target) {
-        if (token == null || token.isBlank()) return;
+        if (StringUtils.isBlank(token)) return;
         index.computeIfAbsent(token, k -> new LinkedHashSet<>()).add(target);
     }
 
     private static Stream<String> tokenise(String text) {
-        if (text == null || text.isBlank()) return Stream.empty();
+        if (StringUtils.isBlank(text)) return Stream.empty();
         // Length-1 fragments are dropped on both sides of the index. They're
         // signal-poor (the genus initial in "A. californica" is meaningful
         // only in context with the species) and they make every prose token
@@ -119,7 +120,7 @@ final class InMemoryCatalog implements Catalog {
 
     @Override
     public SearchResults search(String text) {
-        if (text == null || text.isBlank()) return SearchResults.empty();
+        if (StringUtils.isBlank(text)) return SearchResults.empty();
         List<String> queryTokens = tokenise(text).toList();
         if (queryTokens.isEmpty()) return SearchResults.empty();
 

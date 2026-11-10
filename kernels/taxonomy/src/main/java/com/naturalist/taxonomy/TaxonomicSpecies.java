@@ -2,6 +2,7 @@ package com.naturalist.taxonomy;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NamedValue;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The Linnaean species epithet of a taxonomic classification (e.g. {@code convergens},
@@ -24,6 +25,6 @@ public record TaxonomicSpecies(String value) implements NamedValue<String> {
 
     @Override
     public boolean isValid() {
-        return value != null && !value.isBlank() && Character.isLowerCase(value.charAt(0));
+        return StringUtils.isNotBlank(value) && Character.isLowerCase(value.charAt(0));
     }
 }

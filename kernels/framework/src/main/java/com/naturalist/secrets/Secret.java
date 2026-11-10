@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A deployment secret's value (ADR-028). {@link #toString()} redacts it to
@@ -22,7 +23,7 @@ public final class Secret {
     }
 
     public static Secret of(String value) {
-        if (value == null || value.isBlank()) {
+        if (StringUtils.isBlank(value)) {
             throw new IllegalArgumentException("secret value must not be blank");
         }
         return new Secret(value);

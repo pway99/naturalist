@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Transforms a {@code Description}-level string into HTML with internal
@@ -105,7 +106,7 @@ public final class DescriptionRenderer {
     }
 
     public String render(String text) {
-        if (text == null || text.isBlank()) {
+        if (StringUtils.isBlank(text)) {
             return "";
         }
         String escaped = htmlEscape(text);

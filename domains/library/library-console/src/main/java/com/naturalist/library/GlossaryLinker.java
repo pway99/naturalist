@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Wraps occurrences of glossary terms in free text with an inline definition
@@ -56,7 +57,7 @@ public final class GlossaryLinker {
     public static GlossaryLinker of(Iterable<GlossaryTerm> terms) {
         var list = new ArrayList<Entry>();
         for (var term : terms) {
-            if (term.term() != null && !term.term().isBlank()) {
+            if (StringUtils.isNotBlank(term.term())) {
                 var definition = term.definition() == null ? "" : term.definition();
                 var example = term.example() == null ? "" : term.example();
                 list.add(new Entry(term.term().strip(), term.name().value(), definition, example));
@@ -85,7 +86,7 @@ public final class GlossaryLinker {
      * generated popover ids do not collide.
      */
     public String linkHtml(String text, String idSeed) {
-        if (text == null || text.isEmpty()) {
+        if (StringUtils.isEmpty(text)) {
             return "";
         }
         if (pattern == null) {

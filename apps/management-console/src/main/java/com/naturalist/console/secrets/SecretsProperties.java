@@ -3,6 +3,7 @@ package com.naturalist.console.secrets;
 import java.util.Locale;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@code naturalist.secrets.*}: which source supplies deployment secrets (ADR-028).
@@ -12,6 +13,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("naturalist.secrets")
 public record SecretsProperties(String source, String directory) {
     public SecretsProperties {
-        source = source == null || source.isBlank() ? "environment" : source.strip().toLowerCase(Locale.ROOT);
+        source = StringUtils.isBlank(source) ? "environment" : source.strip().toLowerCase(Locale.ROOT);
     }
 }

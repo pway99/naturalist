@@ -2,6 +2,7 @@ package com.naturalist.taxonomy;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NamedValue;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The Linnaean order rank of a taxonomic classification (e.g. {@code Coleoptera},
@@ -19,6 +20,6 @@ public record TaxonomicOrder(String value) implements NamedValue<String> {
 
     @Override
     public boolean isValid() {
-        return value != null && !value.isBlank() && Character.isUpperCase(value.charAt(0));
+        return StringUtils.isNotBlank(value) && Character.isUpperCase(value.charAt(0));
     }
 }

@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
+import org.apache.commons.lang3.StringUtils;
 
 /** Process-wide test DataSource, configured from env with localhost defaults. */
 public final class RdbmsDataSource {
@@ -37,6 +38,6 @@ public final class RdbmsDataSource {
 
     private static String env(String key, String dflt) {
         String v = System.getenv(key);
-        return (v == null || v.isBlank()) ? dflt : v;
+        return StringUtils.defaultIfBlank(v, dflt);
     }
 }

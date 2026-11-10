@@ -2,6 +2,7 @@ package com.naturalist.secrets;
 
 import java.util.Map;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Reads a secret from the process environment (ADR-028): {@code example-secret}
@@ -22,7 +23,7 @@ public final class EnvironmentSecretProvider implements SecretProvider {
     @Override
     public Optional<Secret> lookup(SecretName name) {
         String value = environment.get(name.environmentVariable());
-        return value == null || value.isBlank() ? Optional.empty() : Optional.of(Secret.of(value));
+        return StringUtils.isBlank(value) ? Optional.empty() : Optional.of(Secret.of(value));
     }
 
     @Override

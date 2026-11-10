@@ -33,6 +33,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Anthropic Java SDK implementation of {@link VisionService}.
@@ -228,7 +229,7 @@ public class AnthropicVisionService implements VisionService {
 
     private static String buildUserText(Image image) {
         var location = image.metadata().location();
-        if (location != null && !location.isBlank()) {
+        if (StringUtils.isNotBlank(location)) {
             return "Identify this insect. Location: " + location;
         }
         return "Identify this insect.";

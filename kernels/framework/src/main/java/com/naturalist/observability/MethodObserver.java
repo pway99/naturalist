@@ -6,6 +6,7 @@ import com.naturalist.ddd.Named;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A method-scoped observer that qualifies every observation with the owning
@@ -34,7 +35,7 @@ public class MethodObserver {
     private final Observer.MonitoringMode monitoringMode;
 
     MethodObserver(Class<?> referenceClass, String methodName, Observer.MonitoringMode monitoringMode) {
-        if (methodName == null || methodName.isBlank()) {
+        if (StringUtils.isBlank(methodName)) {
             throw new IllegalArgumentException("methodName must not be null or blank");
         }
         this.referenceClass = referenceClass;

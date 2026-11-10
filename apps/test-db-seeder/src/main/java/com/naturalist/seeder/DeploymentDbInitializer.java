@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Creates a deployment's database: every domain's schema, then the public catalog. Unlike
@@ -152,7 +153,7 @@ public final class DeploymentDbInitializer {
 
     private static String requiredProperty(String name) {
         String value = System.getProperty(name);
-        if (value == null || value.isBlank()) {
+        if (StringUtils.isBlank(value)) {
             throw new IllegalStateException("System property " + name + " must be set");
         }
         return value;

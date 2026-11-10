@@ -3,6 +3,7 @@ package com.naturalist.console.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The key a per-client rate limit is taken under: the request's remote address, with an IPv6
@@ -34,7 +35,7 @@ public final class ClientKey {
 
     public static String of(HttpServletRequest request) {
         String address = request.getRemoteAddr();
-        return address == null || address.isBlank() ? UNKNOWN : keyOf(address);
+        return StringUtils.isBlank(address) ? UNKNOWN : keyOf(address);
     }
 
     /**

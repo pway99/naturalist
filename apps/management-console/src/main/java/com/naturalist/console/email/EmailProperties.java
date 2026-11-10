@@ -1,6 +1,7 @@
 package com.naturalist.console.email;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Property-bound email settings under {@code naturalist.email.*}.
@@ -30,10 +31,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record EmailProperties(String from, String publicUrl, boolean logOnly) {
 
     public EmailProperties {
-        if (from == null || from.isBlank()) {
+        if (StringUtils.isBlank(from)) {
             from = "no-reply@naturalist.local";
         }
-        if (publicUrl == null || publicUrl.isBlank()) {
+        if (StringUtils.isBlank(publicUrl)) {
             publicUrl = "http://localhost:8080";
         }
         publicUrl = publicUrl.endsWith("/") ? publicUrl.substring(0, publicUrl.length() - 1) : publicUrl;

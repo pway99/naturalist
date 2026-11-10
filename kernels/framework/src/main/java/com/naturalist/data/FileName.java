@@ -3,6 +3,7 @@ package com.naturalist.data;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.naturalist.ddd.NamedValue;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A typed wrapper for a file's base name — the filename as stored, including extension,
@@ -54,7 +55,7 @@ public record FileName(String value) implements NamedValue<String> {
 
     @Override
     public boolean isValid() {
-        return value != null && !value.isBlank();
+        return StringUtils.isNotBlank(value);
     }
 
     /**
@@ -72,7 +73,7 @@ public record FileName(String value) implements NamedValue<String> {
      * @return the composed path string
      */
     public String path(String directory) {
-        if (directory == null || directory.isBlank()) {
+        if (StringUtils.isBlank(directory)) {
             return value;
         }
         return directory.endsWith("/") ? directory + value : directory + "/" + value;

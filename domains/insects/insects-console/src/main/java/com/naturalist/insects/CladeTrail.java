@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.library.CladeStep;
 
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The phylogenetic breadcrumb row for one insect page: the real clade nodes
@@ -12,6 +13,6 @@ import java.util.List;
 public record CladeTrail(List<CladeStep> steps, String gapLabel) {
 
     public boolean hasGap() {
-        return gapLabel != null && !gapLabel.isBlank();
+        return StringUtils.isNotBlank(gapLabel);
     }
 }

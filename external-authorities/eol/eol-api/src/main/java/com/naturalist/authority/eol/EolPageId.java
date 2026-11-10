@@ -2,6 +2,7 @@ package com.naturalist.authority.eol;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NamedValue;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * EOL's native record identifier — a page id, shaped to EOL's API.
@@ -18,6 +19,6 @@ public record EolPageId(String value) implements NamedValue<String> {
 
     @Override
     public boolean isValid() {
-        return value != null && !value.isBlank();
+        return StringUtils.isNotBlank(value);
     }
 }

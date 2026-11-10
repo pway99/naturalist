@@ -1,6 +1,7 @@
 package com.naturalist.console.images;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Property-bound location of the image store under {@code naturalist.images.*}. {@code root} is the
@@ -11,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record ImageStoreProperties(String root) {
 
     public ImageStoreProperties {
-        if (root == null || root.isBlank()) {
+        if (StringUtils.isBlank(root)) {
             root = "data/images";
         }
     }

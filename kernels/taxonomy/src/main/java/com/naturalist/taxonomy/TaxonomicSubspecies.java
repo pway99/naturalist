@@ -2,6 +2,7 @@ package com.naturalist.taxonomy;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NamedValue;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The Linnaean subspecies epithet of a taxonomic classification (e.g.
@@ -21,6 +22,6 @@ public record TaxonomicSubspecies(String value) implements NamedValue<String> {
 
     @Override
     public boolean isValid() {
-        return value != null && !value.isBlank() && Character.isLowerCase(value.charAt(0));
+        return StringUtils.isNotBlank(value) && Character.isLowerCase(value.charAt(0));
     }
 }

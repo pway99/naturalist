@@ -8,6 +8,7 @@ import com.naturalist.resilience.Resilient;
 
 import java.util.*;
 import java.util.function.Function;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Postgres-backed {@link Catalog}. Forward search and slug resolution delegate
@@ -38,7 +39,7 @@ final class RdbmsCatalog implements Catalog {
 
     @Override
     public SearchResults search(String text) {
-        if (text == null || text.isBlank() || text.trim().length() < 2) return SearchResults.empty();
+        if (StringUtils.isBlank(text) || text.trim().length() < 2) return SearchResults.empty();
         String q = text.trim();
         List<CatalogTokenRow> rows = mapper.search(q);
 
@@ -74,7 +75,7 @@ final class RdbmsCatalog implements Catalog {
 
     @Override
     public Optional<EntityRef> findBySlug(String slug) {
-        if (slug == null || slug.isBlank()) return Optional.empty();
+        if (StringUtils.isBlank(slug)) return Optional.empty();
         return Optional.ofNullable(mapper.findBySlug(slug.trim())).map(this::toRef);
     }
 
