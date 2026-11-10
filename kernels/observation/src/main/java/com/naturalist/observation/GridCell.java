@@ -3,6 +3,7 @@ package com.naturalist.observation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
@@ -72,6 +73,24 @@ public record GridCell(int latIndex, int lonIndex) implements ValueObject {
     /** The cell with these indices, exactly as given. */
     public static GridCell of(int latIndex, int lonIndex) {
         return new GridCell(latIndex, lonIndex);
+    }
+
+    /**
+     * The cell named by two index strings, as a form posts them. Null when neither is given (both
+     * null or blank): no cell was claimed. Only one given, or either not an integer, is a cell
+     * whose {@link #isValid()} is false, like any other cell off the lattice.
+     */
+    public static @Nullable GridCell of(@Nullable String latIndex, @Nullable String lonIndex) {
+        if (StringUtils.isBlank(latIndex) && StringUtils.isBlank(lonIndex)) return null;
+        return new GridCell(parseIndex(latIndex, MAX_LAT_INDEX), parseIndex(lonIndex, MAX_LON_INDEX));
+    }
+
+    private static int parseIndex(@Nullable String index, int lastIndex) {
+        try {
+            return Integer.parseInt(StringUtils.trim(index));
+        } catch (NumberFormatException notAnIndex) {
+            return lastIndex + 1;
+        }
     }
 
     /**

@@ -17,6 +17,7 @@ import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
 import com.naturalist.library.GlossaryLinker;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -396,10 +397,10 @@ public class InsectsController {
         if (csrf != null) {
             model.addAttribute("_csrf", csrf);
         }
-        if (identified != null && !identified.isBlank()) {
+        if (StringUtils.isNotBlank(identified)) {
             model.addAttribute("identified", identified);
         }
-        if (limit != null && !limit.isBlank()) {
+        if (StringUtils.isNotBlank(limit)) {
             model.addAttribute("limit", limit);
         }
         if ("image".equals(error)) {
@@ -425,7 +426,7 @@ public class InsectsController {
         }
 
         Instant capturedInstant = null;
-        if (capturedAt != null && !capturedAt.isBlank()) {
+        if (StringUtils.isNotBlank(capturedAt)) {
             try { capturedInstant = Instant.parse(capturedAt); }
             catch (java.time.format.DateTimeParseException ignored) { }
         }
@@ -436,14 +437,9 @@ public class InsectsController {
             return "redirect:/insects/identify?error=image";
         }
 
-        GridCell area;
-        try {
-            area = postedArea(areaLat, areaLon).orElse(null);
-        } catch (IllegalArgumentException unreadable) {
-            return "redirect:/insects/identify?error=area";
-        }
+        GridCell area = GridCell.of(areaLat, areaLon);
         if (area != null && !area.isValid()) {
-            // A claimed cell outside the lattice -- nothing is stored.
+            // A claimed cell that is unreadable or off the lattice -- nothing is stored.
             return "redirect:/insects/identify?error=area";
         }
 
@@ -663,40 +659,13 @@ public class InsectsController {
         if (!upload.isValid()) {
             return "redirect:/insects/" + name + "?error=image";
         }
-        GridCell area;
-        try {
-            area = postedArea(areaLat, areaLon).orElse(null);
-        } catch (IllegalArgumentException unreadable) {
-            return "redirect:/insects/" + name + "?error=area";
-        }
+        GridCell area = GridCell.of(areaLat, areaLon);
         if (area != null && !area.isValid()) {
-            // A claimed cell outside the lattice -- nothing is stored.
+            // A claimed cell that is unreadable or off the lattice -- nothing is stored.
             return "redirect:/insects/" + name + "?error=area";
         }
         insectCommand.photos().add(species, upload, me.orElse(null), notes, location, area);
         return "redirect:/insects/" + name;
-    }
-
-    /**
-     * Translates the posted {@code areaLat}/{@code areaLon} form fields into the cell the client
-     * derived on the device. Neither posted (or both blank) is no claim -- the command then derives
-     * the area from the photo; both posted is a claim, which the caller must still check for
-     * validity. Translation only: this never reads the photo and holds no rule about which source
-     * wins.
-     *
-     * @throws IllegalArgumentException when only one of the two is posted, or either is not an integer
-     */
-    private static java.util.Optional<GridCell> postedArea(@Nullable String areaLat, @Nullable String areaLon) {
-        boolean noLat = areaLat == null || areaLat.isBlank();
-        boolean noLon = areaLon == null || areaLon.isBlank();
-        if (noLat && noLon) {
-            return java.util.Optional.empty();
-        }
-        if (noLat || noLon) {
-            throw new IllegalArgumentException("a posted area needs both areaLat and areaLon");
-        }
-        return java.util.Optional.of(GridCell.of(
-                Integer.parseInt(areaLat.trim()), Integer.parseInt(areaLon.trim())));
     }
 
     @PostMapping("/{name}/notes")
@@ -726,7 +695,7 @@ public class InsectsController {
      * open redirect.
      */
     private static String safeReturnPath(@Nullable String candidate, String fallback) {
-        if (candidate == null || candidate.isBlank()) {
+        if (StringUtils.isBlank(candidate)) {
             return fallback;
         }
         if (!candidate.startsWith("/insects/") || candidate.contains("//")) {

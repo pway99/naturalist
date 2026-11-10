@@ -6,6 +6,7 @@ import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -82,6 +83,15 @@ public record ImageUpload(byte[] bytes) implements ValueObject {
         if (mediaType() == null) return this;
         byte[] stripped = ImageMetadataSegments.withoutMetadata(bytes, observer.forMethod("withoutMetadata"));
         return Arrays.equals(stripped, bytes) ? this : new ImageUpload(stripped);
+    }
+
+    /**
+     * True when this upload is a valid image of the same format as {@code other}: what a caller
+     * checks of a {@link #withoutMetadata()} result against the upload it was stripped from
+     * before storing it.
+     */
+    public boolean isSameFormatAs(ImageUpload other) {
+        return isValid() && Objects.equals(mediaType(), other.mediaType());
     }
 
     private boolean startsWith(byte[] prefix, int offset) {

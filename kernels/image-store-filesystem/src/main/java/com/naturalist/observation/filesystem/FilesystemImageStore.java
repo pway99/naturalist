@@ -9,6 +9,7 @@ import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.StoredImage;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,8 +46,7 @@ public final class FilesystemImageStore implements ImageStore {
         MethodObserver m = observer.forMethod("store");
         m.arguments(i -> i.notBlank(space, "space").valueObject(upload, "upload")).throwWhenInvalid();
         ImageUpload stripped = upload.withoutMetadata();
-        m.state(i -> i.isTrue(stripped.isValid() && stripped.mediaType().equals(upload.mediaType()),
-                "strippedIsTheSameImage")).throwWhenInvalid();
+        m.state(i -> i.isTrue(stripped.isSameFormatAs(upload), "strippedIsTheSameImage")).throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
         if (!directory.startsWith(root.normalize()) || directory.equals(root.normalize())) {
             throw new IllegalArgumentException("space escapes the store root: " + space);
@@ -65,7 +65,7 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public Optional<StoredImage> read(String space, FileName name) {
-        if (name == null || space == null || space.isBlank() || !isPlainName(name.value())) {
+        if (name == null || StringUtils.isBlank(space) || !isPlainName(name.value())) {
             return Optional.empty();
         }
         Path directory = root.resolve(space).normalize();
@@ -92,7 +92,7 @@ public final class FilesystemImageStore implements ImageStore {
     }
 
     private static boolean isPlainName(String value) {
-        return value != null && !value.isBlank()
+        return StringUtils.isNotBlank(value)
                 && !value.contains("/") && !value.contains("\\") && !value.contains("..");
     }
 
@@ -116,7 +116,7 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public void delete(String space, FileName name) {
-        if (name == null || space == null || space.isBlank() || !isPlainName(name.value())) {
+        if (name == null || StringUtils.isBlank(space) || !isPlainName(name.value())) {
             return;
         }
         Path directory = root.resolve(space).normalize();

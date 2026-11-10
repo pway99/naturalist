@@ -10,6 +10,7 @@ import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
@@ -69,8 +70,8 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
             observationId = InsectObservationId.create();
             observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                     observationId, naturalist, subject, Instant.now(),
-                    (notes == null || notes.isBlank()) ? null : notes,
-                    (location == null || location.isBlank()) ? null : location,
+                    StringUtils.defaultIfBlank(notes, null),
+                    StringUtils.defaultIfBlank(location, null),
                     observedArea,
                     null);
         }

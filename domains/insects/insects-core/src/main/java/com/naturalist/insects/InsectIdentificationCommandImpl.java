@@ -45,6 +45,7 @@ import com.naturalist.vision.ImageMetadata;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
 import com.naturalist.vision.VisionService;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
@@ -267,7 +268,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
         var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 observationId, naturalist, rankName, capturedAt,
-                (notes == null || notes.isBlank()) ? null : notes,
+                StringUtils.defaultIfBlank(notes, null),
                 metadata.location(),
                 area,
                 visionResult.identification());
@@ -696,7 +697,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * be ruled out. Null when there is neither.
      */
     static @Nullable String locationContext(@Nullable String typed, @Nullable GridCell area) {
-        boolean hasTyped = typed != null && !typed.isBlank();
+        boolean hasTyped = StringUtils.isNotBlank(typed);
         if (area == null) return hasTyped ? typed : null;
         String sentence = "Photographed within " + area.describe()
                 + ". Treat this as the observation's location: rule out species whose known range does not include it.";
@@ -741,7 +742,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 (e.g. battus-philenor for a species, syrphidae for a family).
                 Use the propose_insect_species tool to return your identification.
                 """;
-        if (location != null && !location.isBlank()) {
+        if (StringUtils.isNotBlank(location)) {
             prompt += "\nLocation context: " + location;
         }
         return prompt;
@@ -860,7 +861,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         var candidates = new ArrayList<Identification.Candidate>();
         for (var candidate : array) {
             var scientificName = candidate.hasNonNull("name") ? candidate.get("name").asText() : null;
-            if (scientificName == null || scientificName.isBlank()) {
+            if (StringUtils.isBlank(scientificName)) {
                 continue;
             }
             var candidateCommonName = candidate.hasNonNull("commonName") ? candidate.get("commonName").asText() : null;

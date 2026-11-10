@@ -80,6 +80,17 @@ class GridCellTest {
     }
 
     @Test
+    void postedIndices_parse_blankIsNoClaim_andUnreadableIsNotValid() {
+        assertThat(GridCell.of(" 1092 ", "-2945")).isEqualTo(GridCell.of(1092, -2945));
+        assertThat(GridCell.of((String) null, null)).isNull();
+        assertThat(GridCell.of(" ", "")).isNull();
+        assertThat(GridCell.of("1092", null).isValid()).isFalse();
+        assertThat(GridCell.of("", "-2945").isValid()).isFalse();
+        assertThat(GridCell.of("north", "-2945").isValid()).isFalse();
+        assertThat(GridCell.of("1092", "1.5").isValid()).isFalse();
+    }
+
+    @Test
     void coordinates_outOfRange_failInvariants() {
         var mo = observer.forMethod("coordinates_outOfRange_failInvariants");
         assertThat(mo.observable(new Coordinates(91, 0), "point").violationNamesRemovingPrefix(mo.observationPoint()))
