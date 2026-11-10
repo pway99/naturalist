@@ -2,12 +2,14 @@ package com.naturalist.observation.filesystem;
 
 import com.naturalist.data.FileName;
 import com.naturalist.ddd.EntityId;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.StoredImage;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +19,11 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 /**
- * {@link ImageStore} over a directory root. {@code store} writes
- * {@code <root>/<space>/<uuidv7><ext>}; {@code read} looks there first and then falls back
- * to the classpath resource {@code <space>/images/<name>}, which is how seed photos shipped
- * inside a jar are served. Every filesystem call runs under the {@link #STRATEGY} timeout.
+ * {@link ImageStore} over a directory root. {@code store} writes the upload, stripped of its
+ * metadata and refused when the strip leaves no image of the same kind, to
+ * {@code <root>/<space>/<uuidv7><ext>}; {@code read} looks there first and then
+ * falls back to the classpath resource {@code <space>/images/<name>}, which is how seed photos
+ * shipped inside a jar are served. Every filesystem call runs under the {@link #STRATEGY} timeout.
  */
 @Resilient(name = FilesystemImageStore.STRATEGY)
 public final class FilesystemImageStore implements ImageStore {
@@ -40,17 +43,19 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public FileName store(String space, ImageUpload upload) {
-        observer.arguments("store", i -> i.notBlank(space, "space").valueObject(upload, "upload"))
-                .throwWhenInvalid();
+        MethodObserver m = observer.forMethod("store");
+        m.arguments(i -> i.notBlank(space, "space").valueObject(upload, "upload")).throwWhenInvalid();
+        ImageUpload stripped = upload.withoutMetadata();
+        m.state(i -> i.isTrue(stripped.isSameFormatAs(upload), "strippedIsTheSameImage")).throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
         if (!directory.startsWith(root.normalize()) || directory.equals(root.normalize())) {
             throw new IllegalArgumentException("space escapes the store root: " + space);
         }
-        String name = EntityId.newUUID() + upload.extension();
+        String name = EntityId.newUUID() + stripped.extension();
         resilience.timeout(STRATEGY).execute(() -> {
             try {
                 Files.createDirectories(directory);
-                Files.write(directory.resolve(name), upload.bytes());
+                Files.write(directory.resolve(name), stripped.bytes());
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -60,7 +65,7 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public Optional<StoredImage> read(String space, FileName name) {
-        if (name == null || space == null || space.isBlank() || !isPlainName(name.value())) {
+        if (name == null || StringUtils.isBlank(space) || !isPlainName(name.value())) {
             return Optional.empty();
         }
         Path directory = root.resolve(space).normalize();
@@ -87,7 +92,7 @@ public final class FilesystemImageStore implements ImageStore {
     }
 
     private static boolean isPlainName(String value) {
-        return value != null && !value.isBlank()
+        return StringUtils.isNotBlank(value)
                 && !value.contains("/") && !value.contains("\\") && !value.contains("..");
     }
 
@@ -111,7 +116,7 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public void delete(String space, FileName name) {
-        if (name == null || space == null || space.isBlank() || !isPlainName(name.value())) {
+        if (name == null || StringUtils.isBlank(space) || !isPlainName(name.value())) {
             return;
         }
         Path directory = root.resolve(space).normalize();

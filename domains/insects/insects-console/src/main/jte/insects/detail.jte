@@ -15,6 +15,7 @@
 @param boolean lens = false
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 @param boolean imageError = false
+@param boolean areaError = false
 
 !{var insect = page.insect();}
 !{var species = insect.species().info();}
@@ -112,6 +113,9 @@
         @if(imageError)
             <p class="error">That file is not a JPEG, PNG or WebP photo under 20 MB.</p>
         @endif
+        @if(areaError)
+            <p class="error">The area could not be read; the photo was not added.</p>
+        @endif
         <form id="identify-form" action="/insects/${species.name().value()}/images" method="post"
               enctype="multipart/form-data">
             @if(_csrfParam != null)
@@ -120,6 +124,9 @@
             <div class="form-group">
                 <input type="file" name="image" accept="image/*" capture="environment" required>
             </div>
+            <input type="hidden" name="areaLat" value="">
+            <input type="hidden" name="areaLon" value="">
+            <p id="area-line" class="area-line" aria-live="polite" hidden>Area: <span id="area-text"></span> <button type="button" id="area-clear">Clear</button></p>
             <div class="form-group">
                 <input type="text" name="location" placeholder="Location (e.g. Oak Vista, Chico, CA)">
             </div>

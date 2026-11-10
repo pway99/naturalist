@@ -26,6 +26,7 @@ class PlantObservationTest {
                         Instant.parse("2026-08-18T15:00:00Z"),
                         "first fruit set",
                         "south bed",
+                        null,
                         null);
 
         InvariantObservation result = mo.namedEntity(observation, "observation");
@@ -45,6 +46,7 @@ class PlantObservationTest {
                         Instant.parse("2026-08-18T15:00:00Z"),
                         null,
                         null,
+                        null,
                         null);
 
         InvariantObservation result = mo.namedEntity(observation, "observation");
@@ -56,7 +58,7 @@ class PlantObservationTest {
     void allNullComponentsReportEveryViolation() {
         MethodObserver mo = observer.forMethod("allNullComponentsReportEveryViolation");
         OrganismObservation<PlantObservationId, PlantRankName> observation =
-                new OrganismObservation<>(null, null, null, null, null, null, null);
+                new OrganismObservation<>(null, null, null, null, null, null, null, null);
 
         InvariantObservation result = mo.namedEntity(observation, "observation");
 
@@ -76,6 +78,7 @@ class PlantObservationTest {
                         NaturalistName.of("patrick-way"),
                         PlantGenusName.of("trifolium"),
                         Instant.parse("2026-08-18T15:00:00Z"),
+                        null,
                         null,
                         null,
                         null);

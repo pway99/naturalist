@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.data.EntityCommand;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.OrganismImage;
 import com.naturalist.observation.OrganismObservation;
@@ -134,9 +135,14 @@ public interface InsectCommand {
          * Stores the upload, then persists an image at {@code subject} (plus an observation when
          * {@code naturalist} is given) atomically; if persistence fails the stored file is deleted.
          *
+         * <p>{@code area} is the cell the client already derived on the device; when null, the command
+         * derives it from the upload's EXIF GPS before stripping, and an upload with neither leaves the
+         * observation's area null.
+         *
          * @throws com.naturalist.exception.InvariantViolationException for an invalid upload — nothing is stored
          */
-        void add(InsectRankName subject, ImageUpload upload, @Nullable NaturalistName naturalist, @Nullable String notes, @Nullable String location);
+        void add(InsectRankName subject, ImageUpload upload, @Nullable NaturalistName naturalist, @Nullable String notes,
+                 @Nullable String location, @Nullable GridCell area);
     }
 
     /**
@@ -147,9 +153,14 @@ public interface InsectCommand {
          * Rate gate → budget → store upload → vision → enrichment → features → citations →
          * transactional catalog write. Returns the identified rank.
          *
+         * <p>{@code area} is the cell the client already derived on the device; when null, the command
+         * derives it from the upload's EXIF GPS before stripping, and an upload with neither leaves the
+         * observation's area null.
+         *
          * @throws com.naturalist.identification.IdentificationRefused RATE_LIMITED or BUDGET_EXHAUSTED (nothing stored)
          * @throws com.naturalist.exception.InvariantViolationException for an invalid upload (nothing stored)
          */
-        InsectRankName identify(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist, @Nullable String notes);
+        InsectRankName identify(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist,
+                                @Nullable String notes, @Nullable GridCell area);
     }
 }

@@ -17,6 +17,7 @@ import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
 import com.naturalist.library.GlossaryLinker;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -38,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 
@@ -395,14 +397,17 @@ public class InsectsController {
         if (csrf != null) {
             model.addAttribute("_csrf", csrf);
         }
-        if (identified != null && !identified.isBlank()) {
+        if (StringUtils.isNotBlank(identified)) {
             model.addAttribute("identified", identified);
         }
-        if (limit != null && !limit.isBlank()) {
+        if (StringUtils.isNotBlank(limit)) {
             model.addAttribute("limit", limit);
         }
         if ("image".equals(error)) {
             model.addAttribute("imageError", true);
+        }
+        if ("area".equals(error)) {
+            model.addAttribute("areaError", true);
         }
         return "insects/identify";
     }
@@ -412,6 +417,8 @@ public class InsectsController {
                     @RequestParam(name = "location", required = false) String location,
                     @RequestParam(name = "capturedAt", required = false) String capturedAt,
                     @RequestParam(name = "notes", required = false) String notes,
+                    @RequestParam(name = "areaLat", required = false) String areaLat,
+                    @RequestParam(name = "areaLon", required = false) String areaLon,
                     HttpServletRequest request) throws IOException {
         var me = currentNaturalist(request);
         if (me.isEmpty()) {
@@ -419,7 +426,7 @@ public class InsectsController {
         }
 
         Instant capturedInstant = null;
-        if (capturedAt != null && !capturedAt.isBlank()) {
+        if (StringUtils.isNotBlank(capturedAt)) {
             try { capturedInstant = Instant.parse(capturedAt); }
             catch (java.time.format.DateTimeParseException ignored) { }
         }
@@ -430,11 +437,17 @@ public class InsectsController {
             return "redirect:/insects/identify?error=image";
         }
 
+        GridCell area = GridCell.of(areaLat, areaLon);
+        if (area != null && !area.isValid()) {
+            // A claimed cell that is unreadable or off the lattice -- nothing is stored.
+            return "redirect:/insects/identify?error=area";
+        }
+
         try {
             var rankName = insectCommand.identification().identify(
                     upload,
                     new com.naturalist.vision.ImageMetadata(location, capturedInstant),
-                    me.get(), notes);
+                    me.get(), notes, area);
             return "redirect:/insects/" + rankName.value();
         } catch (com.naturalist.identification.IdentificationRefused refused) {
             // The rate gate and the budget both live behind insectCommand.identification()
@@ -594,6 +607,9 @@ public class InsectsController {
         if ("image".equals(error)) {
             model.addAttribute("imageError", true);
         }
+        if ("area".equals(error)) {
+            model.addAttribute("areaError", true);
+        }
         model.addAttribute("page", rankPage.get());
         model.addAttribute("lens", collectionLensOn(request) && viewer.isPresent());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -634,6 +650,8 @@ public class InsectsController {
                     @RequestParam("image") MultipartFile imageFile,
                     @RequestParam(name = "location", required = false) String location,
                     @RequestParam(name = "notes", required = false) String notes,
+                    @RequestParam(name = "areaLat", required = false) String areaLat,
+                    @RequestParam(name = "areaLon", required = false) String areaLon,
                     HttpServletRequest request) throws IOException {
         var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
@@ -641,7 +659,12 @@ public class InsectsController {
         if (!upload.isValid()) {
             return "redirect:/insects/" + name + "?error=image";
         }
-        insectCommand.photos().add(species, upload, me.orElse(null), notes, location);
+        GridCell area = GridCell.of(areaLat, areaLon);
+        if (area != null && !area.isValid()) {
+            // A claimed cell that is unreadable or off the lattice -- nothing is stored.
+            return "redirect:/insects/" + name + "?error=area";
+        }
+        insectCommand.photos().add(species, upload, me.orElse(null), notes, location, area);
         return "redirect:/insects/" + name;
     }
 
@@ -672,7 +695,7 @@ public class InsectsController {
      * open redirect.
      */
     private static String safeReturnPath(@Nullable String candidate, String fallback) {
-        if (candidate == null || candidate.isBlank()) {
+        if (StringUtils.isBlank(candidate)) {
             return fallback;
         }
         if (!candidate.startsWith("/insects/") || candidate.contains("//")) {

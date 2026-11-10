@@ -52,7 +52,7 @@ class InsectViewQueryImplTest {
 
     @Test
     void rankPage_viewerWithPhotoObservation() {
-        insectCommand.photos().add(species, ImageUpload.of(JPEG), FLORA, "on the pipevine", null);
+        insectCommand.photos().add(species, ImageUpload.of(JPEG), FLORA, "on the pipevine", null, null);
 
         InsectViews.RankPage page = views.rankPage(species, FLORA).orElseThrow();
 

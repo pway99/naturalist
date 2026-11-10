@@ -17,6 +17,7 @@ class InsectObservationTest {
             Instant.parse("2026-07-01T12:00:00Z"),
             "original notes",
             "oak vista",
+            null,
             null);
 
     @Test

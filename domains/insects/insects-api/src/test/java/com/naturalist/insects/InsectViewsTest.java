@@ -19,7 +19,7 @@ class InsectViewsTest {
     void viewer_rejectsObservationKeyedByForeignImage() {
         OrganismObservation<InsectObservationId, InsectRankName> observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 InsectObservationId.create(), NaturalistName.of("pat"), InsectSpeciesName.of("battus-philenor"),
-                Instant.parse("2026-07-01T12:00:00Z"), null, null, null);
+                Instant.parse("2026-07-01T12:00:00Z"), null, null, null, null);
         InsectViews.Viewer viewer = new InsectViews.Viewer(
                 true, InsectEntityCollections.ImageCollection.empty(), Map.of(InsectImageId.create(), observation));
 

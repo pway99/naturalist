@@ -4,12 +4,14 @@ import com.naturalist.data.FileName;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.StoredImage;
+import com.naturalist.observation.test.ImageFixtures;
 import com.naturalist.resilience.Resilience;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -81,6 +83,40 @@ class FilesystemImageStoreTest {
         assertThat(read).isPresent();
         assertThat(read.get().bytes()).isEqualTo(JPEG);
         assertThat(read.get().mediaType()).isEqualTo("image/jpeg");
+    }
+
+    @Test
+    void store_stripsMetadata_readReturnsNone() {
+        byte[] withGps = ImageFixtures.jpeg(ImageFixtures.app0Jfif(),
+                ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, 6, 45.5, -122.7));
+        FileName name = store.store("insects", ImageUpload.of(withGps));
+
+        StoredImage stored = store.read("insects", name).orElseThrow();
+
+        ImageUpload upload = ImageUpload.of(stored.bytes());
+        assertThat(upload.gps()).isEmpty();
+        assertThat(upload.withoutMetadata()).isEqualTo(upload);
+    }
+
+    @Test
+    void store_refusesAnUploadThatStripsToANonImage() throws IOException {
+        byte[] exif = ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, null, 45.5, -122.7);
+        byte[] bytes = new byte[2 + exif.length + 4];
+        bytes[0] = (byte) 0xFF;
+        bytes[1] = (byte) 0xD8;
+        System.arraycopy(exif, 0, bytes, 2, exif.length);
+        System.arraycopy(new byte[]{0x12, 0x34, 0x56, 0x78}, 0, bytes, 2 + exif.length, 4);
+        ImageUpload upload = ImageUpload.of(bytes);
+        assertThat(upload.isValid()).isTrue();
+
+        assertThatThrownBy(() -> store.store("insects", upload)).isInstanceOf(InvariantViolationException.class);
+
+        Path space = root.resolve("insects");
+        if (Files.exists(space)) {
+            try (Stream<Path> files = Files.list(space)) {
+                assertThat(files.toList()).isEmpty();
+            }
+        }
     }
 
     @Test

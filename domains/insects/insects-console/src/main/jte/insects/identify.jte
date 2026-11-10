@@ -4,6 +4,7 @@
 @param String identified = null
 @param String limit = null
 @param boolean imageError = false
+@param boolean areaError = false
 
 !{var csrfName = _csrf != null ? _csrf.getParameterName() : "";}
 !{var csrfValue = _csrf != null ? _csrf.getToken() : "";}
@@ -34,6 +35,9 @@
             @if(imageError)
                 <p class="error">That file is not a JPEG, PNG or WebP photo under 20 MB.</p>
             @endif
+            @if(areaError)
+                <p class="error">The area could not be read; nothing was identified.</p>
+            @endif
             <p>Upload a photo and Claude will suggest an identification.
                You can verify the result against authoritative references.</p>
 
@@ -50,6 +54,10 @@
                 <img id="image-preview" style="display:none; max-width:400px; margin:1rem 0;"
                      alt="Preview">
 
+                <input type="hidden" name="areaLat" value="">
+                <input type="hidden" name="areaLon" value="">
+                <p id="area-line" class="area-line" aria-live="polite" hidden>Area: <span id="area-text"></span> <button type="button" id="area-clear">Clear</button></p>
+
                 <div class="form-group">
                     <label for="location">Location</label>
                     <input type="text" id="location" name="location"
@@ -59,7 +67,7 @@
                 <div class="form-group">
                     <label for="capturedAt">Date observed</label>
                     <input type="text" id="capturedAt" name="capturedAt"
-                           placeholder="auto-detected from photo">
+                           placeholder="YYYY-MM-DDTHH:MM:SSZ">
                 </div>
 
                 <div class="form-group">

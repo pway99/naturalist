@@ -12,6 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.naturalist.observation.OrganismObservation;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.Identification;
 
 interface InsectObservationEntityRepositoryTest
@@ -48,7 +49,7 @@ interface InsectObservationEntityRepositoryTest
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-01T08:00:00Z"),
                 "new observation",
-                null, null);
+                null, null, null);
     }
 
     @Override
@@ -59,7 +60,7 @@ interface InsectObservationEntityRepositoryTest
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-02T08:00:00Z"),
                 null,
-                null, null);
+                null, null, null);
     }
 
     @Override
@@ -71,9 +72,22 @@ interface InsectObservationEntityRepositoryTest
                 Instant.parse("2026-06-03T08:00:00Z"),
                 "changed",
                 "Oak Vista, Chico, CA",
+                GridCell.of(1092, -2945),
                 new Identification(0.77, "changed evidence",
                         List.of(new Identification.Candidate(
                                 "Papilio rutulus", "Western Tiger Swallowtail", 0.15))));
+    }
+
+    @Test
+    default void insertWithArea_readsBackTheSameCell() {
+        var cell = GridCell.of(1092, -2945);
+        var entity = newEntity().withArea(cell);
+
+        repository().insert(entity);
+
+        var persisted = repository().getByName(entity.key()).orElseThrow();
+        assertThat(persisted.area()).isEqualTo(cell);
+        assertEntityEquals(persisted, entity);
     }
 
     @Test

@@ -2,8 +2,12 @@ package com.naturalist.observation;
 
 import com.naturalist.ddd.ValueObject;
 import com.naturalist.observability.Constraints;
+import com.naturalist.observability.MethodObserver;
+import com.naturalist.observability.Observer;
 
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -13,6 +17,8 @@ import java.util.function.Consumer;
  */
 public record ImageUpload(byte[] bytes) implements ValueObject {
     public static final int MAX_BYTES = 20 * 1024 * 1024;
+
+    private static final Observer observer = Observer.forClass(ImageUpload.class);
 
     private static final byte[] JPEG_MAGIC = {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF};
 
@@ -42,6 +48,50 @@ public record ImageUpload(byte[] bytes) implements ValueObject {
             case "image/png" -> ".png";
             default -> ".webp";
         };
+    }
+
+    /**
+     * The point the camera recorded in the upload's Exif GPS tags, read from a JPEG {@code APP1},
+     * a PNG {@code eXIf} or a WebP {@code EXIF} block. Empty when the upload carries no fix, and
+     * when the metadata is truncated or corrupt, decodes to no point on the globe, or is exactly
+     * 0°, 0°, which firmware writes when it had no fix: a bad fix is
+     * observed, never thrown and never handed on.
+     */
+    public Optional<Coordinates> gps() {
+        MethodObserver m = observer.forMethod("gps");
+        return ImageMetadataSegments.exifTiff(bytes, m).flatMap(tiff -> ImageMetadataSegments.gps(tiff, m));
+    }
+
+    /**
+     * This upload with its metadata removed, so what is stored says nothing the picture does not:
+     * a JPEG loses every application segment except {@code APP0} (JFIF), {@code APP2} (ICC) and
+     * {@code APP14} (Adobe), so its Exif and XMP {@code APP1}, JUMBF and C2PA {@code APP11} and
+     * IPTC {@code APP13} go, and every {@code COM} segment, and bytes between segments that are
+     * not a marker; a PNG its {@code eXIf} and text chunks, a WebP its {@code EXIF} and {@code XMP } chunks, and
+     * every format loses whatever follows the image's terminator. The one tag kept is a JPEG's
+     * Exif orientation, written back alone, so the picture still stands the right way up.
+     * Everything a decoder reads is copied byte for byte; nothing is re-encoded. Stripping a
+     * stripped upload changes nothing.
+     *
+     * <p>When the container is malformed, the fault is observed: from a metadata block the walk
+     * broke on, the rest is dropped; from any other, it is kept as it stands. The result can
+     * therefore fail {@link #isValid()} when this upload was not really an image, and a caller
+     * that stores it validates it first. Returns this upload when there was nothing to remove,
+     * and for bytes that are not a recognised image.
+     */
+    public ImageUpload withoutMetadata() {
+        if (mediaType() == null) return this;
+        byte[] stripped = ImageMetadataSegments.withoutMetadata(bytes, observer.forMethod("withoutMetadata"));
+        return Arrays.equals(stripped, bytes) ? this : new ImageUpload(stripped);
+    }
+
+    /**
+     * True when this upload is a valid image of the same format as {@code other}: what a caller
+     * checks of a {@link #withoutMetadata()} result against the upload it was stripped from
+     * before storing it.
+     */
+    public boolean isSameFormatAs(ImageUpload other) {
+        return isValid() && Objects.equals(mediaType(), other.mediaType());
     }
 
     private boolean startsWith(byte[] prefix, int offset) {

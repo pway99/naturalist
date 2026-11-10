@@ -56,7 +56,7 @@ class InsectsControllerPipelineInvariantTest {
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
         var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
-        assertThatThrownBy(() -> controller.identify(image, null, null, null, request))
+        assertThatThrownBy(() -> controller.identify(image, null, null, null, null, null, request))
                 .isInstanceOf(InvariantViolationException.class);
 
         try (var walk = Files.walk(imageRoot)) {

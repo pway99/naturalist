@@ -3,6 +3,7 @@ package com.naturalist.plants;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Constraints;
 import com.naturalist.observability.Observer;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.Identification;
 import com.naturalist.observation.OrganismObservation;
 import com.naturalist.persistence.Dbo;
@@ -33,6 +34,8 @@ final class PlantObservationDbo implements Dbo {
     Instant observedOn;
     String notes;          // nullable
     String location;       // nullable
+    Integer areaLat;       // nullable pair with areaLon: the GridCell's latIndex
+    Integer areaLon;       // GridCell lonIndex; null exactly when areaLat is
     Double identificationConfidence;  // nullable group: present iff the observation has an Identification
     String identificationEvidence;    // nullable group
 
@@ -45,6 +48,11 @@ final class PlantObservationDbo implements Dbo {
         d.observedOn = o.observedOn();
         d.notes = o.notes();
         d.location = o.location();
+        GridCell area = o.area();
+        if (area != null) {
+            d.areaLat = area.latIndex();
+            d.areaLon = area.lonIndex();
+        }
         Identification ident = o.identification();
         if (ident != null) {
             d.identificationConfidence = ident.confidence();
@@ -66,6 +74,7 @@ final class PlantObservationDbo implements Dbo {
                 observedOn,
                 notes,
                 location,
+                areaLat == null ? null : GridCell.of(areaLat, areaLon),
                 identification);
     }
 
@@ -77,6 +86,7 @@ final class PlantObservationDbo implements Dbo {
                     .maxLength(observedBy, 64, "observedBy")
                 .notBlank(subjectRank, "subjectRank").maxLength(subjectRank, 16, "subjectRank")
                 .notNull(subject, "subject").kebabFormat(subject, "subject").maxLength(subject, 64, "subject")
-                .notNull(observedOn, "observedOn");
+                .notNull(observedOn, "observedOn")
+                .isTrue((areaLat == null) == (areaLon == null), "areaLatAndLonTogether");
     }
 }

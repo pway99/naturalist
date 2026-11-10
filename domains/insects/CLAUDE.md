@@ -18,6 +18,13 @@ below. The persistence stack keeps the rank subject (`InsectSpeciesQueryImpl`,
 `InsectQuery`; nothing in the biology refers to them. The console's read handlers bind,
 call one `InsectViewQuery` method and render.
 
+**area / location** — *area* is the `GridCell` (kernel `observation`), the only place the domain keeps
+for an observation; the field observation's `OrganismObservation.area` is nullable. The command resolves it with
+`GridCell.resolve` from the client's cell or the upload's EXIF GPS, before the upload is stripped, and
+hands it to identification as range context. *location* is the naturalist's own typed words,
+untouched. The controller only translates the posted `areaLat` / `areaLon` cell indices; it never
+reads EXIF and never sees exact coordinates.
+
 **InsectImage** — `Entity<InsectImageId>`. A photograph of an observed individual.
 Carries `InsectImageId id`, accessor `id()`. Parent reference is an
 `InsectRankName parentName` (slug) — no `insectSpeciesId`, no `withId`, no nullable

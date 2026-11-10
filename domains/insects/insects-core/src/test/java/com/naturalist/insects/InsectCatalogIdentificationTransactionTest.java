@@ -70,7 +70,7 @@ class InsectCatalogIdentificationTransactionTest {
                 FileName.of("IMG_0002.jpg"), secondObsId);
         var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
                 secondObsId, NaturalistName.of("pat"), SPECIES_NAME,
-                Instant.now(), "second sighting", null, null);
+                Instant.now(), "second sighting", null, null, null);
         var second = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(species()),
                 taxonomy(), secondImage, secondObs,
@@ -109,7 +109,7 @@ class InsectCatalogIdentificationTransactionTest {
                 FileName.of("IMG_0003.jpg"), secondObsId);
         var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
                 secondObsId, NaturalistName.of("pat"), secondSpeciesName,
-                Instant.now(), null, null, null);
+                Instant.now(), null, null, null, null);
         var second = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(secondSpecies),
                 taxonomy(), secondImage, secondObs,
@@ -144,7 +144,7 @@ class InsectCatalogIdentificationTransactionTest {
                 FileName.of("IMG_0010.jpg"), obsId);
         var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 obsId, NaturalistName.of("pat"), familyName,
-                Instant.now(), null, null, null);
+                Instant.now(), null, null, null, null);
         var id = new CatalogIdentification(
                 new IdentifiedRankEntity.Family(family), taxonomy,
                 image, observation, List.of(), List.of(), Map.of());
@@ -181,7 +181,7 @@ class InsectCatalogIdentificationTransactionTest {
                 FileName.of("IMG_0020.jpg"), obsId);
         var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 obsId, NaturalistName.of("pat"), genusName,
-                Instant.now(), null, null, null);
+                Instant.now(), null, null, null, null);
         var id = new CatalogIdentification(
                 new IdentifiedRankEntity.Genus(genus), taxonomy,
                 image, observation, List.of(), List.of(), Map.of());
@@ -283,7 +283,7 @@ class InsectCatalogIdentificationTransactionTest {
     private static OrganismObservation<InsectObservationId, InsectRankName> observation() {
         return new OrganismObservation<InsectObservationId, InsectRankName>(
                 OBSERVATION_ID, NaturalistName.of("pat"), SPECIES_NAME,
-                Instant.now(), null, null, null);
+                Instant.now(), null, null, null, null);
     }
 
     private static Description description() {
@@ -314,7 +314,7 @@ class InsectCatalogIdentificationTransactionTest {
                 FileName.of("IMG_0030.jpg"), secondObsId);
         var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
                 secondObsId, NaturalistName.of("pat"), secondSpeciesName,
-                Instant.now(), null, null, null);
+                Instant.now(), null, null, null, null);
         var second = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(secondSpecies),
                 taxonomy(), secondImage, secondObs,

@@ -59,7 +59,7 @@ class InsectObservationCommandImplTest
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-10T08:00:00Z"),
                 "new",
-                null, null);
+                null, null, null);
     }
 
     @Override
@@ -70,7 +70,7 @@ class InsectObservationCommandImplTest
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 Instant.parse("2026-06-11T08:00:00Z"),
                 null,
-                null, null);
+                null, null, null);
     }
 
     @Override
@@ -82,6 +82,7 @@ class InsectObservationCommandImplTest
                 Instant.parse("2026-06-12T08:00:00Z"),
                 "changed",
                 "Deer Creek, Butte County, CA",
+                null,
                 new Identification(0.91, "changed evidence",
                         List.of(new Identification.Candidate(
                                 "Papilio zelicaon", "Anise Swallowtail", 0.08))));

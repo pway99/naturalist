@@ -85,7 +85,7 @@ class InsectsControllerOverBudgetTest {
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
         var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
-        String view = controller().identify(image, null, null, null, request);
+        String view = controller().identify(image, null, null, null, null, null, request);
 
         assertThat(view).isEqualTo("redirect:/insects/identify?limit=MONTHLY");
     }

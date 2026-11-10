@@ -18,7 +18,9 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.identification.IdentificationRefused;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.resilience.Bulkhead;
@@ -43,6 +45,7 @@ import com.naturalist.vision.ImageMetadata;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
 import com.naturalist.vision.VisionService;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
@@ -76,6 +79,11 @@ import com.naturalist.observation.Identification;
  * any budget is reserved. All three gates surface as {@link IdentificationRefused} (api
  * vocabulary) and run before the upload is stored, so a refused call stores nothing; a
  * failure at any later stage deletes the stored upload.
+ *
+ * <p>Before any gate, the observation's {@link GridCell} area is resolved from the claimed cell
+ * or the upload's EXIF fix and the upload is stripped of its metadata; only the stripped upload
+ * is stored and shown to vision. Vision is told the area as range context beside the typed
+ * location; the observation records the typed location and the area apart.
  *
  * <p>Authority lookups enrich the identification with citations and
  * grounded descriptions but never gate it — the vision result is
@@ -160,12 +168,21 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     @Override
     public InsectRankName identify(ImageUpload upload, ImageMetadata metadata,
                                    NaturalistName naturalist,
-                                   @Nullable String notes) {
-        observer.arguments("identify", i -> i
+                                   @Nullable String notes,
+                                   @Nullable GridCell area) {
+        MethodObserver m = observer.forMethod("identify");
+        m.arguments(i -> i
                         .valueObject(upload, "upload")
                         .valueObject(metadata, "metadata")
-                        .entityName(naturalist, "naturalist"))
+                        .entityName(naturalist, "naturalist")
+                        .whenNotNull(area, c -> c.valueObject(area, "area")))
                 .throwWhenInvalid();
+
+        // The EXIF is read for the cell, then gone: neither the store nor vision sees the camera's
+        // metadata. A strip can leave an upload that was not really an image with no image at all.
+        GridCell observedArea = GridCell.resolve(area, upload);
+        ImageUpload stripped = upload.withoutMetadata();
+        m.state(s -> s.valueObject(stripped, "strippedUpload")).throwWhenInvalid();
 
         // 0a. RATE GATE -- one permit per identification (not per vision turn); refuses
         // before any budget reservation or vision spend, so a rate-rejected call burns no
@@ -181,7 +198,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         // budget reservation or vision spend. The permit is held through stages 0c-6 and
         // released whether they return or throw.
         try {
-            return bulkhead.execute(() -> reserveStoreAndCatalogue(upload, metadata, naturalist, notes));
+            return bulkhead.execute(() -> reserveStoreAndCatalogue(stripped, metadata, naturalist, notes, observedArea));
         } catch (BulkheadFullException full) {
             throw refusal(naturalist, "notBusy",
                     new IdentificationRefused(IdentificationRefused.Reason.BUSY, null, null));
@@ -200,11 +217,15 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         return refused;
     }
 
-    /** Stages 1-6: vision, enrichment, feature and citation resolution, catalog write. */
+    /**
+     * Stages 1-6: vision, enrichment, feature and citation resolution, catalog write. Vision is
+     * told the typed location and the area together; the observation keeps them apart.
+     */
     private InsectRankName catalogue(ImageUpload upload, ImageMetadata metadata,
                                      NaturalistName naturalist, @Nullable String notes,
-                                     FileName storedFileName) {
-        var image = new Image(upload.bytes(), upload.mediaType(), metadata);
+                                     @Nullable GridCell area, FileName storedFileName) {
+        var image = new Image(upload.bytes(), upload.mediaType(),
+                new ImageMetadata(locationContext(metadata.location(), area), metadata.capturedAt()));
 
         // 1. VISION -- external call (turn 1 propose, optional turn 2 reuse-resolve)
         var visionOutcome = identifyViaVision(image);
@@ -247,8 +268,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
         var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 observationId, naturalist, rankName, capturedAt,
-                (notes == null || notes.isBlank()) ? null : notes,
-                image.metadata().location(),
+                StringUtils.defaultIfBlank(notes, null),
+                metadata.location(),
+                area,
                 visionResult.identification());
 
         var descriptionMap = new HashMap<InsectRankName, Description>();
@@ -669,7 +691,20 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 schema);
     }
 
-    private String buildSystemPrompt(String location) {
+    /**
+     * The location context vision is given: the naturalist's typed words, then, when the
+     * observation has an area, a sentence naming the cell and asking for species out of range to
+     * be ruled out. Null when there is neither.
+     */
+    static @Nullable String locationContext(@Nullable String typed, @Nullable GridCell area) {
+        boolean hasTyped = StringUtils.isNotBlank(typed);
+        if (area == null) return hasTyped ? typed : null;
+        String sentence = "Photographed within " + area.describe()
+                + ". Treat this as the observation's location: rule out species whose known range does not include it.";
+        return hasTyped ? typed + " " + sentence : sentence;
+    }
+
+    private String buildSystemPrompt(@Nullable String location) {
         var prompt = """
                 You are an expert entomologist assisting a naturalist in identifying insects
                 from photographs. For each identification:
@@ -707,7 +742,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 (e.g. battus-philenor for a species, syrphidae for a family).
                 Use the propose_insect_species tool to return your identification.
                 """;
-        if (location != null && !location.isBlank()) {
+        if (StringUtils.isNotBlank(location)) {
             prompt += "\nLocation context: " + location;
         }
         return prompt;
@@ -826,7 +861,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         var candidates = new ArrayList<Identification.Candidate>();
         for (var candidate : array) {
             var scientificName = candidate.hasNonNull("name") ? candidate.get("name").asText() : null;
-            if (scientificName == null || scientificName.isBlank()) {
+            if (StringUtils.isBlank(scientificName)) {
                 continue;
             }
             var candidateCommonName = candidate.hasNonNull("commonName") ? candidate.get("commonName").asText() : null;
@@ -837,7 +872,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     }
 
     /** Stage 0c onward, run while holding a {@code vision.identification} bulkhead permit. */
-    private InsectRankName reserveStoreAndCatalogue(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist, @Nullable String notes) {
+    private InsectRankName reserveStoreAndCatalogue(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist,
+                                                    @Nullable String notes, @Nullable GridCell area) {
         // 0c. BUDGET RESERVATION -- refuses before any vision spend; nothing stored
         try {
             budget.reserve(naturalist);
@@ -849,7 +885,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         // 0d. STORE THE UPLOAD -- deleted again if any later stage fails
         FileName storedFileName = imageStore.store(SPACE, upload);
         try {
-            return catalogue(upload, metadata, naturalist, notes, storedFileName);
+            return catalogue(upload, metadata, naturalist, notes, area, storedFileName);
         } catch (RuntimeException e) {
             try {
                 imageStore.delete(SPACE, storedFileName);

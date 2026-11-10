@@ -19,7 +19,7 @@ import java.util.List;
 interface InsectObservationMapper {
 
     String COLUMNS = """
-        id, observed_by, subject_rank, subject, observed_on, notes, location,
+        id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
         identification_confidence, identification_evidence
         """;
 
@@ -28,7 +28,7 @@ interface InsectObservationMapper {
 
     @Select("""
         <script>
-        SELECT id, observed_by, subject_rank, subject, observed_on, notes, location,
+        SELECT id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
                identification_confidence, identification_evidence
         FROM insect_observation WHERE id IN
         <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
@@ -51,7 +51,7 @@ interface InsectObservationMapper {
 
     @Select("""
         <script>
-        SELECT id, observed_by, subject_rank, subject, observed_on, notes, location,
+        SELECT id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
                identification_confidence, identification_evidence
         FROM insect_observation
         WHERE observed_by = #{observedBy} AND (subject_rank, subject) IN
@@ -73,9 +73,9 @@ interface InsectObservationMapper {
     List<InsectObservationCandidateDbo> selectCandidates(@Param("ids") Collection<String> ids);
 
     @Insert("""
-        INSERT INTO insect_observation (id, observed_by, subject_rank, subject, observed_on, notes, location,
+        INSERT INTO insect_observation (id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
             identification_confidence, identification_evidence)
-        VALUES (#{id}::uuid, #{observedBy}, #{subjectRank}, #{subject}, #{observedOn}, #{notes}, #{location},
+        VALUES (#{id}::uuid, #{observedBy}, #{subjectRank}, #{subject}, #{observedOn}, #{notes}, #{location}, #{areaLat}, #{areaLon},
             #{identificationConfidence}, #{identificationEvidence})
         """)
     void insert(InsectObservationDbo dbo);
@@ -84,6 +84,7 @@ interface InsectObservationMapper {
         UPDATE insect_observation SET
             observed_by = #{observedBy}, subject_rank = #{subjectRank}, subject = #{subject},
             observed_on = #{observedOn}, notes = #{notes}, location = #{location},
+            area_lat = #{areaLat}, area_lon = #{areaLon},
             identification_confidence = #{identificationConfidence}, identification_evidence = #{identificationEvidence}
         WHERE id = #{id}::uuid
         """)

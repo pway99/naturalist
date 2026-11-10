@@ -220,6 +220,30 @@ over a directory root with a classpath fallback (`<space>/images/<name>`) for se
 photos. It has no vendor dependency, so it lives in `kernels/` like `catalog-inmem`;
 every `Files.*` call runs under `resilience.timeout("image.store")`.
 
+**Location privacy.** Photo metadata and exact location never persist. `ImageUpload.gps()` reads
+the EXIF fix (empty when absent or malformed) and `ImageUpload.withoutMetadata()` returns the upload
+with EXIF, XMP, IPTC and comment segments removed and image data untouched (no transcoding); only the
+EXIF Orientation survives, as a minimal APP1, so the picture still displays upright. A JPEG keeps only
+`APP0` (JFIF), `APP2` (ICC) and `APP14` (Adobe) among its `APPn` segments, so `APP11` (JUMBF/C2PA) and every
+other one goes; bytes appended after the image's end (a motion photo's MP4, a phone's trailer) are dropped;
+the JPEG walk skips fill bytes and resynchronises past junk as a decoder does, dropping the junk. `gps()`
+treats an exact 0°, 0° as no fix. The `ImageStore`
+contract: every image a store writes is stripped first, and an upload that strips to something other than
+the same kind of image is refused with nothing written; images a store serves without having written
+(classpath seed photos) are stripped once where they are kept. `GridCell` is a 2.5-arc-minute cell of
+the lat/lon lattice (`latIndex`, `lonIndex`) and the only form of location the app keeps:
+`OrganismObservation.area` persists it as two nullable indices, and `GridCell.resolve(claimed, upload)`
+is the one place the rule "client cell wins, else EXIF, else none" lives (commands call it, adapters never
+do). `Coordinates` is the exact point, request-scoped: it is snapped to a cell and discarded, and
+the ArchUnit `LocationPrivacyComplianceTest` (management-console) forbids it as a persisted component.
+
+### observation-test  (`com.naturalist.observation.test`)
+
+Shared `ImageFixtures` (synthetic JPEG/PNG/WebP bytes with and without EXIF, GPS, XMP, IPTC and
+comments). It is a *main* source set so other modules can use it, and consumers depend on it at
+test scope only, never compile scope. Its own tests (`ImageUploadStripTest`, `ImageUploadGpsTest`)
+exercise the `observation` kernel's `ImageUpload`, which cannot host them without a cycle.
+
 ### catalog-rdbms  (`com.naturalist.catalog.rdbms`)
 
 Postgres/MyBatis adapter for `Catalog`: per-domain `<domain>_catalog_token`
@@ -386,7 +410,7 @@ constraint. Adding a kernel-level test would re-verify edges that
 
 **Scope of this convention.** Applies to all kernels: `framework`, `framework-test`,
 `field-notes`, `identification`, `taxonomy`, `clades`, `biogeography`, `catalog`, `catalog-inmem`,
-`catalog-rdbms`, `habitat`, `image-store-filesystem`, `measurements`, `observation`. The `framework-test` kernel additionally carries the
+`catalog-rdbms`, `habitat`, `image-store-filesystem`, `measurements`, `observation`, `observation-test`. The `framework-test` kernel additionally carries the
 "no test infra for test infra" rule — don't add unit tests for code that exists
 only to support other tests; rely on manual smoke + the consuming `*-repository-test`
 modules.

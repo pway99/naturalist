@@ -104,6 +104,12 @@
             <artifactId>image-store-filesystem</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- TEST: byte-level JPEG fixtures (EXIF GPS and friends) for the upload tests. -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>observation-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

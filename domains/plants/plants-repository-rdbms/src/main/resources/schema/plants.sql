@@ -139,8 +139,11 @@ CREATE TABLE plant_observation (
     observed_on              TIMESTAMPTZ  NOT NULL,
     notes                    TEXT,
     location                 TEXT,
+    area_lat                 INTEGER,                          -- GridCell latIndex, null together with area_lon
+    area_lon                 INTEGER,                          -- GridCell lonIndex
     identification_confidence DOUBLE PRECISION,               -- null group: absent when no Identification
-    identification_evidence  TEXT
+    identification_evidence  TEXT,
+    CONSTRAINT plant_observation_area_pair CHECK ((area_lat IS NULL) = (area_lon IS NULL))
 );
 CREATE TABLE plant_observation_candidate (
     observation_id  UUID             NOT NULL REFERENCES plant_observation(id),

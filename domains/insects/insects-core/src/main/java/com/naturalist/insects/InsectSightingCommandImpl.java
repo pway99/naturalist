@@ -4,6 +4,7 @@ import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Observer;
 import com.naturalist.observation.OrganismObservation;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
@@ -33,7 +34,7 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
                 .throwWhenInvalid();
         var id = InsectObservationId.create();
         observations.insert(new OrganismObservation<InsectObservationId, InsectRankName>(
-                id, naturalist, subject, Instant.now(), blankToNull(notes), null, null));
+                id, naturalist, subject, Instant.now(), blankToNull(notes), null, null, null));
         return id;
     }
 
@@ -49,6 +50,6 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
     }
 
     private static @Nullable String blankToNull(@Nullable String s) {
-        return s == null || s.isBlank() ? null : s;
+        return StringUtils.defaultIfBlank(s, null);
     }
 }

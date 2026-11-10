@@ -15,8 +15,12 @@ import com.naturalist.identification.IdentificationRefused;
 import com.naturalist.library.CitationAssociationQuery;
 import com.naturalist.library.LibraryCommand;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.observation.GridCell;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
+import com.naturalist.observation.OrganismObservation;
+import com.naturalist.observation.test.ImageFixtures;
 import com.naturalist.resilience.Bulkhead;
 import com.naturalist.resilience.CircuitBreaker;
 import com.naturalist.resilience.RateLimitExceededException;
@@ -28,6 +32,7 @@ import com.naturalist.taxonomy.OrganismFeatureAssignment;
 import com.naturalist.usage.BudgetExceededException;
 import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.usage.LimitKind;
+import com.naturalist.vision.Image;
 import com.naturalist.vision.ImageMetadata;
 import com.naturalist.vision.ToolResult;
 import com.naturalist.vision.ToolSchema;
@@ -38,11 +43,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.net.URI;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.nio.file.Path;
 import java.nio.file.Files;
@@ -155,7 +163,7 @@ class InsectIdentificationCommandImplTest {
     void identify_returnsRankNameAndPersistsEntities() {
         var rankName = buildCommand(stubService).identify(
                 ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
-                NaturalistName.of("pat"), null);
+                NaturalistName.of("pat"), null, null);
 
         assertThat(rankName.value()).isEqualTo("testus-fabricatus");
 
@@ -208,7 +216,7 @@ class InsectIdentificationCommandImplTest {
                 twoTurn(SAMPLE_RESULT_JSON, "{\"resolutions\":[]}"));
         var metadata = new ImageMetadata("Chico, CA", null);
 
-        twoTurnCmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null);
+        twoTurnCmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null, null);
 
         var featureSource = nte.getNamed(InsectFeatureTestEntitySource.class);
         var assignmentSource = nte.getNamed(InsectFeatureAssignmentTestEntitySource.class);
@@ -217,7 +225,7 @@ class InsectIdentificationCommandImplTest {
         assertThat(featureCountAfterFirst).isGreaterThanOrEqualTo(3);
 
         // Same stub -> vision reports the exact same three feature strings again.
-        twoTurnCmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null);
+        twoTurnCmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null, null);
 
         assertThat(featureSource.entityStream().count()).isEqualTo(featureCountAfterFirst);
         assertThat(assignmentSource.entityStream().count()).isEqualTo(assignmentCountAfterFirst);
@@ -245,7 +253,7 @@ class InsectIdentificationCommandImplTest {
         long before = featureSource.entityStream().count();
 
         buildCommand(stubService).identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
-                NaturalistName.of("pat"), null);
+                NaturalistName.of("pat"), null, null);
 
         assertThat(featureSource.entityStream().count()).isEqualTo(before + 3);
         assertThat(featureSource.entityStream().map(InsectFeature::value).toList())
@@ -276,7 +284,7 @@ class InsectIdentificationCommandImplTest {
         var cmd = buildCommand((image, tool, prompt) -> exchange);
 
         cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
-                NaturalistName.of("pat"), null);
+                NaturalistName.of("pat"), null, null);
 
         // Only the two non-reused sample values were minted; "hovering flight" reused the seed.
         assertThat(featureSource.entityStream().count()).isEqualTo(before + 2);
@@ -313,7 +321,7 @@ class InsectIdentificationCommandImplTest {
         var cmd = buildCommand((image, tool, prompt) -> exchange);
 
         cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
-                NaturalistName.of("pat"), null);
+                NaturalistName.of("pat"), null, null);
 
         // All three sample values minted fresh; the seeded near-variant untouched.
         assertThat(featureSource.entityStream().count()).isEqualTo(before + 3);
@@ -340,7 +348,7 @@ class InsectIdentificationCommandImplTest {
         nte.get(LibraryCommand.class).citations().insert(preExisting);
 
         cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
-                NaturalistName.of("pat"), null);
+                NaturalistName.of("pat"), null, null);
 
         var associations = nte.get(CitationAssociationQuery.class).findByCitationName(citationName);
         assertThat(associations.size()).isEqualTo(1);
@@ -357,7 +365,7 @@ class InsectIdentificationCommandImplTest {
         var cmd = buildCommand(withAlternatives);
         var rankName = cmd.identify(
                 ImageUpload.of(JPEG), new ImageMetadata(null, null),
-                NaturalistName.of("pat"), null);
+                NaturalistName.of("pat"), null, null);
 
         var obs = query.observations().findPage(PageRequest.console(0));
         var withId = obs.content().stream()
@@ -379,7 +387,7 @@ class InsectIdentificationCommandImplTest {
         };
         var cmd = buildCommand(capturing);
         cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Deer Creek, Butte County, CA", null),
-                NaturalistName.of("pat"), null);
+                NaturalistName.of("pat"), null, null);
 
         assertThat(promptCapture[0]).contains("Deer Creek, Butte County, CA");
     }
@@ -393,7 +401,7 @@ class InsectIdentificationCommandImplTest {
         };
         var cmd = buildCommand(capturing);
         cmd.identify(ImageUpload.of(JPEG), new ImageMetadata(null, null),
-                NaturalistName.of("pat"), null);
+                NaturalistName.of("pat"), null, null);
 
         assertThat(promptCapture[0]).doesNotContain("Location context:");
     }
@@ -413,7 +421,7 @@ class InsectIdentificationCommandImplTest {
         var cmd = buildCommand(com.naturalist.resilience.Resilience.noOp(), exceededBudget, trackingVision);
 
         assertThatThrownBy(() -> cmd.identify(
-                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null))
                 .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
                         assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.BUDGET_EXHAUSTED));
 
@@ -490,7 +498,7 @@ class InsectIdentificationCommandImplTest {
         var metadata = new ImageMetadata("Chico, CA", null);
 
         // First call: the rate limiter permits it through -- budget reserves and vision runs.
-        cmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null);
+        cmd.identify(ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null, null);
         assertThat(budgetReserveCalls.get()).isEqualTo(1);
         assertThat(visionCalled.get()).isTrue();
 
@@ -498,7 +506,7 @@ class InsectIdentificationCommandImplTest {
         // is never called again.
         visionCalled.set(false);
         assertThatThrownBy(() -> cmd.identify(
-                ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null))
+                ImageUpload.of(JPEG), metadata, NaturalistName.of("pat"), null, null))
                 .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
                         assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.RATE_LIMITED));
 
@@ -666,7 +674,7 @@ class InsectIdentificationCommandImplTest {
         var cmd = buildCommand(failing);
 
         assertThatThrownBy(() -> cmd.identify(
-                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("vision exploded");
 
@@ -679,7 +687,7 @@ class InsectIdentificationCommandImplTest {
                 IdentificationBudget.noOp(), stubService);
 
         assertThatThrownBy(() -> cmd.identify(
-                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null))
                 .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
                         assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.RATE_LIMITED));
 
@@ -696,7 +704,7 @@ class InsectIdentificationCommandImplTest {
         var cmd = buildCommand(Resilience.noOp(), exceeded, stubService);
 
         assertThatThrownBy(() -> cmd.identify(
-                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null))
                 .isInstanceOfSatisfying(IdentificationRefused.class, refused -> {
                     assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.BUDGET_EXHAUSTED);
                     assertThat(refused.detail()).isEqualTo("MONTHLY");
@@ -709,7 +717,7 @@ class InsectIdentificationCommandImplTest {
     @Test
     void identify_success_storesTheUpload() {
         var rankName = buildCommand(stubService).identify(
-                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null);
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null);
 
         var images = query.images().forParentName(rankName).stream().toList();
         assertThat(images).hasSize(1);
@@ -820,7 +828,7 @@ class InsectIdentificationCommandImplTest {
         var cmd = buildCommand(new RejectingBulkheadResilience(), trackingBudget, trackingVision);
 
         assertThatThrownBy(() -> cmd.identify(
-                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null))
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null))
                 .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
                         assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.BUSY));
 
@@ -854,7 +862,7 @@ class InsectIdentificationCommandImplTest {
             };
 
             buildCommand(Resilience.noOp(), recording, stubService)
-                    .identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), pat, null);
+                    .identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), pat, null, null);
             assertThat(refused).as("a permitted identification records no refusal").isEmpty();
 
             for (var cmd : List.of(
@@ -862,7 +870,7 @@ class InsectIdentificationCommandImplTest {
                     handBuiltCommand(new RejectingBulkheadResilience(), recording, stubService),
                     handBuiltCommand(Resilience.noOp(), overBudget, stubService))) {
                 assertThatThrownBy(() -> cmd.identify(
-                        ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), pat, null))
+                        ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), pat, null, null))
                         .isInstanceOf(IdentificationRefused.class);
             }
 
@@ -876,5 +884,130 @@ class InsectIdentificationCommandImplTest {
         } finally {
             Metrics.removeRegistry(meters);
         }
+    }
+
+    // ----- the area: resolved, persisted, and handed to vision as range context -----
+
+    /** The cell Portland, Oregon (45.52, -122.68) snaps to. */
+    private static final GridCell PORTLAND_CELL = GridCell.of(1092, -2945);
+
+    private static final String PORTLAND_SENTENCE = "Photographed within 45.50–45.54°N, 122.71–122.67°W. "
+            + "Treat this as the observation's location: rule out species whose known range does not include it.";
+
+    /** The image the vision service was handed, captured by {@link #capturingVision}. */
+    private final AtomicReference<Image> seenByVision = new AtomicReference<>();
+
+    private final VisionService capturingVision = (image, tool, prompt) -> {
+        seenByVision.set(image);
+        return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
+    };
+
+    /** A JPEG that walks as segments and carries an Exif fix at Portland and an orientation. */
+    private static ImageUpload portlandUpload() {
+        return ImageUpload.of(ImageFixtures.jpeg(ImageFixtures.app0Jfif(),
+                ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, 6, 45.52, -122.68)));
+    }
+
+    /** The one observation the identification of {@code rankName} recorded. */
+    private OrganismObservation<InsectObservationId, InsectRankName> observationOf(InsectRankName rankName) {
+        var image = query.images().forParentName(rankName).stream().toList().getFirst();
+        return query.observations().getByName(image.observationId()).orElseThrow();
+    }
+
+    @Test
+    void identify_sendsTheAreaSentence_andStrippedBytes_toVision() {
+        buildCommand(capturingVision).identify(portlandUpload(), new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null, PORTLAND_CELL);
+
+        assertThat(seenByVision.get().metadata().location()).isEqualTo("Chico, CA " + PORTLAND_SENTENCE);
+        assertThat(ImageUpload.of(seenByVision.get().bytes()).gps()).isEmpty();
+    }
+
+    @Test
+    void identify_persistsTheArea_andKeepsTypedLocationSeparate() {
+        var rankName = buildCommand(capturingVision).identify(portlandUpload(),
+                new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, PORTLAND_CELL);
+
+        var observation = observationOf(rankName);
+        assertThat(observation.area()).isEqualTo(PORTLAND_CELL);
+        assertThat(observation.location()).isEqualTo("Chico, CA");
+    }
+
+    @Test
+    void identify_claimedAreaWinsOverExif() {
+        var claimed = GridCell.of(1000, -2000);
+        var rankName = buildCommand(capturingVision).identify(portlandUpload(),
+                new ImageMetadata(null, null), NaturalistName.of("pat"), null, claimed);
+
+        assertThat(observationOf(rankName).area()).isEqualTo(claimed);
+    }
+
+    @Test
+    void identify_nullArea_derivesTheCellFromExif() {
+        var rankName = buildCommand(capturingVision).identify(portlandUpload(),
+                new ImageMetadata(null, null), NaturalistName.of("pat"), null, null);
+
+        assertThat(observationOf(rankName).area()).isEqualTo(PORTLAND_CELL);
+        assertThat(seenByVision.get().metadata().location()).isEqualTo(PORTLAND_SENTENCE);
+    }
+
+    @Test
+    void identify_nullArea_andNoGps_leavesAreaNull_andContextAsTyped() {
+        var upload = ImageUpload.of(ImageFixtures.jpeg(ImageFixtures.app0Jfif()));
+        var rankName = buildCommand(capturingVision).identify(upload,
+                new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null);
+
+        var observation = observationOf(rankName);
+        assertThat(observation.area()).isNull();
+        assertThat(observation.location()).isEqualTo("Chico, CA");
+        assertThat(seenByVision.get().metadata().location()).isEqualTo("Chico, CA");
+    }
+
+    @Test
+    void identify_storedImageCarriesNoMetadata() {
+        var rankName = buildCommand(capturingVision).identify(portlandUpload(),
+                new ImageMetadata(null, null), NaturalistName.of("pat"), null, null);
+
+        var image = query.images().forParentName(rankName).stream().toList().getFirst();
+        var stored = store.read(InsectIdentificationCommandImpl.SPACE, image.resourceName()).orElseThrow();
+        assertThat(ImageUpload.of(stored.bytes()).gps()).isEmpty();
+        assertThat(stored.bytes()).isEqualTo(portlandUpload().withoutMetadata().bytes());
+    }
+
+    /**
+     * An upload that sniffs as a JPEG but whose Exif {@code APP1} runs past the end strips to
+     * {@code SOI} alone, which is no image: the identification is refused as an invalid upload
+     * before anything is stored or sent to vision.
+     */
+    @Test
+    void identify_refusesAnUploadThatStripsToANonImage() throws IOException {
+        byte[] full = ImageFixtures.jpeg(ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68));
+        var upload = ImageUpload.of(Arrays.copyOf(full, 20));
+        assertThat(upload.isValid()).isTrue();
+        var cmd = buildCommand(capturingVision);
+
+        assertThatThrownBy(() -> cmd.identify(upload, new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null, null))
+                .isInstanceOf(InvariantViolationException.class);
+
+        assertThat(seenByVision.get()).as("vision is never called").isNull();
+        assertThat(filesUnder(imageRoot)).as("nothing is stored").isEmpty();
+    }
+
+    @Test
+    void identify_refusesAClaimedAreaOffTheLattice() throws IOException {
+        var cmd = buildCommand(capturingVision);
+
+        assertThatThrownBy(() -> cmd.identify(portlandUpload(), new ImageMetadata(null, null),
+                NaturalistName.of("pat"), null, GridCell.of(2160, 0)))
+                .isInstanceOf(InvariantViolationException.class);
+
+        assertThat(seenByVision.get()).as("vision is never called").isNull();
+        assertThat(filesUnder(imageRoot)).as("nothing is stored").isEmpty();
+    }
+
+    @Test
+    void locationContext_bothNull_isNull() {
+        assertThat(InsectIdentificationCommandImpl.locationContext(null, null)).isNull();
     }
 }
