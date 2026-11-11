@@ -8,8 +8,7 @@
 .env
 .env.*
 secrets
-data/*
-!data/images
+data
 temp
 docs
 *.iml

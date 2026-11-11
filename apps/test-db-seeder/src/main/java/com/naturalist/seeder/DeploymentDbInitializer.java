@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -19,7 +18,6 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -111,11 +109,6 @@ public final class DeploymentDbInitializer {
         PlantsSeeding.loadData(dataSource, database);
         InsectsSeeding.loadData(dataSource, database);
         UsageSeeding.loadData(dataSource, database);
-        try {
-            copySeedImages();
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed copying the seed images", e);
-        }
 
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE " + MARKER_TABLE + " (completed_at TIMESTAMPTZ NOT NULL)");
@@ -157,25 +150,5 @@ public final class DeploymentDbInitializer {
             throw new IllegalStateException("System property " + name + " must be set");
         }
         return value;
-    }
-
-    /**
-     * Copies the catalog photos tracked under {@code data/images}, which the image ships at
-     * {@code naturalist.seed-images}, into the image store. Runs only during initialization, so a photo
-     * later removed from a deployment does not come back, and it never overwrites a file.
-     */
-    private static void copySeedImages() throws IOException {
-        Path source = Path.of(requiredProperty("naturalist.seed-images"));
-        Path target = Path.of(requiredProperty("naturalist.images.root"));
-        try (Stream<Path> paths = Files.walk(source)) {
-            for (Path path : (Iterable<Path>) paths::iterator) {
-                Path destination = target.resolve(source.relativize(path).toString());
-                if (Files.isDirectory(path)) {
-                    Files.createDirectories(destination);
-                } else if (!Files.exists(destination)) {
-                    Files.copy(path, destination);
-                }
-            }
-        }
     }
 }

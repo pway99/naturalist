@@ -16,7 +16,6 @@ FROM eclipse-temurin:25-jre-noble AS db-init
 RUN useradd --system --uid 10001 --create-home naturalist \
     && mkdir -p /data/images && chown -R naturalist /data
 COPY --from=build /out/db-init.jar /opt/naturalist/db-init.jar
-COPY data/images /opt/naturalist/seed-images
 USER naturalist
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -cp /opt/naturalist/db-init.jar com.naturalist.seeder.DeploymentDbInitializer"]
 

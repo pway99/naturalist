@@ -40,7 +40,6 @@ services:
         -Dnaturalist.db.username=naturalist
         -Dnaturalist.secrets.directory=/run/secrets
         -Dnaturalist.images.root=/data/images
-        -Dnaturalist.seed-images=/opt/naturalist/seed-images
     secrets:
       - database-credential
     volumes:

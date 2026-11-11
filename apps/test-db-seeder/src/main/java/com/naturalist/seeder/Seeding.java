@@ -5,7 +5,9 @@ import com.naturalist.data.FileName;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.io.InputStream;
@@ -32,15 +34,16 @@ final class Seeding {
      * Copy each seed photo the seeded image rows name from the classpath resource
      * {@code <space>/images/<name>} into the image store's root ({@code naturalist.images.root},
      * default {@code data/images}, relative to the working directory) under {@code <space>/}, so the
-     * app serves them from disk like any upload. A file already present is left alone; a name with no
-     * classpath resource (a UUID-named upload row) is skipped.
+     * app serves them from disk like any upload. A file already present is left alone. A row whose
+     * photo is neither present nor on the classpath fails the seed: it would show as a broken image on
+     * a public catalog page, so every seeded image row must ship its photo under {@code <space>/images/}.
      */
     static void copySeedPhotos(String space, Collection<FileName> names) {
         Path directory = Path.of(
                 System.getProperty("naturalist.images.root", "data/images")).resolve(space);
         int copied = 0;
         int present = 0;
-        int missing = 0;
+        List<String> missing = new ArrayList<>();
         try {
             Files.createDirectories(directory);
             for (FileName name : names) {
@@ -52,7 +55,7 @@ final class Seeding {
                 try (InputStream in = Seeding.class.getClassLoader()
                         .getResourceAsStream(space + "/images/" + name.value())) {
                     if (in == null) {
-                        missing++;
+                        missing.add(name.value());
                         continue;
                     }
                     Files.copy(in, target);
@@ -62,6 +65,10 @@ final class Seeding {
         } catch (IOException e) {
             throw new UncheckedIOException("Failed copying " + space + " seed photos to " + directory, e);
         }
-        System.out.println("Seed photos (" + space + "): copied " + copied + ", present " + present + ", missing " + missing);
+        System.out.println("Seed photos (" + space + "): copied " + copied + ", present " + present);
+        if (!missing.isEmpty()) {
+            throw new IllegalStateException(missing.size() + " seeded " + space + " image rows have no photo under "
+                    + space + "/images/ on the classpath or in " + directory + ": " + missing);
+        }
     }
 }
