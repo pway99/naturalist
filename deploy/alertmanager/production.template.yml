@@ -1,4 +1,5 @@
-# Production. start-production.sh fills in the @VALUES@ from the environment, because Alertmanager
+# Production. start-production.sh fills in the @VALUES@ from the environment, and the recipient
+# from the alert-email secret, because Alertmanager
 # doesn't expand variables in its own configuration.
 global:
   smtp_smarthost: "@SMTP_HOST@:@SMTP_PORT@"

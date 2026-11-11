@@ -75,7 +75,7 @@ flag: they print emailed tokens and turn the challenge off.
 | `naturalist.secrets.source` | `environment` or `file`, depending on the host |
 | `naturalist.challenge.site-key`, `naturalist.challenge.expected-hostname` | From the widget, and `backyardnaturalist.app`, plus the `challenge-credential` secret |
 | `naturalist.images.root` | The persistent storage path |
-| `ALERT_EMAIL_TO` | Where alerts go. `compose.production.yaml` requires it |
+| `secrets/alert-email` | Where the app's usage alerts and Alertmanager's alerts go: an address at `backyardnaturalist.app`. A file, not a setting, so it stays out of the image and `.env`. `compose.production.yaml` requires it |
 
 ## 5. Prove it before going public
 

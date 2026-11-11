@@ -94,7 +94,10 @@ naturalist:
   # (the file <naturalist.secrets.directory>/model-credential). See ADR-028.
   usage:
     warning-percent: 80
-    alert-email: patway99@gmail.com
+    # Where usage alerts go. Never a real address here: this file ships inside the jar. Local runs
+    # use the same placeholder as the local Alertmanager (Mailpit catches both); a deployment
+    # mounts secrets/alert-email over it (compose.production.yaml).
+    alert-email: operator@naturalist.local
   access:
     grant-policy: self-serve
   images:

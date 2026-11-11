@@ -21,6 +21,8 @@ services:
         target: app/naturalist.admin.password
       - source: mail-credential
         target: app/spring.mail.password
+      - source: alert-email
+        target: app/naturalist.usage.alert-email
       - challenge-credential
       - model-credential
 
@@ -36,9 +38,9 @@ services:
       SMTP_PORT: ${SPRING_MAIL_PORT:?set the mail port}
       SMTP_USERNAME: ${SPRING_MAIL_USERNAME:?set the mail username}
       ALERT_EMAIL_FROM: ${NATURALIST_EMAIL_FROM:?set the sending address}
-      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:?set where alerts go}
     secrets:
       - mail-credential
+      - alert-email
       - heartbeat-url
 
   # The only way in. It connects out to the edge and publishes nothing.
@@ -62,3 +64,6 @@ secrets:
   # The private address the outside check gives you. Anyone holding it can fake a heartbeat.
   heartbeat-url:
     file: ./secrets/heartbeat-url
+  # Where the app's usage alerts and Alertmanager's alerts go. Kept out of git, the image and .env.
+  alert-email:
+    file: ./secrets/alert-email
