@@ -5,16 +5,21 @@ import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.StoredImage;
 import com.naturalist.observation.test.ImageFixtures;
+import com.naturalist.resilience.Bulkhead;
+import com.naturalist.resilience.BulkheadFullException;
 import com.naturalist.resilience.Resilience;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,8 +86,21 @@ class FilesystemImageStoreTest {
         Optional<StoredImage> read = store.read("insects", name);
 
         assertThat(read).isPresent();
-        assertThat(read.get().bytes()).isEqualTo(JPEG);
+        assertThat(read.get().readAllBytes()).isEqualTo(JPEG);
         assertThat(read.get().mediaType()).isEqualTo("image/jpeg");
+        assertThat(read.get().size()).isEqualTo(JPEG.length);
+    }
+
+    /** A read finds the file; its content is opened only when streamed, and each open is fresh. */
+    @Test
+    void read_streamsContentOnEachOpen() throws IOException {
+        FileName name = store.store("insects", ImageUpload.of(JPEG));
+        StoredImage stored = store.read("insects", name).orElseThrow();
+
+        try (var first = stored.content().open(); var second = stored.content().open()) {
+            assertThat(first.readAllBytes()).isEqualTo(JPEG);
+            assertThat(second.readAllBytes()).isEqualTo(JPEG);
+        }
     }
 
     @Test
@@ -93,7 +111,7 @@ class FilesystemImageStoreTest {
 
         StoredImage stored = store.read("insects", name).orElseThrow();
 
-        ImageUpload upload = ImageUpload.of(stored.bytes());
+        ImageUpload upload = ImageUpload.of(stored.readAllBytes());
         assertThat(upload.gps()).isEmpty();
         assertThat(upload.withoutMetadata()).isEqualTo(upload);
     }
@@ -134,14 +152,6 @@ class FilesystemImageStoreTest {
         assertThat(store.read("insects", FileName.of("../secret.jpg"))).isEmpty();
         assertThat(store.read("insects", FileName.of("sub/b.jpg"))).isEmpty();
         assertThat(store.read("insects", FileName.of("sub\\b.jpg"))).isEmpty();
-    }
-
-    @Test
-    void read_fallsBackToClasspath() {
-        Optional<StoredImage> read = store.read("testspace", FileName.of("seed.jpg"));
-
-        assertThat(read).isPresent();
-        assertThat(read.get().mediaType()).isEqualTo("image/jpeg");
     }
 
     @Test
@@ -189,5 +199,52 @@ class FilesystemImageStoreTest {
         store.delete("insects", FileName.of("../secret.jpg"));
 
         assertThat(Files.exists(secret)).isTrue();
+    }
+
+    /** {@code testspace/images/seed.jpg} is on the test classpath but not in the root: photos are data, so it is not served. */
+    @Test
+    void read_ignoresAClasspathResource() {
+        assertThat(store.read("testspace", FileName.of("seed.jpg"))).isEmpty();
+    }
+
+    /**
+     * A read past the bulkhead cap is refused with the kernel {@link BulkheadFullException}, before any
+     * file is touched, so the caller can answer 503.
+     */
+    @Test
+    void read_propagatesTheBulkheadRefusal() {
+        FileName name = store.store("insects", ImageUpload.of(JPEG));
+        var full = new FilesystemImageStore(root, rejectingBulkhead());
+
+        assertThatThrownBy(() -> full.read("insects", name))
+                .isInstanceOf(BulkheadFullException.class);
+    }
+
+    /** {@link Resilience#noOp()} for every primitive except {@code bulkhead}, which always refuses. */
+    private static Resilience rejectingBulkhead() {
+        Resilience noOp = Resilience.noOp();
+        Bulkhead refusing = new Bulkhead() {
+            @Override
+            public <T> T execute(Supplier<T> supplier) {
+                throw new BulkheadFullException("Bulkhead full for strategy 'image.store'", FilesystemImageStore.STRATEGY);
+            }
+
+            @Override
+            public void execute(Runnable runnable) {
+                execute(() -> {
+                    runnable.run();
+                    return null;
+                });
+            }
+        };
+        return (Resilience) Proxy.newProxyInstance(Resilience.class.getClassLoader(), new Class<?>[]{Resilience.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("bulkhead")) return refusing;
+                    try {
+                        return method.invoke(noOp, args);
+                    } catch (InvocationTargetException e) {
+                        throw e.getCause();
+                    }
+                });
     }
 }

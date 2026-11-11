@@ -37,8 +37,9 @@ are built. What remains is the code gaps below and the setup that only happens o
   ([S1](notes/2026-11-03-security-review.md)). Reset would fix this, including ending sessions on
   reset and suspend. The cheaper option is new wording on the confirm page plus purging accounts
   never verified after 24 hours, but forgotten passwords would remain unrecoverable.
-- [ ] **Measure image reads under load.** Nothing caps concurrent `image.store` work except its
-  callers, so measure a gallery-sized read ([PL-16](notes/parking-lot.md)).
+- [x] **Measure image reads under load.** Done 2026-11-10: buffering whole photos took the app down at
+  100 concurrent 20 MB reads, so reads now stream from disk; 200 concurrent are all served with the
+  heap under 160 MB ([PL-16](notes/parking-lot-resolved.md)).
 - [x] **Get CI running.** Done 2026-11-08: the repository's Actions were behind the Actions tab's
   "enable workflows" gate, which drops push events silently while the API still reports Actions
   enabled. The first run (`b50a2e3f`) passed in 4m22s, `PackagedJarIT` and the alert rule tests

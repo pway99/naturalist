@@ -275,10 +275,11 @@ Resolves a filename to a filesystem path. Validates against path traversal
 
 Images are served by `GET /insects/images/{filename}` through the kernel
 `ImageStore` (`FilesystemImageStore`): uploads are read from the image root
-(`naturalist.images.root`, `<root>/insects/`), and seed photos from the
-classpath fallback (`insects/images/<name>`) or from the copy the
-test-db-seeder places in the image root. The served media type is sniffed
-from the bytes, and the store refuses any filename that is not a plain name.
+(`naturalist.images.root`, `<root>/insects/`), and so are seed photos, which
+the seeder copies there from the `insects/images/<name>` resources. The store
+has no classpath fallback. The served media type is sniffed
+from the leading bytes, the photo streams to the client without being buffered
+whole, and the store refuses any filename that is not a plain name.
 
 ---
 

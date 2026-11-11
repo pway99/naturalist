@@ -102,7 +102,7 @@ naturalist:
     grant-policy: self-serve
   images:
     # Filesystem root of the image store: one <space>/ subdirectory per domain holds the
-    # photos. Seed photos not found here fall back to the classpath. The path is relative
+    # photos, seed photos included (the seeder copies them here). The path is relative
     # to the working directory the app is started from (the repo root when run with
     # `mvn -pl apps/management-console spring-boot:run`).
     root: data/images

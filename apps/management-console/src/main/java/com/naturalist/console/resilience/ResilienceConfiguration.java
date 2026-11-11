@@ -29,7 +29,11 @@ import java.util.List;
  *   <li><b>{@code image.store}</b> — bounds every {@code FilesystemImageStore}
  *       operation (declared by {@code FilesystemImageStore.STRATEGY}): a 2&nbsp;s
  *       timeout, the full request-path ceiling, since serving a stored photo is
- *       a request-path call.</li>
+ *       a request-path call. Reads also take a {@code BulkheadConfig} permit
+ *       (16 concurrent, 1&nbsp;s wait) for the lookup only: the photo streams to
+ *       the client afterwards, never buffered whole (PL-16). A read past the cap
+ *       is refused with the kernel {@code BulkheadFullException}, which the
+ *       consoles answer with 503.</li>
  *   <li><b>{@code vision.identification}</b> — bounds the Anthropic vision API
  *       call in {@code AnthropicVisionService}. Declared {@code upload = true}
  *       and given the full {@link ResilienceConfig#MAX_UPLOAD_TIMEOUT}: the
@@ -214,5 +218,13 @@ public class ResilienceConfiguration {
         // Per-client ceiling on identification (IdentifyRateLimitFilter keys it by remote address):
         // two a minute, below the global three, so one address can never hold every shared slot.
         return new RateLimiterConfig("vision.identification.client", 2, Duration.ofMinutes(1), Duration.ZERO);
+    }
+
+    @Bean
+    ResilienceConfig.BulkheadConfig imageStoreBulkhead() {
+        // A read is a lookup (stat plus the first 12 bytes); the photo itself streams afterwards, outside
+        // the permit, so the heap no longer depends on this cap (PL-16). It bounds concurrent filesystem
+        // lookups: past 16, a read waits up to 1 s, then is refused (503) rather than queued without bound.
+        return new ResilienceConfig.BulkheadConfig(FilesystemImageStore.STRATEGY, 16, Duration.ofSeconds(1));
     }
 }

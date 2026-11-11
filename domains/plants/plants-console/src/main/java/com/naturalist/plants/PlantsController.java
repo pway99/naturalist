@@ -26,7 +26,12 @@ import com.naturalist.plants.management.PlantProgramQuery;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituent;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentName;
 import com.naturalist.plants.phytochemistry.PhytochemicalConstituentQuery;
+import com.naturalist.resilience.BulkheadFullException;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -446,18 +451,27 @@ public class PlantsController {
     // ── Images ───────────────────────────────────────────────────────────
 
     /**
-     * Serves a stored photo — a seed catalog image or an upload, the store resolves both —
-     * under the media type the store derives from its file name. Names are unique,
-     * so the response is cacheable forever.
+     * Streams a stored photo from the store to the client, never buffering it whole (PL-16), under
+     * the media type the store sniffs. Names are unique, so the response is cacheable forever. When the store's read cap is full
+     * ({@link BulkheadFullException}) the answer is an uncached 503 with {@code Retry-After},
+     * so the browser retries the one photo rather than the page failing (PL-16).
      */
     @GetMapping("/images/{filename:.+}")
-    ResponseEntity<byte[]> image(@PathVariable String filename) {
-        return imageStore.read("plants", FileName.of(filename))
-                .map(stored -> ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType(stored.mediaType()))
-                        .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
-                        .body(stored.bytes()))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    ResponseEntity<Resource> image(@PathVariable String filename) {
+        try {
+            return imageStore.read("plants", FileName.of(filename))
+                    .map(stored -> ResponseEntity.ok()
+                            .contentType(MediaType.parseMediaType(stored.mediaType()))
+                            .contentLength(stored.size())
+                            .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
+                            .<Resource>body(new InputStreamResource(stored.content()::open)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (BulkheadFullException busy) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .header(HttpHeaders.RETRY_AFTER, "1")
+                    .cacheControl(CacheControl.noStore())
+                    .build();
+        }
     }
 
     // ── Shared ───────────────────────────────────────────────────────────

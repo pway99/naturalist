@@ -723,7 +723,7 @@ class InsectIdentificationCommandImplTest {
         assertThat(images).hasSize(1);
         var stored = store.read(InsectIdentificationCommandImpl.SPACE, images.getFirst().resourceName());
         assertThat(stored).isPresent();
-        assertThat(stored.get().bytes()).isEqualTo(JPEG);
+        assertThat(stored.get().readAllBytes()).isEqualTo(JPEG);
     }
 
     /**
@@ -970,8 +970,8 @@ class InsectIdentificationCommandImplTest {
 
         var image = query.images().forParentName(rankName).stream().toList().getFirst();
         var stored = store.read(InsectIdentificationCommandImpl.SPACE, image.resourceName()).orElseThrow();
-        assertThat(ImageUpload.of(stored.bytes()).gps()).isEmpty();
-        assertThat(stored.bytes()).isEqualTo(portlandUpload().withoutMetadata().bytes());
+        assertThat(ImageUpload.of(stored.readAllBytes()).gps()).isEmpty();
+        assertThat(stored.readAllBytes()).isEqualTo(portlandUpload().withoutMetadata().bytes());
     }
 
     /**

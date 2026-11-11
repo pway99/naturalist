@@ -13,8 +13,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
  * Every classpath seed photo is already stripped: {@code withoutMetadata()} is the identity on it and it carries no
- * GPS. The seed photos are served to the public through the image store's classpath fallback, so none may ever carry
- * EXIF, XMP or IPTC.
+ * GPS. The seeder copies the seed photos into the image store, which serves them to the public as it serves any
+ * upload, so none may ever carry EXIF, XMP or IPTC.
  */
 class SeedImagesCarryNoMetadataTest {
 

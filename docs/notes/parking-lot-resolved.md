@@ -80,3 +80,35 @@ and keep its original `PL-N` ID. IDs never reuse.
 **Resolution:** Option (a), taken further: strip at the use case and again at the store, and keep a coarse location instead of none. `ImageUpload.withoutMetadata()` is a metadata-only rewrite (no transcoding) that drops EXIF, XMP, IPTC and comment segments and keeps only the EXIF Orientation, so the image still displays upright. A JPEG keeps only `APP0` (JFIF), `APP2` (ICC) and `APP14` (Adobe) of its application segments: every other `APPn`, including the `APP11` JUMBF/C2PA content credentials recent phones write (which can embed Exif again), is dropped. Bytes appended after the image's end (a phone's trailer, a motion photo's MP4) are dropped too, and the JPEG walk skips fill bytes and resynchronises past junk the way a decoder does, so nothing placed before an Exif segment can hide it from the strip. The insects commands strip every upload before it goes anywhere, and `FilesystemImageStore.store` applies the same strip, so every image a store writes is clean whatever the caller does (JavaScript off or a direct POST included). The 18 seed photos were rewritten without metadata. Location the app wants for identification is kept as `GridCell`, a 2.5 arc-minute cell, never as coordinates: `OrganismObservation.area` persists the cell as two nullable indices, and an ArchUnit rule (`LocationPrivacyComplianceTest`) bars `Coordinates` from any persisted component. Tests pin the strip at the command, at the store and on every classpath seed photo (`SeedImagesCarryNoMetadataTest`). Design: [`plans/2026-11-08-photo-location-privacy-design.md`](../plans/2026-11-08-photo-location-privacy-design.md); plan: [`plans/2026-11-08-photo-location-privacy-plan.md`](../plans/2026-11-08-photo-location-privacy-plan.md).
 
 ---
+
+---
+
+## PL-16 — Image reads share the resilience timeout pool with vision and catalog fan-out
+
+**Raised:** 2026-11-01.
+**Resolved:** 2026-11-10 (launch item 1.6).
+**Where:** Surfaced in the whole-branch review of insects-ports slice 1 (image store). `FilesystemImageStore` runs every `store` and `read` under `resilience.timeout("image.store")`, and `Resilience4jTimeout` schedules every named timeout on one shared `SCHEDULER` executor. A rank or gallery page that serves many large photos therefore competes for the same threads as `vision.identification` and the `catalog.fanout` provider calls: a burst of slow image reads can delay or starve the catalog fan-out's timeouts, so a page full of photos degrades search and back-references that have nothing to do with images.
+**Blocking:** No. Local use serves a handful of photos per page; the contention needs concurrent load.
+**Resolution path:** Before hosting, give `image.store` a bounded or separate executor — either a per-strategy executor in the resilience4j adapter (`ResilienceConfig` names the pool) or a dedicated bounded pool for blocking I/O strategies — and size it so a gallery cannot exhaust what `catalog.fanout` needs. Measure with a gallery-sized concurrent read before choosing.
+**Update 2026-11-03:** the shared fixed pool is gone. `Resilience4jTimeout` now runs each timed call on its own virtual thread (ADR-027 PR 5, because `challenge.verify` would have queued on the same pool), so one strategy no longer spends another's deadline. What remains of this entry: nothing caps concurrent `image.store` work except its callers, so measure a gallery-sized read before hosting and add a bulkhead if it needs one.
+**Measured 2026-11-10 (launch item 1.6):** the packaged jar at the production heap cap (`-Xmx1152m`, 75% of the 1536 MB container) against the standing test database, with `ab` and parallel `curl` on `/insects/images/{name}`. `read` loads the whole file into the heap, and `store` strips metadata but does not downscale, so a served photo can be as large as `ImageUpload.MAX_BYTES` (20 MB).
+
+| Photo | Concurrent | Result |
+|---|---|---|
+| 2.9 MB (phone-sized) | 10 / 50 / 100 / 200 | all served; ~1,070 req/s at 100+; p50 175 ms, p99 510 ms at 200 |
+| 20.4 MB (near the cap) | 10 / 50 | all served; p50 233 ms at 50, heap peaked at 979 MB of 1,152 MB |
+| 20.4 MB | 100 | **`OutOfMemoryError`**: it killed Tomcat's poller thread and the app stopped serving every request, pages included, until restarted |
+
+Pages kept working under the 50-reader load (`/insects/orders` p50 9 ms unchanged, p95 22 → 249 ms), so CPU and thread contention is not the problem; heap is. **Verdict: a cap is needed.** Fewer than 100 concurrent reads of large uploads, a few users opening galleries at once, take the whole site down. Two side findings: the seed-photo jars (`*-repository-test`) are not in the packaged app, so the store's classpath fallback never serves a seed photo there (production relies on `db-init` copying them into the image volume, which it does); and `ab` reports spurious "Length" failures on large bodies, which parallel `curl` did not reproduce.
+
+**Resolution:** heap was the problem, and buffering was its cause. Two steps:
+
+1. The classpath fallback went first (it was dead in the packaged jar, and photos are data, not static content): `read` serves only the image root, which `db-init` fills.
+2. An `image.store` bulkhead (16 permits, 1 s wait) alone did **not** fix it. Re-measured at 100 concurrent 20 MB reads, the app still threw ~250 `OutOfMemoryError`s and answered 500s: the permit covers the read, but the byte array lives on while Tomcat writes it to a slow client. So `read` no longer returns bytes. `StoredImage` is now `(mediaType, size, Content content)`; the store stats the file and sniffs 12 bytes, and the consoles stream `content()` as an `InputStreamResource` with `Content-Length`. The bulkhead stays, capping concurrent lookups; a full one gives an uncached 503 with `Retry-After: 1`.
+
+| 20.4 MB photo, `-Xmx1152m` | Concurrent | Result |
+|---|---|---|
+| Buffered, bulkhead | 100 / 200 | 46 / 173 × 500 (OOM), 83 × 503 at 200; heap 1,151 MB |
+| Streamed, bulkhead | 50 / 100 / 200 | 150 / 300 / 600 × 200, no errors; heap peak 154 MB |
+
+During 200 concurrent large downloads, a phone-sized photo served at p50 63 ms / p99 195 ms and `/login` at p50 1 ms.

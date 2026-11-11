@@ -270,8 +270,8 @@ Recorded so they are not reintroduced.
 - Shares the keyed-limiter worktree, the `ClientKey` deploy-order constraint and a
   future CSP with ADR-028 (deployment secrets and model spend protection); the plan's
   coordination section says who owns what.
-- Not covered here and still open before hosting: PL-16 (image reads share the
-  resilience executor) and PL-17 (EXIF on raw uploads).
+- Not covered here: PL-16 (image reads under load; resolved 2026-11-10, reads stream from disk)
+  and PL-17 (EXIF on raw uploads; resolved 2026-11-09).
 
 ## Open items
 

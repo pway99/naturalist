@@ -29,13 +29,6 @@ class PlantsImagesWebMvcTest {
     }
 
     @Test
-    void image_servesClasspathSeed() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/plants/images/IMG_9313.jpg"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("image/jpeg"));
-    }
-
-    @Test
     void image_servesStoredUpload() throws Exception {
         var name = PlantsControllerTestConfig.IMAGE_STORE.store("plants", ImageUpload.of(TINY_JPEG));
         mockMvc.perform(MockMvcRequestBuilders.get("/plants/images/" + name.value()))

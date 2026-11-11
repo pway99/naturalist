@@ -21,14 +21,19 @@ import java.util.Optional;
 /**
  * {@link ImageStore} over a directory root. {@code store} writes the upload, stripped of its
  * metadata and refused when the strip leaves no image of the same kind, to
- * {@code <root>/<space>/<uuidv7><ext>}; {@code read} looks there first and then
- * falls back to the classpath resource {@code <space>/images/<name>}, which is how seed photos
- * shipped inside a jar are served. Every filesystem call runs under the {@link #STRATEGY} timeout.
+ * {@code <root>/<space>/<uuidv7><ext>}; {@code read} finds only what the root holds, and hands back
+ * a stream of it rather than its bytes. Photos are
+ * data, never classpath resources: the catalog's seed photos reach the root the same way as any
+ * file, copied there by the seeder ({@code db-init} in a deployment). Every filesystem call runs
+ * under the {@link #STRATEGY} timeout.
  */
 @Resilient(name = FilesystemImageStore.STRATEGY)
 public final class FilesystemImageStore implements ImageStore {
 
     public static final String STRATEGY = "image.store";
+
+    /** Enough leading bytes for every magic {@link ImageUpload#mediaType()} recognises. */
+    private static final int SNIFF_BYTES = 12;
 
     private final Observer observer = Observer.forClass(FilesystemImageStore.class);
 
@@ -73,22 +78,11 @@ public final class FilesystemImageStore implements ImageStore {
         if (!directory.startsWith(root.normalize()) || !file.startsWith(directory)) {
             return Optional.empty();
         }
-        byte[] bytes = resilience.timeout(STRATEGY).execute(() -> readBytes(space, name, file));
-        return Optional.ofNullable(bytes).map(b -> new StoredImage(b, servedMediaType(b, name)));
-    }
-
-    private byte[] readBytes(String space, FileName name, Path file) {
-        try {
-            if (Files.isRegularFile(file)) {
-                return Files.readAllBytes(file);
-            }
-            String resource = space + "/images/" + name.value();
-            try (InputStream in = FilesystemImageStore.class.getClassLoader().getResourceAsStream(resource)) {
-                return in == null ? null : in.readAllBytes();
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        // A read only finds the file and sniffs its first bytes; the caller streams the rest, so no read
+        // holds a photo in the heap (PL-16). The bulkhead caps concurrent lookups; past it the caller
+        // gets BulkheadFullException.
+        return Optional.ofNullable(resilience.bulkhead(STRATEGY).execute(
+                () -> resilience.timeout(STRATEGY).execute(() -> find(file, name))));
     }
 
     private static boolean isPlainName(String value) {
@@ -131,5 +125,25 @@ public final class FilesystemImageStore implements ImageStore {
                 throw new UncheckedIOException(e);
             }
         });
+    }
+
+    /**
+     * The stored file, its size and the media type its leading bytes sniff as, or {@code null} when
+     * the root holds no such file. Nothing else is a source. Reads {@link #SNIFF_BYTES} and no more.
+     */
+    private static StoredImage find(Path file, FileName name) {
+        try {
+            if (!Files.isRegularFile(file)) {
+                return null;
+            }
+            long size = Files.size(file);
+            byte[] head;
+            try (InputStream in = Files.newInputStream(file)) {
+                head = in.readNBytes(SNIFF_BYTES);
+            }
+            return new StoredImage(servedMediaType(head, name), size, () -> Files.newInputStream(file));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

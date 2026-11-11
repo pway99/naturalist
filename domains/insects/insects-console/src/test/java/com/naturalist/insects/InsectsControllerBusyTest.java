@@ -154,4 +154,24 @@ class InsectsControllerBusyTest {
         assertThat(controller().identify(image, null, null, null, null, null, request))
                 .isEqualTo("redirect:/insects/identify?limit=BUSY");
     }
+
+    /**
+     * {@link InsectsController#image} answers a full {@code image.store} bulkhead with an uncached 503
+     * and {@code Retry-After}, never a 500 or a cached failure (PL-16).
+     */
+    @Test
+    void image_isServiceUnavailable_whenTheBulkheadRejects() {
+        var busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
+        var context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
+                new NoOpVisionService(), InsectsTestContext.noOpAuthority());
+        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+                context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
+
+        var response = controller.image("anything.jpg");
+
+        assertThat(response.getStatusCode().value()).isEqualTo(503);
+        assertThat(response.getHeaders().getFirst("Retry-After")).isEqualTo("1");
+        assertThat(response.getHeaders().getCacheControl()).isEqualTo("no-store");
+        assertThat(response.getBody()).isNull();
+    }
 }

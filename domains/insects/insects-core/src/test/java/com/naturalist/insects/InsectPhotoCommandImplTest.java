@@ -191,8 +191,8 @@ class InsectPhotoCommandImplTest {
         var image = addAndFind(portlandUpload(), null);
 
         var stored = store.read(InsectPhotoCommandImpl.SPACE, image.resourceName()).orElseThrow();
-        assertThat(ImageUpload.of(stored.bytes()).gps()).isEmpty();
-        assertThat(stored.bytes()).isEqualTo(portlandUpload().withoutMetadata().bytes());
+        assertThat(ImageUpload.of(stored.readAllBytes()).gps()).isEmpty();
+        assertThat(stored.readAllBytes()).isEqualTo(portlandUpload().withoutMetadata().bytes());
     }
 
     /** A fresh image root per test, made before the {@code @Fake} store that writes under it. */
