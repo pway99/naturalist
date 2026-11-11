@@ -175,7 +175,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                         .valueObject(upload, "upload")
                         .valueObject(metadata, "metadata")
                         .entityName(naturalist, "naturalist")
-                        .whenNotNull(area, c -> c.valueObject(area, "area")))
+                        .valueObjectOrNull(area, "area"))
                 .throwWhenInvalid();
 
         // The EXIF is read for the cell, then gone: neither the store nor vision sees the camera's

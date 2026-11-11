@@ -44,6 +44,6 @@ public record OrganismImage<IMG_ID extends EntityId, OBS_ID extends EntityId, R 
                 .identifier(parentName, "parentName")
                 .notNull(dateAdded, "dateAdded")
                 .namedValue(resourceName, "resourceName")
-                .whenNotNull(observationId, c -> c.entityId(observationId, "observationId"));
+                .entityIdOrNull(observationId, "observationId");
     }
 }

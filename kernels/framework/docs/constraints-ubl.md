@@ -6,8 +6,8 @@
 to write or review `invariants()` bodies without inventing methods.
 
 **Primary rule.** If a method is not in §3 below, it does not exist on `Constraints`.
-Past sessions invented `namedEntityOrNull`, `observableOrNull`, and a direct-form
-`notEmpty(value, name)`. None exist. When in doubt, say so.
+Past sessions invented a direct-form `notEmpty(value, name)`; it does not exist. When in
+doubt, say so.
 
 ---
 
@@ -118,6 +118,25 @@ range as `isTrue(x >= a && x <= b, ...)` or `isTrue(x == null || x.signum() >= 0
 | `greaterThan(V value, V min, name)`     | `InRangeConstraint`       | Present and `> min` (exclusive bound). |
 | `inRangeOrNull` / `atLeastOrNull` / `atMostOrNull` / `greaterThanOrNull` | `InRangeOrNullConstraint` | Null passes; a present value meets the same bound. |
 
+### Null-tolerant (`OrNull`) variants
+
+For a `@Nullable` component, use the `OrNull` form: a null value passes, and a present
+value is validated (or descended into) exactly as the plain form would. Never write
+`whenNotNull(x, c -> c.<constraint>(x, "x"))` — keep `whenNotNull` for genuinely
+conditional rules (one field's presence implying another's, a cross-field predicate).
+
+| Method                                       | Backing record                                      |
+|----------------------------------------------|-----------------------------------------------------|
+| `namedEntityOrNull`                          | `NamedEntityOrNullConstraint`                       |
+| `aggregateOrNull`                            | `AggregateOrNullConstraint`                         |
+| `valueObjectOrNull`                          | `ValueObjectOrNullConstraint`                       |
+| `readModelOrNull`, `observableOrNull`        | `ObservableOrNullConstraint`                        |
+| `entityNameOrNull`                           | `EntityNameConstraints.EntityNameOrNullConstraint`  |
+| `entityIdOrNull`                             | `EntityIdConstraints.EntityIdOrNullConstraint`      |
+| `identifierOrNull`                           | `IdentifierConstraints.IdentifierOrNullConstraint`  |
+| `namedValueOrNull`                           | `NamedValueConstraints.NamedValueOrNullConstraint`  |
+| `inRangeOrNull` and the range family above   | `InRangeOrNullConstraint`                           |
+
 ### Terminal
 
 | Method        | Returns                                                                                    |
@@ -131,16 +150,6 @@ range as `isTrue(x >= a && x <= b, ...)` or `isTrue(x == null || x.signum() >= 0
 Past sessions have called these. None exist. Do not add them without the user's
 explicit go-ahead — they're absent by design.
 
-- ❌ `namedEntityOrNull(...)` — for nullable `NamedEntity` descent, write a block
-  lambda with a null guard:
-  ```java
-  return i -> {
-      i.entityName(name, "name")
-       .valueObject(this, Parent::taxonomy, "taxonomy");
-      if (stage != null) i.namedEntity(this, Parent::stage, "stage");
-  };
-  ```
-- ❌ `observableOrNull(...)` — same pattern.
 - ❌ `notEmpty(value, name)` (direct-value form) — only the by-function form exists.
 - ❌ `notBlank(t, fn, name)` for non-String types — `notBlank` is String-only.
 - ❌ Direct-value form for `valueObjectOrNull`, `valueObjectCollection`, `observable`,
@@ -348,8 +357,7 @@ which is a kernel change, out of scope for normal domain work.
   `invariants()`, `this` cannot be null — the indirection is dead weight.
 - **Do not call `notEmpty(value, name)` direct-form.** The overload doesn't exist.
 - **Do not call `notBlank` on a non-String type.** `notBlank` is String-only.
-- **Do not invent `namedEntityOrNull` / `observableOrNull`.** Use a block lambda with
-  a null guard.
+- **Do not wrap a single constraint in `whenNotNull`.** Use its `OrNull` variant (§3).
 - **Do not `throwWhenInvalid()` from a producer observing its own output.** Use
   `.observe()`; let the consumer decide the terminal operation. Argument validation is
   the one exception (it always throws — boundary contract).

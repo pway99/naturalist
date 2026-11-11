@@ -102,7 +102,7 @@ public record Planting(
     public Consumer<? extends Constraints> invariants() {
         return i -> i
                 .entityId(id, "id")
-                .whenNotNull(plantName, c -> c.identifier(plantName, "plantName"))
+                .identifierOrNull(plantName, "plantName")
                 .entityNameOrNull(cultivarName, "cultivarName")
                 .isTrue(plantName != null || cultivarName != null, "plantOrCultivarKnown")
                 .entityName(zoneName, "zoneName")

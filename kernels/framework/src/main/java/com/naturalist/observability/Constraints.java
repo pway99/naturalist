@@ -79,6 +79,19 @@ public class Constraints {
         return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
+    /**
+     * Null-tolerant variant of {@link #readModel}. A null reference passes; a
+     * non-null reference is descended into. Use for a {@code @Nullable ReadModel}
+     * component — an optional rank, citations or features on a composed read model.
+     */
+    public <R extends ReadModel> Constraints readModelOrNull(R readModel, String name) {
+        return readModelOrNull(readModel, Function.identity(), name);
+    }
+
+    public <O, R extends ReadModel> Constraints readModelOrNull(O o, Function<O, R> valueFunction, String name) {
+        return add(new ObservableOrNullConstraint<>(o, valueFunction, name));
+    }
+
     public <V extends ValueObject> Constraints valueObject(V valueObject, String name) {
         return valueObject(valueObject, Function.identity(), name);
     }
@@ -147,6 +160,15 @@ public class Constraints {
         return add(new ObservableConstraint<>(o, valueFunction, name));
     }
 
+    /** Null-tolerant variant of {@link #observable}: a null reference passes; a non-null one is descended into. */
+    public <V extends Observable> Constraints observableOrNull(V observable, String name) {
+        return observableOrNull(observable, Function.identity(), name);
+    }
+
+    public <O, V extends Observable> Constraints observableOrNull(O o, Function<O, V> valueFunction, String name) {
+        return add(new ObservableOrNullConstraint<>(o, valueFunction, name));
+    }
+
     public <E extends EntityName> Constraints entityName(E e, String name) {
         return add(new EntityNameConstraints.EntityNameConstraint<>(e, name));
     }
@@ -167,6 +189,14 @@ public class Constraints {
     }
 
     /**
+     * Null-tolerant variant of {@link #entityId}. A null value passes; a non-null
+     * value must be a valid UUIDv7. Use for a {@code @Nullable EntityId} component.
+     */
+    public <F extends EntityId> Constraints entityIdOrNull(F f, String name) {
+        return add(new EntityIdConstraints.EntityIdOrNullConstraint<>(f, name));
+    }
+
+    /**
      * Polymorphic identifier check — dispatches at runtime to
      * {@link #entityName}- or {@link #entityId}-equivalent validation based on the
      * concrete type of {@code value}. Use at boundaries where the identifier branch
@@ -175,6 +205,14 @@ public class Constraints {
      */
     public <V> Constraints identifier(V value, String name) {
         return add(new IdentifierConstraints.IdentifierConstraint<>(value, name));
+    }
+
+    /**
+     * Null-tolerant variant of {@link #identifier}. A null value passes; a non-null
+     * value is validated by its runtime type.
+     */
+    public <V> Constraints identifierOrNull(V value, String name) {
+        return add(new IdentifierConstraints.IdentifierOrNullConstraint<>(value, name));
     }
 
     /**
@@ -203,6 +241,15 @@ public class Constraints {
 
     public <O, V extends NamedValue<?>> Constraints namedValue(O o, Function<O, V> valueFunction, String name) {
         return add(new NamedValueConstraints.NamedValueConstraint<>(o, valueFunction, name));
+    }
+
+    /** Null-tolerant variant of {@link #namedValue}: a null value passes; a non-null one must be valid. */
+    public <V extends NamedValue<?>> Constraints namedValueOrNull(V namedValue, String name) {
+        return namedValueOrNull(namedValue, Function.identity(), name);
+    }
+
+    public <O, V extends NamedValue<?>> Constraints namedValueOrNull(O o, Function<O, V> valueFunction, String name) {
+        return add(new NamedValueConstraints.NamedValueOrNullConstraint<>(o, valueFunction, name));
     }
 
     public Constraints notBlank(String value, String name) {

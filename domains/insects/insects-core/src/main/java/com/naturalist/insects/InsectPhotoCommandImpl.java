@@ -52,8 +52,8 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
         m.arguments(i -> i
                         .identifier(subject, "subject")
                         .valueObject(upload, "upload")
-                        .whenNotNull(naturalist, c -> c.entityName(naturalist, "naturalist"))
-                        .whenNotNull(area, c -> c.valueObject(area, "area")))
+                        .entityNameOrNull(naturalist, "naturalist")
+                        .valueObjectOrNull(area, "area"))
                 .throwWhenInvalid();
 
         // The EXIF is read for the cell, then gone: nothing downstream sees the camera's metadata.

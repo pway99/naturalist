@@ -149,7 +149,7 @@ public record Plant(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .whenNotNull(order, o -> o.readModel(order, "order"))
+                .readModelOrNull(order, "order")
                 .whenNotNull(family, f -> f
                         .readModel(family, "family")
                         .notNull(order, "family:order")
@@ -162,7 +162,7 @@ public record Plant(
                         .readModel(species, "species")
                         .notNull(genus, "species:genus")
                         .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus"))
-                .whenNotNull(features, f -> f.readModel(features, "features"))
+                .readModelOrNull(features, "features")
                 .notNull(children, "children")
                 .namedEntityOrNull(role, "role")
                 .behavioralCollection(images, "images")

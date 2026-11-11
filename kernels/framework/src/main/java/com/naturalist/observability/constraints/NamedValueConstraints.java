@@ -36,4 +36,26 @@ public interface NamedValueConstraints {
             return new NamedValueConstraint<>(o, valueFunction, name);
         }
     }
+
+    record NamedValueOrNullConstraint<O, V extends NamedValue<?>>(
+            O o,
+            Function<O, V> valueFunction,
+            String name
+    ) implements Constraint<V> {
+
+        @Override
+        public V value() {
+            return o == null ? null : valueFunction.apply(o);
+        }
+
+        @Override
+        public boolean isValid() {
+            V v = value();
+            return v == null || v.isValid();
+        }
+
+        public NamedValueOrNullConstraint<O, V> withName(String name) {
+            return new NamedValueOrNullConstraint<>(o, valueFunction, name);
+        }
+    }
 }

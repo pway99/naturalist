@@ -24,4 +24,24 @@ public interface EntityIdConstraints {
             return EntityId.errorMessageFor(value);
         }
     }
+
+    record EntityIdOrNullConstraint<NAME extends EntityId>(
+            NAME value,
+            String name
+    ) implements Constraint<NAME> {
+
+        @Override
+        public boolean isValid() {
+            return value == null || EntityId.isValid(value);
+        }
+
+        public EntityIdOrNullConstraint<NAME> withName(String name) {
+            return new EntityIdOrNullConstraint<>(value, name);
+        }
+
+        @Override
+        public String errorMessage() {
+            return value == null ? "" : EntityId.errorMessageFor(value);
+        }
+    }
 }

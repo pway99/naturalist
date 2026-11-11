@@ -34,7 +34,7 @@ class InsectViewFactory {
     }
 
     Optional<InsectViews.RankPage> buildRankPage(InsectRankName name, @Nullable NaturalistName viewer) {
-        observer.arguments("buildRankPage", i -> i.identifier(name, "name").whenNotNull(viewer, v -> v.entityName(viewer, "viewer"))).throwWhenInvalid();
+        observer.arguments("buildRankPage", i -> i.identifier(name, "name").entityNameOrNull(viewer, "viewer")).throwWhenInvalid();
         Optional<Insect> found = insectQuery.getByName(name);
         if (found.isEmpty()) {
             return Optional.empty();
@@ -62,7 +62,7 @@ class InsectViewFactory {
     }
 
     Page<InsectViews.SpeciesCard> speciesCards(PageRequest request, @Nullable NaturalistName viewer) {
-        observer.arguments("speciesCards", i -> i.valueObject(request, "request").whenNotNull(viewer, v -> v.entityName(viewer, "viewer"))).throwWhenInvalid();
+        observer.arguments("speciesCards", i -> i.valueObject(request, "request").entityNameOrNull(viewer, "viewer")).throwWhenInvalid();
         Page<InsectSpeciesInfo> page = insectQuery.species().findPage(request);
         Set<InsectSpeciesName> names = page.content().stream().map(InsectSpeciesInfo::name).collect(Collectors.toSet());
         Set<InsectSpeciesName> collected = viewer == null || names.isEmpty() ? Set.of() : collectedAmong(viewer, names);

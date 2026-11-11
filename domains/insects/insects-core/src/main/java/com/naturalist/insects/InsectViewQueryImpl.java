@@ -22,13 +22,13 @@ class InsectViewQueryImpl implements InsectViewQuery {
 
     @Override
     public Optional<InsectViews.RankPage> rankPage(InsectRankName name, @Nullable NaturalistName viewer) {
-        observer.arguments("rankPage", i -> i.identifier(name, "name").whenNotNull(viewer, v -> v.entityName(viewer, "viewer"))).throwWhenInvalid();
+        observer.arguments("rankPage", i -> i.identifier(name, "name").entityNameOrNull(viewer, "viewer")).throwWhenInvalid();
         return viewFactory.buildRankPage(name, viewer);
     }
 
     @Override
     public Page<InsectViews.SpeciesCard> speciesCards(PageRequest request, @Nullable NaturalistName viewer) {
-        observer.arguments("speciesCards", i -> i.valueObject(request, "request").whenNotNull(viewer, v -> v.entityName(viewer, "viewer"))).throwWhenInvalid();
+        observer.arguments("speciesCards", i -> i.valueObject(request, "request").entityNameOrNull(viewer, "viewer")).throwWhenInvalid();
         return viewFactory.speciesCards(request, viewer);
     }
 

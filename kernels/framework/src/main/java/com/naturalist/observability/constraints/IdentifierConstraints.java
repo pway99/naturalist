@@ -41,6 +41,27 @@ public interface IdentifierConstraints {
         }
     }
 
+    record IdentifierOrNullConstraint<V>(
+            V value,
+            String name
+    ) implements Constraint<V> {
+
+        @Override
+        public boolean isValid() {
+            return value == null || isValidIdentifier(value);
+        }
+
+        @Override
+        public IdentifierOrNullConstraint<V> withName(String name) {
+            return new IdentifierOrNullConstraint<>(value, name);
+        }
+
+        @Override
+        public String errorMessage() {
+            return value == null ? "" : errorMessageFor(value);
+        }
+    }
+
     record IdentifierSetConstraint<V>(
             Set<V> value,
             String name

@@ -51,9 +51,10 @@ import java.util.function.Consumer;
  *       {@code lifeStages} must be non-null. Use
  *       {@link ImageCollection#empty()} /
  *       {@link LifeStageCollection#empty()} for the empty state.</li>
- *   <li><b>Per-rank descent</b> — each present rank is descended into once
- *       via its own {@code whenNotNull(rank, r -> r.readModel(rank, name))}
- *       block. Closes the leaf-rank gap (the most-specific identified rank
+ *   <li><b>Per-rank descent</b> — each present rank is descended into once:
+ *       {@code order} via {@code readModelOrNull}, each lower rank via a
+ *       {@code whenNotNull(rank, ...)} block that also carries its
+ *       ancestor-presence checks. Closes the leaf-rank gap (the most-specific identified rank
  *       still gets its own invariants walked).</li>
  *   <li><b>Ancestor-presence</b> — when a child rank is set, each of its
  *       ancestor slots must also be set. Reported as path-prefixed
@@ -204,9 +205,7 @@ public record Insect(
             // grandparent FKs removed there is exactly one path up the tree, so
             // the former skip-level checks (speciesBelongsToFamily,
             // genusBelongsToOrder) are structurally impossible and gone.
-            .whenNotNull(order, o -> o
-                .readModel(order, "order")
-            )
+            .readModelOrNull(order, "order")
             .whenNotNull(family, f -> f
                 .readModel(family, "family")
                 .notNull(order, "family:order")
@@ -222,10 +221,8 @@ public record Insect(
                 .notNull(genus, "species:genus")
                 .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus")
             )
-            .whenNotNull(citations, c -> c
-                .readModel(citations, "citations")
-            )
-            .whenNotNull(features, f -> f.readModel(features, "features"))
+            .readModelOrNull(citations, "citations")
+            .readModelOrNull(features, "features")
             .namedEntityOrNull(role, "role")
             .notNull(children, "children")
         ;

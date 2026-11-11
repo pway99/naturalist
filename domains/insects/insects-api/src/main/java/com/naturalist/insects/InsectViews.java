@@ -76,9 +76,9 @@ public interface InsectViews {
         @Override
         public Consumer<? extends Constraints> invariants() {
             return i -> i.namedEntity(species, "species").notNull(images, "images")
-                    .whenNotNull(genus, g -> g.namedEntity(genus, "genus"))
-                    .whenNotNull(family, f -> f.namedEntity(family, "family"))
-                    .whenNotNull(role, r -> r.observable(role, "role"));
+                    .namedEntityOrNull(genus, "genus")
+                    .namedEntityOrNull(family, "family")
+                    .observableOrNull(role, "role");
         }
     }
 

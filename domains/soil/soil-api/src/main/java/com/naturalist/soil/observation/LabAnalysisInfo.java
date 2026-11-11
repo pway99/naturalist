@@ -59,7 +59,7 @@ public record LabAnalysisInfo(
                 .notNull(sampleDate, "sampleDate")
                 .notNull(labId, "labId")
                 .notNull(labSampleId, "labSampleId")
-                .whenNotNull(sampleDepth, c -> c.namedValue(sampleDepth, "sampleDepth"))
+                .namedValueOrNull(sampleDepth, "sampleDepth")
                 .valueObjectOrNull(samplingProtocol, "samplingProtocol");
     }
 }
