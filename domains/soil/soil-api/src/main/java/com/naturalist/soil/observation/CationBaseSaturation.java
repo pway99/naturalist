@@ -75,15 +75,10 @@ public record CationBaseSaturation(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-                .notNull(calciumPct, "calciumPct")
                 .inRange(calciumPct, BigDecimal.ZERO, HUNDRED, "calciumPct")
-                .notNull(magnesiumPct, "magnesiumPct")
                 .inRange(magnesiumPct, BigDecimal.ZERO, HUNDRED, "magnesiumPct")
-                .notNull(potassiumPct, "potassiumPct")
                 .inRange(potassiumPct, BigDecimal.ZERO, HUNDRED, "potassiumPct")
-                .notNull(sodiumPct, "sodiumPct")
                 .inRange(sodiumPct, BigDecimal.ZERO, HUNDRED, "sodiumPct")
-                .notNull(hydrogenPct, "hydrogenPct")
                 .inRange(hydrogenPct, BigDecimal.ZERO, HUNDRED, "hydrogenPct");
     }
 }

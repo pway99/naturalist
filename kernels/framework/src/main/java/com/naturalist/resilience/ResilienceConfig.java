@@ -65,7 +65,6 @@ public sealed interface ResilienceConfig extends Observable {
             return (Constraints c) -> c
                     .notBlank(name, "name")
                     .inRange(maxAttempts, 1, 10, "maxAttempts")
-                    .notNull(backoff, "backoff")
                     .inRange(backoff, Duration.ZERO, Duration.ofSeconds(1), "backoff");
         }
     }
@@ -89,7 +88,6 @@ public sealed interface ResilienceConfig extends Observable {
             Duration ceiling = upload ? MAX_UPLOAD_TIMEOUT : MAX_TIMEOUT;
             return (Constraints c) -> c
                     .notBlank(name, "name")
-                    .notNull(duration, "duration")
                     .inRange(duration, Duration.ofMillis(1), ceiling, "duration");
         }
     }
@@ -106,10 +104,8 @@ public sealed interface ResilienceConfig extends Observable {
             return (Constraints c) -> c
                     .notBlank(name, "name")
                     .inRange(failureRateThreshold, 1.0f, 100.0f, "failureRateThreshold")
-                    .notNull(slowCallDurationThreshold, "slowCallDurationThreshold")
                     .inRange(slowCallDurationThreshold, Duration.ofMillis(1), MAX_UPLOAD_TIMEOUT, "slowCallDurationThreshold")
                     .inRange(slowCallRateThreshold, 1.0f, 100.0f, "slowCallRateThreshold")
-                    .notNull(waitDurationInOpenState, "waitDurationInOpenState")
                     .inRange(waitDurationInOpenState, Duration.ofMillis(1), MAX_OPEN_WAIT, "waitDurationInOpenState")
                     .inRange(minimumNumberOfCalls, 1, 10_000, "minimumNumberOfCalls");
         }
@@ -122,7 +118,6 @@ public sealed interface ResilienceConfig extends Observable {
             return (Constraints c) -> c
                     .notBlank(name, "name")
                     .inRange(maxConcurrentCalls, 1, 10_000, "maxConcurrentCalls")
-                    .notNull(maxWaitDuration, "maxWaitDuration")
                     .inRange(maxWaitDuration, Duration.ZERO, Duration.ofMinutes(1), "maxWaitDuration");
         }
     }
@@ -140,9 +135,7 @@ public sealed interface ResilienceConfig extends Observable {
             return (Constraints c) -> c
                     .notBlank(name, "name")
                     .inRange(limitForPeriod, 1, 10_000, "limitForPeriod")
-                    .notNull(limitRefreshPeriod, "limitRefreshPeriod")
                     .inRange(limitRefreshPeriod, Duration.ofMillis(1), MAX_LIMIT_REFRESH_PERIOD, "limitRefreshPeriod")
-                    .notNull(timeoutDuration, "timeoutDuration")
                     .inRange(timeoutDuration, Duration.ZERO, Duration.ofMinutes(1), "timeoutDuration");
         }
     }

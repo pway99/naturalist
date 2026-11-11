@@ -104,6 +104,20 @@ exact `isValid()` semantics in `kernels/framework/src/main/java/com/naturalist/o
 | `notBlank(T t, Function<T,String> fn, String name)` | by-fn          | `NotBlankConstraint` | Same via parent. **`notBlank` is String-only** — there is no `notBlank` for non-String types.                                                               |
 | `notEmpty(T t, Function<T,R> fn, String name)`      | **by-fn only** | `NotEmptyConstraint` | Rejects null + empty `Collection`, `Map`, `CharSequence`. Non-collection non-null values pass. **No direct-value `notEmpty(value, name)` overload exists.** |
 
+### Numeric / `Comparable` range checks
+
+Every method has a direct-value and a by-fn form. The plain name **rejects null**, so it needs no
+`notNull` beside it; the `OrNull` name passes null and checks a present value. Do not write the
+range as `isTrue(x >= a && x <= b, ...)` or `isTrue(x == null || x.signum() >= 0, ...)`.
+
+| Method                                  | Backing record            | Behaviour                              |
+|-----------------------------------------|---------------------------|----------------------------------------|
+| `inRange(V value, V min, V max, name)`  | `InRangeConstraint`       | Present and in `[min, max]`.           |
+| `atLeast(V value, V min, name)`         | `InRangeConstraint`       | Present and `>= min`.                  |
+| `atMost(V value, V max, name)`          | `InRangeConstraint`       | Present and `<= max`.                  |
+| `greaterThan(V value, V min, name)`     | `InRangeConstraint`       | Present and `> min` (exclusive bound). |
+| `inRangeOrNull` / `atLeastOrNull` / `atMostOrNull` / `greaterThanOrNull` | `InRangeOrNullConstraint` | Null passes; a present value meets the same bound. |
+
 ### Terminal
 
 | Method        | Returns                                                                                    |

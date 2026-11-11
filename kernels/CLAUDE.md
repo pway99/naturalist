@@ -295,6 +295,9 @@ field (when `this` is the enclosing record):
 - `notNull(value, name)` — general null check
 - `notBlank(value, name)` — rejects null, empty, and whitespace-only Strings (`StringUtils.isNotBlank`)
 - `entityName(e, name)` — validates `EntityName`
+- `inRange(value, min, max, name)`, `atLeast`, `atMost`, `greaterThan` (exclusive) — a present `Comparable`
+  within the bound; null fails. `inRangeOrNull` / `atLeastOrNull` / `atMostOrNull` / `greaterThanOrNull` pass null.
+  Never spell a range or sign check as an `isTrue` expression
 
 **By-function form** — pass the parent object and a method reference. Use this only when evaluating a child property
 from outside the parent (e.g. `namedEntity(this, FooAggregate::fooInfo, "fooInfo")` to descend into a child Observable):

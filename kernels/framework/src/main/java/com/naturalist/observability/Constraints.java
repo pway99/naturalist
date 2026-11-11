@@ -302,23 +302,33 @@ public class Constraints {
     }
 
     /**
-     * Asserts the value lies within {@code [min, max]} inclusive. Null values
-     * pass (pair with {@link #notNull} when presence is also required); either
-     * bound may be null to express a one-sided range — see {@link #atLeast}
-     * and {@link #atMost} for the conventional spellings.
+     * Asserts the value is present and lies within {@code [min, max]} inclusive.
+     * A null value fails — use {@link #inRangeOrNull} for a {@code @Nullable}
+     * component. Either bound may be null to express a one-sided range — see
+     * {@link #atLeast}, {@link #atMost} and {@link #greaterThan} for the
+     * conventional spellings.
      */
     public <V extends Comparable<V>> Constraints inRange(V value, V min, V max, String name) {
         return inRange(value, Function.identity(), min, max, name);
     }
 
     public <T, V extends Comparable<V>> Constraints inRange(T t, Function<T, V> valueFunction, V min, V max, String name) {
-        return add(new InRangeConstraint<>(t, valueFunction, min, max, name));
+        return add(new InRangeConstraint<>(t, valueFunction, min, false, max, name));
     }
 
     /**
-     * Asserts the value is greater than or equal to {@code min}. Null values
-     * pass (pair with {@link #notNull} when presence is also required).
+     * Null-tolerant variant of {@link #inRange}. A null value passes; a present
+     * value must lie within {@code [min, max]}.
      */
+    public <V extends Comparable<V>> Constraints inRangeOrNull(V value, V min, V max, String name) {
+        return inRangeOrNull(value, Function.identity(), min, max, name);
+    }
+
+    public <T, V extends Comparable<V>> Constraints inRangeOrNull(T t, Function<T, V> valueFunction, V min, V max, String name) {
+        return add(new InRangeOrNullConstraint<>(t, valueFunction, min, false, max, name));
+    }
+
+    /** Asserts the value is present and greater than or equal to {@code min}. */
     public <V extends Comparable<V>> Constraints atLeast(V value, V min, String name) {
         return inRange(value, Function.identity(), min, null, name);
     }
@@ -327,16 +337,53 @@ public class Constraints {
         return inRange(t, valueFunction, min, null, name);
     }
 
-    /**
-     * Asserts the value is less than or equal to {@code max}. Null values pass
-     * (pair with {@link #notNull} when presence is also required).
-     */
+    /** Null-tolerant variant of {@link #atLeast}. */
+    public <V extends Comparable<V>> Constraints atLeastOrNull(V value, V min, String name) {
+        return inRangeOrNull(value, Function.identity(), min, null, name);
+    }
+
+    public <T, V extends Comparable<V>> Constraints atLeastOrNull(T t, Function<T, V> valueFunction, V min, String name) {
+        return inRangeOrNull(t, valueFunction, min, null, name);
+    }
+
+    /** Asserts the value is present and less than or equal to {@code max}. */
     public <V extends Comparable<V>> Constraints atMost(V value, V max, String name) {
         return inRange(value, Function.identity(), null, max, name);
     }
 
     public <T, V extends Comparable<V>> Constraints atMost(T t, Function<T, V> valueFunction, V max, String name) {
         return inRange(t, valueFunction, null, max, name);
+    }
+
+    /** Null-tolerant variant of {@link #atMost}. */
+    public <V extends Comparable<V>> Constraints atMostOrNull(V value, V max, String name) {
+        return inRangeOrNull(value, Function.identity(), null, max, name);
+    }
+
+    public <T, V extends Comparable<V>> Constraints atMostOrNull(T t, Function<T, V> valueFunction, V max, String name) {
+        return inRangeOrNull(t, valueFunction, null, max, name);
+    }
+
+    /**
+     * Asserts the value is present and strictly greater than {@code min} — the
+     * exclusive counterpart of {@link #atLeast} (a positive amount is
+     * {@code greaterThan(amount, ZERO, ...)}).
+     */
+    public <V extends Comparable<V>> Constraints greaterThan(V value, V min, String name) {
+        return greaterThan(value, Function.identity(), min, name);
+    }
+
+    public <T, V extends Comparable<V>> Constraints greaterThan(T t, Function<T, V> valueFunction, V min, String name) {
+        return add(new InRangeConstraint<>(t, valueFunction, min, true, null, name));
+    }
+
+    /** Null-tolerant variant of {@link #greaterThan}. */
+    public <V extends Comparable<V>> Constraints greaterThanOrNull(V value, V min, String name) {
+        return greaterThanOrNull(value, Function.identity(), min, name);
+    }
+
+    public <T, V extends Comparable<V>> Constraints greaterThanOrNull(T t, Function<T, V> valueFunction, V min, String name) {
+        return add(new InRangeOrNullConstraint<>(t, valueFunction, min, true, null, name));
     }
 
     /**

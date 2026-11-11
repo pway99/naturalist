@@ -241,7 +241,7 @@ final class ImageMetadataSegments {
      * orientation reads back as {@code orientation}, which is what makes a second strip a no-op.
      */
     static byte[] orientationOnlyApp1(int orientation) {
-        observer.arguments("orientationOnlyApp1", c -> c.isTrue(orientation >= 1 && orientation <= 8, "orientation"))
+        observer.arguments("orientationOnlyApp1", c -> c.inRange(orientation, 1, 8, "orientation"))
                 .throwWhenInvalid();
         int tiffLength = 8 + 2 + 12 + 4;
         return ByteBuffer.allocate(4 + EXIF_HEADER.length + tiffLength).order(ByteOrder.BIG_ENDIAN)

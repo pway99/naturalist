@@ -15,7 +15,7 @@ public record Coordinates(double latitude, double longitude) implements ValueObj
     @Override
     public Consumer<? extends Constraints> invariants() {
         return c -> c
-                .isTrue(latitude >= -90.0 && latitude <= 90.0, "latitude")
-                .isTrue(longitude >= -180.0 && longitude <= 180.0, "longitude");
+                .inRange(latitude, -90.0, 90.0, "latitude")
+                .inRange(longitude, -180.0, 180.0, "longitude");
     }
 }

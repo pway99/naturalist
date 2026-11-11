@@ -108,7 +108,7 @@ public record Planting(
                 .entityName(zoneName, "zoneName")
                 .entityNameOrNull(subZoneName, "subZoneName")
                 .notNull(plantedDate, "plantedDate")
-                .whenNotNull(plantCount, c -> c.atLeast(plantCount, 1, "plantCount"))
+                .atLeastOrNull(plantCount, 1, "plantCount")
                 .isTrue(removedDate == null || plantedDate == null
                         || !removedDate.isBefore(plantedDate), "removedNotBeforePlanted");
     }

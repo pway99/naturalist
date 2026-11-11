@@ -44,7 +44,7 @@ public sealed interface RecommendedAmount extends ValueObject {
         public Consumer<? extends Constraints> invariants() {
             return i -> i
                     .notNull(value, "value")
-                    .isTrue(value == null || value.signum() >= 0, "notNegative");
+                    .atLeastOrNull(value, BigDecimal.ZERO, "notNegative");
         }
     }
 
@@ -69,7 +69,7 @@ public sealed interface RecommendedAmount extends ValueObject {
         public Consumer<? extends Constraints> invariants() {
             return i -> i
                     .notNull(limit, "limit")
-                    .isTrue(limit == null || limit.signum() > 0, "positiveLimit");
+                    .greaterThanOrNull(limit, BigDecimal.ZERO, "positiveLimit");
         }
     }
 }
