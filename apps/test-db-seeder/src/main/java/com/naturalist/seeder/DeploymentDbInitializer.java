@@ -67,6 +67,9 @@ public final class DeploymentDbInitializer {
                 }
             }
         }
+
+        // On every start, whether or not the database step ran, so photos already in the volume reach the limit too.
+        Seeding.conformPhotos();
     }
 
     private enum State {

@@ -1,6 +1,8 @@
 package com.naturalist.seeder;
 
 import com.naturalist.persistence.test.SchemaApplier;
+import com.naturalist.resilience.Resilience;
+import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.data.FileName;
 
 import javax.sql.DataSource;
@@ -69,6 +71,22 @@ final class Seeding {
         if (!missing.isEmpty()) {
             throw new IllegalStateException(missing.size() + " seeded " + space + " image rows have no photo under "
                     + space + "/images/ on the classpath or in " + directory + ": " + missing);
+        }
+    }
+
+    /**
+     * Conform every photo in the image store's root ({@code naturalist.images.root}, default {@code data/images}) for the
+     * {@code insects} and {@code plants} spaces: a photo over 1024 px is downscaled in place and a missing tile is
+     * written, through the store's own {@code conform}. Idempotent, so it runs on every seed and every {@code db-init},
+     * whether or not the database step ran; that is how photos already in a deployment's volume reach the limit.
+     */
+    static void conformPhotos() {
+        FilesystemImageStore store = new FilesystemImageStore(
+                Path.of(System.getProperty("naturalist.images.root", "data/images")), Resilience.noOp());
+        for (String space : List.of("insects", "plants")) {
+            FilesystemImageStore.ConformReport report = store.conform(space);
+            System.out.println("Photos conformed (" + space + "): downscaled " + report.downscaled()
+                    + ", tiled " + report.tiled() + ", unchanged " + report.unchanged());
         }
     }
 }

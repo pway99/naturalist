@@ -3,6 +3,7 @@ package com.naturalist.console.images;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.naturalist.observation.ImageUpload;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import javax.imageio.ImageIO;
 
 /**
  * Every classpath seed photo is already stripped: {@code withoutMetadata()} is the identity on it and it carries no
@@ -42,5 +44,25 @@ class SeedImagesCarryNoMetadataTest {
     @Test
     void thereAreSeedImages() throws IOException {
         assertThat(seedImages().count()).isGreaterThanOrEqualTo(18);
+    }
+
+    /** Every classpath seed photo is within the store's 1024 px photo edge, read from its header, so the seeder copies none that the store would not keep. */
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("seedImages")
+    void seedImagesAreWithinThePhotoLimit(Resource resource) throws IOException {
+        try (var in = ImageIO.createImageInputStream(new ByteArrayInputStream(resource.getContentAsByteArray()))) {
+            var readers = ImageIO.getImageReaders(in);
+            assertThat(readers.hasNext()).as("%s has an ImageIO reader", resource.getFilename()).isTrue();
+            var reader = readers.next();
+            try {
+                reader.setInput(in, true, true);
+                int longestEdge = Math.max(reader.getWidth(0), reader.getHeight(0));
+                assertThat(longestEdge)
+                        .as("%s is %d px on its longest edge; conform it to 1024", resource.getFilename(), longestEdge)
+                        .isLessThanOrEqualTo(1024);
+            } finally {
+                reader.dispose();
+            }
+        }
     }
 }

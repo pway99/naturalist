@@ -19,8 +19,11 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 /**
  * {@link ImageStore} over a directory root. {@code store} strips the upload of its metadata
@@ -87,9 +90,7 @@ public final class FilesystemImageStore implements ImageStore {
         // Storable above means the header decodes, so declared() answers; orElse(false) only keeps this total
         // rather than throwing. A photo already within the edge is kept as it is, and keeps its format; a larger
         // one becomes a JPEG, and is named as one.
-        boolean keepsBytes = PhotoScaler.declared(stripped.bytes())
-                .map(declared -> declared.longestEdge() <= PhotoScaler.PHOTO_EDGE)
-                .orElse(false);
+        boolean keepsBytes = withinPhotoEdge(stripped.bytes());
         String name = EntityId.newUUID() + (keepsBytes ? stripped.extension() : ".jpg");
         Path photoFile = directory.resolve(name);
         Path tileFile = directory.resolve(TILES).resolve(name);
@@ -100,10 +101,8 @@ public final class FilesystemImageStore implements ImageStore {
         AtomicBoolean abandoned = new AtomicBoolean();
         try {
             resilience.bulkhead(WRITE_STRATEGY).execute(() -> resilience.timeout(WRITE_STRATEGY).execute(() -> {
-                byte[] photo = keepsBytes
-                        ? stripped.bytes()
-                        : PhotoScaler.fitJpeg(stripped.bytes(), PhotoScaler.PHOTO_EDGE, orientation);
-                byte[] tile = PhotoScaler.fitJpeg(stripped.bytes(), PhotoScaler.TILE_EDGE, orientation);
+                byte[] photo = photo(stripped.bytes(), keepsBytes, orientation);
+                byte[] tile = tile(stripped.bytes(), orientation);
                 try {
                     if (!abandoned.get()) {
                         Files.createDirectories(tileFile.getParent());
@@ -301,6 +300,171 @@ public final class FilesystemImageStore implements ImageStore {
         } catch (InvalidPathException unresolvable) {
             // a string the file system cannot name (a NUL, say) is refused as a bad space or name, never thrown
             return false;
+        }
+    }
+
+    /**
+     * What one {@link #conform} did to a space: how many photos it downscaled in place, how many tiles it wrote, and
+     * how many photos it left as they were (already conformed, or skipped as undecodable). A photo both downscaled and
+     * tiled counts in both.
+     */
+    public record ConformReport(int downscaled, int tiled, int unchanged) {
+    }
+
+    /**
+     * Backfills a space to what {@code store} would have written: every regular file directly in {@code <root>/<space>/}
+     * over {@link PhotoScaler#PHOTO_EDGE} px is rewritten in place, under its own name, as the JPEG a store keeps, and
+     * every photo without a tile gets one. {@code tiles/} itself is never conformed. It runs on the store's own sizing
+     * methods and is idempotent: a second run finds nothing to do and counts every photo unchanged. A file that does not
+     * decode is left as it is, counted unchanged and observed at WARN. A space with no directory yet has nothing to
+     * conform. A space outside the root is refused like {@code store} refuses it.
+     */
+    public ConformReport conform(String space) {
+        MethodObserver m = observer.forMethod("conform");
+        m.arguments(i -> i
+            .notBlank(space, "space"))
+            .throwWhenInvalid();
+        m.arguments(i -> i
+            .isTrue(spaceWithinRoot(space), "spaceWithinRoot"))
+            .throwWhenInvalid();
+        Path directory = root.resolve(space).normalize();
+        if (!Files.isDirectory(directory)) {
+            return new ConformReport(0, 0, 0);
+        }
+        // Only the photos directly in the space: tiles/ is a directory, so it is never listed as a photo.
+        List<Path> photos;
+        try (Stream<Path> entries = Files.list(directory)) {
+            photos = entries.filter(Files::isRegularFile).sorted().toList();
+        } catch (IOException e) {
+            m.state(i -> i
+                .isTrue(false, "listed"))
+                .observe(Level.ERROR);
+            throw new UncheckedIOException(e);
+        }
+        int downscaled = 0;
+        int tiled = 0;
+        int unchanged = 0;
+        for (Path photoFile : photos) {
+            Conformed conformed = conformed(m, photoFile, directory.resolve(TILES).resolve(photoFile.getFileName()));
+            downscaled += conformed.downscaled() ? 1 : 0;
+            tiled += conformed.tiled() ? 1 : 0;
+            unchanged += conformed.downscaled() || conformed.tiled() ? 0 : 1;
+        }
+        return new ConformReport(downscaled, tiled, unchanged);
+    }
+
+    /**
+     * True when {@code bytes} declare an image whose longest edge is within {@link PhotoScaler#PHOTO_EDGE}, so the
+     * store keeps them as they are. An image whose header does not decode is never one to keep as it is.
+     */
+    private static boolean withinPhotoEdge(byte[] bytes) {
+        return PhotoScaler.declared(bytes)
+                .map(declared -> declared.longestEdge() <= PhotoScaler.PHOTO_EDGE)
+                .orElse(false);
+    }
+
+    /** The photo kept for {@code bytes}: the bytes themselves when {@code keepsBytes}, else an upright JPEG fitted to {@link PhotoScaler#PHOTO_EDGE}. */
+    private static byte[] photo(byte[] bytes, boolean keepsBytes, int orientation) {
+        return keepsBytes ? bytes : PhotoScaler.fitJpeg(bytes, PhotoScaler.PHOTO_EDGE, orientation);
+    }
+
+    /** The tile kept for {@code bytes}: always an upright JPEG fitted to {@link PhotoScaler#TILE_EDGE}. */
+    private static byte[] tile(byte[] bytes, int orientation) {
+        return PhotoScaler.fitJpeg(bytes, PhotoScaler.TILE_EDGE, orientation);
+    }
+
+    /** What conforming one photo did: rewrote it within the edge, wrote its missing tile, both or neither. */
+    private record Conformed(boolean downscaled, boolean tiled) {
+    }
+
+    /**
+     * Writes {@code bytes} to {@code target} through a temporary file in {@code staging}, moved over the target in one
+     * step, so a failure part way leaves the old file or the new one and never a part of either. A failure is observed
+     * through the caller's {@code m} before it is thrown.
+     */
+    private static void replace(MethodObserver m, Path staging, Path target, byte[] bytes) {
+        Path temporary = null;
+        try {
+            temporary = Files.createTempFile(staging, ".conform-", ".tmp");
+            Files.write(temporary, bytes);
+            Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException e) {
+            m.state(i -> i
+                .isTrue(false, "replaced"))
+                .observe(Level.ERROR);
+            throw new UncheckedIOException(e);
+        } finally {
+            if (temporary != null) {
+                discard(m, temporary);
+            }
+        }
+    }
+
+    /**
+     * Conforms one photo on the store's own sizing path: a photo over {@link PhotoScaler#PHOTO_EDGE} is replaced by its
+     * fitted JPEG under the same name, and a missing tile is written. A file that does not decode within the pixel
+     * ceiling is left as it is and observed at WARN through the caller's {@code m}, never thrown. The decode, re-encodes
+     * and writes run under the {@link #WRITE_STRATEGY} bulkhead and timeout; each write replaces its file in one step,
+     * so a worker the timeout abandons can only leave a conformed file behind, never a part of one.
+     */
+    private Conformed conformed(MethodObserver m, Path photoFile, Path tileFile) {
+        byte[] bytes;
+        try {
+            bytes = Files.readAllBytes(photoFile);
+        } catch (IOException e) {
+            m.state(i -> i
+                .isTrue(false, "read"))
+                .observe(Level.ERROR);
+            throw new UncheckedIOException(e);
+        }
+        if (!PhotoScaler.storable(bytes)) {
+            m.state(i -> i
+                .isTrue(false, "decodable"))
+                .observe(Level.WARN);
+            return new Conformed(false, false);
+        }
+        boolean keepsBytes = withinPhotoEdge(bytes);
+        boolean tileMissing = !Files.isRegularFile(tileFile);
+        if (keepsBytes && !tileMissing) {
+            return new Conformed(false, false);
+        }
+        int orientation = ImageUpload.of(bytes).orientation().orElse(1);
+        try {
+            return resilience.bulkhead(WRITE_STRATEGY).execute(() -> resilience.timeout(WRITE_STRATEGY).execute(() -> {
+                byte[] photo;
+                byte[] tile;
+                try {
+                    photo = photo(bytes, keepsBytes, orientation);
+                    tile = tileMissing ? tile(bytes, orientation) : null;
+                } catch (IllegalArgumentException undecodable) {
+                    // the header decoded but the image did not: left as it is, like a file whose header does not decode
+                    m.state(i -> i
+                        .isTrue(false, "decodable"))
+                        .observe(Level.WARN);
+                    return new Conformed(false, false);
+                }
+                Path tiles = tileFile.getParent();
+                try {
+                    Files.createDirectories(tiles);
+                } catch (IOException e) {
+                    m.state(i -> i
+                        .isTrue(false, "tilesDirectory"))
+                        .observe(Level.ERROR);
+                    throw new UncheckedIOException(e);
+                }
+                if (tile != null) {
+                    replace(m, tiles, tileFile, tile);
+                }
+                if (!keepsBytes) {
+                    replace(m, tiles, photoFile, photo);
+                }
+                return new Conformed(!keepsBytes, tile != null);
+            }));
+        } catch (RuntimeException e) {
+            m.state(i -> i
+                .isTrue(false, "conformed"))
+                .observe(Level.ERROR);
+            throw e;
         }
     }
 }

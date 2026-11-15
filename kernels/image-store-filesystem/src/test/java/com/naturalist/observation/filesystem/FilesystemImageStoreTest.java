@@ -2,6 +2,7 @@ package com.naturalist.observation.filesystem;
 
 import com.naturalist.data.FileName;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.observability.Level;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.ImageVariant;
 import com.naturalist.observation.StoredImage;
@@ -13,6 +14,8 @@ import com.naturalist.resilience.Timeout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -22,6 +25,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
+import java.util.TreeMap;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.List;
@@ -492,5 +497,103 @@ class FilesystemImageStoreTest {
         try (Stream<Path> files = Files.walk(root)) {
             assertThat(files.filter(Files::isRegularFile).toList()).isEmpty();
         }
+    }
+
+    /** {@code bytes} written straight into {@code <root>/insects/name}, the way a seeder or an older store left a photo. */
+    private Path placed(String name, byte[] bytes) throws IOException {
+        Path file = root.resolve("insects").resolve(name);
+        Files.createDirectories(file.getParent());
+        return Files.write(file, bytes);
+    }
+
+    /** A photo over the edge is rewritten in place under its own name, and its tile is written beside it. */
+    @Test
+    void conform_downscalesInPlaceAndTiles() throws IOException {
+        Path photo = placed("seed.jpg", image("jpg", 2048, 1536));
+
+        FilesystemImageStore.ConformReport report = store.conform("insects");
+
+        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(1, 1, 0));
+        BufferedImage rewritten = decode(Files.readAllBytes(photo));
+        assertThat(rewritten.getWidth()).isEqualTo(1024);
+        assertThat(rewritten.getHeight()).isEqualTo(768);
+        BufferedImage tile = decode(Files.readAllBytes(root.resolve("insects/tiles/seed.jpg")));
+        assertThat(tile.getWidth()).isEqualTo(640);
+        assertThat(tile.getHeight()).isEqualTo(480);
+        try (Stream<Path> files = Files.list(root.resolve("insects"))) {
+            assertThat(files.filter(Files::isRegularFile).map(p -> p.getFileName().toString())).containsExactly("seed.jpg");
+        }
+    }
+
+    /** A photo already within the edge keeps its bytes; only its missing tile is written. */
+    @Test
+    void conform_tilesAPhotoWithinTheLimitWithoutTouchingIt() throws IOException {
+        byte[] bytes = image("jpg", 1024, 768);
+        Path photo = placed("seed.jpg", bytes);
+
+        FilesystemImageStore.ConformReport report = store.conform("insects");
+
+        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(0, 1, 0));
+        assertThat(Files.readAllBytes(photo)).isEqualTo(bytes);
+        BufferedImage tile = decode(store.read("insects", FileName.of("seed.jpg"), ImageVariant.TILE).orElseThrow().readAllBytes());
+        assertThat(tile.getWidth()).isEqualTo(640);
+        assertThat(tile.getHeight()).isEqualTo(480);
+    }
+
+    /** Every regular file under {@code directory}, tiles included, with its bytes. */
+    private static Map<Path, byte[]> contents(Path directory) throws IOException {
+        Map<Path, byte[]> contents = new TreeMap<>();
+        try (Stream<Path> files = Files.walk(directory)) {
+            for (Path file : files.filter(Files::isRegularFile).toList()) {
+                contents.put(directory.relativize(file), Files.readAllBytes(file));
+            }
+        }
+        return contents;
+    }
+
+    /** A second conform finds every photo within the edge and tiled, so it counts them unchanged and rewrites no byte. */
+    @Test
+    void conform_isIdempotent() throws IOException {
+        placed("large.jpg", image("jpg", 2048, 1536));
+        placed("small.png", image("png", 800, 600));
+        store.conform("insects");
+        Map<Path, byte[]> before = contents(root.resolve("insects"));
+
+        FilesystemImageStore.ConformReport report = store.conform("insects");
+
+        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(0, 0, 2));
+        Map<Path, byte[]> after = contents(root.resolve("insects"));
+        assertThat(after.keySet()).isEqualTo(before.keySet());
+        assertThat(after.keySet()).hasSize(4);
+        for (Path file : before.keySet()) {
+            assertThat(after.get(file)).as("%s", file).isEqualTo(before.get(file));
+        }
+    }
+
+    /** A file that does not decode is left as it is and counted unchanged, observed at WARN, never thrown; the rest are still conformed. */
+    @Test
+    void conform_skipsAnUndecodableFile() throws IOException {
+        Path junk = placed("junk.jpg", JPEG);
+        placed("large.jpg", image("jpg", 2048, 1536));
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        FilesystemImageStore.ConformReport report;
+        try {
+            report = store.conform("insects");
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
+
+        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(1, 1, 1));
+        assertThat(Files.readAllBytes(junk)).isEqualTo(JPEG);
+        assertThat(Files.exists(root.resolve("insects/tiles/junk.jpg"))).isFalse();
+        assertThat(Files.isRegularFile(root.resolve("insects/tiles/large.jpg"))).isTrue();
+        var skipped = meters.find("naturalist.invariant.check")
+                .tag("method", "conform")
+                .tag("outcome", "violated")
+                .tag("level", Level.WARN.tagValue())
+                .counter();
+        assertThat(skipped).isNotNull();
+        assertThat(skipped.count()).isEqualTo(1);
     }
 }

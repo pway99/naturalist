@@ -104,6 +104,10 @@
             <artifactId>usage-repository-test</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>image-store-filesystem</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -39,6 +39,7 @@ public final class TestDbSeeder {
         if (only.isEmpty() || only.contains("usage")) UsageSeeding.seed(dataSource, database);
 
         CatalogSeeding.apply(dataSource);   // always last: rebuilds the fan-in view over per-domain views
+        Seeding.conformPhotos();
 
         System.out.println("Seed complete" + (only.isEmpty() ? "" : " (" + String.join(", ", only) + ")") + ".");
     }
