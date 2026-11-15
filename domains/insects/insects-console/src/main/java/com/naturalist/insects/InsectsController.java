@@ -51,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 import com.naturalist.observation.GridCell;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
+import com.naturalist.observation.ImageVariant;
 
 @Controller
 @RequestMapping("/insects")
@@ -775,20 +776,39 @@ public class InsectsController {
      */
     @GetMapping("/images/{filename:.+}")
     ResponseEntity<Resource> image(@PathVariable String filename) {
+        return serve("insects", filename, ImageVariant.PHOTO);
+    }
+
+    /**
+     * Streams one variant of a stored photo. A missing variant is an uncached 404: a tile never
+     * falls back to the full photo, and the 404 must not be remembered once the tile is written.
+     */
+    private ResponseEntity<Resource> serve(String space, String filename, ImageVariant variant) {
         try {
-            return imageStore.read("insects", FileName.of(filename))
+            return imageStore.read(space, FileName.of(filename), variant)
                     .map(stored -> ResponseEntity.ok()
                             .contentType(MediaType.parseMediaType(stored.mediaType()))
                             .contentLength(stored.size())
                             .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
                             .<Resource>body(new InputStreamResource(stored.content()::open)))
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+                    .orElseGet(() -> ResponseEntity.notFound()
+                            .cacheControl(CacheControl.noStore())
+                            .build());
         } catch (BulkheadFullException busy) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .header(HttpHeaders.RETRY_AFTER, "1")
                     .cacheControl(CacheControl.noStore())
                     .build();
         }
+    }
+
+    /**
+     * Streams the stored tile of a photo, the scaled-down copy the galleries show. A photo stored
+     * before tiles existed has none until it is conformed, and that is a 404, never the full photo.
+     */
+    @GetMapping("/images/tile/{filename:.+}")
+    ResponseEntity<Resource> tile(@PathVariable String filename) {
+        return serve("insects", filename, ImageVariant.TILE);
     }
 
     private static final Observer OBSERVER = Observer.forClass(InsectsController.class);

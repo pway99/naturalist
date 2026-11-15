@@ -13,6 +13,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.UncheckedIOException;
+import java.io.ByteArrayOutputStream;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -131,7 +136,8 @@ class InsectsCatalogWebMvcTest {
     @Test
     void image_missingIs404() throws Exception {
         mockMvc.perform(get("/insects/images/nope.jpg"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(header().string("Cache-Control", "no-store"));
     }
 
     @Test
@@ -230,5 +236,36 @@ class InsectsCatalogWebMvcTest {
         try (var walk = Files.walk(InsectsControllerTestConfig.IMAGE_ROOT)) {
             return walk.filter(Files::isRegularFile).count();
         }
+    }
+
+    @Test
+    void tile_missingIs404NoStore() throws Exception {
+        mockMvc.perform(get("/insects/images/tile/nope.jpg"))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string("Cache-Control", "no-store"));
+    }
+
+    private static byte[] largeJpeg() {
+        var image = new BufferedImage(2000, 1500, BufferedImage.TYPE_INT_RGB);
+        var encoded = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", encoded);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return encoded.toByteArray();
+    }
+
+    @Test
+    void tile_servesTheStoredTile() throws Exception {
+        var name = InsectsControllerTestConfig.IMAGE_STORE.store("insects", ImageUpload.of(largeJpeg()));
+        byte[] body = mockMvc.perform(get("/insects/images/tile/" + name.value()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("image/jpeg"))
+                .andExpect(header().string("Cache-Control", containsString("immutable")))
+                .andReturn().getResponse().getContentAsByteArray();
+        var tile = ImageIO.read(new ByteArrayInputStream(body));
+        assertThat(tile.getWidth()).isEqualTo(640);
+        assertThat(tile.getHeight()).isEqualTo(480);
     }
 }

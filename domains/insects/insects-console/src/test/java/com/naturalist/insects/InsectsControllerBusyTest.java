@@ -172,4 +172,24 @@ class InsectsControllerBusyTest {
         assertThat(response.getHeaders().getCacheControl()).isEqualTo("no-store");
         assertThat(response.getBody()).isNull();
     }
+
+    /**
+     * {@link InsectsController#tile} answers a full {@code image.store} bulkhead with an uncached 503
+     * and {@code Retry-After}, never a 500, a cached failure or a fallback to the full photo.
+     */
+    @Test
+    void tile_isServiceUnavailable_whenTheBulkheadRejects() {
+        var busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
+        var context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
+                new NoOpVisionService(), InsectsTestContext.noOpAuthority());
+        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+                context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
+
+        var response = controller.tile("anything.jpg");
+
+        assertThat(response.getStatusCode().value()).isEqualTo(503);
+        assertThat(response.getHeaders().getFirst("Retry-After")).isEqualTo("1");
+        assertThat(response.getHeaders().getCacheControl()).isEqualTo("no-store");
+        assertThat(response.getBody()).isNull();
+    }
 }

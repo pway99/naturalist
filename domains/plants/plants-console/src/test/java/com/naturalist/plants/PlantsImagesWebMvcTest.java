@@ -11,6 +11,13 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import javax.imageio.ImageIO;
+import org.assertj.core.api.Assertions;
 
 @WebMvcTest
 class PlantsImagesWebMvcTest {
@@ -26,7 +33,8 @@ class PlantsImagesWebMvcTest {
     @Test
     void image_missingIs404() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/plants/images/nope.jpg"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.header().string("Cache-Control", "no-store"));
     }
 
     @Test
@@ -37,5 +45,36 @@ class PlantsImagesWebMvcTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("image/jpeg"))
                 .andExpect(MockMvcResultMatchers.header().string("Cache-Control", Matchers.containsString("immutable")))
                 .andExpect(MockMvcResultMatchers.content().bytes(TINY_JPEG));
+    }
+
+    private static byte[] largeJpeg() {
+        var image = new BufferedImage(2000, 1500, BufferedImage.TYPE_INT_RGB);
+        var encoded = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", encoded);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return encoded.toByteArray();
+    }
+
+    @Test
+    void tile_servesTheStoredTile() throws Exception {
+        var name = PlantsControllerTestConfig.IMAGE_STORE.store("plants", ImageUpload.of(largeJpeg()));
+        byte[] body = mockMvc.perform(MockMvcRequestBuilders.get("/plants/images/tile/" + name.value()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("image/jpeg"))
+                .andExpect(MockMvcResultMatchers.header().string("Cache-Control", Matchers.containsString("immutable")))
+                .andReturn().getResponse().getContentAsByteArray();
+        var tile = ImageIO.read(new ByteArrayInputStream(body));
+        Assertions.assertThat(tile.getWidth()).isEqualTo(640);
+        Assertions.assertThat(tile.getHeight()).isEqualTo(480);
+    }
+
+    @Test
+    void tile_missingIs404NoStore() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/plants/images/tile/nope.jpg"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.header().string("Cache-Control", "no-store"));
     }
 }
