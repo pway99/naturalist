@@ -143,6 +143,9 @@ final class InsectLifeStageDbo implements Dbo {
                        List<PlantSpeciesName> hostPlants,
                        List<com.naturalist.insects.InsectSpeciesName> parasitoidHosts,
                        List<PlantSpeciesName> nectarSources) {
+        OBSERVER.state("toEntity", s -> s
+                .isTrue(isStageKind(stageKind), "stageKind"))
+                .throwWhenInvalid();
         LifeStageName lsName = LifeStageName.of(name);
         InsectRankName parent = InsectRankName.of(parentName, LinealRank.valueOf(parentRank));
         StagePhenology phenology = new StagePhenology(windows, phenologyNotes);
@@ -168,18 +171,21 @@ final class InsectLifeStageDbo implements Dbo {
             case "ADULT" -> new AdultStage(lsName, parent, phenology, habitat, chem, description,
                     adultFeedingHabit == null ? null : AdultStage.FeedingHabit.valueOf(adultFeedingHabit),
                     nectarSources, adultEcologicalRole, adultLifespan);
-            default -> throw new IllegalStateException("Unknown life stage kind: " + stageKind);
+            default -> throw new IllegalStateException("unreachable: " + stageKind);
         };
     }
 
     private PupaStage.DiapauseRegulation diapauseRegulation() {
         if (diapauseKind == null) return null;
+        OBSERVER.state("diapauseRegulation", s -> s
+                .isTrue(isDiapauseKind(diapauseKind), "diapauseKind"))
+                .throwWhenInvalid();
         return switch (diapauseKind) {
             case "PHOTOPERIOD" -> new PupaStage.PhotoperiodRegulated(diapauseFieldA, diapauseFieldB);
             case "FOOD_WATER" -> new PupaStage.FoodWaterContentRegulated(diapauseFieldA, diapauseFieldB);
             case "TEMPERATURE" -> new PupaStage.TemperatureRegulated(diapauseFieldA, diapauseFieldB);
             case "NON_DIAPAUSING" -> new PupaStage.NonDiapausing();
-            default -> throw new IllegalStateException("Unknown diapause kind: " + diapauseKind);
+            default -> throw new IllegalStateException("unreachable: " + diapauseKind);
         };
     }
 
@@ -195,5 +201,23 @@ final class InsectLifeStageDbo implements Dbo {
                 .notBlank(descriptionElementary, "descriptionElementary")
                 .notBlank(descriptionSecondary, "descriptionSecondary")
                 .notBlank(descriptionUniversity, "descriptionUniversity");
+    }
+
+    private static final Observer OBSERVER = Observer.forClass(InsectLifeStageDbo.class);
+
+    /** Whether {@code kind} names one of the four life stage kinds this row can hold; null does not. */
+    private static boolean isStageKind(String kind) {
+        return kind != null && switch (kind) {
+            case "EGG", "LARVA", "PUPA", "ADULT" -> true;
+            default -> false;
+        };
+    }
+
+    /** Whether {@code kind} names one of the four diapause regulations a pupa row can hold; null does not. */
+    private static boolean isDiapauseKind(String kind) {
+        return kind != null && switch (kind) {
+            case "PHOTOPERIOD", "FOOD_WATER", "TEMPERATURE", "NON_DIAPAUSING" -> true;
+            default -> false;
+        };
     }
 }

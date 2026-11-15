@@ -3,6 +3,7 @@ package com.naturalist.secrets;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import com.naturalist.exception.InvariantViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,5 +43,19 @@ class EnvironmentSecretProviderTest {
     @Test
     void source_isEnvironment() {
         assertThat(new EnvironmentSecretProvider(Map.of()).source()).isEqualTo("environment");
+    }
+
+    @Test
+    void nullArguments_areRefused() {
+        assertThatThrownBy(() -> new EnvironmentSecretProvider(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[EnvironmentSecretProvider.constructor.environment]");
+        var provider = new EnvironmentSecretProvider(Map.of());
+        assertThatThrownBy(() -> provider.lookup(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[EnvironmentSecretProvider.lookup.name]");
+        assertThatThrownBy(() -> provider.require(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[EnvironmentSecretProvider.require.name]");
     }
 }

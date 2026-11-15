@@ -6,6 +6,7 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import com.naturalist.exception.InvariantViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -61,12 +62,30 @@ class FileSecretProviderTest {
     void aDirectoryInPlaceOfTheFile_isAnError() throws IOException {
         Files.createDirectory(dir.resolve("example-secret"));
         assertThatThrownBy(() -> new FileSecretProvider(dir).lookup(SECRET))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("example-secret");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[FileSecretProvider.lookup.regularFile]");
     }
 
     @Test
     void source_namesTheDirectory() {
         assertThat(new FileSecretProvider(dir).source()).isEqualTo("file:" + dir);
+    }
+
+    @Test
+    void nullDirectory_isRefused() {
+        assertThatThrownBy(() -> new FileSecretProvider(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[FileSecretProvider.constructor.directory]");
+    }
+
+    @Test
+    void nullName_isRefused() {
+        var provider = new FileSecretProvider(dir);
+        assertThatThrownBy(() -> provider.lookup(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[FileSecretProvider.lookup.name]");
+        assertThatThrownBy(() -> provider.require(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[FileSecretProvider.require.name]");
     }
 }

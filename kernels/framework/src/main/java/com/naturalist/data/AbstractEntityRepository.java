@@ -89,19 +89,37 @@ public abstract class AbstractEntityRepository<
 
     @Override
     public final void insert(ENTITY entity) {
-        observer.arguments("insert", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
-        doInsert(entity);
+        MethodObserver insert = observer.forMethod("insert");
+        insert.arguments(i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
+        try {
+            doInsert(entity);
+        } catch (RuntimeException e) {
+            insert.state(s -> s.isTrue(false, "inserted")).observe(Level.ERROR);
+            throw e;
+        }
     }
 
     @Override
     public final void update(ENTITY entity) {
-        observer.arguments("update", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
-        doUpdate(entity);
+        MethodObserver update = observer.forMethod("update");
+        update.arguments(i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
+        try {
+            doUpdate(entity);
+        } catch (RuntimeException e) {
+            update.state(s -> s.isTrue(false, "updated")).observe(Level.ERROR);
+            throw e;
+        }
     }
 
     @Override
     public final ENTITY save(ENTITY entity) {
-        observer.arguments("save", i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
-        return doSave(entity);
+        MethodObserver save = observer.forMethod("save");
+        save.arguments(i -> i.namedEntity(entity, "entity")).throwWhenInvalid();
+        try {
+            return doSave(entity);
+        } catch (RuntimeException e) {
+            save.state(s -> s.isTrue(false, "saved")).observe(Level.ERROR);
+            throw e;
+        }
     }
 }

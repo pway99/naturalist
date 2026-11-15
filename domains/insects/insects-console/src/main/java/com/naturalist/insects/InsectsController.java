@@ -1,6 +1,8 @@
 package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
+import com.naturalist.observability.MethodObserver;
+import com.naturalist.observability.Observer;
 import com.naturalist.clades.CladeCatalog;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Eukaryota;
@@ -43,6 +45,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import com.naturalist.observation.GridCell;
 import com.naturalist.observation.ImageStore;
@@ -258,9 +261,16 @@ public class InsectsController {
     }
 
     private CladeTrail cladeTrail(List<InsectCladeAnchors.LineageEntry> lineage) {
+        MethodObserver m = OBSERVER.forMethod("cladeTrail");
+        m.arguments(i -> i
+                .notNull(lineage, "lineage"))
+                .throwWhenInvalid();
         InsectCladeAnchors.Anchor anchor = InsectCladeAnchors.resolve(lineage);
-        CladeView view = cladeQuery.getBySlug(anchor.cladeSlug()).orElseThrow(
-                () -> new IllegalStateException("anchor clade not found: " + anchor.cladeSlug()));
+        Optional<CladeView> found = cladeQuery.getBySlug(anchor.cladeSlug());
+        m.state(s -> s
+                .isPresent(found, "anchorClade"))
+                .throwWhenInvalid();
+        CladeView view = found.orElseThrow();
         List<CladeStep> steps = new ArrayList<>(view.ancestry());
         steps.add(view.subject());
         return new CladeTrail(steps, anchor.gapLabel());
@@ -304,8 +314,11 @@ public class InsectsController {
     }
 
     private CladeTrail cladeTrailAt(String slug) {
-        CladeView view = cladeQuery.getBySlug(slug).orElseThrow(
-                () -> new IllegalStateException("clade not found: " + slug));
+        Optional<CladeView> found = cladeQuery.getBySlug(slug);
+        OBSERVER.state("cladeTrailAt", s -> s
+                .isPresent(found, "clade"))
+                .throwWhenInvalid();
+        CladeView view = found.orElseThrow();
         List<CladeStep> steps = new ArrayList<>(view.ancestry());
         steps.add(view.subject());
         return new CladeTrail(steps, null);
@@ -762,5 +775,7 @@ public class InsectsController {
                     .build();
         }
     }
+
+    private static final Observer OBSERVER = Observer.forClass(InsectsController.class);
 
 }

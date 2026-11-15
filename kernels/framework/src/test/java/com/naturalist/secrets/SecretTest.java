@@ -3,6 +3,7 @@ package com.naturalist.secrets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import com.naturalist.exception.InvariantViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,14 +37,16 @@ class SecretTest {
 
     @Test
     void null_isRefused() {
-        assertThatThrownBy(() -> Secret.of(null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Secret.of(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[Secret.of.value]");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   "})
     void blank_isRefused(String bad) {
         assertThatThrownBy(() -> Secret.of(bad))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("secret value must not be blank");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[Secret.of.value]");
     }
 }

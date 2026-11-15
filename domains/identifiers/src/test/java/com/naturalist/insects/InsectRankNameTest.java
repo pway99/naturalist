@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.taxonomy.LinealRank;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,6 +50,21 @@ class InsectRankNameTest {
     @EnumSource(value = LinealRank.class, names = {"KINGDOM", "PHYLUM", "CLASS"})
     void rejectsNonInsectRanks(LinealRank rank) {
         assertThatThrownBy(() -> InsectRankName.of("test", rank))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[InsectRankName.of.insectRank]");
+    }
+
+    @Test
+    void rejectsNullRank() {
+        assertThatThrownBy(() -> InsectRankName.of("battus", null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[InsectRankName.of.rank]");
+    }
+
+    @Test
+    void rejectsSlugThatIsNotKebabCase() {
+        assertThatThrownBy(() -> InsectRankName.of("Battus Philenor", LinealRank.SPECIES))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[InsectRankName.of.slug]");
     }
 }

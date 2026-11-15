@@ -2,8 +2,7 @@ package com.naturalist.insects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
-
-import java.util.Objects;
+import com.naturalist.observability.Observer;
 
 /**
  * Natural-key identity of a LifeStage. Composite slug:
@@ -19,20 +18,26 @@ public final class LifeStageName extends EntityName {
     }
 
     public static LifeStageName of(InsectSpeciesName species, LifeStageKind kind) {
-        Objects.requireNonNull(species, "species");
-        Objects.requireNonNull(kind, "kind");
+        OBSERVER.arguments("of", i -> i
+                .notNull(species, "species")
+                .notNull(kind, "kind"))
+                .throwWhenInvalid();
         return new LifeStageName(species.value() + "-" + kind.slug());
     }
 
     public static LifeStageName of(InsectGenusName genus, LifeStageKind kind) {
-        Objects.requireNonNull(genus, "genus");
-        Objects.requireNonNull(kind, "kind");
+        OBSERVER.arguments("of", i -> i
+                .notNull(genus, "genus")
+                .notNull(kind, "kind"))
+                .throwWhenInvalid();
         return new LifeStageName(genus.value() + "-" + kind.slug());
     }
 
     public static LifeStageName of(InsectFamilyName family, LifeStageKind kind) {
-        Objects.requireNonNull(family, "family");
-        Objects.requireNonNull(kind, "kind");
+        OBSERVER.arguments("of", i -> i
+                .notNull(family, "family")
+                .notNull(kind, "kind"))
+                .throwWhenInvalid();
         return new LifeStageName(family.value() + "-" + kind.slug());
     }
 
@@ -65,10 +70,11 @@ public final class LifeStageName extends EntityName {
 
     private int lastHyphenIndex() {
         int idx = value().lastIndexOf('-');
-        if (idx < 0) {
-            throw new IllegalStateException(
-                    "LifeStageName has no stage-kind component: " + value());
-        }
+        OBSERVER.state("lastHyphenIndex", s -> s
+                .isTrue(idx >= 0, "stageKindComponent"))
+                .throwWhenInvalid();
         return idx;
     }
+
+    private static final Observer OBSERVER = Observer.forClass(LifeStageName.class);
 }

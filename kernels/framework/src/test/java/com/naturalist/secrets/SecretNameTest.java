@@ -3,6 +3,7 @@ package com.naturalist.secrets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import com.naturalist.exception.InvariantViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -28,12 +29,14 @@ class SecretNameTest {
     @ValueSource(strings = {"", " ", "Example-Secret", "example_secret", "-leading", "trailing-", "a--b"})
     void nonKebab_isRefused(String bad) {
         assertThatThrownBy(() -> SecretName.of(bad))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("kebab-case");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[SecretName.constructor.kebabCase]");
     }
 
     @Test
     void null_isRefused() {
-        assertThatThrownBy(() -> SecretName.of(null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> SecretName.of(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[SecretName.constructor.kebabCase]");
     }
 }

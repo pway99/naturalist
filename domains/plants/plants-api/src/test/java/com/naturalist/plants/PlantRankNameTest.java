@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.taxonomy.LinealRank;
 import org.junit.jupiter.api.Test;
 
@@ -60,11 +61,11 @@ class PlantRankNameTest {
         // nothing above order, so a slug at those ranks has nowhere to live and the
         // factory refuses rather than inventing a home for it.
         assertThatThrownBy(() -> PlantRankName.of("anything", LinealRank.SUBSPECIES))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("SUBSPECIES");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[PlantRankName.of.plantRank]");
         assertThatThrownBy(() -> PlantRankName.of("plantae", LinealRank.KINGDOM))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("KINGDOM");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[PlantRankName.of.plantRank]");
     }
 
     @Test
