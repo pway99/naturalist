@@ -62,8 +62,8 @@ class FileSecretProviderTest {
     void aDirectoryInPlaceOfTheFile_isAnError() throws IOException {
         Files.createDirectory(dir.resolve("example-secret"));
         assertThatThrownBy(() -> new FileSecretProvider(dir).lookup(SECRET))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("example-secret");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[FileSecretProvider.lookup.regularFile]");
     }
 
     @Test

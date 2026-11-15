@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.clades.CladeCatalog;
 import com.naturalist.clades.CladeTraversal;
@@ -260,9 +261,13 @@ public class InsectsController {
     }
 
     private CladeTrail cladeTrail(List<InsectCladeAnchors.LineageEntry> lineage) {
+        MethodObserver m = OBSERVER.forMethod("cladeTrail");
+        m.arguments(i -> i
+                .notNull(lineage, "lineage"))
+                .throwWhenInvalid();
         InsectCladeAnchors.Anchor anchor = InsectCladeAnchors.resolve(lineage);
         Optional<CladeView> found = cladeQuery.getBySlug(anchor.cladeSlug());
-        OBSERVER.state("cladeTrail", s -> s
+        m.state(s -> s
                 .isPresent(found, "anchorClade"))
                 .throwWhenInvalid();
         CladeView view = found.orElseThrow();

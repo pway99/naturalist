@@ -347,8 +347,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         } catch (Exception e) {
             observer.state("buildCandidatesJson", s -> s
                     .isTrue(false, "serialized"))
-                    .observe(Level.ERROR);
-            throw new RuntimeException("Failed to serialize feature candidates for turn 2", e);
+                    .throwWhenInvalid();
+            throw new IllegalStateException("unreachable", e);
         }
     }
 
@@ -815,8 +815,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         } catch (Exception e) {
             observer.state("parseResult", s -> s
                     .isTrue(false, "resultParsed"))
-                    .observe(Level.ERROR);
-            throw new RuntimeException("Failed to parse vision identification result", e);
+                    .throwWhenInvalid();
+            throw new IllegalStateException("unreachable", e);
         }
     }
 

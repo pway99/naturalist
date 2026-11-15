@@ -1,8 +1,7 @@
 package com.naturalist.insects;
 
-import java.util.Optional;
-import java.util.Arrays;
 import com.naturalist.observability.Observer;
+import com.naturalist.observability.MethodObserver;
 
 /**
  * The stages of an insect's life cycle. Component of {@link LifeStageName}.
@@ -26,15 +25,26 @@ public enum LifeStageKind {
     }
 
     public static LifeStageKind fromSlug(String slug) {
-        Optional<LifeStageKind> found = Arrays.stream(values())
-                .filter(k -> k.slug.equals(slug))
-                .findFirst();
-        OBSERVER.arguments("fromSlug", i -> i
-                .notNull(slug, "slug")
-                .isTrue(found.isPresent(), "knownSlug"))
+        MethodObserver m = OBSERVER.forMethod("fromSlug");
+        m.arguments(i -> i
+                .notBlank(slug, "slug"))
                 .throwWhenInvalid();
-        return found.orElseThrow();
+        LifeStageKind kind = bySlug(slug);
+        m.state(s -> s
+                .notNull(kind, "kind"))
+                .throwWhenInvalid();
+        return kind;
     }
 
     private static final Observer OBSERVER = Observer.forClass(LifeStageKind.class);
+
+    /** The kind whose slug is {@code slug}, or null when no kind has it. */
+    private static LifeStageKind bySlug(String slug) {
+        for (LifeStageKind k : values()) {
+            if (k.slug.equals(slug)) {
+                return k;
+            }
+        }
+        return null;
+    }
 }

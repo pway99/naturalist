@@ -35,11 +35,9 @@ public final class FileSecretProvider implements SecretProvider {
         if (Files.notExists(path)) {
             return Optional.empty();
         }
-        if (!Files.isRegularFile(path)) {
-            lookup.state(s -> s.isTrue(false, "regularFile")).observe(Level.ERROR);
-            throw new IllegalStateException("secret file could not be read: " + path,
-                    new IOException("not a regular file"));
-        }
+        lookup.state(s -> s
+                .isTrue(Files.isRegularFile(path), "regularFile"))
+                .throwWhenInvalid();
         try {
             String value = stripTrailingLineBreaks(Files.readString(path, StandardCharsets.UTF_8));
             return value.isBlank() ? Optional.empty() : Optional.of(Secret.of(value));
