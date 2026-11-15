@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import com.naturalist.observability.Observer;
-import com.naturalist.observability.Level;
+import com.naturalist.observability.Handling;
 
 /**
  * A deployment secret's value (ADR-028). {@link #toString()} redacts it to
@@ -39,9 +39,7 @@ public final class Secret {
             byte[] digest = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(digest).substring(0, 8);
         } catch (NoSuchAlgorithmException e) {
-            OBSERVER.state("fingerprint", s -> s
-                    .isTrue(false, "sha256Available"))
-                    .observe(Level.ERROR);
+            OBSERVER.noticeError("fingerprint", "sha256Available", e, Handling.WRAPPED);
             throw new IllegalStateException("SHA-256 is unavailable", e);
         }
     }

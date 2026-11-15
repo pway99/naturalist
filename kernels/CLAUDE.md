@@ -355,6 +355,23 @@ object's *own* `invariants()` rather than the facts this method depends on, use 
 Security-critical classes (`accounts-core`, console authentication, registration) construct their `Observer` in
 `MonitoringMode.ALWAYS` so valid decisions are counted too (as the `INFO` baseline); everything else stays `ON_FAILURE`.
 
+**Caught failures: `noticeError`, not a constraint.** A constraint checks a value. In a `catch` block there is nothing left
+to check: the failure has already happened, and the catch only needs to count it. Notice it with
+`m.noticeError("<name>", e, Handling.X)` (or `observer.noticeError("<method>", "<name>", e, Handling.X)` when the method
+observes nothing else). It is one increment of `naturalist.invariant.check` tagged `kind=caught`, `outcome=violated`,
+`level=error`, with the exception's simple class name as `exception` (in place of `constraint`) and what the catch does
+next as `handling`, so existing alerts and dashboards on `outcome="violated"` see it unchanged, and a dashboard can split
+the failures the system absorbed (`handling="swallowed"`) from the ones that still reached a caller (`rethrown`,
+`wrapped`). Pass the `Handling` that matches the catch's next statement: `SWALLOWED` when it returns a fallback, skips
+the step or does nothing; `RETHROWN` when it throws `e` itself (after any cleanup); `WRAPPED` when it throws a new
+exception carrying `e` as the cause. It never throws, so the catch keeps its own behaviour and its cause:
+`m.noticeError("serialized", e, Handling.WRAPPED); throw new IllegalStateException("...", e);`,
+`m.noticeError("inserted", e, Handling.RETHROWN); throw e;` or
+`m.noticeError("enriched", e, Handling.SWALLOWED); return FALLBACK;`. Never write `state(s -> s.isTrue(false, "<name>"))` in a catch: it
+reads as a check that can never hold, and `throwWhenInvalid()` there drops the caught exception (it takes no cause).
+A constraint stays right when the catch turns the failure into a *decision* observed below `ERROR` (a WARN refusal,
+an INFO signal such as `ImageMetadataSegments`); `noticeError` is always `ERROR`.
+
 **One `MethodObserver` per method.** A method that observes more than once — its arguments, then a decision, then the
 entity it wrote — obtains `MethodObserver m = observer.forMethod("name")` once and routes every observation through it
 (`m.arguments(...)`, `m.state(...)`, `m.namedEntity(...)`, `m.observable(...)`); helpers that observe on the caller's behalf take the
