@@ -41,7 +41,7 @@ public final class FileSecretProvider implements SecretProvider {
             String value = stripTrailingLineBreaks(Files.readString(path, StandardCharsets.UTF_8));
             return value.isBlank() ? Optional.empty() : Optional.of(Secret.of(value));
         } catch (IOException e) {
-            lookup.caught("readable", e);
+            lookup.noticeError("readable", e);
             throw new IllegalStateException("secret file could not be read: " + path, e);
         }
     }

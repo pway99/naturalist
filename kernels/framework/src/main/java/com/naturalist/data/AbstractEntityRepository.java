@@ -94,7 +94,7 @@ public abstract class AbstractEntityRepository<
         try {
             doInsert(entity);
         } catch (RuntimeException e) {
-            insert.caught("inserted", e);
+            insert.noticeError("inserted", e);
             throw e;
         }
     }
@@ -106,7 +106,7 @@ public abstract class AbstractEntityRepository<
         try {
             doUpdate(entity);
         } catch (RuntimeException e) {
-            update.caught("updated", e);
+            update.noticeError("updated", e);
             throw e;
         }
     }
@@ -118,7 +118,7 @@ public abstract class AbstractEntityRepository<
         try {
             return doSave(entity);
         } catch (RuntimeException e) {
-            save.caught("saved", e);
+            save.noticeError("saved", e);
             throw e;
         }
     }

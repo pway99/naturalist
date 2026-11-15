@@ -19,8 +19,8 @@ import java.util.Locale;
  *       {@link Observer#observable(Observable, String)}, {@link Observer#namedEntity}, and
  *       {@link Observer#observation(Observable)}.</li>
  *   <li>{@link #CAUGHT} — a failure a {@code catch} block caught, from
- *       {@link Observer#caught(String, String, Throwable)} and
- *       {@link MethodObserver#caught(String, Throwable)}. Nothing was checked: the failure had
+ *       {@link Observer#noticeError(String, String, Throwable)} and
+ *       {@link MethodObserver#noticeError(String, Throwable)}. Nothing was checked: the failure had
  *       already happened, and the emission counts it at {@code level=error}, always
  *       {@code outcome=violated}, with an {@code exception} tag (the exception's simple class
  *       name) in place of {@code constraint}.</li>

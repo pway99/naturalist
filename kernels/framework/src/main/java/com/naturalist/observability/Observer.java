@@ -274,7 +274,7 @@ public class Observer {
     }
 
     /**
-     * Count a failure {@code methodName} caught: one increment of {@code naturalist.invariant.check}
+     * Notice an error {@code methodName} caught: one increment of {@code naturalist.invariant.check}
      * tagged {@code kind=caught}, {@code outcome=violated} and {@code level=error}, with the class,
      * the method, the name ({@code ClassName.methodName.name}) and the exception's simple class name
      * as {@code exception}. Use it in a {@code catch} block, where the failure has already happened
@@ -283,23 +283,23 @@ public class Observer {
      *
      * <pre>{@code
      * } catch (IOException e) {
-     *     observer.caught("lookup", "readable", e);
+     *     observer.noticeError("lookup", "readable", e);
      *     throw new IllegalStateException("secret file could not be read: " + path, e);
      * }
      * }</pre>
      *
-     * <p>Within a method that observes more than once, use {@link MethodObserver#caught(String, Throwable)}.
+     * <p>Within a method that observes more than once, use {@link MethodObserver#noticeError(String, Throwable)}.
      */
-    public void caught(String methodName, String name, Throwable failure) {
-        countCaught(referenceClass.getSimpleName(), methodName, name, failure);
+    public void noticeError(String methodName, String name, Throwable failure) {
+        countError(referenceClass.getSimpleName(), methodName, name, failure);
     }
 
     /**
-     * The one emission behind {@link #caught(String, String, Throwable)} and
-     * {@link MethodObserver#caught(String, Throwable)}. An anonymous exception class has no simple
+     * The one emission behind {@link #noticeError(String, String, Throwable)} and
+     * {@link MethodObserver#noticeError(String, Throwable)}. An anonymous exception class has no simple
      * name, so it is tagged with its binary name. Never throws.
      */
-    static void countCaught(String className, String methodName, String name, Throwable failure) {
+    static void countError(String className, String methodName, String name, Throwable failure) {
         try {
             Class<?> failed = failure == null ? null : failure.getClass();
             Metric.counter("naturalist.invariant.check")

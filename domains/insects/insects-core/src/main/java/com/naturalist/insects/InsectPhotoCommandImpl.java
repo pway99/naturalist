@@ -82,7 +82,7 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
         try {
             transaction.execute(new PhotoAddition(image, observation));
         } catch (RuntimeException e) {
-            m.caught("photoAdded", e);
+            m.noticeError("photoAdded", e);
             try {
                 imageStore.delete(SPACE, stored);
             } catch (RuntimeException deleteFailure) {

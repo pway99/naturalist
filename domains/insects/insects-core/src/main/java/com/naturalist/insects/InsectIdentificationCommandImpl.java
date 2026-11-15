@@ -345,7 +345,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             return MAPPER.writeValueAsString(Map.of("features", features));
         } catch (Exception e) {
-            observer.caught("buildCandidatesJson", "serialized", e);
+            observer.noticeError("buildCandidatesJson", "serialized", e);
             throw new IllegalStateException("Failed to serialize feature candidates for turn 2", e);
         }
     }
@@ -405,7 +405,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 }
             }
         } catch (Exception e) {
-            observer.caught("parseResolution", "resolutionParsed", e);
+            observer.noticeError("parseResolution", "resolutionParsed", e);
             // A malformed resolution degrades to "mint everything new" -- never gates.
             return Map.of();
         }
@@ -446,7 +446,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             var found = externalAuthority.lookup((EntityName) rankName);
             if (!found.isEmpty()) refs.put(rankName, found);
         } catch (Exception e) {
-            observer.caught("tryCollectRef", "authorityReferenceCollected", e);
+            observer.noticeError("tryCollectRef", "authorityReferenceCollected", e);
             // best-effort — identification proceeds without this reference
         }
     }
@@ -507,7 +507,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             var enrichment = generateEnrichment(displayName, content);
             enrichments.put(rankName, enrichment);
         } catch (Exception e) {
-            observer.caught("enrichIfNew", "enriched", e);
+            observer.noticeError("enrichIfNew", "enriched", e);
             enrichments.put(rankName, new RankEnrichment(FALLBACK_DESCRIPTION, List.of()));
         }
     }
@@ -556,7 +556,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             }
             return new RankEnrichment(description, List.copyOf(features));
         } catch (Exception e) {
-            observer.caught("generateEnrichment", "enrichmentParsed", e);
+            observer.noticeError("generateEnrichment", "enrichmentParsed", e);
             return new RankEnrichment(FALLBACK_DESCRIPTION, List.of());
         }
     }
@@ -640,7 +640,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                     // expected here, so none is caught.
                     libraryCommand.attributeCitation(attribution);
                 } catch (Exception e) {
-                    observer.caught("writeCitations", "citationAttributed", e);
+                    observer.noticeError("writeCitations", "citationAttributed", e);
                     // Degraded -- deliberately still swallowed here, but for a
                     // different reason than before: attributeCitation runs as its
                     // own library-owned transaction that commits or rolls back
@@ -801,7 +801,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             return new InsectIdentificationResult(identifiedEntity, taxonomy, identification,
                     List.copyOf(features), referenceUrl);
         } catch (Exception e) {
-            observer.caught("parseResult", "resultParsed", e);
+            observer.noticeError("parseResult", "resultParsed", e);
             throw new IllegalStateException("Failed to parse vision identification result", e);
         }
     }
@@ -857,7 +857,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             array = alt.isTextual() ? MAPPER.readTree(alt.asText()) : alt;
         } catch (Exception e) {
-            observer.caught("parseAlternatives", "alternativesParsed", e);
+            observer.noticeError("parseAlternatives", "alternativesParsed", e);
             return List.of();
         }
         if (array == null || !array.isArray()) {
@@ -892,7 +892,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             return catalogue(upload, metadata, naturalist, notes, area, storedFileName);
         } catch (RuntimeException e) {
-            observer.caught("reserveStoreAndCatalogue", "catalogued", e);
+            observer.noticeError("reserveStoreAndCatalogue", "catalogued", e);
             try {
                 imageStore.delete(SPACE, storedFileName);
             } catch (RuntimeException deleteFailure) {

@@ -155,10 +155,10 @@ class InvariantObservationMetricsTest {
      * the exception's simple class name.
      */
     @Test
-    void caught_countsOneErrorViolation_taggedWithTheException() {
+    void noticeError_countsOneErrorViolation_taggedWithTheException() {
         Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
-        observer.forMethod("register").caught("stored", new UncheckedIOException(new IOException("disk")));
-        observer.caught("register", "stored", new IllegalStateException("boom"));
+        observer.forMethod("register").noticeError("stored", new UncheckedIOException(new IOException("disk")));
+        observer.noticeError("register", "stored", new IllegalStateException("boom"));
 
         Counter io = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.stored")
                 .tag("class", "InvariantObservationMetricsTest")
@@ -183,11 +183,11 @@ class InvariantObservationMetricsTest {
      * anonymous exception class that has no simple name.
      */
     @Test
-    void caught_neverThrows() {
+    void noticeError_neverThrows() {
         Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
-        observer.caught(null, null, null);
-        observer.forMethod("register").caught(null, null);
-        observer.forMethod("register").caught("anonymous", new RuntimeException() { });
+        observer.noticeError(null, null, null);
+        observer.forMethod("register").noticeError(null, null);
+        observer.forMethod("register").noticeError("anonymous", new RuntimeException() { });
 
         Counter anonymous = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.anonymous")
                 .tag("kind", "caught")
