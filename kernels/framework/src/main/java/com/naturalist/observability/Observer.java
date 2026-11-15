@@ -1,6 +1,7 @@
 package com.naturalist.observability;
 
 import com.naturalist.ddd.Named;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -270,5 +271,48 @@ public class Observer {
             }
         }
         return result;
+    }
+
+    /**
+     * Count a failure {@code methodName} caught: one increment of {@code naturalist.invariant.check}
+     * tagged {@code kind=caught}, {@code outcome=violated} and {@code level=error}, with the class,
+     * the method, the name ({@code ClassName.methodName.name}) and the exception's simple class name
+     * as {@code exception}. Use it in a {@code catch} block, where the failure has already happened
+     * and there is nothing left to check; the catch then rethrows, wraps (carrying {@code failure}
+     * as the cause) or degrades, as before. Never throws.
+     *
+     * <pre>{@code
+     * } catch (IOException e) {
+     *     observer.caught("lookup", "readable", e);
+     *     throw new IllegalStateException("secret file could not be read: " + path, e);
+     * }
+     * }</pre>
+     *
+     * <p>Within a method that observes more than once, use {@link MethodObserver#caught(String, Throwable)}.
+     */
+    public void caught(String methodName, String name, Throwable failure) {
+        countCaught(referenceClass.getSimpleName(), methodName, name, failure);
+    }
+
+    /**
+     * The one emission behind {@link #caught(String, String, Throwable)} and
+     * {@link MethodObserver#caught(String, Throwable)}. An anonymous exception class has no simple
+     * name, so it is tagged with its binary name. Never throws.
+     */
+    static void countCaught(String className, String methodName, String name, Throwable failure) {
+        try {
+            Class<?> failed = failure == null ? null : failure.getClass();
+            Metric.counter("naturalist.invariant.check")
+                    .tag("class", className)
+                    .tag("method", methodName)
+                    .tag("name", className + "." + methodName + "." + name)
+                    .tag("exception", failed == null ? null : StringUtils.defaultIfBlank(failed.getSimpleName(), failed.getName()))
+                    .tag("outcome", "violated")
+                    .tag("level", Level.ERROR.tagValue())
+                    .tag("kind", ObservationKind.CAUGHT.tagValue())
+                    .incrementCounter();
+        } catch (Exception ignored) {
+            // The observability framework must never throw from metric emission.
+        }
     }
 }

@@ -337,6 +337,18 @@ object's *own* `invariants()` rather than the facts this method depends on, use 
 Security-critical classes (`accounts-core`, console authentication, registration) construct their `Observer` in
 `MonitoringMode.ALWAYS` so valid decisions are counted too (as the `INFO` baseline); everything else stays `ON_FAILURE`.
 
+**Caught failures: `caught`, not a constraint.** A constraint checks a value. In a `catch` block there is nothing left
+to check: the failure has already happened, and the catch only needs to count it. Count it with
+`m.caught("<name>", e)` (or `observer.caught("<method>", "<name>", e)` when the method observes nothing else). It is
+one increment of `naturalist.invariant.check` tagged `kind=caught`, `outcome=violated`, `level=error`, with the
+exception's simple class name as `exception` (in place of `constraint`), so existing alerts and dashboards on
+`outcome="violated"` see it unchanged. It never throws, so the catch keeps its own behaviour and its cause:
+`m.caught("serialized", e); throw new IllegalStateException("...", e);`, `m.caught("inserted", e); throw e;` or
+`m.caught("enriched", e); return FALLBACK;`. Never write `state(s -> s.isTrue(false, "<name>"))` in a catch: it
+reads as a check that can never hold, and `throwWhenInvalid()` there drops the caught exception (it takes no cause).
+A constraint stays right when the catch turns the failure into a *decision* observed below `ERROR` (a WARN refusal,
+an INFO signal such as `ImageMetadataSegments`); `caught` is always `ERROR`.
+
 **One `MethodObserver` per method.** A method that observes more than once — its arguments, then a decision, then the
 entity it wrote — obtains `MethodObserver m = observer.forMethod("name")` once and routes every observation through it
 (`m.arguments(...)`, `m.state(...)`, `m.namedEntity(...)`, `m.observable(...)`); helpers that observe on the caller's behalf take the

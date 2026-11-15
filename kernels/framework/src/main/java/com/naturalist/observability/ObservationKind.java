@@ -18,12 +18,19 @@ import java.util.Locale;
  *   <li>{@link #OBSERVABLE} — an {@link Observable}'s own declared {@code invariants()}, from
  *       {@link Observer#observable(Observable, String)}, {@link Observer#namedEntity}, and
  *       {@link Observer#observation(Observable)}.</li>
+ *   <li>{@link #CAUGHT} — a failure a {@code catch} block caught, from
+ *       {@link Observer#caught(String, String, Throwable)} and
+ *       {@link MethodObserver#caught(String, Throwable)}. Nothing was checked: the failure had
+ *       already happened, and the emission counts it at {@code level=error}, always
+ *       {@code outcome=violated}, with an {@code exception} tag (the exception's simple class
+ *       name) in place of {@code constraint}.</li>
  * </ul>
  */
 public enum ObservationKind {
     ARGUMENT,
     STATE,
-    OBSERVABLE;
+    OBSERVABLE,
+    CAUGHT;
 
     /**
      * The Micrometer-friendly tag value for this kind — lowercased constant name. Used as the

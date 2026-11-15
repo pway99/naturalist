@@ -94,7 +94,7 @@ public abstract class AbstractEntityRepository<
         try {
             doInsert(entity);
         } catch (RuntimeException e) {
-            insert.state(s -> s.isTrue(false, "inserted")).observe(Level.ERROR);
+            insert.caught("inserted", e);
             throw e;
         }
     }
@@ -106,7 +106,7 @@ public abstract class AbstractEntityRepository<
         try {
             doUpdate(entity);
         } catch (RuntimeException e) {
-            update.state(s -> s.isTrue(false, "updated")).observe(Level.ERROR);
+            update.caught("updated", e);
             throw e;
         }
     }
@@ -118,7 +118,7 @@ public abstract class AbstractEntityRepository<
         try {
             return doSave(entity);
         } catch (RuntimeException e) {
-            save.state(s -> s.isTrue(false, "saved")).observe(Level.ERROR);
+            save.caught("saved", e);
             throw e;
         }
     }

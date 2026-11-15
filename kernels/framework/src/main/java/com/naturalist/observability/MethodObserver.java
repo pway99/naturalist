@@ -125,4 +125,21 @@ public class MethodObserver {
         }
         return result;
     }
+
+    /**
+     * Count a failure this method caught — see {@link Observer#caught(String, String, Throwable)}.
+     * One increment of {@code naturalist.invariant.check} tagged {@code kind=caught},
+     * {@code outcome=violated}, {@code level=error} and the exception's simple class name. Never
+     * throws; the catch keeps its own rethrow, wrap or fallback.
+     *
+     * <pre>{@code
+     * } catch (RuntimeException e) {
+     *     insert.caught("inserted", e);
+     *     throw e;
+     * }
+     * }</pre>
+     */
+    public void caught(String name, Throwable failure) {
+        Observer.countCaught(referenceClass.getSimpleName(), methodName, name, failure);
+    }
 }

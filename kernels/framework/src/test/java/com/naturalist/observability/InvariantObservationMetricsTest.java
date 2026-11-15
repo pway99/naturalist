@@ -7,6 +7,8 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.io.UncheckedIOException;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -146,5 +148,51 @@ class InvariantObservationMetricsTest {
 
         Counter counter = check("InvariantObservationMetricsTest.fetched.fetched", "violated");
         assertThat(counter.getId().getTag("kind")).isEqualTo("observable");
+    }
+
+    /**
+     * A caught failure is one {@code kind=caught} violation at ERROR on the same meter, tagged with
+     * the exception's simple class name.
+     */
+    @Test
+    void caught_countsOneErrorViolation_taggedWithTheException() {
+        Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
+        observer.forMethod("register").caught("stored", new UncheckedIOException(new IOException("disk")));
+        observer.caught("register", "stored", new IllegalStateException("boom"));
+
+        Counter io = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.stored")
+                .tag("class", "InvariantObservationMetricsTest")
+                .tag("method", "register")
+                .tag("exception", "UncheckedIOException")
+                .tag("outcome", "violated")
+                .tag("level", "error")
+                .tag("kind", "caught")
+                .counter();
+        assertThat(io).isNotNull();
+        assertThat(io.count()).isEqualTo(1);
+        Counter state = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.stored")
+                .tag("exception", "IllegalStateException")
+                .tag("kind", "caught")
+                .counter();
+        assertThat(state).isNotNull();
+        assertThat(state.count()).isEqualTo(1);
+    }
+
+    /**
+     * Counting a caught failure never throws, whatever it is handed: a null name or failure, or an
+     * anonymous exception class that has no simple name.
+     */
+    @Test
+    void caught_neverThrows() {
+        Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
+        observer.caught(null, null, null);
+        observer.forMethod("register").caught(null, null);
+        observer.forMethod("register").caught("anonymous", new RuntimeException() { });
+
+        Counter anonymous = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.anonymous")
+                .tag("kind", "caught")
+                .counter();
+        assertThat(anonymous).isNotNull();
+        assertThat(anonymous.getId().getTag("exception")).isNotBlank();
     }
 }
