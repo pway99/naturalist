@@ -83,17 +83,16 @@ public class CladesController {
      * accessed indirectly through the kernel's static API.
      */
     private String[] findCladeDescription(String slug) {
-        try {
-            Clade clade = Clade.of(slug);
-            Description description = clade.description();
-            return new String[]{
-                    descriptionRenderer.render(description.preschool()),
-                    descriptionRenderer.render(description.elementary()),
-                    descriptionRenderer.render(description.secondary()),
-                    descriptionRenderer.render(description.university())
-            };
-        } catch (IllegalArgumentException e) {
+        Optional<Clade> found = Clade.find(slug);
+        if (found.isEmpty()) {
             return new String[]{"", "", "", ""};
         }
+        Description description = found.get().description();
+        return new String[]{
+                descriptionRenderer.render(description.preschool()),
+                descriptionRenderer.render(description.elementary()),
+                descriptionRenderer.render(description.secondary()),
+                descriptionRenderer.render(description.university())
+        };
     }
 }

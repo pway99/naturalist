@@ -3,6 +3,9 @@ package com.naturalist.biogeography;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.observability.MethodObserver;
+import com.naturalist.observability.Observer;
+import java.util.Optional;
 
 /**
  * A named biogeographical area used to record where an organism is native,
@@ -32,8 +35,9 @@ import com.naturalist.fieldnotes.Description;
  *
  * <h2>Jackson</h2>
  * Serialised as the {@link #slug()} string ({@link JsonValue}); deserialised
- * via {@link #of(String)} ({@link JsonCreator}). Unknown slugs throw
- * {@link IllegalArgumentException}.
+ * via {@link #of(String)} ({@link JsonCreator}). An unknown slug is observed
+ * at ERROR and thrown as an {@code InvariantViolationException}; a caller
+ * probing a slug that may not be a bioregion uses {@link #find(String)}.
  */
 public sealed interface Bioregion
         permits SacramentoValley,
@@ -52,14 +56,34 @@ public sealed interface Bioregion
 
     @JsonCreator
     static Bioregion of(String slug) {
-        return switch (slug) {
+        MethodObserver m = Observer.forClass(Bioregion.class).forMethod("of");
+        m.arguments(i -> i
+                .notBlank(slug, "slug"))
+                .throwWhenInvalid();
+        Optional<Bioregion> found = find(slug);
+        m.state(s -> s
+                .isPresent(found, "bioregion"))
+                .throwWhenInvalid();
+        return found.orElseThrow();
+    }
+
+    /**
+     * The bioregion whose slug is {@code slug}, or empty when no bioregion has it (null included).
+     * For a caller that asks whether a slug names a bioregion; {@link #of(String)} is for a slug that must.
+     */
+    static Optional<Bioregion> find(String slug) {
+        if (slug == null) {
+            return Optional.empty();
+        }
+        Bioregion bioregion = switch (slug) {
             case "sacramento-valley" -> new SacramentoValley();
             case "southern-cascades" -> new SouthernCascades();
             case "klamath-mountains" -> new KlamathMountains();
             case "coast-ranges" -> new CoastRanges();
             case "sierra-nevada" -> new SierraNevada();
             case "modoc-plateau" -> new ModocPlateau();
-            default -> throw new IllegalArgumentException("Unknown bioregion: " + slug);
+            default -> null;
         };
+        return Optional.ofNullable(bioregion);
     }
 }

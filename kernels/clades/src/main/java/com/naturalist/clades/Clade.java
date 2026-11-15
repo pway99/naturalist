@@ -3,6 +3,8 @@ package com.naturalist.clades;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.naturalist.fieldnotes.Description;
+import com.naturalist.observability.MethodObserver;
+import com.naturalist.observability.Observer;
 
 import java.util.Optional;
 
@@ -31,8 +33,9 @@ import java.util.Optional;
  *
  * <h2>Jackson</h2>
  * Serialised as the {@link #slug()} string ({@link JsonValue}); deserialised
- * via {@link #of(String)} ({@link JsonCreator}). Unknown slugs throw
- * {@link IllegalArgumentException}.
+ * via {@link #of(String)} ({@link JsonCreator}). An unknown slug is observed
+ * at ERROR and thrown as an {@code InvariantViolationException}; a caller
+ * probing a slug that may not be a clade uses {@link #find(String)}.
  */
 public sealed interface Clade
         permits Eukaryota,
@@ -89,7 +92,26 @@ public sealed interface Clade
 
     @JsonCreator
     static Clade of(String slug) {
-        return switch (slug) {
+        MethodObserver m = Observer.forClass(Clade.class).forMethod("of");
+        m.arguments(i -> i
+                .notBlank(slug, "slug"))
+                .throwWhenInvalid();
+        Optional<Clade> found = find(slug);
+        m.state(s -> s
+                .isPresent(found, "clade"))
+                .throwWhenInvalid();
+        return found.orElseThrow();
+    }
+
+    /**
+     * The clade whose slug is {@code slug}, or empty when no clade has it (null included). For a
+     * caller that asks whether a slug names a clade; {@link #of(String)} is for a slug that must.
+     */
+    static Optional<Clade> find(String slug) {
+        if (slug == null) {
+            return Optional.empty();
+        }
+        Clade clade = switch (slug) {
             case "anthophila" -> new Anthophila();
             case "animalia" -> new Animalia();
             case "apoidea" -> new Apoidea();
@@ -121,7 +143,8 @@ public sealed interface Clade
             case "asterids" -> new Asterids();
             case "lamiids" -> new Lamiids();
             case "campanulids" -> new Campanulids();
-            default -> throw new IllegalArgumentException("Unknown clade: " + slug);
+            default -> null;
         };
+        return Optional.ofNullable(clade);
     }
 }
