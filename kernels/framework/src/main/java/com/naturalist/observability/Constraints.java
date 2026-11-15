@@ -6,6 +6,7 @@ import com.naturalist.observability.constraints.*;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.lang.String;
@@ -480,5 +481,13 @@ public class Constraints {
     private Constraints add(Constraint<?> constraint) {
         constraints.add(constraint);
         return this;
+    }
+
+    /**
+     * Fires a violation under {@code name} when {@code value} is empty or null: an acquired lookup
+     * that must have found something before the method can go on.
+     */
+    public Constraints isPresent(Optional<?> value, String name) {
+        return add(new IsPresentConstraint(value, name));
     }
 }

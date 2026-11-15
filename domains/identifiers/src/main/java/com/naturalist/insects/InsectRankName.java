@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinealRank;
 import com.naturalist.taxonomy.RankName;
 
@@ -50,17 +51,35 @@ public sealed interface InsectRankName extends RankName
 
     /**
      * Creates the appropriate {@code InsectRankName} permit for the given slug
-     * and Linnaean rank. Only the five insect-side ranks are supported; higher
-     * ranks (Kingdom, Phylum, Class) throw {@link IllegalArgumentException}.
+     * and Linnaean rank. Only the five insect-side ranks are supported. A slug that
+     * is not kebab-case, a null rank, or a higher rank (Kingdom, Phylum, Class) is
+     * observed and refused with an
+     * {@link com.naturalist.exception.InvariantViolationException}.
      */
     static InsectRankName of(String slug, LinealRank rank) {
+        Observer.forClass(InsectRankName.class).arguments("of", i -> i
+                .kebabFormat(slug, "slug")
+                .notNull(rank, "rank")
+                .isTrue(isInsectRank(rank), "insectRank"))
+                .throwWhenInvalid();
         return switch (rank) {
             case ORDER -> InsectOrderName.of(slug);
             case FAMILY -> InsectFamilyName.of(slug);
             case GENUS -> InsectGenusName.of(slug);
             case SPECIES -> InsectSpeciesName.of(slug);
             case SUBSPECIES -> InsectSubspeciesName.of(slug);
-            default -> throw new IllegalArgumentException("Unsupported insect rank: " + rank);
+            case KINGDOM, PHYLUM, CLASS -> throw new IllegalStateException("unreachable: " + rank);
+        };
+    }
+
+    /**
+     * Whether {@code rank} is one of the five ranks the insects catalogue names; null is not.
+     * Every {@link LinealRank} is listed, so a new rank stops this compiling until it is placed.
+     */
+    static boolean isInsectRank(LinealRank rank) {
+        return rank != null && switch (rank) {
+            case ORDER, FAMILY, GENUS, SPECIES, SUBSPECIES -> true;
+            case KINGDOM, PHYLUM, CLASS -> false;
         };
     }
 }

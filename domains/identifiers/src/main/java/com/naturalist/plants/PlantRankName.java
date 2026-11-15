@@ -1,5 +1,6 @@
 package com.naturalist.plants;
 
+import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinealRank;
 import com.naturalist.taxonomy.RankName;
 
@@ -71,16 +72,33 @@ public sealed interface PlantRankName extends RankName
 
     /**
      * Creates the appropriate permit for the given slug and Linnaean rank. Only the
-     * four ranks plants catalogues — order, family, genus, species — are supported;
-     * anything else throws.
+     * four ranks plants catalogues — order, family, genus, species — are supported.
+     * A slug that is not kebab-case, a null rank, or any other rank is observed and
+     * refused with an {@link com.naturalist.exception.InvariantViolationException}.
      */
     static PlantRankName of(String slug, LinealRank rank) {
+        Observer.forClass(PlantRankName.class).arguments("of", i -> i
+                .kebabFormat(slug, "slug")
+                .notNull(rank, "rank")
+                .isTrue(isPlantRank(rank), "plantRank"))
+                .throwWhenInvalid();
         return switch (rank) {
             case ORDER -> PlantOrderName.of(slug);
             case FAMILY -> PlantFamilyName.of(slug);
             case GENUS -> PlantGenusName.of(slug);
             case SPECIES -> PlantSpeciesName.of(slug);
-            default -> throw new IllegalArgumentException("Unsupported plant rank: " + rank);
+            case KINGDOM, PHYLUM, CLASS, SUBSPECIES -> throw new IllegalStateException("unreachable: " + rank);
+        };
+    }
+
+    /**
+     * Whether {@code rank} is one of the four ranks the plants catalogue names; null is not.
+     * Every {@link LinealRank} is listed, so a new rank stops this compiling until it is placed.
+     */
+    static boolean isPlantRank(LinealRank rank) {
+        return rank != null && switch (rank) {
+            case ORDER, FAMILY, GENUS, SPECIES -> true;
+            case KINGDOM, PHYLUM, CLASS, SUBSPECIES -> false;
         };
     }
 }

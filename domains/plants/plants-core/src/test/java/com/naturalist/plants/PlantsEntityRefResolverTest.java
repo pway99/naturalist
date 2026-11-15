@@ -3,6 +3,7 @@ package com.naturalist.plants;
 import com.naturalist.catalog.EntityRef;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectOrderName;
 import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
@@ -68,8 +69,8 @@ class PlantsEntityRefResolverTest {
     @Test
     void resolveRejectsSubspeciesBecausePlantsHasNoSuchRank() {
         assertThatThrownBy(() -> resolver.resolve("plants", "SUBSPECIES", "anything"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Unsupported plant rank");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[PlantRankName.of.plantRank]");
     }
 
     @Test

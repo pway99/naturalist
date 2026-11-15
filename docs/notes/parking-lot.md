@@ -147,6 +147,15 @@ public InsectFamily withEgg(@Nullable EggStage value) {
 
 ---
 
+## PL-18 — `InvariantObservation` evaluates every constraint twice
+
+**Raised:** 2026-11-14.
+**Where:** Surfaced during the observe-every-throw sweep (branch `claude/observe-every-throw-8d0d18`), when Pat asked whether `InsectRankName.of(slug, rank)` can afford an `Observer` call on a hot path (Dbo mapping per row, JSON reconstruction, the entity-ref resolvers). `InvariantObservation.throwWhenInvalid()` calls `violations()`, which runs `isValid()` on every constraint, and then `emitMetrics(...)`, which runs `isValid()` on every constraint again. `observe(Level)` goes through `emitMetrics` too, and `violationNames()` / `violationNamesRemovingPrefix()` each run `violations()` again. On the valid path every check is paid twice. For `InsectRankName.of` that means the kebab regex runs twice. Every `arguments(...)` / `state(...)` call in the repo pays the same.
+**Blocking:** No. It hasn't been measured. Each call costs well under a microsecond, against callers that already pay a database round trip or a Jackson parse. The cost is per call, though, and the sweep adds observations to more paths.
+**Resolution path:** Kernel change, own slice. Evaluate each constraint once per observation, either at construction or lazily on first use. Keep the result (the violated set, or a held/violated flag per constraint) and have `violations()`, `emitMetrics` and the `violationNames*` methods read that result. Constraints are immutable and their values are captured when the observation is built, so caching the result is safe. Add a test showing a constraint's `isValid()` runs once per `throwWhenInvalid()`. Related but separate: `Observer.forClass(...)` called inline, as in `InsectRankName.of` (an interface can't hold a private `OBSERVER` constant), builds a new `Observer` on every call. A package-private holder class would give it one shared `Observer`.
+
+---
+
 ## Conventions
 
 - New entries get the next `PL-N` ID; numbers are never reused.

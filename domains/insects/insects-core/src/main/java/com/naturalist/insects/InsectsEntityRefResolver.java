@@ -5,7 +5,9 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.library.EntityRefResolver;
+import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinealRank;
+import org.apache.commons.lang3.EnumUtils;
 
 /**
  * Production {@link EntityRefResolver} for insect-side citation subjects — the composition-root
@@ -35,21 +37,28 @@ public final class InsectsEntityRefResolver implements EntityRefResolver {
 
     @Override
     public String rankOf(EntityRef subject) {
-        EntityName name = subject.name();
-        if (name instanceof InsectRankName rankName) {
-            return rankName.rank().name();
-        }
-        throw new IllegalArgumentException(
-                "Unsupported citation subject name type: " + (name == null ? "null" : name.getClass().getName()));
+        OBSERVER.arguments("rankOf", i -> i
+                .notNull(subject, "subject")
+                .isTrue(isInsectRankName(subject), "insectRankName"))
+                .throwWhenInvalid();
+        return ((InsectRankName) subject.name()).rank().name();
     }
 
     @Override
     public EntityRef resolve(String domain, String rank, String name) {
-        if (!INSECTS.value().equals(domain)) {
-            throw new IllegalArgumentException("Unknown citation subject domain: " + domain);
-        }
+        OBSERVER.arguments("resolve", i -> i
+                .isTrue(INSECTS.value().equals(domain), "insectsDomain")
+                .isTrue(EnumUtils.isValidEnum(LinealRank.class, rank), "rank"))
+                .throwWhenInvalid();
         // InsectRankName is a sealed interface whose permits separately implement EntityName —
         // the conversion needs an explicit cast rather than a plain return.
         return new EntityRef(INSECTS, (EntityName) InsectRankName.of(name, LinealRank.valueOf(rank)));
+    }
+
+    private static final Observer OBSERVER = Observer.forClass(InsectsEntityRefResolver.class);
+
+    /** Whether {@code subject} names an insect rank; a null subject or name does not. */
+    private static boolean isInsectRankName(EntityRef subject) {
+        return subject != null && subject.name() instanceof InsectRankName;
     }
 }

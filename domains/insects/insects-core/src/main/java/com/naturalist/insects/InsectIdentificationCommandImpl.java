@@ -345,6 +345,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             return MAPPER.writeValueAsString(Map.of("features", features));
         } catch (Exception e) {
+            observer.state("buildCandidatesJson", s -> s
+                    .isTrue(false, "serialized"))
+                    .observe(Level.ERROR);
             throw new RuntimeException("Failed to serialize feature candidates for turn 2", e);
         }
     }
@@ -404,6 +407,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                 }
             }
         } catch (Exception e) {
+            observer.state("parseResolution", s -> s
+                    .isTrue(false, "resolutionParsed"))
+                    .observe(Level.ERROR);
             // A malformed resolution degrades to "mint everything new" -- never gates.
             return Map.of();
         }
@@ -444,6 +450,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             var found = externalAuthority.lookup((EntityName) rankName);
             if (!found.isEmpty()) refs.put(rankName, found);
         } catch (Exception e) {
+            observer.state("tryCollectRef", s -> s
+                    .isTrue(false, "authorityReferenceCollected"))
+                    .observe(Level.ERROR);
             // best-effort — identification proceeds without this reference
         }
     }
@@ -504,6 +513,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             var enrichment = generateEnrichment(displayName, content);
             enrichments.put(rankName, enrichment);
         } catch (Exception e) {
+            observer.state("enrichIfNew", s -> s
+                    .isTrue(false, "enriched"))
+                    .observe(Level.ERROR);
             enrichments.put(rankName, new RankEnrichment(FALLBACK_DESCRIPTION, List.of()));
         }
     }
@@ -552,6 +564,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             }
             return new RankEnrichment(description, List.copyOf(features));
         } catch (Exception e) {
+            observer.state("generateEnrichment", s -> s
+                    .isTrue(false, "enrichmentParsed"))
+                    .observe(Level.ERROR);
             return new RankEnrichment(FALLBACK_DESCRIPTION, List.of());
         }
     }
@@ -635,6 +650,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                     // expected here, so none is caught.
                     libraryCommand.attributeCitation(attribution);
                 } catch (Exception e) {
+                    observer.state("writeCitations", s -> s
+                            .isTrue(false, "citationAttributed"))
+                            .observe(Level.ERROR);
                     // Degraded -- deliberately still swallowed here, but for a
                     // different reason than before: attributeCitation runs as its
                     // own library-owned transaction that commits or rolls back
@@ -795,6 +813,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             return new InsectIdentificationResult(identifiedEntity, taxonomy, identification,
                     List.copyOf(features), referenceUrl);
         } catch (Exception e) {
+            observer.state("parseResult", s -> s
+                    .isTrue(false, "resultParsed"))
+                    .observe(Level.ERROR);
             throw new RuntimeException("Failed to parse vision identification result", e);
         }
     }
@@ -802,6 +823,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     private IdentifiedRankEntity buildIdentifiedEntity(
             String rank, String slug, Description description, String commonName,
             @Nullable String sightingNotes, TaxonomicClassification taxonomy) {
+        observer.arguments("buildIdentifiedEntity", i -> i
+                .isTrue(isIdentifiedRank(rank), "rank"))
+                .throwWhenInvalid();
         return switch (rank) {
             case "SPECIES" -> {
                 var speciesName = InsectSpeciesName.of(slug);
@@ -834,8 +858,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                         orderName, taxonomy.order(), description,
                         Set.of(CommonName.of(commonName)), null));
             }
-            default -> throw new IllegalArgumentException(
-                    "Unknown identified rank: " + rank);
+            default -> throw new IllegalStateException("unreachable: " + rank);
         };
     }
 
@@ -848,6 +871,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             array = alt.isTextual() ? MAPPER.readTree(alt.asText()) : alt;
         } catch (Exception e) {
+            observer.state("parseAlternatives", s -> s
+                    .isTrue(false, "alternativesParsed"))
+                    .observe(Level.ERROR);
             return List.of();
         }
         if (array == null || !array.isArray()) {
@@ -882,6 +908,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             return catalogue(upload, metadata, naturalist, notes, area, storedFileName);
         } catch (RuntimeException e) {
+            observer.state("reserveStoreAndCatalogue", s -> s
+                    .isTrue(false, "catalogued"))
+                    .observe(Level.ERROR);
             try {
                 imageStore.delete(SPACE, storedFileName);
             } catch (RuntimeException deleteFailure) {
@@ -889,5 +918,13 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             }
             throw e;
         }
+    }
+
+    /** Whether {@code rank} is one of the four ranks the vision tool may identify; null is not. */
+    private static boolean isIdentifiedRank(String rank) {
+        return rank != null && switch (rank) {
+            case "SPECIES", "GENUS", "FAMILY", "ORDER" -> true;
+            default -> false;
+        };
     }
 }
