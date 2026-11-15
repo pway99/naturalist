@@ -152,18 +152,19 @@ class InvariantObservationMetricsTest {
 
     /**
      * A caught failure is one {@code kind=caught} violation at ERROR on the same meter, tagged with
-     * the exception's simple class name.
+     * the exception's simple class name and with how the catch handled it.
      */
     @Test
     void noticeError_countsOneErrorViolation_taggedWithTheException() {
         Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
-        observer.forMethod("register").noticeError("stored", new UncheckedIOException(new IOException("disk")));
-        observer.noticeError("register", "stored", new IllegalStateException("boom"));
+        observer.forMethod("register").noticeError("stored", new UncheckedIOException(new IOException("disk")), Handling.RETHROWN);
+        observer.noticeError("register", "stored", new IllegalStateException("boom"), Handling.WRAPPED);
 
         Counter io = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.stored")
                 .tag("class", "InvariantObservationMetricsTest")
                 .tag("method", "register")
                 .tag("exception", "UncheckedIOException")
+                .tag("handling", "rethrown")
                 .tag("outcome", "violated")
                 .tag("level", "error")
                 .tag("kind", "caught")
@@ -172,6 +173,7 @@ class InvariantObservationMetricsTest {
         assertThat(io.count()).isEqualTo(1);
         Counter state = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.stored")
                 .tag("exception", "IllegalStateException")
+                .tag("handling", "wrapped")
                 .tag("kind", "caught")
                 .counter();
         assertThat(state).isNotNull();
@@ -179,15 +181,15 @@ class InvariantObservationMetricsTest {
     }
 
     /**
-     * Counting a caught failure never throws, whatever it is handed: a null name or failure, or an
-     * anonymous exception class that has no simple name.
+     * Counting a caught failure never throws, whatever it is handed: a null name, failure or
+     * handling, or an anonymous exception class that has no simple name.
      */
     @Test
     void noticeError_neverThrows() {
         Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
-        observer.noticeError(null, null, null);
-        observer.forMethod("register").noticeError(null, null);
-        observer.forMethod("register").noticeError("anonymous", new RuntimeException() { });
+        observer.noticeError(null, null, null, null);
+        observer.forMethod("register").noticeError(null, null, Handling.RETHROWN);
+        observer.forMethod("register").noticeError("anonymous", new RuntimeException() { }, Handling.RETHROWN);
 
         Counter anonymous = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.register.anonymous")
                 .tag("kind", "caught")

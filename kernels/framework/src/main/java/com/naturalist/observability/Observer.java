@@ -276,30 +276,33 @@ public class Observer {
     /**
      * Notice an error {@code methodName} caught: one increment of {@code naturalist.invariant.check}
      * tagged {@code kind=caught}, {@code outcome=violated} and {@code level=error}, with the class,
-     * the method, the name ({@code ClassName.methodName.name}) and the exception's simple class name
-     * as {@code exception}. Use it in a {@code catch} block, where the failure has already happened
-     * and there is nothing left to check; the catch then rethrows, wraps (carrying {@code failure}
-     * as the cause) or degrades, as before. Never throws.
+     * the method, the name ({@code ClassName.methodName.name}), the exception's simple class name
+     * as {@code exception}, and what the catch does next as {@code handling}. Use it in a
+     * {@code catch} block, where the failure has already happened and there is nothing left to
+     * check; the catch then rethrows ({@link Handling#RETHROWN}), wraps carrying {@code failure} as
+     * the cause ({@link Handling#WRAPPED}) or carries on without it ({@link Handling#SWALLOWED}),
+     * as before. Never throws.
      *
      * <pre>{@code
      * } catch (IOException e) {
-     *     observer.noticeError("lookup", "readable", e);
+     *     observer.noticeError("lookup", "readable", e, Handling.WRAPPED);
      *     throw new IllegalStateException("secret file could not be read: " + path, e);
      * }
      * }</pre>
      *
-     * <p>Within a method that observes more than once, use {@link MethodObserver#noticeError(String, Throwable)}.
+     * <p>Within a method that observes more than once, use
+     * {@link MethodObserver#noticeError(String, Throwable, Handling)}.
      */
-    public void noticeError(String methodName, String name, Throwable failure) {
-        countError(referenceClass.getSimpleName(), methodName, name, failure);
+    public void noticeError(String methodName, String name, Throwable failure, Handling handling) {
+        countError(referenceClass.getSimpleName(), methodName, name, failure, handling);
     }
 
     /**
-     * The one emission behind {@link #noticeError(String, String, Throwable)} and
-     * {@link MethodObserver#noticeError(String, Throwable)}. An anonymous exception class has no simple
+     * The one emission behind {@link #noticeError(String, String, Throwable, Handling)} and
+     * {@link MethodObserver#noticeError(String, Throwable, Handling)}. An anonymous exception class has no simple
      * name, so it is tagged with its binary name. Never throws.
      */
-    static void countError(String className, String methodName, String name, Throwable failure) {
+    static void countError(String className, String methodName, String name, Throwable failure, Handling handling) {
         try {
             Class<?> failed = failure == null ? null : failure.getClass();
             Metric.counter("naturalist.invariant.check")
@@ -307,6 +310,7 @@ public class Observer {
                     .tag("method", methodName)
                     .tag("name", className + "." + methodName + "." + name)
                     .tag("exception", failed == null ? null : StringUtils.defaultIfBlank(failed.getSimpleName(), failed.getName()))
+                    .tag("handling", handling == null ? null : handling.tagValue())
                     .tag("outcome", "violated")
                     .tag("level", Level.ERROR.tagValue())
                     .tag("kind", ObservationKind.CAUGHT.tagValue())

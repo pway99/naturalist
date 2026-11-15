@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import com.naturalist.observability.Observer;
+import com.naturalist.observability.Handling;
 import com.naturalist.observability.MethodObserver;
 
 /**
@@ -41,7 +42,7 @@ public final class FileSecretProvider implements SecretProvider {
             String value = stripTrailingLineBreaks(Files.readString(path, StandardCharsets.UTF_8));
             return value.isBlank() ? Optional.empty() : Optional.of(Secret.of(value));
         } catch (IOException e) {
-            lookup.noticeError("readable", e);
+            lookup.noticeError("readable", e, Handling.WRAPPED);
             throw new IllegalStateException("secret file could not be read: " + path, e);
         }
     }

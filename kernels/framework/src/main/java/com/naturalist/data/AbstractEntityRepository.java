@@ -1,6 +1,7 @@
 package com.naturalist.data;
 
 import com.naturalist.ddd.Named;
+import com.naturalist.observability.Handling;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
@@ -94,7 +95,7 @@ public abstract class AbstractEntityRepository<
         try {
             doInsert(entity);
         } catch (RuntimeException e) {
-            insert.noticeError("inserted", e);
+            insert.noticeError("inserted", e, Handling.RETHROWN);
             throw e;
         }
     }
@@ -106,7 +107,7 @@ public abstract class AbstractEntityRepository<
         try {
             doUpdate(entity);
         } catch (RuntimeException e) {
-            update.noticeError("updated", e);
+            update.noticeError("updated", e, Handling.RETHROWN);
             throw e;
         }
     }
@@ -118,7 +119,7 @@ public abstract class AbstractEntityRepository<
         try {
             return doSave(entity);
         } catch (RuntimeException e) {
-            save.noticeError("saved", e);
+            save.noticeError("saved", e, Handling.RETHROWN);
             throw e;
         }
     }

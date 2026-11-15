@@ -19,11 +19,12 @@ import java.util.Locale;
  *       {@link Observer#observable(Observable, String)}, {@link Observer#namedEntity}, and
  *       {@link Observer#observation(Observable)}.</li>
  *   <li>{@link #CAUGHT} — a failure a {@code catch} block caught, from
- *       {@link Observer#noticeError(String, String, Throwable)} and
- *       {@link MethodObserver#noticeError(String, Throwable)}. Nothing was checked: the failure had
- *       already happened, and the emission counts it at {@code level=error}, always
+ *       {@link Observer#noticeError(String, String, Throwable, Handling)} and
+ *       {@link MethodObserver#noticeError(String, Throwable, Handling)}. Nothing was checked: the
+ *       failure had already happened, and the emission counts it at {@code level=error}, always
  *       {@code outcome=violated}, with an {@code exception} tag (the exception's simple class
- *       name) in place of {@code constraint}.</li>
+ *       name) in place of {@code constraint}, and a {@code handling} tag ({@link Handling}) for
+ *       whether the catch swallowed, rethrew or wrapped it.</li>
  * </ul>
  */
 public enum ObservationKind {

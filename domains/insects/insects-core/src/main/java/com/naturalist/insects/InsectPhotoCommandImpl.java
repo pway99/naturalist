@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.FileName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observability.Handling;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.observation.GridCell;
@@ -82,7 +83,7 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
         try {
             transaction.execute(new PhotoAddition(image, observation));
         } catch (RuntimeException e) {
-            m.noticeError("photoAdded", e);
+            m.noticeError("photoAdded", e, Handling.RETHROWN);
             try {
                 imageStore.delete(SPACE, stored);
             } catch (RuntimeException deleteFailure) {
