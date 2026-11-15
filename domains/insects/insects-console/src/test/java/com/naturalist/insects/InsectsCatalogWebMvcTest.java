@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -188,5 +191,44 @@ class InsectsCatalogWebMvcTest {
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=image"));
+    }
+
+    @Test
+    void identify_redirectsWithErrorImage_whenThePhotoIsUnstorable() throws Exception {
+        long storedBefore = storedFiles();
+        var file = new MockMultipartFile("image", "bomb.png", "image/png", pixelBomb());
+
+        mockMvc.perform(multipart("/insects/identify").file(file)
+                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/insects/identify?error=image"));
+
+        assertThat(storedFiles()).as("nothing is stored").isEqualTo(storedBefore);
+    }
+
+    @Test
+    void addImage_redirectsWithErrorImage_whenThePhotoIsUnstorable() throws Exception {
+        long storedBefore = storedFiles();
+        var file = new MockMultipartFile("image", "bomb.png", "image/png", pixelBomb());
+
+        mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
+                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/insects/battus-philenor?error=image"));
+
+        assertThat(storedFiles()).as("nothing is stored").isEqualTo(storedBefore);
+    }
+
+    /** A well-formed PNG whose header declares 50000 x 50000 pixels: a valid upload the store cannot use. */
+    private static byte[] pixelBomb() {
+        byte[] header = ByteBuffer.allocate(13).putInt(50_000).putInt(50_000).put((byte) 8).put((byte) 2)
+                .put((byte) 0).put((byte) 0).put((byte) 0).array();
+        return ImageFixtures.png(ImageFixtures.chunk("IHDR", header), ImageFixtures.idat(), ImageFixtures.iend());
+    }
+
+    private static long storedFiles() throws IOException {
+        try (var walk = Files.walk(InsectsControllerTestConfig.IMAGE_ROOT)) {
+            return walk.filter(Files::isRegularFile).count();
+        }
     }
 }

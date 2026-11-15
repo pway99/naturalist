@@ -184,6 +184,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         ImageUpload stripped = upload.withoutMetadata();
         m.state(s -> s.valueObject(stripped, "strippedUpload")).throwWhenInvalid();
 
+        // 0. STORABLE -- a photo the store cannot use is refused before any rate, budget or vision spend.
+        imageStore.requireStorable(stripped);
+
         // 0a. RATE GATE -- one permit per identification (not per vision turn); refuses
         // before any budget reservation or vision spend, so a rate-rejected call burns no
         // budget and stores nothing.

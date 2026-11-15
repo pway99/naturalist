@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.clades.CladeCatalog;
@@ -455,6 +456,13 @@ public class InsectsController {
             return "redirect:/insects/identify?error=image";
         }
 
+        try {
+            imageStore.requireStorable(upload);
+        } catch (InvariantViolationException unstorable) {
+            // A valid JPEG/PNG/WebP the store cannot use (undecodable, or a declared pixel bomb) -- nothing is stored.
+            return "redirect:/insects/identify?error=image";
+        }
+
         GridCell area = GridCell.of(areaLat, areaLon);
         if (area != null && !area.isValid()) {
             // A claimed cell that is unreadable or off the lattice -- nothing is stored.
@@ -675,6 +683,13 @@ public class InsectsController {
         var me = currentNaturalist(request);
         ImageUpload upload = ImageUpload.of(imageFile.getBytes());
         if (!upload.isValid()) {
+            return "redirect:/insects/" + name + "?error=image";
+        }
+
+        try {
+            imageStore.requireStorable(upload);
+        } catch (InvariantViolationException unstorable) {
+            // A valid JPEG/PNG/WebP the store cannot use (undecodable, or a declared pixel bomb) -- nothing is stored.
             return "redirect:/insects/" + name + "?error=image";
         }
         GridCell area = GridCell.of(areaLat, areaLon);

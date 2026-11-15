@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
+import com.naturalist.observation.test.ImageFixtures;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.usage.BudgetExceededException;
 import com.naturalist.usage.IdentificationBudget;
@@ -51,10 +52,7 @@ class InsectsControllerOverBudgetTest {
 
     // Minimal valid JPEG (magic bytes, padded to the 12 bytes ImageUpload sniffs) --
     // a valid upload, so the refusal can only come from the budget.
-    private static final byte[] JPEG_BYTES = {
-            (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, 0x00, 0x01, 0x02, 0x03,
-            0, 0, 0, 0, 0
-    };
+    private static final byte[] JPEG_BYTES = ImageFixtures.decodableJpeg();
 
     @TempDir
     Path imageRoot;

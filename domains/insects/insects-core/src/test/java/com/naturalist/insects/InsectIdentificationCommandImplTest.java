@@ -44,6 +44,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.net.URI;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,8 +54,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
+import java.util.zip.CRC32;
 import java.nio.file.Path;
 import java.nio.file.Files;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Instant;
@@ -1008,5 +1012,45 @@ class InsectIdentificationCommandImplTest {
     @Test
     void locationContext_bothNull_isNull() {
         assertThat(InsectIdentificationCommandImpl.locationContext(null, null)).isNull();
+    }
+
+    @Test
+    void identify_refusesAnUnstorablePhotoBeforeChargingTheBudget() throws IOException {
+        // a PNG whose header declares 50000x50000: a valid ImageUpload the store cannot use
+        ImageUpload bomb = ImageUpload.of(pngDeclaring(50_000, 50_000));
+        AtomicInteger reservations = new AtomicInteger();
+        IdentificationBudget counting = naturalist -> reservations.incrementAndGet();
+        var cmd = buildCommand(Resilience.noOp(), counting, capturingVision);
+
+        assertThatThrownBy(() -> cmd.identify(bomb, new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null, null))
+                .isInstanceOf(InvariantViolationException.class);
+
+        assertThat(reservations.get()).as("the budget is never charged").isZero();
+        assertThat(seenByVision.get()).as("vision is never called").isNull();
+        assertThat(filesUnder(imageRoot)).as("nothing is stored").isEmpty();
+    }
+
+    /** A PNG whose IHDR declares {@code width x height} and whose IDAT is a stub: never decodable. */
+    private static byte[] pngDeclaring(int width, int height) {
+        byte[] ihdr = ByteBuffer.allocate(13).putInt(width).putInt(height).put((byte) 8).put((byte) 2)
+                .put((byte) 0).put((byte) 0).put((byte) 0).array();
+        var out = new ByteArrayOutputStream();
+        out.writeBytes(new byte[]{(byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A});
+        pngChunk(out, "IHDR", ihdr);
+        pngChunk(out, "IDAT", new byte[]{0x78, (byte) 0x9C, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01});
+        pngChunk(out, "IEND", new byte[0]);
+        return out.toByteArray();
+    }
+
+    private static void pngChunk(ByteArrayOutputStream out, String type, byte[] data) {
+        byte[] typeBytes = type.getBytes(StandardCharsets.US_ASCII);
+        var crc = new CRC32();
+        crc.update(typeBytes);
+        crc.update(data);
+        out.writeBytes(ByteBuffer.allocate(4).putInt(data.length).array());
+        out.writeBytes(typeBytes);
+        out.writeBytes(data);
+        out.writeBytes(ByteBuffer.allocate(4).putInt((int) crc.getValue()).array());
     }
 }
