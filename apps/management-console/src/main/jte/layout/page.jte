@@ -11,11 +11,14 @@
     <link rel="stylesheet" href="/css/pico.min.css">
     <%-- Bump ?v= when naturalist.css ships visible changes so browsers
          don't keep serving the previous cached version. --%>
-    <link rel="stylesheet" href="/css/naturalist.css?v=31">
+    <link rel="stylesheet" href="/css/naturalist.css?v=32">
     <script src="/js/htmx.min.js" defer></script>
     <%-- Rotates stacked images on .card-image[data-rotate] tiles across all
          catalog cards. No-op on pages without rotating cards. --%>
     <script src="/js/card-image-rotate.js" defer></script>
+    <%-- Opens a gallery photo (a[data-photo-view]) in a dialog over the page.
+         Without it the link opens the photo URL. --%>
+    <script src="/js/photo-view.js" defer></script>
     <%-- Closes an open nav group on outside click / Escape. Pure enhancement —
          without it the <details> still opens and closes on its own summary. --%>
     <script src="/js/nav-menu.js" defer></script>

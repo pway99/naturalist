@@ -20,9 +20,13 @@
         <div class="image-gallery">
             @for(var img : images)
                 <figure class="observation-card">
-                    <img src="/insects/images/${img.resourceName().value()}"
-                         alt="${alt}"
-                         loading="lazy">
+                    <%-- The tile links to the photo; photo-view.js opens it over the page. --%>
+                    <a href="/insects/images/${img.resourceName().value()}" data-photo-view>
+                        <img src="/insects/images/tile/${img.resourceName().value()}"
+                             alt="${alt}"
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='/images/photo-not-found.svg'">
+                    </a>
                     @if(observations.containsKey(img.id()))
                         !{var obs = observations.get(img.id());}
                         <figcaption>

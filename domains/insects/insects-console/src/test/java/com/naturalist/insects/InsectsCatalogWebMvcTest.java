@@ -268,4 +268,31 @@ class InsectsCatalogWebMvcTest {
         assertThat(tile.getWidth()).isEqualTo(640);
         assertThat(tile.getHeight()).isEqualTo(480);
     }
+
+    @Test
+    void rankPage_showsTilesNotPhotos() throws Exception {
+        mockMvc.perform(get("/insects/battus-philenor").requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("src=\"/insects/images/tile/pipevine-swallow-tail.jpg\"")))
+                .andExpect(content().string(containsString("/images/photo-not-found.svg")))
+                .andExpect(content().string(not(containsString("src=\"/insects/images/pipevine-swallow-tail.jpg\""))));
+    }
+
+    @Test
+    void gallery_linksEachTileToItsPhoto() throws Exception {
+        mockMvc.perform(get("/insects/battus-philenor").requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("data-photo-view")))
+                .andExpect(content().string(containsString("href=\"/insects/images/pipevine-swallow-tail.jpg\"")));
+    }
+
+    @Test
+    void listing_cardsShowTilesLinkedToTheRankPage() throws Exception {
+        mockMvc.perform(get("/insects/species").requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("src=\"/insects/images/tile/pipevine-swallow-tail.jpg\"")))
+                .andExpect(content().string(containsString("/images/photo-not-found.svg")))
+                .andExpect(content().string(containsString("href=\"/insects/battus-philenor\" class=\"card-image-link\"")))
+                .andExpect(content().string(not(containsString("src=\"/insects/images/pipevine-swallow-tail.jpg\""))));
+    }
 }

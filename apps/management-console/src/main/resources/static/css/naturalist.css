@@ -2246,3 +2246,83 @@ figure.compound-depiction img {
     font-variant: small-caps;
     letter-spacing: 0.03em;
 }
+
+/* A gallery tile is a link to its photo (photo-view.js opens it over the page),
+   so the link, not the image, is the gallery figure's flex item and carries the
+   340px width; the image fills it. */
+.image-gallery a[data-photo-view] {
+    flex: 0 0 auto;
+    display: block;
+    width: 340px;
+    max-width: 100%;
+    margin: 0;
+}
+
+.image-gallery a[data-photo-view] img {
+    display: block;
+    width: 100%;
+}
+
+/* The photo view: one <dialog> over the page showing the stored photo. Every box
+   property is declared so Pico's dialog, img and button defaults don't restyle it.
+   The dialog itself has no padding or background, so a click that lands on it is a
+   click on the backdrop, which closes it. */
+dialog.photo-view {
+    display: none;
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    width: fit-content;
+    height: fit-content;
+    min-width: 0;
+    min-height: 0;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: visible;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+dialog.photo-view[open] {
+    display: block;
+}
+
+dialog.photo-view::backdrop {
+    background: rgba(58, 42, 24, 0.82);
+}
+
+dialog.photo-view img {
+    display: block;
+    margin: 0;
+    width: auto;
+    height: auto;
+    max-width: 90vw;
+    max-height: 90vh;
+    border: 1px solid var(--sepia-rule);
+    border-radius: 0.25rem;
+    background: var(--parchment);
+    box-shadow: var(--plate-shadow);
+}
+
+dialog.photo-view button {
+    position: absolute;
+    top: -0.9rem;
+    right: -0.9rem;
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--sepia-rule);
+    border-radius: 50%;
+    background: var(--parchment);
+    color: var(--sepia-ink);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: var(--plate-shadow);
+}

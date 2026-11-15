@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480" role="img" aria-label="Photo not found">
+  <rect width="640" height="480" fill="#F2E8D4"/>
+  <rect x="16" y="16" width="608" height="448" fill="none" stroke="#8B6B3D" stroke-width="3"/>
+  <rect x="28" y="28" width="584" height="424" fill="none" stroke="#8B6B3D" stroke-width="1"/>
+  <text x="320" y="252" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-style="italic" fill="#5A4329">Photo not found</text>
+</svg>

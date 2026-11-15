@@ -77,4 +77,16 @@ class PlantsImagesWebMvcTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.header().string("Cache-Control", "no-store"));
     }
+
+    @Test
+    void plantPage_showsTilesLinkedToPhotos() throws Exception {
+        String photo = "IMG_5905338E-63EC-495D-A63A-CA79AA9C066E.JPEG";
+        mockMvc.perform(MockMvcRequestBuilders.get("/plants/aristolochia-californica"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("src=\"/plants/images/tile/" + photo + "\"")))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("/images/photo-not-found.svg")))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("data-photo-view")))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("href=\"/plants/images/" + photo + "\"")))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("src=\"/plants/images/" + photo + "\""))));
+    }
 }
