@@ -16,12 +16,11 @@ class CladeViewFactory {
 
     Optional<CladeView> buildBySlug(String slug) {
         observer.arguments("buildBySlug", i -> i.notBlank(slug, "slug")).throwWhenInvalid();
-        Clade clade;
-        try {
-            clade = Clade.of(slug);
-        } catch (IllegalArgumentException e) {
+        Optional<Clade> found = Clade.find(slug);
+        if (found.isEmpty()) {
             return Optional.empty();
         }
+        Clade clade = found.get();
 
         List<Clade> chain = CladeTraversal.ancestry(clade); // [clade, parent, ..., root]
         List<CladeStep> ancestry = chain.reversed().stream()

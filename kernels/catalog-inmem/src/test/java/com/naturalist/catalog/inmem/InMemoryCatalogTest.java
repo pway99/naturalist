@@ -5,6 +5,7 @@ import com.naturalist.catalog.CatalogContribution.SearchableEntity;
 import com.naturalist.chemistry.TestChemistryIdentifiers.Compounds;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.EntityName;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.TestInsectsIdentifiers.InsectSpecies;
 import com.naturalist.observability.InvariantObservation;
@@ -534,9 +535,8 @@ class InMemoryCatalogTest {
         var rogue = contribution(new RoguePlants(), entity(CALIFORNIA_PIPEVINE, "shared"));
 
         assertThatThrownBy(() -> CatalogAssembly.from(List.of(legitimate, rogue), List.of()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("plants")
-                .hasMessageContaining("RoguePlants");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[CatalogAssembly.recordSlug.uniqueDomainSlug]");
     }
 
     @Test
@@ -552,8 +552,8 @@ class InMemoryCatalogTest {
                 CompoundName.class, Map.of());
 
         assertThatThrownBy(() -> CatalogAssembly.from(List.of(contribution), List.of(rogueProvider)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("plants");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[CatalogAssembly.recordSlug.uniqueDomainSlug]");
     }
 
     @Test
