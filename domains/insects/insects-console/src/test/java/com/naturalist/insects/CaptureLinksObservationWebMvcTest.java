@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.observation.test.ImageFixtures;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,8 @@ class CaptureLinksObservationWebMvcTest {
 
     private static final String CURRENT_NATURALIST = "naturalist.currentNaturalistName";
 
-    /** Minimal valid JPEG: FF D8 FF E0 header + padding. */
-    private static final byte[] TINY_JPEG = {
-            (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    };
+    /** A small JPEG the store can decode. */
+    private static final byte[] TINY_JPEG = ImageFixtures.decodableJpeg();
 
     @Autowired
     MockMvc mockMvc;

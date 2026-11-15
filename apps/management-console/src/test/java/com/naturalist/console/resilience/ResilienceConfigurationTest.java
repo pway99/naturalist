@@ -85,12 +85,14 @@ class ResilienceConfigurationTest {
     void resolvesImageStoreTimeoutAndBulkhead() {
         assertThat(resilience.timeout("image.store")).isNotNull();
         assertThat(resilience.bulkhead("image.store")).isNotNull();
+        assertThat(resilience.timeout("image.store.write")).isNotNull();
+        assertThat(resilience.bulkhead("image.store.write")).isNotNull();
     }
 
     @Test
     void resolvesVisionIdentificationBulkhead() {
         assertThat(resilience.bulkhead("vision.identification")).isNotNull();
-        assertThat(resilience.bulkheadNames()).containsExactlyInAnyOrder("vision.identification", "image.store");
+        assertThat(resilience.bulkheadNames()).containsExactlyInAnyOrder("vision.identification", "image.store", "image.store.write");
     }
 
     /** ADR-027 D5: the edge and the challenge are the front line, so these only bound CPU and mail. */

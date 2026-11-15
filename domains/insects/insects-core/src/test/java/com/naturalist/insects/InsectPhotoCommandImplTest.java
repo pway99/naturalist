@@ -31,8 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InsectPhotoCommandImplTest {
 
-    private static final byte[] JPEG = {
-            (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 16, 'J', 'F', 'I', 'F', 0, 1, 1, 0, 0, 1};
+    private static final byte[] JPEG = ImageFixtures.decodableJpeg();
 
     private static final byte[] HEIC = {
             0, 0, 0, 24, 'f', 't', 'y', 'p', 'h', 'e', 'i', 'c', 0, 0, 0, 0, 'm', 'i', 'f', '1'};
@@ -150,9 +149,9 @@ class InsectPhotoCommandImplTest {
         assertThat(filesUnder(imageRoot)).isEmpty();
     }
 
-    /** A JPEG that walks as segments and carries an Exif fix at Portland and an orientation. */
+    /** A decodable JPEG that carries an Exif fix at Portland and an orientation. */
     private static ImageUpload portlandUpload() {
-        return ImageUpload.of(ImageFixtures.jpeg(ImageFixtures.app0Jfif(),
+        return ImageUpload.of(ImageFixtures.decodableJpeg(
                 ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, 6, 45.52, -122.68)));
     }
 

@@ -57,10 +57,9 @@ class ObservationAreaWebMvcTest {
 
     private static final GridCell PORTLAND_CELL = GridCell.of(1092, -2945);
 
-    private static final byte[] PLAIN_JPEG = ImageFixtures.jpeg(ImageFixtures.app0Jfif());
+    private static final byte[] PLAIN_JPEG = ImageFixtures.decodableJpeg();
 
-    private static final byte[] PORTLAND_JPEG = ImageFixtures.jpeg(
-            ImageFixtures.app0Jfif(),
+    private static final byte[] PORTLAND_JPEG = ImageFixtures.decodableJpeg(
             ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68));
 
     @Autowired
@@ -93,8 +92,12 @@ class ObservationAreaWebMvcTest {
 
         Set<Path> added = storedFiles();
         added.removeAll(before);
-        assertThat(added).hasSize(1);
-        String name = added.iterator().next().getFileName().toString();
+        assertThat(added).hasSize(2);
+        Path photoFile = added.stream()
+                .filter(file -> !file.getParent().getFileName().toString().equals("tiles"))
+                .findFirst().orElseThrow();
+        String name = photoFile.getFileName().toString();
+        assertThat(added).containsExactlyInAnyOrder(photoFile, photoFile.resolveSibling("tiles").resolve(name));
         byte[] served = mockMvc.perform(get("/insects/images/" + name))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsByteArray();
@@ -256,6 +259,7 @@ class ObservationAreaWebMvcTest {
                 .orElseThrow();
     }
 
+    /** Every regular file in the store, photos and tiles alike, so a leaked tile is seen. */
     private static Set<Path> storedFiles() throws IOException {
         try (Stream<Path> walk = Files.walk(InsectsControllerTestConfig.IMAGE_ROOT)) {
             return walk.filter(Files::isRegularFile).collect(Collectors.toCollection(java.util.HashSet::new));

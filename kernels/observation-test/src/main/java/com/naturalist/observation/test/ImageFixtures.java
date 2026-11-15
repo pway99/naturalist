@@ -2,10 +2,15 @@ package com.naturalist.observation.test;
 
 import com.naturalist.observation.Coordinates;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 
@@ -13,8 +18,9 @@ import java.util.zip.Deflater;
  * Byte-level JPEG, PNG and WebP images, with and without the metadata a camera or an editor
  * writes, for tests that read or strip it. Every container is laid out as its specification says:
  * JPEG segments carry their own lengths, PNG chunks their CRCs, WebP chunks their padding and the
- * {@code VP8X} flags the chunks that follow. The PNG and WebP decode as a one-pixel picture; the
- * JPEG only walks as segments, which is all a metadata reader looks at.
+ * {@code VP8X} flags the chunks that follow. The PNG and WebP decode as a one-pixel picture; a
+ * {@link #jpeg} only walks as segments, which is all a metadata reader looks at, while a
+ * {@link #decodableJpeg} is a real image a decoder accepts, for what goes through a store.
  *
  * <p>The three formats share one Exif block, {@link #tiff}, so a test can put the same GPS fix or
  * orientation in any of them.
@@ -60,6 +66,30 @@ public final class ImageFixtures {
         for (byte[] segment : segments) out.writeBytes(segment);
         out.writeBytes(new byte[]{(byte) 0xFF, (byte) 0xDA, 0x00, 0x02, 0x12, 0x34, 0x56, 0x78});
         out.writeBytes(new byte[]{(byte) 0xFF, (byte) 0xD9});
+        return out.toByteArray();
+    }
+
+    /**
+     * A JPEG a decoder accepts: a real 16x16 image encoded by {@code ImageIO}, with the given
+     * segments inserted right after {@code SOI}. For what goes through a store, which decodes;
+     * {@link #jpeg} is for the strip and metadata tests, whose bytes never need to decode.
+     */
+    public static byte[] decodableJpeg(byte[]... segments) {
+        BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < 16; y++) {
+            for (int x = 0; x < 16; x++) image.setRGB(x, y, (x * 16) << 16 | (y * 16) << 8 | 0x80);
+        }
+        ByteArrayOutputStream encoded = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", encoded);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        byte[] jpeg = encoded.toByteArray();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.writeBytes(Arrays.copyOfRange(jpeg, 0, 2));
+        for (byte[] segment : segments) out.writeBytes(segment);
+        out.writeBytes(Arrays.copyOfRange(jpeg, 2, jpeg.length));
         return out.toByteArray();
     }
 

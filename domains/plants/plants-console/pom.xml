@@ -92,6 +92,12 @@
             <artifactId>spring-console-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- TEST: a decodable JPEG fixture for the image endpoint tests. -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>observation-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

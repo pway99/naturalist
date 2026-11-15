@@ -34,6 +34,12 @@ import java.util.List;
  *       the client afterwards, never buffered whole (PL-16). A read past the cap
  *       is refused with the kernel {@code BulkheadFullException}, which the
  *       consoles answer with 503.</li>
+ *   <li><b>{@code image.store.write}</b> — bounds a {@code FilesystemImageStore.store}
+ *       (declared by {@code FilesystemImageStore.WRITE_STRATEGY}), which decodes the upload,
+ *       re-encodes the photo and its tile, and writes both: heap and CPU heavy, so a
+ *       {@code BulkheadConfig} of two concurrent stores (2&nbsp;s wait) under a 10&nbsp;s
+ *       timeout declared {@code upload = true}. A third concurrent store is refused with the
+ *       kernel {@code BulkheadFullException}, and a failed or timed-out store removes both files.</li>
  *   <li><b>{@code vision.identification}</b> — bounds the Anthropic vision API
  *       call in {@code AnthropicVisionService}. Declared {@code upload = true}
  *       and given the full {@link ResilienceConfig#MAX_UPLOAD_TIMEOUT}: the
@@ -204,6 +210,19 @@ public class ResilienceConfiguration {
     @Bean
     TimeoutConfig imageStoreTimeout() {
         return new TimeoutConfig(FilesystemImageStore.STRATEGY, Duration.ofSeconds(2));
+    }
+
+    @Bean
+    TimeoutConfig imageStoreWriteTimeout() {
+        // Decode, resize and encode a phone photo twice, then write both; an upload, so past the ordinary ceiling.
+        return new TimeoutConfig(FilesystemImageStore.WRITE_STRATEGY, Duration.ofSeconds(10), true);
+    }
+
+    @Bean
+    ResilienceConfig.BulkheadConfig imageStoreWriteBulkhead() {
+        // A decode holds a raster of up to about twice the target edge squared, twice per store: two at once
+        // is the heap this app budgets for it, and a third waits up to 2 s before it is refused.
+        return new ResilienceConfig.BulkheadConfig(FilesystemImageStore.WRITE_STRATEGY, 2, Duration.ofSeconds(2));
     }
 
     @Bean

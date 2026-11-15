@@ -651,9 +651,8 @@ class InsectIdentificationCommandImplTest {
         }
     }
 
-    /** A minimal upload that sniffs as JPEG (the image store validates it). */
-    private static final byte[] JPEG = {
-            (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 16, 'J', 'F', 'I', 'F', 0, 1, 1, 0, 0, 1};
+    /** A minimal upload the image store can decode. */
+    private static final byte[] JPEG = ImageFixtures.decodableJpeg();
 
     /** Per-test image-store root, created and removed by JUnit. */
     @org.junit.jupiter.api.io.TempDir
@@ -904,7 +903,7 @@ class InsectIdentificationCommandImplTest {
 
     /** A JPEG that walks as segments and carries an Exif fix at Portland and an orientation. */
     private static ImageUpload portlandUpload() {
-        return ImageUpload.of(ImageFixtures.jpeg(ImageFixtures.app0Jfif(),
+        return ImageUpload.of(ImageFixtures.decodableJpeg(
                 ImageFixtures.app1Exif(ByteOrder.BIG_ENDIAN, 6, 45.52, -122.68)));
     }
 
@@ -953,7 +952,7 @@ class InsectIdentificationCommandImplTest {
 
     @Test
     void identify_nullArea_andNoGps_leavesAreaNull_andContextAsTyped() {
-        var upload = ImageUpload.of(ImageFixtures.jpeg(ImageFixtures.app0Jfif()));
+        var upload = ImageUpload.of(ImageFixtures.decodableJpeg());
         var rankName = buildCommand(capturingVision).identify(upload,
                 new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null);
 

@@ -15,11 +15,31 @@ import java.util.Optional;
  * the same kind of image is refused like any other invalid one, with nothing written. Images a
  * store serves without having written them, such as seed photos shipped on the classpath, are
  * stripped once where they are kept, not on every {@link #read}.
+ *
+ * <p>Size guarantees: a stored photo's longest edge is at most 1024 px, and its tile's at most
+ * 640 px; an image is never enlarged. A stripped upload already within 1024 px is stored byte for
+ * byte; a larger one is stored only as a re-encoded JPEG of at most 1024 px, and its original is
+ * kept nowhere. A store refuses an upload it cannot decode, or whose header declares more than
+ * 100,000,000 pixels, without decoding it ({@link #requireStorable}).
  */
 public interface ImageStore {
     FileName store(String space, ImageUpload upload);
 
-    Optional<StoredImage> read(String space, FileName name);
+    /** The photo, or the tile, of a stored image; empty when it is not held. */
+    Optional<StoredImage> read(String space, FileName name, ImageVariant variant);
+
+    /** The full-size photo: {@code read(space, name, ImageVariant.PHOTO)}. */
+    default Optional<StoredImage> read(String space, FileName name) {
+        return read(space, name, ImageVariant.PHOTO);
+    }
+
+    /**
+     * Refuses, through the Observer ({@code storable}) with an {@code InvariantViolationException},
+     * an upload {@link #store} could not keep: undecodable, or declaring more than 100,000,000
+     * pixels. Reads the header only and writes nothing, so a caller can check before it spends
+     * anything on the upload.
+     */
+    void requireStorable(ImageUpload upload);
 
     /**
      * Removes a stored image, best-effort: a missing file is not an error, and a name that

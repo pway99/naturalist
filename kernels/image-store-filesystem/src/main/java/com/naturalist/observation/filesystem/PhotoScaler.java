@@ -1,5 +1,6 @@
 package com.naturalist.observation.filesystem;
 
+import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 
@@ -112,7 +113,12 @@ final class PhotoScaler {
             .throwWhenInvalid();
         Dimensions declared = declared(bytes)
                 .filter(d -> d.pixels() <= MAX_PIXELS)
-                .orElseThrow(() -> new IllegalArgumentException("image is not storable"));
+                .orElseThrow(() -> {
+                    m.state(i -> i
+                        .isTrue(false, "storable"))
+                        .observe(Level.ERROR);
+                    return new IllegalArgumentException("image is not storable");
+                });
         int tag = orientation >= 1 && orientation <= 8 ? orientation : 1;
         boolean quarterTurn = tag >= 5;
         int orientedWidth = quarterTurn ? declared.height() : declared.width();
@@ -121,6 +127,9 @@ final class PhotoScaler {
             BufferedImage source = decode(bytes, declared, edge);
             return encodeJpeg(upright(source, tag, orientedWidth, orientedHeight, edge));
         } catch (IOException | RuntimeException undecodable) {
+            m.state(i -> i
+                .isTrue(false, "decoded"))
+                .observe(Level.ERROR);
             throw new IllegalArgumentException("image could not be decoded", undecodable);
         }
     }

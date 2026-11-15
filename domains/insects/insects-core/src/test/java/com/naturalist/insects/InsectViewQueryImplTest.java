@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.observation.test.ImageFixtures;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
@@ -18,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InsectViewQueryImplTest {
-    private static final byte[] JPEG = {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 16, 'J', 'F', 'I', 'F', 0, 1, 1, 0, 0, 1};
+    private static final byte[] JPEG = ImageFixtures.decodableJpeg();
 
     private static final NaturalistName FLORA = NaturalistName.of("flora-mendez");
 
