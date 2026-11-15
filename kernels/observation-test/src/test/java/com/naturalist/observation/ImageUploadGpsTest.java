@@ -232,4 +232,13 @@ class ImageUploadGpsTest {
         }
         throw new AssertionError("pattern not in fixture");
     }
+
+    @Test
+    void orientation_readsTheExifTag() {
+        var tagged = ImageUpload.of(jpeg(app0Jfif(), app1Exif(ByteOrder.BIG_ENDIAN, 6, null, null)));
+        var plain = ImageUpload.of(jpeg(app0Jfif()));
+
+        assertThat(tagged.orientation()).contains(6);
+        assertThat(plain.orientation()).isEmpty();
+    }
 }

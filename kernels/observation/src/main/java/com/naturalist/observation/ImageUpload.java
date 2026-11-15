@@ -131,4 +131,15 @@ public record ImageUpload(byte[] bytes) implements ValueObject {
     public boolean isValid() {
         return mediaType() != null && bytes != null && bytes.length <= MAX_BYTES;
     }
+
+    /**
+     * The raw Exif orientation tag a viewer rotates the picture by, read from a JPEG {@code APP1},
+     * a PNG {@code eXIf} or a WebP {@code EXIF} block. Empty when the upload carries none, and when the
+     * metadata is truncated or corrupt: a bad tag is observed, never thrown. The value is whatever the
+     * tag holds; one outside 1 to 8 is the caller's to treat as 1.
+     */
+    public Optional<Integer> orientation() {
+        MethodObserver m = observer.forMethod("orientation");
+        return ImageMetadataSegments.exifTiff(bytes, m).flatMap(tiff -> ImageMetadataSegments.orientation(tiff, m));
+    }
 }

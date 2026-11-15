@@ -21,6 +21,13 @@
             <artifactId>observation</artifactId>
         </dependency>
 
+        <!-- ImageIO SPI plugin: lets PhotoScaler decode WebP. Never referenced in code. -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-webp</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>com.naturalist</groupId>
