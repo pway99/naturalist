@@ -281,6 +281,15 @@ has no classpath fallback. The served media type is sniffed
 from the leading bytes, the photo streams to the client without being buffered
 whole, and the store refuses any filename that is not a plain name.
 
+Every stored photo has a tile, its 640 px JPEG (the photo itself is at most
+1024 px), served by `GET /{space}/images/tile/{filename}` (`insects`, `plants`).
+A missing tile is an uncached (`no-store`) 404, never the full photo; a full
+`image.store` bulkhead is an uncached 503 with `Retry-After: 1`, as for photos.
+The templates show tiles in every photo position and fall back to
+`/images/photo-not-found.svg` when one fails to load. A gallery tile links to its
+photo (`a[data-photo-view]`); `static/js/photo-view.js` opens that photo in a
+dialog over the page, and without JavaScript the link opens the photo URL.
+
 ---
 
 ## 7. Console Routes

@@ -212,7 +212,8 @@ failing provider degrades only that domain's slice of the response
 ### observation `ImageStore` / image-store-filesystem  (`com.naturalist.observation`, `com.naturalist.observation.filesystem`)
 
 `observation` also owns the `ImageStore` port (`store(space, ImageUpload)` /
-`read(space, FileName)`), the `ImageUpload` value (sniffs JPEG/PNG/WebP by magic
+`read(space, FileName, ImageVariant)`, with `read(space, FileName)` the `PHOTO` default /
+`requireStorable(ImageUpload)` / `delete`), the `ImageVariant` enum (`PHOTO`, `TILE`), the `ImageUpload` value (sniffs JPEG/PNG/WebP by magic
 bytes, capped at `MAX_BYTES`) and the `StoredImage` read result. `store` mints the
 file name itself (UUIDv7 + sniffed extension) and never trusts a client name.
 `kernels/image-store-filesystem` is the reference implementation, `FilesystemImageStore`,
@@ -220,13 +221,30 @@ over a directory root, and it serves only what the root holds: photos are data, 
 resources. The seed photos ship as `<space>/images/<name>` resources of the `*-repository-test`
 modules (which the packaged jar does not contain) and reach the root the way any file does, copied
 by the seeder (`db-init` in a deployment). It has no vendor dependency, so it lives in `kernels/` like `catalog-inmem`;
-every `Files.*` call runs under `resilience.timeout("image.store")`, and a `read` also under the
+a `read` or `delete` runs under `resilience.timeout("image.store")`, and a `read` also under the
 `image.store` bulkhead. **A read never loads a photo into the heap:** it stats the file, sniffs the
 first 12 bytes, and returns a `StoredImage` whose `content()` the console streams to the client
 (`InputStreamResource`, with `Content-Length`). Photos can be 20 MB, and buffering them whole
 took the app down at 100 concurrent reads (PL-16). `StoredImage.readAllBytes()` is for tests and
 one-image checks, never for serving. A full bulkhead throws `BulkheadFullException`; the image
 endpoints answer it with an uncached 503 and `Retry-After: 1`.
+
+**Photo sizes.** A stored photo's longest edge is at most 1024 px and its tile's at most 640 px; an
+image is never enlarged. `store` writes two files, the photo at `<root>/<space>/<name>` and its tile at
+`<root>/<space>/tiles/<name>` (same name). A stripped upload already within 1024 px is the photo byte for
+byte (and keeps its format); a larger one is stored only as an upright re-encoded JPEG (named `.jpg`),
+and the original is kept nowhere. The tile is always a JPEG. Both are written from the stripped upload,
+so metadata is gone from each. `read(..., TILE)` never falls back to the photo: a missing tile is
+observed (`tilePresent`, WARN) and answered empty. `requireStorable` refuses, through the Observer
+(`storable`, an `InvariantViolationException`), an upload that does not decode or whose header declares
+more than 100,000,000 pixels; it reads the header only and writes nothing, so the insects commands and
+controller call it before any identification charge. `store` runs its decode, re-encodes and both writes
+under the `image.store.write` bulkhead (2 concurrent, 2 s wait) and timeout (10 s, `upload = true`); a
+failed or timed-out store removes both files. `FilesystemImageStore.conform(space)` backfills a space to
+what `store` would have written (downscales any photo over 1024 px in place under its own name, writes
+every missing tile, leaves an undecodable file alone at WARN) and returns a `ConformReport(downscaled,
+tiled, unchanged)`; it is idempotent, and the seeder and `db-init` run it for `insects` and `plants` on
+every run.
 
 **Location privacy.** Photo metadata and exact location never persist. `ImageUpload.gps()` reads
 the EXIF fix (empty when absent or malformed) and `ImageUpload.withoutMetadata()` returns the upload
