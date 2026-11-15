@@ -6,6 +6,7 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import com.naturalist.exception.InvariantViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -68,5 +69,23 @@ class FileSecretProviderTest {
     @Test
     void source_namesTheDirectory() {
         assertThat(new FileSecretProvider(dir).source()).isEqualTo("file:" + dir);
+    }
+
+    @Test
+    void nullDirectory_isRefused() {
+        assertThatThrownBy(() -> new FileSecretProvider(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[FileSecretProvider.constructor.directory]");
+    }
+
+    @Test
+    void nullName_isRefused() {
+        var provider = new FileSecretProvider(dir);
+        assertThatThrownBy(() -> provider.lookup(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[FileSecretProvider.lookup.name]");
+        assertThatThrownBy(() -> provider.require(null))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[FileSecretProvider.require.name]");
     }
 }

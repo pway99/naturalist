@@ -4,7 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
-import org.apache.commons.lang3.StringUtils;
+import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
 
 /**
  * A deployment secret's value (ADR-028). {@link #toString()} redacts it to
@@ -23,9 +24,7 @@ public final class Secret {
     }
 
     public static Secret of(String value) {
-        if (StringUtils.isBlank(value)) {
-            throw new IllegalArgumentException("secret value must not be blank");
-        }
+        OBSERVER.arguments("of", i -> i.notBlank(value, "value")).throwWhenInvalid();
         return new Secret(value);
     }
 
@@ -40,6 +39,9 @@ public final class Secret {
             byte[] digest = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(digest).substring(0, 8);
         } catch (NoSuchAlgorithmException e) {
+            OBSERVER.state("fingerprint", s -> s
+                    .isTrue(false, "sha256Available"))
+                    .observe(Level.ERROR);
             throw new IllegalStateException("SHA-256 is unavailable", e);
         }
     }
@@ -59,4 +61,6 @@ public final class Secret {
     public String toString() {
         return "Secret[" + fingerprint() + "]";
     }
+
+    private static final Observer OBSERVER = Observer.forClass(Secret.class);
 }

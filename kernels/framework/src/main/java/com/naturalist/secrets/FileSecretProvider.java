@@ -5,6 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import com.naturalist.observability.Observer;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 
 /**
  * Reads a secret from {@code <directory>/<name>} (ADR-028), the shape of systemd
@@ -16,22 +19,32 @@ public final class FileSecretProvider implements SecretProvider {
     private final Path directory;
 
     public FileSecretProvider(Path directory) {
+        OBSERVER.arguments("constructor", i -> i
+                .notNull(directory, "directory"))
+                .throwWhenInvalid();
         this.directory = directory;
     }
 
     @Override
     public Optional<Secret> lookup(SecretName name) {
+        MethodObserver lookup = OBSERVER.forMethod("lookup");
+        lookup.arguments(i -> i
+                .notNull(name, "name"))
+                .throwWhenInvalid();
         Path path = directory.resolve(name.value());
         if (Files.notExists(path)) {
             return Optional.empty();
         }
+        if (!Files.isRegularFile(path)) {
+            lookup.state(s -> s.isTrue(false, "regularFile")).observe(Level.ERROR);
+            throw new IllegalStateException("secret file could not be read: " + path,
+                    new IOException("not a regular file"));
+        }
         try {
-            if (!Files.isRegularFile(path)) {
-                throw new IOException("not a regular file");
-            }
             String value = stripTrailingLineBreaks(Files.readString(path, StandardCharsets.UTF_8));
             return value.isBlank() ? Optional.empty() : Optional.of(Secret.of(value));
         } catch (IOException e) {
+            lookup.state(s -> s.isTrue(false, "readable")).observe(Level.ERROR);
             throw new IllegalStateException("secret file could not be read: " + path, e);
         }
     }
@@ -48,4 +61,6 @@ public final class FileSecretProvider implements SecretProvider {
         }
         return text.substring(0, end);
     }
+
+    private static final Observer OBSERVER = Observer.forClass(FileSecretProvider.class);
 }

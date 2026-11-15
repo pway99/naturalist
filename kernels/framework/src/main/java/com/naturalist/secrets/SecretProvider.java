@@ -1,6 +1,9 @@
 package com.naturalist.secrets;
 
 import java.util.Optional;
+import com.naturalist.observability.Observer;
+import com.naturalist.observability.MethodObserver;
+import com.naturalist.observability.Level;
 
 /**
  * Port for deployment secrets (ADR-028). The port lives in the kernel and each
@@ -21,6 +24,14 @@ public interface SecretProvider {
 
     /** The secret, or {@link MissingSecretException} naming the secret and this source. */
     default Secret require(SecretName name) {
-        return lookup(name).orElseThrow(() -> new MissingSecretException(name, source()));
+        MethodObserver require = Observer.forClass(getClass()).forMethod("require");
+        require.arguments(i -> i
+                .notNull(name, "name"))
+                .throwWhenInvalid();
+        Optional<Secret> found = lookup(name);
+        require.state(s -> s
+                .isTrue(found.isPresent(), "present"))
+                .observe(Level.ERROR);
+        return found.orElseThrow(() -> new MissingSecretException(name, source()));
     }
 }
