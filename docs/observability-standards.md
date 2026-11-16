@@ -264,6 +264,12 @@ consumer can only decide (J4) about rules the type declares.
 
 **Test.** *Name a value of this type the domain would call wrong. Does `invariants()` reject it?*
 
+The same goes for any constraint, inside `invariants()` or not: **a constraint that can never fail
+is a finding.** It checks something that is always true (a record's `toString()`, a value already
+guaranteed by an earlier check), so it looks like an observation but counts nothing. Example:
+`isTrue(!stored.toString().isBlank(), "storedNamed")` is never false, because a record's
+`toString()` is `FileName[value=…]`; observe `valueObject(stored, "stored")` or `stored.isValid()`.
+
 #### J6. Names say the reason
 
 **Kind:** Judgment, partly tool-checkable.
