@@ -10,6 +10,8 @@ Area-specific conventions (load when working in that area):
   patterns**, query rules, new-module scaffolding, PR size
 - [`domains/<domain>/CLAUDE.md`](domains/) — per-domain vocabulary and invariants
 - [`docs/measurement-standards.md`](docs/measurement-standards.md) — units
+- [`docs/observability-standards.md`](docs/observability-standards.md) — observability rules
+  (every exception noticed, decisions observed, consumer decides); wins over older guidance
 
 Cross-effort status (load when the user asks "where are we", "what's next",
 or starts work that touches multiple plans):
@@ -216,3 +218,11 @@ per-element stream op — the static N+1 backstop to the runtime select-count ga
 credential. Run the credential grep from the non-negotiables alongside it.
 Developers auto-apply the fixable ones with `mvn rewrite:run`. Design:
 [`docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md`](docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md).
+
+Then the observability review. Before declaring complete any task that changed `src/main/java`,
+dispatch the `observability-reviewer` agent with `checkout: <this checkout's absolute path>`; fix
+every finding it reports, and re-dispatch until it reports `No findings` or only findings you
+cannot settle (marked *uncertain*, or needing Pat's decision); tell Pat only those, plus every
+row of its "Existing code concerns" section, which you do not have to fix. Rubric:
+[`docs/observability-standards.md`](docs/observability-standards.md). Pat runs the same review
+on any PR or branch with `/observability-review [PR# | branch]`.
