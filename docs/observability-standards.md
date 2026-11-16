@@ -288,7 +288,10 @@ through one).
 
 A REST controller adapter or bus listener turns bad input, including Jackson deserialization
 errors, into a refusal (a 4xx for HTTP; a rejected, not retried, event on a bus), and notices it
-with `kind=argument` under a name that identifies the endpoint or event type.
+with `kind=argument` under a name that identifies the endpoint or event type. A redirect or a
+fallback page in answer to bad input (an unknown slug, a missing record) is a refusal too, and is
+noticed the same way before the redirect: a slug that names nothing is a broken link of ours or
+someone probing URLs, and both are worth a count.
 
 #### B2. Inbound Jackson errors stay at the edge
 
@@ -440,3 +443,5 @@ None.
   (`notBlank`, `kebabFormat`) before using them (B2). Pat, 2026-11-15.
 - Startup assembly code (composition roots, `*Assembly.from`, startup registry validation) is
   exempt from J1. Pat, 2026-11-15.
+- A redirect or fallback page in answer to bad input is a refusal, noticed at the edge (B1).
+  Pat, 2026-11-15.
