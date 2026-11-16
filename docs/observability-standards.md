@@ -293,6 +293,26 @@ fallback page in answer to bad input (an unknown slug, a missing record) is a re
 noticed the same way before the redirect: a slug that names nothing is a broken link of ours or
 someone probing URLs, and both are worth a count.
 
+By the time a request reaches the controller it has passed Spring and Jackson, so the edge is in
+control and knows the context. It answers resiliently, by what was asked:
+
+- **A request for one thing** (a page for a slug): the caller deserves to know the request was
+  invalid. The response says so (a not-found page, or a redirect that carries the message), never
+  a silent redirect.
+- **A request for a list:** return what is possible. Invalid entries are left out and observed
+  where they were found (C1, J4); the request itself is not refused.
+
+A refusal the edge answers instead of throwing is observed with `arguments(...)` at `WARN`, on
+the caller's input, and the answer follows:
+
+```java
+observer.arguments("cladeDetail", i -> i
+                .isTrue(Clade.find(slug).isPresent(), "knownSlug"))
+        .observe(Level.WARN);
+```
+
+This is the one exception to M1.
+
 #### B2. Inbound Jackson errors stay at the edge
 
 **Kind:** Tool.
@@ -370,7 +390,7 @@ reviewer checks it.
 
 | ID | Rule |
 |---|---|
-| M1 | `arguments(...)` always ends in `throwWhenInvalid()`. |
+| M1 | `arguments(...)` always ends in `throwWhenInvalid()`, except at an edge that answers a refusal instead of throwing, which ends in `observe(Level.WARN)` (B1). |
 | M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`, and so does anything it calculated, even from its parameters alone (a map lookup, a `putIfAbsent` result): observing a calculated value as an argument would be misleading. |
 | M3 | Checks made at the same point are one chained call, one constraint per line. Split only when a later check needs a value the earlier one guarantees. |
 | M4 | A method that observes once calls `observer.arguments("method", ...)` / `observer.state("method", ...)` / `observer.noticeError("method", ...)` directly. A method that observes two or more times gets one `MethodObserver methodObserver = observer.forMethod("method")` and routes everything through it. A helper that observes on its own behalf uses its own method name. A helper shared to avoid duplication (DRY) may instead take the caller's `MethodObserver` as a parameter, so each observation is tagged with the caller's name; it never takes a method-name string. |
@@ -451,3 +471,6 @@ None.
 - A value of a framework kind (ValueObject, EntityName, …) is observed with its kind's
   constraint, not just null-checked (M14). Pat, 2026-11-15.
 - An interface's static method may build its Observer inline (M8). Pat, 2026-11-15.
+- An edge observes a refusal it answers (rather than throws) with `arguments(...).observe(WARN)`;
+  a request for one thing tells the caller it was invalid, a request for a list returns what is
+  possible (B1, M1). Pat, 2026-11-15.
