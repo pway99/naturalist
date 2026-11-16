@@ -228,11 +228,18 @@ Right:
     try {
         imageStore.delete(SPACE, storedFileName);
     } catch (RuntimeException deleteFailure) {
+        observer.noticeError("reserveStoreAndCatalogue", "storedDiscarded", deleteFailure,
+                Handling.SWALLOWED);
         e.addSuppressed(deleteFailure);
     }
     throw e;
 }
 ```
+
+**A failed cleanup is counted.** Attaching it with `addSuppressed` is not noticing it. A delete
+that fails leaves its file behind; failed deletes accumulate until the disk is full, and then
+the whole system stops. The cleanup's catch notices the failure (`SWALLOWED`: the original
+failure is what propagates).
 
 **A reply to our own call.** When code parses the reply to a call *we* made (a model's tool
 output, a vendor's response), a parse failure means a dependency misbehaved, not that the user
@@ -334,6 +341,13 @@ observer.arguments("cladeDetail", i -> i
 ```
 
 This is the one exception to M1.
+
+**Terminate as early as possible.** Commands are persistent; their success depends on a valid
+state, so control flow stops at the first point that can tell a request is invalid. An edge that
+can detect it (a length limit the entity publishes, an unknown slug) checks it itself, observes
+the refusal as above and answers, before calling core. The command still validates its own
+input. A refusal only the command could detect is caught at the edge and answered without being
+counted again.
 
 #### B2. Inbound Jackson errors stay at the edge
 
@@ -502,3 +516,7 @@ None.
 - The author fixes only what the change added, edited or broke; everything else the reviewer
   sees is reported as existing code for the maintainer, who reviews existing code separately in
   chunks. Pat, 2026-11-15.
+- Terminate as early as possible: an edge that can detect an invalid request checks it, observes
+  the refusal and answers before calling core; the command still validates (B1). A failed cleanup
+  (a delete attached with `addSuppressed`) is noticed: leftover files fill the disk (J3). Pat,
+  2026-11-16.
