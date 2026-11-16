@@ -220,7 +220,9 @@ Developers auto-apply the fixable ones with `mvn rewrite:run`. Design:
 [`docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md`](docs/plans/2026-08-23-naturalist-rewrite-enforcement-design.md).
 
 Then the observability review. Before declaring complete any task that changed `src/main/java`,
-dispatch the `observability-reviewer` agent with `checkout: <this checkout's absolute path>`; fix
+dispatch the `observability-reviewer` agent with `checkout: <this checkout's absolute path>`
+— after your builds have finished, never alongside a running `mvn` (the engine cannot build its
+index while Maven is writing `target/`); fix
 every finding it reports, and re-dispatch until it reports `No findings` or only findings you
 cannot settle (marked *uncertain*, or needing Pat's decision); tell Pat only those, plus every
 row of its "Existing code concerns" section, which you do not have to fix. Rubric:
