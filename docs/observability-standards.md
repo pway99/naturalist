@@ -293,6 +293,21 @@ a Jackson error on inbound input is raised and handled there (B1). Core is hande
 deserialized values; domain and kernel code never deserialize an inbound request themselves, and
 never catch, wrap or notice an inbound Jackson error.
 
+**Our own deserializers are the exception.** A custom `JsonDeserializer` we write takes control of
+deserialization and knows the target model's requirements, so it treats the `JsonNode` as its
+argument: it observes the fields it reads with `arguments(...)` before using them (`notBlank`,
+`kebabFormat` for a slug, and so on), and `throwWhenInvalid()` refuses bad input with a count.
+
+```java
+JsonNode node = p.readValueAsTree();
+String rankText = node.path("rank").asText(null);
+String slug = node.path("value").asText(null);
+observer.arguments("deserialize", i -> i
+                .notBlank(rankText, "rank")
+                .kebabFormat(slug, "value"))
+        .throwWhenInvalid();
+```
+
 #### B3. Each edge has a backstop
 
 **Kind:** Tool (it exists, and every edge is covered).
@@ -398,3 +413,5 @@ None.
 - M8 is checked on every class a change touches. A helper uses its own method name unless it is
   shared to avoid duplication, when it may take the caller's `MethodObserver` (M4). Pat,
   2026-11-15.
+- A custom Jackson deserializer we write observes the `JsonNode`'s fields as arguments
+  (`notBlank`, `kebabFormat`) before using them (B2). Pat, 2026-11-15.
