@@ -383,6 +383,7 @@ reviewer checks it.
 | M11 | `accounts-core`, console authentication and registration construct their `Observer` with `MonitoringMode.ALWAYS`; everything else uses the default `ON_FAILURE`. |
 | M12 | A `catch` never observes with `isTrue(false, ...)` unless the catch turns the failure into a decision (J2, J3). |
 | M13 | The class's `Observer` field is named `observer` (not `OBSERVER`). A method's `MethodObserver` local is named `methodObserver` (not `m`, and not the method's name). A helper's `MethodObserver` parameter is named `methodObserver` too. |
+| M14 | A value of a framework kind is observed with its kind's constraint, which checks null and the type's `invariants()`: `valueObject`, `identifier`, `entityName`, `entityId`, `observable`, `aggregate`, `readModel` (and their `OrNull` / collection forms). Not a bare `notNull`, and never a hand-written `== null` check that skips or returns. Example: `DomainId` is a `ValueObject`, so `recordSlug` observes `valueObject(domain, "domain")` instead of `if (domain == null) return;`. |
 
 ## Known gaps today
 
@@ -447,3 +448,5 @@ None.
   Pat, 2026-11-15.
 - A value a method calculates, even from its parameters alone, is state, not an argument (M2).
   Pat, 2026-11-15.
+- A value of a framework kind (ValueObject, EntityName, …) is observed with its kind's
+  constraint, not just null-checked (M14). Pat, 2026-11-15.
