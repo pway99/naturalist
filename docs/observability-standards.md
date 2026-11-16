@@ -121,6 +121,11 @@ These rules are where review time goes.
 **Kind:** Judgment. A recipe can flag candidates (a `throw`, `orElseThrow()` or empty `catch`
 with no observation in the same method) but cannot decide them.
 
+**Startup assembly is exempt.** Code that runs only while the application is being wired
+(composition roots, `*Assembly.from` factories, registry validation at startup) fails the
+deploy if it throws. That failure cannot reach a user as a 500 and cannot go unseen, so J1 does
+not ask it to notice exceptions it lets through.
+
 Every exception that leaves or is swallowed by our code is noticed (P2). That happens in
 one of three ways:
 
@@ -415,3 +420,5 @@ None.
   2026-11-15.
 - A custom Jackson deserializer we write observes the `JsonNode`'s fields as arguments
   (`notBlank`, `kebabFormat`) before using them (B2). Pat, 2026-11-15.
+- Startup assembly code (composition roots, `*Assembly.from`, startup registry validation) is
+  exempt from J1. Pat, 2026-11-15.
