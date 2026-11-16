@@ -229,4 +229,4 @@ row of its "Existing code" section. Fix only the report's main section — lines
 and what your change broke. Never fix "Existing code" rows in the same task: Pat reviews existing
 code separately, in chunks, and a small change must stay a small diff. Rubric:
 [`docs/observability-standards.md`](docs/observability-standards.md). Pat runs the same review
-on any PR or branch with `/observability-review [PR# | branch]`.
+on any PR, branch, or path of existing code with `/observability-review [PR# | branch | path]`.

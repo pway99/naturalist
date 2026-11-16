@@ -1,6 +1,6 @@
 ---
 name: observability-review
-description: Review a PR, a branch, or the current checkout against docs/observability-standards.md by dispatching the read-only observability-reviewer agent (Kaname Engine backed). Use when Pat asks to "review PR 3 for observability", "run an observability review of <branch>", or invokes "/observability-review [PR# | branch]".
+description: Review a PR, a branch, the current checkout, or a path of existing code (a file, package or module) against docs/observability-standards.md by dispatching the read-only observability-reviewer agent (Kaname Engine backed). Use when Pat asks to "review PR 3 for observability", "run an observability review of <branch>", "review kernels/catalog-inmem for observability", or invokes "/observability-review [PR# | branch | path...]".
 ---
 
 # Observability review (on demand)
@@ -13,6 +13,10 @@ its report. You do not review yourself and you never fix anything here.
 From the repo root (`git rev-parse --show-toplevel` of the main checkout):
 
 - **No argument** → `checkout` = the current checkout's root; `base` = `git merge-base HEAD main`.
+- **One or more paths that exist in the main checkout** (a file or directory, e.g.
+  `kernels/catalog-inmem` or `.../InsectsController.java`) → **path mode**: `checkout` = the main
+  checkout's root, and dispatch with `paths:` instead of `base:` (skip the worktree steps below).
+  If an argument could be both a path and a branch, it is a path.
 - **A number** → a PR: `gh pr view <n> --json headRefName,baseRefName,state`. Branch =
   `headRefName`; base branch = `baseRefName` (usually `main`).
 - **Anything else** → a branch name; base branch = `main`.
@@ -34,6 +38,13 @@ Dispatch the `observability-reviewer` agent with:
 ```
 checkout: <absolute path>
 base: <sha>
+```
+
+or, in path mode:
+
+```
+checkout: <absolute path of the main checkout>
+paths: <path> [<path> ...]
 ```
 
 ## 3. Report
