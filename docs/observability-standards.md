@@ -254,6 +254,14 @@ consumers care.
 **Test.** *Which parts of the value does this method (or its next consumer) use? Are the invalid
 parts among them?*
 
+**A command observes what it builds before handing it on.** An aggregate, entity or value a
+command instantiates is observed with its kind's constraint (`aggregate(...)`, `valueObject(...)`,
+`observable(...)`, M14) and `throwWhenInvalid()` before it is passed to a transaction, so an
+invalid one is refused with a count instead of failing inside the transaction. Place the check
+so that anything the command already did (a stored file, a reservation) is undone when it
+refuses: inside the `try` that cleans up, or before the side effect. Pass the instance you
+observed, not a new one.
+
 #### J5. `invariants()` state the type's real rules
 
 **Kind:** Judgment.
@@ -261,6 +269,11 @@ parts among them?*
 `invariants()` declares what makes an instance valid in the domain, including cross-field rules
 (`isTrue(family.belongsToOrder(order), "familyBelongsToOrder")`), not just null checks. A
 consumer can only decide (J4) about rules the type declares.
+
+When a change adds a rule about an entity's field (a command now limits `notes` to 2000
+characters), the entity's own `invariants()` must declare it too, even though the entity is not
+in the diff (`whenNotNull(notes, c -> c.maxLength(notes, MAX_NOTES_LENGTH, "notes"))` on
+`OrganismObservation`). The limit lives with the entity, and the command uses the same constant.
 
 **Test.** *Name a value of this type the domain would call wrong. Does `invariants()` reject it?*
 
@@ -480,3 +493,6 @@ None.
 - An edge observes a refusal it answers (rather than throws) with `arguments(...).observe(WARN)`;
   a request for one thing tells the caller it was invalid, a request for a list returns what is
   possible (B1, M1). Pat, 2026-11-15.
+- A command observes the aggregate it builds before the transaction, with cleanup covering the
+  refusal (J4); a rule a change adds about an entity's field is declared in that entity's
+  `invariants()` (J5). Pat, 2026-11-15.
