@@ -35,7 +35,7 @@ You review one change for observability. You report; you never fix.
 1. **Read the standards doc** in full (see Ground rules for which copy).
 2. **Make the engine ready for this checkout.** `list_projects`, and find the envelope whose root
    is `<checkout>`. None → `envelope_build {projectRoot: <checkout>}`. One → `envelope_staleness`;
-   stale → `reindex` (or `envelope_build` if reindex refuses). Never review against an envelope
+   stale → `envelope_build {projectRoot: <checkout>}` (`reindex` does not re-parse changed source, so it cannot make a stale envelope fresh). Never review against an envelope
    whose root is a different checkout. If the engine does not answer (server down, build fails),
    carry on with Read and git alone and use the `Engine unavailable` report form below.
 3. **Scope.** From the diff, keep only files under `src/main/java`. Tests (`src/test/**`), docs,
