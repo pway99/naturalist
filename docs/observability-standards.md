@@ -47,7 +47,8 @@ mattered, and without logs nobody can work that out.
   `noticeError(name, e, Handling.X)`.
 - **P6. Producers hand values on and consumers decide.** Types that carry values (DTOs, records
   read from storage or JSON, enums mapped from strings) hold what they were given and declare
-  `invariants()`. An enum maps an unknown string to `UNRECOGNISED`. The consumer observes and
+  `invariants()`. A lookup from a string returns null for a value it does not recognise. The
+  consumer observes and
   either carries on, when the invalid part is not involved, or throws.
 - **P7. Each edge has a backstop.** A last-resort handler at every web and bus edge notices any
   exception nobody noticed and returns a defined response. Each time the backstop fires, an
@@ -329,9 +330,24 @@ unnoticed.
 **Kind:** Tool for enums mapped from strings; Judgment for other types.
 
 DTOs, records read from storage or JSON, and value types hold what they were given and declare
-`invariants()` (P6). An enum that is mapped from a string coming from outside the code (storage,
-JSON, a request) has an `UNRECOGNISED` constant and maps unknown values to it instead of
-throwing. An enum that is only ever used in code doesn't need `UNRECOGNISED`.
+`invariants()` (P6). A lookup that maps a string to an enum or a sealed value type (a
+`@JsonCreator`, an `of(String)`, a `fromValue`) returns **null** for a value it does not
+recognise, null and blank included, instead of throwing. It has several consumers and cannot
+know what each needs. No type gets a made-up `UNRECOGNISED` member: the value sets are often
+biological, and a fake member would sit among the real ones.
+
+The signal comes from the layers around the lookup. On the read path from the database:
+
+1. MyBatis maps the column into the Dbo as stored.
+2. The Dbo is observable; its constraint check fires on the bad column and names it.
+3. The Dbo's factory maps to the entity; the lookup returns null, so the entity is invalid.
+4. The repository hands the invalid entity on (J4).
+5. The consumer observes the invalid entity and decides: skip it so the rest still shows (a
+   browse page), or throw when it cannot proceed. Its observation says where the entity came
+   from; with the Dbo's signal, that points at the rows holding null or bad values.
+
+A caller whose value must exist observes the null itself (`notNull`, or `isPresent` on an
+`Optional` variant) and refuses if it cannot proceed.
 
 Wrong:
 
@@ -373,7 +389,8 @@ changed method like any other finding, and does not repeat them as existing-code
 - **No edge handler or backstop (B1, B3).** There is no `@ControllerAdvice` or error controller in
   the code. Unexpected exceptions become Spring's default 500. There is no message bus yet.
 - **Enums mapped with `valueOf` (C1).** `AccountDbo`, `EmailVerificationTokenDbo`, `CompoundDbo`,
-  `CompoundConstituentElementDbo` and others. No enum has an `UNRECOGNISED` constant yet.
+  `CompoundConstituentElementDbo` and others throw on an unknown value instead of returning
+  null. `Clade.of` and `Bioregion.of` refuse an unknown slug instead of returning null.
 - **Unobserved throws (J1).** The observe-every-throw sweep is on hold at slice 3 (PR #3) until
   these standards are agreed. `PlantsEntityRefResolver` is one remaining example.
 - **Decision observed by the consumer, not the decider (J2).** `UsageCommandImpl.reserve` must
@@ -397,8 +414,9 @@ None.
 
 - A decision is observed by the decider, not by a caller that translates it (J2). Pat,
   2026-11-15.
-- `UNRECOGNISED` is only for enums mapped from strings that come from outside (C1). Pat,
-  2026-11-15.
+- A lookup from a string (enum, sealed value type, `@JsonCreator`) returns null for an
+  unrecognised value; no type gets an `UNRECOGNISED` member (C1). Supersedes the earlier
+  `UNRECOGNISED` decision. Pat, 2026-11-15.
 - Variable names: `observer` for the class's `Observer`, `methodObserver` for a method's
   `MethodObserver` (M13). Pat, 2026-11-15.
 - The reviewer is a read-only project agent, `.claude/agents/observability-reviewer.md`. The
