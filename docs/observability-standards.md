@@ -371,7 +371,7 @@ reviewer checks it.
 | ID | Rule |
 |---|---|
 | M1 | `arguments(...)` always ends in `throwWhenInvalid()`. |
-| M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`. |
+| M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`, and so does anything it calculated, even from its parameters alone (a map lookup, a `putIfAbsent` result): observing a calculated value as an argument would be misleading. |
 | M3 | Checks made at the same point are one chained call, one constraint per line. Split only when a later check needs a value the earlier one guarantees. |
 | M4 | A method that observes once calls `observer.arguments("method", ...)` / `observer.state("method", ...)` / `observer.noticeError("method", ...)` directly. A method that observes two or more times gets one `MethodObserver methodObserver = observer.forMethod("method")` and routes everything through it. A helper that observes on its own behalf uses its own method name. A helper shared to avoid duplication (DRY) may instead take the caller's `MethodObserver` as a parameter, so each observation is tagged with the caller's name; it never takes a method-name string. |
 | M5 | No `Objects.requireNonNull` or hand-written null check that throws. Constructors validate through `observer.arguments("constructor", ...)`. |
@@ -444,4 +444,6 @@ None.
 - Startup assembly code (composition roots, `*Assembly.from`, startup registry validation) is
   exempt from J1. Pat, 2026-11-15.
 - A redirect or fallback page in answer to bad input is a refusal, noticed at the edge (B1).
+  Pat, 2026-11-15.
+- A value a method calculates, even from its parameters alone, is state, not an argument (M2).
   Pat, 2026-11-15.
