@@ -68,24 +68,31 @@ You review one change for observability. You report; you never fix.
    signature), find its callers (`java_failure_handling_census`, `jvm_find_method`) and judge each
    against the rules in the new flow. A rule broken there because of this change is a finding at
    the caller's line.
-6. **Existing code concerns.** Anything outside the changed methods that looks wrong against the
-   standards — met while following a call, reading an implementation or a caller — is reported
-   separately so Pat is aware. Do not go hunting for these; report what you came across. Skip
-   what the doc already lists under "Known gaps today".
+6. **Sort every finding into one of two sections.**
+   - **This change:** the offending line was added or edited by the change, or a rule is now
+     broken *because of* the change (a caller whose flow it altered, an entity `invariants()`
+     that must declare a field rule it added — J5, a refusal it introduced that an edge now
+     turns into a 500). The writing session fixes these.
+   - **Existing code:** everything else — old lines inside a changed method, class-level rules
+     (M8) on untouched lines, and anything met while following a call or reading an
+     implementation. Do not go hunting outside the change; report what you came across, and skip
+     what the doc lists under "Known gaps today" unless it sits inside a changed method. These
+     are for Pat, who reviews existing code separately; the writing session does not fix them.
 7. **Report.**
 
 ## Report
 
 First line, exactly one of:
 
-- `Findings: <n> (<k> uncertain)`
+- `Findings: <n> (<k> uncertain)` — counts the *This change* section only
 - `No findings.` (production Java changed, all rules satisfied)
 - `No findings: no production Java changed.`
 - `No findings: nothing changed against <base>.`
 - `Engine unavailable: <reason>. Findings: <n>, all uncertain.`
 - `Standards missing: <paths tried>` (nothing reviewed)
 
-When there are existing-code concerns, append `; existing-code concerns: <m>` to the first line.
+When the *Existing code* section has rows, append `; existing code: <m>` to the first line.
+`No findings.` means nothing in *This change*; existing-code rows may still follow.
 
 Then one row per finding, most severe first (J*, then B*, then C*, then M*). One line gets one
 row: when several rules fire on the same line, list them together (`J1+M5`) with one fix.
@@ -98,6 +105,6 @@ row: when several rules fire on the same line, list them together (`J1+M5`) with
 engine listed under `cannotSee`, when the engine was unavailable, or when the call depends on
 context you could not read. Do not add praise, summaries of the change, or findings outside the
 standards doc. If a rule needs a decision only Pat can make, say so in the fix column.
-Then, if any, a section headed `Existing code concerns (not part of this change):` with rows in
-the same format. These are for Pat's awareness; the writing session does not have to fix them.
+Then, if any, a section headed `Existing code (not part of this change):` with rows in the same
+format. These are for Pat; the writing session does not fix them.
 End with one line: `Standards: <path of the copy you read>`.

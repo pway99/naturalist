@@ -225,6 +225,8 @@ dispatch the `observability-reviewer` agent with `checkout: <this checkout's abs
 index while Maven is writing `target/`); fix
 every finding it reports, and re-dispatch until it reports `No findings` or only findings you
 cannot settle (marked *uncertain*, or needing Pat's decision); tell Pat only those, plus every
-row of its "Existing code concerns" section, which you do not have to fix. Rubric:
+row of its "Existing code" section. Fix only the report's main section — lines you added or edited,
+and what your change broke. Never fix "Existing code" rows in the same task: Pat reviews existing
+code separately, in chunks, and a small change must stay a small diff. Rubric:
 [`docs/observability-standards.md`](docs/observability-standards.md). Pat runs the same review
 on any PR or branch with `/observability-review [PR# | branch]`.

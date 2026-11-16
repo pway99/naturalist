@@ -75,8 +75,11 @@ kinds, and each rule below is tagged with its kind.
 - reports each finding as rule ID, file:line, what it saw, and the fix the rule implies;
 - marks a finding *uncertain* when the rule's test does not settle it, so the maintainer looks at
   that one;
-- reports concerns it meets in existing code outside the change separately, so the maintainer
-  is aware, without the author having to fix them;
+- sorts its findings into two sections: *this change* (lines the change added or edited, and
+  rules the change broke elsewhere), which the author fixes, and *existing code* (old lines in
+  changed methods, class-level rules on untouched lines, anything met while following a call),
+  which goes to the maintainer and is never fixed in the same change, so a small change stays a
+  small diff;
 - never edits code, this document, or the tools.
 
 The author (human or agent) applies the same tests while writing. Each test is worded so that
@@ -427,7 +430,7 @@ reviewer checks it.
 ## Known gaps today
 
 These are where the code does not meet the standards yet. The reviewer reports them inside a
-changed method like any other finding, and does not repeat them as existing-code concerns.
+changed method under *existing code*, and does not repeat them when it meets them elsewhere.
 
 - **No edge handler or backstop (B1, B3).** There is no `@ControllerAdvice` or error controller in
   the code. Unexpected exceptions become Spring's default 500. There is no message bus yet.
@@ -496,3 +499,6 @@ None.
 - A command observes the aggregate it builds before the transaction, with cleanup covering the
   refusal (J4); a rule a change adds about an entity's field is declared in that entity's
   `invariants()` (J5). Pat, 2026-11-15.
+- The author fixes only what the change added, edited or broke; everything else the reviewer
+  sees is reported as existing code for the maintainer, who reviews existing code separately in
+  chunks. Pat, 2026-11-15.
