@@ -319,7 +319,7 @@ A REST controller adapter or bus listener turns bad input, including Jackson des
 errors, into a refusal (a 4xx for HTTP; a rejected, not retried, event on a bus), and notices it
 with `kind=argument` under a name that identifies the endpoint or event type. A redirect or a
 fallback page in answer to bad input (an unknown slug, a missing record) is a refusal too, and is
-noticed the same way before the redirect: a slug that names nothing is a broken link of ours or
+noticed before the redirect, with `kind=state` when the check is on a lookup of the input (M2): a slug that names nothing is a broken link of ours or
 someone probing URLs, and both are worth a count.
 
 By the time a request reaches the controller it has passed Spring and Jackson, so the edge is in
@@ -331,16 +331,18 @@ control and knows the context. It answers resiliently, by what was asked:
 - **A request for a list:** return what is possible. Invalid entries are left out and observed
   where they were found (C1, J4); the request itself is not refused.
 
-A refusal the edge answers instead of throwing is observed with `arguments(...)` at `WARN`, on
-the caller's input, and the answer follows:
+A refusal the edge answers instead of throwing ends its check in `observe(Level.WARN)`, and the
+answer follows. The check is `arguments(...)` on the caller's input as given, and `state(...)` on
+anything the edge computed from it (M2): a lookup result, or a value object built from two
+parameters such as `GridCell.of(lat, lon)`:
 
 ```java
-observer.arguments("cladeDetail", i -> i
+observer.state("cladeDetail", i -> i
                 .isTrue(Clade.find(slug).isPresent(), "knownSlug"))
         .observe(Level.WARN);
 ```
 
-This is the one exception to M1.
+This is the one exception to M1 (and the matching exception for a `state(...)` check).
 
 **Terminate as early as possible.** Commands are persistent; their success depends on a valid
 state, so control flow stops at the first point that can tell a request is invalid. An edge that
@@ -427,8 +429,8 @@ reviewer checks it.
 
 | ID | Rule |
 |---|---|
-| M1 | `arguments(...)` always ends in `throwWhenInvalid()`, except at an edge that answers a refusal instead of throwing, which ends in `observe(Level.WARN)` (B1). |
-| M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`, and so does anything it calculated, even from its parameters alone (a map lookup, a `putIfAbsent` result): observing a calculated value as an argument would be misleading. |
+| M1 | `arguments(...)` always ends in `throwWhenInvalid()`, except at an edge that answers a refusal instead of throwing, which ends its check (`arguments(...)` or `state(...)`) in `observe(Level.WARN)` (B1). |
+| M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`, and so does anything it calculated, even from its parameters alone (a map lookup, a `putIfAbsent` result, a value object built from several parameters such as `GridCell.of(lat, lon)`): observing a calculated value as an argument would be misleading. |
 | M3 | Checks made at the same point are one chained call, one constraint per line. Split only when a later check needs a value the earlier one guarantees. |
 | M4 | A method that observes once calls `observer.arguments("method", ...)` / `observer.state("method", ...)` / `observer.noticeError("method", ...)` directly. A method that observes two or more times gets one `MethodObserver methodObserver = observer.forMethod("method")` and routes everything through it. A helper that observes on its own behalf uses its own method name. A helper shared to avoid duplication (DRY) may instead take the caller's `MethodObserver` as a parameter, so each observation is tagged with the caller's name; it never takes a method-name string. |
 | M5 | No `Objects.requireNonNull` or hand-written null check that throws. Constructors validate through `observer.arguments("constructor", ...)`. |
