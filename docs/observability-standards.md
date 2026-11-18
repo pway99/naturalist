@@ -33,10 +33,19 @@ mattered, and without logs nobody can work that out.
   serves this.
 - **P2. Every exception is noticed at the point that knows what failed and why, once per call
   site.** A double count is one failure noticed twice at the same call site: two `noticeError`
-  calls in one handler, or a constraint observation and a `noticeError` for the same exception in
-  one handler. A producer that notices a failure it hands on, and a consumer that notices it
-  again, is not a double count: each observation names its own layer, and the metrics are read
-  together.
+  calls in one handler, a constraint observation and a `noticeError` for the same exception in
+  one handler, or nested handlers in one method that share its `MethodObserver`. There, an outer
+  catch lets an exception an inner catch or a callee already noticed pass through unnoticed, and
+  notices only what its own wrapper throws (a timeout, a full bulkhead). A producer that notices a
+  failure it hands on, and a consumer that notices it again, is not a double count: each
+  observation names its own layer, and the metrics are read together.
+
+  *Why.* Within one method a second count adds nothing: the first already says the failure left
+  the method (`WRAPPED`, `RETHROWN`), and Prometheus cannot tell one failure counted twice from two
+  failures. With one count per failure per method, each series is one cause and the total is
+  their sum, which is what alerts, dashboards and incident analysis add up. Across methods the
+  extra count is context, the path the failure took, so layering stays. What breaks sums is
+  inconsistency, so every method follows the same rule. Pat, 2026-11-17.
 - **P3. Bad input from outside is rejected at the edge.** An edge is an inbound adapter: a
   `@RestController` or a message handler. Jackson deserializes the request there, before anything
   is submitted to a core module, so an inbound deserialization error never reaches domain or
