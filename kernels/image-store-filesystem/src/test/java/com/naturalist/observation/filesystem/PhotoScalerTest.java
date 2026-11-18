@@ -29,7 +29,7 @@ class PhotoScalerTest {
 
     @Test
     void fitJpeg_scalesTheLongestEdgeTo640() {
-        byte[] result = PhotoScaler.fitJpeg(image("jpg", 2000, 1500, BufferedImage.TYPE_INT_RGB), 640, 1);
+        byte[] result = fit(image("jpg", 2000, 1500, BufferedImage.TYPE_INT_RGB), 640, 1);
 
         assertThat(decode(result).getWidth()).isEqualTo(640);
         assertThat(decode(result).getHeight()).isEqualTo(480);
@@ -38,7 +38,7 @@ class PhotoScalerTest {
 
     @Test
     void fitJpeg_neverUpscales() {
-        byte[] result = PhotoScaler.fitJpeg(image("png", 300, 200, BufferedImage.TYPE_INT_RGB), 640, 1);
+        byte[] result = fit(image("png", 300, 200, BufferedImage.TYPE_INT_RGB), 640, 1);
 
         assertThat(decode(result).getWidth()).isEqualTo(300);
         assertThat(decode(result).getHeight()).isEqualTo(200);
@@ -47,7 +47,7 @@ class PhotoScalerTest {
 
     @Test
     void fitJpeg_appliesOrientation6() {
-        byte[] result = PhotoScaler.fitJpeg(image("jpg", 800, 600, BufferedImage.TYPE_INT_RGB), 640, 6);
+        byte[] result = fit(image("jpg", 800, 600, BufferedImage.TYPE_INT_RGB), 640, 6);
 
         assertThat(decode(result).getWidth()).isEqualTo(480);
         assertThat(decode(result).getHeight()).isEqualTo(640);
@@ -58,7 +58,7 @@ class PhotoScalerTest {
         byte[] tagged = withExif(image("jpg", 800, 600, BufferedImage.TYPE_INT_RGB), 6, null, null);
 
         int orientation = ImageUpload.of(tagged).orientation().orElseThrow();
-        byte[] result = PhotoScaler.fitJpeg(tagged, 1024, orientation);
+        byte[] result = fit(tagged, 1024, orientation);
 
         assertThat(orientation).isEqualTo(6);
         assertThat(decode(result).getWidth()).isEqualTo(600);
@@ -67,7 +67,7 @@ class PhotoScalerTest {
 
     @Test
     void fitJpeg_treatsAnUnknownOrientationAsUpright() {
-        byte[] result = PhotoScaler.fitJpeg(image("jpg", 800, 600, BufferedImage.TYPE_INT_RGB), 1024, 99);
+        byte[] result = fit(image("jpg", 800, 600, BufferedImage.TYPE_INT_RGB), 1024, 99);
 
         assertThat(decode(result).getWidth()).isEqualTo(800);
         assertThat(decode(result).getHeight()).isEqualTo(600);
@@ -75,7 +75,7 @@ class PhotoScalerTest {
 
     @Test
     void fitJpeg_flattensTransparencyOntoWhite() {
-        byte[] result = PhotoScaler.fitJpeg(image("png", 10, 10, BufferedImage.TYPE_INT_ARGB), 640, 1);
+        byte[] result = fit(image("png", 10, 10, BufferedImage.TYPE_INT_ARGB), 640, 1);
 
         assertThat(decode(result).getRGB(5, 5) & 0xFFFFFF).isEqualTo(0xFFFFFF);
     }
@@ -84,7 +84,7 @@ class PhotoScalerTest {
     void fitJpeg_writesNoMetadata() {
         byte[] tagged = withExif(image("jpg", 400, 300, BufferedImage.TYPE_INT_RGB), 6, 45.5, -122.7);
 
-        byte[] result = PhotoScaler.fitJpeg(tagged, 1024, 1);
+        byte[] result = fit(tagged, 1024, 1);
 
         var upload = ImageUpload.of(result);
         assertThat(upload.withoutMetadata()).isEqualTo(upload);
@@ -99,7 +99,7 @@ class PhotoScalerTest {
             webp = in.readAllBytes();
         }
 
-        byte[] result = PhotoScaler.fitJpeg(webp, 640, 1);
+        byte[] result = fit(webp, 640, 1);
 
         assertThat(ImageUpload.of(result).mediaType()).isEqualTo("image/jpeg");
         assertThat(PhotoScaler.declared(result)).contains(new Dimensions(64, 48));
@@ -125,7 +125,7 @@ class PhotoScalerTest {
         Color[] colour = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
 
         for (int orientation = 1; orientation <= 8; orientation++) {
-            BufferedImage out = decode(PhotoScaler.fitJpeg(source, 200, orientation));
+            BufferedImage out = decode(fit(source, 200, orientation));
             int w = out.getWidth();
             int h = out.getHeight();
             int[][] centres = {{w / 4, h / 4}, {3 * w / 4, h / 4}, {3 * w / 4, 3 * h / 4}, {w / 4, 3 * h / 4}};
@@ -158,16 +158,15 @@ class PhotoScalerTest {
     }
 
     @Test
-    void storable_refusesADeclaredBomb() {
+    void declared_readsABombsSizeFromTheHeaderAlone() {
         byte[] bomb = pngDeclaring(50_000, 50_000);
 
-        assertThat(PhotoScaler.declared(bomb)).contains(new Dimensions(50_000, 50_000));
-        assertThat(PhotoScaler.storable(bomb)).isFalse();
-        assertThatThrownBy(() -> PhotoScaler.fitJpeg(bomb, 640, 1)).isInstanceOf(IllegalArgumentException.class);
+        assertThat(PhotoScaler.declared(bomb)).contains(new Dimensions(50_000, 50_000))
+                .hasValueSatisfying(d -> assertThat(d.pixels()).isGreaterThan(PhotoScaler.MAX_PIXELS));
     }
 
     @Test
-    void storable_refusesUndecodableBytes() {
+    void declared_isEmptyForUndecodableBytes() {
         byte[] junk = new byte[64];
         Arrays.fill(junk, (byte) 0x42);
         junk[0] = (byte) 0xFF;
@@ -175,12 +174,13 @@ class PhotoScalerTest {
         junk[2] = (byte) 0xFF;
 
         assertThat(PhotoScaler.declared(junk)).isEmpty();
-        assertThat(PhotoScaler.storable(junk)).isFalse();
     }
 
     @Test
-    void storable_acceptsAnOrdinaryPhoto() {
-        assertThat(PhotoScaler.storable(image("jpg", 2000, 1500, BufferedImage.TYPE_INT_RGB))).isTrue();
+    void declared_readsAnOrdinaryPhotoWithinTheCeiling() {
+        assertThat(PhotoScaler.declared(image("jpg", 2000, 1500, BufferedImage.TYPE_INT_RGB)))
+                .contains(new Dimensions(2000, 1500))
+                .hasValueSatisfying(d -> assertThat(d.pixels()).isLessThanOrEqualTo(PhotoScaler.MAX_PIXELS));
     }
 
     /** {@code jpeg} with an Exif APP1 spliced in straight after its SOI. */
@@ -261,5 +261,10 @@ class PhotoScalerTest {
         out.writeBytes(typeBytes);
         out.writeBytes(data);
         out.writeBytes(ByteBuffer.allocate(4).putInt((int) crc.getValue()).array());
+    }
+
+    /** {@code bytes} through {@link PhotoScaler#fitJpeg}, with the dimensions its header declares, as the store passes them. */
+    private static byte[] fit(byte[] bytes, int edge, int orientation) {
+        return PhotoScaler.fitJpeg(bytes, PhotoScaler.declared(bytes).orElseThrow(), edge, orientation);
     }
 }

@@ -4,6 +4,8 @@ import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Plantae;
 import com.naturalist.data.FileName;
+import com.naturalist.observability.Level;
+import com.naturalist.observability.Observer;
 import com.naturalist.data.Page;
 import com.naturalist.data.Pages;
 import com.naturalist.data.PageRequest;
@@ -52,6 +54,8 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/plants")
 public class PlantsController {
+
+    private static final Observer observer = Observer.forClass(PlantsController.class);
 
     private final PlantQuery plantQuery;
     private final CultivarQuery cultivarQuery;
@@ -458,7 +462,7 @@ public class PlantsController {
      * so the browser retries the one photo rather than the page failing (PL-16).
      */
     @GetMapping("/images/{filename:.+}")
-    ResponseEntity<Resource> image(@PathVariable String filename) {
+    ResponseEntity<Resource> image(@PathVariable FileName filename) {
         return serve("plants", filename, ImageVariant.PHOTO);
     }
 
@@ -479,9 +483,18 @@ public class PlantsController {
      * Streams one variant of a stored photo. A missing variant is an uncached 404: a tile never
      * falls back to the full photo, and the 404 must not be remembered once the tile is written.
      */
-    private ResponseEntity<Resource> serve(String space, String filename, ImageVariant variant) {
+    private ResponseEntity<Resource> serve(String space, FileName filename, ImageVariant variant) {
+        // A name with a directory part names no stored photo: answered here, before the store refuses it.
+        if (!observer.arguments("serve", i -> i
+                        .namedValue(filename, "filename"))
+                .observe(Level.WARN)
+                .violations().isEmpty()) {
+            return ResponseEntity.notFound()
+                    .cacheControl(CacheControl.noStore())
+                    .build();
+        }
         try {
-            return imageStore.read(space, FileName.of(filename), variant)
+            return imageStore.read(space, filename, variant)
                     .map(stored -> ResponseEntity.ok()
                             .contentType(MediaType.parseMediaType(stored.mediaType()))
                             .contentLength(stored.size())
@@ -503,7 +516,7 @@ public class PlantsController {
      * before tiles existed has none until it is conformed, and that is a 404, never the full photo.
      */
     @GetMapping("/images/tile/{filename:.+}")
-    ResponseEntity<Resource> tile(@PathVariable String filename) {
+    ResponseEntity<Resource> tile(@PathVariable FileName filename) {
         return serve("plants", filename, ImageVariant.TILE);
     }
 }

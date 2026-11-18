@@ -2,6 +2,9 @@ package com.naturalist.observation.filesystem;
 
 import com.naturalist.data.FileName;
 import com.naturalist.ddd.EntityId;
+import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.observability.Handling;
+import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
@@ -11,7 +14,6 @@ import com.naturalist.observation.ImageVariant;
 import com.naturalist.observation.StoredImage;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Resilient;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +59,7 @@ public final class FilesystemImageStore implements ImageStore {
     /** Enough leading bytes for every magic {@link ImageUpload#mediaType()} recognises. */
     private static final int SNIFF_BYTES = 12;
 
-    private final Observer observer = Observer.forClass(FilesystemImageStore.class);
+    private static final Observer observer = Observer.forClass(FilesystemImageStore.class);
 
     private final Path root;
 
@@ -70,27 +72,28 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public void requireStorable(ImageUpload upload) {
-        MethodObserver m = observer.forMethod("requireStorable");
-        m.arguments(i -> i.valueObject(upload, "upload")).throwWhenInvalid();
-        strippedStorable(m, upload);
+        MethodObserver methodObserver = observer.forMethod("requireStorable");
+        methodObserver.arguments(i -> i.valueObject(upload, "upload")).throwWhenInvalid();
+        strippedStorable(methodObserver, upload);
     }
 
     @Override
     @Resilient(name = WRITE_STRATEGY)
     public FileName store(String space, ImageUpload upload) {
-        MethodObserver m = observer.forMethod("store");
-        m.arguments(i -> i
+        MethodObserver methodObserver = observer.forMethod("store");
+        methodObserver.arguments(i -> i
             .notBlank(space, "space")
             .valueObject(upload, "upload")).throwWhenInvalid();
-        m.arguments(i -> i
+        methodObserver.state(i -> i
             .isTrue(spaceWithinRoot(space), "spaceWithinRoot"))
             .throwWhenInvalid();
-        ImageUpload stripped = strippedStorable(m, upload);
+        Storable storable = strippedStorable(methodObserver, upload);
+        ImageUpload stripped = storable.stripped();
+        PhotoScaler.Dimensions declared = storable.declared();
         Path directory = root.resolve(space).normalize();
-        // Storable above means the header decodes, so declared() answers; orElse(false) only keeps this total
-        // rather than throwing. A photo already within the edge is kept as it is, and keeps its format; a larger
-        // one becomes a JPEG, and is named as one.
-        boolean keepsBytes = withinPhotoEdge(stripped.bytes());
+        // A photo already within the edge is kept as it is, and keeps its format; a larger one becomes a JPEG, and is
+        // named as one.
+        boolean keepsBytes = withinPhotoEdge(declared);
         String name = EntityId.newUUID() + (keepsBytes ? stripped.extension() : ".jpg");
         Path photoFile = directory.resolve(name);
         Path tileFile = directory.resolve(TILES).resolve(name);
@@ -101,8 +104,8 @@ public final class FilesystemImageStore implements ImageStore {
         AtomicBoolean abandoned = new AtomicBoolean();
         try {
             resilience.bulkhead(WRITE_STRATEGY).execute(() -> resilience.timeout(WRITE_STRATEGY).execute(() -> {
-                byte[] photo = photo(stripped.bytes(), keepsBytes, orientation);
-                byte[] tile = tile(stripped.bytes(), orientation);
+                byte[] photo = photo(stripped.bytes(), declared, keepsBytes, orientation);
+                byte[] tile = tile(stripped.bytes(), declared, orientation);
                 try {
                     if (!abandoned.get()) {
                         Files.createDirectories(tileFile.getParent());
@@ -112,23 +115,24 @@ public final class FilesystemImageStore implements ImageStore {
                         Files.write(tileFile, tile);
                     }
                 } catch (IOException e) {
-                    m.state(i -> i
-                        .isTrue(false, "written"))
-                        .observe(Level.ERROR);
+                    methodObserver.noticeError("written", e, Handling.WRAPPED);
                     throw new UncheckedIOException(e);
                 } finally {
                     if (abandoned.get()) {
-                        discard(m, photoFile, tileFile);
+                        discard(methodObserver, photoFile, tileFile);
                     }
                 }
                 return null;
             }));
+        } catch (UncheckedIOException | IllegalArgumentException | InvariantViolationException noticed) {
+            // a failed write (written) or a photo that would not scale (fitJpeg) was counted where it was thrown
+            abandoned.set(true);
+            discard(methodObserver, photoFile, tileFile);
+            throw noticed;
         } catch (RuntimeException e) {
             abandoned.set(true);
-            discard(m, photoFile, tileFile);
-            m.state(i -> i
-                .isTrue(false, "stored"))
-                .observe(Level.ERROR);
+            discard(methodObserver, photoFile, tileFile);
+            methodObserver.noticeError("stored", e, Handling.RETHROWN);
             throw e;
         }
         return FileName.of(name);
@@ -136,43 +140,43 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
-        MethodObserver m = observer.forMethod("read");
-        if (name == null || variant == null || StringUtils.isBlank(space) || !isPlainName(name.value())
-                || !resolvable(space, name.value())) {
-            return Optional.empty();
-        }
+        MethodObserver methodObserver = observer.forMethod("read");
+        methodObserver.arguments(i -> i
+            .notBlank(space, "space")
+            .namedValue(name, "name")
+            .notNull(variant, "variant"))
+            .throwWhenInvalid();
+        methodObserver.state(i -> i
+            .isTrue(resolvable(space, name.value()), "resolvable"))
+            .throwWhenInvalid();
         Path spaceDirectory = root.resolve(space).normalize();
         Path directory = variant == ImageVariant.TILE ? spaceDirectory.resolve(TILES) : spaceDirectory;
         Path file = directory.resolve(name.value()).normalize();
-        if (!spaceDirectory.startsWith(root.normalize()) || !file.startsWith(directory)) {
-            return Optional.empty();
-        }
+        methodObserver.state(i -> i
+            .isTrue(spaceDirectory.startsWith(root.normalize()), "spaceWithinRoot"))
+            .throwWhenInvalid();
         // A read only finds the file and sniffs its first bytes; the caller streams the rest, so no read
         // holds a photo in the heap (PL-16). The bulkhead caps concurrent lookups; past it the caller
         // gets BulkheadFullException.
         Optional<StoredImage> found;
         try {
             found = Optional.ofNullable(resilience.bulkhead(STRATEGY).execute(
-                    () -> resilience.timeout(STRATEGY).execute(() -> find(m, file, name))));
+                    () -> resilience.timeout(STRATEGY).execute(() -> find(methodObserver, file, name))));
+        } catch (UncheckedIOException noticed) {
+            // an unreadable file was counted by find (found)
+            throw noticed;
         } catch (RuntimeException e) {
-            m.state(i -> i
-                .isTrue(false, "read"))
-                .observe(Level.ERROR);
+            methodObserver.noticeError("read", e, Handling.RETHROWN);
             throw e;
         }
         if (variant == ImageVariant.TILE && found.isEmpty()) {
             // A tile is written with its photo and conform backfills the rest: a missing one is a defect to
             // see, and the photo is never served in its place.
-            m.state(i -> i
+            methodObserver.state(i -> i
                 .isTrue(false, "tilePresent"))
                 .observe(Level.WARN);
         }
         return found;
-    }
-
-    private static boolean isPlainName(String value) {
-        return StringUtils.isNotBlank(value)
-                && !value.contains("/") && !value.contains("\\") && !value.contains("..");
     }
 
     private static String mediaType(FileName name) {
@@ -195,16 +199,19 @@ public final class FilesystemImageStore implements ImageStore {
 
     @Override
     public void delete(String space, FileName name) {
-        MethodObserver m = observer.forMethod("delete");
-        if (name == null || StringUtils.isBlank(space) || !isPlainName(name.value())
-                || !resolvable(space, name.value())) {
-            return;
-        }
+        MethodObserver methodObserver = observer.forMethod("delete");
+        methodObserver.arguments(i -> i
+            .notBlank(space, "space")
+            .namedValue(name, "name"))
+            .throwWhenInvalid();
+        methodObserver.state(i -> i
+            .isTrue(resolvable(space, name.value()), "resolvable"))
+            .throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
         Path file = directory.resolve(name.value()).normalize();
-        if (!directory.startsWith(root.normalize()) || !file.startsWith(directory)) {
-            return;
-        }
+        methodObserver.state(i -> i
+            .isTrue(directory.startsWith(root.normalize()), "spaceWithinRoot"))
+            .throwWhenInvalid();
         Path tile = directory.resolve(TILES).resolve(name.value()).normalize();
         try {
             resilience.timeout(STRATEGY).execute(() -> {
@@ -212,32 +219,37 @@ public final class FilesystemImageStore implements ImageStore {
                     Files.deleteIfExists(file);
                     Files.deleteIfExists(tile);
                 } catch (IOException e) {
-                    m.state(i -> i
-                        .isTrue(false, "removed"))
-                        .observe(Level.ERROR);
+                    methodObserver.noticeError("removed", e, Handling.WRAPPED);
                     throw new UncheckedIOException(e);
                 }
             });
+        } catch (UncheckedIOException noticed) {
+            // a failed removal was counted where it was thrown (removed)
+            throw noticed;
         } catch (RuntimeException e) {
-            m.state(i -> i
-                .isTrue(false, "deleted"))
-                .observe(Level.ERROR);
+            methodObserver.noticeError("deleted", e, Handling.RETHROWN);
             throw e;
         }
     }
 
+    /** An upload stripped of its metadata, with the dimensions its header declares. */
+    private record Storable(ImageUpload stripped, PhotoScaler.Dimensions declared) {
+    }
+
     /**
-     * The upload stripped of its metadata, after one observation of what a store keeps: the strip leaves an image
-     * of the same kind, and that image can be decoded within the pixel ceiling. Observes through the caller's
-     * {@code m}, and throws with every failing invariant at once.
+     * The upload stripped of its metadata and the dimensions its header declares, after one observation of what a
+     * store keeps: the strip leaves an image of the same kind, and that image can be decoded within the pixel ceiling.
+     * Observes through the caller's {@code methodObserver}, and throws with every failing invariant at once.
      */
-    private static ImageUpload strippedStorable(MethodObserver m, ImageUpload upload) {
+    private static Storable strippedStorable(MethodObserver methodObserver, ImageUpload upload) {
         ImageUpload stripped = upload.withoutMetadata();
-        m.state(i -> i
+        Optional<PhotoScaler.Dimensions> header = PhotoScaler.declared(stripped.bytes());
+        methodObserver.state(i -> i
             .isTrue(stripped.isSameFormatAs(upload), "strippedIsTheSameImage")
-            .isTrue(PhotoScaler.storable(stripped.bytes()), "storable"))
+            .isTrue(header.isPresent(), "headerDecodes")
+            .atMostOrNull(header.map(PhotoScaler.Dimensions::pixels).orElse(null), PhotoScaler.MAX_PIXELS, "pixels"))
             .throwWhenInvalid();
-        return stripped;
+        return new Storable(stripped, header.orElseThrow());
     }
 
     /** True when {@code space} names a directory strictly inside the root, so a store never writes beside or into it. */
@@ -251,17 +263,15 @@ public final class FilesystemImageStore implements ImageStore {
 
     /**
      * Best-effort removal of a half-written pair; the failure being propagated is the one that matters. A file
-     * that cannot be removed is observed through the caller's {@code m}, never thrown.
+     * that cannot be removed is observed through the caller's {@code methodObserver}, never thrown.
      */
-    private static void discard(MethodObserver m, Path... files) {
+    private static void discard(MethodObserver methodObserver, Path... files) {
         for (Path file : files) {
             try {
                 Files.deleteIfExists(file);
             } catch (IOException | RuntimeException failed) {
                 // the original failure is rethrown by the caller; this one is observed, never thrown
-                m.state(i -> i
-                    .isTrue(false, "discarded"))
-                    .observe(Level.ERROR);
+                methodObserver.noticeError("discarded", failed, Handling.SWALLOWED);
             }
         }
     }
@@ -269,9 +279,9 @@ public final class FilesystemImageStore implements ImageStore {
     /**
      * The stored file, its size and the media type its leading bytes sniff as, or {@code null} when
      * the root holds no such file. Nothing else is a source. Reads {@link #SNIFF_BYTES} and no more.
-     * A file that cannot be read is observed through the caller's {@code m} before it is thrown.
+     * A file that cannot be read is observed through the caller's {@code methodObserver} before it is thrown.
      */
-    private static StoredImage find(MethodObserver m, Path file, FileName name) {
+    private static StoredImage find(MethodObserver methodObserver, Path file, FileName name) {
         try {
             if (!Files.isRegularFile(file)) {
                 return null;
@@ -283,9 +293,7 @@ public final class FilesystemImageStore implements ImageStore {
             }
             return new StoredImage(servedMediaType(head, name), size, () -> Files.newInputStream(file));
         } catch (IOException e) {
-            m.state(i -> i
-                .isTrue(false, "found"))
-                .observe(Level.ERROR);
+            methodObserver.noticeError("found", e, Handling.WRAPPED);
             throw new UncheckedIOException(e);
         }
     }
@@ -320,11 +328,11 @@ public final class FilesystemImageStore implements ImageStore {
      * conform. A space outside the root is refused like {@code store} refuses it.
      */
     public ConformReport conform(String space) {
-        MethodObserver m = observer.forMethod("conform");
-        m.arguments(i -> i
+        MethodObserver methodObserver = observer.forMethod("conform");
+        methodObserver.arguments(i -> i
             .notBlank(space, "space"))
             .throwWhenInvalid();
-        m.arguments(i -> i
+        methodObserver.state(i -> i
             .isTrue(spaceWithinRoot(space), "spaceWithinRoot"))
             .throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
@@ -336,16 +344,14 @@ public final class FilesystemImageStore implements ImageStore {
         try (Stream<Path> entries = Files.list(directory)) {
             photos = entries.filter(Files::isRegularFile).sorted().toList();
         } catch (IOException e) {
-            m.state(i -> i
-                .isTrue(false, "listed"))
-                .observe(Level.ERROR);
+            methodObserver.noticeError("listed", e, Handling.WRAPPED);
             throw new UncheckedIOException(e);
         }
         int downscaled = 0;
         int tiled = 0;
         int unchanged = 0;
         for (Path photoFile : photos) {
-            Conformed conformed = conformed(m, photoFile, directory.resolve(TILES).resolve(photoFile.getFileName()));
+            Conformed conformed = conformed(methodObserver, photoFile, directory.resolve(TILES).resolve(photoFile.getFileName()));
             downscaled += conformed.downscaled() ? 1 : 0;
             tiled += conformed.tiled() ? 1 : 0;
             unchanged += conformed.downscaled() || conformed.tiled() ? 0 : 1;
@@ -353,24 +359,19 @@ public final class FilesystemImageStore implements ImageStore {
         return new ConformReport(downscaled, tiled, unchanged);
     }
 
-    /**
-     * True when {@code bytes} declare an image whose longest edge is within {@link PhotoScaler#PHOTO_EDGE}, so the
-     * store keeps them as they are. An image whose header does not decode is never one to keep as it is.
-     */
-    private static boolean withinPhotoEdge(byte[] bytes) {
-        return PhotoScaler.declared(bytes)
-                .map(declared -> declared.longestEdge() <= PhotoScaler.PHOTO_EDGE)
-                .orElse(false);
+    /** True when the declared longest edge is within {@link PhotoScaler#PHOTO_EDGE}, so the store keeps the bytes as they are. */
+    private static boolean withinPhotoEdge(PhotoScaler.Dimensions declared) {
+        return declared.longestEdge() <= PhotoScaler.PHOTO_EDGE;
     }
 
     /** The photo kept for {@code bytes}: the bytes themselves when {@code keepsBytes}, else an upright JPEG fitted to {@link PhotoScaler#PHOTO_EDGE}. */
-    private static byte[] photo(byte[] bytes, boolean keepsBytes, int orientation) {
-        return keepsBytes ? bytes : PhotoScaler.fitJpeg(bytes, PhotoScaler.PHOTO_EDGE, orientation);
+    private static byte[] photo(byte[] bytes, PhotoScaler.Dimensions declared, boolean keepsBytes, int orientation) {
+        return keepsBytes ? bytes : PhotoScaler.fitJpeg(bytes, declared, PhotoScaler.PHOTO_EDGE, orientation);
     }
 
     /** The tile kept for {@code bytes}: always an upright JPEG fitted to {@link PhotoScaler#TILE_EDGE}. */
-    private static byte[] tile(byte[] bytes, int orientation) {
-        return PhotoScaler.fitJpeg(bytes, PhotoScaler.TILE_EDGE, orientation);
+    private static byte[] tile(byte[] bytes, PhotoScaler.Dimensions declared, int orientation) {
+        return PhotoScaler.fitJpeg(bytes, declared, PhotoScaler.TILE_EDGE, orientation);
     }
 
     /** What conforming one photo did: rewrote it within the edge, wrote its missing tile, both or neither. */
@@ -380,22 +381,20 @@ public final class FilesystemImageStore implements ImageStore {
     /**
      * Writes {@code bytes} to {@code target} through a temporary file in {@code staging}, moved over the target in one
      * step, so a failure part way leaves the old file or the new one and never a part of either. A failure is observed
-     * through the caller's {@code m} before it is thrown.
+     * through the caller's {@code methodObserver} before it is thrown.
      */
-    private static void replace(MethodObserver m, Path staging, Path target, byte[] bytes) {
+    private static void replace(MethodObserver methodObserver, Path staging, Path target, byte[] bytes) {
         Path temporary = null;
         try {
             temporary = Files.createTempFile(staging, ".conform-", ".tmp");
             Files.write(temporary, bytes);
             Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
-            m.state(i -> i
-                .isTrue(false, "replaced"))
-                .observe(Level.ERROR);
+            methodObserver.noticeError("replaced", e, Handling.WRAPPED);
             throw new UncheckedIOException(e);
         } finally {
             if (temporary != null) {
-                discard(m, temporary);
+                discard(methodObserver, temporary);
             }
         }
     }
@@ -403,27 +402,28 @@ public final class FilesystemImageStore implements ImageStore {
     /**
      * Conforms one photo on the store's own sizing path: a photo over {@link PhotoScaler#PHOTO_EDGE} is replaced by its
      * fitted JPEG under the same name, and a missing tile is written. A file that does not decode within the pixel
-     * ceiling is left as it is and observed at WARN through the caller's {@code m}, never thrown. The decode, re-encodes
+     * ceiling is left as it is and observed at WARN through the caller's {@code methodObserver}, never thrown. The decode, re-encodes
      * and writes run under the {@link #WRITE_STRATEGY} bulkhead and timeout; each write replaces its file in one step,
      * so a worker the timeout abandons can only leave a conformed file behind, never a part of one.
      */
-    private Conformed conformed(MethodObserver m, Path photoFile, Path tileFile) {
+    private Conformed conformed(MethodObserver methodObserver, Path photoFile, Path tileFile) {
         byte[] bytes;
         try {
             bytes = Files.readAllBytes(photoFile);
         } catch (IOException e) {
-            m.state(i -> i
-                .isTrue(false, "read"))
-                .observe(Level.ERROR);
+            methodObserver.noticeError("read", e, Handling.WRAPPED);
             throw new UncheckedIOException(e);
         }
-        if (!PhotoScaler.storable(bytes)) {
-            m.state(i -> i
-                .isTrue(false, "decodable"))
-                .observe(Level.WARN);
+        Optional<PhotoScaler.Dimensions> header = PhotoScaler.declared(bytes);
+        InvariantObservation decodable = methodObserver.state(i -> i
+            .isTrue(header.isPresent(), "headerDecodes")
+            .atMostOrNull(header.map(PhotoScaler.Dimensions::pixels).orElse(null), PhotoScaler.MAX_PIXELS, "pixels"))
+            .observe(Level.WARN);
+        if (!decodable.violations().isEmpty()) {
             return new Conformed(false, false);
         }
-        boolean keepsBytes = withinPhotoEdge(bytes);
+        PhotoScaler.Dimensions declared = header.orElseThrow();
+        boolean keepsBytes = withinPhotoEdge(declared);
         boolean tileMissing = !Files.isRegularFile(tileFile);
         if (keepsBytes && !tileMissing) {
             return new Conformed(false, false);
@@ -434,11 +434,11 @@ public final class FilesystemImageStore implements ImageStore {
                 byte[] photo;
                 byte[] tile;
                 try {
-                    photo = photo(bytes, keepsBytes, orientation);
-                    tile = tileMissing ? tile(bytes, orientation) : null;
+                    photo = photo(bytes, declared, keepsBytes, orientation);
+                    tile = tileMissing ? tile(bytes, declared, orientation) : null;
                 } catch (IllegalArgumentException undecodable) {
                     // the header decoded but the image did not: left as it is, like a file whose header does not decode
-                    m.state(i -> i
+                    methodObserver.state(i -> i
                         .isTrue(false, "decodable"))
                         .observe(Level.WARN);
                     return new Conformed(false, false);
@@ -447,23 +447,23 @@ public final class FilesystemImageStore implements ImageStore {
                 try {
                     Files.createDirectories(tiles);
                 } catch (IOException e) {
-                    m.state(i -> i
-                        .isTrue(false, "tilesDirectory"))
-                        .observe(Level.ERROR);
+                    methodObserver.noticeError("tilesDirectory", e, Handling.WRAPPED);
                     throw new UncheckedIOException(e);
                 }
                 if (tile != null) {
-                    replace(m, tiles, tileFile, tile);
+                    replace(methodObserver, tiles, tileFile, tile);
                 }
                 if (!keepsBytes) {
-                    replace(m, tiles, photoFile, photo);
+                    replace(methodObserver, tiles, photoFile, photo);
                 }
                 return new Conformed(!keepsBytes, tile != null);
             }));
+        } catch (UncheckedIOException | InvariantViolationException noticed) {
+            // a failed directory or write (tilesDirectory, replaced), or fitJpeg's own argument check, was counted
+            // where it was thrown
+            throw noticed;
         } catch (RuntimeException e) {
-            m.state(i -> i
-                .isTrue(false, "conformed"))
-                .observe(Level.ERROR);
+            methodObserver.noticeError("conformed", e, Handling.RETHROWN);
             throw e;
         }
     }

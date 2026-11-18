@@ -1,6 +1,6 @@
 package com.naturalist.observation.filesystem;
 
-import com.naturalist.observability.Level;
+import com.naturalist.observability.Handling;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 
@@ -31,7 +31,7 @@ import java.util.Optional;
  *
  * <p>Decoding is bounded by the header, not the upload size: a few kilobytes of PNG can declare a
  * raster of gigabytes. {@link #declared} reads the header only; past {@link #MAX_PIXELS} declared
- * pixels an image is not {@link #storable} and is never decoded. Below it, a large image is
+ * pixels an image is refused and is never decoded. Below it, a large image is
  * decoded with source subsampling, so the raster held is never much more than twice the target
  * edge on its longest side. The stream is cached in memory, never in a temporary file.
  *
@@ -68,11 +68,15 @@ final class PhotoScaler {
     private PhotoScaler() {
     }
 
-    /** The dimensions {@code bytes} declare, read from the header alone; empty when no reader accepts them. */
+    /**
+     * The dimensions {@code bytes} declare, read from the header alone; empty when no reader accepts them. An empty
+     * array is answered empty like any other bytes that are not an image: conform reads files from disk, and an empty
+     * file is one to skip and count, not a refusal.
+     */
     static Optional<Dimensions> declared(byte[] bytes) {
-        observer.forMethod("declared")
-            .arguments(i -> i
-                .notNull(bytes, "bytes"))
+        MethodObserver methodObserver = observer.forMethod("declared");
+        methodObserver.arguments(i -> i
+            .notNull(bytes, "bytes"))
             .throwWhenInvalid();
         try (ImageInputStream in = new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes))) {
             var readers = ImageIO.getImageReaders(in);
@@ -88,37 +92,29 @@ final class PhotoScaler {
                 reader.dispose();
             }
         } catch (IOException | RuntimeException undecodable) {
+            methodObserver.noticeError("headerRead", undecodable, Handling.SWALLOWED);
             return Optional.empty();
         }
     }
 
-    /** True when the header declares an image of at most {@link #MAX_PIXELS}. */
-    static boolean storable(byte[] bytes) {
-        return declared(bytes).filter(d -> d.pixels() <= MAX_PIXELS).isPresent();
-    }
 
     /**
      * {@code bytes} as an upright JPEG whose longest edge is {@code min(edge, its own)}. The Exif
      * {@code orientation} (1 to 8, anything else read as 1) is applied here because the output
      * carries no metadata to apply it later. The output carries no Exif, XMP, IPTC or comment,
-     * only the JFIF header the JDK's JPEG writer emits.
+     * only the JFIF header the JDK's JPEG writer emits. {@code declared} is what {@link #declared}
+     * read from these bytes; the caller has already refused a header that does not decode or
+     * declares more than {@link #MAX_PIXELS} pixels, so this method never re-reads or re-checks it.
      *
-     * @throws IllegalArgumentException when the bytes are not {@link #storable} or fail to decode
+     * @throws IllegalArgumentException when the image fails to decode
      */
-    static byte[] fitJpeg(byte[] bytes, int edge, int orientation) {
-        MethodObserver m = observer.forMethod("fitJpeg");
-        m.arguments(i -> i
-            .notNull(bytes, "bytes")
+    static byte[] fitJpeg(byte[] bytes, Dimensions declared, int edge, int orientation) {
+        MethodObserver methodObserver = observer.forMethod("fitJpeg");
+        methodObserver.arguments(i -> i
+            .notEmpty(bytes, "bytes")
+            .notNull(declared, "declared")
             .atLeast(edge, 1, "edge"))
             .throwWhenInvalid();
-        Dimensions declared = declared(bytes)
-                .filter(d -> d.pixels() <= MAX_PIXELS)
-                .orElseThrow(() -> {
-                    m.state(i -> i
-                        .isTrue(false, "storable"))
-                        .observe(Level.ERROR);
-                    return new IllegalArgumentException("image is not storable");
-                });
         int tag = orientation >= 1 && orientation <= 8 ? orientation : 1;
         boolean quarterTurn = tag >= 5;
         int orientedWidth = quarterTurn ? declared.height() : declared.width();
@@ -127,9 +123,7 @@ final class PhotoScaler {
             BufferedImage source = decode(bytes, declared, edge);
             return encodeJpeg(upright(source, tag, orientedWidth, orientedHeight, edge));
         } catch (IOException | RuntimeException undecodable) {
-            m.state(i -> i
-                .isTrue(false, "decoded"))
-                .observe(Level.ERROR);
+            methodObserver.noticeError("decoded", undecodable, Handling.WRAPPED);
             throw new IllegalArgumentException("image could not be decoded", undecodable);
         }
     }

@@ -2,6 +2,7 @@ package com.naturalist.observability.constraints;
 
 import com.naturalist.observability.Constraint;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,6 +42,9 @@ public record NotEmptyConstraint<T, R>(
         }
         if (v instanceof CharSequence s) {
             return s.length() > 0;
+        }
+        if (v.getClass().isArray()) {
+            return Array.getLength(v) > 0;
         }
         return true;
     }

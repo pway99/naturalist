@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.naturalist.ddd.NamedValue;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.regex.Pattern;
+
 /**
  * A typed wrapper for a file's base name — the filename as stored, including extension,
  * excluding any directory path.
@@ -53,9 +55,15 @@ public record FileName(String value) implements NamedValue<String> {
         return value;
     }
 
+    /**
+     * A base name only: no {@code /}, {@code \\} or NUL anywhere, no {@code ..}, and at least one character that is
+     * not whitespace.
+     */
+    private static final Pattern BASE_NAME = Pattern.compile("^(?!.*\\.\\.)(?=.*\\S)[^/\\\\\\x00]+$");
+
     @Override
     public boolean isValid() {
-        return StringUtils.isNotBlank(value);
+        return value != null && BASE_NAME.matcher(value).matches();
     }
 
     /**

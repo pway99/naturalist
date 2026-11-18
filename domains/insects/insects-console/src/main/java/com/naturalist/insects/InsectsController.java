@@ -836,7 +836,7 @@ public class InsectsController {
      * so the browser retries the one photo rather than the page failing (PL-16).
      */
     @GetMapping("/images/{filename:.+}")
-    ResponseEntity<Resource> image(@PathVariable String filename) {
+    ResponseEntity<Resource> image(@PathVariable FileName filename) {
         return serve("insects", filename, ImageVariant.PHOTO);
     }
 
@@ -844,9 +844,18 @@ public class InsectsController {
      * Streams one variant of a stored photo. A missing variant is an uncached 404: a tile never
      * falls back to the full photo, and the 404 must not be remembered once the tile is written.
      */
-    private ResponseEntity<Resource> serve(String space, String filename, ImageVariant variant) {
+    private ResponseEntity<Resource> serve(String space, FileName filename, ImageVariant variant) {
+        // A name with a directory part names no stored photo: answered here, before the store refuses it.
+        if (!OBSERVER.arguments("serve", i -> i
+                        .namedValue(filename, "filename"))
+                .observe(Level.WARN)
+                .violations().isEmpty()) {
+            return ResponseEntity.notFound()
+                    .cacheControl(CacheControl.noStore())
+                    .build();
+        }
         try {
-            return imageStore.read(space, FileName.of(filename), variant)
+            return imageStore.read(space, filename, variant)
                     .map(stored -> ResponseEntity.ok()
                             .contentType(MediaType.parseMediaType(stored.mediaType()))
                             .contentLength(stored.size())
@@ -868,7 +877,7 @@ public class InsectsController {
      * before tiles existed has none until it is conformed, and that is a 404, never the full photo.
      */
     @GetMapping("/images/tile/{filename:.+}")
-    ResponseEntity<Resource> tile(@PathVariable String filename) {
+    ResponseEntity<Resource> tile(@PathVariable FileName filename) {
         return serve("insects", filename, ImageVariant.TILE);
     }
 

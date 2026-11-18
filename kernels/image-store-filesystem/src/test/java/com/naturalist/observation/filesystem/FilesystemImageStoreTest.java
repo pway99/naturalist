@@ -167,10 +167,14 @@ class FilesystemImageStoreTest {
         Files.createDirectories(root.resolve("insects/sub"));
         Files.write(root.resolve("insects/sub/b.jpg"), JPEG);
 
-        assertThat(store.read("insects", FileName.of("../../etc/passwd"))).isEmpty();
-        assertThat(store.read("insects", FileName.of("../secret.jpg"))).isEmpty();
-        assertThat(store.read("insects", FileName.of("sub/b.jpg"))).isEmpty();
-        assertThat(store.read("insects", FileName.of("sub\\b.jpg"))).isEmpty();
+        assertThatThrownBy(() -> store.read("insects", FileName.of("../../etc/passwd")))
+                .isInstanceOf(InvariantViolationException.class);
+        assertThatThrownBy(() -> store.read("insects", FileName.of("../secret.jpg")))
+                .isInstanceOf(InvariantViolationException.class);
+        assertThatThrownBy(() -> store.read("insects", FileName.of("sub/b.jpg")))
+                .isInstanceOf(InvariantViolationException.class);
+        assertThatThrownBy(() -> store.read("insects", FileName.of("sub\\b.jpg")))
+                .isInstanceOf(InvariantViolationException.class);
     }
 
     @Test
@@ -215,7 +219,8 @@ class FilesystemImageStoreTest {
         Path secret = root.resolve("secret.jpg");
         Files.writeString(secret, "secret");
 
-        store.delete("insects", FileName.of("../secret.jpg"));
+        assertThatThrownBy(() -> store.delete("insects", FileName.of("../secret.jpg")))
+                .isInstanceOf(InvariantViolationException.class);
 
         assertThat(Files.exists(secret)).isTrue();
     }

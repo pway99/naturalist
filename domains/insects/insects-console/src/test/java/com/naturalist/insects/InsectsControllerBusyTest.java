@@ -1,5 +1,6 @@
 package com.naturalist.insects;
 
+import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.library.LibraryTestContext;
 import com.naturalist.observation.filesystem.FilesystemImageStore;
@@ -165,7 +166,7 @@ class InsectsControllerBusyTest {
         var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
                 context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
 
-        var response = controller.image("anything.jpg");
+        var response = controller.image(FileName.of("anything.jpg"));
 
         assertThat(response.getStatusCode().value()).isEqualTo(503);
         assertThat(response.getHeaders().getFirst("Retry-After")).isEqualTo("1");
@@ -185,7 +186,7 @@ class InsectsControllerBusyTest {
         var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
                 context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
 
-        var response = controller.tile("anything.jpg");
+        var response = controller.tile(FileName.of("anything.jpg"));
 
         assertThat(response.getStatusCode().value()).isEqualTo(503);
         assertThat(response.getHeaders().getFirst("Retry-After")).isEqualTo("1");
