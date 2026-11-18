@@ -15,6 +15,7 @@
 @param boolean lens = false
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
 @param boolean imageError = false
+@param boolean notesError = false
 @param boolean areaError = false
 
 !{var insect = page.insect();}
@@ -115,6 +116,9 @@
         @endif
         @if(areaError)
             <p class="error">The area could not be read; the photo was not added.</p>
+        @endif
+        @if(notesError)
+            <p class="error">Notes can be at most ${com.naturalist.observation.OrganismObservation.MAX_NOTES_LENGTH} characters; nothing was saved.</p>
         @endif
         <form id="identify-form" action="/insects/${species.name().value()}/images" method="post"
               enctype="multipart/form-data">

@@ -30,7 +30,8 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
     public InsectObservationId record(InsectRankName subject, NaturalistName naturalist, @Nullable String notes) {
         observer.arguments("record", i -> i
                         .identifier(subject, "subject")
-                        .entityName(naturalist, "naturalist"))
+                        .entityName(naturalist, "naturalist")
+                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
                 .throwWhenInvalid();
         var id = InsectObservationId.create();
         observations.insert(new OrganismObservation<InsectObservationId, InsectRankName>(
@@ -42,7 +43,8 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
     public void updateNotes(InsectObservationId observationId, NaturalistName viewer, @Nullable String notes) {
         observer.arguments("updateNotes", i -> i
                         .entityId(observationId, "observationId")
-                        .entityName(viewer, "viewer"))
+                        .entityName(viewer, "viewer")
+                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
                 .throwWhenInvalid();
         observationQuery.getByName(observationId)
                 .filter(o -> o.observedBy().equals(viewer))

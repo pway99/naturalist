@@ -176,6 +176,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                         .valueObject(upload, "upload")
                         .valueObject(metadata, "metadata")
                         .entityName(naturalist, "naturalist")
+                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes")
                         .valueObjectOrNull(area, "area"))
                 .throwWhenInvalid();
 

@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.data.FileName;
+import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observability.Handling;
@@ -24,7 +25,7 @@ import java.time.Instant;
  * {@link ImageStore}, then
  * builds a {@link PhotoAddition} aggregate and delegates to an
  * {@link InsectAddPhotoTransaction} so the image and observation are persisted
- * atomically; if persistence fails the stored file is deleted.
+ * atomically; if the addition is refused or persistence fails the stored file is deleted.
  */
 @DomainService
 class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
@@ -49,11 +50,12 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
     public void add(InsectRankName subject, ImageUpload upload,
                     @Nullable NaturalistName naturalist,
                     @Nullable String notes, @Nullable String location, @Nullable GridCell area) {
-        MethodObserver m = observer.forMethod("add");
-        m.arguments(i -> i
+        MethodObserver methodObserver = observer.forMethod("add");
+        methodObserver.arguments(i -> i
                         .identifier(subject, "subject")
                         .valueObject(upload, "upload")
                         .entityNameOrNull(naturalist, "naturalist")
+                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes")
                         .valueObjectOrNull(area, "area"))
                 .throwWhenInvalid();
 
@@ -61,7 +63,7 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
         // A strip can leave an upload that was not really an image with no image at all.
         GridCell observedArea = GridCell.resolve(area, upload);
         ImageUpload stripped = upload.withoutMetadata();
-        m.state(s -> s.valueObject(stripped, "strippedUpload")).throwWhenInvalid();
+        methodObserver.state(s -> s.valueObject(stripped, "strippedUpload")).throwWhenInvalid();
 
         FileName stored = imageStore.store(SPACE, stripped);
 
@@ -69,7 +71,7 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
         InsectObservationId observationId = null;
         if (naturalist != null) {
             observationId = InsectObservationId.create();
-            observation = new OrganismObservation<InsectObservationId, InsectRankName>(
+            observation = new OrganismObservation<>(
                     observationId, naturalist, subject, Instant.now(),
                     StringUtils.defaultIfBlank(notes, null),
                     StringUtils.defaultIfBlank(location, null),
@@ -77,19 +79,36 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
                     null);
         }
 
-        var image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        var image = new OrganismImage<>(
                 InsectImageId.create(), subject, Instant.now(), stored, observationId);
+        PhotoAddition photoAddition = new PhotoAddition(image, observation);
+        try {
+            methodObserver.state(pa -> pa.aggregate(photoAddition, "photoAddition"))
+                    .throwWhenInvalid();
+        } catch (InvariantViolationException refused) {
+            // Already counted by the state check: only undo the store, do not notice it again.
+            throw discardStored(methodObserver, stored, refused);
+        }
 
         try {
-            transaction.execute(new PhotoAddition(image, observation));
+            transaction.execute(photoAddition);
         } catch (RuntimeException e) {
-            m.noticeError("photoAdded", e, Handling.RETHROWN);
-            try {
-                imageStore.delete(SPACE, stored);
-            } catch (RuntimeException deleteFailure) {
-                e.addSuppressed(deleteFailure);
-            }
-            throw e;
+            methodObserver.noticeError("photoAdded", e, Handling.RETHROWN);
+            throw discardStored(methodObserver, stored, e);
         }
+    }
+
+    /**
+     * Deletes the stored file after {@code cause} refused or failed the addition; returns {@code cause} to
+     * rethrow. A failed delete leaves the file on disk, so it is counted before it rides along as suppressed.
+     */
+    private <E extends RuntimeException> E discardStored(MethodObserver methodObserver, FileName stored, E cause) {
+        try {
+            imageStore.delete(SPACE, stored);
+        } catch (RuntimeException deleteFailure) {
+            methodObserver.noticeError("storedDiscarded", deleteFailure, Handling.SWALLOWED);
+            cause.addSuppressed(deleteFailure);
+        }
+        return cause;
     }
 }

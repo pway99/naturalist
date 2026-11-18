@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.naturalist.NaturalistName;
+import com.naturalist.observation.OrganismObservation;
 import com.naturalist.test.context.Wired;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -52,6 +53,27 @@ class InsectSightingCommandImplTest {
     void record_rejectsNullNaturalist() {
         assertThatThrownBy(() -> sightings.record(species, null, "x"))
                 .isInstanceOf(InvariantViolationException.class);
+    }
+
+    @Test
+    void record_notesOverMaxLength_isRefused() {
+        var tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
+
+        assertThatThrownBy(() -> sightings.record(species, PAT, tooLong))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("notes");
+    }
+
+    @Test
+    void updateNotes_notesOverMaxLength_isRefusedAndLeavesNotesUnchanged() {
+        var id = recordedBy(PAT, "old");
+        var tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
+
+        assertThatThrownBy(() -> sightings.updateNotes(id, PAT, tooLong))
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("notes");
+
+        assertThat(notesOf(id)).isEqualTo("old");
     }
 
     @Test

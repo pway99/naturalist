@@ -5,6 +5,7 @@
 @param String limit = null
 @param boolean imageError = false
 @param boolean areaError = false
+@param boolean notesError = false
 
 !{var csrfName = _csrf != null ? _csrf.getParameterName() : "";}
 !{var csrfValue = _csrf != null ? _csrf.getToken() : "";}
@@ -37,6 +38,9 @@
             @endif
             @if(areaError)
                 <p class="error">The area could not be read; nothing was identified.</p>
+            @endif
+            @if(notesError)
+                <p class="error">Notes can be at most ${com.naturalist.observation.OrganismObservation.MAX_NOTES_LENGTH} characters; nothing was identified.</p>
             @endif
             <p>Upload a photo and Claude will suggest an identification.
                You can verify the result against authoritative references.</p>

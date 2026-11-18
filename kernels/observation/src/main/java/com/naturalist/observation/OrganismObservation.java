@@ -41,6 +41,9 @@ public record OrganismObservation<ID extends EntityId, R extends RankName>(
         @Nullable Identification identification
 ) implements Entity<ID> {
 
+    /** The longest free-text note an observation may carry. */
+    public static final int MAX_NOTES_LENGTH = 2000;
+
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
@@ -48,6 +51,7 @@ public record OrganismObservation<ID extends EntityId, R extends RankName>(
                 .identifier(observedBy, "observedBy")
                 .identifier(subject, "subject")
                 .notNull(observedOn, "observedOn")
+                .whenNotNull(notes, c -> c.maxLength(notes, MAX_NOTES_LENGTH, "notes"))
                 .valueObjectOrNull(area, "area")
                 .valueObjectOrNull(identification, "identification");
     }

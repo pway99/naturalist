@@ -15,6 +15,7 @@
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 @param GlossaryLinker glossaryLinker = GlossaryLinker.none()
+@param boolean notesError = false
 
 !{var insect = page.insect();}
 !{var children = insect.children();}
@@ -53,7 +54,8 @@
         notesAction = "/insects/" + order.name().value() + "/notes",
         returnPath = "/insects/orders/" + order.name().value(),
         csrfParam = _csrfParam,
-        csrfToken = _csrfToken)
+        csrfToken = _csrfToken,
+        notesError = notesError)
 
     <section>
         <h2>Families in this order</h2>

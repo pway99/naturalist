@@ -718,6 +718,25 @@ class InsectIdentificationCommandImplTest {
     }
 
     @Test
+    void identify_notesOverMaxLength_isRefusedBeforeVisionAndStoresNothing() throws IOException {
+        var visionCalled = new java.util.concurrent.atomic.AtomicBoolean(false);
+        VisionService trackingVision = (image, tool, prompt) -> {
+            visionCalled.set(true);
+            return fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
+        };
+        var cmd = buildCommand(trackingVision);
+        var tooLong = "a".repeat(com.naturalist.observation.OrganismObservation.MAX_NOTES_LENGTH + 1);
+
+        assertThatThrownBy(() -> cmd.identify(
+                ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), tooLong, null))
+                .isInstanceOf(com.naturalist.exception.InvariantViolationException.class)
+                .hasMessageContaining("notes");
+
+        assertThat(visionCalled.get()).isFalse();
+        assertThat(filesUnder(imageRoot)).isEmpty();
+    }
+
+    @Test
     void identify_success_storesTheUpload() {
         var rankName = buildCommand(stubService).identify(
                 ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null);

@@ -86,6 +86,32 @@ class OrganismObservationTest {
     }
 
     @Test
+    void notes_overMaxLength_isViolation() {
+        var mo = OBSERVER.forMethod("notes_overMaxLength_isViolation");
+        var tooLong = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH + 1);
+
+        var result = mo.namedEntity(observationIn(null).withNotes(tooLong), "observation");
+
+        assertThat(result.violationNamesRemovingPrefix(mo.observationPoint()))
+                .contains(".observation.notes");
+    }
+
+    @Test
+    void notes_atMaxLengthOrNull_isNoViolation() {
+        var mo = OBSERVER.forMethod("notes_atMaxLengthOrNull_isNoViolation");
+        var atMax = "a".repeat(OrganismObservation.MAX_NOTES_LENGTH);
+
+        var nullNotes = mo.namedEntity(observationIn(null), "nullNotes");
+        var maxNotes = mo.namedEntity(observationIn(null).withNotes(atMax), "maxNotes");
+
+        // the fake subject is not a real identifier, so only the notes violation is asserted absent
+        assertThat(nullNotes.violationNamesRemovingPrefix(mo.observationPoint()))
+                .doesNotContain(".nullNotes.notes");
+        assertThat(maxNotes.violationNamesRemovingPrefix(mo.observationPoint()))
+                .doesNotContain(".maxNotes.notes");
+    }
+
+    @Test
     void area_roundTripsAndWithAreaReplaces() throws Exception {
         var obs = observationIn(GridCell.of(1092, -2945));
         String json = mapper().writeValueAsString(obs);

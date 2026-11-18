@@ -2,6 +2,7 @@ package com.naturalist.insects;
 
 import com.naturalist.clades.Clade;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.clades.CladeCatalog;
@@ -52,6 +53,7 @@ import com.naturalist.observation.GridCell;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.ImageVariant;
+import com.naturalist.observation.OrganismObservation;
 
 @Controller
 @RequestMapping("/insects")
@@ -429,6 +431,9 @@ public class InsectsController {
         if ("area".equals(error)) {
             model.addAttribute("areaError", true);
         }
+        if ("notes".equals(error)) {
+            model.addAttribute("notesError", true);
+        }
         return "insects/identify";
     }
 
@@ -444,11 +449,21 @@ public class InsectsController {
         if (me.isEmpty()) {
             return "redirect:/insects/identify";
         }
+        MethodObserver methodObserver = OBSERVER.forMethod("identify");
+        if (notesTooLong(methodObserver, notes)) {
+            return "redirect:/insects/identify?error=notes";
+        }
 
         Instant capturedInstant = null;
         if (StringUtils.isNotBlank(capturedAt)) {
             try { capturedInstant = Instant.parse(capturedAt); }
             catch (java.time.format.DateTimeParseException ignored) { }
+        }
+
+        GridCell area = GridCell.of(areaLat, areaLon);
+        if (areaOffTheLattice(methodObserver, area)) {
+            // A claimed cell that is unreadable or off the lattice -- the image is not read, nothing is stored.
+            return "redirect:/insects/identify?error=area";
         }
 
         ImageUpload upload = ImageUpload.of(imageFile.getBytes());
@@ -462,12 +477,6 @@ public class InsectsController {
         } catch (InvariantViolationException unstorable) {
             // A valid JPEG/PNG/WebP the store cannot use (undecodable, or a declared pixel bomb) -- nothing is stored.
             return "redirect:/insects/identify?error=image";
-        }
-
-        GridCell area = GridCell.of(areaLat, areaLon);
-        if (area != null && !area.isValid()) {
-            // A claimed cell that is unreadable or off the lattice -- nothing is stored.
-            return "redirect:/insects/identify?error=area";
         }
 
         try {
@@ -516,7 +525,9 @@ public class InsectsController {
     }
 
     @GetMapping("/families/{name}")
-    String familyDetail(@PathVariable String name, HttpServletRequest request, Model model) {
+    String familyDetail(@PathVariable String name,
+                        @RequestParam(name = "error", required = false) String error,
+                        HttpServletRequest request, Model model) {
         var rankPage = insectViewQuery.rankPage(InsectFamilyName.of(name), currentNaturalist(request).orElse(null));
         if (rankPage.isEmpty()) {
             return "redirect:/insects/families";
@@ -534,6 +545,9 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToFamily(family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToFamily(family, order)));
         model.addAttribute("ancestorIntros", introsForFamily(order));
+        if ("notes".equals(error)) {
+            model.addAttribute("notesError", true);
+        }
         return "insects/family";
     }
 
@@ -547,7 +561,9 @@ public class InsectsController {
     }
 
     @GetMapping("/orders/{name}")
-    String orderDetail(@PathVariable String name, HttpServletRequest request, Model model) {
+    String orderDetail(@PathVariable String name,
+                        @RequestParam(name = "error", required = false) String error,
+                        HttpServletRequest request, Model model) {
         var rankPage = insectViewQuery.rankPage(InsectOrderName.of(name), currentNaturalist(request).orElse(null));
         if (rankPage.isEmpty()) {
             return "redirect:/insects/orders";
@@ -563,6 +579,9 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToOrder(order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToOrder(order)));
         model.addAttribute("ancestorIntros", classOnlyIntros());
+        if ("notes".equals(error)) {
+            model.addAttribute("notesError", true);
+        }
         return "insects/order";
     }
 
@@ -576,7 +595,9 @@ public class InsectsController {
     }
 
     @GetMapping("/genera/{name}")
-    String genusDetail(@PathVariable String name, HttpServletRequest request, Model model) {
+    String genusDetail(@PathVariable String name,
+                        @RequestParam(name = "error", required = false) String error,
+                        HttpServletRequest request, Model model) {
         var rankPage = insectViewQuery.rankPage(InsectGenusName.of(name), currentNaturalist(request).orElse(null));
         if (rankPage.isEmpty()) {
             return "redirect:/insects/genera";
@@ -595,6 +616,9 @@ public class InsectsController {
         model.addAttribute("breadcrumb", breadcrumbToGenus(genus, family, order));
         model.addAttribute("cladeTrail", cladeTrail(lineageToGenus(genus, family, order)));
         model.addAttribute("ancestorIntros", introsForGenus(order, family));
+        if ("notes".equals(error)) {
+            model.addAttribute("notesError", true);
+        }
         return "insects/genus";
     }
 
@@ -637,6 +661,9 @@ public class InsectsController {
         if ("area".equals(error)) {
             model.addAttribute("areaError", true);
         }
+        if ("notes".equals(error)) {
+            model.addAttribute("notesError", true);
+        }
         model.addAttribute("page", rankPage.get());
         model.addAttribute("lens", collectionLensOn(request) && viewer.isPresent());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -668,6 +695,9 @@ public class InsectsController {
         if (me.isEmpty()) {
             return "redirect:/insects/" + name;
         }
+        if (notesTooLong(OBSERVER.forMethod("observe"), notes)) {
+            return "redirect:/insects/" + name + "?error=notes";
+        }
         insectCommand.sightings().record(InsectSpeciesName.of(name), me.get(), notes);
         return "redirect:/insects/" + name;
     }
@@ -680,8 +710,17 @@ public class InsectsController {
                     @RequestParam(name = "areaLat", required = false) String areaLat,
                     @RequestParam(name = "areaLon", required = false) String areaLon,
                     HttpServletRequest request) throws IOException {
+        MethodObserver methodObserver = OBSERVER.forMethod("addImage");
+        if (notesTooLong(methodObserver, notes)) {
+            return "redirect:/insects/" + name + "?error=notes";
+        }
         var species = InsectSpeciesName.of(name);
         var me = currentNaturalist(request);
+        GridCell area = GridCell.of(areaLat, areaLon);
+        if (areaOffTheLattice(methodObserver, area)) {
+            // A claimed cell that is unreadable or off the lattice -- the image is not read, nothing is stored.
+            return "redirect:/insects/" + name + "?error=area";
+        }
         ImageUpload upload = ImageUpload.of(imageFile.getBytes());
         if (!upload.isValid()) {
             return "redirect:/insects/" + name + "?error=image";
@@ -693,13 +732,32 @@ public class InsectsController {
             // A valid JPEG/PNG/WebP the store cannot use (undecodable, or a declared pixel bomb) -- nothing is stored.
             return "redirect:/insects/" + name + "?error=image";
         }
-        GridCell area = GridCell.of(areaLat, areaLon);
-        if (area != null && !area.isValid()) {
-            // A claimed cell that is unreadable or off the lattice -- nothing is stored.
-            return "redirect:/insects/" + name + "?error=area";
-        }
         insectCommand.photos().add(species, upload, me.orElse(null), notes, location, area);
         return "redirect:/insects/" + name;
+    }
+
+    /**
+     * Stops a request whose notes the observation would refuse before it reaches the command: observes
+     * the refusal through the endpoint's {@code methodObserver} and answers true, so the caller
+     * redirects with {@code ?error=notes}.
+     */
+    private static boolean notesTooLong(MethodObserver methodObserver, @Nullable String notes) {
+        return !methodObserver.arguments(i -> i
+                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
+                .observe(Level.WARN)
+                .violations().isEmpty();
+    }
+
+    /**
+     * Stops a request whose claimed {@code area} is unreadable or off the lattice before the image is
+     * read: observes the refusal through the endpoint's {@code methodObserver} and answers true, so the
+     * caller redirects with {@code ?error=area}. No claimed cell ({@code null}) is not a refusal.
+     */
+    private static boolean areaOffTheLattice(MethodObserver methodObserver, @Nullable GridCell area) {
+        return !methodObserver.state(i -> i
+                        .valueObjectOrNull(area, "area"))
+                .observe(Level.WARN)
+                .violations().isEmpty();
     }
 
     @PostMapping("/{name}/notes")
@@ -709,6 +767,9 @@ public class InsectsController {
                        @RequestParam(value = "returnPath", required = false) String returnPath,
                        HttpServletRequest request) {
         var destination = safeReturnPath(returnPath, "/insects/" + name);
+        if (notesTooLong(OBSERVER.forMethod("updateNotes"), notes)) {
+            return "redirect:" + destination + (destination.contains("?") ? "&" : "?") + "error=notes";
+        }
         InsectObservationId obsId;
         try {
             obsId = InsectObservationId.of(java.util.UUID.fromString(observationId));
