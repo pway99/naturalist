@@ -347,7 +347,8 @@ state, so control flow stops at the first point that can tell a request is inval
 can detect it (a length limit the entity publishes, an unknown slug) checks it itself, observes
 the refusal as above and answers, before calling core. The command still validates its own
 input. A refusal only the command could detect is caught at the edge and answered without being
-counted again.
+counted again. Order an edge's checks cheapest first: request parameters before reading the
+body, reading before decoding, so a bad parameter never costs a 20 MB read or an image decode.
 
 #### B2. Inbound Jackson errors stay at the edge
 
@@ -520,3 +521,5 @@ None.
   the refusal and answers before calling core; the command still validates (B1). A failed cleanup
   (a delete attached with `addSuppressed`) is noticed: leftover files fill the disk (J3). Pat,
   2026-11-16.
+- An edge orders its checks cheapest first: parameters, then reading the body, then decoding
+  (B1). Pat, 2026-11-17.
