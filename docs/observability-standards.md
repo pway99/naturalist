@@ -296,6 +296,10 @@ in the diff (`whenNotNull(notes, c -> c.maxLength(notes, MAX_NOTES_LENGTH, "note
 
 **Test.** *Name a value of this type the domain would call wrong. Does `invariants()` reject it?*
 
+A plain result record handed back to startup or tooling code (a tally such as
+`FilesystemImageStore.ConformReport`, returned to the seeder) is not a framework kind and needs no
+`invariants()`. Pat, 2026-11-17.
+
 The same goes for any constraint, inside `invariants()` or not: **a constraint that can never fail
 is a finding.** It checks something that is always true (a record's `toString()`, a value already
 guaranteed by an earlier check), so it looks like an observation but counts nothing. Example:
@@ -439,7 +443,7 @@ reviewer checks it.
 | ID | Rule |
 |---|---|
 | M1 | `arguments(...)` always ends in `throwWhenInvalid()`, except at an edge that answers a refusal instead of throwing, which ends its check (`arguments(...)` or `state(...)`) in `observe(Level.WARN)` (B1). |
-| M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`, and so does anything it calculated, even from its parameters alone (a map lookup, a `putIfAbsent` result, a value object built from several parameters such as `GridCell.of(lat, lon)`): observing a calculated value as an argument would be misleading. |
+| M2 | An `arguments(...)` lambda references only the method's parameters (or elements of them). Anything the method acquired goes through `state(...)`, and so does anything it calculated, even from its parameters alone (a map lookup, a `putIfAbsent` result, a value object built from several parameters such as `GridCell.of(lat, lon)`): observing a calculated value as an argument would be misleading. This holds when the check is a refusal too: where the value came from decides the kind, not what the check does with it (`state(i -> i.isTrue(spaceWithinRoot(space), "spaceWithinRoot")).throwWhenInvalid()`). |
 | M3 | Checks made at the same point are one chained call, one constraint per line. Split only when a later check needs a value the earlier one guarantees. |
 | M4 | A method that observes once calls `observer.arguments("method", ...)` / `observer.state("method", ...)` / `observer.noticeError("method", ...)` directly. A method that observes two or more times gets one `MethodObserver methodObserver = observer.forMethod("method")` and routes everything through it. A helper that observes on its own behalf uses its own method name. A helper shared to avoid duplication (DRY) may instead take the caller's `MethodObserver` as a parameter, so each observation is tagged with the caller's name; it never takes a method-name string. |
 | M5 | No `Objects.requireNonNull` or hand-written null check that throws. Constructors validate through `observer.arguments("constructor", ...)`. |
@@ -451,7 +455,7 @@ reviewer checks it.
 | M11 | `accounts-core`, console authentication and registration construct their `Observer` with `MonitoringMode.ALWAYS`; everything else uses the default `ON_FAILURE`. |
 | M12 | A `catch` never observes with `isTrue(false, ...)` unless the catch turns the failure into a decision (J2, J3). |
 | M13 | The class's `Observer` field is named `observer` (not `OBSERVER`). A method's `MethodObserver` local is named `methodObserver` (not `m`, and not the method's name). A helper's `MethodObserver` parameter is named `methodObserver` too. |
-| M14 | A value of a framework kind is observed with its kind's constraint, which checks null and the type's `invariants()`: `valueObject`, `identifier`, `entityName`, `entityId`, `observable`, `aggregate`, `readModel` (and their `OrNull` / collection forms). Not a bare `notNull`, and never a hand-written `== null` check that skips or returns. Example: `DomainId` is a `ValueObject`, so `recordSlug` observes `valueObject(domain, "domain")` instead of `if (domain == null) return;`. |
+| M14 | A value of a framework kind is observed with its kind's constraint, which checks null and the type's `invariants()`: `valueObject`, `identifier`, `entityName`, `entityId`, `namedValue`, `observable`, `aggregate`, `readModel` (and their `OrNull` / collection forms). A `NamedValue` (`FileName`, `EmailAddress`) is one of these kinds: `namedValue(name, "name")` checks null and `isValid()`. Not a bare `notNull`, and never a hand-written `== null` check that skips or returns. Example: `DomainId` is a `ValueObject`, so `recordSlug` observes `valueObject(domain, "domain")` instead of `if (domain == null) return;`. |
 
 ## Known gaps today
 
