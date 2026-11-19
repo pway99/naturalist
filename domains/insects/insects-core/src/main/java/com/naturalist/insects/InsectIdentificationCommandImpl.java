@@ -894,13 +894,16 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
         // 0d. STORE THE UPLOAD -- deleted again if any later stage fails
         FileName storedFileName = imageStore.store(SPACE, upload);
+        MethodObserver methodObserver = observer.forMethod("reserveStoreAndCatalogue");
         try {
             return catalogue(upload, metadata, naturalist, notes, area, storedFileName);
         } catch (RuntimeException e) {
-            observer.noticeError("reserveStoreAndCatalogue", "catalogued", e, Handling.RETHROWN);
+            methodObserver.noticeError("catalogued", e, Handling.RETHROWN);
             try {
                 imageStore.delete(SPACE, storedFileName);
             } catch (RuntimeException deleteFailure) {
+                // a file left behind fills the disk: counted, and carried on the failure being thrown
+                methodObserver.noticeError("storedDiscarded", deleteFailure, Handling.SWALLOWED);
                 e.addSuppressed(deleteFailure);
             }
             throw e;

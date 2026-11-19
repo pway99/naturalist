@@ -17,6 +17,7 @@ import com.naturalist.library.LibraryCommand;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observation.GridCell;
+import com.naturalist.data.FileName;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.OrganismObservation;
@@ -682,6 +683,48 @@ class InsectIdentificationCommandImplTest {
                 .hasMessage("vision exploded");
 
         assertThat(filesUnder(imageRoot)).isEmpty();
+    }
+
+    @Test
+    void identify_pipelineFailure_whenDeleteAlsoFails_countsTheFailedCleanup() {
+        ImageStore real = store;
+        store = new ImageStore() {
+            @Override public FileName store(String space, ImageUpload upload) {
+                return real.store(space, upload);
+            }
+            @Override public java.util.Optional<com.naturalist.observation.StoredImage> read(
+                    String space, FileName name, com.naturalist.observation.ImageVariant variant) {
+                return real.read(space, name, variant);
+            }
+            @Override public void requireStorable(ImageUpload upload) {
+                real.requireStorable(upload);
+            }
+            @Override public void delete(String space, FileName name) {
+                throw new UncheckedIOException(new IOException("disk said no"));
+            }
+        };
+        VisionService failing = (image, tool, prompt) -> {
+            throw new IllegalStateException("vision exploded");
+        };
+        var cmd = buildCommand(failing);
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            assertThatThrownBy(() -> cmd.identify(
+                    ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null), NaturalistName.of("pat"), null, null))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("vision exploded")
+                    .satisfies(e -> assertThat(e.getSuppressed()).hasSize(1));
+
+            var counter = meters.find("naturalist.invariant.check")
+                    .tag("name", "InsectIdentificationCommandImpl.reserveStoreAndCatalogue.storedDiscarded")
+                    .tag("handling", "swallowed")
+                    .counter();
+            assertThat(counter).isNotNull();
+            assertThat(counter.count()).isEqualTo(1.0);
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
     }
 
     @Test

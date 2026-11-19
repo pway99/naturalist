@@ -236,8 +236,8 @@ byte (and keeps its format); a larger one is stored only as an upright re-encode
 and the original is kept nowhere. The tile is always a JPEG. Both are written from the stripped upload,
 so metadata is gone from each. `read(..., TILE)` never falls back to the photo: a missing tile is
 observed (`tilePresent`, WARN) and answered empty. `requireStorable` refuses, through the Observer
-(`storable`, an `InvariantViolationException`), an upload that does not decode or whose header declares
-more than 100,000,000 pixels; it reads the header only and writes nothing, so the insects commands and
+(an `InvariantViolationException` naming `headerDecodes` or `pixels`), an upload whose header does not
+decode or declares more than 100,000,000 pixels; it reads the header only and writes nothing, so the insects commands and
 controller call it before any identification charge. `store` runs its decode, re-encodes and both writes
 under the `image.store.write` bulkhead (2 concurrent, 2 s wait) and timeout (10 s, `upload = true`); a
 failed or timed-out store removes both files. `FilesystemImageStore.conform(space)` backfills a space to

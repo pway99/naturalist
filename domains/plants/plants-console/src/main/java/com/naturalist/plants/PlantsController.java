@@ -4,7 +4,9 @@ import com.naturalist.clades.Clade;
 import com.naturalist.clades.CladeTraversal;
 import com.naturalist.clades.Plantae;
 import com.naturalist.data.FileName;
+import com.naturalist.observability.Handling;
 import com.naturalist.observability.Level;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.data.Page;
 import com.naturalist.data.Pages;
@@ -16,6 +18,7 @@ import com.naturalist.library.CladeStep;
 import com.naturalist.library.CladeView;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageVariant;
+import com.naturalist.observation.StoredImage;
 import com.naturalist.plants.render.PlantsParagraphCues;
 import com.naturalist.plants.cultivar.Cultivar;
 import com.naturalist.plants.cultivar.CultivarName;
@@ -48,8 +51,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/plants")
@@ -484,31 +489,53 @@ public class PlantsController {
      * falls back to the full photo, and the 404 must not be remembered once the tile is written.
      */
     private ResponseEntity<Resource> serve(String space, FileName filename, ImageVariant variant) {
+        MethodObserver methodObserver = observer.forMethod("serve");
         // A name with a directory part names no stored photo: answered here, before the store refuses it.
-        if (!observer.arguments("serve", i -> i
+        if (!methodObserver.arguments(i -> i
                         .namedValue(filename, "filename"))
                 .observe(Level.WARN)
                 .violations().isEmpty()) {
-            return ResponseEntity.notFound()
-                    .cacheControl(CacheControl.noStore())
-                    .build();
+            return notFound();
         }
+        Optional<StoredImage> found;
         try {
-            return imageStore.read(space, filename, variant)
-                    .map(stored -> ResponseEntity.ok()
-                            .contentType(MediaType.parseMediaType(stored.mediaType()))
-                            .contentLength(stored.size())
-                            .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
-                            .<Resource>body(new InputStreamResource(stored.content()::open)))
-                    .orElseGet(() -> ResponseEntity.notFound()
-                            .cacheControl(CacheControl.noStore())
-                            .build());
+            found = imageStore.read(space, filename, variant);
         } catch (BulkheadFullException busy) {
+            // the store's read cap is full: the browser retries this one photo
+            methodObserver.noticeError("read", busy, Handling.SWALLOWED);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .header(HttpHeaders.RETRY_AFTER, "1")
                     .cacheControl(CacheControl.noStore())
                     .build();
         }
+        // a broken link of ours, or someone probing names: the caller is told, and the miss is counted
+        if (!methodObserver.state(i -> i
+                        .isTrue(found.isPresent(), "found"))
+                .observe(Level.WARN)
+                .violations().isEmpty()) {
+            return notFound();
+        }
+        StoredImage stored = found.orElseThrow();
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(stored.mediaType()))
+                .contentLength(stored.size())
+                .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
+                .body(new InputStreamResource(() -> {
+                    try {
+                        return stored.content().open();
+                    } catch (IOException opened) {
+                        // the photo went between the lookup and the stream: counted before Spring answers 500
+                        methodObserver.noticeError("opened", opened, Handling.RETHROWN);
+                        throw opened;
+                    }
+                }));
+    }
+
+    /** An uncached 404: the photo may be written later, so the miss must not be remembered. */
+    private static ResponseEntity<Resource> notFound() {
+        return ResponseEntity.notFound()
+                .cacheControl(CacheControl.noStore())
+                .build();
     }
 
     /**
