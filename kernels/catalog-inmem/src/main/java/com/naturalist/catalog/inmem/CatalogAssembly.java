@@ -4,6 +4,7 @@ import com.naturalist.catalog.Catalog;
 import com.naturalist.catalog.CatalogContribution;
 import com.naturalist.catalog.DomainId;
 import com.naturalist.catalog.EntityReferences;
+import com.naturalist.observability.Observer;
 import com.naturalist.resilience.Resilience;
 
 import java.util.Arrays;
@@ -158,11 +159,10 @@ public final class CatalogAssembly {
     private static void recordSlug(Map<String, DomainId> bySlug, DomainId domain) {
         if (domain == null) return;
         DomainId previous = bySlug.putIfAbsent(domain.value(), domain);
-        if (previous != null && !previous.equals(domain)) {
-            throw new IllegalArgumentException(
-                    "Duplicate domain slug \"" + domain.value() + "\" registered by "
-                            + previous.getClass().getName() + " and "
-                            + domain.getClass().getName());
-        }
+        OBSERVER.arguments("recordSlug", i -> i
+                .isTrue(previous == null || previous.equals(domain), "uniqueDomainSlug"))
+                .throwWhenInvalid();
     }
+
+    private static final Observer OBSERVER = Observer.forClass(CatalogAssembly.class);
 }

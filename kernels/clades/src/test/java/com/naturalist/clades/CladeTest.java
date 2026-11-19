@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import com.naturalist.exception.InvariantViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -134,8 +135,8 @@ class CladeTest {
     @Test
     void ofRejectsUnknownSlugs() {
         assertThatThrownBy(() -> Clade.of("not-a-real-clade"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("not-a-real-clade");
+                .isInstanceOf(InvariantViolationException.class)
+                .hasMessageContaining("[Clade.of.clade]");
     }
 
     @Test

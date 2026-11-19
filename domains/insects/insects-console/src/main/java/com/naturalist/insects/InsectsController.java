@@ -292,12 +292,11 @@ public class InsectsController {
      */
     @GetMapping("/clades/{slug}")
     String cladeDetail(@PathVariable String slug, Model model) {
-        Clade clade;
-        try {
-            clade = Clade.of(slug);
-        } catch (IllegalArgumentException notAClade) {
+        Optional<Clade> found = Clade.find(slug);
+        if (found.isEmpty()) {
             return "redirect:/insects/orders";
         }
+        Clade clade = found.get();
         if (CladeTraversal.ancestry(clade).stream().anyMatch(node -> node instanceof Plantae)) {
             return "redirect:/plants/clades/" + slug;
         }

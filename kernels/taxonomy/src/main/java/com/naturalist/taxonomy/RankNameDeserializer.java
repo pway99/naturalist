@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.naturalist.observability.Observer;
 
 import java.io.IOException;
 
@@ -20,11 +21,11 @@ public class RankNameDeserializer extends JsonDeserializer<RankName> {
         String slug = node.get("value").asText();
         Object injected = ctxt.findInjectableValue(
                 RankNameReconstructor.class.getName(), null, null);
-        if (!(injected instanceof RankNameReconstructor reconstructor)) {
-            throw new IllegalStateException(
-                    "No RankNameReconstructor registered on this ObjectMapper; "
-                            + "register one via InjectableValues before reading RankName subjects.");
-        }
-        return reconstructor.reconstruct(slug, LinealRank.valueOf(rankText));
+        OBSERVER.state("deserialize", s -> s
+                .isTrue(injected instanceof RankNameReconstructor, "rankNameReconstructor"))
+                .throwWhenInvalid();
+        return ((RankNameReconstructor) injected).reconstruct(slug, LinealRank.valueOf(rankText));
     }
+
+    private static final Observer OBSERVER = Observer.forClass(RankNameDeserializer.class);
 }
