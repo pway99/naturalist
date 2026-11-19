@@ -14,6 +14,10 @@ import com.naturalist.resilience.Retry;
 import com.naturalist.resilience.Timeout;
 import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.vision.NoOpVisionService;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -53,6 +57,30 @@ class InsectsControllerBusyTest {
 
     @TempDir
     Path imageRoot;
+
+    SimpleMeterRegistry meters;
+
+    @BeforeEach
+    void addMeters() {
+        meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+    }
+
+    @AfterEach
+    void removeMeters() {
+        Metrics.removeRegistry(meters);
+    }
+
+    /** The endpoint counted the full bulkhead once, as a failure it answered rather than threw. */
+    private void assertBusyCounted() {
+        var busy = meters.find("naturalist.invariant.check")
+                .tag("name", "InsectsController.serve.read")
+                .tag("kind", "caught")
+                .tag("handling", "swallowed")
+                .counter();
+        assertThat(busy).as("busy count").isNotNull();
+        assertThat(busy.count()).as("busy count").isEqualTo(1.0);
+    }
 
     /**
      * A {@link Resilience} that mirrors {@link Resilience#noOp()} for every primitive except
@@ -172,6 +200,7 @@ class InsectsControllerBusyTest {
         assertThat(response.getHeaders().getFirst("Retry-After")).isEqualTo("1");
         assertThat(response.getHeaders().getCacheControl()).isEqualTo("no-store");
         assertThat(response.getBody()).isNull();
+        assertBusyCounted();
     }
 
     /**
@@ -192,5 +221,6 @@ class InsectsControllerBusyTest {
         assertThat(response.getHeaders().getFirst("Retry-After")).isEqualTo("1");
         assertThat(response.getHeaders().getCacheControl()).isEqualTo("no-store");
         assertThat(response.getBody()).isNull();
+        assertBusyCounted();
     }
 }

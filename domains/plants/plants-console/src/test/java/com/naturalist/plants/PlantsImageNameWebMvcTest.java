@@ -20,7 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * A photo or tile name with a directory part names no stored photo: the endpoint answers an uncached 404 and counts
- * the refusal itself, before the image store is asked (B1, terminate at the edge).
+ * the refusal itself, before the image store is asked (B1, terminate at the edge). A valid name the store does not
+ * hold is a 404 too, counted as {@code found}: a broken link of ours or someone probing names.
  */
 @WebMvcTest
 class PlantsImageNameWebMvcTest {
@@ -60,6 +61,17 @@ class PlantsImageNameWebMvcTest {
                 .andExpect(header().string("Cache-Control", "no-store"));
 
         assertStoppedAtEdge();
+    }
+
+    @Test
+    void image_missing_is404NoStore_countedAsNotFound() throws Exception {
+        mockMvc.perform(get("/plants/images/{filename}", "nope.jpg"))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string("Cache-Control", "no-store"));
+
+        var missing = violated("PlantsController.serve.found");
+        assertThat(missing).as("missing count").isNotNull();
+        assertThat(missing.count()).as("missing count").isEqualTo(1.0);
     }
 
     /** The endpoint counted the refusal once and the store's own name check never ran. */

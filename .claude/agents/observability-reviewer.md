@@ -44,8 +44,12 @@ You review one change for observability. You report; you never fix.
 2. **Make the engine ready for this checkout.** `list_projects`, and find the envelope whose root
    is `<checkout>`. None → `envelope_build {projectRoot: <checkout>}`. One → `envelope_staleness`;
    stale → `envelope_build {projectRoot: <checkout>}` (`reindex` does not re-parse changed source, so it cannot make a stale envelope fresh). Never review against an envelope
-   whose root is a different checkout. If the engine does not answer (server down, build fails),
-   carry on with Read and git alone and use the `Engine unavailable` report form below.
+   whose root is a different checkout. Every `envelope_build` passes `timeoutSeconds: 300` (a
+   normal build takes under a minute). The limit is wall-clock, so a machine that slept during
+   the build wakes to a timeout the engine did not cause: when a build times out or fails, call
+   `list_projects` once. If it answers, the engine is up — retry the build once. If it does not
+   answer, or the retry also times out or fails, stop calling the engine: carry on with Read and
+   git alone and use the `Engine unavailable` report form below, naming the call that failed.
 3. **Scope.** (Path mode: see Inputs.) From the diff, keep only files under `src/main/java`. Tests (`src/test/**`), docs,
    templates and poms are out of scope. For each kept file, map the changed line ranges to their
    enclosing methods (`java_file_outline` gives each member's start/end lines). A *changed method*
