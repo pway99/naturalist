@@ -1,6 +1,7 @@
 package com.naturalist.ddd;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.f4b6a3.uuid.UuidCreator;
 import org.jspecify.annotations.Nullable;
 
@@ -21,6 +22,7 @@ import java.util.UUID;
  * compile time — equality is qualified by {@code getClass()}, so two distinct
  * id types holding the same UUID never compare equal.
  */
+@JsonDeserialize(using = NamedValueDeserializer.class, keyUsing = NamedValueKeyDeserializer.class)
 public abstract class EntityId {
 
     final UUID value;

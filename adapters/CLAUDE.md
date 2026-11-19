@@ -53,6 +53,13 @@ A module belongs in `adapters/` when **all** of the following are true:
   `@DomainService` marker is auto-discovered. A new domain adding the
   marker requires no change to either the scan or the assembly factory.
 
+  It also ships `NamedValueConversion`, the Spring `GenericConverter` that reads a path
+  variable or request parameter into an `EntityName`, `NamedValue` or `EntityId` through the
+  kernel's `NamedValues.read` (the strategy JSON reads use). The app registers it in
+  `WebConfiguration.addFormatters`; `spring-console-test` registers it for every console slice,
+  and is the one adapter that depends on another (test support only, never on a production
+  classpath).
+
   The scan takes no exclusion configuration. What it registers is
   decided entirely by what is on the classpath — an app that wants a
   different adapter set changes its dependencies, not a property. See

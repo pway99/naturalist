@@ -1,6 +1,7 @@
 package com.naturalist.ddd;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
  * its own. Equality is value-based, qualified by concrete class so two distinct slug
  * types holding the same string never compare equal.
  */
+@JsonDeserialize(using = NamedValueDeserializer.class, keyUsing = NamedValueKeyDeserializer.class)
 public abstract class EntityName {
 
     private static final Pattern LOWER_KEBAB = Pattern.compile("^[a-z0-9]+(-[a-z0-9]+)*$");

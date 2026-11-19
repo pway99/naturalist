@@ -1,6 +1,7 @@
 package com.naturalist.ddd;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * A typed, non-identifying, single-value wrapper whose type carries its own domain meaning.
@@ -60,6 +61,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * @see EntityName
  * @see ValueObject
  */
+@JsonDeserialize(using = NamedValueDeserializer.class, keyUsing = NamedValueKeyDeserializer.class)
 public interface NamedValue<T> {
     @JsonValue
     T value();
