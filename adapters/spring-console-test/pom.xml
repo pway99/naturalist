@@ -42,6 +42,11 @@
             <groupId>com.naturalist</groupId>
             <artifactId>framework-test</artifactId>
         </dependency>
+        <!-- NamedValueConversion: the slices register the app's own path-variable conversion -->
+        <dependency>
+            <groupId>com.naturalist</groupId>
+            <artifactId>spring-runtime</artifactId>
+        </dependency>
         <!-- Spring Boot 4 split the old fat `spring-boot-starter-test` apart: `@WebMvcTest`
              now lives in the `spring-boot-webmvc-test` module (package
              org.springframework.boot.webmvc.test.autoconfigure), not in
