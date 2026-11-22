@@ -325,4 +325,14 @@ public final class ImageFixtures {
         for (byte[] part : parts) out.writeBytes(part);
         return out.toByteArray();
     }
+
+    /**
+     * A 64x48 PNG whose signature and {@code IHDR} are sound but whose {@code IDAT} is not zlib data: its header
+     * reads, so a check of the header alone passes it, and the image itself never decodes. Within 1024 px, so
+     * a store that keeps such a photo as it is still has to decode it for the tile.
+     */
+    public static byte[] corruptBodyPng() {
+        byte[] header = ByteBuffer.allocate(13).putInt(64).putInt(48).put((byte) 8).put((byte) 2).array();
+        return png(chunk("IHDR", header), chunk("IDAT", new byte[]{0x01, 0x23, 0x45, 0x67, (byte) 0x89, (byte) 0xAB, (byte) 0xCD, (byte) 0xEF}), iend());
+    }
 }

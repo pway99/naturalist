@@ -106,7 +106,10 @@ final class PhotoScaler {
      * read from these bytes; the caller has already refused a header that does not decode or
      * declares more than {@link #MAX_PIXELS} pixels, so this method never re-reads or re-checks it.
      *
-     * @throws IllegalArgumentException when the image fails to decode
+     * @throws IllegalArgumentException when the image fails to decode: a refusal of the input, which this method does
+     *         not count, so the caller that refuses the photo counts it once, below {@code ERROR}
+     * @throws ReencodeFailedException when the decoded image cannot be drawn upright or encoded (or no JPEG writer is
+     *         available): a fault, noticed here at {@code ERROR} as {@code encoded}, so a caller passes it on uncounted
      */
     static byte[] fitJpeg(byte[] bytes, Dimensions declared, int edge, int orientation) {
         MethodObserver methodObserver = observer.forMethod("fitJpeg");
@@ -119,12 +122,18 @@ final class PhotoScaler {
         boolean quarterTurn = tag >= 5;
         int orientedWidth = quarterTurn ? declared.height() : declared.width();
         int orientedHeight = quarterTurn ? declared.width() : declared.height();
+        BufferedImage source;
         try {
-            BufferedImage source = decode(bytes, declared, edge);
-            return encodeJpeg(upright(source, tag, orientedWidth, orientedHeight, edge));
+            source = decode(bytes, declared, edge);
         } catch (IOException | RuntimeException undecodable) {
-            methodObserver.noticeError("decoded", undecodable, Handling.WRAPPED);
+            // a refusal of the input, not a fault: the caller that refuses the photo counts it once, at WARN (decodable)
             throw new IllegalArgumentException("image could not be decoded", undecodable);
+        }
+        try {
+            return encodeJpeg(upright(source, tag, orientedWidth, orientedHeight, edge));
+        } catch (IOException | RuntimeException e) {
+            methodObserver.noticeError("encoded", e, Handling.WRAPPED);
+            throw new ReencodeFailedException("decoded image could not be re-encoded", e);
         }
     }
 

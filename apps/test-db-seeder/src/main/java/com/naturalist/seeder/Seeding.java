@@ -86,7 +86,8 @@ final class Seeding {
         for (String space : List.of("insects", "plants")) {
             FilesystemImageStore.ConformReport report = store.conform(space);
             System.out.println("Photos conformed (" + space + "): downscaled " + report.downscaled()
-                    + ", tiled " + report.tiled() + ", unchanged " + report.unchanged());
+                    + ", tiled " + report.tiled() + ", unchanged " + report.unchanged()
+                    + (report.undecodable().isEmpty() ? "" : ", undecodable (left as they are): " + String.join(", ", report.undecodable())));
         }
     }
 }

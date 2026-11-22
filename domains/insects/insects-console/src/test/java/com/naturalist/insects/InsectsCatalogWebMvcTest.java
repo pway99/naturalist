@@ -295,4 +295,40 @@ class InsectsCatalogWebMvcTest {
                 .andExpect(content().string(containsString("href=\"/insects/battus-philenor\" class=\"card-image-link\"")))
                 .andExpect(content().string(not(containsString("src=\"/insects/images/pipevine-swallow-tail.jpg\""))));
     }
+
+    /** A photo whose header reads but whose body does not decode passes the header check and is refused by the store: still {@code ?error=image}, never a 500. */
+    @Test
+    void identify_redirectsWithErrorImage_whenThePhotoBodyDoesNotDecode() throws Exception {
+        long storedBefore = storedFiles();
+        var file = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
+
+        mockMvc.perform(multipart("/insects/identify").file(file)
+                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/insects/identify?error=image"));
+
+        assertThat(storedFiles()).as("nothing is stored").isEqualTo(storedBefore);
+    }
+
+    /** Adding a photo whose body does not decode is answered {@code ?error=image} like any other unstorable photo, never a 500. */
+    @Test
+    void addImage_redirectsWithErrorImage_whenThePhotoBodyDoesNotDecode() throws Exception {
+        long storedBefore = storedFiles();
+        var file = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
+
+        mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
+                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/insects/battus-philenor?error=image"));
+
+        assertThat(storedFiles()).as("nothing is stored").isEqualTo(storedBefore);
+    }
+
+    /** {@code ?error=busy}, the answer to an add-photo the image store had no write permit for, tells the visitor to try again. */
+    @Test
+    void detail_rendersBusyErrorWhenFlagged() throws Exception {
+        mockMvc.perform(get("/insects/battus-philenor?error=busy").requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Too many photos are being saved right now")));
+    }
 }

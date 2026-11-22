@@ -1,9 +1,12 @@
 package com.naturalist.observation.filesystem;
 
+import com.naturalist.observability.Level;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.filesystem.PhotoScaler.Dimensions;
 import com.naturalist.observation.test.ImageFixtures;
 import org.junit.jupiter.api.Test;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -266,5 +269,53 @@ class PhotoScalerTest {
     /** {@code bytes} through {@link PhotoScaler#fitJpeg}, with the dimensions its header declares, as the store passes them. */
     private static byte[] fit(byte[] bytes, int edge, int orientation) {
         return PhotoScaler.fitJpeg(bytes, PhotoScaler.declared(bytes).orElseThrow(), edge, orientation);
+    }
+
+    /**
+     * A body that does not decode is a refusal of the input, an {@code IllegalArgumentException}, and is not counted as a
+     * fault: the caller that refuses the photo counts it once, below {@code ERROR}.
+     */
+    @Test
+    void fitJpeg_refusesABodyThatDoesNotDecodeWithoutCountingAFault() {
+        byte[] corrupt = ImageFixtures.corruptBodyPng();
+        Dimensions declared = PhotoScaler.declared(corrupt).orElseThrow();
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            assertThatThrownBy(() -> PhotoScaler.fitJpeg(corrupt, declared, PhotoScaler.TILE_EDGE, 1))
+                    .isInstanceOf(IllegalArgumentException.class);
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
+
+        assertThat(meters.find("naturalist.invariant.check")
+                .tag("level", Level.ERROR.tagValue())
+                .counters()).as("faults counted").filteredOn(counter -> counter.count() > 0).isEmpty();
+    }
+
+    /**
+     * A failure after the image decoded (drawing it upright, encoding the JPEG) is a fault, not a refusal of the photo: a
+     * {@link ReencodeFailedException}, noticed at {@code ERROR} as {@code encoded}. It is provoked here with declared dimensions
+     * no header read ever answers (a zero width), so drawing the upright raster fails; there is no test seam.
+     */
+    @Test
+    void fitJpeg_reportsAFailureAfterTheDecodeAsAFault() {
+        byte[] png = image("png", 10, 10, BufferedImage.TYPE_INT_RGB);
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            assertThatThrownBy(() -> PhotoScaler.fitJpeg(png, new Dimensions(0, 10), PhotoScaler.TILE_EDGE, 1))
+                    .isInstanceOf(ReencodeFailedException.class);
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
+
+        var encoded = meters.find("naturalist.invariant.check")
+                .tag("name", "PhotoScaler.fitJpeg.encoded")
+                .tag("handling", "wrapped")
+                .tag("level", Level.ERROR.tagValue())
+                .counter();
+        assertThat(encoded).as("encode fault count").isNotNull();
+        assertThat(encoded.count()).as("encode fault count").isEqualTo(1.0);
     }
 }

@@ -19,8 +19,13 @@ import java.util.Optional;
  * <p>Size guarantees: a stored photo's longest edge is at most 1024 px, and its tile's at most
  * 640 px; an image is never enlarged. A stripped upload already within 1024 px is stored byte for
  * byte; a larger one is stored only as a re-encoded JPEG of at most 1024 px, and its original is
- * kept nowhere. A store refuses an upload it cannot decode, or whose header declares more than
- * 100,000,000 pixels, without decoding it ({@link #requireStorable}).
+ * kept nowhere. {@link #requireStorable} refuses, from the header alone, an upload whose header does not decode
+ * or declares more than 100,000,000 pixels; {@code store} refuses the same and also an upload whose
+ * body does not decode, the latter with an {@link ImageRefusedException} and nothing written, so a
+ * caller that maps the refusal before it charges anything charges nothing for it. A refusal is the user's bad photo,
+ * never a fault; a decoded image the store then cannot re-encode or write is a fault, never an
+ * {@link ImageRefusedException}. A store's writes
+ * are atomic: each file is moved into place whole, the tile before the photo.
  */
 public interface ImageStore {
     FileName store(String space, ImageUpload upload);
@@ -35,9 +40,9 @@ public interface ImageStore {
 
     /**
      * Refuses, through the Observer ({@code storable}) with an {@code InvariantViolationException},
-     * an upload {@link #store} could not keep: undecodable, or declaring more than 100,000,000
-     * pixels. Reads the header only and writes nothing, so a caller can check before it spends
-     * anything on the upload.
+     * an upload whose header does not decode or declares more than 100,000,000 pixels. Reads the
+     * header only and writes nothing, so a caller can check before it spends anything on the
+     * upload; a body that does not decode passes it and is refused by {@link #store}.
      */
     void requireStorable(ImageUpload upload);
 

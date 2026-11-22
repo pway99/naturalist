@@ -8,6 +8,7 @@ import com.naturalist.observability.InvariantObservation;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
+import com.naturalist.observation.ImageRefusedException;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.ImageVariant;
@@ -20,8 +21,10 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,7 +37,11 @@ import java.util.stream.Stream;
  * {@code <root>/<space>/<uuidv7><ext>} and its tile to {@code <root>/<space>/tiles/<same name>}.
  * A stripped upload within {@link PhotoScaler#PHOTO_EDGE} px is the photo byte for byte; a larger
  * one is stored only as a JPEG of at most that edge, so the original is kept nowhere. The tile is
- * always a JPEG of at most {@link PhotoScaler#TILE_EDGE} px. {@code read} finds only what the root
+ * always a JPEG of at most {@link PhotoScaler#TILE_EDGE} px. Each file is written to a temporary
+ * file in {@code tiles/} and moved into place with an atomic move (the photo's temporary too,
+ * deliberately: conform lists only the space directory, so a temporary is never taken for a photo),
+ * the tile before the photo, so a reader never sees a part-written file, a listed photo always has
+ * its tile, and a failed store removes its temporary files. {@code read} finds only what the root
  * holds, and hands back a stream of it rather than its bytes; a missing tile is observed and
  * answered empty, never replaced by the photo. Photos are data, never classpath resources: the
  * catalog's seed photos reach the root the same way as any file, copied there by the seeder
@@ -104,19 +111,42 @@ public final class FilesystemImageStore implements ImageStore {
         AtomicBoolean abandoned = new AtomicBoolean();
         try {
             resilience.bulkhead(WRITE_STRATEGY).execute(() -> resilience.timeout(WRITE_STRATEGY).execute(() -> {
-                byte[] photo = photo(stripped.bytes(), declared, keepsBytes, orientation);
-                byte[] tile = tile(stripped.bytes(), declared, orientation);
+                byte[] photo = null;
+                byte[] tile = null;
+                try {
+                    photo = photo(stripped.bytes(), declared, keepsBytes, orientation);
+                    tile = tile(stripped.bytes(), declared, orientation);
+                } catch (IllegalArgumentException undecodable) {
+                    // the header read but the image did not decode: a refusal of the user's photo, which fitJpeg does
+                    // not count, counted once just below (decodable, WARN); an encode fault (ReencodeFailedException)
+                    // is a fault, counted by fitJpeg (encoded), and propagates
+                }
+                boolean decodable = tile != null;
+                InvariantObservation decodes = methodObserver.state(i -> i
+                    .isTrue(decodable, "decodable"))
+                    .observe(Level.WARN);
+                if (!decodes.violations().isEmpty()) {
+                    // the port's one refusal a caller may answer as a bad photo (ImageRefusedException), counted here
+                    throw new ImageRefusedException(decodes.scope(), decodes.violations());
+                }
+                Path tiles = tileFile.getParent();
                 try {
                     if (!abandoned.get()) {
-                        Files.createDirectories(tileFile.getParent());
-                        Files.write(photoFile, photo);
-                    }
-                    if (!abandoned.get()) {
-                        Files.write(tileFile, tile);
+                        Files.createDirectories(tiles);
                     }
                 } catch (IOException e) {
-                    methodObserver.noticeError("written", e, Handling.WRAPPED);
+                    methodObserver.noticeError("tilesDirectory", e, Handling.WRAPPED);
                     throw new UncheckedIOException(e);
+                }
+                // The tile lands first, so the photo is never there without it. Each is written to a temporary file in
+                // tiles/ and moved into place in one step, so no reader and no racing conform ever sees part of either.
+                try {
+                    if (!abandoned.get()) {
+                        replace(methodObserver, tiles, tileFile, tile);
+                    }
+                    if (!abandoned.get()) {
+                        replace(methodObserver, tiles, photoFile, photo);
+                    }
                 } finally {
                     if (abandoned.get()) {
                         discard(methodObserver, photoFile, tileFile);
@@ -124,8 +154,10 @@ public final class FilesystemImageStore implements ImageStore {
                 }
                 return null;
             }));
-        } catch (UncheckedIOException | IllegalArgumentException | InvariantViolationException noticed) {
-            // a failed write (written) or a photo that would not scale (fitJpeg) was counted where it was thrown
+        } catch (UncheckedIOException | ReencodeFailedException | InvariantViolationException noticed) {
+            // counted where it was thrown: a failed tiles directory or write (tilesDirectory, replaced), an image that
+            // would not decode (decodable), a decoded image fitJpeg could not re-encode (encoded), or fitJpeg's own
+            // argument check; any other IllegalStateException (a cancelled bulkhead permit wait) is counted below
             abandoned.set(true);
             discard(methodObserver, photoFile, tileFile);
             throw noticed;
@@ -313,19 +345,24 @@ public final class FilesystemImageStore implements ImageStore {
 
     /**
      * What one {@link #conform} did to a space: how many photos it downscaled in place, how many tiles it wrote, and
-     * how many photos it left as they were (already conformed, or skipped as undecodable). A photo both downscaled and
-     * tiled counts in both.
+     * how many photos it left as they were (already conformed, skipped as undecodable, or gone before conform reached
+     * them). A photo both downscaled and tiled counts in both. {@code undecodable} names, by file name within the space,
+     * each photo left as it was because it does not decode, so a person can find and replace or remove it.
      */
-    public record ConformReport(int downscaled, int tiled, int unchanged) {
+    public record ConformReport(int downscaled, int tiled, int unchanged, List<String> undecodable) {
     }
 
     /**
      * Backfills a space to what {@code store} would have written: every regular file directly in {@code <root>/<space>/}
      * over {@link PhotoScaler#PHOTO_EDGE} px is rewritten in place, under its own name, as the JPEG a store keeps, and
      * every photo without a tile gets one. {@code tiles/} itself is never conformed. It runs on the store's own sizing
-     * methods and is idempotent: a second run finds nothing to do and counts every photo unchanged. A file that does not
-     * decode is left as it is, counted unchanged and observed at WARN. A space with no directory yet has nothing to
-     * conform. A space outside the root is refused like {@code store} refuses it.
+     * methods and is idempotent: a second run finds nothing to do and counts every photo unchanged. A file that does
+     * not decode is left as it is, counted unchanged, observed at WARN and named in the report's {@code undecodable}. A
+     * file removed after conform listed the space (a delete racing the run) is counted unchanged and observed as a
+     * swallowed failure, and the run carries on. A photo that decodes but cannot be re-encoded is a fault: it is
+     * counted at ERROR and thrown with the photo's path in its message, and stops the run as a failed read or write
+     * does. A space with no directory yet has nothing to conform. A space outside the root is refused like
+     * {@code store} refuses it.
      */
     public ConformReport conform(String space) {
         MethodObserver methodObserver = observer.forMethod("conform");
@@ -337,7 +374,7 @@ public final class FilesystemImageStore implements ImageStore {
             .throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
         if (!Files.isDirectory(directory)) {
-            return new ConformReport(0, 0, 0);
+            return new ConformReport(0, 0, 0, List.of());
         }
         // Only the photos directly in the space: tiles/ is a directory, so it is never listed as a photo.
         List<Path> photos;
@@ -350,13 +387,17 @@ public final class FilesystemImageStore implements ImageStore {
         int downscaled = 0;
         int tiled = 0;
         int unchanged = 0;
+        List<String> undecodable = new ArrayList<>();
         for (Path photoFile : photos) {
             Conformed conformed = conformed(methodObserver, photoFile, directory.resolve(TILES).resolve(photoFile.getFileName()));
             downscaled += conformed.downscaled() ? 1 : 0;
             tiled += conformed.tiled() ? 1 : 0;
             unchanged += conformed.downscaled() || conformed.tiled() ? 0 : 1;
+            if (conformed.undecodable()) {
+                undecodable.add(photoFile.getFileName().toString());
+            }
         }
-        return new ConformReport(downscaled, tiled, unchanged);
+        return new ConformReport(downscaled, tiled, unchanged, List.copyOf(undecodable));
     }
 
     /** True when the declared longest edge is within {@link PhotoScaler#PHOTO_EDGE}, so the store keeps the bytes as they are. */
@@ -374,8 +415,8 @@ public final class FilesystemImageStore implements ImageStore {
         return PhotoScaler.fitJpeg(bytes, declared, PhotoScaler.TILE_EDGE, orientation);
     }
 
-    /** What conforming one photo did: rewrote it within the edge, wrote its missing tile, both or neither. */
-    private record Conformed(boolean downscaled, boolean tiled) {
+    /** What conforming one photo did: rewrote it within the edge, wrote its missing tile, both or neither; and whether it was left as it was because it does not decode. */
+    private record Conformed(boolean downscaled, boolean tiled, boolean undecodable) {
     }
 
     /**
@@ -386,7 +427,7 @@ public final class FilesystemImageStore implements ImageStore {
     private static void replace(MethodObserver methodObserver, Path staging, Path target, byte[] bytes) {
         Path temporary = null;
         try {
-            temporary = Files.createTempFile(staging, ".conform-", ".tmp");
+            temporary = Files.createTempFile(staging, ".partial-", ".tmp");
             Files.write(temporary, bytes);
             Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
@@ -410,6 +451,10 @@ public final class FilesystemImageStore implements ImageStore {
         byte[] bytes;
         try {
             bytes = Files.readAllBytes(photoFile);
+        } catch (NoSuchFileException vanished) {
+            // removed since conform listed it (a delete racing the run): nothing is left to conform, and the rest carry on
+            methodObserver.noticeError("read", vanished, Handling.SWALLOWED);
+            return new Conformed(false, false, false);
         } catch (IOException e) {
             methodObserver.noticeError("read", e, Handling.WRAPPED);
             throw new UncheckedIOException(e);
@@ -420,13 +465,13 @@ public final class FilesystemImageStore implements ImageStore {
             .atMostOrNull(header.map(PhotoScaler.Dimensions::pixels).orElse(null), PhotoScaler.MAX_PIXELS, "pixels"))
             .observe(Level.WARN);
         if (!decodable.violations().isEmpty()) {
-            return new Conformed(false, false);
+            return new Conformed(false, false, true);
         }
         PhotoScaler.Dimensions declared = header.orElseThrow();
         boolean keepsBytes = withinPhotoEdge(declared);
         boolean tileMissing = !Files.isRegularFile(tileFile);
         if (keepsBytes && !tileMissing) {
-            return new Conformed(false, false);
+            return new Conformed(false, false, false);
         }
         int orientation = ImageUpload.of(bytes).orientation().orElse(1);
         try {
@@ -437,11 +482,16 @@ public final class FilesystemImageStore implements ImageStore {
                     photo = photo(bytes, declared, keepsBytes, orientation);
                     tile = tileMissing ? tile(bytes, declared, orientation) : null;
                 } catch (IllegalArgumentException undecodable) {
-                    // the header decoded but the image did not: left as it is, like a file whose header does not decode
+                    // the header decoded but the image did not: left as it is, like a file whose header does not decode;
+                    // a decoded image that cannot be re-encoded is a fault (ReencodeFailedException) and stops the run
                     methodObserver.state(i -> i
                         .isTrue(false, "decodable"))
                         .observe(Level.WARN);
-                    return new Conformed(false, false);
+                    return new Conformed(false, false, true);
+                } catch (ReencodeFailedException fault) {
+                    // already counted by fitJpeg (encoded); wrapped, not counted again, only so the failure that stops the
+                    // run names the photo an operator has to find
+                    throw new ReencodeFailedException("photo could not be re-encoded: " + photoFile, fault);
                 }
                 Path tiles = tileFile.getParent();
                 try {
@@ -456,11 +506,12 @@ public final class FilesystemImageStore implements ImageStore {
                 if (!keepsBytes) {
                     replace(methodObserver, tiles, photoFile, photo);
                 }
-                return new Conformed(!keepsBytes, tile != null);
+                return new Conformed(!keepsBytes, tile != null, false);
             }));
-        } catch (UncheckedIOException | InvariantViolationException noticed) {
-            // a failed directory or write (tilesDirectory, replaced), or fitJpeg's own argument check, was counted
-            // where it was thrown
+        } catch (UncheckedIOException | ReencodeFailedException | InvariantViolationException noticed) {
+            // counted where it was thrown: a failed tiles directory or write (tilesDirectory, replaced), a decoded image
+            // fitJpeg could not re-encode (encoded, named with its file above), or fitJpeg's own argument check; any other
+            // IllegalStateException (a cancelled bulkhead permit wait) is counted below
             throw noticed;
         } catch (RuntimeException e) {
             methodObserver.noticeError("conformed", e, Handling.RETHROWN);

@@ -25,8 +25,10 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -222,5 +224,49 @@ class InsectsControllerBusyTest {
         assertThat(response.getHeaders().getCacheControl()).isEqualTo("no-store");
         assertThat(response.getBody()).isNull();
         assertBusyCounted();
+    }
+
+    /**
+     * {@link InsectsController#addImage} answers a full {@code image.store.write} bulkhead with {@code ?error=busy} --
+     * the species page has no busy message of its own, so this is a new one -- never a 500, and nothing is stored.
+     */
+    @Test
+    void addImage_redirectsWithErrorBusy_whenTheStoreHasNoWritePermit() throws IOException {
+        var busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
+        var context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
+                new NoOpVisionService(), InsectsTestContext.noOpAuthority());
+        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+                context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
+        var request = new MockHttpServletRequest();
+        request.setAttribute("naturalist.currentNaturalistName", "pat-way");
+        var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
+
+        assertThat(controller.addImage("battus-philenor", image, null, null, null, null, request))
+                .isEqualTo("redirect:/insects/battus-philenor?error=busy");
+        try (var files = Files.walk(imageRoot)) {
+            assertThat(files.filter(Files::isRegularFile).toList()).as("nothing is stored").isEmpty();
+        }
+    }
+
+    /**
+     * A full {@code image.store.write} bulkhead on identify is the same busy refusal as a full vision bulkhead:
+     * {@code ?limit=BUSY}, and the budget is never charged.
+     */
+    @Test
+    void identify_redirectsWithLimitBusy_whenTheStoreHasNoWritePermit() throws IOException {
+        var busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
+        var reservations = new AtomicInteger();
+        IdentificationBudget counting = naturalist -> reservations.incrementAndGet();
+        var context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), counting,
+                new NoOpVisionService(), InsectsTestContext.noOpAuthority());
+        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+                context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
+        var request = new MockHttpServletRequest();
+        request.setAttribute("naturalist.currentNaturalistName", "pat-way");
+        var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
+
+        assertThat(controller.identify(image, null, null, null, null, null, request))
+                .isEqualTo("redirect:/insects/identify?limit=BUSY");
+        assertThat(reservations.get()).as("the budget is never charged").isZero();
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -86,6 +87,28 @@ class InsectsControllerOverBudgetTest {
         String view = controller().identify(image, null, null, null, null, null, request);
 
         assertThat(view).isEqualTo("redirect:/insects/identify?limit=MONTHLY");
+    }
+
+    /**
+     * A photo the store refuses after the header check (its body does not decode) is answered {@code ?error=image}, and
+     * the identification is never charged: the store runs before the budget.
+     */
+    @Test
+    void identify_chargesNothing_whenTheStoreRefusesThePhoto() throws IOException {
+        var reservations = new AtomicInteger();
+        IdentificationBudget counting = naturalist -> reservations.incrementAndGet();
+        var imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
+        var context = InsectsTestContext.create(nte, imageStore, Resilience.noOp(), counting,
+                new NoOpVisionService(), InsectsTestContext.noOpAuthority());
+        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+                context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), imageStore);
+        var request = new MockHttpServletRequest();
+        request.setAttribute("naturalist.currentNaturalistName", "pat-way");
+        var image = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
+
+        assertThat(controller.identify(image, null, null, null, null, null, request))
+                .isEqualTo("redirect:/insects/identify?error=image");
+        assertThat(reservations.get()).as("the budget is never charged").isZero();
     }
 
 }

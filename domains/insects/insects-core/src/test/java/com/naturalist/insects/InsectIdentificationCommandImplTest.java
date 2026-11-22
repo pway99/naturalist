@@ -17,6 +17,8 @@ import com.naturalist.library.LibraryCommand;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observation.GridCell;
+import com.naturalist.observation.ImageRefusedException;
+import com.naturalist.observation.filesystem.FilesystemImageStore;
 import com.naturalist.data.FileName;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
@@ -64,6 +66,8 @@ import java.io.UncheckedIOException;
 import java.time.Instant;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.core.instrument.Metrics;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -1114,5 +1118,112 @@ class InsectIdentificationCommandImplTest {
         out.writeBytes(typeBytes);
         out.writeBytes(data);
         out.writeBytes(ByteBuffer.allocate(4).putInt((int) crc.getValue()).array());
+    }
+
+    /**
+     * {@link Resilience#noOp()} for every primitive except the store's {@code image.store.write} bulkhead, which always
+     * refuses with {@link com.naturalist.resilience.BulkheadFullException}: an image store with no write permit free.
+     */
+    private static Resilience rejectingStoreWrites() {
+        Resilience noOp = Resilience.noOp();
+        String strategy = FilesystemImageStore.WRITE_STRATEGY;
+        Bulkhead refusing = new Bulkhead() {
+            @Override
+            public <T> T execute(java.util.function.Supplier<T> supplier) {
+                throw new com.naturalist.resilience.BulkheadFullException("Bulkhead full for strategy '" + strategy + "'", strategy);
+            }
+
+            @Override
+            public void execute(Runnable runnable) {
+                execute(() -> {
+                    runnable.run();
+                    return null;
+                });
+            }
+        };
+        return (Resilience) Proxy.newProxyInstance(Resilience.class.getClassLoader(), new Class<?>[]{Resilience.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("bulkhead") && strategy.equals(args[0])) return refusing;
+                    try {
+                        return method.invoke(noOp, args);
+                    } catch (InvocationTargetException e) {
+                        throw e.getCause();
+                    }
+                });
+    }
+
+    /**
+     * A PNG whose header reads but whose body does not decode passes the header-only {@code requireStorable} and is
+     * refused by the store itself. The store runs before the budget, so the refused photo costs no identification: no
+     * reservation, no usage event, no vision call and no file left behind.
+     */
+    @Test
+    void identify_refusesAPhotoWhoseBodyDoesNotDecodeBeforeChargingTheBudget() throws IOException {
+        ImageUpload corrupt = ImageUpload.of(ImageFixtures.corruptBodyPng());
+        AtomicInteger reservations = new AtomicInteger();
+        AtomicInteger refusalsRecorded = new AtomicInteger();
+        IdentificationBudget recording = new IdentificationBudget() {
+            @Override public void reserve(NaturalistName naturalist) { reservations.incrementAndGet(); }
+            @Override public void refused(NaturalistName naturalist) { refusalsRecorded.incrementAndGet(); }
+        };
+        var cmd = buildCommand(Resilience.noOp(), recording, capturingVision);
+
+        assertThatThrownBy(() -> cmd.identify(corrupt, new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null, null))
+                .isInstanceOf(ImageRefusedException.class);
+
+        assertThat(reservations.get()).as("the budget is never charged").isZero();
+        assertThat(refusalsRecorded.get()).as("no usage event is written").isZero();
+        assertThat(seenByVision.get()).as("vision is never called").isNull();
+        assertThat(filesUnder(imageRoot)).as("nothing is stored").isEmpty();
+    }
+
+    /**
+     * An image store with no write permit free refuses the store; the identification is refused {@code BUSY}, like a
+     * full vision bulkhead, and the budget is never charged, vision never runs and nothing is stored.
+     */
+    @Test
+    void identify_fullStoreWriteBulkhead_refusesBusyBeforeChargingTheBudget() throws IOException {
+        store = new FilesystemImageStore(imageRoot, rejectingStoreWrites());
+        AtomicInteger reservations = new AtomicInteger();
+        IdentificationBudget counting = naturalist -> reservations.incrementAndGet();
+        var cmd = buildCommand(Resilience.noOp(), counting, capturingVision);
+
+        assertThatThrownBy(() -> cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
+                NaturalistName.of("pat"), null, null))
+                .isInstanceOfSatisfying(IdentificationRefused.class, refused ->
+                        assertThat(refused.reason()).isEqualTo(IdentificationRefused.Reason.BUSY));
+
+        assertThat(reservations.get()).as("the budget is never charged").isZero();
+        assertThat(seenByVision.get()).as("vision is never called").isNull();
+        assertThat(filesUnder(imageRoot)).as("nothing is stored").isEmpty();
+    }
+
+    /**
+     * The upload is stored before the budget is reserved, so a budget refusal deletes it again: the refusal is counted
+     * once ({@code withinBudget}), never also as a failed catalogue, and no file is left behind.
+     */
+    @Test
+    void identify_overBudget_deletesTheStoredUpload() throws IOException {
+        IdentificationBudget exceeded = naturalist -> {
+            throw new BudgetExceededException(LimitKind.DAILY, Instant.parse("2026-11-04T00:00:00Z"));
+        };
+        var cmd = buildCommand(Resilience.noOp(), exceeded, capturingVision);
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            assertThatThrownBy(() -> cmd.identify(ImageUpload.of(JPEG), new ImageMetadata("Chico, CA", null),
+                    NaturalistName.of("pat"), null, null))
+                    .isInstanceOf(IdentificationRefused.class);
+
+            var catalogued = meters.find("naturalist.invariant.check")
+                    .tag("name", "InsectIdentificationCommandImpl.reserveStoreAndCatalogue.catalogued").counter();
+            assertThat(catalogued == null ? 0.0 : catalogued.count())
+                    .as("a budget refusal is not a failed catalogue").isZero();
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
+        assertThat(seenByVision.get()).as("vision is never called").isNull();
+        assertThat(filesUnder(imageRoot)).as("the stored upload is deleted").isEmpty();
     }
 }

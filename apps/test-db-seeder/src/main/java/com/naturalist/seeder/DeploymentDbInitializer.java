@@ -57,7 +57,7 @@ public final class DeploymentDbInitializer {
 
         try (HikariDataSource dataSource = new HikariDataSource(config)) {
             switch (stateOf(dataSource)) {
-                case INITIALIZED -> System.out.println("Database already initialized; nothing to do.");
+                case INITIALIZED -> System.out.println("Database already initialized; conforming photos.");
                 case NOT_EMPTY -> throw new IllegalStateException(
                         "Refusing to initialize: the database holds tables but no " + MARKER_TABLE
                                 + " record, so it is either live data or a failed earlier run. Nothing was changed.");

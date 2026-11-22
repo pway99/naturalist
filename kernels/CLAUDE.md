@@ -237,13 +237,30 @@ and the original is kept nowhere. The tile is always a JPEG. Both are written fr
 so metadata is gone from each. `read(..., TILE)` never falls back to the photo: a missing tile is
 observed (`tilePresent`, WARN) and answered empty. `requireStorable` refuses, through the Observer
 (an `InvariantViolationException` naming `headerDecodes` or `pixels`), an upload whose header does not
-decode or declares more than 100,000,000 pixels; it reads the header only and writes nothing, so the insects commands and
-controller call it before any identification charge. `store` runs its decode, re-encodes and both writes
-under the `image.store.write` bulkhead (2 concurrent, 2 s wait) and timeout (10 s, `upload = true`); a
-failed or timed-out store removes both files. `FilesystemImageStore.conform(space)` backfills a space to
+decode or declares more than 100,000,000 pixels; it reads the header only and writes nothing, so the insects
+controller (identify and add-photo) and the identify command call it before any charge. A body that does not
+decode passes it and is refused by `store` itself with the port's `ImageRefusedException` (an
+`InvariantViolationException` subtype, violation `FilesystemImageStore.store.decodable`, nothing written).
+That is a refusal of the user's photo, counted once at WARN (`decodable`); `PhotoScaler.fitJpeg` throws an
+`IllegalArgumentException` for a body that does not decode and does not count it. A decoded image that `fitJpeg`
+cannot draw upright or re-encode is a fault: a `ReencodeFailedException` (package-private, an
+`IllegalStateException`), noticed at ERROR (`fitJpeg.encoded`), which `store` propagates (a 500) and which stops a
+`conform` run, as a failed read or write does, wrapped once more to name the file. The outer catches pass only that
+type through uncounted; any other `IllegalStateException` (a cancelled bulkhead permit wait) is counted as
+`stored` / `conformed`.
+Callers map only that subtype to a bad photo: any other `InvariantViolationException` from the pipeline
+is a fault and surfaces as one (`InsectsControllerPipelineInvariantTest`). Store refusals are mapped before any charge: the identify
+command stores the upload before it reserves the budget (and deletes it again on a budget refusal or a later
+failure), so a refused photo or a full write bulkhead costs no identification; the controller answers a store
+refusal with `?error=image`, a full write bulkhead with `?limit=BUSY` on identify and `?error=busy` on
+add-photo. `store` runs its decode, re-encodes and both writes under the `image.store.write` bulkhead
+(2 concurrent, 2 s wait) and timeout (10 s, `upload = true`). Its writes are atomic: each file goes to a
+`.partial-` temp file in `tiles/` (the photo's too, deliberately: `conform` lists only the space directory, so
+a temp file is never taken for a photo) and is moved into place with `ATOMIC_MOVE` (the helper `conform`
+shares), the tile before the photo; a failed or timed-out store removes both files and any temp file. `FilesystemImageStore.conform(space)` backfills a space to
 what `store` would have written (downscales any photo over 1024 px in place under its own name, writes
-every missing tile, leaves an undecodable file alone at WARN) and returns a `ConformReport(downscaled,
-tiled, unchanged)`; it is idempotent, and the seeder and `db-init` run it for `insects` and `plants` on
+every missing tile, leaves an undecodable file alone at WARN and names it in the report, skips a file deleted
+mid-run as a swallowed failure) and returns a `ConformReport(downscaled, tiled, unchanged, undecodable)`; it is idempotent, and the seeder and `db-init` run it for `insects` and `plants` on
 every run.
 
 **Location privacy.** Photo metadata and exact location never persist. `ImageUpload.gps()` reads

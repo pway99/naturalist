@@ -17,6 +17,7 @@
 @param boolean imageError = false
 @param boolean notesError = false
 @param boolean areaError = false
+@param boolean busyError = false
 
 !{var insect = page.insect();}
 !{var species = insect.species().info();}
@@ -116,6 +117,9 @@
         @endif
         @if(areaError)
             <p class="error">The area could not be read; the photo was not added.</p>
+        @endif
+        @if(busyError)
+            <p class="error">Too many photos are being saved right now; please try again in a few seconds.</p>
         @endif
         @if(notesError)
             <p class="error">Notes can be at most ${com.naturalist.observation.OrganismObservation.MAX_NOTES_LENGTH} characters; nothing was saved.</p>

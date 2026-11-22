@@ -64,9 +64,9 @@ import com.naturalist.observation.OrganismObservation;
 import com.naturalist.observation.Identification;
 
 /**
- * Orchestrates the full insect identification flow: rate gate → bulkhead → budget
- * reservation → store the upload → vision identification → authority enrichment (best-effort)
- * → parent rank enrichment → feature resolution → citation creation →
+ * Orchestrates the full insect identification flow: storable check → rate gate → bulkhead →
+ * store the upload → budget reservation → vision identification → authority enrichment
+ * (best-effort) → parent rank enrichment → feature resolution → citation creation →
  * transactional persistence. All external calls (vision, authority lookup,
  * content fetch, text generation) complete before the transaction boundary.
  * The transaction does pure DB writes.
@@ -78,8 +78,10 @@ import com.naturalist.observation.Identification;
  * then caps how many identifications run at once; its permit is held for the rest of the
  * call and released whether it returns or throws, and a full bulkhead also refuses before
  * any budget is reserved. All three gates surface as {@link IdentificationRefused} (api
- * vocabulary) and run before the upload is stored, so a refused call stores nothing; a
- * failure at any later stage deletes the stored upload.
+ * vocabulary). The rate gate and the bulkhead run before the upload is stored, so a call they
+ * refuse stores nothing; the budget reservation runs after the store, so a photo the store
+ * refuses, or a full store-write bulkhead (refused {@code BUSY}), costs no identification; a
+ * budget refusal or a failure at any later stage deletes the stored upload.
  *
  * <p>Before any gate, the observation's {@link GridCell} area is resolved from the claimed cell
  * or the upload's EXIF fix and the upload is stripped of its metadata; only the stripped upload
@@ -884,29 +886,28 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     /** Stage 0c onward, run while holding a {@code vision.identification} bulkhead permit. */
     private InsectRankName reserveStoreAndCatalogue(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist,
                                                     @Nullable String notes, @Nullable GridCell area) {
-        // 0c. BUDGET RESERVATION -- refuses before any vision spend; nothing stored
+        // 0c. STORE THE UPLOAD -- before the budget, so a refused photo or a full write bulkhead costs nothing
+        FileName storedFileName = imageStore.store(SPACE, upload);
+        MethodObserver methodObserver = observer.forMethod("reserveStoreAndCatalogue");
+
+        // 0d. BUDGET RESERVATION -- refuses before any vision spend; the stored upload is deleted if a stage refuses or fails
         try {
             budget.reserve(naturalist);
         } catch (BudgetExceededException over) {
-            throw refusal(naturalist, "withinBudget", new IdentificationRefused(
+            // the upload goes first, so a refusal whose usage event fails to write still leaves no file behind
+            IdentificationRefused overBudget = discardStored(methodObserver, storedFileName, new IdentificationRefused(
                     IdentificationRefused.Reason.BUDGET_EXHAUSTED, over.limitKind().name(), over.resetAt()));
+            throw refusal(naturalist, "withinBudget", overBudget);
+        } catch (RuntimeException e) {
+            methodObserver.noticeError("reserved", e, Handling.RETHROWN);
+            throw discardStored(methodObserver, storedFileName, e);
         }
 
-        // 0d. STORE THE UPLOAD -- deleted again if any later stage fails
-        FileName storedFileName = imageStore.store(SPACE, upload);
-        MethodObserver methodObserver = observer.forMethod("reserveStoreAndCatalogue");
         try {
             return catalogue(upload, metadata, naturalist, notes, area, storedFileName);
         } catch (RuntimeException e) {
             methodObserver.noticeError("catalogued", e, Handling.RETHROWN);
-            try {
-                imageStore.delete(SPACE, storedFileName);
-            } catch (RuntimeException deleteFailure) {
-                // a file left behind fills the disk: counted, and carried on the failure being thrown
-                methodObserver.noticeError("storedDiscarded", deleteFailure, Handling.SWALLOWED);
-                e.addSuppressed(deleteFailure);
-            }
-            throw e;
+            throw discardStored(methodObserver, storedFileName, e);
         }
     }
 
@@ -916,5 +917,20 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             case "SPECIES", "GENUS", "FAMILY", "ORDER" -> true;
             default -> false;
         };
+    }
+
+    /**
+     * Deletes the upload stored for an identification that was refused or failed after the store, and returns
+     * {@code failure} for the caller to throw. A delete that fails is counted and carried on {@code failure}, since a
+     * file left behind fills the disk.
+     */
+    private <E extends RuntimeException> E discardStored(MethodObserver methodObserver, FileName storedFileName, E failure) {
+        try {
+            imageStore.delete(SPACE, storedFileName);
+        } catch (RuntimeException deleteFailure) {
+            methodObserver.noticeError("storedDiscarded", deleteFailure, Handling.SWALLOWED);
+            failure.addSuppressed(deleteFailure);
+        }
+        return failure;
     }
 }

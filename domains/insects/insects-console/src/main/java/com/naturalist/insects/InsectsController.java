@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import com.naturalist.observation.GridCell;
+import com.naturalist.observation.ImageRefusedException;
 import com.naturalist.observation.ImageStore;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.ImageVariant;
@@ -488,8 +489,8 @@ public class InsectsController {
                     me.get(), notes, area);
             return "redirect:/insects/" + rankName.value();
         } catch (com.naturalist.identification.IdentificationRefused refused) {
-            // The rate gate and the budget both live behind insectCommand.identification()
-            // (InsectIdentificationCommandImpl), ahead of the store and any vision call.
+            // The rate gate, the bulkheads and the budget all live behind insectCommand.identification()
+            // (InsectIdentificationCommandImpl), ahead of any vision call; a full store-write bulkhead is BUSY.
             // "RATE" is a UI-only query-param string, not a usage.LimitKind; a budget refusal's
             // detail is the exhausted LimitKind's name (DAILY / MONTHLY ...).
             return switch (refused.reason()) {
@@ -497,6 +498,9 @@ public class InsectsController {
                 case BUDGET_EXHAUSTED -> "redirect:/insects/identify?limit=" + refused.detail();
                 case BUSY -> "redirect:/insects/identify?limit=BUSY";
             };
+        } catch (ImageRefusedException unstorable) {
+            // the store refused the photo's body (counted there), before any budget was reserved -- nothing is stored
+            return "redirect:/insects/identify?error=image";
         }
     }
 
@@ -666,6 +670,9 @@ public class InsectsController {
         if ("notes".equals(error)) {
             model.addAttribute("notesError", true);
         }
+        if ("busy".equals(error)) {
+            model.addAttribute("busyError", true);
+        }
         model.addAttribute("page", rankPage.get());
         model.addAttribute("lens", collectionLensOn(request) && viewer.isPresent());
         model.addAttribute("glossaryLinker", glossaryLinker);
@@ -734,7 +741,18 @@ public class InsectsController {
             // A valid JPEG/PNG/WebP the store cannot use (undecodable, or a declared pixel bomb) -- nothing is stored.
             return "redirect:/insects/" + name + "?error=image";
         }
-        insectCommand.photos().add(species, upload, me.orElse(null), notes, location, area);
+        try {
+            insectCommand.photos().add(species, upload, me.orElse(null), notes, location, area);
+        } catch (ImageRefusedException unstorable) {
+            // the store refused the photo's body (counted there) -- nothing is stored
+            return "redirect:/insects/" + name + "?error=image";
+        } catch (BulkheadFullException busy) {
+            // the store's write cap is full -- a refusal like identify's notBusy: nothing is stored, the naturalist tries again
+            methodObserver.state(i -> i
+                    .isTrue(false, "notBusy"))
+                    .observe(Level.WARN);
+            return "redirect:/insects/" + name + "?error=busy";
+        }
         return "redirect:/insects/" + name;
     }
 

@@ -184,21 +184,33 @@ Decided by Pat, 2026-11-11.
 
 `InsectIdentificationCommandImpl.reserveStoreAndCatalogue` runs, in order:
 1. the `vision.identification` bulkhead;
-2. `budget.reserve(naturalist)`;
-3. `imageStore.store(...)`;
+2. `imageStore.store(...)`;
+3. `budget.reserve(naturalist)`;
 4. the vision call.
 
-`store` can now refuse a photo: undecodable, or over the pixel ceiling. A photo the server can't
-use must not use up an identification. So, **before** `budget.reserve`, check that the upload is
-decodable and within the pixel ceiling, and refuse it the way any invalid upload is refused
-today (`?error=image`).
+(Before any of them the rate gate runs, and the controller and command call the header-only
+`requireStorable`, so a header that does not decode or declares more than 100,000,000 pixels is
+refused with `?error=image` before anything is stored.)
 
-The builder decides how. For example, the check can be a port method that reads only the header
-and declared dimensions, and writes nothing.
+`store` can refuse a photo: its body does not decode. Because `store` runs before
+`budget.reserve`, a refused photo costs no identification: the controller answers it with
+`?error=image`. The refusal is counted once, at WARN (`FilesystemImageStore.store.decodable`;
+Pat, 2026-11-22).
 
-`store` refusing for a different reason (its bulkhead full, its timeout, or an I/O failure) is
-an infrastructure failure, not a bad photo. It follows whatever the command does today for a
-failure after the reservation. The builder states which in the plan.
+`store` failing for any other reason is infrastructure, not a bad photo, and it also costs no
+identification, since nothing was reserved yet:
+- a full `image.store.write` bulkhead is a `BUSY` refusal, recorded as an `identification-refused`
+  usage event like a full vision bulkhead (Pat, 2026-11-22), and answered `?limit=BUSY`;
+- a write timeout or an I/O failure is a 500, counted where it happened, with no charge;
+- a decoded image the store cannot re-encode is a fault (`PhotoScaler.fitJpeg.encoded`, ERROR), a
+  500 with no charge.
+
+A budget refusal, or any failure after the store, deletes the stored upload.
+
+**The cost of this order (Pat, 2026-11-22, accepted).** An over-budget call now decodes,
+re-encodes and writes the upload before its budget refusal, then deletes it. That extra work is
+bounded by the rate gate (one permit per call) and by the `vision.identification` bulkhead, which
+both run before the store.
 
 The photo-add command (`InsectPhotoCommandImpl`) has no budget, so it needs no reordering.
 

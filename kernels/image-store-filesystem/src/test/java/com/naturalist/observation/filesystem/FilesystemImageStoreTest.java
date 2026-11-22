@@ -3,6 +3,7 @@ package com.naturalist.observation.filesystem;
 import com.naturalist.data.FileName;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.observability.Level;
+import com.naturalist.observation.ImageRefusedException;
 import com.naturalist.observation.ImageUpload;
 import com.naturalist.observation.ImageVariant;
 import com.naturalist.observation.StoredImage;
@@ -518,7 +519,7 @@ class FilesystemImageStoreTest {
 
         FilesystemImageStore.ConformReport report = store.conform("insects");
 
-        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(1, 1, 0));
+        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(1, 1, 0, List.of()));
         BufferedImage rewritten = decode(Files.readAllBytes(photo));
         assertThat(rewritten.getWidth()).isEqualTo(1024);
         assertThat(rewritten.getHeight()).isEqualTo(768);
@@ -538,7 +539,7 @@ class FilesystemImageStoreTest {
 
         FilesystemImageStore.ConformReport report = store.conform("insects");
 
-        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(0, 1, 0));
+        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(0, 1, 0, List.of()));
         assertThat(Files.readAllBytes(photo)).isEqualTo(bytes);
         BufferedImage tile = decode(store.read("insects", FileName.of("seed.jpg"), ImageVariant.TILE).orElseThrow().readAllBytes());
         assertThat(tile.getWidth()).isEqualTo(640);
@@ -566,7 +567,7 @@ class FilesystemImageStoreTest {
 
         FilesystemImageStore.ConformReport report = store.conform("insects");
 
-        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(0, 0, 2));
+        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(0, 0, 2, List.of()));
         Map<Path, byte[]> after = contents(root.resolve("insects"));
         assertThat(after.keySet()).isEqualTo(before.keySet());
         assertThat(after.keySet()).hasSize(4);
@@ -589,7 +590,7 @@ class FilesystemImageStoreTest {
             Metrics.removeRegistry(meters);
         }
 
-        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(1, 1, 1));
+        assertThat(report).isEqualTo(new FilesystemImageStore.ConformReport(1, 1, 1, List.of("junk.jpg")));
         assertThat(Files.readAllBytes(junk)).isEqualTo(JPEG);
         assertThat(Files.exists(root.resolve("insects/tiles/junk.jpg"))).isFalse();
         assertThat(Files.isRegularFile(root.resolve("insects/tiles/large.jpg"))).isTrue();
@@ -600,5 +601,209 @@ class FilesystemImageStoreTest {
                 .counter();
         assertThat(skipped).isNotNull();
         assertThat(skipped.count()).isEqualTo(1);
+    }
+
+    /**
+     * A photo whose header reads but whose body does not decode passes {@code requireStorable}, which reads the header
+     * only, and is then refused by {@code store} like any other unstorable upload: an {@code InvariantViolationException},
+     * and nothing left behind, no photo, no tile and no temporary file.
+     */
+    @Test
+    void store_refusesAPhotoWhoseBodyDoesNotDecodeAndWritesNothing() throws IOException {
+        ImageUpload corrupt = ImageUpload.of(ImageFixtures.corruptBodyPng());
+        assertThatCode(() -> store.requireStorable(corrupt)).doesNotThrowAnyException();
+
+        assertThatThrownBy(() -> store.store("insects", corrupt)).isInstanceOf(ImageRefusedException.class);
+
+        assertNothingWritten();
+    }
+
+    /**
+     * {@link Resilience#noOp()} for every primitive except the {@code bulkhead} of {@code strategy}, which deletes
+     * {@code victim} before it runs the work: a file another process removes while a conform is part way through.
+     */
+    private static Resilience deletingOnEntry(String strategy, Path victim) {
+        Resilience noOp = Resilience.noOp();
+        Bulkhead deleting = new Bulkhead() {
+            @Override
+            public <T> T execute(Supplier<T> supplier) {
+                try {
+                    Files.deleteIfExists(victim);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+                return supplier.get();
+            }
+
+            @Override
+            public void execute(Runnable runnable) {
+                execute(() -> {
+                    runnable.run();
+                    return null;
+                });
+            }
+        };
+        return (Resilience) Proxy.newProxyInstance(Resilience.class.getClassLoader(), new Class<?>[]{Resilience.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("bulkhead") && strategy.equals(args[0])) return deleting;
+                    try {
+                        return method.invoke(noOp, args);
+                    } catch (InvocationTargetException e) {
+                        throw e.getCause();
+                    }
+                });
+    }
+
+    /**
+     * A photo removed between the listing and its read is skipped, counted unchanged and noticed as a swallowed failure,
+     * never thrown: the rest of the space is still conformed and the run carries on.
+     */
+    @Test
+    void conform_skipsAPhotoThatVanishesPartWay() throws IOException {
+        placed("a-large.jpg", image("jpg", 2048, 1536));
+        Path vanishing = placed("b-small.jpg", image("jpg", 800, 600));
+        var racing = new FilesystemImageStore(root, deletingOnEntry(FilesystemImageStore.WRITE_STRATEGY, vanishing));
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        FilesystemImageStore.ConformReport report;
+        try {
+            report = racing.conform("insects");
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
+
+        assertThat(report.downscaled()).isEqualTo(1);
+        assertThat(report.tiled()).isEqualTo(1);
+        assertThat(report.unchanged()).isEqualTo(1);
+        assertThat(Files.exists(vanishing)).isFalse();
+        var skipped = meters.find("naturalist.invariant.check")
+                .tag("name", "FilesystemImageStore.conform.read")
+                .tag("kind", "caught")
+                .tag("handling", "swallowed")
+                .counter();
+        assertThat(skipped).as("vanished photo count").isNotNull();
+        assertThat(skipped.count()).as("vanished photo count").isEqualTo(1.0);
+    }
+
+    /** Each file a store writes is moved into place from a temporary one, and no temporary file is left once it returns. */
+    @Test
+    void store_leavesOnlyThePhotoAndItsTile() throws IOException {
+        FileName name = store.store("insects", ImageUpload.of(image("jpg", 3000, 2000)));
+
+        try (Stream<Path> files = Files.walk(root.resolve("insects"))) {
+            assertThat(files.filter(Files::isRegularFile).map(p -> root.resolve("insects").relativize(p).toString()))
+                    .containsExactlyInAnyOrder(name.value(), "tiles/" + name.value());
+        }
+    }
+
+    /**
+     * A user's photo whose body does not decode is a refusal, not a fault: it is counted once, as {@code decodable} at
+     * {@code WARN}, and nothing along the way counts it at {@code ERROR}.
+     */
+    @Test
+    void store_countsAnUndecodableBodyOnceAsARefusal() {
+        ImageUpload corrupt = ImageUpload.of(ImageFixtures.corruptBodyPng());
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            assertThatThrownBy(() -> store.store("insects", corrupt)).isInstanceOf(ImageRefusedException.class);
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
+
+        var refused = meters.find("naturalist.invariant.check")
+                .tag("name", "FilesystemImageStore.store.decodable")
+                .tag("method", "store")
+                .tag("outcome", "violated")
+                .tag("level", Level.WARN.tagValue())
+                .counter();
+        assertThat(refused).as("refusal count").isNotNull();
+        assertThat(refused.count()).as("refusal count").isEqualTo(1.0);
+        assertThat(meters.find("naturalist.invariant.check")
+                .tag("level", Level.ERROR.tagValue())
+                .counters()).as("faults counted").filteredOn(counter -> counter.count() > 0).isEmpty();
+    }
+
+    /**
+     * {@link Resilience#noOp()} for every primitive except the {@code bulkhead} of {@code strategy}, which throws
+     * {@code failure} instead of running the work: a primitive failing in a way the store did not cause, such as a permit
+     * wait cut short by an interrupt (Resilience4j's {@code AcquirePermissionCancelledException}, an
+     * {@code IllegalStateException}).
+     */
+    private static Resilience throwingBulkhead(String strategy, RuntimeException failure) {
+        Resilience noOp = Resilience.noOp();
+        Bulkhead throwing = new Bulkhead() {
+            @Override
+            public <T> T execute(Supplier<T> supplier) {
+                throw failure;
+            }
+
+            @Override
+            public void execute(Runnable runnable) {
+                throw failure;
+            }
+        };
+        return (Resilience) Proxy.newProxyInstance(Resilience.class.getClassLoader(), new Class<?>[]{Resilience.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("bulkhead") && strategy.equals(args[0])) return throwing;
+                    try {
+                        return method.invoke(noOp, args);
+                    } catch (InvocationTargetException e) {
+                        throw e.getCause();
+                    }
+                });
+    }
+
+    /**
+     * An {@code IllegalStateException} nothing inside the store counted (here, from the write bulkhead) is counted once by
+     * {@code store} as {@code stored}, rethrown, and nothing is left behind: only the re-encode fault {@code fitJpeg}
+     * already counted passes through uncounted.
+     */
+    @Test
+    void store_countsAnIllegalStateFromTheWriteBulkheadAsAStoreFault() throws IOException {
+        var failure = new IllegalStateException("permit wait interrupted");
+        var failing = new FilesystemImageStore(root, throwingBulkhead(FilesystemImageStore.WRITE_STRATEGY, failure));
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            assertThatThrownBy(() -> failing.store("insects", ImageUpload.of(PHOTO))).isSameAs(failure);
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
+
+        var stored = meters.find("naturalist.invariant.check")
+                .tag("name", "FilesystemImageStore.store.stored")
+                .tag("kind", "caught")
+                .tag("handling", "rethrown")
+                .counter();
+        assertThat(stored).as("store fault count").isNotNull();
+        assertThat(stored.count()).as("store fault count").isEqualTo(1.0);
+        assertNothingWritten();
+    }
+
+    /**
+     * An {@code IllegalStateException} nothing inside conform counted (here, from the write bulkhead) is counted once as
+     * {@code conformed} and stops the run: only the re-encode fault {@code fitJpeg} already counted passes through uncounted.
+     */
+    @Test
+    void conform_countsAnIllegalStateFromTheWriteBulkheadAsAConformFault() throws IOException {
+        placed("large.jpg", image("jpg", 2048, 1536));
+        var failure = new IllegalStateException("permit wait interrupted");
+        var failing = new FilesystemImageStore(root, throwingBulkhead(FilesystemImageStore.WRITE_STRATEGY, failure));
+        var meters = new SimpleMeterRegistry();
+        Metrics.addRegistry(meters);
+        try {
+            assertThatThrownBy(() -> failing.conform("insects")).isSameAs(failure);
+        } finally {
+            Metrics.removeRegistry(meters);
+        }
+
+        var conformed = meters.find("naturalist.invariant.check")
+                .tag("name", "FilesystemImageStore.conform.conformed")
+                .tag("kind", "caught")
+                .tag("handling", "rethrown")
+                .counter();
+        assertThat(conformed).as("conform fault count").isNotNull();
+        assertThat(conformed.count()).as("conform fault count").isEqualTo(1.0);
     }
 }
