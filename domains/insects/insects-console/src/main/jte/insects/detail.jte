@@ -18,6 +18,7 @@
 @param boolean notesError = false
 @param boolean areaError = false
 @param boolean busyError = false
+@param boolean observationError = false
 
 !{var insect = page.insect();}
 !{var species = insect.species().info();}
@@ -96,7 +97,8 @@
         notesAction = "/insects/" + species.name().value() + "/notes",
         returnPath = "/insects/" + species.name().value(),
         csrfParam = _csrfParam,
-        csrfToken = _csrfToken)
+        csrfToken = _csrfToken,
+        observationError = observationError)
 
     @if(lens && images.isEmpty())
         <p class="collection-empty">No photos of yours here yet — add one below to start your collection.</p>

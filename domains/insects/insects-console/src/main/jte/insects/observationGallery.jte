@@ -14,12 +14,16 @@
 @param String csrfParam = null
 @param String csrfToken = null
 @param boolean notesError = false
+@param boolean observationError = false
 
 @if(!images.isEmpty())
     <section>
         <h2>Photo Gallery</h2>
         @if(notesError)
             <p class="error">Notes can be at most ${OrganismObservation.MAX_NOTES_LENGTH} characters; nothing was saved.</p>
+        @endif
+        @if(observationError)
+            <p class="error">That observation could not be found; nothing was saved.</p>
         @endif
         <div class="image-gallery">
             @for(var img : images)

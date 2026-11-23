@@ -161,6 +161,11 @@ Where the body used the String (`"redirect:/insects/" + name`), it uses `name.va
   Without it, a name key read only through the subtype's `@JsonCreator` (which step 2 removes) and an id or
   numeric key could not be read at all (spike, Jackson 2.21.5). *My call:* an unreadable id or numeric key is a
   `null` key, like a value.
+- A refused edge says so (B1; Pat, 2026-11-22): a GET page whose name is not a valid slug, or a
+  valid one the catalog does not hold, answers a 404 not-found page (both counted: `name`,
+  `nameFound`); a post redirects with an error its target page shows (`?error=name` on the species
+  list, `?error=observation` beside the notes form). Supersedes "redirect as for an unknown name"
+  in Edges above.
 - *My call:* `invalidName` is a per-controller helper, like `notesTooLong`, rather than a shared
   console module.
 - *My call:* the deserializer observes nothing for an invalid value. A missing factory (a defect

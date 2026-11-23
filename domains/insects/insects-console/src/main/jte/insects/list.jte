@@ -12,12 +12,16 @@
 @param CladeTrail cladeTrail = null
 @param List<AncestorIntro> ancestorIntros = List.of()
 @param boolean mine = false
+@param boolean nameError = false
 
 @template.layout.page(title = "Insect Species", content = @`
     @template.insects.nav(breadcrumb = breadcrumb, cladeTrail = cladeTrail)
     @template.insects.ancestorIntros(intros = ancestorIntros)
 
     <h1>Insect Species</h1>
+    @if(nameError)
+        <p class="error">That is not the name of an insect in the catalog; nothing was saved.</p>
+    @endif
     <p>Insect species documented at Oak Vista.</p>
 
     <div class="entity-grid">
