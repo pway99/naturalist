@@ -35,7 +35,7 @@ class PlantObservationEntityRepositoryRdbms
     private final PlantObservationTransaction transaction;
 
     PlantObservationEntityRepositoryRdbms(PlantObservationMapper mapper,
-            PlantObservationTransaction transaction) {
+                                          PlantObservationTransaction transaction) {
         this.mapper = mapper;
         this.transaction = transaction;
     }

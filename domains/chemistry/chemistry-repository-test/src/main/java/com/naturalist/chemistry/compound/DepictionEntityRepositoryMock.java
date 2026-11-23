@@ -22,7 +22,7 @@ class DepictionEntityRepositoryMock
     public Optional<CompoundDepiction> getByCompoundName(CompoundName compoundName) {
         MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
         getByCompoundName.arguments(i -> i
-                        .identifier(compoundName, "compoundName"))
+                .identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
         Optional<CompoundDepiction> result = testEntitySource().entityStream()
                 .filter(depiction -> depiction.compoundName().equals(compoundName))

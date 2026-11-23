@@ -26,8 +26,8 @@ import java.util.function.Consumer;
  * ({@code taxonomic_family} → {@code taxonomicFamily}). {@code id} is a DB-generated identity.
  */
 @DboSchema(table = "insect_family", primaryKey = "id", unique = {"name"},
-           foreignKeys = @Fk(columns = "order_id", references = "insect_order(id)"),
-           entity = InsectFamilyInfo.class)
+        foreignKeys = @Fk(columns = "order_id", references = "insect_order(id)"),
+        entity = InsectFamilyInfo.class)
 final class InsectFamilyDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;

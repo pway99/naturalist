@@ -19,25 +19,25 @@ interface UsageAlertMapper {
     UsageAlertDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT id, counter, scope, kind, period, message, at, emailed, acknowledged FROM usage_alert
-        WHERE id IN <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, counter, scope, kind, period, message, at, emailed, acknowledged FROM usage_alert
+            WHERE id IN <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<UsageAlertDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM usage_alert ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     List<UsageAlertDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (SELECT 1 FROM usage_alert ORDER BY id OFFSET #{skip} LIMIT #{window}) t
-        """)
+            SELECT count(*) FROM (SELECT 1 FROM usage_alert ORDER BY id OFFSET #{skip} LIMIT #{window}) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select("""
-        SELECT id, counter, scope, kind, period, message, at, emailed, acknowledged FROM usage_alert
-        WHERE counter = #{counter} AND scope = #{scope} AND kind = #{kind} AND period = #{period}
-        """)
+            SELECT id, counter, scope, kind, period, message, at, emailed, acknowledged FROM usage_alert
+            WHERE counter = #{counter} AND scope = #{scope} AND kind = #{kind} AND period = #{period}
+            """)
     UsageAlertDbo selectDedupKey(@Param("counter") String counter, @Param("scope") String scope,
                                  @Param("kind") String kind, @Param("period") String period);
 
@@ -48,15 +48,15 @@ interface UsageAlertMapper {
     List<UsageAlertDbo> selectUnsent();
 
     @Insert("""
-        INSERT INTO usage_alert (id, counter, scope, kind, period, message, at, emailed, acknowledged)
-        VALUES (#{id}::uuid, #{counter}, #{scope}, #{kind}, #{period}, #{message}, #{at}, #{emailed}, #{acknowledged})
-        """)
+            INSERT INTO usage_alert (id, counter, scope, kind, period, message, at, emailed, acknowledged)
+            VALUES (#{id}::uuid, #{counter}, #{scope}, #{kind}, #{period}, #{message}, #{at}, #{emailed}, #{acknowledged})
+            """)
     void insert(UsageAlertDbo dbo);
 
     @Update("""
-        UPDATE usage_alert SET counter = #{counter}, scope = #{scope}, kind = #{kind}, period = #{period},
-            message = #{message}, at = #{at}, emailed = #{emailed}, acknowledged = #{acknowledged}
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE usage_alert SET counter = #{counter}, scope = #{scope}, kind = #{kind}, period = #{period},
+                message = #{message}, at = #{at}, emailed = #{emailed}, acknowledged = #{acknowledged}
+            WHERE id = #{id}::uuid
+            """)
     int updateById(UsageAlertDbo dbo);
 }

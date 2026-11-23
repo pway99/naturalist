@@ -29,9 +29,9 @@ class InsectImageQueryImpl
     private final InsectQuery.FamilyQuery familyQuery;
 
     InsectImageQueryImpl(InsectRepository.ImageRepository repository,
-                   InsectQuery.SpeciesQuery speciesQuery,
-                   InsectQuery.GenusQuery genusQuery,
-                   InsectQuery.FamilyQuery familyQuery) {
+                         InsectQuery.SpeciesQuery speciesQuery,
+                         InsectQuery.GenusQuery genusQuery,
+                         InsectQuery.FamilyQuery familyQuery) {
         super(repository);
         this.speciesQuery = speciesQuery;
         this.genusQuery = genusQuery;
@@ -41,7 +41,7 @@ class InsectImageQueryImpl
     @Override
     public ImageCollection findByNameSet(Set<InsectImageId> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return ImageCollection.of(repository().getByEntityNameSet(names));
     }
@@ -142,12 +142,14 @@ class InsectImageQueryImpl
         Set<InsectRankName> ranks = new LinkedHashSet<>();
         ranks.add(rankName);
         switch (rankName) {
-            case InsectSpeciesName _ -> { /* species is the leaf — no descendants */ }
-            case InsectSubspeciesName _ -> { /* no entity yet */ }
+            case InsectSpeciesName _ -> { /* species is the leaf — no descendants */
+            }
+            case InsectSubspeciesName _ -> { /* no entity yet */
+            }
             case InsectGenusName genusName ->
-                    speciesQuery.forGenusName(genusName).stream()
-                            .map(InsectSpeciesInfo::name)
-                            .forEach(ranks::add);
+                speciesQuery.forGenusName(genusName).stream()
+                        .map(InsectSpeciesInfo::name)
+                        .forEach(ranks::add);
             case InsectFamilyName familyName -> {
                 Set<InsectGenusName> genusNames = genusQuery.forFamilyName(familyName).stream()
                         .map(InsectGenusInfo::name)

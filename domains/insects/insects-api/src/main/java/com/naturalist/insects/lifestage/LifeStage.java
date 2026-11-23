@@ -39,7 +39,8 @@ public sealed interface LifeStage extends NamedEntity<LifeStageName>
 
     StageHabitat habitat();
 
-    @Nullable StageChemistryRole chemistryRole();
+    @Nullable
+    StageChemistryRole chemistryRole();
 
     Description description();
 }

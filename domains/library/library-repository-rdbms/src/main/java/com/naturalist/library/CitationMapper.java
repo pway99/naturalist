@@ -20,47 +20,47 @@ import java.util.List;
 interface CitationMapper {
 
     String COLUMNS = """
-        id, name, kind, title, author, year, last_modified,
-        authority_source_id, authority_source_display_name, authority_url
-        """;
+            id, name, kind, title, author, year, last_modified,
+            authority_source_id, authority_source_display_name, authority_url
+            """;
 
     @Select("SELECT " + COLUMNS + " FROM citation WHERE name = #{name}")
     CitationDbo selectByName(String name);
 
     @Select("""
-        <script>
-        SELECT id, name, kind, title, author, year, last_modified,
-               authority_source_id, authority_source_display_name, authority_url
-        FROM citation WHERE name IN
-        <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, name, kind, title, author, year, last_modified,
+                   authority_source_id, authority_source_display_name, authority_url
+            FROM citation WHERE name IN
+            <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
+            </script>
+            """)
     List<CitationDbo> selectByNameSet(@Param("names") Collection<String> names);
 
     @Select("SELECT " + COLUMNS + " FROM citation ORDER BY name LIMIT #{limit} OFFSET #{offset}")
     List<CitationDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM citation ORDER BY name OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM citation ORDER BY name OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Insert("""
-        INSERT INTO citation (name, kind, title, author, year, last_modified,
-            authority_source_id, authority_source_display_name, authority_url)
-        VALUES (#{name}, #{kind}, #{title}, #{author}, #{year}, #{lastModified},
-            #{authoritySourceId}, #{authoritySourceDisplayName}, #{authorityUrl})
-        """)
+            INSERT INTO citation (name, kind, title, author, year, last_modified,
+                authority_source_id, authority_source_display_name, authority_url)
+            VALUES (#{name}, #{kind}, #{title}, #{author}, #{year}, #{lastModified},
+                #{authoritySourceId}, #{authoritySourceDisplayName}, #{authorityUrl})
+            """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(CitationDbo dbo);
 
     @Update("""
-        UPDATE citation SET kind = #{kind}, title = #{title}, author = #{author}, year = #{year},
-            last_modified = #{lastModified}, authority_source_id = #{authoritySourceId},
-            authority_source_display_name = #{authoritySourceDisplayName}, authority_url = #{authorityUrl}
-        WHERE name = #{name}
-        """)
+            UPDATE citation SET kind = #{kind}, title = #{title}, author = #{author}, year = #{year},
+                last_modified = #{lastModified}, authority_source_id = #{authoritySourceId},
+                authority_source_display_name = #{authoritySourceDisplayName}, authority_url = #{authorityUrl}
+            WHERE name = #{name}
+            """)
     int updateByName(CitationDbo dbo);
 }

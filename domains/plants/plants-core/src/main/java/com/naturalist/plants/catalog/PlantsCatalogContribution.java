@@ -70,9 +70,9 @@ public class PlantsCatalogContribution implements CatalogContribution {
     private final PlantQuery.GenusQuery genera;
 
     public PlantsCatalogContribution(PlantQuery.SpeciesQuery plants,
-                                    PlantQuery.OrderQuery orders,
-                                    PlantQuery.FamilyQuery families,
-                                    PlantQuery.GenusQuery genera) {
+                                     PlantQuery.OrderQuery orders,
+                                     PlantQuery.FamilyQuery families,
+                                     PlantQuery.GenusQuery genera) {
         Observer.forClass(PlantsCatalogContribution.class)
                 .arguments("constructor", i -> i
                         .notNull(plants, "plants")

@@ -90,10 +90,10 @@ class UsageAlertEntityRepositoryRdbms
     public Optional<UsageAlert> findDedupKey(UsageCounterName counter, AlertScope scope, AlertKind kind, String period) {
         MethodObserver findDedupKey = observer().forMethod("findDedupKey");
         findDedupKey.arguments(i -> i
-                        .identifier(counter, "counter")
-                        .notNull(scope, "scope")
-                        .notNull(kind, "kind")
-                        .notBlank(period, "period"))
+                .identifier(counter, "counter")
+                .notNull(scope, "scope")
+                .notNull(kind, "kind")
+                .notBlank(period, "period"))
                 .throwWhenInvalid();
         Optional<UsageAlert> result = Optional.ofNullable(mapper.selectDedupKey(counter.value(), scope.name(), kind.name(), period))
                 .map(UsageAlertDbo::toEntity);

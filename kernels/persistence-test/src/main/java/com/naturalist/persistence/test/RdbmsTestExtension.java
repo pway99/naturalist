@@ -19,7 +19,8 @@ public final class RdbmsTestExtension implements BeforeEachCallback, AfterEachCa
 
     private final ThreadLocal<SqlSession> current = new ThreadLocal<>();
 
-    private RdbmsTestExtension() {}
+    private RdbmsTestExtension() {
+    }
 
     public static RdbmsTestExtension shared() {
         return new RdbmsTestExtension();

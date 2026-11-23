@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * and the drift validator checks it.
  */
 @DboSchema(table = "insect_functional_role", primaryKey = "id", unique = {"parent_name"},
-           entity = InsectFunctionalRole.class)
+        entity = InsectFunctionalRole.class)
 final class InsectFunctionalRoleDbo implements Dbo {
     String id;          // the InsectFunctionalRoleId's UUID as text; mapper casts it (::uuid)
     String parentRank;  // ORDER|FAMILY|GENUS|SPECIES|SUBSPECIES — parentName.rank().name()

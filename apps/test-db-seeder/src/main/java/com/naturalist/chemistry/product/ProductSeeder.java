@@ -15,7 +15,8 @@ import java.util.List;
  */
 public final class ProductSeeder {
 
-    private ProductSeeder() {}
+    private ProductSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<Product> products = database.getNamed(ProductTestEntitySource.class).entityStream().toList();

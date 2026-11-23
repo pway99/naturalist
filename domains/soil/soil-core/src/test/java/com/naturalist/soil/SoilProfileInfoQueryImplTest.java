@@ -14,7 +14,8 @@ class SoilProfileInfoQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired SoilProfileInfoQuery query;
+    @Wired
+    SoilProfileInfoQuery query;
 
     @Override
     public EntityQuery<SoilProfileName, SoilProfileInfo, SoilProfileInfoCollection> query() {

@@ -82,7 +82,7 @@ final class InsectObservationDbo implements Dbo {
         return c -> c
                 .notBlank(id, "id")
                 .notNull(observedBy, "observedBy").kebabFormat(observedBy, "observedBy")
-                    .maxLength(observedBy, 64, "observedBy")
+                .maxLength(observedBy, 64, "observedBy")
                 .notBlank(subjectRank, "subjectRank").maxLength(subjectRank, 16, "subjectRank")
                 .notNull(subject, "subject").kebabFormat(subject, "subject").maxLength(subject, 96, "subject")
                 .notNull(observedOn, "observedOn")

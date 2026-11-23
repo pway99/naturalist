@@ -75,9 +75,9 @@ final class InMemoryCatalog implements Catalog {
                     List<EntityReferences<?>> providers,
                     Resilience resilience) {
         observer.arguments("constructor", i -> i
-                        .notNull(contributions, "contributions")
-                        .notNull(providers, "providers")
-                        .notNull(resilience, "resilience"))
+                .notNull(contributions, "contributions")
+                .notNull(providers, "providers")
+                .notNull(resilience, "resilience"))
                 .throwWhenInvalid();
         Map<String, Set<EntityRef>> index = new HashMap<>();
         Set<String> slugs = new LinkedHashSet<>();

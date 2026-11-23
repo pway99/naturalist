@@ -18,7 +18,7 @@ class PlantProgramQueryImpl
     @Override
     public PlantProgramCollection findByNameSet(Set<PlantProgramName> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return PlantProgramCollection.of(repository().getByEntityNameSet(names));
     }
@@ -26,7 +26,7 @@ class PlantProgramQueryImpl
     @Override
     public PlantProgramCollection forPlantName(PlantRankName plantName) {
         observer().arguments("forPlantName", i -> i
-                        .identifier(plantName, "plantName"))
+                .identifier(plantName, "plantName"))
                 .throwWhenInvalid();
         return PlantProgramCollection.of(repository().getByPlantName(plantName));
     }

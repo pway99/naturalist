@@ -36,8 +36,8 @@ class PlantedZoneFactory {
 
     Optional<PlantedZone> buildBySubZoneName(ZoneName zoneName, SubZoneName subZoneName) {
         observer.arguments("buildBySubZoneName", i -> i
-                        .entityName(zoneName, "zoneName")
-                        .entityName(subZoneName, "subZoneName"))
+                .entityName(zoneName, "zoneName")
+                .entityName(subZoneName, "subZoneName"))
                 .throwWhenInvalid();
         return assemble(zoneName, subZoneName, plantingQuery.forSubZoneName(subZoneName));
     }

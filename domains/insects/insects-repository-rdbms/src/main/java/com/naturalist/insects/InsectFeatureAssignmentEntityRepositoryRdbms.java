@@ -27,7 +27,7 @@ import java.util.Set;
 @DomainService
 class InsectFeatureAssignmentEntityRepositoryRdbms
         extends AbstractEntityRepository<InsectFeatureAssignmentId,
-                OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>
+        OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>>
         implements InsectRepository.FeatureAssignmentRepository {
 
     private final InsectFeatureAssignmentMapper mapper;

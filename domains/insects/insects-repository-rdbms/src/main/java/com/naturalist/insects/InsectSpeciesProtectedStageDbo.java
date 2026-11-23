@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * (write). {@link LifeStageKind} round-trips as its {@code name()} / {@code valueOf}.
  */
 @DboSchema(table = "insect_species_protected_stage", primaryKey = "species_id,stage_kind",
-           foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
-           entity = InsectSpeciesInfo.class)
+        foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
+        entity = InsectSpeciesInfo.class)
 final class InsectSpeciesProtectedStageDbo implements Dbo {
     String speciesName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String stageKind;

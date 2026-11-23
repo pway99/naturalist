@@ -16,7 +16,8 @@ import javax.sql.DataSource;
  */
 final class SoilSeeding {
 
-    private SoilSeeding() {}
+    private SoilSeeding() {
+    }
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/soil.sql");

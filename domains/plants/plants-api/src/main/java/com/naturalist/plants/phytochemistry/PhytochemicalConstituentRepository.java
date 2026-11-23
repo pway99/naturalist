@@ -14,5 +14,6 @@ import java.util.List;
 interface PhytochemicalConstituentRepository extends EntityRepository<PhytochemicalConstituentName, PhytochemicalConstituent> {
 
     List<PhytochemicalConstituent> getByPlantName(PlantRankName plantRankName);
+
     List<PhytochemicalConstituent> getByCompoundName(CompoundName compoundName);
 }

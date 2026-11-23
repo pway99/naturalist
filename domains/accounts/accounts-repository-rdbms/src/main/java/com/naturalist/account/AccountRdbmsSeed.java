@@ -13,11 +13,12 @@ import java.util.Collection;
  *  this module never depends on the test-fixture module itself. */
 public final class AccountRdbmsSeed {
 
-    private AccountRdbmsSeed() {}
+    private AccountRdbmsSeed() {
+    }
 
     public static void seed(DataSource dataSource,
-                             Collection<Account> accounts,
-                             Collection<EmailVerificationToken> tokens) {
+                            Collection<Account> accounts,
+                            Collection<EmailVerificationToken> tokens) {
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(
                 dataSource, AccountMapper.class, EmailVerificationTokenMapper.class);
 

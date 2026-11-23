@@ -464,8 +464,11 @@ public class InsectsController {
 
         Instant capturedInstant = null;
         if (StringUtils.isNotBlank(capturedAt)) {
-            try { capturedInstant = Instant.parse(capturedAt); }
-            catch (java.time.format.DateTimeParseException ignored) { }
+            try {
+                capturedInstant = Instant.parse(capturedAt);
+            }
+            catch (java.time.format.DateTimeParseException ignored) {
+            }
         }
 
         GridCell area = GridCell.of(areaLat, areaLon);
@@ -582,8 +585,8 @@ public class InsectsController {
 
     @GetMapping("/orders/{name}")
     String orderDetail(@PathVariable InsectOrderName name,
-                        @RequestParam(name = "error", required = false) String error,
-                        HttpServletRequest request, HttpServletResponse response, Model model) {
+                       @RequestParam(name = "error", required = false) String error,
+                       HttpServletRequest request, HttpServletResponse response, Model model) {
         MethodObserver methodObserver = OBSERVER.forMethod("orderDetail");
         if (invalidName(methodObserver, name)) {
             return notFound(response, model, name, "/insects/orders");
@@ -623,8 +626,8 @@ public class InsectsController {
 
     @GetMapping("/genera/{name}")
     String genusDetail(@PathVariable InsectGenusName name,
-                        @RequestParam(name = "error", required = false) String error,
-                        HttpServletRequest request, HttpServletResponse response, Model model) {
+                       @RequestParam(name = "error", required = false) String error,
+                       HttpServletRequest request, HttpServletResponse response, Model model) {
         MethodObserver methodObserver = OBSERVER.forMethod("genusDetail");
         if (invalidName(methodObserver, name)) {
             return notFound(response, model, name, "/insects/genera");
@@ -804,7 +807,7 @@ public class InsectsController {
      */
     private static boolean notesTooLong(MethodObserver methodObserver, @Nullable String notes) {
         return !methodObserver.arguments(i -> i
-                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
+                .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
                 .observe(Level.WARN)
                 .violations().isEmpty();
     }
@@ -823,7 +826,7 @@ public class InsectsController {
     /** Observes whether a valid name found a catalog entry (WARN when not) and answers true when it did not. */
     private static boolean unknownName(MethodObserver methodObserver, boolean found) {
         return !methodObserver.state(i -> i
-                        .isTrue(found, "nameFound"))
+                .isTrue(found, "nameFound"))
                 .observe(Level.WARN)
                 .violations().isEmpty();
     }
@@ -835,7 +838,7 @@ public class InsectsController {
      */
     private static boolean invalidName(MethodObserver methodObserver, EntityName name) {
         return !methodObserver.arguments(i -> i
-                        .entityName(name, "name"))
+                .entityName(name, "name"))
                 .observe(Level.WARN)
                 .violations().isEmpty();
     }
@@ -847,7 +850,7 @@ public class InsectsController {
      */
     private static boolean areaOffTheLattice(MethodObserver methodObserver, @Nullable GridCell area) {
         return !methodObserver.state(i -> i
-                        .valueObjectOrNull(area, "area"))
+                .valueObjectOrNull(area, "area"))
                 .observe(Level.WARN)
                 .violations().isEmpty();
     }
@@ -864,7 +867,7 @@ public class InsectsController {
             return "redirect:" + destination + (destination.contains("?") ? "&" : "?") + "error=notes";
         }
         if (!methodObserver.arguments(i -> i
-                        .entityId(observationId, "observationId"))
+                .entityId(observationId, "observationId"))
                 .observe(Level.WARN)
                 .violations().isEmpty()) {
             // a missing, malformed or non-v7 observationId (Spring hands an unreadable one on as null). It names no
@@ -946,7 +949,7 @@ public class InsectsController {
         MethodObserver methodObserver = OBSERVER.forMethod("serve");
         // A name with a directory part names no stored photo: answered here, before the store refuses it.
         if (!methodObserver.arguments(i -> i
-                        .namedValue(filename, "filename"))
+                .namedValue(filename, "filename"))
                 .observe(Level.WARN)
                 .violations().isEmpty()) {
             return notFound();
@@ -964,7 +967,7 @@ public class InsectsController {
         }
         // a broken link of ours, or someone probing names: the caller is told, and the miss is counted
         if (!methodObserver.state(i -> i
-                        .isTrue(found.isPresent(), "found"))
+                .isTrue(found.isPresent(), "found"))
                 .observe(Level.WARN)
                 .violations().isEmpty()) {
             return notFound();

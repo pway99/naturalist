@@ -9,7 +9,8 @@ import javax.sql.DataSource;
  */
 final class CatalogSeeding {
 
-    private CatalogSeeding() {}
+    private CatalogSeeding() {
+    }
 
     static void apply(DataSource dataSource) {
         Seeding.applySchema(dataSource, "schema/catalog.sql");

@@ -31,16 +31,16 @@ class InsectQueryImpl implements InsectQuery {
                     InsectLifeStageQuery insectLifeStageQuery,
                     ObservationQuery observationQuery) {
         Observer.forClass(InsectQueryImpl.class).arguments("constructor", i -> i
-                        .notNull(speciesQuery, "speciesQuery")
-                        .notNull(imageQuery, "imageQuery")
-                        .notNull(familyQuery, "familyQuery")
-                        .notNull(genusQuery, "genusQuery")
-                        .notNull(functionalRoleQuery, "functionalRoleQuery")
-                        .notNull(orderQuery, "orderQuery")
-                        .notNull(citationQuery, "citationQuery")
-                        .notNull(featureQuery, "featureQuery")
-                        .notNull(insectLifeStageQuery, "insectLifeStageQuery")
-                        .notNull(observationQuery, "observationQuery"))
+                .notNull(speciesQuery, "speciesQuery")
+                .notNull(imageQuery, "imageQuery")
+                .notNull(familyQuery, "familyQuery")
+                .notNull(genusQuery, "genusQuery")
+                .notNull(functionalRoleQuery, "functionalRoleQuery")
+                .notNull(orderQuery, "orderQuery")
+                .notNull(citationQuery, "citationQuery")
+                .notNull(featureQuery, "featureQuery")
+                .notNull(insectLifeStageQuery, "insectLifeStageQuery")
+                .notNull(observationQuery, "observationQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;

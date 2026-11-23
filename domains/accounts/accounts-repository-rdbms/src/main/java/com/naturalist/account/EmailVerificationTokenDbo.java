@@ -10,6 +10,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Consumer;
+
 // id is unwrapped to its String form (like EntityName -> String): MyBatis has no UUID type
 // handler, and the ACL forbids adding one, so the mapper casts the text to uuid in SQL (::uuid).
 
@@ -21,15 +22,16 @@ import java.util.function.Consumer;
  * nothing can drift.
  */
 @DboSchema(table = "email_verification_token", primaryKey = "id",
-           foreignKeys = @Fk(columns = "account_id", references = "account(id)"),
-           entity = EmailVerificationToken.class)
+        foreignKeys = @Fk(columns = "account_id", references = "account(id)"),
+        entity = EmailVerificationToken.class)
 final class EmailVerificationTokenDbo implements Dbo {
     String id;             // the EmailVerificationTokenId's UUID as text; the mapper casts it to uuid (::uuid)
     String account;        // JOIN projection (read) / nested-select key (write); not a stored column
     String tokenHash;
     String purpose;
     Instant expiresAt;
-    @Nullable Instant consumedAt;
+    @Nullable
+    Instant consumedAt;
 
     static EmailVerificationTokenDbo from(EmailVerificationToken t) {
         EmailVerificationTokenDbo d = new EmailVerificationTokenDbo();

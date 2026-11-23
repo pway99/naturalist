@@ -23,7 +23,7 @@ public final class FeatureViewAssembler {
     }
 
     public static <RANK extends RankName, FID extends EntityId, FEATURE>
-    OrganismFeatureView<RANK, FEATURE> assemble(
+            OrganismFeatureView<RANK, FEATURE> assemble(
             RANK subject,
             Set<RANK> ancestry,
             List<? extends OrganismFeatureAssignment<?, FID, RANK>> assignments,

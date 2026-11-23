@@ -160,9 +160,9 @@ class InsectViewFactory {
 
     /** One batched subtree-gallery read for the page's roots, then in-memory assembly in page order. */
     private <E> Page<InsectViews.RankCard> rankCards(Page<E> page,
-                                                    Function<E, InsectRankName> nameOf, Function<E, String> displayOf,
-                                                    Function<E, String> scientificOf, Function<E, @Nullable InsectRankName> parentOf,
-                                                    Map<InsectRankName, String> parentLabels) {
+                                                     Function<E, InsectRankName> nameOf, Function<E, String> displayOf,
+                                                     Function<E, String> scientificOf, Function<E, @Nullable InsectRankName> parentOf,
+                                                     Map<InsectRankName, String> parentLabels) {
         if (page.content().isEmpty()) {
             return new Page<>(List.of(), page.pageNumber(), page.pageSize(), page.pagesAheadKnown(), page.moreBeyondLookahead());
         }

@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds seed lineages through the real RDBMS adapter (split-package with the rdbms module). */
 public final class SeedLineageSeeder {
 
-    private SeedLineageSeeder() {}
+    private SeedLineageSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<SeedLineage> entities = database.getNamed(PlantSeedLineageTestEntitySource.class).entityStream().toList();

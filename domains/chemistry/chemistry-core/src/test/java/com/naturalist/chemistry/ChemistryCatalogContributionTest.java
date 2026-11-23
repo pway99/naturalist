@@ -34,10 +34,14 @@ class ChemistryCatalogContributionTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired CompoundQuery.CompoundEntityQuery compounds;
-    @Wired ProductQuery products;
-    @Wired ElementQuery elements;
-    @Wired ChemistryCatalogContribution contribution;
+    @Wired
+    CompoundQuery.CompoundEntityQuery compounds;
+    @Wired
+    ProductQuery products;
+    @Wired
+    ElementQuery elements;
+    @Wired
+    ChemistryCatalogContribution contribution;
 
     @Test
     void domainIsChemistry() {

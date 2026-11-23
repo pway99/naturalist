@@ -21,8 +21,8 @@ import java.util.function.Consumer;
  * {@code ::uuid} cast (no MyBatis UUID handler).
  */
 @DboSchema(table = "plant_image", primaryKey = "id",
-           foreignKeys = @Fk(columns = "observation_id", references = "plant_observation(id)"),
-           entity = OrganismImage.class)
+        foreignKeys = @Fk(columns = "observation_id", references = "plant_observation(id)"),
+        entity = OrganismImage.class)
 final class PlantImageDbo implements Dbo {
     String id;             // the PlantImageId's UUID as text
     String parentRank;     // ORDER|FAMILY|GENUS|SPECIES
@@ -60,7 +60,7 @@ final class PlantImageDbo implements Dbo {
                 .notBlank(id, "id")
                 .notBlank(parentRank, "parentRank").maxLength(parentRank, 16, "parentRank")
                 .notNull(parentName, "parentName").kebabFormat(parentName, "parentName")
-                    .maxLength(parentName, 64, "parentName")
+                .maxLength(parentName, 64, "parentName")
                 .notNull(dateAdded, "dateAdded")
                 .notBlank(resourceName, "resourceName").maxLength(resourceName, 255, "resourceName");
     }

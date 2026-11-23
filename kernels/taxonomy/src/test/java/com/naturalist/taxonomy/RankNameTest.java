@@ -7,8 +7,15 @@ class RankNameTest {
     @Test
     void exposesSlugAndRank() {
         RankName name = new RankName() {
-            @Override public String value() { return "salvia"; }
-            @Override public LinealRank rank() { return LinealRank.GENUS; }
+            @Override
+            public String value() {
+                return "salvia";
+            }
+
+            @Override
+            public LinealRank rank() {
+                return LinealRank.GENUS;
+            }
         };
         assertThat(name.value()).isEqualTo("salvia");
         assertThat(name.rank()).isEqualTo(LinealRank.GENUS);

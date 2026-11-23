@@ -92,7 +92,8 @@ final class IdentifyRateLimitFilter extends OncePerRequestFilter {
 
     private static boolean acquire(RateLimiter limiter) {
         try {
-            limiter.execute(() -> { });
+            limiter.execute(() -> {
+            });
             return true;
         } catch (RateLimitExceededException rejected) {
             return false;

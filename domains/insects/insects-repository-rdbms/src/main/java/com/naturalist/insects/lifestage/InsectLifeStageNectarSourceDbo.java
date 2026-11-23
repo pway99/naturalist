@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 
 /** Ordered child row: one {@code PlantSpeciesName} slug (cross-domain, no FK). Carries the life stage NAME. */
 @DboSchema(table = "insect_life_stage_nectar_source", primaryKey = "life_stage_id,ordinal",
-           foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
-           entity = LifeStage.class)
+        foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
+        entity = LifeStage.class)
 final class InsectLifeStageNectarSourceDbo implements Dbo {
     String lifeStageName;
     int ordinal;
@@ -27,7 +27,9 @@ final class InsectLifeStageNectarSourceDbo implements Dbo {
         return d;
     }
 
-    PlantSpeciesName toName() { return PlantSpeciesName.of(plantName); }
+    PlantSpeciesName toName() {
+        return PlantSpeciesName.of(plantName);
+    }
 
     @Override
     public Consumer<? extends Constraints> invariants() {

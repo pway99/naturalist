@@ -65,7 +65,7 @@ class AdminResilienceControllerWebMvcTest {
     @Test
     void admin_resilience_listsEachStrategyUnderItsPrimitive() throws Exception {
         String html = mockMvc.perform(get("/admin/resilience")
-                        .with(user("naturalist").roles("ADMIN")))
+                .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 

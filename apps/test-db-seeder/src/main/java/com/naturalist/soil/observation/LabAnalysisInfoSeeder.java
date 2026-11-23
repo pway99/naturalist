@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds lab analyses through the real RDBMS adapter (split-package with the rdbms module). */
 public final class LabAnalysisInfoSeeder {
 
-    private LabAnalysisInfoSeeder() {}
+    private LabAnalysisInfoSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<LabAnalysisInfo> entities = database.getNamed(LabAnalysisInfoTestEntitySource.class).entityStream().toList();

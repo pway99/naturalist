@@ -56,8 +56,15 @@ class IdentifyRateLimitFilterTest {
         Resilience resilience = new Resilience4jResilience(List.of(
                 new RateLimiterConfig(IdentifyRateLimitFilter.STRATEGY, 2, Duration.ofMinutes(1), Duration.ZERO)));
         CurrentNaturalist current = new CurrentNaturalist() {
-            @Override public Optional<NaturalistName> name() { return signedIn; }
-            @Override public Optional<Naturalist> naturalist() { return Optional.empty(); }
+            @Override
+            public Optional<NaturalistName> name() {
+                return signedIn;
+            }
+
+            @Override
+            public Optional<Naturalist> naturalist() {
+                return Optional.empty();
+            }
         };
         filter = new IdentifyRateLimitFilter(resilience, current,
                 UsagesTestContext.create(nte, 80, CLOCK).identificationBudget());

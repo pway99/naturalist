@@ -30,7 +30,8 @@ import java.util.function.Function;
  */
 final class CatalogTestRegistry {
 
-    private CatalogTestRegistry() {}
+    private CatalogTestRegistry() {
+    }
 
     // Test-local DomainId records — kept decoupled from the production *-api modules. Slug
     // values match the seeded catalog_search_token rows' domain column.
@@ -61,15 +62,15 @@ final class CatalogTestRegistry {
 
     static Map<String, Function<String, EntityName>> reconstructors() {
         return Map.of(
-                "insect-order",   InsectOrderName::of,
-                "insect-family",  InsectFamilyName::of,
-                "insect-genus",   InsectGenusName::of,
+                "insect-order", InsectOrderName::of,
+                "insect-family", InsectFamilyName::of,
+                "insect-genus", InsectGenusName::of,
                 "insect-species", InsectSpeciesName::of,
-                "plant-order",    PlantOrderName::of,
-                "plant-family",   PlantFamilyName::of,
-                "plant-genus",    PlantGenusName::of,
-                "plant-species",  PlantSpeciesName::of,
-                "element",        ElementName::of,
-                "compound",       CompoundName::of);
+                "plant-order", PlantOrderName::of,
+                "plant-family", PlantFamilyName::of,
+                "plant-genus", PlantGenusName::of,
+                "plant-species", PlantSpeciesName::of,
+                "element", ElementName::of,
+                "compound", CompoundName::of);
     }
 }

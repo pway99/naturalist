@@ -30,7 +30,8 @@ class ChemistryCompoundReferencesTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired ChemistryCompoundReferences provider;
+    @Wired
+    ChemistryCompoundReferences provider;
 
     @Test
     void domainIsChemistry() {

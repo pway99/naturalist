@@ -41,8 +41,8 @@ public class NamedValueHasFactory extends Recipe {
     @Override
     public String getDescription() {
         return "Every concrete EntityName, NamedValue (numeric included) and EntityId in main source declares "
-             + "public static <Type> of(String | BigDecimal | UUID): the one factory the supertypes' Jackson "
-             + "deserializers and the Spring converter call through NamedValues.";
+                + "public static <Type> of(String | BigDecimal | UUID): the one factory the supertypes' Jackson "
+                + "deserializers and the Spring converter call through NamedValues.";
     }
 
     @Override
@@ -54,9 +54,9 @@ public class NamedValueHasFactory extends Recipe {
             public @Nullable J visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree instanceof JavaSourceFile file) {
                     boolean isMain = file.getMarkers()
-                        .findFirst(JavaSourceSet.class)
-                        .map(s -> "main".equals(s.getName()))
-                        .orElse(false);
+                            .findFirst(JavaSourceSet.class)
+                            .map(s -> "main".equals(s.getName()))
+                            .orElse(false);
                     if (!isMain) {
                         return (J) tree;
                     }

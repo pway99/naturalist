@@ -16,5 +16,6 @@ public interface CladeQuery {
             String displayName,
             Optional<LinealRank> rank,
             List<CladeTreeNode> children
-    ) {}
+    ) {
+    }
 }

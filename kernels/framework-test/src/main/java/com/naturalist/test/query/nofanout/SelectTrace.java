@@ -250,7 +250,7 @@ public final class SelectTrace {
                 if (method.isAnnotationPresent(SuppressRepeatedSelect.class)
                         && method.getName().equals(frame.getMethodName())
                         && MethodType.methodType(method.getReturnType(), method.getParameterTypes())
-                                .equals(frame.getMethodType())) {
+                        .equals(frame.getMethodType())) {
                     return true;
                 }
             }

@@ -20,7 +20,7 @@ class SecretsComplianceTest {
     static final ArchRule onlyTheVendorAdaptersTouchTheSdk =
             noClasses()
                     .that().resideOutsideOfPackages(
-                            "com.naturalist.vision.anthropic", "com.naturalist.textgeneration.anthropic")
+                    "com.naturalist.vision.anthropic", "com.naturalist.textgeneration.anthropic")
                     .should().dependOnClassesThat().resideInAPackage("com.anthropic..")
                     .because("the vendor SDK, and therefore the credential, is confined to adapters/anthropic-* (ADR-028)");
 }

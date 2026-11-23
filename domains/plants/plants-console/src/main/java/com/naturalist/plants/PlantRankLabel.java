@@ -4,7 +4,8 @@ import java.util.Locale;
 
 /** Presentation helper: the human label for a rank ("Order", "Family"). Mirrors the insects RankLabel. */
 public final class PlantRankLabel {
-    private PlantRankLabel() {}
+    private PlantRankLabel() {
+    }
 
     public static String of(PlantRankName rankName) {
         String name = rankName.rank().name();               // e.g. "ORDER"

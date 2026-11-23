@@ -34,7 +34,7 @@ class InsectObservationEntityRepositoryRdbms
     private final InsectObservationTransaction transaction;
 
     InsectObservationEntityRepositoryRdbms(InsectObservationMapper mapper,
-            InsectObservationTransaction transaction) {
+                                           InsectObservationTransaction transaction) {
         this.mapper = mapper;
         this.transaction = transaction;
     }

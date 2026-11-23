@@ -36,7 +36,7 @@ interface CitationAssociationEntityRepositoryTest
     @Override
     default List<CitationAssociationId> knownEntityNames() {
         return List.of(
-            TestLibraryIdentifiers.Citations.Associations.EolLepidopteraOnLepidoptera,
+                TestLibraryIdentifiers.Citations.Associations.EolLepidopteraOnLepidoptera,
                 TestLibraryIdentifiers.Citations.Associations.EolSwallowtailOnPapilionidae);
     }
 
@@ -116,7 +116,7 @@ interface CitationAssociationEntityRepositoryTest
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().citationName().value())
-            .isEqualTo("eol-lepidoptera-747");
+                .isEqualTo("eol-lepidoptera-747");
     }
 
     // =========================================================================

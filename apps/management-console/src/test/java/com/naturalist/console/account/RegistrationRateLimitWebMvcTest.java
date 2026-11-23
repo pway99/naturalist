@@ -75,13 +75,13 @@ class RegistrationRateLimitWebMvcTest {
     @Test
     void secondRegistrationInTheWindow_is429_reRendersForm_andIsObserved() throws Exception {
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", "first@example.com").param("password", "a fine passphrase")
-                        .param("publicHandle", "first-in").param("givenName", "First"))
+                .param("email", "first@example.com").param("password", "a fine passphrase")
+                .param("publicHandle", "first-in").param("givenName", "First"))
                 .andExpect(redirectedUrl("/register?registered"));
 
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", "second@example.com").param("password", "a fine passphrase")
-                        .param("publicHandle", "second-in").param("givenName", "Second"))
+                .param("email", "second@example.com").param("password", "a fine passphrase")
+                .param("publicHandle", "second-in").param("givenName", "Second"))
                 .andExpect(status().is(429))
                 .andExpect(model().attributeExists("error"));
 

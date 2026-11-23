@@ -13,5 +13,6 @@ public interface FeatureCorpus<ID extends EntityId> {
 
     Stream<Indexed<ID>> load();
 
-    record Indexed<ID extends EntityId>(ID id, String value) {}
+    record Indexed<ID extends EntityId>(ID id, String value) {
+    }
 }

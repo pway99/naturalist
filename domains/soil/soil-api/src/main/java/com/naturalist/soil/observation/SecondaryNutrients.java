@@ -38,7 +38,7 @@ public record SecondaryNutrients(
     /** The readings this section actually carries, in printed order. Absent slots are skipped. */
     public Stream<NutrientReading> present() {
         return Stream.of(calciumExch, calciumSoluble, magnesiumExch, magnesiumSoluble,
-                        sodiumExch, sodiumSoluble, sulfate).flatMap(Optional::stream);
+                sodiumExch, sodiumSoluble, sulfate).flatMap(Optional::stream);
     }
 
     @Override

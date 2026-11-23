@@ -37,7 +37,8 @@ class PlantsCompoundReferencesTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired PlantsCompoundReferences provider;
+    @Wired
+    PlantsCompoundReferences provider;
 
     @Test
     void domainIsPlants() {

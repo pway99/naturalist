@@ -40,8 +40,8 @@ public class NoSubtypeJsonCreator extends Recipe {
     @Override
     public String getDescription() {
         return "Removes @JsonCreator from every EntityName, NamedValue (numeric included) and EntityId in main "
-             + "source: the supertypes' deserializer reads them through NamedValues, so the subtype's creator is "
-             + "never called.";
+                + "source: the supertypes' deserializer reads them through NamedValues, so the subtype's creator is "
+                + "never called.";
     }
 
     @Override
@@ -53,9 +53,9 @@ public class NoSubtypeJsonCreator extends Recipe {
             public @Nullable J visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree instanceof JavaSourceFile file) {
                     boolean isMain = file.getMarkers()
-                        .findFirst(JavaSourceSet.class)
-                        .map(s -> "main".equals(s.getName()))
-                        .orElse(false);
+                            .findFirst(JavaSourceSet.class)
+                            .map(s -> "main".equals(s.getName()))
+                            .orElse(false);
                     if (!isMain) {
                         return (J) tree;
                     }

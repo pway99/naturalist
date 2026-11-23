@@ -13,14 +13,22 @@ class RankNameCodecTest {
 
     /** A stand-in typed permit — models a domain rank name for the codec test. */
     record FakeSpeciesName(String value) implements RankName {
-        @JsonCreator static FakeSpeciesName of(String v) { return new FakeSpeciesName(v); }
-        @Override public LinealRank rank() { return LinealRank.SPECIES; }
+        @JsonCreator
+        static FakeSpeciesName of(String v) {
+            return new FakeSpeciesName(v);
+        }
+
+        @Override
+        public LinealRank rank() {
+            return LinealRank.SPECIES;
+        }
     }
 
     record Holder(
             @JsonSerialize(using = RankNameSerializer.class)
             @JsonDeserialize(using = RankNameDeserializer.class)
-            RankName subject) {}
+            RankName subject) {
+    }
 
     private static final RankNameReconstructor RECONSTRUCTOR =
             (slug, rank) -> new FakeSpeciesName(slug);

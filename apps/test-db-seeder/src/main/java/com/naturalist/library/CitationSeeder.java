@@ -16,7 +16,8 @@ import java.util.List;
  */
 public final class CitationSeeder {
 
-    private CitationSeeder() {}
+    private CitationSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<Citation> citations = database.getNamed(CitationTestEntitySource.class).entityStream().toList();

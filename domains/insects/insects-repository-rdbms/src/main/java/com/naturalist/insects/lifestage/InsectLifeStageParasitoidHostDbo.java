@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 
 /** Ordered child row: one parasitoid-host {@code InsectSpeciesName} slug (soft ref, no FK for parity). */
 @DboSchema(table = "insect_life_stage_parasitoid_host", primaryKey = "life_stage_id,ordinal",
-           foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
-           entity = LifeStage.class)
+        foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
+        entity = LifeStage.class)
 final class InsectLifeStageParasitoidHostDbo implements Dbo {
     String lifeStageName;
     int ordinal;
@@ -28,7 +28,9 @@ final class InsectLifeStageParasitoidHostDbo implements Dbo {
         return d;
     }
 
-    InsectSpeciesName toName() { return InsectSpeciesName.of(speciesName); }
+    InsectSpeciesName toName() {
+        return InsectSpeciesName.of(speciesName);
+    }
 
     @Override
     public Consumer<? extends Constraints> invariants() {

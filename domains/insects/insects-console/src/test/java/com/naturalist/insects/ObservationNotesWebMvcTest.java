@@ -89,9 +89,9 @@ class ObservationNotesWebMvcTest {
         int observationsBefore = observationsOfSpecies();
 
         mockMvc.perform(multipart("/insects/battus-philenor/images")
-                        .file(photo())
-                        .param("notes", TOO_LONG)
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo())
+                .param("notes", TOO_LONG)
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=notes"));
 
@@ -105,9 +105,9 @@ class ObservationNotesWebMvcTest {
         int observationsBefore = observationsOfSpecies();
 
         mockMvc.perform(multipart("/insects/battus-philenor/images")
-                        .file(photo())
-                        .param("notes", "a".repeat(OrganismObservation.MAX_NOTES_LENGTH))
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo())
+                .param("notes", "a".repeat(OrganismObservation.MAX_NOTES_LENGTH))
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
 
@@ -127,8 +127,8 @@ class ObservationNotesWebMvcTest {
         int observationsBefore = observationsOfSpecies();
 
         mockMvc.perform(post("/insects/battus-philenor/observe")
-                        .param("notes", TOO_LONG)
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .param("notes", TOO_LONG)
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=notes"));
 
@@ -141,9 +141,9 @@ class ObservationNotesWebMvcTest {
         InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
-                        .param("observationId", id.value().toString())
-                        .param("notes", TOO_LONG)
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .param("observationId", id.value().toString())
+                .param("notes", TOO_LONG)
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=notes"));
 
@@ -157,10 +157,10 @@ class ObservationNotesWebMvcTest {
         InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
-                        .param("observationId", id.value().toString())
-                        .param("notes", TOO_LONG)
-                        .param("returnPath", "/insects/families/papilionidae")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .param("observationId", id.value().toString())
+                .param("notes", TOO_LONG)
+                .param("returnPath", "/insects/families/papilionidae")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/families/papilionidae?error=notes"));
 
@@ -173,9 +173,9 @@ class ObservationNotesWebMvcTest {
         Set<Path> filesBefore = storedFiles();
 
         mockMvc.perform(multipart("/insects/identify")
-                        .file(photo())
-                        .param("notes", TOO_LONG)
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo())
+                .param("notes", TOO_LONG)
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/identify?error=notes"));
 
@@ -190,10 +190,10 @@ class ObservationNotesWebMvcTest {
         ObservationNotesWebMvcTest.CountingPhoto upload = new CountingPhoto();
 
         mockMvc.perform(multipart("/insects/battus-philenor/images")
-                        .file(upload)
-                        .param("areaLat", "not-a-cell")
-                        .param("areaLon", "0")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(upload)
+                .param("areaLat", "not-a-cell")
+                .param("areaLon", "0")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=area"));
 
@@ -208,10 +208,10 @@ class ObservationNotesWebMvcTest {
         ObservationNotesWebMvcTest.CountingPhoto upload = new CountingPhoto();
 
         mockMvc.perform(multipart("/insects/identify")
-                        .file(upload)
-                        .param("areaLat", "not-a-cell")
-                        .param("areaLon", "0")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(upload)
+                .param("areaLat", "not-a-cell")
+                .param("areaLon", "0")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/identify?error=area"));
 

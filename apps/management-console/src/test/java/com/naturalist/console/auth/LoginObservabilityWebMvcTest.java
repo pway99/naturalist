@@ -54,7 +54,7 @@ class LoginObservabilityWebMvcTest {
     @Test
     void login_unknownEmail_isObservedAsUnknownAccountAndBadCredentials() throws Exception {
         mockMvc.perform(post("/login").with(csrf())
-                        .param("username", "nobody@example.org").param("password", "guess"))
+                .param("username", "nobody@example.org").param("password", "guess"))
                 .andExpect(redirectedUrl("/login?error"));
 
         // Spring hid "not found" from the caller as bad credentials; the metrics keep the distinction.
@@ -68,7 +68,7 @@ class LoginObservabilityWebMvcTest {
     @Test
     void login_adminWrongPassword_isObservedAsAdminAuthenticationFailed() throws Exception {
         mockMvc.perform(post("/login").with(csrf())
-                        .param("username", "test-admin").param("password", "guess"))
+                .param("username", "test-admin").param("password", "guess"))
                 .andExpect(redirectedUrl("/login?error"));
 
         // The one credential whose guessing rate deserves its own alert.
@@ -79,7 +79,7 @@ class LoginObservabilityWebMvcTest {
     @Test
     void login_knownEmailWrongPassword_isObservedAsBadCredentialsOnly() throws Exception {
         mockMvc.perform(post("/login").with(csrf())
-                        .param("username", "gerald.durrell@oakvista.example").param("password", "guess"))
+                .param("username", "gerald.durrell@oakvista.example").param("password", "guess"))
                 .andExpect(redirectedUrl("/login?error"));
 
         // The email exists (seeded), so this is password guessing, not enumeration.
@@ -95,7 +95,7 @@ class LoginObservabilityWebMvcTest {
             // The lock check runs before the password check, so even a wrong password surfaces
             // the suspension — exactly the signal wanted: a banned account trying to get back in.
             mockMvc.perform(post("/login").with(csrf())
-                            .param("username", "gerald.durrell@oakvista.example").param("password", "guess"))
+                    .param("username", "gerald.durrell@oakvista.example").param("password", "guess"))
                     .andExpect(redirectedUrl("/login?error"));
 
             assertThat(violations("NaturalistUserDetailsService.loadUserByUsername.accountActive")).isEqualTo(1);

@@ -23,7 +23,8 @@ class InsectImageQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery.ImageQuery query;
+    @Wired
+    InsectQuery.ImageQuery query;
 
     @Override
     public EntityQuery<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>, ImageCollection> query() {

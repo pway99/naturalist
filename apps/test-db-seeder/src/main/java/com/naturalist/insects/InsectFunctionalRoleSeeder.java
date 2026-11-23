@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds insect functional roles through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectFunctionalRoleSeeder {
 
-    private InsectFunctionalRoleSeeder() {}
+    private InsectFunctionalRoleSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<InsectFunctionalRole> entities = database.getNamed(InsectFunctionalRoleTestEntitySource.class).entityStream().toList();

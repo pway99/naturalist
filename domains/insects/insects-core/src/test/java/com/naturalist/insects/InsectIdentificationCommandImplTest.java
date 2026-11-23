@@ -107,8 +107,10 @@ class InsectIdentificationCommandImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery query;
-    @Wired InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
+    @Wired
+    InsectQuery query;
+    @Wired
+    InsectCatalogIdentificationTransaction catalogIdentificationTransaction;
 
     private final VisionService stubService = (image, tool, prompt) ->
             fixedExchange("propose_insect_species", SAMPLE_RESULT_JSON);
@@ -119,10 +121,13 @@ class InsectIdentificationCommandImplTest {
      */
     private static VisionExchange fixedExchange(String toolName, String argumentsJson) {
         return new VisionExchange() {
-            @Override public ToolResult result() {
+            @Override
+            public ToolResult result() {
                 return new ToolResult(toolName, argumentsJson);
             }
-            @Override public VisionExchange respond(String toolResultJson, ToolSchema nextTool) {
+
+            @Override
+            public VisionExchange respond(String toolResultJson, ToolSchema nextTool) {
                 throw new AssertionError("no second turn expected in this test");
             }
         };
@@ -137,10 +142,13 @@ class InsectIdentificationCommandImplTest {
      */
     private static VisionExchange twoTurn(String turn1Json, String turn2ResolveJson) {
         return new VisionExchange() {
-            @Override public ToolResult result() {
+            @Override
+            public ToolResult result() {
                 return new ToolResult("propose_insect_species", turn1Json);
             }
-            @Override public VisionExchange respond(String toolResultJson, ToolSchema nextTool) {
+
+            @Override
+            public VisionExchange respond(String toolResultJson, ToolSchema nextTool) {
                 return fixedExchange("resolve_features", turn2ResolveJson);
             }
         };
@@ -699,17 +707,24 @@ class InsectIdentificationCommandImplTest {
     void identify_pipelineFailure_whenDeleteAlsoFails_countsTheFailedCleanup() {
         ImageStore real = store;
         store = new ImageStore() {
-            @Override public FileName store(String space, ImageUpload upload) {
+            @Override
+            public FileName store(String space, ImageUpload upload) {
                 return real.store(space, upload);
             }
-            @Override public Optional<StoredImage> read(
+
+            @Override
+            public Optional<StoredImage> read(
                     String space, FileName name, com.naturalist.observation.ImageVariant variant) {
                 return real.read(space, name, variant);
             }
-            @Override public void requireStorable(ImageUpload upload) {
+
+            @Override
+            public void requireStorable(ImageUpload upload) {
                 real.requireStorable(upload);
             }
-            @Override public void delete(String space, FileName name) {
+
+            @Override
+            public void delete(String space, FileName name) {
                 throw new UncheckedIOException(new IOException("disk said no"));
             }
         };
@@ -926,14 +941,25 @@ class InsectIdentificationCommandImplTest {
             NaturalistName pat = NaturalistName.of("pat");
             ArrayList<NaturalistName> refused = new ArrayList<NaturalistName>();
             IdentificationBudget recording = new IdentificationBudget() {
-                @Override public void reserve(NaturalistName naturalist) { }
-                @Override public void refused(NaturalistName naturalist) { refused.add(naturalist); }
+                @Override
+                public void reserve(NaturalistName naturalist) {
+                }
+
+                @Override
+                public void refused(NaturalistName naturalist) {
+                    refused.add(naturalist);
+                }
             };
             IdentificationBudget overBudget = new IdentificationBudget() {
-                @Override public void reserve(NaturalistName naturalist) {
+                @Override
+                public void reserve(NaturalistName naturalist) {
                     throw new BudgetExceededException(LimitKind.DAILY, Instant.parse("2026-11-04T00:00:00Z"));
                 }
-                @Override public void refused(NaturalistName naturalist) { refused.add(naturalist); }
+
+                @Override
+                public void refused(NaturalistName naturalist) {
+                    refused.add(naturalist);
+                }
             };
 
             buildCommand(Resilience.noOp(), recording, stubService)
@@ -1169,8 +1195,15 @@ class InsectIdentificationCommandImplTest {
         AtomicInteger reservations = new AtomicInteger();
         AtomicInteger refusalsRecorded = new AtomicInteger();
         IdentificationBudget recording = new IdentificationBudget() {
-            @Override public void reserve(NaturalistName naturalist) { reservations.incrementAndGet(); }
-            @Override public void refused(NaturalistName naturalist) { refusalsRecorded.incrementAndGet(); }
+            @Override
+            public void reserve(NaturalistName naturalist) {
+                reservations.incrementAndGet();
+            }
+
+            @Override
+            public void refused(NaturalistName naturalist) {
+                refusalsRecorded.incrementAndGet();
+            }
         };
         InsectCommand.IdentificationCommand cmd = buildCommand(Resilience.noOp(), recording, capturingVision);
 

@@ -15,7 +15,8 @@ class GlossaryTermQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired GlossaryTermQuery glossaryTermQuery;
+    @Wired
+    GlossaryTermQuery glossaryTermQuery;
 
     @Test
     void getByNameReturnsTheTerm() {

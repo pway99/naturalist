@@ -23,51 +23,51 @@ interface NutrientReadingMapper {
     NutrientReadingDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT id, nutrient_name, lab_analysis_id, value, unit
-        FROM nutrient_reading WHERE id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, nutrient_name, lab_analysis_id, value, unit
+            FROM nutrient_reading WHERE id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<NutrientReadingDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM nutrient_reading ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     List<NutrientReadingDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM nutrient_reading ORDER BY id OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM nutrient_reading ORDER BY id OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select("SELECT " + COLUMNS + " FROM nutrient_reading WHERE lab_analysis_id = #{id}::uuid ORDER BY id")
     List<NutrientReadingDbo> selectByLabAnalysisId(String id);
 
     @Select("""
-        <script>
-        SELECT id, nutrient_name, lab_analysis_id, value, unit
-        FROM nutrient_reading WHERE lab_analysis_id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        ORDER BY id
-        </script>
-        """)
+            <script>
+            SELECT id, nutrient_name, lab_analysis_id, value, unit
+            FROM nutrient_reading WHERE lab_analysis_id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            ORDER BY id
+            </script>
+            """)
     List<NutrientReadingDbo> selectByLabAnalysisIds(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM nutrient_reading WHERE nutrient_name = #{nutrientName} ORDER BY id")
     List<NutrientReadingDbo> selectByNutrientName(String nutrientName);
 
     @Insert("""
-        INSERT INTO nutrient_reading (id, nutrient_name, lab_analysis_id, value, unit)
-        VALUES (#{id}::uuid, #{nutrientName}, #{labAnalysisId}::uuid, #{value}, #{unit})
-        """)
+            INSERT INTO nutrient_reading (id, nutrient_name, lab_analysis_id, value, unit)
+            VALUES (#{id}::uuid, #{nutrientName}, #{labAnalysisId}::uuid, #{value}, #{unit})
+            """)
     void insert(NutrientReadingDbo dbo);
 
     @Update("""
-        UPDATE nutrient_reading SET
-            nutrient_name = #{nutrientName}, lab_analysis_id = #{labAnalysisId}::uuid,
-            value = #{value}, unit = #{unit}
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE nutrient_reading SET
+                nutrient_name = #{nutrientName}, lab_analysis_id = #{labAnalysisId}::uuid,
+                value = #{value}, unit = #{unit}
+            WHERE id = #{id}::uuid
+            """)
     int updateById(NutrientReadingDbo dbo);
 }

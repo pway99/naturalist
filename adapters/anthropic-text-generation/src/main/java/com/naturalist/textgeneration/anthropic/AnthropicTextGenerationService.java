@@ -96,7 +96,7 @@ public class AnthropicTextGenerationService implements TextGenerationService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
                         "Text generation response contained no tool_use block. " +
-                        "stop_reason=" + message.stopReason()));
+                                "stop_reason=" + message.stopReason()));
 
         // 6. Serialize the raw input JsonValue to a JSON string
         String argumentsJson = serializeInput(toolUseBlock);
@@ -113,7 +113,8 @@ public class AnthropicTextGenerationService implements TextGenerationService {
         try {
             Map<String, Object> schemaMap = MAPPER.readValue(
                     schema.parametersJson(),
-                    new TypeReference<>() {});
+                    new TypeReference<>() {
+                    });
 
             Tool.InputSchema.Builder inputSchemaBuilder = Tool.InputSchema.builder();
 

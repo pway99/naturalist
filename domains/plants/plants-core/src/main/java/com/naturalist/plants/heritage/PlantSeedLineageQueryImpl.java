@@ -18,7 +18,7 @@ class PlantSeedLineageQueryImpl
     @Override
     public SeedLineageCollection findByNameSet(Set<SeedLineageName> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return SeedLineageCollection.of(repository().getByEntityNameSet(names));
     }
@@ -26,7 +26,7 @@ class PlantSeedLineageQueryImpl
     @Override
     public SeedLineageCollection forCultivarName(CultivarName cultivarName) {
         observer().arguments("forCultivarName", i -> i
-                        .entityName(cultivarName, "cultivarName"))
+                .entityName(cultivarName, "cultivarName"))
                 .throwWhenInvalid();
         return SeedLineageCollection.of(repository().getByCultivarName(cultivarName));
     }

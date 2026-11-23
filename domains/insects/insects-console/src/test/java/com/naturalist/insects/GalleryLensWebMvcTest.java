@@ -42,8 +42,8 @@ class GalleryLensWebMvcTest {
     @Test
     void lensOn_hidesSharedPhoto_andShowsEmptyNote() throws Exception {
         mockMvc.perform(get("/insects/battus-philenor")
-                        .sessionAttr("insects.collectionLens", true)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .sessionAttr("insects.collectionLens", true)
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not(containsString("pipevine-swallow-tail.jpg"))))
                 .andExpect(content().string(containsString("No photos of yours here yet")));

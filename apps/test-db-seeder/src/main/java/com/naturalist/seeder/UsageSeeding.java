@@ -11,7 +11,8 @@ import javax.sql.DataSource;
  */
 final class UsageSeeding {
 
-    private UsageSeeding() {}
+    private UsageSeeding() {
+    }
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/usage.sql");

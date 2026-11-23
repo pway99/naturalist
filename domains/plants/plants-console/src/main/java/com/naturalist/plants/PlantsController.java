@@ -491,7 +491,7 @@ public class PlantsController {
         MethodObserver methodObserver = observer.forMethod("serve");
         // A name with a directory part names no stored photo: answered here, before the store refuses it.
         if (!methodObserver.arguments(i -> i
-                        .namedValue(filename, "filename"))
+                .namedValue(filename, "filename"))
                 .observe(Level.WARN)
                 .violations().isEmpty()) {
             return notFound();
@@ -509,7 +509,7 @@ public class PlantsController {
         }
         // a broken link of ours, or someone probing names: the caller is told, and the miss is counted
         if (!methodObserver.state(i -> i
-                        .isTrue(found.isPresent(), "found"))
+                .isTrue(found.isPresent(), "found"))
                 .observe(Level.WARN)
                 .violations().isEmpty()) {
             return notFound();

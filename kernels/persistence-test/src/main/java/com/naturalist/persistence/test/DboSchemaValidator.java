@@ -36,7 +36,8 @@ import java.util.jar.JarFile;
  */
 public final class DboSchemaValidator {
 
-    private DboSchemaValidator() {}
+    private DboSchemaValidator() {
+    }
 
     /** All {@code @DboSchema}-annotated classes reachable under {@code basePackage}. */
     public static List<Class<?>> discover(String basePackage) {

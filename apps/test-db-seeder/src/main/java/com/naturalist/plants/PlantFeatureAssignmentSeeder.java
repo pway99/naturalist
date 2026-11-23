@@ -13,7 +13,8 @@ import java.util.List;
 /** Seeds plant feature assignments through the real RDBMS adapter (split-package with the rdbms module). */
 public final class PlantFeatureAssignmentSeeder {
 
-    private PlantFeatureAssignmentSeeder() {}
+    private PlantFeatureAssignmentSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> entities = database.getNamed(PlantFeatureAssignmentTestEntitySource.class).entityStream().toList();

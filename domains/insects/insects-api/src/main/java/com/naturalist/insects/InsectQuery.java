@@ -23,7 +23,6 @@ import com.naturalist.taxonomy.OrganismFeatureView;
  * <ul>
  *   <li>{@link SpeciesQuery} — {@link InsectSpeciesInfo} entities in isolation.</li>
  *   <li>{@link ImageQuery} — {@link OrganismImage} entities in isolation.</li>
-
  *   <li>{@link FamilyQuery} — {@link InsectFamilyInfo} entities in isolation.</li>
  *   <li>{@link GenusQuery} — {@link InsectGenusInfo} entities in isolation.</li>
  *   <li>{@link FunctionalRoleQuery} — {@link InsectFunctionalRole} entities,
@@ -127,7 +126,7 @@ public interface InsectQuery {
 
     interface ObservationQuery
             extends EntityQuery<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>,
-                    InsectEntityCollections.ObservationCollection> {
+            InsectEntityCollections.ObservationCollection> {
 
         /** All of a naturalist's observations — used for the species-list "my collection" filter. */
         InsectEntityCollections.ObservationCollection forNaturalist(

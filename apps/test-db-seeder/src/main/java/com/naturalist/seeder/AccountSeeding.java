@@ -13,7 +13,8 @@ import java.util.List;
 /** Seeds the accounts domain: its schema, then accounts and their verification tokens. */
 final class AccountSeeding {
 
-    private AccountSeeding() {}
+    private AccountSeeding() {
+    }
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/accounts.sql");

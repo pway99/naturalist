@@ -23,7 +23,7 @@ class InsectFunctionalRoleQueryImpl
     @Override
     public FunctionalRoleCollection findByNameSet(Set<InsectFunctionalRoleId> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return FunctionalRoleCollection.of(repository().getByEntityNameSet(names));
     }

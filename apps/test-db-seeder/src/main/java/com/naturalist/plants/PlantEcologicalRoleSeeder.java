@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds plant ecological roles through the real RDBMS adapter (split-package with the rdbms module). */
 public final class PlantEcologicalRoleSeeder {
 
-    private PlantEcologicalRoleSeeder() {}
+    private PlantEcologicalRoleSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<PlantEcologicalRole> entities = database.getNamed(PlantEcologicalRoleTestEntitySource.class).entityStream().toList();

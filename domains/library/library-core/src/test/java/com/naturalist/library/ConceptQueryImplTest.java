@@ -15,7 +15,8 @@ class ConceptQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired ConceptQuery conceptQuery;
+    @Wired
+    ConceptQuery conceptQuery;
 
     @Test
     void getByNameReturnsTheConcept() {

@@ -23,8 +23,8 @@ import java.util.function.Consumer;
  * the {@link PlantGenusCommonNameDbo} child table.
  */
 @DboSchema(table = "plant_genus", primaryKey = "id", unique = {"name"},
-           foreignKeys = @Fk(columns = "family_id", references = "plant_family(id)"),
-           entity = PlantGenus.class)
+        foreignKeys = @Fk(columns = "family_id", references = "plant_family(id)"),
+        entity = PlantGenus.class)
 final class PlantGenusDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;

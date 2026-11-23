@@ -16,14 +16,16 @@ import java.util.function.Consumer;
 record Foo(String key) implements Named<String> {
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return c -> { };
+        return c -> {
+        };
     }
 }
 
 record Bar(String key, String foo) implements Named<String> {
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return c -> { };
+        return c -> {
+        };
     }
 }
 

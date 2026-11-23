@@ -17,8 +17,8 @@ import java.util.function.Consumer;
  * row carries the observation's UUID directly (FK-enforced) — no name indirection.
  */
 @DboSchema(table = "plant_observation_candidate", primaryKey = "observation_id,ordinal",
-           foreignKeys = @Fk(columns = "observation_id", references = "plant_observation(id)"),
-           entity = OrganismObservation.class)
+        foreignKeys = @Fk(columns = "observation_id", references = "plant_observation(id)"),
+        entity = OrganismObservation.class)
 final class PlantObservationCandidateDbo implements Dbo {
     String observationId;  // parent UUID as text; mapper casts it (::uuid)
     int ordinal;

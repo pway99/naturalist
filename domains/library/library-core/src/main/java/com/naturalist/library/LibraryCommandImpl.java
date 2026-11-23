@@ -14,9 +14,9 @@ class LibraryCommandImpl implements LibraryCommand {
                        CitationAssociationCommand citationAssociationCommand,
                        CitationAttributionTransaction citationAttributionTransaction) {
         Observer.forClass(LibraryCommandImpl.class).arguments("constructor", i -> i
-                        .notNull(citationCommand, "citationCommand")
-                        .notNull(citationAssociationCommand, "citationAssociationCommand")
-                        .notNull(citationAttributionTransaction, "citationAttributionTransaction"))
+                .notNull(citationCommand, "citationCommand")
+                .notNull(citationAssociationCommand, "citationAssociationCommand")
+                .notNull(citationAttributionTransaction, "citationAttributionTransaction"))
                 .throwWhenInvalid();
         this.citationCommand = citationCommand;
         this.citationAssociationCommand = citationAssociationCommand;

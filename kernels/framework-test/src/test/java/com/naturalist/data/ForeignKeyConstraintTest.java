@@ -90,7 +90,9 @@ class ForeignKeyConstraintTest {
 
     record Parent(String name) implements Named<String> {
         @Override
-        public String key() { return name; }
+        public String key() {
+            return name;
+        }
 
         @Override
         public Consumer<? extends Constraints> invariants() {
@@ -100,7 +102,9 @@ class ForeignKeyConstraintTest {
 
     record Child(String name, String parentName) implements Named<String> {
         @Override
-        public String key() { return name; }
+        public String key() {
+            return name;
+        }
 
         @Override
         public Consumer<? extends Constraints> invariants() {

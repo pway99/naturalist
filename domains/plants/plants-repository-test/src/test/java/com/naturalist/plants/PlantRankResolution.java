@@ -30,7 +30,7 @@ public final class PlantRankResolution {
     }
 
     private static <N extends com.naturalist.ddd.EntityName, E extends com.naturalist.ddd.NamedEntity<N>>
-    Set<String> slugs(NaturalistDatabase db,
+            Set<String> slugs(NaturalistDatabase db,
                       Class<? extends com.naturalist.data.TestEntitySource<N, E>> source) {
         return db.getNamed(source).entityStream()
                 .map(e -> e.name().value())

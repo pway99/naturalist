@@ -30,7 +30,8 @@ class InsectFactoryTest {
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     /** Provided by {@link InsectsTestContextInternal} over the graph's real queries, life stages included. */
-    @Wired InsectFactory factory;
+    @Wired
+    InsectFactory factory;
 
     @Test
     void buildByName_rejectsNull() {
@@ -117,7 +118,7 @@ class InsectFactoryTest {
         assertThat(insect.citations().citations()).isNotEmpty();
         assertThat(insect.citations().citations())
                 .extracting(c -> c.citation().name().value())
-            .contains("eol-battus-philenor-130502", "eol-lepidoptera-747");
+                .contains("eol-battus-philenor-130502", "eol-lepidoptera-747");
     }
 
     @Test

@@ -8,7 +8,8 @@ import javax.sql.DataSource;
 /** Seeds the garden domain — a single flat {@code planting} table with no foreign keys. */
 final class GardenSeeding {
 
-    private GardenSeeding() {}
+    private GardenSeeding() {
+    }
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/garden.sql");

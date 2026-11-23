@@ -26,50 +26,50 @@ interface PlantEcologicalRoleMapper {
     PlantEcologicalRoleDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT id, plant_rank, plant_name FROM plant_ecological_role WHERE id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, plant_rank, plant_name FROM plant_ecological_role WHERE id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<PlantEcologicalRoleDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM plant_ecological_role ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     List<PlantEcologicalRoleDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM plant_ecological_role ORDER BY id OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM plant_ecological_role ORDER BY id OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select("""
-        SELECT id, plant_rank, plant_name FROM plant_ecological_role
-        WHERE plant_rank = #{rank} AND plant_name = #{name}
-        """)
+            SELECT id, plant_rank, plant_name FROM plant_ecological_role
+            WHERE plant_rank = #{rank} AND plant_name = #{name}
+            """)
     PlantEcologicalRoleDbo selectByPlantName(@Param("rank") String rank, @Param("name") String name);
 
     @Select("""
-        <script>
-        SELECT role_id, role FROM plant_ecological_role_role WHERE role_id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT role_id, role FROM plant_ecological_role_role WHERE role_id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<PlantEcologicalRoleRoleDbo> selectRolesByIds(@Param("ids") Collection<String> ids);
 
     @Insert("""
-        INSERT INTO plant_ecological_role (id, plant_rank, plant_name)
-        VALUES (#{id}::uuid, #{plantRank}, #{plantName})
-        """)
+            INSERT INTO plant_ecological_role (id, plant_rank, plant_name)
+            VALUES (#{id}::uuid, #{plantRank}, #{plantName})
+            """)
     int insert(PlantEcologicalRoleDbo dbo);
 
     @Insert("INSERT INTO plant_ecological_role_role (role_id, role) VALUES (#{roleId}::uuid, #{role})")
     int insertRole(PlantEcologicalRoleRoleDbo dbo);
 
     @Update("""
-        UPDATE plant_ecological_role SET plant_rank = #{plantRank}, plant_name = #{plantName}
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE plant_ecological_role SET plant_rank = #{plantRank}, plant_name = #{plantName}
+            WHERE id = #{id}::uuid
+            """)
     int updateById(PlantEcologicalRoleDbo dbo);
 
     @Delete("DELETE FROM plant_ecological_role_role WHERE role_id = #{id}::uuid")

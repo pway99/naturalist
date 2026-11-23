@@ -21,8 +21,10 @@ class InsectObservationCommandImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectCommand.ObservationCommand command;
-    @Wired InsectQuery.ObservationQuery query;
+    @Wired
+    InsectCommand.ObservationCommand command;
+    @Wired
+    InsectQuery.ObservationQuery query;
 
     @Override
     public EntityCommand<InsectObservationId, OrganismObservation<InsectObservationId, InsectRankName>> command() {

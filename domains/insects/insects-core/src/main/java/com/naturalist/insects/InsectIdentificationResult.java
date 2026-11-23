@@ -18,4 +18,5 @@ record InsectIdentificationResult(
         Identification identification,
         List<String> features,
         @Nullable URI referenceUrl
-) {}
+) {
+}

@@ -49,7 +49,7 @@ class SecurityHeadersWebMvcTest {
     @Test
     void identifyPage_carriesThePolicy_andNosniff() throws Exception {
         MockHttpServletResponse response = mockMvc.perform(get("/insects/identify").with(user("naturalist").authorities(
-                        new SimpleGrantedAuthority("ROLE_NATURALIST"), new SimpleGrantedAuthority("VISION"))))
+                new SimpleGrantedAuthority("ROLE_NATURALIST"), new SimpleGrantedAuthority("VISION"))))
                 .andReturn().getResponse();
         assertThat(response.getHeader("Content-Security-Policy")).isEqualTo(POLICY);
         assertThat(response.getHeader("X-Content-Type-Options")).isEqualTo("nosniff");

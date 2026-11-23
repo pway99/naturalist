@@ -16,9 +16,9 @@ import java.util.Optional;
 @MockDomainService
 class EmailVerificationTokenRepositoryMock
         extends AbstractTestEntityRepository<
-                        EmailVerificationTokenId,
-                        EmailVerificationToken,
-                        EmailVerificationTokenTestEntitySource>
+        EmailVerificationTokenId,
+        EmailVerificationToken,
+        EmailVerificationTokenTestEntitySource>
         implements AccountRepository.VerificationTokenRepository {
 
     EmailVerificationTokenRepositoryMock(NaturalistDatabase naturalistDatabase) {

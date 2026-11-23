@@ -8,6 +8,7 @@ import com.naturalist.persistence.Fk;
 
 import java.util.UUID;
 import java.util.function.Consumer;
+
 // id is unwrapped to its String form (like EntityName -> String): MyBatis has no UUID type
 // handler, and the ACL forbids adding one, so the mapper casts the text to uuid in SQL (::uuid).
 
@@ -19,8 +20,8 @@ import java.util.function.Consumer;
  * {@code compound.id} from on write — so no name is persisted on this row and nothing can drift.
  */
 @DboSchema(table = "compound_depiction", primaryKey = "id",
-           foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
-           entity = CompoundDepiction.class)
+        foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
+        entity = CompoundDepiction.class)
 final class CompoundDepictionDbo implements Dbo {
     String id;            // the DepictionId's UUID as text; the mapper casts it to uuid (::uuid)
     String compoundName;  // JOIN projection (read) / nested-select key (write); not a stored column

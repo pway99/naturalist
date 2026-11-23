@@ -17,17 +17,28 @@ class InsectQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery insectQuery;
-    @Wired InsectQuery.SpeciesQuery speciesQuery;
-    @Wired InsectQuery.ImageQuery imageQuery;
-    @Wired InsectQuery.FamilyQuery familyQuery;
-    @Wired InsectQuery.GenusQuery genusQuery;
-    @Wired InsectQuery.FunctionalRoleQuery functionalRoleQuery;
-    @Wired InsectQuery.OrderQuery orderQuery;
-    @Wired InsectQuery.ObservationQuery observationQuery;
-    @Wired InsectCitationQueryImpl citationQuery;
-    @Wired InsectFeatureQueryImpl featureQuery;
-    @Wired InsectLifeStageQuery insectLifeStageQuery;
+    @Wired
+    InsectQuery insectQuery;
+    @Wired
+    InsectQuery.SpeciesQuery speciesQuery;
+    @Wired
+    InsectQuery.ImageQuery imageQuery;
+    @Wired
+    InsectQuery.FamilyQuery familyQuery;
+    @Wired
+    InsectQuery.GenusQuery genusQuery;
+    @Wired
+    InsectQuery.FunctionalRoleQuery functionalRoleQuery;
+    @Wired
+    InsectQuery.OrderQuery orderQuery;
+    @Wired
+    InsectQuery.ObservationQuery observationQuery;
+    @Wired
+    InsectCitationQueryImpl citationQuery;
+    @Wired
+    InsectFeatureQueryImpl featureQuery;
+    @Wired
+    InsectLifeStageQuery insectLifeStageQuery;
 
     @Test
     void accessors_returnNonNullDelegates() {

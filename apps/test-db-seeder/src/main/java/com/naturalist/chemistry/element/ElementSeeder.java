@@ -16,7 +16,8 @@ import java.util.List;
  */
 public final class ElementSeeder {
 
-    private ElementSeeder() {}
+    private ElementSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<Element> elements = database.getNamed(ElementTestEntitySource.class).entityStream().toList();

@@ -14,7 +14,8 @@ class PlantFeatureQueryImplTest {
     @RegisterExtension
     final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired PlantFeatureQueryImpl featureQuery;
+    @Wired
+    PlantFeatureQueryImpl featureQuery;
 
     @Test
     void findByRankName_composesAncestryFirst_ordinalOrderedWithinGroup() {

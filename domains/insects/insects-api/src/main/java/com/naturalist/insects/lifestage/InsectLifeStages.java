@@ -85,9 +85,9 @@ public final class InsectLifeStages {
 
         Clade placement = firstNonNull(
                 species.placedIn(),
-                genus  != null ? genus.placedIn()  : null,
+                genus != null ? genus.placedIn() : null,
                 family != null ? family.placedIn() : null,
-                order  != null ? order.placedIn()  : null);
+                order != null ? order.placedIn() : null);
         return resolve(placement);
     }
 

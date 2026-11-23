@@ -25,13 +25,25 @@ class OrganismObservationTest {
     private static final Observer OBSERVER = Observer.forClass(OrganismObservationTest.class);
 
     static final class FakeObsId extends EntityId {
-        private FakeObsId(UUID v) { super(v); }
-        @JsonCreator static FakeObsId of(UUID v) { return new FakeObsId(v); }
-        static FakeObsId create() { return new FakeObsId(EntityId.newUUID()); }
+        private FakeObsId(UUID v) {
+            super(v);
+        }
+
+        @JsonCreator
+        static FakeObsId of(UUID v) {
+            return new FakeObsId(v);
+        }
+
+        static FakeObsId create() {
+            return new FakeObsId(EntityId.newUUID());
+        }
     }
 
     record FakeGenusName(String value) implements RankName {
-        @Override public LinealRank rank() { return LinealRank.GENUS; }
+        @Override
+        public LinealRank rank() {
+            return LinealRank.GENUS;
+        }
     }
 
     private static final RankNameReconstructor RECONSTRUCTOR =

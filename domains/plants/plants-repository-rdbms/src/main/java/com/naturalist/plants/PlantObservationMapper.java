@@ -20,81 +20,81 @@ import java.util.List;
 interface PlantObservationMapper {
 
     String COLUMNS = """
-        id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
-        identification_confidence, identification_evidence
-        """;
+            id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
+            identification_confidence, identification_evidence
+            """;
 
     @Select("SELECT " + COLUMNS + " FROM plant_observation WHERE id = #{id}::uuid")
     PlantObservationDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
-               identification_confidence, identification_evidence
-        FROM plant_observation WHERE id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
+                   identification_confidence, identification_evidence
+            FROM plant_observation WHERE id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<PlantObservationDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM plant_observation ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     List<PlantObservationDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM plant_observation ORDER BY id OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM plant_observation ORDER BY id OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select("SELECT " + COLUMNS + " FROM plant_observation WHERE observed_by = #{observedBy} ORDER BY id")
     List<PlantObservationDbo> selectByNaturalist(String observedBy);
 
     @Select("""
-        <script>
-        SELECT id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
-               identification_confidence, identification_evidence
-        FROM plant_observation
-        WHERE observed_by = #{observedBy} AND (subject_rank, subject) IN
-        <foreach item='k' collection='keys' open='(' separator=',' close=')'>(#{k.rank}, #{k.name})</foreach>
-        ORDER BY id
-        </script>
-        """)
+            <script>
+            SELECT id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
+                   identification_confidence, identification_evidence
+            FROM plant_observation
+            WHERE observed_by = #{observedBy} AND (subject_rank, subject) IN
+            <foreach item='k' collection='keys' open='(' separator=',' close=')'>(#{k.rank}, #{k.name})</foreach>
+            ORDER BY id
+            </script>
+            """)
     List<PlantObservationDbo> selectByNaturalistAndSubjects(
             @Param("observedBy") String observedBy, @Param("keys") Collection<ObservationSubjectKey> keys);
 
     @Select("""
-        <script>
-        SELECT observation_id, ordinal, scientific_name, common_name, confidence
-        FROM plant_observation_candidate WHERE observation_id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        ORDER BY observation_id, ordinal
-        </script>
-        """)
+            <script>
+            SELECT observation_id, ordinal, scientific_name, common_name, confidence
+            FROM plant_observation_candidate WHERE observation_id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            ORDER BY observation_id, ordinal
+            </script>
+            """)
     List<PlantObservationCandidateDbo> selectCandidates(@Param("ids") Collection<String> ids);
 
     @Insert("""
-        INSERT INTO plant_observation (id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
-            identification_confidence, identification_evidence)
-        VALUES (#{id}::uuid, #{observedBy}, #{subjectRank}, #{subject}, #{observedOn}, #{notes}, #{location}, #{areaLat}, #{areaLon},
-            #{identificationConfidence}, #{identificationEvidence})
-        """)
+            INSERT INTO plant_observation (id, observed_by, subject_rank, subject, observed_on, notes, location, area_lat, area_lon,
+                identification_confidence, identification_evidence)
+            VALUES (#{id}::uuid, #{observedBy}, #{subjectRank}, #{subject}, #{observedOn}, #{notes}, #{location}, #{areaLat}, #{areaLon},
+                #{identificationConfidence}, #{identificationEvidence})
+            """)
     void insert(PlantObservationDbo dbo);
 
     @Update("""
-        UPDATE plant_observation SET
-            observed_by = #{observedBy}, subject_rank = #{subjectRank}, subject = #{subject},
-            observed_on = #{observedOn}, notes = #{notes}, location = #{location},
-            area_lat = #{areaLat}, area_lon = #{areaLon},
-            identification_confidence = #{identificationConfidence}, identification_evidence = #{identificationEvidence}
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE plant_observation SET
+                observed_by = #{observedBy}, subject_rank = #{subjectRank}, subject = #{subject},
+                observed_on = #{observedOn}, notes = #{notes}, location = #{location},
+                area_lat = #{areaLat}, area_lon = #{areaLon},
+                identification_confidence = #{identificationConfidence}, identification_evidence = #{identificationEvidence}
+            WHERE id = #{id}::uuid
+            """)
     int updateById(PlantObservationDbo dbo);
 
     @Insert("""
-        INSERT INTO plant_observation_candidate (observation_id, ordinal, scientific_name, common_name, confidence)
-        VALUES (#{observationId}::uuid, #{ordinal}, #{scientificName}, #{commonName}, #{confidence})
-        """)
+            INSERT INTO plant_observation_candidate (observation_id, ordinal, scientific_name, common_name, confidence)
+            VALUES (#{observationId}::uuid, #{ordinal}, #{scientificName}, #{commonName}, #{confidence})
+            """)
     void insertCandidate(PlantObservationCandidateDbo dbo);
 
     @Delete("DELETE FROM plant_observation_candidate WHERE observation_id = #{id}::uuid")

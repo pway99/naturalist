@@ -26,70 +26,70 @@ interface InsectFunctionalRoleMapper {
     InsectFunctionalRoleDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT id, parent_rank, parent_name, beneficial FROM insect_functional_role WHERE id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, parent_rank, parent_name, beneficial FROM insect_functional_role WHERE id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<InsectFunctionalRoleDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM insect_functional_role ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     List<InsectFunctionalRoleDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM insect_functional_role ORDER BY id OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM insect_functional_role ORDER BY id OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select("""
-        SELECT id, parent_rank, parent_name, beneficial FROM insect_functional_role
-        WHERE parent_rank = #{rank} AND parent_name = #{name}
-        """)
+            SELECT id, parent_rank, parent_name, beneficial FROM insect_functional_role
+            WHERE parent_rank = #{rank} AND parent_name = #{name}
+            """)
     InsectFunctionalRoleDbo selectByParentName(@Param("rank") String rank, @Param("name") String name);
 
     @Select("""
-        <script>
-        SELECT id, parent_rank, parent_name, beneficial FROM insect_functional_role
-        WHERE (parent_rank, parent_name) IN
-        <foreach item='k' collection='keys' open='(' separator=',' close=')'>
-            (#{k.rank}, #{k.name})
-        </foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, parent_rank, parent_name, beneficial FROM insect_functional_role
+            WHERE (parent_rank, parent_name) IN
+            <foreach item='k' collection='keys' open='(' separator=',' close=')'>
+                (#{k.rank}, #{k.name})
+            </foreach>
+            </script>
+            """)
     List<InsectFunctionalRoleDbo> selectByParentNames(@Param("keys") Collection<InsectRankKey> keys);
 
     @Select("""
-        SELECT r.id, r.parent_rank, r.parent_name, r.beneficial FROM insect_functional_role r
-        JOIN insect_functional_role_guild g ON g.role_id = r.id
-        WHERE g.guild = #{guild}
-        ORDER BY r.id
-        """)
+            SELECT r.id, r.parent_rank, r.parent_name, r.beneficial FROM insect_functional_role r
+            JOIN insect_functional_role_guild g ON g.role_id = r.id
+            WHERE g.guild = #{guild}
+            ORDER BY r.id
+            """)
     List<InsectFunctionalRoleDbo> selectByGuild(String guild);
 
     @Select("""
-        <script>
-        SELECT role_id, guild FROM insect_functional_role_guild WHERE role_id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT role_id, guild FROM insect_functional_role_guild WHERE role_id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<InsectFunctionalRoleGuildDbo> selectGuildsByIds(@Param("ids") Collection<String> ids);
 
     @Insert("""
-        INSERT INTO insect_functional_role (id, parent_rank, parent_name, beneficial)
-        VALUES (#{id}::uuid, #{parentRank}, #{parentName}, #{beneficial})
-        """)
+            INSERT INTO insect_functional_role (id, parent_rank, parent_name, beneficial)
+            VALUES (#{id}::uuid, #{parentRank}, #{parentName}, #{beneficial})
+            """)
     int insert(InsectFunctionalRoleDbo dbo);
 
     @Insert("INSERT INTO insect_functional_role_guild (role_id, guild) VALUES (#{roleId}::uuid, #{guild})")
     int insertGuild(InsectFunctionalRoleGuildDbo dbo);
 
     @Update("""
-        UPDATE insect_functional_role SET parent_rank = #{parentRank}, parent_name = #{parentName},
-            beneficial = #{beneficial}
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE insect_functional_role SET parent_rank = #{parentRank}, parent_name = #{parentName},
+                beneficial = #{beneficial}
+            WHERE id = #{id}::uuid
+            """)
     int updateById(InsectFunctionalRoleDbo dbo);
 
     @Delete("DELETE FROM insect_functional_role_guild WHERE role_id = #{id}::uuid")

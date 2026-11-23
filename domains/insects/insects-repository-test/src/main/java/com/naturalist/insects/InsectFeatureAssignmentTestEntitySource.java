@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public class InsectFeatureAssignmentTestEntitySource
         extends TestEntitySource<InsectFeatureAssignmentId,
-                OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
+        OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
 
     private final ObjectMapper mapper = TestDataHelper.newBaseMapper()
             .setInjectableValues(new InjectableValues.Std()

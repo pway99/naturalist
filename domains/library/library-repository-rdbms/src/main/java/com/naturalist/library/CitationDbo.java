@@ -79,7 +79,7 @@ final class CitationDbo implements Dbo {
                 .notBlank(title, "title")
                 .notBlank(authoritySourceId, "authoritySourceId").maxLength(authoritySourceId, 64, "authoritySourceId")
                 .notBlank(authoritySourceDisplayName, "authoritySourceDisplayName")
-                    .maxLength(authoritySourceDisplayName, 128, "authoritySourceDisplayName")
+                .maxLength(authoritySourceDisplayName, 128, "authoritySourceDisplayName")
                 .notBlank(authorityUrl, "authorityUrl");
     }
 }

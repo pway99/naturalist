@@ -17,8 +17,8 @@ import java.util.function.Consumer;
  * slug column, and {@link Bioregion#of(String)} throws on an unknown slug at reconstruction.
  */
 @DboSchema(table = "plant_species_native_bioregion", primaryKey = "species_id,bioregion",
-           foreignKeys = @Fk(columns = "species_id", references = "plant_species(id)"),
-           entity = PlantSpecies.class)
+        foreignKeys = @Fk(columns = "species_id", references = "plant_species(id)"),
+        entity = PlantSpecies.class)
 final class PlantSpeciesNativeBioregionDbo implements Dbo {
     String speciesName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String bioregion;    // biogeography slug (no FK)

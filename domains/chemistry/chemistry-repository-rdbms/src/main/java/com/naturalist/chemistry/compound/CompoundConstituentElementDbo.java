@@ -17,8 +17,8 @@ import java.util.function.Consumer;
  * column has NO foreign key to the {@code element} table.
  */
 @DboSchema(table = "compound_constituent_element", primaryKey = "compound_id,element_symbol",
-           foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
-           entity = Compound.class)
+        foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
+        entity = Compound.class)
 final class CompoundConstituentElementDbo implements Dbo {
     String compoundName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String elementSymbol;

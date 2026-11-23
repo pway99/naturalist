@@ -247,7 +247,9 @@ class Resilience4jResilienceTest {
     void bulkhead_releasesPermit_whenTheSupplierThrows() {
         Resilience resilience = new Resilience4jResilience(List.of(new BulkheadConfig("narrow", 1, Duration.ZERO)));
         Bulkhead bulkhead = resilience.bulkhead("narrow");
-        assertThatThrownBy(() -> bulkhead.execute(() -> { throw new IllegalStateException("vision failed"); }))
+        assertThatThrownBy(() -> bulkhead.execute(() -> {
+            throw new IllegalStateException("vision failed");
+        }))
                 .isInstanceOf(IllegalStateException.class);
         assertThat(bulkhead.execute(() -> "next")).isEqualTo("next");
     }

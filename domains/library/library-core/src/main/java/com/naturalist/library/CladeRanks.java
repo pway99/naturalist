@@ -28,7 +28,8 @@ final class CladeRanks {
             Map.entry("plantae", LinealRank.KINGDOM)
     );
 
-    private CladeRanks() {}
+    private CladeRanks() {
+    }
 
     static Optional<LinealRank> rankFor(Clade clade) {
         return Optional.ofNullable(RANK_BY_SLUG.get(clade.slug()));

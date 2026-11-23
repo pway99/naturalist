@@ -11,19 +11,33 @@ class StringLengthLessThanConstraintTest {
         return new StringLengthLessThanConstraint<>(v, Function.identity(), max, "field");
     }
 
-    @Test void nullValue_isValid() { assertThat(c(null, 5).isValid()).isTrue(); }
+    @Test
+    void nullValue_isValid() {
+        assertThat(c(null, 5).isValid()).isTrue();
+    }
 
-    @Test void atLimit_isValid() { assertThat(c("abcde", 5).isValid()).isTrue(); }
+    @Test
+    void atLimit_isValid() {
+        assertThat(c("abcde", 5).isValid()).isTrue();
+    }
 
-    @Test void underLimit_isValid() { assertThat(c("abc", 5).isValid()).isTrue(); }
+    @Test
+    void underLimit_isValid() {
+        assertThat(c("abc", 5).isValid()).isTrue();
+    }
 
-    @Test void overLimit_isInvalid() { assertThat(c("abcdef", 5).isValid()).isFalse(); }
+    @Test
+    void overLimit_isInvalid() {
+        assertThat(c("abcdef", 5).isValid()).isFalse();
+    }
 
-    @Test void overLimit_errorMessageNamesTheLengths() {
+    @Test
+    void overLimit_errorMessageNamesTheLengths() {
         assertThat(c("abcdef", 5).errorMessage()).contains("6").contains("5");
     }
 
-    @Test void constraintsBuilder_maxLength_flagsOverLimit() {
+    @Test
+    void constraintsBuilder_maxLength_flagsOverLimit() {
         Observer observer = Observer.forClass(StringLengthLessThanConstraintTest.class);
         assertThat(observer.arguments("constraintsBuilder_maxLength_flagsOverLimit", i -> i.maxLength("abcdef", 5, "field")).violations()).isNotEmpty();
         assertThat(observer.arguments("constraintsBuilder_maxLength_flagsOverLimit", i -> i.maxLength("abc", 5, "field")).violations()).isEmpty();

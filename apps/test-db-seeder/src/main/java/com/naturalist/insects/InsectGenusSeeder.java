@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds insect genera through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectGenusSeeder {
 
-    private InsectGenusSeeder() {}
+    private InsectGenusSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<InsectGenusInfo> entities = database.getNamed(InsectGenusTestEntitySource.class).entityStream().toList();

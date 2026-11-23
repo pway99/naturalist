@@ -18,8 +18,8 @@ import java.util.function.Consumer;
  * {@link Locale} round-trips as its BCP-47 language tag.
  */
 @DboSchema(table = "insect_order_common_name", primaryKey = "order_id,label,locale",
-           foreignKeys = @Fk(columns = "order_id", references = "insect_order(id)"),
-           entity = InsectOrderInfo.class)
+        foreignKeys = @Fk(columns = "order_id", references = "insect_order(id)"),
+        entity = InsectOrderInfo.class)
 final class InsectOrderCommonNameDbo implements Dbo {
     String orderName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String label;

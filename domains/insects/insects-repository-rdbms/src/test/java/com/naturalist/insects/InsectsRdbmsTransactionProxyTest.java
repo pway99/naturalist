@@ -111,7 +111,7 @@ class InsectsRdbmsTransactionProxyTest {
         Constructor<?> constructor = type.getDeclaredConstructors()[0];
         constructor.setAccessible(true);
         Class<?> mapperType = constructor.getParameterTypes()[0];
-        Object mapper = Proxy.newProxyInstance(mapperType.getClassLoader(), new Class<?>[] {mapperType},
+        Object mapper = Proxy.newProxyInstance(mapperType.getClassLoader(), new Class<?>[]{mapperType},
                 (proxy, method, args) -> {
                     if (method.getDeclaringClass() == Object.class) return method.invoke(log, args);
                     log.record(method.getName());

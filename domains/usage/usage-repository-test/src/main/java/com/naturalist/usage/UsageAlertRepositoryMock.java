@@ -24,10 +24,10 @@ class UsageAlertRepositoryMock
             UsageCounterName counter, AlertScope scope, AlertKind kind, String period) {
         MethodObserver findDedupKey = observer().forMethod("findDedupKey");
         findDedupKey.arguments(i -> i
-                        .identifier(counter, "counter")
-                        .notNull(scope, "scope")
-                        .notNull(kind, "kind")
-                        .notBlank(period, "period"))
+                .identifier(counter, "counter")
+                .notNull(scope, "scope")
+                .notNull(kind, "kind")
+                .notBlank(period, "period"))
                 .throwWhenInvalid();
         Optional<UsageAlert> result = testEntitySource().entityStream()
                 .filter(a -> a.counter().equals(counter)

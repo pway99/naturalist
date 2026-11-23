@@ -71,7 +71,7 @@ public interface PlantQuery {
 
     interface OrderQuery
             extends EntityQuery<PlantOrderName, PlantOrder,
-                    PlantEntityCollections.OrderCollection> {
+            PlantEntityCollections.OrderCollection> {
     }
 
     interface FamilyQuery
@@ -131,7 +131,7 @@ public interface PlantQuery {
 
     interface EcologicalRoleQuery
             extends EntityQuery<PlantEcologicalRoleId, PlantEcologicalRole,
-                    PlantEntityCollections.EcologicalRoleCollection> {
+            PlantEntityCollections.EcologicalRoleCollection> {
 
         /**
          * The ecological role recorded for a taxon, at whatever rank it was recorded.
@@ -143,7 +143,7 @@ public interface PlantQuery {
 
     interface ObservationQuery
             extends EntityQuery<PlantObservationId, OrganismObservation<PlantObservationId, PlantRankName>,
-                    PlantEntityCollections.ObservationCollection> {
+            PlantEntityCollections.ObservationCollection> {
 
         /** All of a naturalist's plant observations — the "my collection" surface. */
         PlantEntityCollections.ObservationCollection forNaturalist(NaturalistName observedBy);

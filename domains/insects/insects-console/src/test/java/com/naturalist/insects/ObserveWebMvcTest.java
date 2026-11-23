@@ -35,11 +35,11 @@ class ObserveWebMvcTest {
     @Test
     void observe_thenMine_includesTheSpecies() throws Exception {
         mockMvc.perform(post("/insects/battus-philenor/observe").param("notes", "seen today")
-                        .requestAttr(CURRENT_NATURALIST, "flora-mendez"))
+                .requestAttr(CURRENT_NATURALIST, "flora-mendez"))
                 .andExpect(status().is3xxRedirection());
 
         mockMvc.perform(get("/insects/species").sessionAttr("insects.collectionLens", true)
-                        .requestAttr(CURRENT_NATURALIST, "flora-mendez"))
+                .requestAttr(CURRENT_NATURALIST, "flora-mendez"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("battus-philenor")));
     }

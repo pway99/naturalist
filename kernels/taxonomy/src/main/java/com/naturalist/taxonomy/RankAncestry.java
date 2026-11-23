@@ -16,7 +16,8 @@ import java.util.function.Function;
  */
 public final class RankAncestry {
 
-    private RankAncestry() {}
+    private RankAncestry() {
+    }
 
     /**
      * The ancestry chain from {@code subject} upward: subject first, then ancestors in
@@ -53,5 +54,6 @@ public final class RankAncestry {
     }
 
     /** An attribute tagged with the ancestry rank it was attached at. */
-    public record AtRank<R extends RankName, A>(A value, R sourceRank) {}
+    public record AtRank<R extends RankName, A>(A value, R sourceRank) {
+    }
 }

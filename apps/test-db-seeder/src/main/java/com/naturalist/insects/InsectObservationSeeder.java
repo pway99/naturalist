@@ -13,7 +13,8 @@ import java.util.List;
 /** Seeds insect observations through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectObservationSeeder {
 
-    private InsectObservationSeeder() {}
+    private InsectObservationSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<OrganismObservation<InsectObservationId, InsectRankName>> entities = database.getNamed(InsectObservationTestEntitySource.class).entityStream().toList();

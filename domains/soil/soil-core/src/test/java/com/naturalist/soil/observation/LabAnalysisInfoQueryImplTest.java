@@ -20,7 +20,8 @@ class LabAnalysisInfoQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired LabAnalysisInfoQuery query;
+    @Wired
+    LabAnalysisInfoQuery query;
 
     @Override
     public EntityQuery<LabAnalysisId, LabAnalysisInfo, LabAnalysisInfoCollection> query() {

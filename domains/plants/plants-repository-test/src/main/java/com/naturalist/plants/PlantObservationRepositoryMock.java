@@ -36,8 +36,8 @@ class PlantObservationRepositoryMock
     public List<OrganismObservation<PlantObservationId, PlantRankName>> getByNaturalistAndSubjects(NaturalistName observedBy, Set<PlantRankName> subjects) {
         MethodObserver getByNaturalistAndSubjects = observer().forMethod("getByNaturalistAndSubjects");
         getByNaturalistAndSubjects.arguments(i -> i
-                        .identifier(observedBy, "observedBy")
-                        .identifierSet(subjects, "subjects"))
+                .identifier(observedBy, "observedBy")
+                .identifierSet(subjects, "subjects"))
                 .throwWhenInvalid();
         List<OrganismObservation<PlantObservationId, PlantRankName>> result = testEntitySource().entityStream()
                 .filter(o -> observedBy.equals(o.observedBy()) && subjects.contains(o.subject()))

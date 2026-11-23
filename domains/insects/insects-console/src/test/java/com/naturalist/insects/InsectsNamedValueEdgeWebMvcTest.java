@@ -123,8 +123,8 @@ class InsectsNamedValueEdgeWebMvcTest {
     @Test
     void updateNotes_missingId_redirectsBack_andIsCounted() throws Exception {
         mockMvc.perform(post("/insects/battus-philenor/notes")
-                        .param("notes", "new")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .param("notes", "new")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=observation"));
 
@@ -136,9 +136,9 @@ class InsectsNamedValueEdgeWebMvcTest {
         InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
-                        .param("observationId", id.value().toString())
-                        .param("notes", "new")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .param("observationId", id.value().toString())
+                .param("notes", "new")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
 
         assertThat(InsectsControllerTestConfig.INSECTS.insectQuery().observations().getByName(id)
@@ -148,9 +148,9 @@ class InsectsNamedValueEdgeWebMvcTest {
 
     private void assertIdRefused(String observationId) throws Exception {
         mockMvc.perform(post("/insects/battus-philenor/notes")
-                        .param("observationId", observationId)
-                        .param("notes", "new")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .param("observationId", observationId)
+                .param("notes", "new")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=observation"));
 

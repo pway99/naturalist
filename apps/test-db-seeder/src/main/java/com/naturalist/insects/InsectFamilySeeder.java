@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds insect families through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectFamilySeeder {
 
-    private InsectFamilySeeder() {}
+    private InsectFamilySeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<InsectFamilyInfo> entities = database.getNamed(InsectFamilyTestEntitySource.class).entityStream().toList();

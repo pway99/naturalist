@@ -14,7 +14,8 @@ class InsectCitationQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectCitationQueryImpl insectCitationQuery;
+    @Wired
+    InsectCitationQueryImpl insectCitationQuery;
 
     @Test
     void findByRankName_rejectsNull() {
@@ -31,7 +32,7 @@ class InsectCitationQueryImplTest {
         assertThat(view.subject().value()).isEqualTo("lepidoptera");
         assertThat(view.citations()).hasSize(1);
         assertThat(view.citations().getFirst().citation().name().value())
-            .isEqualTo("eol-lepidoptera-747");
+                .isEqualTo("eol-lepidoptera-747");
         assertThat(view.citations().getFirst().attachedAt().value())
                 .isEqualTo("lepidoptera");
     }

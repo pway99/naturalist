@@ -196,35 +196,35 @@ public record Insect(
     @Override
     public Consumer<? extends Constraints> invariants() {
         return i -> i
-            .behavioralCollection(observations, "observations")
-            .behavioralCollection(lifeStages, "lifeStages")
-            // One descent per present rank (R1): a rank's own invariants are
-            // walked exactly once, in its own block. Ancestor *presence* is a
-            // notNull check (not a re-descent), and the single remaining FK
-            // check per rank validates the immediate-parent typed FK. With the
-            // grandparent FKs removed there is exactly one path up the tree, so
-            // the former skip-level checks (speciesBelongsToFamily,
-            // genusBelongsToOrder) are structurally impossible and gone.
-            .readModelOrNull(order, "order")
-            .whenNotNull(family, f -> f
-                .readModel(family, "family")
-                .notNull(order, "family:order")
-                .isTrue(family.belongsToOrder(order), "familyBelongsToOrder")
-            )
-            .whenNotNull(genus, g -> g
-                .readModel(genus, "genus")
-                .notNull(family, "genus:family")
-                .isTrue(genus.belongsToFamily(family), "genusBelongsToFamily")
-            )
-            .whenNotNull(species, s -> s
-                .readModel(species, "species")
-                .notNull(genus, "species:genus")
-                .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus")
-            )
-            .readModelOrNull(citations, "citations")
-            .readModelOrNull(features, "features")
-            .namedEntityOrNull(role, "role")
-            .notNull(children, "children")
+                .behavioralCollection(observations, "observations")
+                .behavioralCollection(lifeStages, "lifeStages")
+                // One descent per present rank (R1): a rank's own invariants are
+                // walked exactly once, in its own block. Ancestor *presence* is a
+                // notNull check (not a re-descent), and the single remaining FK
+                // check per rank validates the immediate-parent typed FK. With the
+                // grandparent FKs removed there is exactly one path up the tree, so
+                // the former skip-level checks (speciesBelongsToFamily,
+                // genusBelongsToOrder) are structurally impossible and gone.
+                .readModelOrNull(order, "order")
+                .whenNotNull(family, f -> f
+                                .readModel(family, "family")
+                                .notNull(order, "family:order")
+                                .isTrue(family.belongsToOrder(order), "familyBelongsToOrder")
+                )
+                .whenNotNull(genus, g -> g
+                                .readModel(genus, "genus")
+                                .notNull(family, "genus:family")
+                                .isTrue(genus.belongsToFamily(family), "genusBelongsToFamily")
+                )
+                .whenNotNull(species, s -> s
+                                .readModel(species, "species")
+                                .notNull(genus, "species:genus")
+                                .isTrue(species.belongsToGenus(genus), "speciesBelongsToGenus")
+                )
+                .readModelOrNull(citations, "citations")
+                .readModelOrNull(features, "features")
+                .namedEntityOrNull(role, "role")
+                .notNull(children, "children")
         ;
     }
 

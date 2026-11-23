@@ -575,7 +575,7 @@ public final class TestGraph {
         String names = providers.stream().map(c -> c.getClass().getSimpleName()).toList().toString();
         throw new TestGraphException(providers.isEmpty()
                 ? "no test context provides " + type.getName() + " (requested by " + chain()
-                        + ") and its package has no context of its own; provide it in the test's own context"
+                + ") and its package has no context of its own; provide it in the test's own context"
                 : type.getName() + " is provided by " + names + "; the test's own context must provide it to choose one");
     }
 }

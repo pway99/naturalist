@@ -24,7 +24,8 @@ class SoilProfileViewTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired SoilProfileQuery query;
+    @Wired
+    SoilProfileQuery query;
 
     private LabAnalysis box1() {
         return query.getBySoilProfileName(TestSoilIdentifiers.SoilProfiles.Box1.name)

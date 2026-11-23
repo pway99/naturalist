@@ -19,7 +19,8 @@ import java.io.IOException;
 /** Shared helper for the per-domain seeders. */
 final class Seeding {
 
-    private Seeding() {}
+    private Seeding() {
+    }
 
     /** Drop + recreate a domain's tables from its {@code schema/*.sql} DDL resource. */
     static void applySchema(DataSource dataSource, String resource) {
@@ -55,7 +56,7 @@ final class Seeding {
                     continue;
                 }
                 try (InputStream in = Seeding.class.getClassLoader()
-                        .getResourceAsStream(space + "/images/" + name.value())) {
+                             .getResourceAsStream(space + "/images/" + name.value())) {
                     if (in == null) {
                         missing.add(name.value());
                         continue;

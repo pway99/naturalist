@@ -47,16 +47,16 @@ class PlantFactory {
                  PlantProgramQuery programQuery,
                  PhytochemicalConstituentQuery constituentQuery) {
         observer.arguments("constructor", i -> i
-                        .notNull(speciesQuery, "speciesQuery")
-                        .notNull(genusQuery, "genusQuery")
-                        .notNull(familyQuery, "familyQuery")
-                        .notNull(orderQuery, "orderQuery")
-                        .notNull(featureQuery, "featureQuery")
-                        .notNull(roleQuery, "roleQuery")
-                        .notNull(imageQuery, "imageQuery")
-                        .notNull(cultivarQuery, "cultivarQuery")
-                        .notNull(programQuery, "programQuery")
-                        .notNull(constituentQuery, "constituentQuery"))
+                .notNull(speciesQuery, "speciesQuery")
+                .notNull(genusQuery, "genusQuery")
+                .notNull(familyQuery, "familyQuery")
+                .notNull(orderQuery, "orderQuery")
+                .notNull(featureQuery, "featureQuery")
+                .notNull(roleQuery, "roleQuery")
+                .notNull(imageQuery, "imageQuery")
+                .notNull(cultivarQuery, "cultivarQuery")
+                .notNull(programQuery, "programQuery")
+                .notNull(constituentQuery, "constituentQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.genusQuery = genusQuery;

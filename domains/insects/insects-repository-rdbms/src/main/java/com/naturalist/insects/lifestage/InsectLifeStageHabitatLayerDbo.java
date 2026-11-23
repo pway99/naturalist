@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 
 /** Child row for one {@link VerticalLayer} of a life stage's habitat profile. Carries the life stage NAME. */
 @DboSchema(table = "insect_life_stage_habitat_layer", primaryKey = "life_stage_id,layer",
-           foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
-           entity = LifeStage.class)
+        foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
+        entity = LifeStage.class)
 final class InsectLifeStageHabitatLayerDbo implements Dbo {
     String lifeStageName;
     String layer;
@@ -26,7 +26,9 @@ final class InsectLifeStageHabitatLayerDbo implements Dbo {
         return d;
     }
 
-    VerticalLayer toLayer() { return VerticalLayer.valueOf(layer); }
+    VerticalLayer toLayer() {
+        return VerticalLayer.valueOf(layer);
+    }
 
     @Override
     public Consumer<? extends Constraints> invariants() {

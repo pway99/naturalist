@@ -96,8 +96,8 @@ class UsageAlertBannerWebMvcTest {
         assertThat(anonymousHome).doesNotContain("usage-alert-banner");
 
         mockMvc.perform(post("/admin/usage/alerts/{id}/ack", id)
-                        .with(user("naturalist").roles("ADMIN"))
-                        .with(csrf()))
+                .with(user("naturalist").roles("ADMIN"))
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection());
 
         String adminHomeAfterAck = mockMvc.perform(get("/").with(user("naturalist").roles("ADMIN")))

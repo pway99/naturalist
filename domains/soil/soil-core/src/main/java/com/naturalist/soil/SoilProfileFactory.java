@@ -59,12 +59,12 @@ class SoilProfileFactory {
                        ReportedOptimumQuery reportedOptimumQuery,
                        ReportedRecommendationQuery reportedRecommendationQuery) {
         observer.arguments("constructor", i -> i
-                        .notNull(soilProfileInfoQuery, "soilProfileInfoQuery")
-                        .notNull(labAnalysisInfoQuery, "labAnalysisInfoQuery")
-                        .notNull(nutrientReadingQuery, "nutrientReadingQuery")
-                        .notNull(physicalCharacteristicsQuery, "physicalCharacteristicsQuery")
-                        .notNull(reportedOptimumQuery, "reportedOptimumQuery")
-                        .notNull(reportedRecommendationQuery, "reportedRecommendationQuery"))
+                .notNull(soilProfileInfoQuery, "soilProfileInfoQuery")
+                .notNull(labAnalysisInfoQuery, "labAnalysisInfoQuery")
+                .notNull(nutrientReadingQuery, "nutrientReadingQuery")
+                .notNull(physicalCharacteristicsQuery, "physicalCharacteristicsQuery")
+                .notNull(reportedOptimumQuery, "reportedOptimumQuery")
+                .notNull(reportedRecommendationQuery, "reportedRecommendationQuery"))
                 .throwWhenInvalid();
         this.soilProfileInfoQuery = soilProfileInfoQuery;
         this.labAnalysisInfoQuery = labAnalysisInfoQuery;

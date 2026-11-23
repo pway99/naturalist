@@ -42,11 +42,11 @@ class UsageQueryImpl implements UsageQuery {
                    UsageRepository.EventRepository events,
                    UsageRepository.AlertRepository alerts) {
         observer.arguments("constructor", i -> i
-                        .notNull(warningPercent, "warningPercent")
-                        .notNull(clock, "clock")
-                        .notNull(counters, "counters")
-                        .notNull(events, "events")
-                        .notNull(alerts, "alerts"))
+                .notNull(warningPercent, "warningPercent")
+                .notNull(clock, "clock")
+                .notNull(counters, "counters")
+                .notNull(events, "events")
+                .notNull(alerts, "alerts"))
                 .throwWhenInvalid();
         this.warningPercent = warningPercent.value();
         this.clock = clock;
@@ -97,7 +97,7 @@ class UsageQueryImpl implements UsageQuery {
     @Override
     public ReserveState reserveState(UsageCounterName counter, NaturalistName naturalist, Instant now) {
         observer.arguments("reserveState", i -> i
-                        .identifier(counter, "counter").identifier(naturalist, "naturalist").notNull(now, "now"))
+                .identifier(counter, "counter").identifier(naturalist, "naturalist").notNull(now, "now"))
                 .throwWhenInvalid();
 
         List<UsageCounter> rules = counters.findByCounterName(counter).stream()

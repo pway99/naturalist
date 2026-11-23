@@ -36,17 +36,17 @@ class PlantQueryImpl implements PlantQuery {
                    PlantProgramQuery programQuery,
                    PhytochemicalConstituentQuery constituentQuery) {
         Observer.forClass(PlantQueryImpl.class).arguments("constructor", i -> i
-                        .notNull(plantEntityQuery, "plantEntityQuery")
-                        .notNull(plantOrderEntityQuery, "plantOrderEntityQuery")
-                        .notNull(plantFamilyEntityQuery, "plantFamilyEntityQuery")
-                        .notNull(plantGenusEntityQuery, "plantGenusEntityQuery")
-                        .notNull(plantEcologicalRoleEntityQuery, "plantEcologicalRoleEntityQuery")
-                        .notNull(observationQuery, "observationQuery")
-                        .notNull(imageQuery, "imageQuery")
-                        .notNull(featureQuery, "featureQuery")
-                        .notNull(cultivarQuery, "cultivarQuery")
-                        .notNull(programQuery, "programQuery")
-                        .notNull(constituentQuery, "constituentQuery"))
+                .notNull(plantEntityQuery, "plantEntityQuery")
+                .notNull(plantOrderEntityQuery, "plantOrderEntityQuery")
+                .notNull(plantFamilyEntityQuery, "plantFamilyEntityQuery")
+                .notNull(plantGenusEntityQuery, "plantGenusEntityQuery")
+                .notNull(plantEcologicalRoleEntityQuery, "plantEcologicalRoleEntityQuery")
+                .notNull(observationQuery, "observationQuery")
+                .notNull(imageQuery, "imageQuery")
+                .notNull(featureQuery, "featureQuery")
+                .notNull(cultivarQuery, "cultivarQuery")
+                .notNull(programQuery, "programQuery")
+                .notNull(constituentQuery, "constituentQuery"))
                 .throwWhenInvalid();
         this.plantEntityQuery = plantEntityQuery;
         this.plantOrderEntityQuery = plantOrderEntityQuery;

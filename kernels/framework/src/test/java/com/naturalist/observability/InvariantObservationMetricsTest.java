@@ -192,7 +192,8 @@ class InvariantObservationMetricsTest {
         Observer observer = Observer.forClass(InvariantObservationMetricsTest.class);
         observer.noticeError(null, null, null, null);
         observer.forMethod("noticeError_neverThrows").noticeError(null, null, Handling.RETHROWN);
-        observer.forMethod("noticeError_neverThrows").noticeError("anonymous", new RuntimeException() { }, Handling.RETHROWN);
+        observer.forMethod("noticeError_neverThrows").noticeError("anonymous", new RuntimeException() {
+        }, Handling.RETHROWN);
 
         Counter anonymous = meters.find(CHECK).tag("name", "InvariantObservationMetricsTest.noticeError_neverThrows.anonymous")
                 .tag("kind", "caught")

@@ -106,7 +106,8 @@ final class InsectLifeStageDbo implements Dbo {
                 d.pupaAppearance = p.appearance();
                 d.pupaAdaptiveSignificance = p.adaptiveSignificance();
                 switch (p.diapauseRegulation()) {
-                    case null -> { }
+                    case null -> {
+                    }
                     case PupaStage.PhotoperiodRegulated x -> {
                         d.diapauseKind = "PHOTOPERIOD";
                         d.diapauseFieldA = x.criticalDaylength();
@@ -196,7 +197,7 @@ final class InsectLifeStageDbo implements Dbo {
                 .notBlank(stageKind, "stageKind").maxLength(stageKind, 16, "stageKind")
                 .notBlank(parentRank, "parentRank").maxLength(parentRank, 16, "parentRank")
                 .notNull(parentName, "parentName").kebabFormat(parentName, "parentName")
-                    .maxLength(parentName, 96, "parentName")
+                .maxLength(parentName, 96, "parentName")
                 .notBlank(descriptionPreschool, "descriptionPreschool")
                 .notBlank(descriptionElementary, "descriptionElementary")
                 .notBlank(descriptionSecondary, "descriptionSecondary")

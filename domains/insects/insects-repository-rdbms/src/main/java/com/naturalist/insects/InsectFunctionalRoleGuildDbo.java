@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * {@link FunctionalGuild} is an enum stored by constant name.
  */
 @DboSchema(table = "insect_functional_role_guild", primaryKey = "role_id,guild",
-           foreignKeys = @Fk(columns = "role_id", references = "insect_functional_role(id)"),
-           entity = InsectFunctionalRole.class)
+        foreignKeys = @Fk(columns = "role_id", references = "insect_functional_role(id)"),
+        entity = InsectFunctionalRole.class)
 final class InsectFunctionalRoleGuildDbo implements Dbo {
     String roleId;  // the owning functional-role's own UUID as text; mapper casts it (::uuid)
     String guild;   // FunctionalGuild enum constant name

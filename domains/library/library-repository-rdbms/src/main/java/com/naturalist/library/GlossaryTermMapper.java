@@ -24,34 +24,34 @@ interface GlossaryTermMapper {
     GlossaryTermDbo selectByName(String name);
 
     @Select("""
-        <script>
-        SELECT id, name, term, definition, example FROM glossary_term
-        WHERE name IN
-        <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, name, term, definition, example FROM glossary_term
+            WHERE name IN
+            <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
+            </script>
+            """)
     List<GlossaryTermDbo> selectByNameSet(@Param("names") Collection<String> names);
 
     @Select("SELECT " + COLUMNS + " FROM glossary_term ORDER BY name LIMIT #{limit} OFFSET #{offset}")
     List<GlossaryTermDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM glossary_term ORDER BY name OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM glossary_term ORDER BY name OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Insert("""
-        INSERT INTO glossary_term (name, term, definition, example)
-        VALUES (#{name}, #{term}, #{definition}, #{example})
-        """)
+            INSERT INTO glossary_term (name, term, definition, example)
+            VALUES (#{name}, #{term}, #{definition}, #{example})
+            """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(GlossaryTermDbo dbo);
 
     @Update("""
-        UPDATE glossary_term SET term = #{term}, definition = #{definition}, example = #{example}
-        WHERE name = #{name}
-        """)
+            UPDATE glossary_term SET term = #{term}, definition = #{definition}, example = #{example}
+            WHERE name = #{name}
+            """)
     int updateByName(GlossaryTermDbo dbo);
 }

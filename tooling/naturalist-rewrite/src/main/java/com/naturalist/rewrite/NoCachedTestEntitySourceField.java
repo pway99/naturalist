@@ -20,7 +20,7 @@ public class NoCachedTestEntitySourceField extends Recipe {
 
     private static final String BASE = "com.naturalist.data.TestEntitySource";
     private static final String MESSAGE =
-        "cache TestEntitySource in a field; fetch via db.getNamed(...) inside each test so sources reset per test";
+            "cache TestEntitySource in a field; fetch via db.getNamed(...) inside each test so sources reset per test";
 
     @Override
     public String getDisplayName() {
@@ -30,8 +30,8 @@ public class NoCachedTestEntitySourceField extends Recipe {
     @Override
     public String getDescription() {
         return "A TestEntitySource-typed field is populated at construction, before the extension's "
-             + "@BeforeEach registry reset, so it goes stale. Fetch from NaturalistDatabase#getNamed "
-             + "inside each test instead. Method-locals and getNamed-returning helpers are allowed.";
+                + "@BeforeEach registry reset, so it goes stale. Fetch from NaturalistDatabase#getNamed "
+                + "inside each test instead. Method-locals and getNamed-returning helpers are allowed.";
     }
 
     @Override
@@ -50,9 +50,9 @@ public class NoCachedTestEntitySourceField extends Recipe {
             public J visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree instanceof JavaSourceFile) {
                     boolean isTest = ((JavaSourceFile) tree).getMarkers()
-                        .findFirst(JavaSourceSet.class)
-                        .map(s -> "test".equals(s.getName()))
-                        .orElse(false);
+                            .findFirst(JavaSourceSet.class)
+                            .map(s -> "test".equals(s.getName()))
+                            .orElse(false);
                     if (!isTest) {
                         return (J) tree;
                     }

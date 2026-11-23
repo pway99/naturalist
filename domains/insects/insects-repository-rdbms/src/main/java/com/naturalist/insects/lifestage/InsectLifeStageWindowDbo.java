@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * write). {@code MonthDay} values store as their {@code --MM-DD} text form; {@code peak} is nullable.
  */
 @DboSchema(table = "insect_life_stage_window", primaryKey = "life_stage_id,ordinal",
-           foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
-           entity = LifeStage.class)
+        foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
+        entity = LifeStage.class)
 final class InsectLifeStageWindowDbo implements Dbo {
     String lifeStageName;  // JOIN projection / nested-select key; not a stored column
     int ordinal;

@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds nutrient readings through the real RDBMS adapter (split-package with the rdbms module). */
 public final class NutrientReadingSeeder {
 
-    private NutrientReadingSeeder() {}
+    private NutrientReadingSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<NutrientReading> entities = database.getNamed(NutrientReadingTestEntitySource.class).entityStream().toList();

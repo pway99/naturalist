@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds reported recommendations through the real RDBMS adapter (split-package with the rdbms module). */
 public final class ReportedRecommendationSeeder {
 
-    private ReportedRecommendationSeeder() {}
+    private ReportedRecommendationSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<ReportedRecommendation> entities = database.getNamed(ReportedRecommendationTestEntitySource.class).entityStream().toList();

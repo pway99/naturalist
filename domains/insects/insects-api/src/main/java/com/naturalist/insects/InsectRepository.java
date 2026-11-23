@@ -178,7 +178,7 @@ class InsectRepository {
 
     protected interface FeatureAssignmentRepository
             extends EntityRepository<InsectFeatureAssignmentId,
-                                     OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
+            OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
 
         List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> getByRankName(InsectRankName rankName);
 

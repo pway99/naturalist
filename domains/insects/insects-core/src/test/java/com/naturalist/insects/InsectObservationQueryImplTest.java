@@ -13,7 +13,8 @@ class InsectObservationQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery.ObservationQuery query;
+    @Wired
+    InsectQuery.ObservationQuery query;
 
     @Test
     void forNaturalist_returnsOnlyThatNaturalistsObservations() {

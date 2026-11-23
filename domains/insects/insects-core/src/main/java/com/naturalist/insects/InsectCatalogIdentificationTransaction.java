@@ -111,7 +111,7 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
             OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> toSave = resolvedFeatureId.equals(assignment.featureId())
                     ? assignment
                     : OrganismFeatureAssignment.of(
-                            assignment.id(), resolvedFeatureId, assignment.rankName(), assignment.ordinal());
+                    assignment.id(), resolvedFeatureId, assignment.rankName(), assignment.ordinal());
             commands.featureAssignments().save(toSave);
         }
     }
@@ -137,9 +137,9 @@ class InsectCatalogIdentificationTransaction extends Transaction<CatalogIdentifi
                 // nothing above order
             }
             case IdentifiedRankEntity.Family ignored ->
-                    resolveOrder(taxonomy, parentDescriptions);
+                resolveOrder(taxonomy, parentDescriptions);
             case IdentifiedRankEntity.Genus ignored ->
-                    resolveFamily(taxonomy, resolveOrder(taxonomy, parentDescriptions), parentDescriptions);
+                resolveFamily(taxonomy, resolveOrder(taxonomy, parentDescriptions), parentDescriptions);
             case IdentifiedRankEntity.Species ignored -> {
                 InsectOrderName orderName = resolveOrder(taxonomy, parentDescriptions);
                 InsectFamilyName familyName = resolveFamily(taxonomy, orderName, parentDescriptions);

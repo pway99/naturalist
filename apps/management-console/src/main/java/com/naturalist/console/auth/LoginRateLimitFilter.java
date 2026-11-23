@@ -65,8 +65,8 @@ final class LoginRateLimitFilter extends OncePerRequestFilter {
         // The system-wide permit is only spent once the client's own budget allowed the attempt.
         boolean permitted = !clientPermitted || acquire(limiter);
         doFilterInternal.state(i -> i
-                        .isTrue(clientPermitted, "withinClientRate")
-                        .isTrue(permitted, "withinRate"))
+                .isTrue(clientPermitted, "withinClientRate")
+                .isTrue(permitted, "withinRate"))
                 .observe(Level.WARN);
         if (!clientPermitted || !permitted) {
             response.setStatus(429);
@@ -80,7 +80,8 @@ final class LoginRateLimitFilter extends OncePerRequestFilter {
 
     private static boolean acquire(RateLimiter limiter) {
         try {
-            limiter.execute(() -> { });
+            limiter.execute(() -> {
+            });
             return true;
         } catch (RateLimitExceededException rejected) {
             return false;

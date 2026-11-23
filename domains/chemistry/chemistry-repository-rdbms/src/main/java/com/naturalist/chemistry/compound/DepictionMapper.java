@@ -19,53 +19,53 @@ import java.util.List;
 interface DepictionMapper {
 
     String SELECT_JOIN = """
-        SELECT d.id, c.name AS compound_name, d.smiles, d.note
-        FROM compound_depiction d JOIN compound c ON c.id = d.compound_id
-        """;
+            SELECT d.id, c.name AS compound_name, d.smiles, d.note
+            FROM compound_depiction d JOIN compound c ON c.id = d.compound_id
+            """;
 
     @Select(SELECT_JOIN + " WHERE d.id = #{id}::uuid")
     CompoundDepictionDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT d.id, c.name AS compound_name, d.smiles, d.note
-        FROM compound_depiction d JOIN compound c ON c.id = d.compound_id
-        WHERE d.id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT d.id, c.name AS compound_name, d.smiles, d.note
+            FROM compound_depiction d JOIN compound c ON c.id = d.compound_id
+            WHERE d.id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<CompoundDepictionDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select(SELECT_JOIN + " ORDER BY d.id LIMIT #{limit} OFFSET #{offset}")
     List<CompoundDepictionDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM compound_depiction ORDER BY id OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM compound_depiction ORDER BY id OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select(SELECT_JOIN + " WHERE c.name = #{compoundName}")
     CompoundDepictionDbo selectByCompoundName(String compoundName);
 
     @Select("""
-        SELECT c.name FROM compound_depiction d JOIN compound c ON c.id = d.compound_id
-        ORDER BY c.name
-        """)
+            SELECT c.name FROM compound_depiction d JOIN compound c ON c.id = d.compound_id
+            ORDER BY c.name
+            """)
     List<String> selectAllDepictedCompoundNames();
 
     @Insert("""
-        INSERT INTO compound_depiction (id, compound_id, smiles, note)
-        SELECT #{id}::uuid, id, #{smiles}, #{note} FROM compound WHERE name = #{compoundName}
-        """)
+            INSERT INTO compound_depiction (id, compound_id, smiles, note)
+            SELECT #{id}::uuid, id, #{smiles}, #{note} FROM compound WHERE name = #{compoundName}
+            """)
     int insert(CompoundDepictionDbo dbo);
 
     @Update("""
-        UPDATE compound_depiction SET
-            smiles = #{smiles}, note = #{note},
-            compound_id = (SELECT id FROM compound WHERE name = #{compoundName})
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE compound_depiction SET
+                smiles = #{smiles}, note = #{note},
+                compound_id = (SELECT id FROM compound WHERE name = #{compoundName})
+            WHERE id = #{id}::uuid
+            """)
     int updateById(CompoundDepictionDbo dbo);
 }

@@ -28,11 +28,16 @@ class InsectsCatalogContributionTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery.FamilyQuery familyQuery;
-    @Wired InsectQuery.GenusQuery genusQuery;
-    @Wired InsectQuery.SpeciesQuery speciesQuery;
-    @Wired InsectQuery.OrderQuery orderQuery;
-    @Wired InsectsCatalogContribution contribution;
+    @Wired
+    InsectQuery.FamilyQuery familyQuery;
+    @Wired
+    InsectQuery.GenusQuery genusQuery;
+    @Wired
+    InsectQuery.SpeciesQuery speciesQuery;
+    @Wired
+    InsectQuery.OrderQuery orderQuery;
+    @Wired
+    InsectsCatalogContribution contribution;
 
     @Test
     void domainIsInsects() {

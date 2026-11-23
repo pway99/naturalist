@@ -38,8 +38,8 @@ class PlantObservationQueryImpl
     @Override
     public ObservationCollection forNaturalistAndSubjects(NaturalistName observedBy, Set<PlantRankName> subjects) {
         observer().arguments("forNaturalistAndSubjects", i -> i
-                        .identifier(observedBy, "observedBy")
-                        .identifierSet(subjects, "subjects"))
+                .identifier(observedBy, "observedBy")
+                .identifierSet(subjects, "subjects"))
                 .throwWhenInvalid();
         return ObservationCollection.of(repository().getByNaturalistAndSubjects(observedBy, subjects));
     }

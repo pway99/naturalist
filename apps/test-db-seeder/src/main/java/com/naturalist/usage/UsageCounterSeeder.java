@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds {@link UsageCounter}s through the real RDBMS adapter (split-package with the rdbms module). */
 public final class UsageCounterSeeder {
 
-    private UsageCounterSeeder() {}
+    private UsageCounterSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<UsageCounter> counters = database.getNamed(UsageCounterTestEntitySource.class).entityStream().toList();

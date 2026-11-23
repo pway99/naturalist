@@ -33,9 +33,9 @@ class PlantFeatureQueryImpl implements PlantQuery.FeatureQuery {
                           PlantRepository.FeatureAssignmentRepository assignmentRepository,
                           PlantAncestryResolver ancestryResolver) {
         observer.arguments("constructor", i -> i
-                        .notNull(featureRepository, "featureRepository")
-                        .notNull(assignmentRepository, "assignmentRepository")
-                        .notNull(ancestryResolver, "ancestryResolver"))
+                .notNull(featureRepository, "featureRepository")
+                .notNull(assignmentRepository, "assignmentRepository")
+                .notNull(ancestryResolver, "ancestryResolver"))
                 .throwWhenInvalid();
         this.featureRepository = featureRepository;
         this.assignmentRepository = assignmentRepository;
@@ -56,8 +56,8 @@ class PlantFeatureQueryImpl implements PlantQuery.FeatureQuery {
      */
     OrganismFeatureView<PlantRankName, PlantFeature> findByAncestry(PlantRankName subject, Set<PlantRankName> ancestry) {
         observer.arguments("findByAncestry", i -> i
-                        .identifier(subject, "subject")
-                        .observableCollection(ancestry, "ancestry"))
+                .identifier(subject, "subject")
+                .observableCollection(ancestry, "ancestry"))
                 .throwWhenInvalid();
 
         List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> assignments =

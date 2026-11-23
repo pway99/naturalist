@@ -21,7 +21,7 @@ class CitationAssociationQueryImpl implements CitationAssociationQuery {
     @Override
     public CitationAssociationCollection findByCitationName(CitationName citationName) {
         observer.arguments("findByCitationName", i -> i
-                        .entityName(citationName, "citationName"))
+                .entityName(citationName, "citationName"))
                 .throwWhenInvalid();
         return CitationAssociationCollection.of(repository.getByCitationName(citationName));
     }
@@ -29,7 +29,7 @@ class CitationAssociationQueryImpl implements CitationAssociationQuery {
     @Override
     public CitationAssociationCollection findBySubject(EntityRef subject) {
         observer.arguments("findBySubject", i -> i
-                        .valueObject(subject, "subject"))
+                .valueObject(subject, "subject"))
                 .throwWhenInvalid();
         return CitationAssociationCollection.of(repository.getBySubject(subject));
     }
@@ -37,7 +37,7 @@ class CitationAssociationQueryImpl implements CitationAssociationQuery {
     @Override
     public CitationAssociationCollection findBySubjects(Set<EntityRef> subjects) {
         observer.arguments("findBySubjects", i -> i
-                        .observableCollection(subjects, "subjects"))
+                .observableCollection(subjects, "subjects"))
                 .throwWhenInvalid();
         return CitationAssociationCollection.of(repository.getBySubjects(subjects));
     }

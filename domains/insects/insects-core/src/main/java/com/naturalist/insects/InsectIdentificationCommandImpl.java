@@ -135,16 +135,16 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                                     ImageStore imageStore,
                                     InsectCatalogIdentificationTransaction transaction) {
         observer.arguments("constructor", i -> i
-                        .notNull(resilience, "resilience")
-                        .notNull(budget, "budget")
-                        .notNull(visionService, "visionService")
-                        .notNull(textGenerationService, "textGenerationService")
-                        .notNull(externalAuthority, "externalAuthority")
-                        .notNull(libraryCommand, "libraryCommand")
-                        .notNull(insectQuery, "insectQuery")
-                        .notNull(featureSearch, "featureSearch")
-                        .notNull(imageStore, "imageStore")
-                        .notNull(transaction, "transaction"))
+                .notNull(resilience, "resilience")
+                .notNull(budget, "budget")
+                .notNull(visionService, "visionService")
+                .notNull(textGenerationService, "textGenerationService")
+                .notNull(externalAuthority, "externalAuthority")
+                .notNull(libraryCommand, "libraryCommand")
+                .notNull(insectQuery, "insectQuery")
+                .notNull(featureSearch, "featureSearch")
+                .notNull(imageStore, "imageStore")
+                .notNull(transaction, "transaction"))
                 .throwWhenInvalid();
         this.rateLimiter = resilience.rateLimiter(RATE_STRATEGY);
         this.bulkhead = resilience.bulkhead(RATE_STRATEGY);
@@ -178,11 +178,11 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         MethodObserver m = observer.forMethod("identify");
         MethodObserver refusalObserver = refusals.forMethod("identify");
         m.arguments(i -> i
-                        .valueObject(upload, "upload")
-                        .valueObject(metadata, "metadata")
-                        .entityName(naturalist, "naturalist")
-                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes")
-                        .valueObjectOrNull(area, "area"))
+                .valueObject(upload, "upload")
+                .valueObject(metadata, "metadata")
+                .entityName(naturalist, "naturalist")
+                .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes")
+                .valueObjectOrNull(area, "area"))
                 .throwWhenInvalid();
 
         // The EXIF is read for the cell, then gone: neither the store nor vision sees the camera's
@@ -198,7 +198,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         // before any budget reservation or vision spend, so a rate-rejected call burns no
         // budget and stores nothing.
         try {
-            rateLimiter.execute(() -> { });
+            rateLimiter.execute(() -> {
+            });
         } catch (RateLimitExceededException rateLimited) {
             throw refusal(refusalObserver, naturalist, "withinRate",
                     new IdentificationRefused(IdentificationRefused.Reason.RATE_LIMITED, null, null));
@@ -308,7 +309,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
      * was skipped entirely — the byte-for-byte pre-reuse behavior.
      */
     private record VisionOutcome(InsectIdentificationResult proposed, Map<String, String> reuse,
-                                 Map<String, InsectFeatureId> candidateIds) {}
+                                 Map<String, InsectFeatureId> candidateIds) {
+    }
 
     /**
      * Runs vision turn 1 (propose), searches each proposed feature value for similar
@@ -471,7 +473,8 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
     // ----- parent rank enrichment -----
 
-    private record RankEnrichment(Description description, List<String> features) {}
+    private record RankEnrichment(Description description, List<String> features) {
+    }
 
     private Map<InsectRankName, RankEnrichment> enrichParentRanks(
             TaxonomicClassification taxonomy) {
@@ -575,12 +578,14 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
 
     // ----- feature resolution -----
 
-    private record RankFeatures(InsectRankName rankName, List<String> featureValues) {}
+    private record RankFeatures(InsectRankName rankName, List<String> featureValues) {
+    }
 
     private record FeatureResolution(
             List<InsectFeature> newFeatures,
             List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> assignments
-    ) {}
+    ) {
+    }
 
     /**
      * Resolves each proposed/enriched feature value to an {@link InsectFeatureId} and builds

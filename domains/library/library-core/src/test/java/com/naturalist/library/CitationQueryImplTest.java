@@ -15,7 +15,8 @@ class CitationQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired CitationQuery citationQuery;
+    @Wired
+    CitationQuery citationQuery;
 
     @Test
     void findByNameSet_happyPath() {

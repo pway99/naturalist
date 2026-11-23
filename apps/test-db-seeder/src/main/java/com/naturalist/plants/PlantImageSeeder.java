@@ -13,7 +13,8 @@ import java.util.List;
 /** Seeds plant images through the real RDBMS adapter (split-package with the rdbms module). */
 public final class PlantImageSeeder {
 
-    private PlantImageSeeder() {}
+    private PlantImageSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> entities = database.getNamed(PlantImageTestEntitySource.class).entityStream().toList();

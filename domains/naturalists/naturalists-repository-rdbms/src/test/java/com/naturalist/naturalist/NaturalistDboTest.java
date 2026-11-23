@@ -19,17 +19,20 @@ class NaturalistDboTest {
                 NaturalistRole.KEEPER, EcologicalStage.NATURALIST, notes);
     }
 
-    @Test void roundTrip_preservesAllFields() {
+    @Test
+    void roundTrip_preservesAllFields() {
         Naturalist n = sample("amir-hassan", "Hassan", "some notes");
         assertThat(NaturalistDbo.from(n).toEntity()).usingRecursiveComparison().isEqualTo(n);
     }
 
-    @Test void roundTrip_preservesNulls() {
+    @Test
+    void roundTrip_preservesNulls() {
         Naturalist n = sample("flora-mendez", null, null);
         assertThat(NaturalistDbo.from(n).toEntity()).usingRecursiveComparison().isEqualTo(n);
     }
 
-    @Test void invariants_flagOverLongName() {
+    @Test
+    void invariants_flagOverLongName() {
         NaturalistDbo dbo = NaturalistDbo.from(sample("amir-hassan", "Hassan", null));
         dbo.name = "x".repeat(65); // exceeds VARCHAR(64)
         Set<Constraint<?>> violations = Observer.forClass(NaturalistDboTest.class)
@@ -37,7 +40,8 @@ class NaturalistDboTest {
         assertThat(violations).isNotEmpty();
     }
 
-    @Test void from_throwsWhenAValueExceedsItsColumnWidth() {
+    @Test
+    void from_throwsWhenAValueExceedsItsColumnWidth() {
         // givenName is unconstrained on the entity but the DBO/column caps it at 100 —
         // from(...) must fail here, one step before the database would truncate/reject.
         Naturalist n = new Naturalist(NaturalistName.of("amir-hassan"), AccountName.of("acct-018f3a2e9b71"),

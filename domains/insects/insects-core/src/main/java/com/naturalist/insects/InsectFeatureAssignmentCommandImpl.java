@@ -7,8 +7,8 @@ import com.naturalist.taxonomy.OrganismFeatureAssignment;
 @DomainService
 class InsectFeatureAssignmentCommandImpl
         extends AbstractEntityCommand<InsectFeatureAssignmentId,
-                OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>,
-                InsectRepository.FeatureAssignmentRepository>
+        OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>,
+        InsectRepository.FeatureAssignmentRepository>
         implements InsectCommand.FeatureAssignmentCommand {
 
     InsectFeatureAssignmentCommandImpl(InsectRepository.FeatureAssignmentRepository repository) {

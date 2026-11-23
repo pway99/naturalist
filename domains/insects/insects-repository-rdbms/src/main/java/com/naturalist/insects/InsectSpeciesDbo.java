@@ -46,8 +46,8 @@ import java.util.function.Consumer;
  * {@link #toEntity(Set, Set, Set, Set, List)}.
  */
 @DboSchema(table = "insect_species", primaryKey = "id", unique = {"name"},
-           foreignKeys = @Fk(columns = "genus_id", references = "insect_genus(id)"),
-           entity = InsectSpeciesInfo.class)
+        foreignKeys = @Fk(columns = "genus_id", references = "insect_genus(id)"),
+        entity = InsectSpeciesInfo.class)
 final class InsectSpeciesDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;
@@ -171,10 +171,10 @@ final class InsectSpeciesDbo implements Dbo {
      * round-trips as absent (null) on every owned VO.
      */
     InsectSpeciesInfo toEntity(Set<CommonName> commonNames,
-                           Set<LifeStageKind> protectedStages,
-                           Set<HabitatZone> zones,
-                           Set<VerticalLayer> layers,
-                           List<String> supportingPlants) {
+                               Set<LifeStageKind> protectedStages,
+                               Set<HabitatZone> zones,
+                               Set<VerticalLayer> layers,
+                               List<String> supportingPlants) {
         Description description = new Description(
                 descriptionPreschool,
                 descriptionElementary,
@@ -183,42 +183,42 @@ final class InsectSpeciesDbo implements Dbo {
 
         InsectSpeciesInfo.ChemicalDefense chemicalDefense = chemMechanism == null ? null
                 : new InsectSpeciesInfo.ChemicalDefense(
-                        chemMechanism, chemSourceCompounds, chemAposematicSignal, protectedStages);
+                chemMechanism, chemSourceCompounds, chemAposematicSignal, protectedStages);
 
         InsectSpeciesInfo.Voltinism voltinism = voltinismPattern == null ? null
                 : new InsectSpeciesInfo.Voltinism(
-                        InsectSpeciesInfo.Voltinism.VoltinismPattern.valueOf(voltinismPattern), voltinismNotes);
+                InsectSpeciesInfo.Voltinism.VoltinismPattern.valueOf(voltinismPattern), voltinismNotes);
 
         HabitatProfile habitatProfile = zones.isEmpty() ? null
                 : new HabitatProfile(
-                        zones,
-                        habitatMoisture == null ? null : MoistureRegime.valueOf(habitatMoisture),
-                        habitatLight == null ? null : LightRegime.valueOf(habitatLight),
-                        layers.isEmpty() ? null : layers);
+                zones,
+                habitatMoisture == null ? null : MoistureRegime.valueOf(habitatMoisture),
+                habitatLight == null ? null : LightRegime.valueOf(habitatLight),
+                layers.isEmpty() ? null : layers);
 
         boolean anyRequirement = reqNectarSources != null || reqShelter != null
                 || reqPreyAvailability != null || reqLighting != null || reqElevationRange != null;
         InsectSpeciesInfo.HabitatRequirements habitatRequirements = anyRequirement
                 ? new InsectSpeciesInfo.HabitatRequirements(
-                        reqNectarSources, reqShelter, reqPreyAvailability, reqLighting, reqElevationRange)
+                reqNectarSources, reqShelter, reqPreyAvailability, reqLighting, reqElevationRange)
                 : null;
 
         boolean gardenPresent = !supportingPlants.isEmpty()
                 || gardenRelationshipToOtherBeneficials != null || gardenNaturalEnemies != null;
         InsectSpeciesInfo.GardenConnections gardenConnections = gardenPresent
                 ? new InsectSpeciesInfo.GardenConnections(
-                        supportingPlants, gardenRelationshipToOtherBeneficials, gardenNaturalEnemies)
+                supportingPlants, gardenRelationshipToOtherBeneficials, gardenNaturalEnemies)
                 : null;
 
         InsectSpeciesInfo.BeneficialProfile beneficialProfile = beneficialSignificance == null ? null
                 : new InsectSpeciesInfo.BeneficialProfile(
-                        beneficialSignificance, beneficialPestManagementValue, beneficialIpmNotes);
+                beneficialSignificance, beneficialPestManagementValue, beneficialIpmNotes);
 
         boolean anyEcological = ecoIndicatorValue != null || ecoFoodWebPosition != null
                 || ecoRegionalContext != null;
         InsectSpeciesInfo.EcologicalSignificance ecologicalSignificance = anyEcological
                 ? new InsectSpeciesInfo.EcologicalSignificance(
-                        ecoIndicatorValue, ecoFoodWebPosition, ecoRegionalContext)
+                ecoIndicatorValue, ecoFoodWebPosition, ecoRegionalContext)
                 : null;
 
         return new InsectSpeciesInfo(

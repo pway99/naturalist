@@ -25,8 +25,8 @@ import java.util.function.Consumer;
  * {@link #plantName}.
  */
 @DboSchema(table = "cultivar", primaryKey = "id", unique = {"name"},
-           foreignKeys = @Fk(columns = "plant_species_id", references = "plant_species(id)"),
-           entity = Cultivar.class)
+        foreignKeys = @Fk(columns = "plant_species_id", references = "plant_species(id)"),
+        entity = Cultivar.class)
 final class CultivarDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;

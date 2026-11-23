@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds soil physical characteristics through the real RDBMS adapter (split-package with the rdbms module). */
 public final class SoilPhysicalCharacteristicsSeeder {
 
-    private SoilPhysicalCharacteristicsSeeder() {}
+    private SoilPhysicalCharacteristicsSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<SoilPhysicalCharacteristics> entities = database.getNamed(SoilPhysicalCharacteristicsTestEntitySource.class).entityStream().toList();

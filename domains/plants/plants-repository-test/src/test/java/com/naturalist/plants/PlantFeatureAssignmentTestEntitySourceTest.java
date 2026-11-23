@@ -5,6 +5,6 @@ import com.naturalist.taxonomy.OrganismFeatureAssignment;
 
 class PlantFeatureAssignmentTestEntitySourceTest
         extends TestEntitySourceTest<PlantFeatureAssignmentId,
-                OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>,
-                PlantFeatureAssignmentTestEntitySource> {
+        OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>,
+        PlantFeatureAssignmentTestEntitySource> {
 }

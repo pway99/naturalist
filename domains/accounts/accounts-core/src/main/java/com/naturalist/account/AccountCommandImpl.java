@@ -60,11 +60,11 @@ class AccountCommandImpl implements AccountCommand {
                        Clock clock,
                        AccountPolicy policy) {
         observer.forMethod("constructor").arguments(i -> i
-                        .notNull(accounts, "accounts")
-                        .notNull(tokens, "tokens")
-                        .notNull(secureTokens, "secureTokens")
-                        .notNull(clock, "clock")
-                        .notNull(policy, "policy"))
+                .notNull(accounts, "accounts")
+                .notNull(tokens, "tokens")
+                .notNull(secureTokens, "secureTokens")
+                .notNull(clock, "clock")
+                .notNull(policy, "policy"))
                 .throwWhenInvalid();
         this.accounts = accounts;
         this.tokens = tokens;
@@ -78,8 +78,8 @@ class AccountCommandImpl implements AccountCommand {
     public Registration register(String email, String passwordHash) {
         MethodObserver register = observer.forMethod("register");
         register.arguments(i -> i
-                        .email(email, "email")
-                        .notBlank(passwordHash, "passwordHash"))
+                .email(email, "email")
+                .notBlank(passwordHash, "passwordHash"))
                 .throwWhenInvalid();
 
         Optional<Account> existing = accounts.getByEmail(email);
@@ -204,8 +204,8 @@ class AccountCommandImpl implements AccountCommand {
     public void resetPassword(String rawToken, String newPasswordHash) {
         MethodObserver resetPassword = observer.forMethod("resetPassword");
         resetPassword.arguments(i -> i
-                        .notBlank(rawToken, "rawToken")
-                        .notBlank(newPasswordHash, "newPasswordHash"))
+                .notBlank(rawToken, "rawToken")
+                .notBlank(newPasswordHash, "newPasswordHash"))
                 .throwWhenInvalid();
 
         Instant now = clock.instant();

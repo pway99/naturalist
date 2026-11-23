@@ -18,7 +18,7 @@ class IdentificationBudgetImpl implements IdentificationBudget {
 
     IdentificationBudgetImpl(UsageCommand usageCommand) {
         Observer.forClass(IdentificationBudgetImpl.class).arguments("constructor", i -> i
-                        .notNull(usageCommand, "usageCommand"))
+                .notNull(usageCommand, "usageCommand"))
                 .throwWhenInvalid();
         this.usageCommand = usageCommand;
     }

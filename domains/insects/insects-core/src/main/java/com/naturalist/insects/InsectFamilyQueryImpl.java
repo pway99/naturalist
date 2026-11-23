@@ -29,7 +29,7 @@ class InsectFamilyQueryImpl
     @Override
     public FamilyCollection forOrderName(InsectOrderName orderName) {
         observer().arguments("forOrderName",
-                        i -> i.entityName(orderName, "orderName"))
+                i -> i.entityName(orderName, "orderName"))
                 .throwWhenInvalid();
         return FamilyCollection.of(repository().getByOrderName(orderName));
     }
@@ -37,7 +37,7 @@ class InsectFamilyQueryImpl
     @Override
     public FamilyCollection forOrderNames(Set<InsectOrderName> orderNames) {
         observer().arguments("forOrderNames",
-                        i -> i.entityNameCollection(orderNames, "orderNames"))
+                i -> i.entityNameCollection(orderNames, "orderNames"))
                 .throwWhenInvalid();
         return FamilyCollection.of(repository().getByOrderNames(orderNames));
     }

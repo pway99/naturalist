@@ -49,7 +49,7 @@ class SearchControllerWebMvcTest {
     @Test
     void search_forKnownGenus_returnsPlantHits() throws Exception {
         mockMvc.perform(get("/search").param("q", "aristolochia")
-                        .with(user("naturalist").roles("ADMIN")))
+                .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Plants")))
                 .andExpect(content().string(containsString("/plants/aristolochia-californica")));
@@ -58,7 +58,7 @@ class SearchControllerWebMvcTest {
     @Test
     void search_forAmbiguousGenus_returnsBothTrifoliumSpecies() throws Exception {
         mockMvc.perform(get("/search").param("q", "trifolium")
-                        .with(user("naturalist").roles("ADMIN")))
+                .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("/plants/trifolium-incarnatum")))
                 .andExpect(content().string(containsString("/plants/trifolium-repens")));
@@ -67,7 +67,7 @@ class SearchControllerWebMvcTest {
     @Test
     void search_forUnknownTerm_rendersEmptyState() throws Exception {
         mockMvc.perform(get("/search").param("q", "qwzxv-unobtainium-flarble")
-                        .with(user("naturalist").roles("ADMIN")))
+                .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("search-empty-state")))
                 .andExpect(content().string(containsString("qwzxv-unobtainium-flarble")));

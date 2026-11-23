@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds insect orders through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectOrderSeeder {
 
-    private InsectOrderSeeder() {}
+    private InsectOrderSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<InsectOrderInfo> entities = database.getNamed(InsectOrderTestEntitySource.class).entityStream().toList();

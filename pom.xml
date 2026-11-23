@@ -111,6 +111,7 @@
                         <recipe>com.naturalist.EnforceArchitecture</recipe>
                     </activeRecipes>
                     <activeStyles>
+                        <style>org.openrewrite.java.IntelliJ</style>
                         <style>com.naturalist.Style</style>
                     </activeStyles>
                     <failOnDryRunResults>true</failOnDryRunResults>

@@ -51,30 +51,30 @@ class SecurityConfiguration {
                 .addFilterAfter(new IdentifyRateLimitFilter(resilience, currentNaturalist, identificationBudget),
                         AuthorizationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        // Static assets + entry / self-service auth pages — open to everyone. So is
-                        // /error: behind a login, a page that throws redirects to /login instead of
-                        // reporting the failure, and a broken login page redirects to itself.
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/error",
-                                "/login", "/register", "/verify", "/reset/**").permitAll()
-                        // The paid vision feature: identification requires the VISION entitlement.
-                        // (Anonymous callers are bounced to login; a signed-in BROWSE_ONLY
-                        // naturalist gets 403 — they lack the authority.)
-                        .requestMatchers(HttpMethod.POST,
-                                "/insects/identify", "/plants/identify")
+                                // Static assets + entry / self-service auth pages — open to everyone. So is
+                                // /error: behind a login, a page that throws redirects to /login instead of
+                                // reporting the failure, and a broken login page redirects to itself.
+                                .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/error",
+                                        "/login", "/register", "/verify", "/reset/**").permitAll()
+                                // The paid vision feature: identification requires the VISION entitlement.
+                                // (Anonymous callers are bounced to login; a signed-in BROWSE_ONLY
+                                // naturalist gets 403 — they lack the authority.)
+                                .requestMatchers(HttpMethod.POST,
+                                        "/insects/identify", "/plants/identify")
                                 .hasAuthority("VISION")
-                        // Anonymous browsing of the public catalog: the organism domains and the
-                        // field-guide library. Operational Oak Vista domains stay authenticated
-                        // (they fall through to anyRequest below).
-                        .requestMatchers(HttpMethod.GET,
-                                "/insects/**", "/plants/**",
-                                "/citations/**", "/concepts/**", "/glossary/**").permitAll()
-                        // Admin console (GET and POST).
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // A naturalist's own profile / handle management.
-                        .requestMatchers("/naturalists/me/**").authenticated()
-                        // Everything else — member write actions (observe, add image, notes) and
-                        // the operational domains — requires a signed-in naturalist.
-                        .anyRequest().authenticated()
+                                // Anonymous browsing of the public catalog: the organism domains and the
+                                // field-guide library. Operational Oak Vista domains stay authenticated
+                                // (they fall through to anyRequest below).
+                                .requestMatchers(HttpMethod.GET,
+                                        "/insects/**", "/plants/**",
+                                        "/citations/**", "/concepts/**", "/glossary/**").permitAll()
+                                // Admin console (GET and POST).
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                // A naturalist's own profile / handle management.
+                                .requestMatchers("/naturalists/me/**").authenticated()
+                                // Everything else — member write actions (observe, add image, notes) and
+                                // the operational domains — requires a signed-in naturalist.
+                                .anyRequest().authenticated()
                 )
                 // The single-use /verify token travels in a GET query string; never let a
                 // browser forward it to a third party in a Referer header.
@@ -88,13 +88,13 @@ class SecurityConfiguration {
                                 "connect-src 'self'; form-action 'self'; frame-ancestors 'none'"))
                         .contentTypeOptions(Customizer.withDefaults()))
                 .formLogin(form -> form
-                        .loginPage("/login")
-                        .failureUrl("/login?error")
-                        .permitAll()
+                                .loginPage("/login")
+                                .failureUrl("/login?error")
+                                .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll()
+                                .logoutSuccessUrl("/login?logout")
+                                .permitAll()
                 )
                 .build();
     }

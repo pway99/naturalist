@@ -39,8 +39,8 @@ class MyCollectionWebMvcTest {
     @Test
     void lensOn_filtersToObservedSpecies() throws Exception {
         mockMvc.perform(get("/insects/species")
-                        .sessionAttr("insects.collectionLens", true)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .sessionAttr("insects.collectionLens", true)
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("battus-philenor")))
                 .andExpect(content().string(not(containsString("apis-mellifera"))));
@@ -57,7 +57,7 @@ class MyCollectionWebMvcTest {
     void mineParam_isIgnored_afterRetirement() throws Exception {
         // ?mine=true must no longer filter -- only the session lens does.
         mockMvc.perform(get("/insects/species").param("mine", "true")
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("apis-mellifera")));
     }
@@ -66,8 +66,8 @@ class MyCollectionWebMvcTest {
     void emptyCollection_showsNudge() throws Exception {
         // A naturalist with no seeded observations, lens on -> the empty-collection nudge.
         mockMvc.perform(get("/insects/species")
-                        .sessionAttr("insects.collectionLens", true)
-                        .requestAttr(CURRENT_NATURALIST, "empty-collector"))
+                .sessionAttr("insects.collectionLens", true)
+                .requestAttr(CURRENT_NATURALIST, "empty-collector"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("No insects in your collection yet")));
     }
@@ -97,14 +97,14 @@ class MyCollectionWebMvcTest {
         assertThat(collected).hasSizeGreaterThan(PageRequest.DEFAULT_CONSOLE_PAGE_SIZE);
         for (InsectSpeciesInfo species : collected) {
             mockMvc.perform(MockMvcRequestBuilders
-                            .post("/insects/" + species.name().value() + "/observe")
-                            .requestAttr(CURRENT_NATURALIST, "page-collector"))
+                    .post("/insects/" + species.name().value() + "/observe")
+                    .requestAttr(CURRENT_NATURALIST, "page-collector"))
                     .andExpect(status().is3xxRedirection());
         }
 
         String body = mockMvc.perform(get("/insects/species").param("page", "1")
-                        .sessionAttr("insects.collectionLens", true)
-                        .requestAttr(CURRENT_NATURALIST, "page-collector"))
+                .sessionAttr("insects.collectionLens", true)
+                .requestAttr(CURRENT_NATURALIST, "page-collector"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("/life-stages\"")))
                 .andExpect(content().string(not(containsString("No insects in your collection yet"))))

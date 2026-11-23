@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * JOIN projection (read) and nested-select (write).
  */
 @DboSchema(table = "compound_property", primaryKey = "compound_id,property_key",
-           foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
-           entity = Compound.class)
+        foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
+        entity = Compound.class)
 final class CompoundPropertyDbo implements Dbo {
     String compoundName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String propertyKey;

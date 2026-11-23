@@ -14,9 +14,12 @@ class CompoundQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired CompoundQuery.CompoundEntityQuery compoundEntityQuery;
-    @Wired CompoundQuery.DepictionQuery depictionQuery;
-    @Wired CompoundQuery compoundQuery;
+    @Wired
+    CompoundQuery.CompoundEntityQuery compoundEntityQuery;
+    @Wired
+    CompoundQuery.DepictionQuery depictionQuery;
+    @Wired
+    CompoundQuery compoundQuery;
 
     @Test
     void accessors_returnNonNullDelegates() {

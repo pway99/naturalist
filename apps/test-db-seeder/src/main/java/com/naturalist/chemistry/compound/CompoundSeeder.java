@@ -16,7 +16,8 @@ import java.util.List;
  */
 public final class CompoundSeeder {
 
-    private CompoundSeeder() {}
+    private CompoundSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<Compound> compounds = database.getNamed(CompoundTestEntitySource.class).entityStream().toList();

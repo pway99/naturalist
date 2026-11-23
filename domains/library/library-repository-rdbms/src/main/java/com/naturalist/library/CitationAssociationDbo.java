@@ -25,8 +25,8 @@ import java.util.function.Consumer;
  * and is cast to uuid in SQL ({@code ::uuid}) — MyBatis has no UUID type handler.
  */
 @DboSchema(table = "citation_association", primaryKey = "id",
-           foreignKeys = @Fk(columns = "citation_id", references = "citation(id)"),
-           entity = CitationAssociation.class)
+        foreignKeys = @Fk(columns = "citation_id", references = "citation(id)"),
+        entity = CitationAssociation.class)
 final class CitationAssociationDbo implements Dbo {
     String id;             // the CitationAssociationId's UUID as text; the mapper casts it (::uuid)
     String citationName;   // JOIN projection (read) / nested-select key (write); not a stored column
@@ -62,7 +62,7 @@ final class CitationAssociationDbo implements Dbo {
         return c -> c
                 .notBlank(id, "id")
                 .notNull(citationName, "citationName").kebabFormat(citationName, "citationName")
-                    .maxLength(citationName, 200, "citationName")
+                .maxLength(citationName, 200, "citationName")
                 .notBlank(subjectDomain, "subjectDomain").maxLength(subjectDomain, 64, "subjectDomain")
                 .notBlank(subjectRank, "subjectRank").maxLength(subjectRank, 32, "subjectRank")
                 .notBlank(subjectName, "subjectName").maxLength(subjectName, 128, "subjectName");

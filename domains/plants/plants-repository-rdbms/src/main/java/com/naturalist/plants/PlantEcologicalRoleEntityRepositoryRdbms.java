@@ -35,7 +35,7 @@ class PlantEcologicalRoleEntityRepositoryRdbms
     private final PlantEcologicalRoleTransaction transaction;
 
     PlantEcologicalRoleEntityRepositoryRdbms(PlantEcologicalRoleMapper mapper,
-            PlantEcologicalRoleTransaction transaction) {
+                                             PlantEcologicalRoleTransaction transaction) {
         this.mapper = mapper;
         this.transaction = transaction;
     }

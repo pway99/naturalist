@@ -36,7 +36,7 @@ class PhytochemicalConstituentEntityRepositoryRdbms
     private final PhytochemicalConstituentTransaction transaction;
 
     PhytochemicalConstituentEntityRepositoryRdbms(PhytochemicalConstituentMapper mapper,
-            PhytochemicalConstituentTransaction transaction) {
+                                                  PhytochemicalConstituentTransaction transaction) {
         this.mapper = mapper;
         this.transaction = transaction;
     }

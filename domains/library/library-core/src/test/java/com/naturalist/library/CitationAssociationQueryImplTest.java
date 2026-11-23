@@ -21,7 +21,8 @@ class CitationAssociationQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired CitationAssociationQueryImpl query;
+    @Wired
+    CitationAssociationQueryImpl query;
 
     @Test
     void findByCitationName_rejectsNull() {

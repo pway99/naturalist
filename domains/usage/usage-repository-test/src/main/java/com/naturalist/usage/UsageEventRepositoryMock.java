@@ -26,8 +26,8 @@ class UsageEventRepositoryMock
                                                Instant since) {
         MethodObserver findByCounterSince = observer().forMethod("findByCounterSince");
         findByCounterSince.arguments(i -> i
-                        .identifier(counter, "counter")
-                        .notNull(since, "since"))
+                .identifier(counter, "counter")
+                .notNull(since, "since"))
                 .throwWhenInvalid();
         List<UsageEvent> result = testEntitySource().entityStream()
                 .filter(e -> e.counterName().equals(counter)

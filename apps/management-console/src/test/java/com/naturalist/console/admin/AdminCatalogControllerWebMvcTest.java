@@ -100,7 +100,7 @@ class AdminCatalogControllerWebMvcTest {
 
     private String render() throws Exception {
         return mockMvc.perform(get("/admin/catalog")
-                        .with(user("naturalist").roles("ADMIN")))
+                .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
     }

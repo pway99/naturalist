@@ -69,8 +69,8 @@ class InsectsRouteSecurityWebMvcTest {
     void identify_authenticatedWithoutVision_isForbidden() throws Exception {
         MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/identify").file(file).with(csrf())
-                        .with(user("naturalist")
-                                .authorities(new SimpleGrantedAuthority("ROLE_NATURALIST"))))
+                .with(user("naturalist")
+                        .authorities(new SimpleGrantedAuthority("ROLE_NATURALIST"))))
                 .andExpect(status().isForbidden());
     }
 
@@ -78,9 +78,9 @@ class InsectsRouteSecurityWebMvcTest {
     void identify_authenticatedWithVision_passesSecurityGate() throws Exception {
         MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/identify").file(file).with(csrf())
-                        .with(user("naturalist").authorities(
-                                new SimpleGrantedAuthority("ROLE_NATURALIST"),
-                                new SimpleGrantedAuthority("VISION"))))
+                .with(user("naturalist").authorities(
+                        new SimpleGrantedAuthority("ROLE_NATURALIST"),
+                        new SimpleGrantedAuthority("VISION"))))
                 // VISION clears the authorization gate; the request reaches the controller,
                 // which redirects because a plain test user is not a NaturalistPrincipal.
                 .andExpect(status().is3xxRedirection());
@@ -99,7 +99,7 @@ class InsectsRouteSecurityWebMvcTest {
     void addImage_missingCsrf_isForbidden() throws Exception {
         MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
-                        .with(user("naturalist").roles("ADMIN")))
+                .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isForbidden());
     }
 
@@ -110,9 +110,9 @@ class InsectsRouteSecurityWebMvcTest {
     @Test
     void identifyForm_rendersImageErrorWhenFlagged() throws Exception {
         mockMvc.perform(get("/insects/identify?error=image")
-                        .with(user("naturalist").authorities(
-                                new SimpleGrantedAuthority("ROLE_NATURALIST"),
-                                new SimpleGrantedAuthority("VISION"))))
+                .with(user("naturalist").authorities(
+                        new SimpleGrantedAuthority("ROLE_NATURALIST"),
+                        new SimpleGrantedAuthority("VISION"))))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content()
                         .string(Matchers.containsString("not a JPEG, PNG or WebP")));

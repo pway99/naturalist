@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * no nested-select. {@link PlantRole} is an enum stored by constant name.
  */
 @DboSchema(table = "plant_ecological_role_role", primaryKey = "role_id,role",
-           foreignKeys = @Fk(columns = "role_id", references = "plant_ecological_role(id)"),
-           entity = PlantEcologicalRole.class)
+        foreignKeys = @Fk(columns = "role_id", references = "plant_ecological_role(id)"),
+        entity = PlantEcologicalRole.class)
 final class PlantEcologicalRoleRoleDbo implements Dbo {
     String roleId;  // the owning ecological-role's own UUID as text; mapper casts it (::uuid)
     String role;    // PlantRole enum constant name

@@ -58,15 +58,15 @@ class InsectFactory {
                   InsectFeatureQueryImpl featureQuery,
                   InsectQuery.FunctionalRoleQuery roleQuery) {
         observer.arguments("constructor", i -> i
-                        .notNull(speciesQuery, "speciesQuery")
-                        .notNull(imageQuery, "imageQuery")
-                        .notNull(genusQuery, "genusQuery")
-                        .notNull(familyQuery, "familyQuery")
-                        .notNull(orderQuery, "orderQuery")
-                        .notNull(lifeStageQuery, "lifeStageQuery")
-                        .notNull(citationQuery, "citationQuery")
-                        .notNull(featureQuery, "featureQuery")
-                        .notNull(roleQuery, "roleQuery"))
+                .notNull(speciesQuery, "speciesQuery")
+                .notNull(imageQuery, "imageQuery")
+                .notNull(genusQuery, "genusQuery")
+                .notNull(familyQuery, "familyQuery")
+                .notNull(orderQuery, "orderQuery")
+                .notNull(lifeStageQuery, "lifeStageQuery")
+                .notNull(citationQuery, "citationQuery")
+                .notNull(featureQuery, "featureQuery")
+                .notNull(roleQuery, "roleQuery"))
                 .throwWhenInvalid();
         this.speciesQuery = speciesQuery;
         this.imageQuery = imageQuery;
