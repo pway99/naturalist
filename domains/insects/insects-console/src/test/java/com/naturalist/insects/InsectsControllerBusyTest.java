@@ -241,7 +241,7 @@ class InsectsControllerBusyTest {
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
         var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
-        assertThat(controller.addImage("battus-philenor", image, null, null, null, null, request))
+        assertThat(controller.addImage(InsectSpeciesName.of("battus-philenor"), image, null, null, null, null, request))
                 .isEqualTo("redirect:/insects/battus-philenor?error=busy");
         try (var files = Files.walk(imageRoot)) {
             assertThat(files.filter(Files::isRegularFile).toList()).as("nothing is stored").isEmpty();
