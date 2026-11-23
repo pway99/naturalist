@@ -51,7 +51,7 @@ class EmailFormatConstraintTest {
 
     @Test void constraintsBuilder_email_flagsInvalid() {
         Observer observer = Observer.forClass(EmailFormatConstraintTest.class);
-        assertThat(observer.arguments("t", i -> i.email("delia@example.org", "email")).violations()).isEmpty();
-        assertThat(observer.arguments("t", i -> i.email("not-an-email", "email")).violations()).isNotEmpty();
+        assertThat(observer.arguments("constraintsBuilder_email_flagsInvalid", i -> i.email("delia@example.org", "email")).violations()).isEmpty();
+        assertThat(observer.arguments("constraintsBuilder_email_flagsInvalid", i -> i.email("not-an-email", "email")).violations()).isNotEmpty();
     }
 }

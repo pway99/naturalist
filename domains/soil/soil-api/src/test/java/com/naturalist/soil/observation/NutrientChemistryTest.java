@@ -36,7 +36,7 @@ class NutrientChemistryTest {
                 NutrientChemistry.of(Nutrients.SULFATE, null, ReportedForm.ION);
 
         assertThatThrownBy(() -> Observer.forClass(NutrientChemistryTest.class)
-                .arguments("invariants", i -> i.valueObject(chemistry, "chemistry"))
+                .arguments("rejectsAMissingSubstance", i -> i.valueObject(chemistry, "chemistry"))
                 .throwWhenInvalid())
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("substance");

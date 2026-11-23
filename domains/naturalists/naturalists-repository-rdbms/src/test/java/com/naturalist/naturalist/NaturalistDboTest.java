@@ -33,7 +33,7 @@ class NaturalistDboTest {
         NaturalistDbo dbo = NaturalistDbo.from(sample("amir-hassan", "Hassan", null));
         dbo.name = "x".repeat(65); // exceeds VARCHAR(64)
         Set<Constraint<?>> violations = Observer.forClass(NaturalistDboTest.class)
-                .arguments("t", i -> i.observable(dbo, "dbo")).violations();
+                .arguments("invariants_flagOverLongName", i -> i.observable(dbo, "dbo")).violations();
         assertThat(violations).isNotEmpty();
     }
 

@@ -8,6 +8,7 @@ import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.ForeignKeyConstraintException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
 import com.naturalist.exception.UniqueConstraintException;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.test.query.nofanout.SelectTrace;
 import org.apache.commons.collections4.MapUtils;
@@ -194,7 +195,7 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
 
     public void insert(ENTITY entity) {
         SelectTrace.recordWrite();
-        insertCommon(entity);
+        insertCommon(observer.forMethod("insert"), entity);
         NAME name = entity.key();
         if (!originFile.containsKey(name)) {
             originFile.put(name, defaultInsertFile);
@@ -202,9 +203,10 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
         flushIfWritable();
     }
 
-    private void insertCommon(ENTITY entity) {
+    /** Validates and stores {@code entity}, observing under the caller's method ({@code insert} or {@code loadFile}). */
+    private void insertCommon(MethodObserver methodObserver, ENTITY entity) {
         final ENTITY argument = entity;
-        observer.arguments("insert", i -> i.namedEntity(argument, "entity")).throwWhenInvalid();
+        methodObserver.arguments(i -> i.namedEntity(argument, "entity")).throwWhenInvalid();
         NAME name = entity.key();
         if (entityMap.containsKey(name)) {
             throw new PrimaryKeyConstraintException(entity);
@@ -375,8 +377,9 @@ public abstract class TestEntitySource<NAME, ENTITY extends Named<NAME>> {
             defaultInsertFile = relativePath;
         }
         String json = TestDataHelper.readFileToString(relativePath);
+        MethodObserver methodObserver = observer.forMethod("loadFile");
         for (ENTITY entity : parser.apply(json)) {
-            insertCommon(entity);
+            insertCommon(methodObserver, entity);
             originFile.put(entity.key(), relativePath);
         }
     }

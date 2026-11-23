@@ -1,6 +1,7 @@
 package com.naturalist.resilience.resilience4j;
 
 import com.naturalist.exception.UnconfiguredResilienceException;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.resilience.Bulkhead;
 import com.naturalist.resilience.CircuitBreaker;
@@ -43,15 +44,17 @@ public final class Resilience4jResilience implements Resilience {
 
     private final Map<String, Retry> retries;
     private final Map<String, Timeout> timeouts;
+    private static final Observer observer = Observer.forClass(Resilience4jResilience.class);
+
     private final Map<String, CircuitBreaker> breakers;
     private final Map<String, Bulkhead> bulkheads;
     private final Map<String, RateLimiter> rateLimiters;
 
     public Resilience4jResilience(List<ResilienceConfig> configs) {
-        Observer observer = Observer.forClass(Resilience4jResilience.class);
-        observer.arguments("construct", c -> c.notNull(configs, "configs"))
+        MethodObserver methodObserver = observer.forMethod("constructor");
+        methodObserver.arguments(c -> c.notNull(configs, "configs"))
                 .throwWhenInvalid();
-        observer.arguments("construct", c -> {
+        methodObserver.arguments(c -> {
             for (int i = 0; i < configs.size(); i++) {
                 c.observable(configs.get(i), Function.identity(), "configs[" + i + "]");
             }

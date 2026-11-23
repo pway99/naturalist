@@ -176,6 +176,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
                                    @Nullable String notes,
                                    @Nullable GridCell area) {
         MethodObserver m = observer.forMethod("identify");
+        MethodObserver refusalObserver = refusals.forMethod("identify");
         m.arguments(i -> i
                         .valueObject(upload, "upload")
                         .valueObject(metadata, "metadata")
@@ -199,7 +200,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         try {
             rateLimiter.execute(() -> { });
         } catch (RateLimitExceededException rateLimited) {
-            throw refusal(naturalist, "withinRate",
+            throw refusal(refusalObserver, naturalist, "withinRate",
                     new IdentificationRefused(IdentificationRefused.Reason.RATE_LIMITED, null, null));
         }
 
@@ -207,21 +208,23 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
         // budget reservation or vision spend. The permit is held through stages 0c-6 and
         // released whether they return or throw.
         try {
-            return bulkhead.execute(() -> reserveStoreAndCatalogue(stripped, metadata, naturalist, notes, observedArea));
+            return bulkhead.execute(() -> reserveStoreAndCatalogue(refusalObserver, stripped, metadata, naturalist, notes, observedArea));
         } catch (BulkheadFullException full) {
-            throw refusal(naturalist, "notBusy",
+            throw refusal(refusalObserver, naturalist, "notBusy",
                     new IdentificationRefused(IdentificationRefused.Reason.BUSY, null, null));
         }
     }
 
     /**
-     * Observes a refusal as a WARN violation named {@code check} and records who was refused --
+     * Observes a refusal as a WARN violation named {@code check}, under {@code identify}'s refusal observer
+     * (every refusal is a decision of the identification), and records who was refused --
      * the naturalist and nothing else -- through the budget seam, which writes one
      * {@code identification-refused} usage event for client relations. Returns {@code refused}
      * for the caller to throw.
      */
-    private IdentificationRefused refusal(NaturalistName naturalist, String check, IdentificationRefused refused) {
-        refusals.forMethod("identify").state(i -> i.isTrue(false, check)).observe(Level.WARN);
+    private IdentificationRefused refusal(MethodObserver methodObserver, NaturalistName naturalist, String check,
+                                          IdentificationRefused refused) {
+        methodObserver.state(i -> i.isTrue(false, check)).observe(Level.WARN);
         budget.refused(naturalist);
         return refused;
     }
@@ -886,8 +889,9 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
     }
 
     /** Stage 0c onward, run while holding a {@code vision.identification} bulkhead permit. */
-    private InsectRankName reserveStoreAndCatalogue(ImageUpload upload, ImageMetadata metadata, NaturalistName naturalist,
-                                                    @Nullable String notes, @Nullable GridCell area) {
+    private InsectRankName reserveStoreAndCatalogue(MethodObserver refusalObserver, ImageUpload upload, ImageMetadata metadata,
+                                                    NaturalistName naturalist, @Nullable String notes,
+                                                    @Nullable GridCell area) {
         // 0c. STORE THE UPLOAD -- before the budget, so a refused photo or a full write bulkhead costs nothing
         FileName storedFileName = imageStore.store(SPACE, upload);
         MethodObserver methodObserver = observer.forMethod("reserveStoreAndCatalogue");
@@ -899,7 +903,7 @@ class InsectIdentificationCommandImpl implements InsectCommand.IdentificationCom
             // the upload goes first, so a refusal whose usage event fails to write still leaves no file behind
             IdentificationRefused overBudget = discardStored(methodObserver, storedFileName, new IdentificationRefused(
                     IdentificationRefused.Reason.BUDGET_EXHAUSTED, over.limitKind().name(), over.resetAt()));
-            throw refusal(naturalist, "withinBudget", overBudget);
+            throw refusal(refusalObserver, naturalist, "withinBudget", overBudget);
         } catch (RuntimeException e) {
             methodObserver.noticeError("reserved", e, Handling.RETHROWN);
             throw discardStored(methodObserver, storedFileName, e);
