@@ -183,6 +183,9 @@ public final class FilesystemImageStore implements ImageStore {
                 .throwWhenInvalid();
         Path spaceDirectory = root.resolve(space).normalize();
         Path directory = variant == ImageVariant.TILE ? spaceDirectory.resolve(TILES) : spaceDirectory;
+        // Cannot leave the root: a valid FileName is one segment (no '/', '\', NUL or ".."), and spaceWithinRoot
+        // refuses any other space. CodeQL's java/path-injection cannot follow a guard through the Observer's lambda
+        // and throwWhenInvalid(), so it reports find's read as a data-flow false positive (dismissed on GitHub).
         Path file = directory.resolve(name.value()).normalize();
         methodObserver.state(i -> i
                 .isTrue(spaceDirectory.startsWith(root.normalize()), "spaceWithinRoot"))
@@ -240,6 +243,7 @@ public final class FilesystemImageStore implements ImageStore {
                 .isTrue(resolvable(space, name.value()), "resolvable"))
                 .throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
+        // Cannot leave the root, for the reason read gives; CodeQL cannot follow that guard through the Observer.
         Path file = directory.resolve(name.value()).normalize();
         methodObserver.state(i -> i
                 .isTrue(directory.startsWith(root.normalize()), "spaceWithinRoot"))
