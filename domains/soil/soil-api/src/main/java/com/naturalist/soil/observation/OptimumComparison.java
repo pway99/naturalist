@@ -67,9 +67,9 @@ public record OptimumComparison(Verdict verdict, AssessmentSource source) implem
                 yield value.compareTo(closed.max()) > 0 ? Verdict.ABOVE : Verdict.WITHIN;
             }
             case OptimumRange.UpperBounded upper ->
-                    value.compareTo(upper.max()) > 0 ? Verdict.ABOVE : Verdict.WITHIN;
+                value.compareTo(upper.max()) > 0 ? Verdict.ABOVE : Verdict.WITHIN;
             case OptimumRange.LowerBounded lower ->
-                    value.compareTo(lower.min()) < 0 ? Verdict.BELOW : Verdict.WITHIN;
+                value.compareTo(lower.min()) < 0 ? Verdict.BELOW : Verdict.WITHIN;
             case OptimumRange.NotApplicable ignored -> Verdict.NOT_COMPARABLE;
         };
         return new OptimumComparison(verdict, AssessmentSource.DERIVED_FROM_PRINTED_RANGE);

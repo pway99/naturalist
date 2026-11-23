@@ -22,6 +22,7 @@ import java.util.function.Consumer;
  */
 public interface RankName extends Observable {
     String value();
+
     LinealRank rank();
 
     @Override

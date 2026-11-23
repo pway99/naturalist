@@ -22,8 +22,8 @@ import java.util.function.Consumer;
  * {@link PlantSpeciesCommonNameDbo} and {@link PlantSpeciesNativeBioregionDbo}.
  */
 @DboSchema(table = "plant_species", primaryKey = "id", unique = {"name"},
-           foreignKeys = @Fk(columns = "genus_id", references = "plant_genus(id)"),
-           entity = PlantSpecies.class)
+        foreignKeys = @Fk(columns = "genus_id", references = "plant_genus(id)"),
+        entity = PlantSpecies.class)
 final class PlantSpeciesDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;

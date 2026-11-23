@@ -16,7 +16,8 @@ class CompoundEntityQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired CompoundQuery.CompoundEntityQuery query;
+    @Wired
+    CompoundQuery.CompoundEntityQuery query;
 
     @Override
     public EntityQuery<CompoundName, Compound, CompoundCollection> query() {

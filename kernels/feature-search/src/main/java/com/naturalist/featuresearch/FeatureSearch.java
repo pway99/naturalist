@@ -17,7 +17,8 @@ public interface FeatureSearch<ID extends EntityId> {
     /** Existing features similar to {@code value}, best first, at most {@code limit}. */
     List<FeatureMatch<ID>> findSimilar(String value, int limit);
 
-    record FeatureMatch<ID extends EntityId>(ID id, String value, double score) {}
+    record FeatureMatch<ID extends EntityId>(ID id, String value, double score) {
+    }
 
     /** {@link #findSimilar} for many values in one pass over the features, keyed by value in the given order. */
     Map<String, List<FeatureMatch<ID>>> findSimilarToEach(Collection<String> values, int limit);

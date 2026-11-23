@@ -102,11 +102,11 @@ class RegistrationFlowWebMvcTest {
         String email = "ada@example.com";
 
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", email)
-                        .param("password", "correct horse battery")
-                        .param("publicHandle", "ada-lovelace")
-                        .param("givenName", "Ada")
-                        .param("familyName", "Lovelace"))
+                .param("email", email)
+                .param("password", "correct horse battery")
+                .param("publicHandle", "ada-lovelace")
+                .param("givenName", "Ada")
+                .param("familyName", "Lovelace"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/register?registered"))
                 .andExpect(authenticated().withUsername(email));
@@ -139,10 +139,10 @@ class RegistrationFlowWebMvcTest {
         String email = "grace@example.com";
 
         MockHttpSession session = (MockHttpSession) mockMvc.perform(post("/register").with(csrf())
-                        .param("email", email)
-                        .param("password", "another good passphrase")
-                        .param("publicHandle", "grace-hopper")
-                        .param("givenName", "Grace"))
+                .param("email", email)
+                .param("password", "another good passphrase")
+                .param("publicHandle", "grace-hopper")
+                .param("givenName", "Grace"))
                 .andExpect(redirectedUrl("/register?registered"))
                 .andReturn().getRequest().getSession();
 
@@ -172,14 +172,14 @@ class RegistrationFlowWebMvcTest {
     void register_duplicateEmail_reRendersFormWithError_notAuthenticated() throws Exception {
         String email = "dup@example.com";
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", email).param("password", "first passphrase here")
-                        .param("publicHandle", "first-handle").param("givenName", "First"))
+                .param("email", email).param("password", "first passphrase here")
+                .param("publicHandle", "first-handle").param("givenName", "First"))
                 .andExpect(redirectedUrl("/register?registered"));
         emailSender.sent.clear();
 
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", email).param("password", "second passphrase here")
-                        .param("publicHandle", "second-handle").param("givenName", "Second"))
+                .param("email", email).param("password", "second passphrase here")
+                .param("publicHandle", "second-handle").param("givenName", "Second"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("error"))
                 .andExpect(unauthenticated());
@@ -190,8 +190,8 @@ class RegistrationFlowWebMvcTest {
     @Test
     void register_shortPassword_reRendersFormWithError() throws Exception {
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", "short@example.com").param("password", "tiny")
-                        .param("publicHandle", "short-pw").param("givenName", "Shorty"))
+                .param("email", "short@example.com").param("password", "tiny")
+                .param("publicHandle", "short-pw").param("givenName", "Shorty"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("error", containsString("8 characters")))
                 .andExpect(unauthenticated());
@@ -205,8 +205,8 @@ class RegistrationFlowWebMvcTest {
         // BCrypt rejects > 72 bytes with an IllegalArgumentException; the transaction must
         // observe the ceiling and refuse first, so the user sees the form, not an error page.
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", "long@example.com").param("password", "x".repeat(80))
-                        .param("publicHandle", "long-pw").param("givenName", "Longy"))
+                .param("email", "long@example.com").param("password", "x".repeat(80))
+                .param("publicHandle", "long-pw").param("givenName", "Longy"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("error", containsString("72")))
                 .andExpect(unauthenticated());
@@ -218,8 +218,8 @@ class RegistrationFlowWebMvcTest {
     @Test
     void register_mixedCaseEmail_isStoredCanonicallyAndLogsInEitherWay() throws Exception {
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", "  Mixed.Case@Example.COM ").param("password", "a fine passphrase")
-                        .param("publicHandle", "mixed-case").param("givenName", "Mixed"))
+                .param("email", "  Mixed.Case@Example.COM ").param("password", "a fine passphrase")
+                .param("publicHandle", "mixed-case").param("givenName", "Mixed"))
                 .andExpect(redirectedUrl("/register?registered"))
                 .andExpect(authenticated().withUsername("mixed.case@example.com"));
 
@@ -230,8 +230,8 @@ class RegistrationFlowWebMvcTest {
     @Test
     void register_malformedEmail_reRendersFormWithError() throws Exception {
         mockMvc.perform(post("/register").with(csrf())
-                        .param("email", "not-an-email").param("password", "a valid passphrase")
-                        .param("publicHandle", "bad-email").param("givenName", "Nomail"))
+                .param("email", "not-an-email").param("password", "a valid passphrase")
+                .param("publicHandle", "bad-email").param("givenName", "Nomail"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("error"))
                 .andExpect(unauthenticated());

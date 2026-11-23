@@ -16,7 +16,8 @@ import javax.sql.DataSource;
  */
 final class LibrarySeeding {
 
-    private LibrarySeeding() {}
+    private LibrarySeeding() {
+    }
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/library.sql");

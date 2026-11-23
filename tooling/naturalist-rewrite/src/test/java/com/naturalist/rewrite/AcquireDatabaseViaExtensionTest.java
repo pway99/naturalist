@@ -15,51 +15,51 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
         spec.recipe(new AcquireDatabaseViaExtension())
-            // Put a REAL, resolvable org.junit.jupiter.api.extension.RegisterExtension on the parse
-            // classpath (junit-jupiter-api is already a transitive test dependency of this module via
-            // the junit-jupiter aggregator, so it's on this process's runtime classpath for
-            // JavaParser's classpath(String...) scan to find). Against these NaturalistTypeStubs
-            // alone, RegisterExtension would stay an unresolved bare identifier and never exercise
-            // the "annotation + declaration parses as 2 statements" failure mode that only appears
-            // once the annotation type genuinely resolves (as it does in a real, fully-compiled
-            // module) — this is exactly the gap that let the original monolithic-template
-            // implementation ship a crash undetected by these unit tests.
-            .parser(JavaParser.fromJavaVersion().classpath("junit-jupiter-api"))
-            // NaturalistTypeStubs are parsed sources, never compiled to real .class files, so the
-            // JavaTemplate-generated NaturalistTestExtension identifiers can't be fully
-            // type-attributed here (unlike RegisterExtension above, which now resolves for real).
-            // The recipe's real-world target sources are always fully compiled, where this resolves
-            // correctly; see
-            // https://docs.openrewrite.org/reference/faq#im-seeing-lst-contains-missing-or-invalid-type-information-in-my-recipe-unit-tests-how-to-resolve
-            .typeValidationOptions(TypeValidation.builder()
-                .identifiers(false)
-                .build());
+                // Put a REAL, resolvable org.junit.jupiter.api.extension.RegisterExtension on the parse
+                // classpath (junit-jupiter-api is already a transitive test dependency of this module via
+                // the junit-jupiter aggregator, so it's on this process's runtime classpath for
+                // JavaParser's classpath(String...) scan to find). Against these NaturalistTypeStubs
+                // alone, RegisterExtension would stay an unresolved bare identifier and never exercise
+                // the "annotation + declaration parses as 2 statements" failure mode that only appears
+                // once the annotation type genuinely resolves (as it does in a real, fully-compiled
+                // module) — this is exactly the gap that let the original monolithic-template
+                // implementation ship a crash undetected by these unit tests.
+                .parser(JavaParser.fromJavaVersion().classpath("junit-jupiter-api"))
+                // NaturalistTypeStubs are parsed sources, never compiled to real .class files, so the
+                // JavaTemplate-generated NaturalistTestExtension identifiers can't be fully
+                // type-attributed here (unlike RegisterExtension above, which now resolves for real).
+                // The recipe's real-world target sources are always fully compiled, where this resolves
+                // correctly; see
+                // https://docs.openrewrite.org/reference/faq#im-seeing-lst-contains-missing-or-invalid-type-information-in-my-recipe-unit-tests-how-to-resolve
+                .typeValidationOptions(TypeValidation.builder()
+                        .identifiers(false)
+                        .build());
     }
 
     @Test
     void caseA_fieldInitializerIsRetypedToTheExtension() {
         rewriteRun(
-            java(NaturalistTypeStubs.NATURALIST_DATABASE),
-            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            srcTestJava(
-                java(
-                    """
-                    import com.naturalist.data.NaturalistDatabase;
-                    class T {
-                        private final NaturalistDatabase db = NaturalistDatabase.create();
-                    }
-                    """,
-                    """
-                    import com.naturalist.data.NaturalistTestExtension;
-                    import org.junit.jupiter.api.extension.RegisterExtension;
-
-                    class T {
-                        @RegisterExtension
-                        private final NaturalistTestExtension nte = NaturalistTestExtension.create();
-                    }
-                    """
+                java(NaturalistTypeStubs.NATURALIST_DATABASE),
+                java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+                srcTestJava(
+                        java(
+                                """
+                                        import com.naturalist.data.NaturalistDatabase;
+                                        class T {
+                                            private final NaturalistDatabase db = NaturalistDatabase.create();
+                                        }
+                                        """,
+                                """
+                                        import com.naturalist.data.NaturalistTestExtension;
+                                        import org.junit.jupiter.api.extension.RegisterExtension;
+                                        
+                                        class T {
+                                            @RegisterExtension
+                                            private final NaturalistTestExtension nte = NaturalistTestExtension.create();
+                                        }
+                                        """
+                        )
                 )
-            )
         );
     }
 
@@ -70,79 +70,79 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
         // so the file would not compile. Both a method-invocation select and a
         // constructor-argument reference must follow the rename to `nte`.
         rewriteRun(
-            java(NaturalistTypeStubs.NATURALIST_DATABASE),
-            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            java(NaturalistTypeStubs.TEST_ENTITY_SOURCE),
-            java(NaturalistTypeStubs.FOO_SOURCE),
-            srcTestJava(
-                java(
-                    """
-                    import com.naturalist.data.FooTestEntitySource;
-                    import com.naturalist.data.NaturalistDatabase;
-
-                    class T {
-                        private final NaturalistDatabase db = NaturalistDatabase.create();
-                        private final FooTestEntitySource foo = new FooTestEntitySource(db);
-
-                        void m() {
-                            db.getNamed(String.class);
-                        }
-                    }
-                    """,
-                    // `com.naturalist.data.NaturalistDatabase` lingers here (a pre-existing,
-                    // documented `maybeRemoveImport` limitation - see retypeCaseAField's own
-                    // comments: it keys off TypesInUse, not printed text). `new
-                    // FooTestEntitySource(nte)` resolves against a constructor typed
-                    // `(NaturalistDatabase)`, and `nte.getNamed(...)` resolves to a method
-                    // declared on NaturalistDatabase, so both keep NaturalistDatabase in
-                    // TypesInUse even though its name no longer appears in source text. An
-                    // unused import doesn't break compilation - only the rename itself
-                    // (declaration + every reference) is the required outcome here.
-                    """
-                    import com.naturalist.data.FooTestEntitySource;
-                    import com.naturalist.data.NaturalistDatabase;
-                    import com.naturalist.data.NaturalistTestExtension;
-                    import org.junit.jupiter.api.extension.RegisterExtension;
-
-                    class T {
-                        @RegisterExtension
-                        private final NaturalistTestExtension nte = NaturalistTestExtension.create();
-                        private final FooTestEntitySource foo = new FooTestEntitySource(nte);
-
-                        void m() {
-                            nte.getNamed(String.class);
-                        }
-                    }
-                    """
+                java(NaturalistTypeStubs.NATURALIST_DATABASE),
+                java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+                java(NaturalistTypeStubs.TEST_ENTITY_SOURCE),
+                java(NaturalistTypeStubs.FOO_SOURCE),
+                srcTestJava(
+                        java(
+                                """
+                                        import com.naturalist.data.FooTestEntitySource;
+                                        import com.naturalist.data.NaturalistDatabase;
+                                        
+                                        class T {
+                                            private final NaturalistDatabase db = NaturalistDatabase.create();
+                                            private final FooTestEntitySource foo = new FooTestEntitySource(db);
+                                        
+                                            void m() {
+                                                db.getNamed(String.class);
+                                            }
+                                        }
+                                        """,
+                                // `com.naturalist.data.NaturalistDatabase` lingers here (a pre-existing,
+                                // documented `maybeRemoveImport` limitation - see retypeCaseAField's own
+                                // comments: it keys off TypesInUse, not printed text). `new
+                                // FooTestEntitySource(nte)` resolves against a constructor typed
+                                // `(NaturalistDatabase)`, and `nte.getNamed(...)` resolves to a method
+                                // declared on NaturalistDatabase, so both keep NaturalistDatabase in
+                                // TypesInUse even though its name no longer appears in source text. An
+                                // unused import doesn't break compilation - only the rename itself
+                                // (declaration + every reference) is the required outcome here.
+                                """
+                                        import com.naturalist.data.FooTestEntitySource;
+                                        import com.naturalist.data.NaturalistDatabase;
+                                        import com.naturalist.data.NaturalistTestExtension;
+                                        import org.junit.jupiter.api.extension.RegisterExtension;
+                                        
+                                        class T {
+                                            @RegisterExtension
+                                            private final NaturalistTestExtension nte = NaturalistTestExtension.create();
+                                            private final FooTestEntitySource foo = new FooTestEntitySource(nte);
+                                        
+                                            void m() {
+                                                nte.getNamed(String.class);
+                                            }
+                                        }
+                                        """
+                        )
                 )
-            )
         );
     }
 
     @Test
     void caseA_alreadyNamedNteIsRetypedWithoutRename() {
         rewriteRun(
-            java(NaturalistTypeStubs.NATURALIST_DATABASE),
-            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            srcTestJava(
-                java(
-                    """
-                    import com.naturalist.data.NaturalistDatabase;
-                    class T {
-                        private final NaturalistDatabase nte = NaturalistDatabase.create();
-                    }
-                    """,
-                    """
-                    import com.naturalist.data.NaturalistTestExtension;
-                    import org.junit.jupiter.api.extension.RegisterExtension;
-
-                    class T {
-                        @RegisterExtension
-                        private final NaturalistTestExtension nte = NaturalistTestExtension.create();
-                    }
-                    """
+                java(NaturalistTypeStubs.NATURALIST_DATABASE),
+                java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+                srcTestJava(
+                        java(
+                                """
+                                        import com.naturalist.data.NaturalistDatabase;
+                                        class T {
+                                            private final NaturalistDatabase nte = NaturalistDatabase.create();
+                                        }
+                                        """,
+                                """
+                                        import com.naturalist.data.NaturalistTestExtension;
+                                        import org.junit.jupiter.api.extension.RegisterExtension;
+                                        
+                                        class T {
+                                            @RegisterExtension
+                                            private final NaturalistTestExtension nte = NaturalistTestExtension.create();
+                                        }
+                                        """
+                        )
                 )
-            )
         );
     }
 
@@ -152,75 +152,75 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
         // produce a duplicate declaration. The retype must still happen, but the handle
         // keeps its original name.
         rewriteRun(
-            java(NaturalistTypeStubs.NATURALIST_DATABASE),
-            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            srcTestJava(
-                java(
-                    """
-                    import com.naturalist.data.NaturalistDatabase;
-                    class T {
-                        private final NaturalistDatabase db = NaturalistDatabase.create();
-                        private final String nte = "existing";
-                    }
-                    """,
-                    """
-                    import com.naturalist.data.NaturalistTestExtension;
-                    import org.junit.jupiter.api.extension.RegisterExtension;
-
-                    class T {
-                        @RegisterExtension
-                        private final NaturalistTestExtension db = NaturalistTestExtension.create();
-                        private final String nte = "existing";
-                    }
-                    """
+                java(NaturalistTypeStubs.NATURALIST_DATABASE),
+                java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+                srcTestJava(
+                        java(
+                                """
+                                        import com.naturalist.data.NaturalistDatabase;
+                                        class T {
+                                            private final NaturalistDatabase db = NaturalistDatabase.create();
+                                            private final String nte = "existing";
+                                        }
+                                        """,
+                                """
+                                        import com.naturalist.data.NaturalistTestExtension;
+                                        import org.junit.jupiter.api.extension.RegisterExtension;
+                                        
+                                        class T {
+                                            @RegisterExtension
+                                            private final NaturalistTestExtension db = NaturalistTestExtension.create();
+                                            private final String nte = "existing";
+                                        }
+                                        """
+                        )
                 )
-            )
         );
     }
 
     @Test
     void methodLocalIsMarkedNotRewritten() {
         rewriteRun(
-            java(NaturalistTypeStubs.NATURALIST_DATABASE),
-            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            srcTestJava(
-                java(
-                    """
-                    import com.naturalist.data.NaturalistDatabase;
-                    class T {
-                        void m() {
-                            NaturalistDatabase db = NaturalistDatabase.create();
-                        }
-                    }
-                    """,
-                    """
-                    import com.naturalist.data.NaturalistDatabase;
-                    class T {
-                        void m() {
-                            NaturalistDatabase db = /*~~(hoist a @RegisterExtension NaturalistTestExtension field; do not create a bare NaturalistDatabase in a test)~~>*/NaturalistDatabase.create();
-                        }
-                    }
-                    """
+                java(NaturalistTypeStubs.NATURALIST_DATABASE),
+                java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+                srcTestJava(
+                        java(
+                                """
+                                        import com.naturalist.data.NaturalistDatabase;
+                                        class T {
+                                            void m() {
+                                                NaturalistDatabase db = NaturalistDatabase.create();
+                                            }
+                                        }
+                                        """,
+                                """
+                                        import com.naturalist.data.NaturalistDatabase;
+                                        class T {
+                                            void m() {
+                                                NaturalistDatabase db = /*~~(hoist a @RegisterExtension NaturalistTestExtension field; do not create a bare NaturalistDatabase in a test)~~>*/NaturalistDatabase.create();
+                                            }
+                                        }
+                                        """
+                        )
                 )
-            )
         );
     }
 
     @Test
     void extensionCreateIsNotFlagged() {
         rewriteRun(
-            java(NaturalistTypeStubs.NATURALIST_DATABASE),
-            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            srcTestJava(
-                java(
-                    """
-                    import com.naturalist.data.NaturalistTestExtension;
-                    class T {
-                        private final NaturalistTestExtension db = NaturalistTestExtension.create();
-                    }
-                    """   // no `after` => unchanged
+                java(NaturalistTypeStubs.NATURALIST_DATABASE),
+                java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+                srcTestJava(
+                        java(
+                                """
+                                        import com.naturalist.data.NaturalistTestExtension;
+                                        class T {
+                                            private final NaturalistTestExtension db = NaturalistTestExtension.create();
+                                        }
+                                        """   // no `after` => unchanged
+                        )
                 )
-            )
         );
     }
 
@@ -232,18 +232,18 @@ class AcquireDatabaseViaExtensionTest implements RewriteTest {
         // NaturalistDatabase.create();` and the main-source contract base TestEntitySourceTest
         // (ADR-001) are sanctioned create() callers this recipe must never touch.
         rewriteRun(
-            java(NaturalistTypeStubs.NATURALIST_DATABASE),
-            java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
-            srcMainJava(
-                java(
-                    """
-                    import com.naturalist.data.NaturalistDatabase;
-                    class T {
-                        private final NaturalistDatabase db = NaturalistDatabase.create();
-                    }
-                    """   // no `after` => unchanged in main source
+                java(NaturalistTypeStubs.NATURALIST_DATABASE),
+                java(NaturalistTypeStubs.NATURALIST_TEST_EXTENSION),
+                srcMainJava(
+                        java(
+                                """
+                                        import com.naturalist.data.NaturalistDatabase;
+                                        class T {
+                                            private final NaturalistDatabase db = NaturalistDatabase.create();
+                                        }
+                                        """   // no `after` => unchanged in main source
+                        )
                 )
-            )
         );
     }
 }

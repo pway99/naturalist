@@ -18,9 +18,12 @@ class InsectFeatureQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectFeatureRepositoryMock featureRepository;
-    @Wired InsectFeatureAssignmentRepositoryMock assignmentRepository;
-    @Wired InsectFeatureQueryImpl featureQuery;
+    @Wired
+    InsectFeatureRepositoryMock featureRepository;
+    @Wired
+    InsectFeatureAssignmentRepositoryMock assignmentRepository;
+    @Wired
+    InsectFeatureQueryImpl featureQuery;
 
     @Test
     void findByRankName_groupsAncestorFirst_familyGroupLast() {

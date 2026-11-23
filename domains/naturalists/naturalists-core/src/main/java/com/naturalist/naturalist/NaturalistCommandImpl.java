@@ -28,18 +28,18 @@ class NaturalistCommandImpl implements NaturalistCommand {
 
     @Override
     public NaturalistName create(AccountName account,
-                                  String publicHandle,
-                                  String givenName,
-                                  @Nullable String familyName,
-                                  NaturalistRole role,
-                                  EcologicalStage stage,
-                                  @Nullable String notes) {
+                                 String publicHandle,
+                                 String givenName,
+                                 @Nullable String familyName,
+                                 NaturalistRole role,
+                                 EcologicalStage stage,
+                                 @Nullable String notes) {
         observer.arguments("create", i -> i
-                        .entityName(account, "account")
-                        .notBlank(publicHandle, "publicHandle")
-                        .notBlank(givenName, "givenName")
-                        .notNull(role, "role")
-                        .notNull(stage, "stage"))
+                .entityName(account, "account")
+                .notBlank(publicHandle, "publicHandle")
+                .notBlank(givenName, "givenName")
+                .notNull(role, "role")
+                .notNull(stage, "stage"))
                 .throwWhenInvalid();
 
         NaturalistName name = NaturalistName.create();
@@ -51,8 +51,8 @@ class NaturalistCommandImpl implements NaturalistCommand {
     @Override
     public void rename(NaturalistName name, String newPublicHandle) {
         observer.arguments("rename", i -> i
-                        .entityName(name, "name")
-                        .notBlank(newPublicHandle, "newPublicHandle"))
+                .entityName(name, "name")
+                .notBlank(newPublicHandle, "newPublicHandle"))
                 .throwWhenInvalid();
 
         Naturalist existing = naturalists.getByName(name).orElseThrow();

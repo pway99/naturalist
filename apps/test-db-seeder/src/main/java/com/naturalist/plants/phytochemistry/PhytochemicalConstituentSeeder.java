@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds phytochemical constituents through the real RDBMS adapter (split-package with the rdbms module). */
 public final class PhytochemicalConstituentSeeder {
 
-    private PhytochemicalConstituentSeeder() {}
+    private PhytochemicalConstituentSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<PhytochemicalConstituent> entities = database.getNamed(PlantPhytochemicalConstituentTestEntitySource.class).entityStream().toList();

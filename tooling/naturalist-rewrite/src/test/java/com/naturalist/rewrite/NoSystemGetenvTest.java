@@ -17,73 +17,84 @@ class NoSystemGetenvTest implements RewriteTest {
     @Test
     void flagsGetenvOutsideTheSecretsPackage() {
         rewriteRun(srcMainJava(java(
-            """
-            package com.naturalist.console;
-            class C { String k() { return System.getenv("X"); } }
-            """,
-            """
-            package com.naturalist.console;
-            class C { String k() { return /*~~(%s)~~>*/System.getenv("X"); } }
-            """.formatted(NoSystemGetenv.MESSAGE))));
+                """
+                        package com.naturalist.console;
+                        class C { String k() { return System.getenv("X"); } }
+                        """,
+                """
+                        package com.naturalist.console;
+                        class C { String k() { return /*~~(%s)~~>*/System.getenv("X"); } }
+                        """.formatted(NoSystemGetenv.MESSAGE))));
     }
 
     @Test
     void flagsTheNoArgumentForm() {
         rewriteRun(srcMainJava(java(
-            """
-            package com.naturalist.console;
-            import java.util.Map;
-            class C { Map<String, String> all() { return System.getenv(); } }
-            """,
-            """
-            package com.naturalist.console;
-            import java.util.Map;
-            class C { Map<String, String> all() { return /*~~(%s)~~>*/System.getenv(); } }
-            """.formatted(NoSystemGetenv.MESSAGE))));
+                """
+                        package com.naturalist.console;
+                        import java.util.Map;
+                        class C { Map<String, String> all() { return System.getenv(); } }
+                        """,
+                """
+                        package com.naturalist.console;
+                        import java.util.Map;
+                        class C { Map<String, String> all() { return /*~~(%s)~~>*/System.getenv(); } }
+                        """.formatted(NoSystemGetenv.MESSAGE))));
     }
 
     @Test
     void doesNotFlagTheSecretsPackage() {
         rewriteRun(srcMainJava(java(
-            """
-            package com.naturalist.secrets;
-            class EnvironmentSecretProvider { String k() { return System.getenv("X"); } }
-            """)));
+                """
+                        package com.naturalist.secrets;
+                        class EnvironmentSecretProvider { String k() { return System.getenv("X"); } }
+                        """)));
     }
 
     @Test
     void doesNotFlagTheStandingTestDatabaseWiring() {
         rewriteRun(srcMainJava(java(
-            """
-            package com.naturalist.persistence.test;
-            final class RdbmsDataSource { static String env(String k) { return System.getenv(k); } }
-            """)));
+                """
+                        package com.naturalist.persistence.test;
+                        final class RdbmsDataSource { static String env(String k) { return System.getenv(k); } }
+                        """)));
     }
 
     @Test
     void theExemptionIsPerClass_notPerPackage() {
         rewriteRun(srcMainJava(java(
-            """
-            package com.naturalist.persistence.test;
-            class Other { String k() { return System.getenv("X"); } }
-            """,
-            """
-            package com.naturalist.persistence.test;
-            class Other { String k() { return /*~~(%s)~~>*/System.getenv("X"); } }
-            """.formatted(NoSystemGetenv.MESSAGE))));
+                """
+                        package com.naturalist.persistence.test;
+                        class Other { String k() { return System.getenv("X"); } }
+                        """,
+                """
+                        package com.naturalist.persistence.test;
+                        class Other { String k() { return /*~~(%s)~~>*/System.getenv("X"); } }
+                        """.formatted(NoSystemGetenv.MESSAGE))));
     }
 
     @Test
     void enforceArchitectureComposite_includesTheRecipe() {
-        rewriteRun(spec -> spec.recipeFromResources("com.naturalist.EnforceArchitecture"),
-            srcMainJava(java(
-            """
-            package com.naturalist.console;
-            class C { String k() { return System.getenv("X"); } }
-            """,
-            """
-            package com.naturalist.console;
-            class C { String k() { return /*~~(%s)~~>*/System.getenv("X"); } }
-            """.formatted(NoSystemGetenv.MESSAGE))));
+        rewriteRun(spec -> spec.recipeFromResources("com.naturalist.EnforceArchitecture")
+                        .parser(ProjectStyles.parser()),
+                srcMainJava(java(
+                        """
+                                package com.naturalist.console;
+                                
+                                class C {
+                                    String k() {
+                                        return System.getenv("X");
+                                    }
+                                }
+                                """,
+                        """
+                                package com.naturalist.console;
+                                
+                                class C {
+                                    String k() {
+                                        return /*~~(%s)~~>*/System.getenv("X");
+                                    }
+                                }
+                                """.formatted(NoSystemGetenv.MESSAGE))));
     }
 }

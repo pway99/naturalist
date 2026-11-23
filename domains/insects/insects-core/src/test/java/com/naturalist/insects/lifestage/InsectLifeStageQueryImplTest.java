@@ -14,8 +14,10 @@ class InsectLifeStageQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectLifeStageQuery.LifeStageEntityQuery lifeStageEntityQuery;
-    @Wired InsectLifeStageQuery query;
+    @Wired
+    InsectLifeStageQuery.LifeStageEntityQuery lifeStageEntityQuery;
+    @Wired
+    InsectLifeStageQuery query;
 
     @Test
     void accessors_returnNonNullDelegates() {

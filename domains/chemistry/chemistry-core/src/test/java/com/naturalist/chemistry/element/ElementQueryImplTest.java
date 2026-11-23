@@ -15,8 +15,10 @@ class ElementQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired ElementRepository repository;
-    @Wired ElementQuery elementQuery;
+    @Wired
+    ElementRepository repository;
+    @Wired
+    ElementQuery elementQuery;
 
     @Test
     void findByNameSet_happyPath() {

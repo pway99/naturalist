@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * enum persisted by its constant name.
  */
 @DboSchema(table = "phytochemical_constituent_tissue", primaryKey = "constituent_id,tissue",
-           foreignKeys = @Fk(columns = "constituent_id", references = "phytochemical_constituent(id)"),
-           entity = PhytochemicalConstituent.class)
+        foreignKeys = @Fk(columns = "constituent_id", references = "phytochemical_constituent(id)"),
+        entity = PhytochemicalConstituent.class)
 final class PhytochemicalConstituentTissueDbo implements Dbo {
     String constituentName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String tissue;

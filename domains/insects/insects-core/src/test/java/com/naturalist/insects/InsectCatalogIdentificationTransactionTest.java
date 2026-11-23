@@ -31,8 +31,10 @@ class InsectCatalogIdentificationTransactionTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery query;
-    @Wired InsectCatalogIdentificationTransaction transaction;
+    @Wired
+    InsectQuery query;
+    @Wired
+    InsectCatalogIdentificationTransaction transaction;
 
     @Test
     void executePersistsSpeciesAndParentRanksAndImageAndObservation() {

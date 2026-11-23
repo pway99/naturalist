@@ -17,10 +17,10 @@ class InsectCommandImpl implements InsectCommand {
     InsectCommandImpl(InsectEntityCommands commands, SightingCommand sightings, PhotoCommand photos,
                       IdentificationCommand identification) {
         Observer.forClass(InsectCommandImpl.class).arguments("constructor", i -> i
-                        .notNull(commands, "commands")
-                        .notNull(sightings, "sightings")
-                        .notNull(photos, "photos")
-                        .notNull(identification, "identification"))
+                .notNull(commands, "commands")
+                .notNull(sightings, "sightings")
+                .notNull(photos, "photos")
+                .notNull(identification, "identification"))
                 .throwWhenInvalid();
         this.commands = commands;
         this.sightings = sightings;

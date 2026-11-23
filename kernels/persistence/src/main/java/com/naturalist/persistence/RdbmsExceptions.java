@@ -5,7 +5,8 @@ import java.sql.SQLException;
 /** Translates driver/SQLState signals into decisions the adapter maps to domain exceptions. */
 public final class RdbmsExceptions {
 
-    private RdbmsExceptions() {}
+    private RdbmsExceptions() {
+    }
 
     private static final String UNIQUE_VIOLATION = "23505"; // Postgres
 

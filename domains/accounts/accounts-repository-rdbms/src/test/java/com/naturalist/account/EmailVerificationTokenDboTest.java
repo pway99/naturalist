@@ -21,19 +21,22 @@ class EmailVerificationTokenDboTest {
                 consumedAt);
     }
 
-    @Test void roundTrip_recoversAllFields() {
+    @Test
+    void roundTrip_recoversAllFields() {
         EmailVerificationToken t = sample(null);
         EmailVerificationTokenDbo dbo = EmailVerificationTokenDbo.from(t);
         assertThat(dbo.toEntity()).usingRecursiveComparison().isEqualTo(t);
     }
 
-    @Test void roundTrip_preservesConsumedAt() {
+    @Test
+    void roundTrip_preservesConsumedAt() {
         EmailVerificationToken t = sample(Instant.parse("2026-11-15T00:00:00Z"));
         EmailVerificationTokenDbo dbo = EmailVerificationTokenDbo.from(t);
         assertThat(dbo.toEntity()).usingRecursiveComparison().isEqualTo(t);
     }
 
-    @Test void invariants_flagOverLongTokenHash() {
+    @Test
+    void invariants_flagOverLongTokenHash() {
         EmailVerificationTokenDbo dbo = EmailVerificationTokenDbo.from(sample(null));
         dbo.tokenHash = "x".repeat(129); // exceeds VARCHAR(128)
         Set<Constraint<?>> violations = Observer.forClass(EmailVerificationTokenDboTest.class)

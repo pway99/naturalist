@@ -21,8 +21,10 @@ class InsectImageCommandImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectCommand.ImageCommand command;
-    @Wired InsectQuery.ImageQuery query;
+    @Wired
+    InsectCommand.ImageCommand command;
+    @Wired
+    InsectQuery.ImageQuery query;
 
     @Override
     public EntityCommand<InsectImageId, OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> command() {

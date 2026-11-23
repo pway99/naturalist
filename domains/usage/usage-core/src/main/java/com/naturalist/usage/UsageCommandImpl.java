@@ -50,18 +50,18 @@ class UsageCommandImpl implements UsageCommand {
     private final UsageRepository.AlertRepository alerts;
 
     UsageCommandImpl(UsageQuery query,
-                      EntitlementLookup entitlements,
-                      WarningPercent warningPercent,
-                      Clock clock,
-                      UsageRepository.EventRepository events,
-                      UsageRepository.AlertRepository alerts) {
+                     EntitlementLookup entitlements,
+                     WarningPercent warningPercent,
+                     Clock clock,
+                     UsageRepository.EventRepository events,
+                     UsageRepository.AlertRepository alerts) {
         observer.arguments("constructor", i -> i
-                        .notNull(query, "query")
-                        .notNull(entitlements, "entitlements")
-                        .notNull(warningPercent, "warningPercent")
-                        .notNull(clock, "clock")
-                        .notNull(events, "events")
-                        .notNull(alerts, "alerts"))
+                .notNull(query, "query")
+                .notNull(entitlements, "entitlements")
+                .notNull(warningPercent, "warningPercent")
+                .notNull(clock, "clock")
+                .notNull(events, "events")
+                .notNull(alerts, "alerts"))
                 .throwWhenInvalid();
         this.query = query;
         this.entitlements = entitlements;

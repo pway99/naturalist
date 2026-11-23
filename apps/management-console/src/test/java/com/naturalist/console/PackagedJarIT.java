@@ -199,7 +199,7 @@ class PackagedJarIT {
      */
     private static boolean inANestedCheckout(Path projectRoot, Path file) {
         for (Path directory = file.getParent(); directory != null && !directory.equals(projectRoot);
-                directory = directory.getParent()) {
+             directory = directory.getParent()) {
             if (Files.exists(directory.resolve(".git"))) {
                 return true;
             }

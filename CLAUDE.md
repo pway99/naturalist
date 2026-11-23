@@ -194,6 +194,11 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
   `com.naturalist.Style` (in `naturalist.yml`, active in the root pom), whose fold counts are out
   of reach so nothing folds imports back. JTE templates are not parsed by OpenRewrite and are not
   covered.
+- **One format: IntelliJ's.** `EnforceArchitecture` ends with OpenRewrite's `AutoFormat`, under the
+  styles the root pom activates: `org.openrewrite.java.IntelliJ` (packaged with rewrite-java), then
+  `com.naturalist.Style`, which overrides only the import fold counts. Format with `mvn rewrite:run`;
+  the dry run fails on anything else. A recipe test of the composite parses under the same styles
+  through `ProjectStyles.parser(...)` (stubs on the classpath, not formatted).
 - **Never weaken a test, gate, or enforcement to make code pass — fix the code.** The
   build-time invariants exist to be *satisfied*, not silenced: the N+1 no-fan-out gate
   (`kernels/framework-test` → `com.naturalist.test.query.nofanout`, surfaced as

@@ -57,7 +57,8 @@ record CitationAssociationJson(
     static List<CitationAssociation> parseAll(String json, EntityRefResolver resolver) {
         try {
             List<CitationAssociationJson> dtos =
-                    MAPPER.readValue(json, new TypeReference<>() {});
+                    MAPPER.readValue(json, new TypeReference<>() {
+                    });
             List<CitationAssociation> entities = new ArrayList<>(dtos.size());
             for (CitationAssociationJson dto : dtos) {
                 entities.add(dto.toEntity(resolver));

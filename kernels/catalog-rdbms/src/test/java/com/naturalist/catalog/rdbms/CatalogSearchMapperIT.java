@@ -14,7 +14,9 @@ class CatalogSearchMapperIT {
     @RegisterExtension
     static RdbmsTestExtension rdbms = RdbmsTestExtension.shared();
 
-    private CatalogSearchMapper mapper() { return rdbms.mapper(CatalogSearchMapper.class); }
+    private CatalogSearchMapper mapper() {
+        return rdbms.mapper(CatalogSearchMapper.class);
+    }
 
     @Test
     void substringSearchReturnsClassifiedRows() {
@@ -22,7 +24,7 @@ class CatalogSearchMapperIT {
         assertFalse(rows.isEmpty());
         assertTrue(rows.stream().allMatch(r -> r.slug != null && r.domain != null && r.entityType != null));
         assertTrue(rows.stream().allMatch(r ->
-                List.of("EXACT_SLUG","EXACT_TOKEN","PREFIX","FUZZY").contains(r.kind)));
+                List.of("EXACT_SLUG", "EXACT_TOKEN", "PREFIX", "FUZZY").contains(r.kind)));
     }
 
     @Test

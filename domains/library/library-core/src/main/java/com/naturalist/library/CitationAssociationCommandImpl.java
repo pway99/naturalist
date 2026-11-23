@@ -6,7 +6,7 @@ import com.naturalist.infrastructure.DomainService;
 @DomainService
 class CitationAssociationCommandImpl
         extends AbstractEntityCommand<CitationAssociationId, CitationAssociation,
-                CitationAssociationRepository>
+        CitationAssociationRepository>
         implements LibraryCommand.CitationAssociationCommand {
 
     CitationAssociationCommandImpl(CitationAssociationRepository repository) {

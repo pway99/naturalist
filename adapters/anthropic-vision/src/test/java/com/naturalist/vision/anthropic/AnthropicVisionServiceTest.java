@@ -46,8 +46,8 @@ class AnthropicVisionServiceTest {
     void buildTool_mapsNameDescriptionPropertiesAndRequired() {
         Tool tool = AnthropicVisionService.buildTool(new ToolSchema("propose", "Propose.",
                 """
-                {"type":"object","required":["name"],"properties":{"name":{"type":"string"}}}
-                """));
+                        {"type":"object","required":["name"],"properties":{"name":{"type":"string"}}}
+                        """));
         assertThat(tool.name()).isEqualTo("propose");
         assertThat(tool.description()).contains("Propose.");
         assertThat(tool.inputSchema().required()).contains(List.of("name"));

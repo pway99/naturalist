@@ -23,8 +23,8 @@ import java.util.function.Consumer;
  * alias maps to {@link #cultivarName}.
  */
 @DboSchema(table = "seed_lineage", primaryKey = "id", unique = {"name"},
-           foreignKeys = @Fk(columns = "cultivar_id", references = "cultivar(id)"),
-           entity = SeedLineage.class)
+        foreignKeys = @Fk(columns = "cultivar_id", references = "cultivar(id)"),
+        entity = SeedLineage.class)
 final class SeedLineageDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;

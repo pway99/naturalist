@@ -89,11 +89,11 @@ public final class FilesystemImageStore implements ImageStore {
     public FileName store(String space, ImageUpload upload) {
         MethodObserver methodObserver = observer.forMethod("store");
         methodObserver.arguments(i -> i
-            .notBlank(space, "space")
-            .valueObject(upload, "upload")).throwWhenInvalid();
+                .notBlank(space, "space")
+                .valueObject(upload, "upload")).throwWhenInvalid();
         methodObserver.state(i -> i
-            .isTrue(spaceWithinRoot(space), "spaceWithinRoot"))
-            .throwWhenInvalid();
+                .isTrue(spaceWithinRoot(space), "spaceWithinRoot"))
+                .throwWhenInvalid();
         Storable storable = strippedStorable(methodObserver, upload);
         ImageUpload stripped = storable.stripped();
         PhotoScaler.Dimensions declared = storable.declared();
@@ -123,8 +123,8 @@ public final class FilesystemImageStore implements ImageStore {
                 }
                 boolean decodable = tile != null;
                 InvariantObservation decodes = methodObserver.state(i -> i
-                    .isTrue(decodable, "decodable"))
-                    .observe(Level.WARN);
+                        .isTrue(decodable, "decodable"))
+                        .observe(Level.WARN);
                 if (!decodes.violations().isEmpty()) {
                     // the port's one refusal a caller may answer as a bad photo (ImageRefusedException), counted here
                     throw new ImageRefusedException(decodes.scope(), decodes.violations());
@@ -174,19 +174,19 @@ public final class FilesystemImageStore implements ImageStore {
     public Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
         MethodObserver methodObserver = observer.forMethod("read");
         methodObserver.arguments(i -> i
-            .notBlank(space, "space")
-            .namedValue(name, "name")
-            .notNull(variant, "variant"))
-            .throwWhenInvalid();
+                .notBlank(space, "space")
+                .namedValue(name, "name")
+                .notNull(variant, "variant"))
+                .throwWhenInvalid();
         methodObserver.state(i -> i
-            .isTrue(resolvable(space, name.value()), "resolvable"))
-            .throwWhenInvalid();
+                .isTrue(resolvable(space, name.value()), "resolvable"))
+                .throwWhenInvalid();
         Path spaceDirectory = root.resolve(space).normalize();
         Path directory = variant == ImageVariant.TILE ? spaceDirectory.resolve(TILES) : spaceDirectory;
         Path file = directory.resolve(name.value()).normalize();
         methodObserver.state(i -> i
-            .isTrue(spaceDirectory.startsWith(root.normalize()), "spaceWithinRoot"))
-            .throwWhenInvalid();
+                .isTrue(spaceDirectory.startsWith(root.normalize()), "spaceWithinRoot"))
+                .throwWhenInvalid();
         // A read only finds the file and sniffs its first bytes; the caller streams the rest, so no read
         // holds a photo in the heap (PL-16). The bulkhead caps concurrent lookups; past it the caller
         // gets BulkheadFullException.
@@ -205,8 +205,8 @@ public final class FilesystemImageStore implements ImageStore {
             // A tile is written with its photo and conform backfills the rest: a missing one is a defect to
             // see, and the photo is never served in its place.
             methodObserver.state(i -> i
-                .isTrue(false, "tilePresent"))
-                .observe(Level.WARN);
+                    .isTrue(false, "tilePresent"))
+                    .observe(Level.WARN);
         }
         return found;
     }
@@ -233,17 +233,17 @@ public final class FilesystemImageStore implements ImageStore {
     public void delete(String space, FileName name) {
         MethodObserver methodObserver = observer.forMethod("delete");
         methodObserver.arguments(i -> i
-            .notBlank(space, "space")
-            .namedValue(name, "name"))
-            .throwWhenInvalid();
+                .notBlank(space, "space")
+                .namedValue(name, "name"))
+                .throwWhenInvalid();
         methodObserver.state(i -> i
-            .isTrue(resolvable(space, name.value()), "resolvable"))
-            .throwWhenInvalid();
+                .isTrue(resolvable(space, name.value()), "resolvable"))
+                .throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
         Path file = directory.resolve(name.value()).normalize();
         methodObserver.state(i -> i
-            .isTrue(directory.startsWith(root.normalize()), "spaceWithinRoot"))
-            .throwWhenInvalid();
+                .isTrue(directory.startsWith(root.normalize()), "spaceWithinRoot"))
+                .throwWhenInvalid();
         Path tile = directory.resolve(TILES).resolve(name.value()).normalize();
         try {
             resilience.timeout(STRATEGY).execute(() -> {
@@ -277,10 +277,10 @@ public final class FilesystemImageStore implements ImageStore {
         ImageUpload stripped = upload.withoutMetadata();
         Optional<PhotoScaler.Dimensions> header = PhotoScaler.declared(stripped.bytes());
         methodObserver.state(i -> i
-            .isTrue(stripped.isSameFormatAs(upload), "strippedIsTheSameImage")
-            .isTrue(header.isPresent(), "headerDecodes")
-            .atMostOrNull(header.map(PhotoScaler.Dimensions::pixels).orElse(null), PhotoScaler.MAX_PIXELS, "pixels"))
-            .throwWhenInvalid();
+                .isTrue(stripped.isSameFormatAs(upload), "strippedIsTheSameImage")
+                .isTrue(header.isPresent(), "headerDecodes")
+                .atMostOrNull(header.map(PhotoScaler.Dimensions::pixels).orElse(null), PhotoScaler.MAX_PIXELS, "pixels"))
+                .throwWhenInvalid();
         return new Storable(stripped, header.orElseThrow());
     }
 
@@ -367,11 +367,11 @@ public final class FilesystemImageStore implements ImageStore {
     public ConformReport conform(String space) {
         MethodObserver methodObserver = observer.forMethod("conform");
         methodObserver.arguments(i -> i
-            .notBlank(space, "space"))
-            .throwWhenInvalid();
+                .notBlank(space, "space"))
+                .throwWhenInvalid();
         methodObserver.state(i -> i
-            .isTrue(spaceWithinRoot(space), "spaceWithinRoot"))
-            .throwWhenInvalid();
+                .isTrue(spaceWithinRoot(space), "spaceWithinRoot"))
+                .throwWhenInvalid();
         Path directory = root.resolve(space).normalize();
         if (!Files.isDirectory(directory)) {
             return new ConformReport(0, 0, 0, List.of());
@@ -461,9 +461,9 @@ public final class FilesystemImageStore implements ImageStore {
         }
         Optional<PhotoScaler.Dimensions> header = PhotoScaler.declared(bytes);
         InvariantObservation decodable = methodObserver.state(i -> i
-            .isTrue(header.isPresent(), "headerDecodes")
-            .atMostOrNull(header.map(PhotoScaler.Dimensions::pixels).orElse(null), PhotoScaler.MAX_PIXELS, "pixels"))
-            .observe(Level.WARN);
+                .isTrue(header.isPresent(), "headerDecodes")
+                .atMostOrNull(header.map(PhotoScaler.Dimensions::pixels).orElse(null), PhotoScaler.MAX_PIXELS, "pixels"))
+                .observe(Level.WARN);
         if (!decodable.violations().isEmpty()) {
             return new Conformed(false, false, true);
         }
@@ -485,8 +485,8 @@ public final class FilesystemImageStore implements ImageStore {
                     // the header decoded but the image did not: left as it is, like a file whose header does not decode;
                     // a decoded image that cannot be re-encoded is a fault (ReencodeFailedException) and stops the run
                     methodObserver.state(i -> i
-                        .isTrue(false, "decodable"))
-                        .observe(Level.WARN);
+                            .isTrue(false, "decodable"))
+                            .observe(Level.WARN);
                     return new Conformed(false, false, true);
                 } catch (ReencodeFailedException fault) {
                     // already counted by fitJpeg (encoded); wrapped, not counted again, only so the failure that stops the

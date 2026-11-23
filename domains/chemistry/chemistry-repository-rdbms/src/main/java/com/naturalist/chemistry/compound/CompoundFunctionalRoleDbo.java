@@ -17,8 +17,8 @@ import java.util.function.Consumer;
  * is a sealed type persisted as its {@code kind()} discriminator.
  */
 @DboSchema(table = "compound_functional_role", primaryKey = "compound_id,functional_role",
-           foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
-           entity = Compound.class)
+        foreignKeys = @Fk(columns = "compound_id", references = "compound(id)"),
+        entity = Compound.class)
 final class CompoundFunctionalRoleDbo implements Dbo {
     String compoundName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String functionalRole;

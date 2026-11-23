@@ -37,11 +37,11 @@ public final class Pages {
     public static <E> Stream<E> stream(int pageSize, Function<PageRequest, Page<E>> loader) {
         Page<E> first = loader.apply(PageRequest.first(pageSize));
         return Stream.iterate(
-                        first,
-                        Objects::nonNull,
-                        page -> page.hasNext()
-                                ? loader.apply(PageRequest.of(page.pageNumber() + 1, pageSize))
-                                : null)
+                first,
+                Objects::nonNull,
+                page -> page.hasNext()
+                        ? loader.apply(PageRequest.of(page.pageNumber() + 1, pageSize))
+                        : null)
                 .flatMap(page -> page.content().stream());
     }
 }

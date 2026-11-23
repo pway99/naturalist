@@ -14,7 +14,8 @@ class PlantFactoryTest {
     final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
     /** Provided by {@link PlantsTestContextInternal} over the graph's real queries, sub-context queries included. */
-    @Wired PlantFactory factory;
+    @Wired
+    PlantFactory factory;
 
     @Test
     void buildByName_speciesName_composesFullAncestrySpine() {

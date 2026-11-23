@@ -36,7 +36,7 @@ class InsectFamilyEntityRepositoryRdbms
     private final InsectFamilyTransaction transaction;
 
     InsectFamilyEntityRepositoryRdbms(InsectFamilyMapper mapper,
-            InsectFamilyTransaction transaction) {
+                                      InsectFamilyTransaction transaction) {
         this.mapper = mapper;
         this.transaction = transaction;
     }

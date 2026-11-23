@@ -18,7 +18,8 @@ public final class RdbmsCatalogAssembly {
 
     private static final Observer observer = Observer.forClass(RdbmsCatalogAssembly.class);
 
-    private RdbmsCatalogAssembly() {}
+    private RdbmsCatalogAssembly() {
+    }
 
     public static Catalog from(CatalogSearchMapper mapper,
                                List<DomainId> domains,
@@ -26,11 +27,11 @@ public final class RdbmsCatalogAssembly {
                                List<EntityReferences<?>> providers,
                                Resilience resilience) {
         observer.arguments("from", i -> i
-                        .notNull(mapper, "mapper")
-                        .notNull(domains, "domains")
-                        .notNull(nameReconstructors, "nameReconstructors")
-                        .notNull(providers, "providers")
-                        .notNull(resilience, "resilience"))
+                .notNull(mapper, "mapper")
+                .notNull(domains, "domains")
+                .notNull(nameReconstructors, "nameReconstructors")
+                .notNull(providers, "providers")
+                .notNull(resilience, "resilience"))
                 .throwWhenInvalid();
         Map<String, DomainId> bySlug = new LinkedHashMap<>();
         for (DomainId d : domains) {

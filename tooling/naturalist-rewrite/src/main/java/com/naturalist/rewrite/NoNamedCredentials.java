@@ -29,7 +29,7 @@ public class NoNamedCredentials extends Recipe {
     @Override
     public String getDescription() {
         return "Flags a source file whose literals, comments or identifiers spell a credential name "
-             + "or a vendor key prefix. Name secrets through neutral SecretName constants (ADR-028).";
+                + "or a vendor key prefix. Name secrets through neutral SecretName constants (ADR-028).";
     }
 
     @Override

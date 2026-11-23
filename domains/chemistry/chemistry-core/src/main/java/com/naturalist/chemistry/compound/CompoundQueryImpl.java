@@ -11,8 +11,8 @@ class CompoundQueryImpl implements CompoundQuery {
 
     CompoundQueryImpl(CompoundEntityQuery compoundEntityQuery, DepictionQuery depictionQuery) {
         Observer.forClass(CompoundQueryImpl.class).arguments("constructor", i -> i
-                        .notNull(compoundEntityQuery, "compoundEntityQuery")
-                        .notNull(depictionQuery, "depictionQuery"))
+                .notNull(compoundEntityQuery, "compoundEntityQuery")
+                .notNull(depictionQuery, "depictionQuery"))
                 .throwWhenInvalid();
         this.compoundEntityQuery = compoundEntityQuery;
         this.depictionQuery = depictionQuery;

@@ -20,7 +20,7 @@ class InsectGenusQueryImpl
     private final InsectQuery.FamilyQuery familyQuery;
 
     InsectGenusQueryImpl(InsectRepository.GenusRepository repository,
-                   InsectQuery.FamilyQuery familyQuery) {
+                         InsectQuery.FamilyQuery familyQuery) {
         super(repository);
         this.familyQuery = Objects.requireNonNull(familyQuery, "familyQuery");
     }
@@ -35,7 +35,7 @@ class InsectGenusQueryImpl
     @Override
     public GenusCollection forFamilyName(InsectFamilyName familyName) {
         observer().arguments("forFamilyName",
-                        i -> i.entityName(familyName, "familyName"))
+                i -> i.entityName(familyName, "familyName"))
                 .throwWhenInvalid();
         return GenusCollection.of(repository().getByFamilyName(familyName));
     }
@@ -43,7 +43,7 @@ class InsectGenusQueryImpl
     @Override
     public GenusCollection forFamilyNames(Set<InsectFamilyName> familyNames) {
         observer().arguments("forFamilyNames",
-                        i -> i.entityNameCollection(familyNames, "familyNames"))
+                i -> i.entityNameCollection(familyNames, "familyNames"))
                 .throwWhenInvalid();
         return GenusCollection.of(repository().getByFamilyNames(familyNames));
     }
@@ -51,7 +51,7 @@ class InsectGenusQueryImpl
     @Override
     public GenusCollection forOrderName(InsectOrderName orderName) {
         observer().arguments("forOrderName",
-                        i -> i.entityName(orderName, "orderName"))
+                i -> i.entityName(orderName, "orderName"))
                 .throwWhenInvalid();
         Set<InsectFamilyName> familyNames = familyQuery.forOrderName(orderName).stream()
                 .map(InsectFamilyInfo::name)

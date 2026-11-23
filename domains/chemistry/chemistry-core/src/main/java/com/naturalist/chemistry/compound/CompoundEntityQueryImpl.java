@@ -18,7 +18,7 @@ class CompoundEntityQueryImpl
     @Override
     public CompoundCollection findByNameSet(Set<CompoundName> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
 
         return CompoundCollection.of(repository().getByEntityNameSet(names));

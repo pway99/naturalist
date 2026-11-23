@@ -85,7 +85,7 @@ class IdentifyClientRateLimitWebMvcTest {
         mockMvc.perform(identify("198.51.100.8"))
                 .andExpect(status().is3xxRedirection());
         mockMvc.perform(identify("198.51.100.8").with(user("naturalist")
-                        .authorities(new SimpleGrantedAuthority("ROLE_NATURALIST"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_NATURALIST"))))
                 .andExpect(status().isForbidden());
 
         // The one permit is still unspent, so this reaches the controller (not the notice).

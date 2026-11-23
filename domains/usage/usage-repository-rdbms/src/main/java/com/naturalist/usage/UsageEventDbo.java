@@ -46,9 +46,9 @@ final class UsageEventDbo implements Dbo {
         return c -> c
                 .notBlank(id, "id")
                 .notNull(counterName, "counterName").kebabFormat(counterName, "counterName")
-                    .maxLength(counterName, 64, "counterName")
+                .maxLength(counterName, 64, "counterName")
                 .notNull(naturalist, "naturalist").kebabFormat(naturalist, "naturalist")
-                    .maxLength(naturalist, 64, "naturalist")
+                .maxLength(naturalist, 64, "naturalist")
                 .notNull(instant, "instant");
     }
 }

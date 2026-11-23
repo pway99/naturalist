@@ -12,7 +12,7 @@ public class TestLibraryIdentifiers {
                 CitationName.of("eol-battus-philenor-130502");
 
         public static final CitationName EolLepidoptera =
-            CitationName.of("eol-lepidoptera-747");
+                CitationName.of("eol-lepidoptera-747");
 
         public static final CitationName EolGreenLacewing =
                 CitationName.of("eol-chrysoperla-rufilabris-2774541");

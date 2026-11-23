@@ -119,9 +119,18 @@ class RegistrationClientRateLimitWebMvcTest {
         Logger logger = Logger.getLogger(RegistrationController.class.getName());
         List<LogRecord> records = new CopyOnWriteArrayList<>();
         Handler capture = new Handler() {
-            @Override public void publish(java.util.logging.LogRecord record) { records.add(record); }
-            @Override public void flush() { }
-            @Override public void close() { }
+            @Override
+            public void publish(java.util.logging.LogRecord record) {
+                records.add(record);
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
         };
         logger.addHandler(capture);
         try {

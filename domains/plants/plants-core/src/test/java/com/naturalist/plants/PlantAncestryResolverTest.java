@@ -12,7 +12,8 @@ class PlantAncestryResolverTest {
     @RegisterExtension
     final NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired PlantAncestryResolver resolver;
+    @Wired
+    PlantAncestryResolver resolver;
 
     @Test
     void ancestry_ofGenus_isAncestorFirst() {

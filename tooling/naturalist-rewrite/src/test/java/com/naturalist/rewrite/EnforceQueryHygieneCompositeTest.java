@@ -17,38 +17,38 @@ class EnforceQueryHygieneCompositeTest implements RewriteTest {
     @Test
     void compositeFlagsAnNPlusOne() {
         rewriteRun(
-            java(NaturalistTypeStubs.ENTITY_REPOSITORY),
-            java(NaturalistTypeStubs.FOO_REPOSITORY),
-            srcMainJava(
-                java(
-                    """
-                    package com.naturalist.data;
-                    import java.util.List;
-                    class Q {
-                        private final FooRepository repo;
-                        Q(FooRepository repo) { this.repo = repo; }
-                        void load(List<String> names) {
-                            for (String n : names) {
-                                repo.getByName(n);
-                            }
-                        }
-                    }
-                    """,
-                    """
-                    package com.naturalist.data;
-                    import java.util.List;
-                    class Q {
-                        private final FooRepository repo;
-                        Q(FooRepository repo) { this.repo = repo; }
-                        void load(List<String> names) {
-                            for (String n : names) {
-                                /*~~(%s)~~>*/repo.getByName(n);
-                            }
-                        }
-                    }
-                    """.formatted(NoSelectInIteration.MESSAGE)
+                java(NaturalistTypeStubs.ENTITY_REPOSITORY),
+                java(NaturalistTypeStubs.FOO_REPOSITORY),
+                srcMainJava(
+                        java(
+                                """
+                                        package com.naturalist.data;
+                                        import java.util.List;
+                                        class Q {
+                                            private final FooRepository repo;
+                                            Q(FooRepository repo) { this.repo = repo; }
+                                            void load(List<String> names) {
+                                                for (String n : names) {
+                                                    repo.getByName(n);
+                                                }
+                                            }
+                                        }
+                                        """,
+                                """
+                                        package com.naturalist.data;
+                                        import java.util.List;
+                                        class Q {
+                                            private final FooRepository repo;
+                                            Q(FooRepository repo) { this.repo = repo; }
+                                            void load(List<String> names) {
+                                                for (String n : names) {
+                                                    /*~~(%s)~~>*/repo.getByName(n);
+                                                }
+                                            }
+                                        }
+                                        """.formatted(NoSelectInIteration.MESSAGE)
+                        )
                 )
-            )
         );
     }
 }

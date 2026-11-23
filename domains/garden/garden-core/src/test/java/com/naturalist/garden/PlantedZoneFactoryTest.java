@@ -21,7 +21,8 @@ class PlantedZoneFactoryTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired PlantedZoneQuery query;
+    @Wired
+    PlantedZoneQuery query;
 
     private static final SubZoneName SOUTH_ROW = SubZoneName.of("backyard-south");
 

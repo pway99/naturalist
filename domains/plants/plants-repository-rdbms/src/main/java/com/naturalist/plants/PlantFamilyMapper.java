@@ -22,9 +22,9 @@ import java.util.List;
 interface PlantFamilyMapper {
 
     String COLUMNS = """
-        f.name, o.name AS order_name, f.taxonomic_family,
-        f.description_preschool, f.description_elementary, f.description_secondary, f.description_university
-        """;
+            f.name, o.name AS order_name, f.taxonomic_family,
+            f.description_preschool, f.description_elementary, f.description_secondary, f.description_university
+            """;
 
     String FROM = " FROM plant_family f JOIN plant_order o ON o.id = f.order_id ";
 
@@ -33,14 +33,14 @@ interface PlantFamilyMapper {
     PlantFamilyDbo selectByName(String name);
 
     @Select("""
-        <script>
-        SELECT f.name, o.name AS order_name, f.taxonomic_family,
-               f.description_preschool, f.description_elementary, f.description_secondary, f.description_university
-        FROM plant_family f JOIN plant_order o ON o.id = f.order_id
-        WHERE f.name IN
-        <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
-        </script>
-        """)
+            <script>
+            SELECT f.name, o.name AS order_name, f.taxonomic_family,
+                   f.description_preschool, f.description_elementary, f.description_secondary, f.description_university
+            FROM plant_family f JOIN plant_order o ON o.id = f.order_id
+            WHERE f.name IN
+            <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
+            </script>
+            """)
     List<PlantFamilyDbo> selectByNameSet(@Param("names") Collection<String> names);
 
     @Select("SELECT " + COLUMNS + FROM + " WHERE o.name = #{orderName} ORDER BY f.name")
@@ -50,51 +50,51 @@ interface PlantFamilyMapper {
     List<PlantFamilyDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM plant_family ORDER BY name OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM plant_family ORDER BY name OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     // ── child reads (one batched query; project plant_family.name for grouping) ──
     @Select("""
-        <script>
-        SELECT f.name AS family_name, cn.label, cn.locale
-        FROM plant_family_common_name cn JOIN plant_family f ON f.id = cn.family_id
-        WHERE f.name IN
-        <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
-        </script>
-        """)
+            <script>
+            SELECT f.name AS family_name, cn.label, cn.locale
+            FROM plant_family_common_name cn JOIN plant_family f ON f.id = cn.family_id
+            WHERE f.name IN
+            <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
+            </script>
+            """)
     List<PlantFamilyCommonNameDbo> selectCommonNames(@Param("names") Collection<String> names);
 
     // ── parent writes (nested-select the order_id from the order name) ───────
     @Insert("""
-        INSERT INTO plant_family (name, order_id, taxonomic_family,
-            description_preschool, description_elementary, description_secondary, description_university)
-        SELECT #{name}, id, #{taxonomicFamily},
-            #{descriptionPreschool}, #{descriptionElementary}, #{descriptionSecondary}, #{descriptionUniversity}
-        FROM plant_order WHERE name = #{orderName}
-        """)
+            INSERT INTO plant_family (name, order_id, taxonomic_family,
+                description_preschool, description_elementary, description_secondary, description_university)
+            SELECT #{name}, id, #{taxonomicFamily},
+                #{descriptionPreschool}, #{descriptionElementary}, #{descriptionSecondary}, #{descriptionUniversity}
+            FROM plant_order WHERE name = #{orderName}
+            """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insert(PlantFamilyDbo dbo);
 
     @Update("""
-        UPDATE plant_family SET
-            order_id = (SELECT id FROM plant_order WHERE name = #{orderName}),
-            taxonomic_family = #{taxonomicFamily},
-            description_preschool = #{descriptionPreschool},
-            description_elementary = #{descriptionElementary},
-            description_secondary = #{descriptionSecondary},
-            description_university = #{descriptionUniversity}
-        WHERE name = #{name}
-        """)
+            UPDATE plant_family SET
+                order_id = (SELECT id FROM plant_order WHERE name = #{orderName}),
+                taxonomic_family = #{taxonomicFamily},
+                description_preschool = #{descriptionPreschool},
+                description_elementary = #{descriptionElementary},
+                description_secondary = #{descriptionSecondary},
+                description_university = #{descriptionUniversity}
+            WHERE name = #{name}
+            """)
     int updateByName(PlantFamilyDbo dbo);
 
     // ── child writes (nested-select the family_id from the name) ─────────────
     @Insert("""
-        INSERT INTO plant_family_common_name (family_id, label, locale)
-        SELECT id, #{label}, #{locale} FROM plant_family WHERE name = #{familyName}
-        """)
+            INSERT INTO plant_family_common_name (family_id, label, locale)
+            SELECT id, #{label}, #{locale} FROM plant_family WHERE name = #{familyName}
+            """)
     int insertCommonName(PlantFamilyCommonNameDbo dbo);
 
     @Delete("DELETE FROM plant_family_common_name WHERE family_id = (SELECT id FROM plant_family WHERE name = #{name})")

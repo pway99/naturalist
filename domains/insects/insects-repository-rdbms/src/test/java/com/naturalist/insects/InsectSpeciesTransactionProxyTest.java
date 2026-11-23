@@ -101,7 +101,7 @@ class InsectSpeciesTransactionProxyTest {
     private static InsectSpeciesMapper recordingMapper(EventLog log) {
         return (InsectSpeciesMapper) Proxy.newProxyInstance(
                 InsectSpeciesMapper.class.getClassLoader(),
-                new Class<?>[] {InsectSpeciesMapper.class},
+                new Class<?>[]{InsectSpeciesMapper.class},
                 (proxy, method, args) -> {
                     if (method.getDeclaringClass() == Object.class) return method.invoke(log, args);
                     log.record(method.getName());

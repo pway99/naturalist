@@ -26,7 +26,8 @@ class CatalogSearchViewIT {
 
     private int count(String sql) throws Exception {
         try (Statement st = rdbms.connection().createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            rs.next(); return rs.getInt(1);
+            rs.next();
+            return rs.getInt(1);
         }
     }
 

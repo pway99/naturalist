@@ -13,9 +13,9 @@ import java.util.Set;
 class LabAnalysisInfoQueryImpl
         extends AbstractEntityQuery<
         LabAnalysisId,
-    LabAnalysisInfo,
-    LabAnalysisInfoCollection,
-    LabAnalysisInfoRepository>
+        LabAnalysisInfo,
+        LabAnalysisInfoCollection,
+        LabAnalysisInfoRepository>
         implements LabAnalysisInfoQuery {
 
     LabAnalysisInfoQueryImpl(LabAnalysisInfoRepository repository) {

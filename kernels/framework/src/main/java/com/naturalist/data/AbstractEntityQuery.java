@@ -50,7 +50,7 @@ public abstract class AbstractEntityQuery<
     @Override
     public Optional<E> getByName(NAME name) {
         observer.arguments("getByName", i -> i
-                        .identifier(name, "name"))
+                .identifier(name, "name"))
                 .throwWhenInvalid();
         return repository.getByName(name);
     }
@@ -58,7 +58,7 @@ public abstract class AbstractEntityQuery<
     @Override
     public Page<E> findPage(PageRequest pageRequest) {
         observer.arguments("findPage", i -> i
-                        .valueObject(pageRequest, "pageRequest"))
+                .valueObject(pageRequest, "pageRequest"))
                 .throwWhenInvalid();
         return repository.getPage(pageRequest);
     }

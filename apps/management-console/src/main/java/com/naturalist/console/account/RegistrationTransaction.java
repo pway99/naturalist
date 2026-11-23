@@ -122,8 +122,8 @@ class RegistrationTransaction {
         boolean clientPermitted = acquirePermit(registrationsPerClient.forKey(clientKey));
         boolean permitted = !clientPermitted || acquirePermit(registrations);
         register.state(i -> i
-                        .isTrue(clientPermitted, "withinClientRate")
-                        .isTrue(permitted, "withinRate"))
+                .isTrue(clientPermitted, "withinClientRate")
+                .isTrue(permitted, "withinRate"))
                 .observe(Level.WARN);
         if (!clientPermitted) {
             throw new RateLimitExceededException("registration rate limit exceeded for this client", CLIENT_RATE_STRATEGY);
@@ -133,14 +133,14 @@ class RegistrationTransaction {
         }
 
         register.arguments(i -> i
-                        .emailAddress(email, "email")
-                        .notBlank(rawPassword, "password")
-                        .whenNotNull(rawPassword, c -> c
-                                .atLeast(rawPassword.length(), MIN_PASSWORD_LENGTH, "password.length")
-                                .atMost(rawPassword.getBytes(StandardCharsets.UTF_8).length,
-                                        MAX_PASSWORD_BYTES, "password.bytes"))
-                        .notBlank(publicHandle, "publicHandle")
-                        .notBlank(givenName, "givenName"))
+                .emailAddress(email, "email")
+                .notBlank(rawPassword, "password")
+                .whenNotNull(rawPassword, c -> c
+                        .atLeast(rawPassword.length(), MIN_PASSWORD_LENGTH, "password.length")
+                        .atMost(rawPassword.getBytes(StandardCharsets.UTF_8).length,
+                                MAX_PASSWORD_BYTES, "password.bytes"))
+                .notBlank(publicHandle, "publicHandle")
+                .notBlank(givenName, "givenName"))
                 .throwWhenInvalid();
 
         AccountCommand.Registration registration =
@@ -153,7 +153,8 @@ class RegistrationTransaction {
 
     private static boolean acquirePermit(RateLimiter limiter) {
         try {
-            limiter.execute(() -> { });
+            limiter.execute(() -> {
+            });
             return true;
         } catch (RateLimitExceededException rejected) {
             return false;
@@ -162,5 +163,6 @@ class RegistrationTransaction {
 
     /** The outcome of {@link #register}: the minted handles, the login email, and the raw
      *  verification token to email (returned once, never stored in the clear). */
-    record Result(AccountName account, NaturalistName naturalist, EmailAddress email, String rawToken) {}
+    record Result(AccountName account, NaturalistName naturalist, EmailAddress email, String rawToken) {
+    }
 }

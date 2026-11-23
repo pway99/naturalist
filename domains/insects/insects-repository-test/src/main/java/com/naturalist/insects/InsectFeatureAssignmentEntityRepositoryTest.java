@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 interface InsectFeatureAssignmentEntityRepositoryTest
         extends EntityRepositoryTest<InsectFeatureAssignmentId,
-                OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
+        OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
 
     @Override
     InsectRepository.FeatureAssignmentRepository repository();

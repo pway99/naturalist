@@ -13,8 +13,8 @@ import java.util.Set;
 @MockDomainService
 class InsectFeatureAssignmentRepositoryMock
         extends AbstractTestEntityRepository<InsectFeatureAssignmentId,
-                OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>,
-                InsectFeatureAssignmentTestEntitySource>
+        OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>,
+        InsectFeatureAssignmentTestEntitySource>
         implements InsectRepository.FeatureAssignmentRepository {
 
     InsectFeatureAssignmentRepositoryMock(NaturalistDatabase naturalistDatabase) {

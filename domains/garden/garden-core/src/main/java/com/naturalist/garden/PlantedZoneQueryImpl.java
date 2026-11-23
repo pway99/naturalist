@@ -35,8 +35,8 @@ class PlantedZoneQueryImpl implements PlantedZoneQuery {
     @Override
     public Optional<PlantedZone> getBySubZoneName(ZoneName zoneName, SubZoneName subZoneName) {
         observer.arguments("getBySubZoneName", i -> i
-                        .entityName(zoneName, "zoneName")
-                        .entityName(subZoneName, "subZoneName"))
+                .entityName(zoneName, "zoneName")
+                .entityName(subZoneName, "subZoneName"))
                 .throwWhenInvalid();
         return factory.buildBySubZoneName(zoneName, subZoneName);
     }

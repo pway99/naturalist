@@ -24,35 +24,35 @@ interface ElementMapper {
     ElementDbo selectByName(String name);
 
     @Select("""
-        <script>
-        SELECT id, name, symbol, atomic_weight, ionic_form, ionic_charge FROM element
-        WHERE name IN
-        <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, name, symbol, atomic_weight, ionic_form, ionic_charge FROM element
+            WHERE name IN
+            <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
+            </script>
+            """)
     List<ElementDbo> selectByNameSet(@Param("names") Collection<String> names);
 
     @Select("SELECT " + COLUMNS + " FROM element ORDER BY name LIMIT #{limit} OFFSET #{offset}")
     List<ElementDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM element ORDER BY name OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM element ORDER BY name OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Insert("""
-        INSERT INTO element (name, symbol, atomic_weight, ionic_form, ionic_charge)
-        VALUES (#{name}, #{symbol}, #{atomicWeight}, #{ionicForm}, #{ionicCharge})
-        """)
+            INSERT INTO element (name, symbol, atomic_weight, ionic_form, ionic_charge)
+            VALUES (#{name}, #{symbol}, #{atomicWeight}, #{ionicForm}, #{ionicCharge})
+            """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(ElementDbo dbo);
 
     @Update("""
-        UPDATE element SET symbol = #{symbol}, atomic_weight = #{atomicWeight},
-               ionic_form = #{ionicForm}, ionic_charge = #{ionicCharge}
-        WHERE name = #{name}
-        """)
+            UPDATE element SET symbol = #{symbol}, atomic_weight = #{atomicWeight},
+                   ionic_form = #{ionicForm}, ionic_charge = #{ionicCharge}
+            WHERE name = #{name}
+            """)
     int updateByName(ElementDbo dbo);
 }

@@ -19,7 +19,7 @@ class InsectSpeciesQueryImpl
     private final InsectQuery.GenusQuery genusQuery;
 
     InsectSpeciesQueryImpl(InsectRepository.SpeciesRepository repository,
-                     InsectQuery.GenusQuery genusQuery) {
+                           InsectQuery.GenusQuery genusQuery) {
         super(repository);
         this.genusQuery = Objects.requireNonNull(genusQuery, "genusQuery");
     }
@@ -34,7 +34,7 @@ class InsectSpeciesQueryImpl
     @Override
     public InsectEntityCollections.SpeciesCollection forGenusName(InsectGenusName genusName) {
         observer().arguments("forGenusName",
-                        i -> i.entityName(genusName, "genusName"))
+                i -> i.entityName(genusName, "genusName"))
                 .throwWhenInvalid();
         return InsectEntityCollections.SpeciesCollection.of(
                 repository().getByGenusName(genusName));
@@ -43,7 +43,7 @@ class InsectSpeciesQueryImpl
     @Override
     public InsectEntityCollections.SpeciesCollection forFamilyName(InsectFamilyName familyName) {
         observer().arguments("forFamilyName",
-                        i -> i.entityName(familyName, "familyName"))
+                i -> i.entityName(familyName, "familyName"))
                 .throwWhenInvalid();
         Set<InsectGenusName> genusNames = genusQuery.forFamilyName(familyName).stream()
                 .map(InsectGenusInfo::name)
@@ -54,7 +54,7 @@ class InsectSpeciesQueryImpl
     @Override
     public InsectEntityCollections.SpeciesCollection forGenusNames(Set<InsectGenusName> genusNames) {
         observer().arguments("forGenusNames",
-                        i -> i.entityNameCollection(genusNames, "genusNames"))
+                i -> i.entityNameCollection(genusNames, "genusNames"))
                 .throwWhenInvalid();
         return InsectEntityCollections.SpeciesCollection.of(
                 repository().getByGenusNames(genusNames));

@@ -17,8 +17,8 @@ import java.util.function.Consumer;
  * any zone row is what marks the whole {@code HabitatProfile} group present on read.
  */
 @DboSchema(table = "insect_species_habitat_zone", primaryKey = "species_id,zone",
-           foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
-           entity = InsectSpeciesInfo.class)
+        foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
+        entity = InsectSpeciesInfo.class)
 final class InsectSpeciesHabitatZoneDbo implements Dbo {
     String speciesName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String zone;

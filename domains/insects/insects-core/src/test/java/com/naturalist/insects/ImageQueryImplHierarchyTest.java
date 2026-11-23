@@ -12,7 +12,8 @@ class ImageQueryImplHierarchyTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery query;
+    @Wired
+    InsectQuery query;
 
     @Test
     void forRankHierarchy_species_returnsSpeciesImages() {

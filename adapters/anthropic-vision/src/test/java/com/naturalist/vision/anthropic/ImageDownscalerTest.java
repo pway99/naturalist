@@ -151,7 +151,7 @@ class ImageDownscalerTest {
             z.write(new byte[width + 1]);
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(new byte[] {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'});
+        out.write(new byte[]{(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'});
         chunk(out, "IHDR", ihdr);
         chunk(out, "IDAT", deflated.toByteArray());
         chunk(out, "IEND", new byte[0]);

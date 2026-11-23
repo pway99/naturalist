@@ -89,9 +89,11 @@ class TypedPathVariableTest implements RewriteTest {
         spec.recipe(new TypedPathVariable());
     }
 
+    private static final String[] FIXTURES = {WEB, GET_MAPPING, POST_MAPPING, PATH_VARIABLE, REQUEST_PARAM,
+            ENTITY_NAME, ENTITY_ID, NAMED_VALUE, NUMERIC_NAMED_VALUE, SLUG, THING_ID, GRAMS};
+
     private static SourceSpecs[] withTypes(SourceSpecs... subjects) {
-        String[] fixtures = {WEB, GET_MAPPING, POST_MAPPING, PATH_VARIABLE, REQUEST_PARAM,
-                ENTITY_NAME, ENTITY_ID, NAMED_VALUE, NUMERIC_NAMED_VALUE, SLUG, THING_ID, GRAMS};
+        String[] fixtures = FIXTURES;
         SourceSpecs[] all = new SourceSpecs[subjects.length + fixtures.length];
         for (int i = 0; i < fixtures.length; i++) {
             all[i] = java(fixtures[i]);
@@ -103,175 +105,189 @@ class TypedPathVariableTest implements RewriteTest {
     @Test
     void marksAStringPathVariableReadIntoAName() {
         rewriteRun(withTypes(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.GetMapping;
-            import org.springframework.web.bind.annotation.PathVariable;
-            class Controller {
-                @GetMapping("/{name}")
-                String detail(@PathVariable String name) {
-                    return Slug.of(name).value();
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.GetMapping;
-            import org.springframework.web.bind.annotation.PathVariable;
-            class Controller {
-                @GetMapping("/{name}")
-                String detail(/*~~(%s)~~>*/@PathVariable String name) {
-                    return Slug.of(name).value();
-                }
-            }
-            """.formatted(TypedPathVariable.TYPED)))));
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.GetMapping;
+                        import org.springframework.web.bind.annotation.PathVariable;
+                        class Controller {
+                            @GetMapping("/{name}")
+                            String detail(@PathVariable String name) {
+                                return Slug.of(name).value();
+                            }
+                        }
+                        """,
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.GetMapping;
+                        import org.springframework.web.bind.annotation.PathVariable;
+                        class Controller {
+                            @GetMapping("/{name}")
+                            String detail(/*~~(%s)~~>*/@PathVariable String name) {
+                                return Slug.of(name).value();
+                            }
+                        }
+                        """.formatted(TypedPathVariable.TYPED)))));
     }
 
     @Test
     void marksAStringRequestParamParsedIntoAnIdOrANumber() {
         rewriteRun(withTypes(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.PostMapping;
-            import org.springframework.web.bind.annotation.RequestParam;
-            import java.math.BigDecimal;
-            import java.util.UUID;
-            class Controller {
-                @PostMapping("/weigh")
-                String weigh(@RequestParam("id") String id, @RequestParam(name = "grams", required = false) String grams) {
-                    ThingId thing = ThingId.of(UUID.fromString(id));
-                    Grams weight = Grams.of(new BigDecimal(grams));
-                    return thing + " " + weight;
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.PostMapping;
-            import org.springframework.web.bind.annotation.RequestParam;
-            import java.math.BigDecimal;
-            import java.util.UUID;
-            class Controller {
-                @PostMapping("/weigh")
-                String weigh(/*~~(%1$s)~~>*/@RequestParam("id") String id, /*~~(%1$s)~~>*/@RequestParam(name = "grams", required = false) String grams) {
-                    ThingId thing = ThingId.of(UUID.fromString(id));
-                    Grams weight = Grams.of(new BigDecimal(grams));
-                    return thing + " " + weight;
-                }
-            }
-            """.formatted(TypedPathVariable.TYPED)))));
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.PostMapping;
+                        import org.springframework.web.bind.annotation.RequestParam;
+                        import java.math.BigDecimal;
+                        import java.util.UUID;
+                        class Controller {
+                            @PostMapping("/weigh")
+                            String weigh(@RequestParam("id") String id, @RequestParam(name = "grams", required = false) String grams) {
+                                ThingId thing = ThingId.of(UUID.fromString(id));
+                                Grams weight = Grams.of(new BigDecimal(grams));
+                                return thing + " " + weight;
+                            }
+                        }
+                        """,
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.PostMapping;
+                        import org.springframework.web.bind.annotation.RequestParam;
+                        import java.math.BigDecimal;
+                        import java.util.UUID;
+                        class Controller {
+                            @PostMapping("/weigh")
+                            String weigh(/*~~(%1$s)~~>*/@RequestParam("id") String id, /*~~(%1$s)~~>*/@RequestParam(name = "grams", required = false) String grams) {
+                                ThingId thing = ThingId.of(UUID.fromString(id));
+                                Grams weight = Grams.of(new BigDecimal(grams));
+                                return thing + " " + weight;
+                            }
+                        }
+                        """.formatted(TypedPathVariable.TYPED)))));
     }
 
     @Test
     void marksARequiredIdOrNumberParameter() {
         rewriteRun(withTypes(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.PostMapping;
-            import org.springframework.web.bind.annotation.RequestParam;
-            class Controller {
-                @PostMapping("/weigh")
-                String weigh(@RequestParam("id") ThingId id, @RequestParam("grams") Grams grams) {
-                    return id + " " + grams;
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.PostMapping;
-            import org.springframework.web.bind.annotation.RequestParam;
-            class Controller {
-                @PostMapping("/weigh")
-                String weigh(/*~~(%1$s)~~>*/@RequestParam("id") ThingId id, /*~~(%1$s)~~>*/@RequestParam("grams") Grams grams) {
-                    return id + " " + grams;
-                }
-            }
-            """.formatted(TypedPathVariable.REQUIRED)))));
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.PostMapping;
+                        import org.springframework.web.bind.annotation.RequestParam;
+                        class Controller {
+                            @PostMapping("/weigh")
+                            String weigh(@RequestParam("id") ThingId id, @RequestParam("grams") Grams grams) {
+                                return id + " " + grams;
+                            }
+                        }
+                        """,
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.PostMapping;
+                        import org.springframework.web.bind.annotation.RequestParam;
+                        class Controller {
+                            @PostMapping("/weigh")
+                            String weigh(/*~~(%1$s)~~>*/@RequestParam("id") ThingId id, /*~~(%1$s)~~>*/@RequestParam("grams") Grams grams) {
+                                return id + " " + grams;
+                            }
+                        }
+                        """.formatted(TypedPathVariable.REQUIRED)))));
     }
 
     @Test
     void acceptsTypedParametersThatMayReadNull() {
         rewriteRun(withTypes(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.GetMapping;
-            import org.springframework.web.bind.annotation.PathVariable;
-            import org.springframework.web.bind.annotation.RequestParam;
-            import java.util.Optional;
-            class Controller {
-                @GetMapping("/{name}")
-                String detail(@PathVariable Slug name,
-                              @RequestParam(name = "id", required = false) ThingId id,
-                              @RequestParam("grams") Optional<Grams> grams) {
-                    return name.value() + id + grams;
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.GetMapping;
+                        import org.springframework.web.bind.annotation.PathVariable;
+                        import org.springframework.web.bind.annotation.RequestParam;
+                        import java.util.Optional;
+                        class Controller {
+                            @GetMapping("/{name}")
+                            String detail(@PathVariable Slug name,
+                                          @RequestParam(name = "id", required = false) ThingId id,
+                                          @RequestParam("grams") Optional<Grams> grams) {
+                                return name.value() + id + grams;
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void leavesPlainStringsAndNonHandlersAlone() {
         rewriteRun(withTypes(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.GetMapping;
-            import org.springframework.web.bind.annotation.RequestParam;
-            class Controller {
-                @GetMapping("/search")
-                String search(@RequestParam("q") String q, @RequestParam("name") String name) {
-                    String other = name.trim();
-                    return q + Slug.of(other).value();
-                }
-
-                String helper(String name) {
-                    return Slug.of(name).value();
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.GetMapping;
+                        import org.springframework.web.bind.annotation.RequestParam;
+                        class Controller {
+                            @GetMapping("/search")
+                            String search(@RequestParam("q") String q, @RequestParam("name") String name) {
+                                String other = name.trim();
+                                return q + Slug.of(other).value();
+                            }
+                        
+                            String helper(String name) {
+                                return Slug.of(name).value();
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void ignoresTestSources() {
         rewriteRun(withTypes(srcTestJava(java(
-            """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.GetMapping;
-            import org.springframework.web.bind.annotation.PathVariable;
-            class FakeController {
-                @GetMapping("/{name}")
-                String detail(@PathVariable String name) {
-                    return Slug.of(name).value();
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.GetMapping;
+                        import org.springframework.web.bind.annotation.PathVariable;
+                        class FakeController {
+                            @GetMapping("/{name}")
+                            String detail(@PathVariable String name) {
+                                return Slug.of(name).value();
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void namedValueEdgesComposite_includesTheRecipe_andEnforceArchitectureDoesNotYet() {
         String controller = """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.GetMapping;
-            import org.springframework.web.bind.annotation.PathVariable;
-            class Controller {
-                @GetMapping("/{name}")
-                String detail(@PathVariable String name) {
-                    return Slug.of(name).value();
+                package com.naturalist.x;
+                import org.springframework.web.bind.annotation.GetMapping;
+                import org.springframework.web.bind.annotation.PathVariable;
+                class Controller {
+                    @GetMapping("/{name}")
+                    String detail(@PathVariable String name) {
+                        return Slug.of(name).value();
+                    }
                 }
-            }
-            """;
+                """;
         rewriteRun(spec -> spec.recipeFromResources("com.naturalist.NamedValueEdges"),
-            withTypes(srcMainJava(java(controller, """
-            package com.naturalist.x;
-            import org.springframework.web.bind.annotation.GetMapping;
-            import org.springframework.web.bind.annotation.PathVariable;
-            class Controller {
-                @GetMapping("/{name}")
-                String detail(/*~~(%s)~~>*/@PathVariable String name) {
-                    return Slug.of(name).value();
-                }
-            }
-            """.formatted(TypedPathVariable.TYPED)))));
-        rewriteRun(spec -> spec.recipeFromResources("com.naturalist.EnforceArchitecture"),
-            withTypes(srcMainJava(java(controller))));
+                withTypes(srcMainJava(java(controller, """
+                        package com.naturalist.x;
+                        import org.springframework.web.bind.annotation.GetMapping;
+                        import org.springframework.web.bind.annotation.PathVariable;
+                        class Controller {
+                            @GetMapping("/{name}")
+                            String detail(/*~~(%s)~~>*/@PathVariable String name) {
+                                return Slug.of(name).value();
+                            }
+                        }
+                        """.formatted(TypedPathVariable.TYPED)))));
+        rewriteRun(spec -> spec.recipeFromResources("com.naturalist.EnforceArchitecture")
+                        .parser(ProjectStyles.parser(FIXTURES)),
+                srcMainJava(java(
+                        """
+                                package com.naturalist.x;
+                                
+                                import org.springframework.web.bind.annotation.GetMapping;
+                                import org.springframework.web.bind.annotation.PathVariable;
+                                
+                                class Controller {
+                                    @GetMapping("/{name}")
+                                    String detail(@PathVariable String name) {
+                                        return Slug.of(name).value();
+                                    }
+                                }
+                                """)));
     }
 }

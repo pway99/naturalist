@@ -20,6 +20,6 @@ class InsectSpeciesEntityRepositoryRdbmsIT implements InsectSpeciesRepositoryTes
     @Override
     public InsectRepository.SpeciesRepository repository() {
         return new InsectSpeciesEntityRepositoryRdbms(rdbms.mapper(InsectSpeciesMapper.class),
-                        new InsectSpeciesTransaction(rdbms.mapper(InsectSpeciesMapper.class)));
+                new InsectSpeciesTransaction(rdbms.mapper(InsectSpeciesMapper.class)));
     }
 }

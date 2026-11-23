@@ -39,21 +39,21 @@ class CollectionLensEndpointWebMvcTest {
     void toggleOn_persistsInSession_andFiltersNextRequest() throws Exception {
         MockHttpSession session = new MockHttpSession();
         mockMvc.perform(post("/insects/collection-lens").param("on", "true")
-                        .param("return", "/insects/species")
-                        .session(session).requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .param("return", "/insects/species")
+                .session(session).requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/species"));
 
         mockMvc.perform(get("/insects/species").session(session)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(content().string(not(containsString("apis-mellifera"))));
     }
 
     @Test
     void toggle_rejectsOffsiteReturn() throws Exception {
         mockMvc.perform(post("/insects/collection-lens").param("on", "true")
-                        .param("return", "https://evil.example/phish")
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .param("return", "https://evil.example/phish")
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(redirectedUrl("/insects/species"));
     }
 }

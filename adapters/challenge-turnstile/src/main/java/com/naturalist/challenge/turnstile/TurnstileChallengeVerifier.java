@@ -79,9 +79,9 @@ public final class TurnstileChallengeVerifier implements ChallengeVerifier {
 
     public TurnstileChallengeVerifier(TurnstileConfig config, SecretProvider secrets, Resilience resilience) {
         observer.arguments("constructor", i -> i
-                .valueObject(config, "config")
-                .notNull(secrets, "secrets")
-                .notNull(resilience, "resilience")
+                        .valueObject(config, "config")
+                        .notNull(secrets, "secrets")
+                        .notNull(resilience, "resilience")
         ).throwWhenInvalid();
         this.config = config;
         this.credential = secrets.require(CREDENTIAL);

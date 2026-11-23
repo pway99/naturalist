@@ -20,8 +20,8 @@ import java.util.function.Consumer;
  * within-insects FK to {@code insect_observation}, stored as the uuid directly.
  */
 @DboSchema(table = "insect_image", primaryKey = "id",
-           foreignKeys = @Fk(columns = "observation_id", references = "insect_observation(id)"),
-           entity = OrganismImage.class)
+        foreignKeys = @Fk(columns = "observation_id", references = "insect_observation(id)"),
+        entity = OrganismImage.class)
 final class InsectImageDbo implements Dbo {
     String id;
     String parentRank;
@@ -59,7 +59,7 @@ final class InsectImageDbo implements Dbo {
                 .notBlank(id, "id")
                 .notBlank(parentRank, "parentRank").maxLength(parentRank, 16, "parentRank")
                 .notNull(parentName, "parentName").kebabFormat(parentName, "parentName")
-                    .maxLength(parentName, 96, "parentName")
+                .maxLength(parentName, 96, "parentName")
                 .notNull(dateAdded, "dateAdded")
                 .notBlank(resourceName, "resourceName").maxLength(resourceName, 255, "resourceName");
     }

@@ -41,174 +41,181 @@ class ObserverMethodNameTest implements RewriteTest {
     @Test
     void marksEachObservationNamingAnotherMethod() {
         rewriteRun(withObserver(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            class A {
-                private static final Observer OBSERVER = Observer.forClass(A.class);
-                void renamed(Object o, Exception e) {
-                    OBSERVER.forMethod("before");
-                    OBSERVER.arguments("before", c -> { });
-                    OBSERVER.state("before", c -> { });
-                    OBSERVER.noticeError("before", "failed", e, null);
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            class A {
-                private static final Observer OBSERVER = Observer.forClass(A.class);
-                void renamed(Object o, Exception e) {
-                    /*~~(%1$s)~~>*/OBSERVER.forMethod("before");
-                    /*~~(%1$s)~~>*/OBSERVER.arguments("before", c -> { });
-                    /*~~(%1$s)~~>*/OBSERVER.state("before", c -> { });
-                    /*~~(%1$s)~~>*/OBSERVER.noticeError("before", "failed", e, null);
-                }
-            }
-            """.formatted(ObserverMethodName.message("before", "renamed"))))));
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.Observer;
+                        class A {
+                            private static final Observer OBSERVER = Observer.forClass(A.class);
+                            void renamed(Object o, Exception e) {
+                                OBSERVER.forMethod("before");
+                                OBSERVER.arguments("before", c -> { });
+                                OBSERVER.state("before", c -> { });
+                                OBSERVER.noticeError("before", "failed", e, null);
+                            }
+                        }
+                        """,
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.Observer;
+                        class A {
+                            private static final Observer OBSERVER = Observer.forClass(A.class);
+                            void renamed(Object o, Exception e) {
+                                /*~~(%1$s)~~>*/OBSERVER.forMethod("before");
+                                /*~~(%1$s)~~>*/OBSERVER.arguments("before", c -> { });
+                                /*~~(%1$s)~~>*/OBSERVER.state("before", c -> { });
+                                /*~~(%1$s)~~>*/OBSERVER.noticeError("before", "failed", e, null);
+                            }
+                        }
+                        """.formatted(ObserverMethodName.message("before", "renamed"))))));
     }
 
     @Test
     void acceptsTheEnclosingMethodsName_includingFromALambda() {
         rewriteRun(withObserver(srcTestJava(java(
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            import java.util.List;
-            class B {
-                private static final Observer observer = Observer.forClass(B.class);
-                void allValid(List<Object> values) {
-                    observer.forMethod("allValid");
-                    values.forEach(v -> observer.arguments("allValid", c -> { }));
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.Observer;
+                        import java.util.List;
+                        class B {
+                            private static final Observer observer = Observer.forClass(B.class);
+                            void allValid(List<Object> values) {
+                                observer.forMethod("allValid");
+                                values.forEach(v -> observer.arguments("allValid", c -> { }));
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void aConstructorObservesAsConstructor() {
         rewriteRun(withObserver(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            class C {
-                private static final Observer observer = Observer.forClass(C.class);
-                C(Object a) {
-                    observer.arguments("constructor", c -> { });
-                }
-                C(Object a, Object b) {
-                    observer.arguments("construct", c -> { });
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            class C {
-                private static final Observer observer = Observer.forClass(C.class);
-                C(Object a) {
-                    observer.arguments("constructor", c -> { });
-                }
-                C(Object a, Object b) {
-                    /*~~(%s)~~>*/observer.arguments("construct", c -> { });
-                }
-            }
-            """.formatted(ObserverMethodName.message("construct", "constructor"))))));
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.Observer;
+                        class C {
+                            private static final Observer observer = Observer.forClass(C.class);
+                            C(Object a) {
+                                observer.arguments("constructor", c -> { });
+                            }
+                            C(Object a, Object b) {
+                                observer.arguments("construct", c -> { });
+                            }
+                        }
+                        """,
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.Observer;
+                        class C {
+                            private static final Observer observer = Observer.forClass(C.class);
+                            C(Object a) {
+                                observer.arguments("constructor", c -> { });
+                            }
+                            C(Object a, Object b) {
+                                /*~~(%s)~~>*/observer.arguments("construct", c -> { });
+                            }
+                        }
+                        """.formatted(ObserverMethodName.message("construct", "constructor"))))));
     }
 
     @Test
     void aRecordsCompactConstructorObservesAsConstructor() {
         rewriteRun(withObserver(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            record D(String value) {
-                private static final Observer observer = Observer.forClass(D.class);
-                D {
-                    observer.arguments("constructor", c -> { });
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.Observer;
+                        record D(String value) {
+                            private static final Observer observer = Observer.forClass(D.class);
+                            D {
+                                observer.arguments("constructor", c -> { });
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void anAnonymousClassMethodIsTheEnclosingMethod() {
         rewriteRun(withObserver(srcTestJava(java(
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            class E {
-                private static final Observer observer = Observer.forClass(E.class);
-                Runnable outer() {
-                    return new Runnable() {
-                        @Override
-                        public void run() {
-                            observer.forMethod("outer");
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.Observer;
+                        class E {
+                            private static final Observer observer = Observer.forClass(E.class);
+                            Runnable outer() {
+                                return new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        observer.forMethod("outer");
+                                    }
+                                };
+                            }
                         }
-                    };
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            class E {
-                private static final Observer observer = Observer.forClass(E.class);
-                Runnable outer() {
-                    return new Runnable() {
-                        @Override
-                        public void run() {
-                            /*~~(%s)~~>*/observer.forMethod("outer");
+                        """,
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.Observer;
+                        class E {
+                            private static final Observer observer = Observer.forClass(E.class);
+                            Runnable outer() {
+                                return new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        /*~~(%s)~~>*/observer.forMethod("outer");
+                                    }
+                                };
+                            }
                         }
-                    };
-                }
-            }
-            """.formatted(ObserverMethodName.message("outer", "run"))))));
+                        """.formatted(ObserverMethodName.message("outer", "run"))))));
     }
 
     @Test
     void leavesAMethodObserversFailureName_andNonLiteralNames_alone() {
         rewriteRun(withObserver(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.MethodObserver;
-            import com.naturalist.observability.Observer;
-            class F {
-                private static final Observer OBSERVER = Observer.forClass(F.class);
-                private static final String NAME = "elsewhere";
-                void read(Exception e) {
-                    MethodObserver methodObserver = OBSERVER.forMethod("read");
-                    methodObserver.noticeError("opened", e, null);
-                    OBSERVER.state(NAME, c -> { });
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        import com.naturalist.observability.MethodObserver;
+                        import com.naturalist.observability.Observer;
+                        class F {
+                            private static final Observer OBSERVER = Observer.forClass(F.class);
+                            private static final String NAME = "elsewhere";
+                            void read(Exception e) {
+                                MethodObserver methodObserver = OBSERVER.forMethod("read");
+                                methodObserver.noticeError("opened", e, null);
+                                OBSERVER.state(NAME, c -> { });
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void enforceArchitectureComposite_includesTheRecipe() {
-        rewriteRun(spec -> spec.recipeFromResources("com.naturalist.EnforceArchitecture"),
-            withObserver(srcMainJava(java(
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            class G {
-                private static final Observer OBSERVER = Observer.forClass(G.class);
-                void renamed() {
-                    OBSERVER.forMethod("before");
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-            import com.naturalist.observability.Observer;
-            class G {
-                private static final Observer OBSERVER = Observer.forClass(G.class);
-                void renamed() {
-                    /*~~(%s)~~>*/OBSERVER.forMethod("before");
-                }
-            }
-            """.formatted(ObserverMethodName.message("before", "renamed"))))));
+        rewriteRun(spec -> spec.recipeFromResources("com.naturalist.EnforceArchitecture")
+                        .parser(ProjectStyles.parser(OBSERVER, METHOD_OBSERVER)),
+                srcMainJava(java(
+                        """
+                                package com.naturalist.x;
+                                
+                                import com.naturalist.observability.Observer;
+                                
+                                class G {
+                                    private static final Observer OBSERVER = Observer.forClass(G.class);
+                                
+                                    void renamed() {
+                                        OBSERVER.forMethod("before");
+                                    }
+                                }
+                                """,
+                        """
+                                package com.naturalist.x;
+                                
+                                import com.naturalist.observability.Observer;
+                                
+                                class G {
+                                    private static final Observer OBSERVER = Observer.forClass(G.class);
+                                
+                                    void renamed() {
+                                        /*~~(%s)~~>*/OBSERVER.forMethod("before");
+                                    }
+                                }
+                                """.formatted(ObserverMethodName.message("before", "renamed")))));
     }
 }

@@ -47,7 +47,7 @@ public final class NamedValueDeserializer extends JsonDeserializer<Object> imple
         JsonToken token = p.currentToken();
         // an object or array where a named value belongs: a malformed file or request, refused with a count (B2)
         observer.arguments("deserialize", i -> i
-                        .isTrue(token != null && token.isScalarValue(), "scalarToken"))
+                .isTrue(token != null && token.isScalarValue(), "scalarToken"))
                 .throwWhenInvalid();
         return NamedValues.read(type, p.getValueAsString());
     }

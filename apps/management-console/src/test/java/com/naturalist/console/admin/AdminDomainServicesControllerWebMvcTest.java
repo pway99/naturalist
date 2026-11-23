@@ -64,7 +64,7 @@ class AdminDomainServicesControllerWebMvcTest {
     @Test
     void admin_domainServices_listsRepresentativeBeanUnderItsDomain() throws Exception {
         String html = mockMvc.perform(get("/admin/domain-services")
-                        .with(user("naturalist").roles("ADMIN")))
+                .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -94,7 +94,7 @@ class AdminDomainServicesControllerWebMvcTest {
     @Test
     void admin_domainServices_omitsHeadingForPackagesWithNoDomainServices() throws Exception {
         String html = mockMvc.perform(get("/admin/domain-services")
-                        .with(user("naturalist").roles("ADMIN")))
+                .with(user("naturalist").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 

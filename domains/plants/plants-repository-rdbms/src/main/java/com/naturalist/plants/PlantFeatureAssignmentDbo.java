@@ -26,8 +26,8 @@ import java.util.function.Consumer;
  * (the validator checks single-column uniques).
  */
 @DboSchema(table = "plant_feature_assignment", primaryKey = "id",
-           foreignKeys = @Fk(columns = "feature_id", references = "plant_feature(id)"),
-           entity = OrganismFeatureAssignment.class)
+        foreignKeys = @Fk(columns = "feature_id", references = "plant_feature(id)"),
+        entity = OrganismFeatureAssignment.class)
 final class PlantFeatureAssignmentDbo implements Dbo {
     String id;         // the PlantFeatureAssignmentId's UUID as text; mapper casts it (::uuid)
     String featureId;  // the PlantFeatureId's UUID as text — within-plants FK, cast (::uuid)

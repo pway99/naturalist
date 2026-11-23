@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds reported optima through the real RDBMS adapter (split-package with the rdbms module). */
 public final class ReportedOptimumSeeder {
 
-    private ReportedOptimumSeeder() {}
+    private ReportedOptimumSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<ReportedOptimum> entities = database.getNamed(ReportedOptimumTestEntitySource.class).entityStream().toList();

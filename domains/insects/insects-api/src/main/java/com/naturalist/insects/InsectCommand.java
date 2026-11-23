@@ -124,7 +124,7 @@ public interface InsectCommand {
      */
     interface FeatureAssignmentCommand
             extends EntityCommand<InsectFeatureAssignmentId,
-                    OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
+            OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> {
     }
 
     /**

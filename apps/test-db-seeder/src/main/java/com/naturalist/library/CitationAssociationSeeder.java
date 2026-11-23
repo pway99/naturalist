@@ -30,7 +30,8 @@ import java.util.List;
  */
 public final class CitationAssociationSeeder {
 
-    private CitationAssociationSeeder() {}
+    private CitationAssociationSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<CitationAssociation> associations = database.getNamed(CitationAssociationTestEntitySource.class).entityStream().toList();

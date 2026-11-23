@@ -20,75 +20,75 @@ import java.util.List;
 interface CitationAssociationMapper {
 
     String SELECT_JOIN = """
-        SELECT ca.id, c.name AS citation_name,
-               ca.subject_domain, ca.subject_rank, ca.subject_name, ca.note
-        FROM citation_association ca JOIN citation c ON c.id = ca.citation_id
-        """;
+            SELECT ca.id, c.name AS citation_name,
+                   ca.subject_domain, ca.subject_rank, ca.subject_name, ca.note
+            FROM citation_association ca JOIN citation c ON c.id = ca.citation_id
+            """;
 
     @Select(SELECT_JOIN + " WHERE ca.id = #{id}::uuid")
     CitationAssociationDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT ca.id, c.name AS citation_name,
-               ca.subject_domain, ca.subject_rank, ca.subject_name, ca.note
-        FROM citation_association ca JOIN citation c ON c.id = ca.citation_id
-        WHERE ca.id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT ca.id, c.name AS citation_name,
+                   ca.subject_domain, ca.subject_rank, ca.subject_name, ca.note
+            FROM citation_association ca JOIN citation c ON c.id = ca.citation_id
+            WHERE ca.id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<CitationAssociationDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select(SELECT_JOIN + " ORDER BY ca.id LIMIT #{limit} OFFSET #{offset}")
     List<CitationAssociationDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM citation_association ORDER BY id OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM citation_association ORDER BY id OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select(SELECT_JOIN + " WHERE c.name = #{citationName} ORDER BY ca.id")
     List<CitationAssociationDbo> selectByCitationName(String citationName);
 
     @Select("""
-        SELECT ca.id, c.name AS citation_name,
-               ca.subject_domain, ca.subject_rank, ca.subject_name, ca.note
-        FROM citation_association ca JOIN citation c ON c.id = ca.citation_id
-        WHERE ca.subject_domain = #{domain} AND ca.subject_rank = #{rank} AND ca.subject_name = #{name}
-        ORDER BY ca.id
-        """)
+            SELECT ca.id, c.name AS citation_name,
+                   ca.subject_domain, ca.subject_rank, ca.subject_name, ca.note
+            FROM citation_association ca JOIN citation c ON c.id = ca.citation_id
+            WHERE ca.subject_domain = #{domain} AND ca.subject_rank = #{rank} AND ca.subject_name = #{name}
+            ORDER BY ca.id
+            """)
     List<CitationAssociationDbo> selectBySubject(
             @Param("domain") String domain, @Param("rank") String rank, @Param("name") String name);
 
     @Select("""
-        <script>
-        SELECT ca.id, c.name AS citation_name,
-               ca.subject_domain, ca.subject_rank, ca.subject_name, ca.note
-        FROM citation_association ca JOIN citation c ON c.id = ca.citation_id
-        WHERE (ca.subject_domain, ca.subject_rank, ca.subject_name) IN
-        <foreach item='k' collection='keys' open='(' separator=',' close=')'>
-            (#{k.subjectDomain}, #{k.subjectRank}, #{k.subjectName})
-        </foreach>
-        ORDER BY ca.id
-        </script>
-        """)
+            <script>
+            SELECT ca.id, c.name AS citation_name,
+                   ca.subject_domain, ca.subject_rank, ca.subject_name, ca.note
+            FROM citation_association ca JOIN citation c ON c.id = ca.citation_id
+            WHERE (ca.subject_domain, ca.subject_rank, ca.subject_name) IN
+            <foreach item='k' collection='keys' open='(' separator=',' close=')'>
+                (#{k.subjectDomain}, #{k.subjectRank}, #{k.subjectName})
+            </foreach>
+            ORDER BY ca.id
+            </script>
+            """)
     List<CitationAssociationDbo> selectBySubjects(@Param("keys") Collection<CitationSubjectKey> keys);
 
     @Insert("""
-        INSERT INTO citation_association (id, citation_id, subject_domain, subject_rank, subject_name, note)
-        SELECT #{id}::uuid, id, #{subjectDomain}, #{subjectRank}, #{subjectName}, #{note}
-        FROM citation WHERE name = #{citationName}
-        """)
+            INSERT INTO citation_association (id, citation_id, subject_domain, subject_rank, subject_name, note)
+            SELECT #{id}::uuid, id, #{subjectDomain}, #{subjectRank}, #{subjectName}, #{note}
+            FROM citation WHERE name = #{citationName}
+            """)
     int insert(CitationAssociationDbo dbo);
 
     @Update("""
-        UPDATE citation_association SET
-            subject_domain = #{subjectDomain}, subject_rank = #{subjectRank},
-            subject_name = #{subjectName}, note = #{note},
-            citation_id = (SELECT id FROM citation WHERE name = #{citationName})
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE citation_association SET
+                subject_domain = #{subjectDomain}, subject_rank = #{subjectRank},
+                subject_name = #{subjectName}, note = #{note},
+                citation_id = (SELECT id FROM citation WHERE name = #{citationName})
+            WHERE id = #{id}::uuid
+            """)
     int updateById(CitationAssociationDbo dbo);
 }

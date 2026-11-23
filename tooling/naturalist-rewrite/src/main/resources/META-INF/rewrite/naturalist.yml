@@ -8,7 +8,8 @@ description: >-
   secrets rules: never read the process environment outside com.naturalist.secrets, and
   never name a credential in source. Every concrete named value declares the factory
   NamedValues reads it through, and declares no @JsonCreator of its own. No source declares
-  a variable with var, and every import is explicit. Every observation names the method it runs in.
+  a variable with var, and every import is explicit. Every observation names the method it runs in. Every source is formatted to the active
+  styles (IntelliJ's, then com.naturalist.Style).
 recipeList:
   - com.naturalist.rewrite.NoDirectTestEntitySourceConstruction
   - com.naturalist.rewrite.NoCachedTestEntitySourceField
@@ -21,6 +22,7 @@ recipeList:
   - com.naturalist.rewrite.ObserverMethodName
   - org.openrewrite.java.RemoveUnusedImports
   - com.naturalist.EnforceQueryHygiene
+  - org.openrewrite.java.format.AutoFormat
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.naturalist.EnforceQueryHygiene

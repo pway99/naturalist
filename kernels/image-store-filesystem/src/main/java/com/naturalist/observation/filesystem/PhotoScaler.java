@@ -77,8 +77,8 @@ final class PhotoScaler {
     static Optional<Dimensions> declared(byte[] bytes) {
         MethodObserver methodObserver = observer.forMethod("declared");
         methodObserver.arguments(i -> i
-            .notNull(bytes, "bytes"))
-            .throwWhenInvalid();
+                .notNull(bytes, "bytes"))
+                .throwWhenInvalid();
         try (ImageInputStream in = new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes))) {
             Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
             if (!readers.hasNext()) {
@@ -115,10 +115,10 @@ final class PhotoScaler {
     static byte[] fitJpeg(byte[] bytes, Dimensions declared, int edge, int orientation) {
         MethodObserver methodObserver = observer.forMethod("fitJpeg");
         methodObserver.arguments(i -> i
-            .notEmpty(bytes, "bytes")
-            .notNull(declared, "declared")
-            .atLeast(edge, 1, "edge"))
-            .throwWhenInvalid();
+                .notEmpty(bytes, "bytes")
+                .notNull(declared, "declared")
+                .atLeast(edge, 1, "edge"))
+                .throwWhenInvalid();
         int tag = orientation >= 1 && orientation <= 8 ? orientation : 1;
         boolean quarterTurn = tag >= 5;
         int orientedWidth = quarterTurn ? declared.height() : declared.width();

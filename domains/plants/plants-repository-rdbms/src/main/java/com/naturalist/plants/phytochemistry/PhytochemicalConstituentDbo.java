@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  * ({@code plant_rank} -> {@code plantRank}).
  */
 @DboSchema(table = "phytochemical_constituent", primaryKey = "id", unique = {"name"},
-           entity = PhytochemicalConstituent.class)
+        entity = PhytochemicalConstituent.class)
 final class PhytochemicalConstituentDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
     String name;

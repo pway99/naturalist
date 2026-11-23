@@ -13,7 +13,8 @@ import java.util.Collection;
  *  test-fixture module itself. */
 public final class NaturalistRdbmsSeed {
 
-    private NaturalistRdbmsSeed() {}
+    private NaturalistRdbmsSeed() {
+    }
 
     public static void seed(DataSource dataSource, Collection<Naturalist> naturalists) {
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, NaturalistMapper.class);

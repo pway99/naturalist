@@ -35,10 +35,14 @@ class CitationAttributionTransactionTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired CitationRepository citationRepository;
-    @Wired LibraryCommand.CitationCommand citationCommand;
-    @Wired CitationAssociationQuery citationAssociationQuery;
-    @Wired CitationAttributionTransaction transaction;
+    @Wired
+    CitationRepository citationRepository;
+    @Wired
+    LibraryCommand.CitationCommand citationCommand;
+    @Wired
+    CitationAssociationQuery citationAssociationQuery;
+    @Wired
+    CitationAttributionTransaction transaction;
 
     private static OnlineSource citation(String slug) {
         return new OnlineSource(

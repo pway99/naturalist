@@ -22,8 +22,10 @@ class InsectSightingCommandImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectCommand.SightingCommand sightings;
-    @Wired InsectQuery insectQuery;
+    @Wired
+    InsectCommand.SightingCommand sightings;
+    @Wired
+    InsectQuery insectQuery;
     InsectRankName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
 
     private InsectObservationId recordedBy(NaturalistName who, String notes) {

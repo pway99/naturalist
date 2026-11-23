@@ -134,8 +134,8 @@ class LoginChallengeWebMvcTest {
         verifier.verdict = ChallengeVerdict.failed("invalid-input-response");
 
         mockMvc.perform(post("/login").with(csrf())
-                        .param("username", "nobody@example.org").param("password", "guess")
-                        .param("cf-turnstile-response", "a-token"))
+                .param("username", "nobody@example.org").param("password", "guess")
+                .param("cf-turnstile-response", "a-token"))
                 .andExpect(header().string("Location", "/login?challenge"));
 
         assertThat(violations(ACCOUNT_KNOWN)).isZero();
@@ -165,8 +165,8 @@ class LoginChallengeWebMvcTest {
     @Test
     void aMissingCsrfToken_isRefusedBeforeTheVerifier() throws Exception {
         mockMvc.perform(post("/login")
-                        .param("username", "test-admin").param("password", "test-password")
-                        .param("cf-turnstile-response", "a-token"))
+                .param("username", "test-admin").param("password", "test-password")
+                .param("cf-turnstile-response", "a-token"))
                 .andExpect(status().isForbidden());
 
         assertThat(verifier.submissions).isEmpty();

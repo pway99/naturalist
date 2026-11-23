@@ -18,7 +18,7 @@ class PlantCultivarQueryImpl
     @Override
     public CultivarCollection findByNameSet(Set<CultivarName> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return CultivarCollection.of(repository().getByEntityNameSet(names));
     }
@@ -26,7 +26,7 @@ class PlantCultivarQueryImpl
     @Override
     public CultivarCollection forPlantName(PlantSpeciesName plantName) {
         observer().arguments("forPlantName", i -> i
-                        .entityName(plantName, "plantName"))
+                .entityName(plantName, "plantName"))
                 .throwWhenInvalid();
         return CultivarCollection.of(repository().getByPlantName(plantName));
     }

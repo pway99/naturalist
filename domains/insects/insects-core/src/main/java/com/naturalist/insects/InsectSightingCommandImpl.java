@@ -19,8 +19,8 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
     InsectSightingCommandImpl(InsectCommand.ObservationCommand observations,
                               InsectQuery.ObservationQuery observationQuery) {
         observer.arguments("constructor", i -> i
-                        .notNull(observations, "observations")
-                        .notNull(observationQuery, "observationQuery"))
+                .notNull(observations, "observations")
+                .notNull(observationQuery, "observationQuery"))
                 .throwWhenInvalid();
         this.observations = observations;
         this.observationQuery = observationQuery;
@@ -29,9 +29,9 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
     @Override
     public InsectObservationId record(InsectRankName subject, NaturalistName naturalist, @Nullable String notes) {
         observer.arguments("record", i -> i
-                        .identifier(subject, "subject")
-                        .entityName(naturalist, "naturalist")
-                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
+                .identifier(subject, "subject")
+                .entityName(naturalist, "naturalist")
+                .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
                 .throwWhenInvalid();
         InsectObservationId id = InsectObservationId.create();
         observations.insert(new OrganismObservation<InsectObservationId, InsectRankName>(
@@ -42,9 +42,9 @@ class InsectSightingCommandImpl implements InsectCommand.SightingCommand {
     @Override
     public void updateNotes(InsectObservationId observationId, NaturalistName viewer, @Nullable String notes) {
         observer.arguments("updateNotes", i -> i
-                        .entityId(observationId, "observationId")
-                        .entityName(viewer, "viewer")
-                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
+                .entityId(observationId, "observationId")
+                .entityName(viewer, "viewer")
+                .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes"))
                 .throwWhenInvalid();
         observationQuery.getByName(observationId)
                 .filter(o -> o.observedBy().equals(viewer))

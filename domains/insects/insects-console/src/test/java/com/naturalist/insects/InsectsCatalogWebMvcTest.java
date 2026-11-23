@@ -76,9 +76,9 @@ class InsectsCatalogWebMvcTest {
     @Test
     void detail_rendersAddPhotoForm() throws Exception {
         mockMvc.perform(get("/insects/battus-philenor")
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way")
-                        .requestAttr("naturalistCsrfParam", "_csrf")
-                        .requestAttr("naturalistCsrfToken", "test-token"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way")
+                .requestAttr("naturalistCsrfParam", "_csrf")
+                .requestAttr("naturalistCsrfToken", "test-token"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Add Photo")))
                 .andExpect(content().string(containsString("name=\"image\"")))
@@ -105,7 +105,7 @@ class InsectsCatalogWebMvcTest {
     void addImage_redirectsToDetail() throws Exception {
         MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
     }
@@ -114,7 +114,7 @@ class InsectsCatalogWebMvcTest {
     void addImage_rejectsUnsupportedFormat() throws Exception {
         MockMultipartFile file = new MockMultipartFile("image", "photo.heic", "image/heic", TINY_HEIC);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=image"));
     }
@@ -147,7 +147,7 @@ class InsectsCatalogWebMvcTest {
     void identify_rejectsUnsupportedFormat() throws Exception {
         MockMultipartFile file = new MockMultipartFile("image", "photo.heic", "image/heic", TINY_HEIC);
         mockMvc.perform(multipart("/insects/identify").file(file)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/identify?error=image"));
     }
@@ -155,15 +155,15 @@ class InsectsCatalogWebMvcTest {
     @Test
     void updateNotes_byNonOwner_redirectsWithoutChange() throws Exception {
         mockMvc.perform(post("/insects/battus-philenor/observe").param("notes", "original")
-                        .requestAttr(CURRENT_NATURALIST, "pat-way"))
+                .requestAttr(CURRENT_NATURALIST, "pat-way"))
                 .andExpect(status().is3xxRedirection());
         InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectQuery().observations()
                 .forNaturalist(NaturalistName.of("pat-way")).stream().findFirst().orElseThrow().id();
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
-                        .param("observationId", id.value().toString())
-                        .param("notes", "overwritten")
-                        .requestAttr(CURRENT_NATURALIST, "mallory"))
+                .param("observationId", id.value().toString())
+                .param("notes", "overwritten")
+                .requestAttr(CURRENT_NATURALIST, "mallory"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
 
@@ -174,15 +174,15 @@ class InsectsCatalogWebMvcTest {
     @Test
     void updateNotes_byOwner_changesNotes() throws Exception {
         mockMvc.perform(post("/insects/battus-philenor/observe").param("notes", "original")
-                        .requestAttr(CURRENT_NATURALIST, "pat-way"))
+                .requestAttr(CURRENT_NATURALIST, "pat-way"))
                 .andExpect(status().is3xxRedirection());
         InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectQuery().observations()
                 .forNaturalist(NaturalistName.of("pat-way")).stream().findFirst().orElseThrow().id();
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
-                        .param("observationId", id.value().toString())
-                        .param("notes", "revised")
-                        .requestAttr(CURRENT_NATURALIST, "pat-way"))
+                .param("observationId", id.value().toString())
+                .param("notes", "revised")
+                .requestAttr(CURRENT_NATURALIST, "pat-way"))
                 .andExpect(status().is3xxRedirection());
 
         assertThat(InsectsControllerTestConfig.INSECTS.insectQuery().observations().getByName(id)
@@ -197,7 +197,7 @@ class InsectsCatalogWebMvcTest {
         oversize[2] = (byte) 0xFF;
         MockMultipartFile file = new MockMultipartFile("image", "huge.jpg", "image/jpeg", oversize);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=image"));
     }
@@ -208,7 +208,7 @@ class InsectsCatalogWebMvcTest {
         MockMultipartFile file = new MockMultipartFile("image", "bomb.png", "image/png", pixelBomb());
 
         mockMvc.perform(multipart("/insects/identify").file(file)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/identify?error=image"));
 
@@ -221,7 +221,7 @@ class InsectsCatalogWebMvcTest {
         MockMultipartFile file = new MockMultipartFile("image", "bomb.png", "image/png", pixelBomb());
 
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=image"));
 
@@ -306,7 +306,7 @@ class InsectsCatalogWebMvcTest {
         MockMultipartFile file = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
 
         mockMvc.perform(multipart("/insects/identify").file(file)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/identify?error=image"));
 
@@ -320,7 +320,7 @@ class InsectsCatalogWebMvcTest {
         MockMultipartFile file = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
 
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
-                        .requestAttr(CURRENT_NATURALIST, "patrick-way"))
+                .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor?error=image"));
 

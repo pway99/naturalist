@@ -36,7 +36,7 @@ class PlantSpeciesEntityRepositoryRdbms
     private final PlantSpeciesTransaction transaction;
 
     PlantSpeciesEntityRepositoryRdbms(PlantSpeciesMapper mapper,
-            PlantSpeciesTransaction transaction) {
+                                      PlantSpeciesTransaction transaction) {
         this.mapper = mapper;
         this.transaction = transaction;
     }

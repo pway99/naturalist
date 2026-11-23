@@ -107,8 +107,8 @@ final class RdbmsCatalog implements Catalog {
         Function<String, EntityName> fn = reconstructors.get(row.entityType);
         if (domain == null || fn == null) {
             observer.state("toRef", i -> i
-                            .notNull(domain, "domain[" + row.domain + "]")
-                            .notNull(fn, "reconstructor[" + row.entityType + "]"))
+                    .notNull(domain, "domain[" + row.domain + "]")
+                    .notNull(fn, "reconstructor[" + row.entityType + "]"))
                     .observe(Level.WARN);
             return null; // defensive; startup validation should prevent this
         }

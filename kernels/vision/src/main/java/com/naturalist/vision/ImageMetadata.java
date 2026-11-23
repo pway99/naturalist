@@ -14,6 +14,7 @@ public record ImageMetadata(
 
     @Override
     public Consumer<? extends Constraints> invariants() {
-        return i -> {};
+        return i -> {
+        };
     }
 }

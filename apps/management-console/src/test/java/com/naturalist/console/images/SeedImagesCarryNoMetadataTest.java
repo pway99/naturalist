@@ -27,8 +27,8 @@ class SeedImagesCarryNoMetadataTest {
 
     static Stream<Resource> seedImages() throws IOException {
         return Stream.concat(
-                        Stream.of(RESOLVER.getResources("classpath*:insects/images/*")),
-                        Stream.of(RESOLVER.getResources("classpath*:plants/images/*")))
+                Stream.of(RESOLVER.getResources("classpath*:insects/images/*")),
+                Stream.of(RESOLVER.getResources("classpath*:plants/images/*")))
                 .filter(Resource::isReadable);
     }
 

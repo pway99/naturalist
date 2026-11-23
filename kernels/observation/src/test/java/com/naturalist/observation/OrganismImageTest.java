@@ -20,19 +20,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OrganismImageTest {
 
     static final class FakeImageId extends EntityId {
-        private FakeImageId(UUID v) { super(v); }
-        @JsonCreator static FakeImageId of(UUID v) { return new FakeImageId(v); }
-        static FakeImageId create() { return new FakeImageId(EntityId.newUUID()); }
+        private FakeImageId(UUID v) {
+            super(v);
+        }
+
+        @JsonCreator
+        static FakeImageId of(UUID v) {
+            return new FakeImageId(v);
+        }
+
+        static FakeImageId create() {
+            return new FakeImageId(EntityId.newUUID());
+        }
     }
 
     static final class FakeObsId extends EntityId {
-        private FakeObsId(UUID v) { super(v); }
-        @JsonCreator static FakeObsId of(UUID v) { return new FakeObsId(v); }
-        static FakeObsId create() { return new FakeObsId(EntityId.newUUID()); }
+        private FakeObsId(UUID v) {
+            super(v);
+        }
+
+        @JsonCreator
+        static FakeObsId of(UUID v) {
+            return new FakeObsId(v);
+        }
+
+        static FakeObsId create() {
+            return new FakeObsId(EntityId.newUUID());
+        }
     }
 
     record FakeGenusName(String value) implements RankName {
-        @Override public LinealRank rank() { return LinealRank.GENUS; }
+        @Override
+        public LinealRank rank() {
+            return LinealRank.GENUS;
+        }
     }
 
     private static final RankNameReconstructor RECONSTRUCTOR = (slug, rank) -> new FakeGenusName(slug);

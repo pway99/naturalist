@@ -17,8 +17,8 @@ import java.util.function.Consumer;
  * (together with either garden text column) what marks the {@code GardenConnections} group present.
  */
 @DboSchema(table = "insect_species_supporting_plant", primaryKey = "species_id,ordinal",
-           foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
-           entity = InsectSpeciesInfo.class)
+        foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
+        entity = InsectSpeciesInfo.class)
 final class InsectSpeciesSupportingPlantDbo implements Dbo {
     String speciesName;  // JOIN projection (read) / nested-select key (write); not a stored column
     int ordinal;

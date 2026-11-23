@@ -16,7 +16,7 @@ class PlantSpeciesQueryImpl
     private final PlantQuery.GenusQuery genusQuery;
 
     PlantSpeciesQueryImpl(PlantRepository.SpeciesRepository repository,
-                         PlantQuery.GenusQuery genusQuery) {
+                          PlantQuery.GenusQuery genusQuery) {
         super(repository);
         this.genusQuery = Objects.requireNonNull(genusQuery, "genusQuery");
     }
@@ -24,7 +24,7 @@ class PlantSpeciesQueryImpl
     @Override
     public SpeciesCollection findByNameSet(Set<PlantSpeciesName> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return SpeciesCollection.of(repository().getByEntityNameSet(names));
     }

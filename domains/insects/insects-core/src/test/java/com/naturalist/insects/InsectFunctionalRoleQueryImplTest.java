@@ -23,7 +23,8 @@ class InsectFunctionalRoleQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery.FunctionalRoleQuery query;
+    @Wired
+    InsectQuery.FunctionalRoleQuery query;
 
     @Override
     public EntityQuery<InsectFunctionalRoleId, InsectFunctionalRole, FunctionalRoleCollection> query() {

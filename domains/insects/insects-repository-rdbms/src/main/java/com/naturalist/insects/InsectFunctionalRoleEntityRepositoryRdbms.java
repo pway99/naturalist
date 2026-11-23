@@ -36,7 +36,7 @@ class InsectFunctionalRoleEntityRepositoryRdbms
     private final InsectFunctionalRoleTransaction transaction;
 
     InsectFunctionalRoleEntityRepositoryRdbms(InsectFunctionalRoleMapper mapper,
-            InsectFunctionalRoleTransaction transaction) {
+                                              InsectFunctionalRoleTransaction transaction) {
         this.mapper = mapper;
         this.transaction = transaction;
     }

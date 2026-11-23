@@ -19,7 +19,7 @@ class PlantPhytochemicalConstituentQueryImpl
     @Override
     public PhytochemicalConstituentCollection findByNameSet(Set<PhytochemicalConstituentName> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
         return PhytochemicalConstituentCollection.of(repository().getByEntityNameSet(names));
     }
@@ -27,7 +27,7 @@ class PlantPhytochemicalConstituentQueryImpl
     @Override
     public PhytochemicalConstituentCollection forPlantName(PlantRankName plantName) {
         observer().arguments("forPlantName", i -> i
-                        .identifier(plantName, "plantName"))
+                .identifier(plantName, "plantName"))
                 .throwWhenInvalid();
         return PhytochemicalConstituentCollection.of(repository().getByPlantName(plantName));
     }
@@ -35,7 +35,7 @@ class PlantPhytochemicalConstituentQueryImpl
     @Override
     public PhytochemicalConstituentCollection forCompoundName(CompoundName compoundName) {
         observer().arguments("forCompoundName", i -> i
-                        .entityName(compoundName, "compoundName"))
+                .entityName(compoundName, "compoundName"))
                 .throwWhenInvalid();
         return PhytochemicalConstituentCollection.of(repository().getByCompoundName(compoundName));
     }

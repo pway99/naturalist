@@ -19,41 +19,41 @@ interface UsageEventMapper {
     UsageEventDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT id, counter_name, naturalist, instant FROM usage_event
-        WHERE id IN <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, counter_name, naturalist, instant FROM usage_event
+            WHERE id IN <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<UsageEventDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM usage_event ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     List<UsageEventDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (SELECT 1 FROM usage_event ORDER BY id OFFSET #{skip} LIMIT #{window}) t
-        """)
+            SELECT count(*) FROM (SELECT 1 FROM usage_event ORDER BY id OFFSET #{skip} LIMIT #{window}) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select("""
-        <script>
-        SELECT id, counter_name, naturalist, instant FROM usage_event
-        WHERE counter_name = #{counter} AND instant >= #{since}
-        <if test='naturalist != null'>AND naturalist = #{naturalist}</if>
-        ORDER BY instant
-        </script>
-        """)
+            <script>
+            SELECT id, counter_name, naturalist, instant FROM usage_event
+            WHERE counter_name = #{counter} AND instant >= #{since}
+            <if test='naturalist != null'>AND naturalist = #{naturalist}</if>
+            ORDER BY instant
+            </script>
+            """)
     List<UsageEventDbo> findByCounterSince(
             @Param("counter") String counter, @Param("naturalist") String naturalist, @Param("since") java.time.Instant since);
 
     @Insert("""
-        INSERT INTO usage_event (id, counter_name, naturalist, instant)
-        VALUES (#{id}::uuid, #{counterName}, #{naturalist}, #{instant})
-        """)
+            INSERT INTO usage_event (id, counter_name, naturalist, instant)
+            VALUES (#{id}::uuid, #{counterName}, #{naturalist}, #{instant})
+            """)
     void insert(UsageEventDbo dbo);
 
     @Update("""
-        UPDATE usage_event SET counter_name = #{counterName}, naturalist = #{naturalist}, instant = #{instant}
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE usage_event SET counter_name = #{counterName}, naturalist = #{naturalist}, instant = #{instant}
+            WHERE id = #{id}::uuid
+            """)
     int updateById(UsageEventDbo dbo);
 }

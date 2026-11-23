@@ -56,7 +56,7 @@ final class UsageCounterDbo implements Dbo {
         return c -> c
                 .notBlank(id, "id")
                 .notNull(counterName, "counterName").kebabFormat(counterName, "counterName")
-                    .maxLength(counterName, 64, "counterName")
+                .maxLength(counterName, 64, "counterName")
                 .notBlank(scope, "scope").maxLength(scope, 24, "scope")
                 .notBlank(windowKind, "windowKind").maxLength(windowKind, 24, "windowKind");
     }

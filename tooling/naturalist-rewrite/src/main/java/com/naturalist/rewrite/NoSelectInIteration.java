@@ -26,8 +26,8 @@ import java.util.Set;
 public class NoSelectInIteration extends Recipe {
 
     static final String MESSAGE =
-        "N+1 fan-out: repository or query select invoked inside an iteration construct; "
-        + "call the batched sibling once instead";
+            "N+1 fan-out: repository or query select invoked inside an iteration construct; "
+                    + "call the batched sibling once instead";
 
     private static final String REPOSITORY = "com.naturalist.data.EntityRepository";
     private static final String QUERY = "com.naturalist.data.EntityQuery";
@@ -48,23 +48,23 @@ public class NoSelectInIteration extends Recipe {
     public static class Findings extends DataTable<Findings.Row> {
         public Findings(Recipe recipe) {
             super(recipe,
-                "N+1 select findings",
-                "Repository or query selects invoked inside an iteration construct.");
+                    "N+1 select findings",
+                    "Repository or query selects invoked inside an iteration construct.");
         }
 
         public record Row(
-            @Column(displayName = "Source path",
-                    description = "Path of the file containing the finding.") String sourcePath,
-            @Column(displayName = "Enclosing type",
-                    description = "Simple name of the class holding the finding.") String enclosingType,
-            @Column(displayName = "Enclosing method",
-                    description = "Name of the method holding the finding.") String enclosingMethod,
-            @Column(displayName = "Select",
-                    description = "The repository/query method invoked per element.") String select,
-            @Column(displayName = "Iteration kind",
-                    description = "The loop or stream operation that fans the select out.") String iterationKind,
-            @Column(displayName = "Suggested batched sibling",
-                    description = "The batched method to call once instead.") String suggestedBatchedSibling) {
+                @Column(displayName = "Source path",
+                        description = "Path of the file containing the finding.") String sourcePath,
+                @Column(displayName = "Enclosing type",
+                        description = "Simple name of the class holding the finding.") String enclosingType,
+                @Column(displayName = "Enclosing method",
+                        description = "Name of the method holding the finding.") String enclosingMethod,
+                @Column(displayName = "Select",
+                        description = "The repository/query method invoked per element.") String select,
+                @Column(displayName = "Iteration kind",
+                        description = "The loop or stream operation that fans the select out.") String iterationKind,
+                @Column(displayName = "Suggested batched sibling",
+                        description = "The batched method to call once instead.") String suggestedBatchedSibling) {
         }
     }
 
@@ -75,12 +75,12 @@ public class NoSelectInIteration extends Recipe {
      * — the same N+1 shape as a loop body — so it is flagged the same way.
      */
     private static final List<MethodMatcher> FAN_OUT = List.of(
-        new MethodMatcher("java.util.stream.Stream *(..)"),
-        new MethodMatcher("java.util.stream.IntStream *(..)"),
-        new MethodMatcher("java.util.stream.LongStream *(..)"),
-        new MethodMatcher("java.util.stream.DoubleStream *(..)"),
-        new MethodMatcher("java.lang.Iterable forEach(..)", true),
-        new MethodMatcher("java.util.Map forEach(..)", true)
+            new MethodMatcher("java.util.stream.Stream *(..)"),
+            new MethodMatcher("java.util.stream.IntStream *(..)"),
+            new MethodMatcher("java.util.stream.LongStream *(..)"),
+            new MethodMatcher("java.util.stream.DoubleStream *(..)"),
+            new MethodMatcher("java.lang.Iterable forEach(..)", true),
+            new MethodMatcher("java.util.Map forEach(..)", true)
     );
 
     private static final String STREAM = "java.util.stream.BaseStream";
@@ -95,7 +95,7 @@ public class NoSelectInIteration extends Recipe {
         JavaType.Method methodType = fan.getMethodType();
         JavaType.FullyQualified declaring = methodType == null ? null : methodType.getDeclaringType();
         String prefix = declaring != null && TypeUtils.isAssignableTo(STREAM, declaring)
-            ? "stream:" : "iterable:";
+                ? "stream:" : "iterable:";
         return prefix + fan.getSimpleName();
     }
 
@@ -111,10 +111,10 @@ public class NoSelectInIteration extends Recipe {
     @Override
     public String getDescription() {
         return "Flags an EntityRepository/EntityQuery select (excluding insert/update/save) that "
-             + "appears lexically inside a loop or a per-element stream operation — the N+1 "
-             + "fan-out pattern. Call the batched sibling (getByEntityNameSet / findByNameSet / a "
-             + "domain getBy…Names) once instead. Cross-method and recursive fan-out are out of "
-             + "scope (covered by the runtime select-count gate).";
+                + "appears lexically inside a loop or a per-element stream operation — the N+1 "
+                + "fan-out pattern. Call the batched sibling (getByEntityNameSet / findByNameSet / a "
+                + "domain getBy…Names) once instead. Cross-method and recursive fan-out are out of "
+                + "scope (covered by the runtime select-count gate).";
     }
 
     @Override
@@ -133,9 +133,9 @@ public class NoSelectInIteration extends Recipe {
             public @Nullable J visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree instanceof JavaSourceFile) {
                     boolean isMain = ((JavaSourceFile) tree).getMarkers()
-                        .findFirst(JavaSourceSet.class)
-                        .map(s -> "main".equals(s.getName()))
-                        .orElse(false);
+                            .findFirst(JavaSourceSet.class)
+                            .map(s -> "main".equals(s.getName()))
+                            .orElse(false);
                     if (!isMain) {
                         return (J) tree;
                     }
@@ -171,10 +171,10 @@ public class NoSelectInIteration extends Recipe {
             }
 
             private <T extends J> T recordAndMark(T site, String kind, JavaType.Method methodType,
-                                                    ExecutionContext ctx) {
+                                                  ExecutionContext ctx) {
                 findings.insertRow(ctx, new Findings.Row(
-                    sourcePath(), enclosingType(), enclosingMethod(),
-                    methodType.getName(), kind, suggestedSibling(methodType)));
+                        sourcePath(), enclosingType(), enclosingMethod(),
+                        methodType.getName(), kind, suggestedSibling(methodType)));
                 return SearchResult.found(site, MESSAGE);
             }
 
@@ -202,8 +202,8 @@ public class NoSelectInIteration extends Recipe {
             }
         };
         return Preconditions.check(
-            Preconditions.or(new UsesType<>(REPOSITORY, true), new UsesType<>(QUERY, true)),
-            visitor);
+                Preconditions.or(new UsesType<>(REPOSITORY, true), new UsesType<>(QUERY, true)),
+                visitor);
     }
 
     static boolean isSelectSite(JavaType.@Nullable Method methodType) {
@@ -215,7 +215,7 @@ public class NoSelectInIteration extends Recipe {
             return false;
         }
         boolean isPort = TypeUtils.isAssignableTo(REPOSITORY, declaring)
-                      || TypeUtils.isAssignableTo(QUERY, declaring);
+                || TypeUtils.isAssignableTo(QUERY, declaring);
         String name = methodType.getName();
         return isPort && !WRITES.contains(name) && !PAGING.contains(name);
     }

@@ -13,7 +13,8 @@ import java.util.List;
 /** Seeds insect feature assignments through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectFeatureAssignmentSeeder {
 
-    private InsectFeatureAssignmentSeeder() {}
+    private InsectFeatureAssignmentSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> entities = database.getNamed(InsectFeatureAssignmentTestEntitySource.class).entityStream().toList();

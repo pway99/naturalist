@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 
 /** Child row for one {@link HabitatZone} of a life stage's habitat profile. Carries the life stage NAME. */
 @DboSchema(table = "insect_life_stage_habitat_zone", primaryKey = "life_stage_id,zone",
-           foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
-           entity = LifeStage.class)
+        foreignKeys = @Fk(columns = "life_stage_id", references = "insect_life_stage(id)"),
+        entity = LifeStage.class)
 final class InsectLifeStageHabitatZoneDbo implements Dbo {
     String lifeStageName;
     String zone;
@@ -26,7 +26,9 @@ final class InsectLifeStageHabitatZoneDbo implements Dbo {
         return d;
     }
 
-    HabitatZone toZone() { return HabitatZone.valueOf(zone); }
+    HabitatZone toZone() {
+        return HabitatZone.valueOf(zone);
+    }
 
     @Override
     public Consumer<? extends Constraints> invariants() {

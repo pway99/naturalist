@@ -14,7 +14,8 @@ import javax.sql.DataSource;
  */
 final class ChemistrySeeding {
 
-    private ChemistrySeeding() {}
+    private ChemistrySeeding() {
+    }
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/chemistry.sql");

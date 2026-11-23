@@ -15,8 +15,8 @@ import java.util.function.Consumer;
  * {@code name} for the mapper's JOIN projection (read) and nested-select (write).
  */
 @DboSchema(table = "product_property", primaryKey = "product_id,property_key",
-           foreignKeys = @Fk(columns = "product_id", references = "product(id)"),
-           entity = Product.class)
+        foreignKeys = @Fk(columns = "product_id", references = "product(id)"),
+        entity = Product.class)
 final class ProductPropertyDbo implements Dbo {
     String productName;   // JOIN projection (read) / nested-select key (write); not a stored column
     String propertyKey;

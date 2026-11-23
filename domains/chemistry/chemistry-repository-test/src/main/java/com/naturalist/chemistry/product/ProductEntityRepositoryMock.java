@@ -22,7 +22,7 @@ class ProductEntityRepositoryMock
     public List<Product> getByCompoundName(CompoundName compoundName) {
         MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
         getByCompoundName.arguments(i -> i
-                        .identifier(compoundName, "compoundName"))
+                .identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
         List<Product> result = testEntitySource().entityStream()
                 .filter(product -> product.compounds().contains(compoundName))

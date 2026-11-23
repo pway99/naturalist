@@ -20,7 +20,8 @@ class InsectSpeciesQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectQuery.SpeciesQuery query;
+    @Wired
+    InsectQuery.SpeciesQuery query;
 
     @Override
     public EntityQuery<InsectSpeciesName, InsectSpeciesInfo, SpeciesCollection> query() {

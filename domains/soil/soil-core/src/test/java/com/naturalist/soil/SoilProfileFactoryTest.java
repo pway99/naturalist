@@ -35,7 +35,8 @@ class SoilProfileFactoryTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired SoilProfileQuery query;
+    @Wired
+    SoilProfileQuery query;
 
     @Test
     void getBySoilProfileName_nullArgument_throws() {

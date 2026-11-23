@@ -10,7 +10,7 @@ class InsectLifeStageQueryImpl implements InsectLifeStageQuery {
 
     InsectLifeStageQueryImpl(LifeStageEntityQuery lifeStageEntityQuery) {
         Observer.forClass(InsectLifeStageQueryImpl.class).arguments("constructor", i -> i
-                        .notNull(lifeStageEntityQuery, "lifeStageEntityQuery"))
+                .notNull(lifeStageEntityQuery, "lifeStageEntityQuery"))
                 .throwWhenInvalid();
         this.lifeStageEntityQuery = lifeStageEntityQuery;
     }

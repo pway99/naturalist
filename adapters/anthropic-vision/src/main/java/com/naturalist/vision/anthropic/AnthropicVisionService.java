@@ -159,7 +159,7 @@ public class AnthropicVisionService implements VisionService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
                         "Vision identification response contained no tool_use block. " +
-                        "stop_reason=" + message.stopReason()));
+                                "stop_reason=" + message.stopReason()));
 
         return new AnthropicVisionExchange(messages, systemBlock, toolUseBlock);
     }
@@ -252,7 +252,8 @@ public class AnthropicVisionService implements VisionService {
             // and required fields individually.
             Map<String, Object> schemaMap = MAPPER.readValue(
                     schema.parametersJson(),
-                    new TypeReference<>() {});
+                    new TypeReference<>() {
+                    });
 
             Tool.InputSchema.Builder inputSchemaBuilder = Tool.InputSchema.builder();
 

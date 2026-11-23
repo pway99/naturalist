@@ -51,10 +51,14 @@ class InsectPhotoCommandImplTest {
 
     Path imageRoot = newImageRoot();
 
-    @Fake ImageStore store = new FilesystemImageStore(imageRoot, Resilience.noOp());
-    @Wired InsectEntityCommands entityCommands;
-    @Wired InsectCommand.PhotoCommand command;
-    @Wired InsectQuery query;
+    @Fake
+    ImageStore store = new FilesystemImageStore(imageRoot, Resilience.noOp());
+    @Wired
+    InsectEntityCommands entityCommands;
+    @Wired
+    InsectCommand.PhotoCommand command;
+    @Wired
+    InsectQuery query;
 
     @Test
     void add_withNaturalist_insertsImageAndObservation() {
@@ -173,17 +177,24 @@ class InsectPhotoCommandImplTest {
         // PhotoAddition -- is invalid after the store has written; delete of that name removes the real file.
         ArrayList<FileName> realNames = new ArrayList<FileName>();
         ImageStore blankNaming = new ImageStore() {
-            @Override public FileName store(String space, ImageUpload upload) {
+            @Override
+            public FileName store(String space, ImageUpload upload) {
                 realNames.add(store.store(space, upload));
                 return FileName.of(" ");
             }
-            @Override public Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
+
+            @Override
+            public Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
                 return store.read(space, name, variant);
             }
-            @Override public void requireStorable(ImageUpload upload) {
+
+            @Override
+            public void requireStorable(ImageUpload upload) {
                 store.requireStorable(upload);
             }
-            @Override public void delete(String space, FileName name) {
+
+            @Override
+            public void delete(String space, FileName name) {
                 realNames.forEach(real -> store.delete(space, real));
             }
         };
@@ -226,16 +237,23 @@ class InsectPhotoCommandImplTest {
             }
         };
         ImageStore undeletable = new ImageStore() {
-            @Override public FileName store(String space, ImageUpload upload) {
+            @Override
+            public FileName store(String space, ImageUpload upload) {
                 return store.store(space, upload);
             }
-            @Override public Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
+
+            @Override
+            public Optional<StoredImage> read(String space, FileName name, ImageVariant variant) {
                 return store.read(space, name, variant);
             }
-            @Override public void requireStorable(ImageUpload upload) {
+
+            @Override
+            public void requireStorable(ImageUpload upload) {
                 store.requireStorable(upload);
             }
-            @Override public void delete(String space, FileName name) {
+
+            @Override
+            public void delete(String space, FileName name) {
                 throw new UncheckedIOException(new IOException("disk said no"));
             }
         };

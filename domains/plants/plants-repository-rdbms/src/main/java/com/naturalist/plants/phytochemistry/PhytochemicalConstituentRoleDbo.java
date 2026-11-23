@@ -18,8 +18,8 @@ import java.util.function.Consumer;
  * {@code kind()} discriminator (mirroring {@code chemistry.StructuralType}).
  */
 @DboSchema(table = "phytochemical_constituent_role", primaryKey = "constituent_id,role_kind",
-           foreignKeys = @Fk(columns = "constituent_id", references = "phytochemical_constituent(id)"),
-           entity = PhytochemicalConstituent.class)
+        foreignKeys = @Fk(columns = "constituent_id", references = "phytochemical_constituent(id)"),
+        entity = PhytochemicalConstituent.class)
 final class PhytochemicalConstituentRoleDbo implements Dbo {
     String constituentName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String roleKind;

@@ -9,7 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 /** Process-wide test DataSource, configured from env with localhost defaults. */
 public final class RdbmsDataSource {
 
-    private RdbmsDataSource() {}
+    private RdbmsDataSource() {
+    }
 
     private static volatile DataSource instance;
 

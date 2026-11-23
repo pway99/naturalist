@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 interface PlantFeatureAssignmentEntityRepositoryTest
         extends EntityRepositoryTest<PlantFeatureAssignmentId,
-                OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> {
+        OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> {
 
     @Override
     PlantRepository.FeatureAssignmentRepository repository();

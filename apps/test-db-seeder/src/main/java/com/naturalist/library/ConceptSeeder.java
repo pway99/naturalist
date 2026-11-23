@@ -16,7 +16,8 @@ import java.util.List;
  */
 public final class ConceptSeeder {
 
-    private ConceptSeeder() {}
+    private ConceptSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<Concept> concepts = database.getNamed(ConceptTestEntitySource.class).entityStream().toList();

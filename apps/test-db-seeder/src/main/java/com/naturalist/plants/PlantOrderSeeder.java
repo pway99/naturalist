@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds plant orders through the real RDBMS adapter (split-package with the rdbms module). */
 public final class PlantOrderSeeder {
 
-    private PlantOrderSeeder() {}
+    private PlantOrderSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<PlantOrder> entities = database.getNamed(PlantOrderTestEntitySource.class).entityStream().toList();

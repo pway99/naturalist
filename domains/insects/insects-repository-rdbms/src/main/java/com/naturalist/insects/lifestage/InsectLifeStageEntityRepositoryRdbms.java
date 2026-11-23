@@ -37,7 +37,7 @@ class InsectLifeStageEntityRepositoryRdbms
     private final InsectLifeStageTransaction transaction;
 
     InsectLifeStageEntityRepositoryRdbms(InsectLifeStageMapper mapper,
-            InsectLifeStageTransaction transaction) {
+                                         InsectLifeStageTransaction transaction) {
         this.mapper = mapper;
         this.transaction = transaction;
     }

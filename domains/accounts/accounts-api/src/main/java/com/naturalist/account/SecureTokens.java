@@ -15,7 +15,8 @@ package com.naturalist.account;
 public interface SecureTokens {
 
     /** A freshly minted secret: the raw value to email, and the hash to persist. */
-    record MintedToken(String rawValue, String hash) {}
+    record MintedToken(String rawValue, String hash) {
+    }
 
     /** Generates a new high-entropy secret and its hash. */
     MintedToken mint();

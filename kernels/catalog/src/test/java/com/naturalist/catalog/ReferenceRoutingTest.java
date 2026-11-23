@@ -14,16 +14,39 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReferenceRoutingTest {
 
-    private record Plants() implements DomainId { public String value() { return "plants"; } }
+    private record Plants() implements DomainId {
+        public String value() {
+            return "plants";
+        }
+    }
+
     private static final class Compound extends EntityName {
-        private Compound(String v) { super(v); } static Compound of(String v){ return new Compound(v);}
-        protected int maxLength(){ return 96; } }
+        private Compound(String v) {
+            super(v);
+        }
+
+        static Compound of(String v) {
+            return new Compound(v);
+        }
+
+        protected int maxLength() {
+            return 96;
+        }
+    }
 
     private static EntityReferences<Compound> provider(DomainId d, EntityRef... refs) {
         return new EntityReferences<>() {
-            public DomainId domain() { return d; }
-            public Class<Compound> referenceType() { return Compound.class; }
-            public Stream<EntityRef> referencesTo(Compound t) { return Stream.of(refs); }
+            public DomainId domain() {
+                return d;
+            }
+
+            public Class<Compound> referenceType() {
+                return Compound.class;
+            }
+
+            public Stream<EntityRef> referencesTo(Compound t) {
+                return Stream.of(refs);
+            }
         };
     }
 

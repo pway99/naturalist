@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 @DboSchema(table = "compound", primaryKey = "id", unique = {"name", "common_name"}, entity = Compound.class)
 final class CompoundDbo implements Dbo {
     Long id;              // numeric identity anchor (BIGINT IDENTITY); null before insert.
-                          // Durable FK target for compound_depiction, mirroring naturalist.id.
+    // Durable FK target for compound_depiction, mirroring naturalist.id.
     String name;
     String commonName;
     boolean omriListed;
@@ -170,23 +170,23 @@ final class CompoundDbo implements Dbo {
 
         VolatilizationProfile volatilization = volatilizationMinEffectiveTempF == null ? null
                 : new VolatilizationProfile(
-                        TemperatureFahrenheit.of(volatilizationMinEffectiveTempF),
-                        TemperatureFahrenheit.of(volatilizationMaxSafeTempF),
-                        TemperatureFahrenheit.of(volatilizationOptimalTempF),
-                        volatilizationVaporPressureAt20c,
-                        volatilizationEfficacyNotes,
-                        volatilizationSafetyNotes);
+                TemperatureFahrenheit.of(volatilizationMinEffectiveTempF),
+                TemperatureFahrenheit.of(volatilizationMaxSafeTempF),
+                TemperatureFahrenheit.of(volatilizationOptimalTempF),
+                volatilizationVaporPressureAt20c,
+                volatilizationEfficacyNotes,
+                volatilizationSafetyNotes);
 
         SafetyProfile safety = safetyHazardLevel == null ? null
                 : new SafetyProfile(
-                        SafetyProfile.HazardLevel.valueOf(safetyHazardLevel),
-                        safetyMaxSafeConcentrationPpm,
-                        safetyMinApplicationTempF == null ? null : TemperatureFahrenheit.of(safetyMinApplicationTempF),
-                        safetyMaxApplicationTempF == null ? null : TemperatureFahrenheit.of(safetyMaxApplicationTempF),
-                        safetyRequiresProtectiveEquipment,
-                        safetyHazardousToBeesWhenWet,
-                        safetyRequiresEveningApplication,
-                        safetyApplicationConstraints);
+                SafetyProfile.HazardLevel.valueOf(safetyHazardLevel),
+                safetyMaxSafeConcentrationPpm,
+                safetyMinApplicationTempF == null ? null : TemperatureFahrenheit.of(safetyMinApplicationTempF),
+                safetyMaxApplicationTempF == null ? null : TemperatureFahrenheit.of(safetyMaxApplicationTempF),
+                safetyRequiresProtectiveEquipment,
+                safetyHazardousToBeesWhenWet,
+                safetyRequiresEveningApplication,
+                safetyApplicationConstraints);
 
         return new Compound(
                 CompoundName.of(name),

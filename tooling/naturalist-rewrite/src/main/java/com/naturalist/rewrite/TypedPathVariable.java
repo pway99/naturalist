@@ -59,8 +59,8 @@ public class TypedPathVariable extends Recipe {
     @Override
     public String getDescription() {
         return "Marks a @PathVariable / @RequestParam String a Spring handler reads straight into a named value "
-             + "(it takes the named value's type instead), and an EntityId or NumericNamedValue handler parameter "
-             + "that is neither required = false nor Optional.";
+                + "(it takes the named value's type instead), and an EntityId or NumericNamedValue handler parameter "
+                + "that is neither required = false nor Optional.";
     }
 
     @Override
@@ -71,9 +71,9 @@ public class TypedPathVariable extends Recipe {
             public @Nullable J visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree instanceof JavaSourceFile file) {
                     boolean isMain = file.getMarkers()
-                        .findFirst(JavaSourceSet.class)
-                        .map(s -> "main".equals(s.getName()))
-                        .orElse(false);
+                            .findFirst(JavaSourceSet.class)
+                            .map(s -> "main".equals(s.getName()))
+                            .orElse(false);
                     if (!isMain) {
                         return (J) tree;
                     }

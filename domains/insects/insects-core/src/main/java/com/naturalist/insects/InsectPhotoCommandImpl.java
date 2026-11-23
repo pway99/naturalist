@@ -39,8 +39,8 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
 
     InsectPhotoCommandImpl(ImageStore imageStore, InsectAddPhotoTransaction transaction) {
         observer.arguments("constructor", i -> i
-                        .notNull(imageStore, "imageStore")
-                        .notNull(transaction, "transaction"))
+                .notNull(imageStore, "imageStore")
+                .notNull(transaction, "transaction"))
                 .throwWhenInvalid();
         this.imageStore = imageStore;
         this.transaction = transaction;
@@ -52,11 +52,11 @@ class InsectPhotoCommandImpl implements InsectCommand.PhotoCommand {
                     @Nullable String notes, @Nullable String location, @Nullable GridCell area) {
         MethodObserver methodObserver = observer.forMethod("add");
         methodObserver.arguments(i -> i
-                        .identifier(subject, "subject")
-                        .valueObject(upload, "upload")
-                        .entityNameOrNull(naturalist, "naturalist")
-                        .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes")
-                        .valueObjectOrNull(area, "area"))
+                .identifier(subject, "subject")
+                .valueObject(upload, "upload")
+                .entityNameOrNull(naturalist, "naturalist")
+                .maxLength(notes, OrganismObservation.MAX_NOTES_LENGTH, "notes")
+                .valueObjectOrNull(area, "area"))
                 .throwWhenInvalid();
 
         // The EXIF is read for the cell, then gone: nothing downstream sees the camera's metadata.

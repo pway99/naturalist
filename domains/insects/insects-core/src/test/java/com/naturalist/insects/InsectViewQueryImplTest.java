@@ -27,9 +27,12 @@ class InsectViewQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectViewQuery views;
-    @Wired InsectQuery insectQuery;
-    @Wired InsectCommand insectCommand;
+    @Wired
+    InsectViewQuery views;
+    @Wired
+    InsectQuery insectQuery;
+    @Wired
+    InsectCommand insectCommand;
 
     InsectRankName species = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
 
@@ -79,6 +82,7 @@ class InsectViewQueryImplTest {
     void rankPage_rejectsNullName() {
         assertThatThrownBy(() -> views.rankPage(null, FLORA)).isInstanceOf(InvariantViolationException.class);
     }
+
     private void sighting(InsectSpeciesName name) {
         insectCommand.sightings().record(name, FLORA, null);
     }

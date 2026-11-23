@@ -23,51 +23,51 @@ interface ReportedOptimumMapper {
     ReportedOptimumDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT id, nutrient_name, lab_analysis_id, range_shape, range_min, range_max, unit
-        FROM reported_optimum WHERE id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, nutrient_name, lab_analysis_id, range_shape, range_min, range_max, unit
+            FROM reported_optimum WHERE id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<ReportedOptimumDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM reported_optimum ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     List<ReportedOptimumDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM reported_optimum ORDER BY id OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM reported_optimum ORDER BY id OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Select("SELECT " + COLUMNS + " FROM reported_optimum WHERE lab_analysis_id = #{id}::uuid ORDER BY id")
     List<ReportedOptimumDbo> selectByLabAnalysisId(String id);
 
     @Select("""
-        <script>
-        SELECT id, nutrient_name, lab_analysis_id, range_shape, range_min, range_max, unit
-        FROM reported_optimum WHERE lab_analysis_id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        ORDER BY id
-        </script>
-        """)
+            <script>
+            SELECT id, nutrient_name, lab_analysis_id, range_shape, range_min, range_max, unit
+            FROM reported_optimum WHERE lab_analysis_id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            ORDER BY id
+            </script>
+            """)
     List<ReportedOptimumDbo> selectByLabAnalysisIds(@Param("ids") Collection<String> ids);
 
     @Select("SELECT " + COLUMNS + " FROM reported_optimum WHERE nutrient_name = #{nutrientName} ORDER BY id")
     List<ReportedOptimumDbo> selectByNutrientName(String nutrientName);
 
     @Insert("""
-        INSERT INTO reported_optimum (id, nutrient_name, lab_analysis_id, range_shape, range_min, range_max, unit)
-        VALUES (#{id}::uuid, #{nutrientName}, #{labAnalysisId}::uuid, #{rangeShape}, #{rangeMin}, #{rangeMax}, #{unit})
-        """)
+            INSERT INTO reported_optimum (id, nutrient_name, lab_analysis_id, range_shape, range_min, range_max, unit)
+            VALUES (#{id}::uuid, #{nutrientName}, #{labAnalysisId}::uuid, #{rangeShape}, #{rangeMin}, #{rangeMax}, #{unit})
+            """)
     void insert(ReportedOptimumDbo dbo);
 
     @Update("""
-        UPDATE reported_optimum SET
-            nutrient_name = #{nutrientName}, lab_analysis_id = #{labAnalysisId}::uuid,
-            range_shape = #{rangeShape}, range_min = #{rangeMin}, range_max = #{rangeMax}, unit = #{unit}
-        WHERE id = #{id}::uuid
-        """)
+            UPDATE reported_optimum SET
+                nutrient_name = #{nutrientName}, lab_analysis_id = #{labAnalysisId}::uuid,
+                range_shape = #{rangeShape}, range_min = #{rangeMin}, range_max = #{rangeMax}, unit = #{unit}
+            WHERE id = #{id}::uuid
+            """)
     int updateById(ReportedOptimumDbo dbo);
 }

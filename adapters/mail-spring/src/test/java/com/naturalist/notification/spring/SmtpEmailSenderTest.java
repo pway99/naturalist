@@ -80,12 +80,14 @@ class SmtpEmailSenderTest {
     private static final class FailingMailSender implements MailSender {
         @Override
         public void send(SimpleMailMessage simpleMessage) throws MailException {
-            throw new MailException("transport down") {};
+            throw new MailException("transport down") {
+            };
         }
 
         @Override
         public void send(SimpleMailMessage... simpleMessages) throws MailException {
-            throw new MailException("transport down") {};
+            throw new MailException("transport down") {
+            };
         }
     }
 

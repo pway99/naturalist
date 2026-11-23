@@ -25,7 +25,8 @@ class InsectLifeStageEntityQueryImplTest
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired InsectLifeStageQuery.LifeStageEntityQuery query;
+    @Wired
+    InsectLifeStageQuery.LifeStageEntityQuery query;
 
     @Override
     public EntityQuery<LifeStageName, LifeStage, LifeStageCollection> query() {

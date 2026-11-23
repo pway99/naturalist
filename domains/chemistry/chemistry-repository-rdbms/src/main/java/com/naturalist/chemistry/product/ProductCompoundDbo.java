@@ -17,11 +17,11 @@ import java.util.function.Consumer;
  * {@code ProductQuery.findByCompoundName} — the reverse "which products contain X" lookup.
  */
 @DboSchema(table = "product_compound", primaryKey = "product_id,compound_id",
-           foreignKeys = {
-                   @Fk(columns = "product_id", references = "product(id)"),
-                   @Fk(columns = "compound_id", references = "compound(id)")
-           },
-           entity = Product.class)
+        foreignKeys = {
+                @Fk(columns = "product_id", references = "product(id)"),
+                @Fk(columns = "compound_id", references = "compound(id)")
+        },
+        entity = Product.class)
 final class ProductCompoundDbo implements Dbo {
     String productName;   // JOIN projection (read) / nested-select key (write); not a stored column
     String compoundName;  // JOIN projection (read) / nested-select key (write); not a stored column

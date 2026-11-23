@@ -51,7 +51,7 @@ public class EolClientMock implements ExternalAuthority {
     public AuthorityContent fetchContent(AuthorityReference ref) {
         return new AuthorityContent(ref,
                 "Stub authority content for " + ref.url()
-                + ". This is placeholder text from the EOL mock client.");
+                        + ". This is placeholder text from the EOL mock client.");
     }
 
     private EolAuthorityTestEntitySource entitySource() {

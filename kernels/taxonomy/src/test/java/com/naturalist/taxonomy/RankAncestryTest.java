@@ -12,7 +12,10 @@ class RankAncestryTest {
 
     /** A fake rank name with a slug; equality by value (record) so the cycle guard works. */
     record Rank(String value) implements RankName {
-        @Override public LinealRank rank() { return LinealRank.GENUS; } // unused here
+        @Override
+        public LinealRank rank() {
+            return LinealRank.GENUS;
+        } // unused here
     }
 
     // species -> genus -> family; family has no parent (top of this fake chain)
@@ -20,7 +23,9 @@ class RankAncestryTest {
             new Rank("empoasca"), new Rank("cicadellidae"),
             new Rank("cicadellidae"), new Rank("hemiptera"));
 
-    private static Optional<Rank> parentOf(Rank r) { return Optional.ofNullable(PARENT.get(r)); }
+    private static Optional<Rank> parentOf(Rank r) {
+        return Optional.ofNullable(PARENT.get(r));
+    }
 
     @Test
     void ancestryIsSubjectFirstThenAncestorsAscending() {

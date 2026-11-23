@@ -16,8 +16,8 @@ import java.util.function.Consumer;
  * the row carries the observation's UUID directly (FK-enforced).
  */
 @DboSchema(table = "insect_observation_candidate", primaryKey = "observation_id,ordinal",
-           foreignKeys = @Fk(columns = "observation_id", references = "insect_observation(id)"),
-           entity = OrganismObservation.class)
+        foreignKeys = @Fk(columns = "observation_id", references = "insect_observation(id)"),
+        entity = OrganismObservation.class)
 final class InsectObservationCandidateDbo implements Dbo {
     String observationId;
     int ordinal;

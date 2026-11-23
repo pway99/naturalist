@@ -65,161 +65,162 @@ class NoSubtypeJsonCreatorTest implements RewriteTest {
     @Test
     void removesTheCreatorFromAName() {
         rewriteRun(withSupertypes(srcMainJava(java(
-            """
-            package com.naturalist.x;
-
-            import com.fasterxml.jackson.annotation.JsonCreator;
-            import com.naturalist.ddd.EntityName;
-
-            public final class Slug extends EntityName {
-                private Slug(String v) { super(v); }
-
-                @JsonCreator
-                public static Slug of(String v) {
-                    return new Slug(v);
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-
-            import com.naturalist.ddd.EntityName;
-
-            public final class Slug extends EntityName {
-                private Slug(String v) { super(v); }
-
-                public static Slug of(String v) {
-                    return new Slug(v);
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        
+                        import com.fasterxml.jackson.annotation.JsonCreator;
+                        import com.naturalist.ddd.EntityName;
+                        
+                        public final class Slug extends EntityName {
+                            private Slug(String v) { super(v); }
+                        
+                            @JsonCreator
+                            public static Slug of(String v) {
+                                return new Slug(v);
+                            }
+                        }
+                        """,
+                """
+                        package com.naturalist.x;
+                        
+                        import com.naturalist.ddd.EntityName;
+                        
+                        public final class Slug extends EntityName {
+                            private Slug(String v) { super(v); }
+                        
+                            public static Slug of(String v) {
+                                return new Slug(v);
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void removesTheCreatorFromAnIdAndANumeric() {
         rewriteRun(withSupertypes(srcMainJava(
-            java("""
-                package com.naturalist.x;
-
-                import com.fasterxml.jackson.annotation.JsonCreator;
-                import com.naturalist.ddd.EntityId;
-                import java.util.UUID;
-
-                public final class ThingId extends EntityId {
-                    private ThingId(UUID v) { super(v); }
-
-                    @JsonCreator
-                    public static ThingId of(UUID v) {
-                        return new ThingId(v);
-                    }
-                }
-                """,
-                """
-                package com.naturalist.x;
-
-                import com.naturalist.ddd.EntityId;
-                import java.util.UUID;
-
-                public final class ThingId extends EntityId {
-                    private ThingId(UUID v) { super(v); }
-
-                    public static ThingId of(UUID v) {
-                        return new ThingId(v);
-                    }
-                }
-                """),
-            java("""
-                package com.naturalist.x;
-
-                import com.fasterxml.jackson.annotation.JsonCreator;
-                import com.naturalist.ddd.NumericNamedValue;
-                import java.math.BigDecimal;
-
-                public record Grams(BigDecimal value) implements NumericNamedValue {
-                    @JsonCreator
-                    public static Grams of(BigDecimal value) {
-                        return new Grams(value);
-                    }
-                }
-                """,
-                """
-                package com.naturalist.x;
-
-                import com.naturalist.ddd.NumericNamedValue;
-                import java.math.BigDecimal;
-
-                public record Grams(BigDecimal value) implements NumericNamedValue {
-                    public static Grams of(BigDecimal value) {
-                        return new Grams(value);
-                    }
-                }
-                """))));
+                java("""
+                        package com.naturalist.x;
+                        
+                        import com.fasterxml.jackson.annotation.JsonCreator;
+                        import com.naturalist.ddd.EntityId;
+                        import java.util.UUID;
+                        
+                        public final class ThingId extends EntityId {
+                            private ThingId(UUID v) { super(v); }
+                        
+                            @JsonCreator
+                            public static ThingId of(UUID v) {
+                                return new ThingId(v);
+                            }
+                        }
+                        """,
+                        """
+                                package com.naturalist.x;
+                                
+                                import com.naturalist.ddd.EntityId;
+                                import java.util.UUID;
+                                
+                                public final class ThingId extends EntityId {
+                                    private ThingId(UUID v) { super(v); }
+                                
+                                    public static ThingId of(UUID v) {
+                                        return new ThingId(v);
+                                    }
+                                }
+                                """),
+                java("""
+                        package com.naturalist.x;
+                        
+                        import com.fasterxml.jackson.annotation.JsonCreator;
+                        import com.naturalist.ddd.NumericNamedValue;
+                        import java.math.BigDecimal;
+                        
+                        public record Grams(BigDecimal value) implements NumericNamedValue {
+                            @JsonCreator
+                            public static Grams of(BigDecimal value) {
+                                return new Grams(value);
+                            }
+                        }
+                        """,
+                        """
+                                package com.naturalist.x;
+                                
+                                import com.naturalist.ddd.NumericNamedValue;
+                                import java.math.BigDecimal;
+                                
+                                public record Grams(BigDecimal value) implements NumericNamedValue {
+                                    public static Grams of(BigDecimal value) {
+                                        return new Grams(value);
+                                    }
+                                }
+                                """))));
     }
 
     @Test
     void leavesOtherTypesAlone() {
         rewriteRun(withSupertypes(srcMainJava(java(
-            """
-            package com.naturalist.x;
-
-            import com.fasterxml.jackson.annotation.JsonCreator;
-
-            public record Label(String text, String locale) {
-                @JsonCreator
-                public static Label of(String text, String locale) {
-                    return new Label(text, locale);
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        
+                        import com.fasterxml.jackson.annotation.JsonCreator;
+                        
+                        public record Label(String text, String locale) {
+                            @JsonCreator
+                            public static Label of(String text, String locale) {
+                                return new Label(text, locale);
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void ignoresTestSources() {
         rewriteRun(withSupertypes(srcTestJava(java(
-            """
-            package com.naturalist.x;
-
-            import com.fasterxml.jackson.annotation.JsonCreator;
-            import com.naturalist.ddd.EntityName;
-
-            final class FixtureName extends EntityName {
-                private FixtureName(String v) { super(v); }
-
-                @JsonCreator
-                static FixtureName fromJson(String v) {
-                    return new FixtureName("creator:" + v);
-                }
-            }
-            """))));
+                """
+                        package com.naturalist.x;
+                        
+                        import com.fasterxml.jackson.annotation.JsonCreator;
+                        import com.naturalist.ddd.EntityName;
+                        
+                        final class FixtureName extends EntityName {
+                            private FixtureName(String v) { super(v); }
+                        
+                            @JsonCreator
+                            static FixtureName fromJson(String v) {
+                                return new FixtureName("creator:" + v);
+                            }
+                        }
+                        """))));
     }
 
     @Test
     void enforceArchitectureComposite_includesTheRecipe() {
-        rewriteRun(spec -> spec.recipeFromResources("com.naturalist.EnforceArchitecture"),
-            withSupertypes(srcMainJava(java(
-            """
-            package com.naturalist.x;
-
-            import com.fasterxml.jackson.annotation.JsonCreator;
-            import com.naturalist.ddd.NamedValue;
-
-            public record Tag(String value) implements NamedValue<String> {
-                @JsonCreator
-                public static Tag of(String value) {
-                    return new Tag(value);
-                }
-            }
-            """,
-            """
-            package com.naturalist.x;
-
-            import com.naturalist.ddd.NamedValue;
-
-            public record Tag(String value) implements NamedValue<String> {
-                public static Tag of(String value) {
-                    return new Tag(value);
-                }
-            }
-            """))));
+        rewriteRun(spec -> spec.recipeFromResources("com.naturalist.EnforceArchitecture")
+                        .parser(ProjectStyles.parser(JSON_CREATOR, ENTITY_NAME, ENTITY_ID, NAMED_VALUE, NUMERIC_NAMED_VALUE)),
+                srcMainJava(java(
+                        """
+                                package com.naturalist.x;
+                                
+                                import com.fasterxml.jackson.annotation.JsonCreator;
+                                import com.naturalist.ddd.NamedValue;
+                                
+                                public record Tag(String value) implements NamedValue<String> {
+                                    @JsonCreator
+                                    public static Tag of(String value) {
+                                        return new Tag(value);
+                                    }
+                                }
+                                """,
+                        """
+                                package com.naturalist.x;
+                                
+                                import com.naturalist.ddd.NamedValue;
+                                
+                                public record Tag(String value) implements NamedValue<String> {
+                                    public static Tag of(String value) {
+                                        return new Tag(value);
+                                    }
+                                }
+                                """)));
     }
 }

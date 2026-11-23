@@ -12,7 +12,8 @@ import javax.sql.DataSource;
  *  underscore-to-camel is OFF because DBO field names already equal the snake_case columns. */
 public final class MyBatisSupport {
 
-    private MyBatisSupport() {}
+    private MyBatisSupport() {
+    }
 
     public static SqlSessionFactory sessionFactory(DataSource dataSource, Class<?>... mappers) {
         Environment environment = new Environment("naturalist", new JdbcTransactionFactory(), dataSource);

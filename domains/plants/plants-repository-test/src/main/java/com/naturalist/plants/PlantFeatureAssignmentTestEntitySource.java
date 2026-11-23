@@ -26,7 +26,7 @@ import java.util.function.Function;
  */
 public class PlantFeatureAssignmentTestEntitySource
         extends TestEntitySource<PlantFeatureAssignmentId,
-                OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> {
+        OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> {
 
     private final ObjectMapper mapper = TestDataHelper.newBaseMapper()
             .setInjectableValues(new InjectableValues.Std()

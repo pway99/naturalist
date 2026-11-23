@@ -21,21 +21,21 @@ interface InsectFeatureMapper {
     InsectFeatureDbo selectById(String id);
 
     @Select("""
-        <script>
-        SELECT id, value FROM insect_feature WHERE id IN
-        <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, value FROM insect_feature WHERE id IN
+            <foreach item='x' collection='ids' open='(' separator=',' close=')'>#{x}::uuid</foreach>
+            </script>
+            """)
     List<InsectFeatureDbo> selectByIdSet(@Param("ids") Collection<String> ids);
 
     @Select("SELECT id, value FROM insect_feature ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     List<InsectFeatureDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM insect_feature ORDER BY id OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM insect_feature ORDER BY id OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Insert("INSERT INTO insect_feature (id, value) VALUES (#{id}::uuid, #{value})")

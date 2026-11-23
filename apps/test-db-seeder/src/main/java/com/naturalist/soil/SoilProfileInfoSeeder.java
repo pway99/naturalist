@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds soil profiles through the real RDBMS adapter (split-package with the rdbms module). */
 public final class SoilProfileInfoSeeder {
 
-    private SoilProfileInfoSeeder() {}
+    private SoilProfileInfoSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<SoilProfileInfo> entities = database.getNamed(SoilProfileInfoTestEntitySource.class).entityStream().toList();

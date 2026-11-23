@@ -32,11 +32,16 @@ class PlantsCatalogContributionTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired PlantQuery.SpeciesQuery entityQuery;
-    @Wired PlantQuery.OrderQuery orderQuery;
-    @Wired PlantQuery.FamilyQuery familyQuery;
-    @Wired PlantQuery.GenusQuery genusQuery;
-    @Wired PlantsCatalogContribution contribution;
+    @Wired
+    PlantQuery.SpeciesQuery entityQuery;
+    @Wired
+    PlantQuery.OrderQuery orderQuery;
+    @Wired
+    PlantQuery.FamilyQuery familyQuery;
+    @Wired
+    PlantQuery.GenusQuery genusQuery;
+    @Wired
+    PlantsCatalogContribution contribution;
 
     @Test
     void domainIsPlants() {

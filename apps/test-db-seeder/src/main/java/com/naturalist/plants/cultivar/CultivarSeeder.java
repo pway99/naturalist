@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds cultivars through the real RDBMS adapter (split-package with the rdbms module). */
 public final class CultivarSeeder {
 
-    private CultivarSeeder() {}
+    private CultivarSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<Cultivar> entities = database.getNamed(PlantCultivarTestEntitySource.class).entityStream().toList();

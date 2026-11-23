@@ -54,7 +54,7 @@ class RdbmsIsolationComplianceTest {
             noClasses()
                     .that().doNotHaveFullyQualifiedName(RUNTIME_GATE)
                     .should().dependOnClassesThat().resideInAnyPackage(
-                            "javax.sql..", "com.zaxxer.hikari..", "org.apache.ibatis..", "org.mybatis..")
+                    "javax.sql..", "com.zaxxer.hikari..", "org.apache.ibatis..", "org.mybatis..")
                     .because("no app-level test may open a database connection or build a mapper; "
                             + "this context has no DataSource at all")
                     .allowEmptyShould(true);

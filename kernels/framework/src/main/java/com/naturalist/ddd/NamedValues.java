@@ -60,12 +60,12 @@ public final class NamedValues {
     public static <T> @Nullable T read(Class<T> type, @Nullable String text) {
         MethodObserver methodObserver = observer.forMethod("read");
         methodObserver.arguments(i -> i
-                        .notNull(type, "type"))
+                .notNull(type, "type"))
                 .throwWhenInvalid();
         List<Method> factories = FACTORIES.get(type);
         methodObserver.state(i -> i
-                        .isTrue(!factories.isEmpty(), "factoryFound")
-                        .atMost(factories.size(), 1, "factoryUnique"))
+                .isTrue(!factories.isEmpty(), "factoryFound")
+                .atMost(factories.size(), 1, "factoryUnique"))
                 .throwWhenInvalid();
         if (text == null) {
             return null;

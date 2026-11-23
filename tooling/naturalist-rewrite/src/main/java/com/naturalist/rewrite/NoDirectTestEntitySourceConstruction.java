@@ -25,7 +25,7 @@ public class NoDirectTestEntitySourceConstruction extends Recipe {
     @Override
     public String getDescription() {
         return "Rewrites `new <X>TestEntitySource(db)` to `db.getNamed(<X>TestEntitySource.class)` "
-             + "so every source is registered in the shared NaturalistDatabase (ADR-001).";
+                + "so every source is registered in the shared NaturalistDatabase (ADR-001).";
     }
 
     @Override
@@ -47,7 +47,7 @@ public class NoDirectTestEntitySourceConstruction extends Recipe {
                 }
                 if (nc.getArguments().size() != 1) {
                     return SearchResult.found(nc,
-                        "unexpected TestEntitySource constructor arity; acquire via db.getNamed(...)");
+                            "unexpected TestEntitySource constructor arity; acquire via db.getNamed(...)");
                 }
                 Expression db = nc.getArguments().get(0);
                 String simpleName = type.getClassName(); // simple name for top-level type

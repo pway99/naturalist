@@ -60,8 +60,6 @@ public record PlantSpecies(
 ) implements NamedEntity<PlantSpeciesName> {
 
 
-
-
     /**
      * Whether this species is recorded as native to the given bioregion.
      */

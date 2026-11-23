@@ -37,9 +37,9 @@ class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
                            InsectRepository.FeatureAssignmentRepository assignmentRepository,
                            InsectAncestryResolver ancestryResolver) {
         observer.arguments("constructor", i -> i
-                        .notNull(featureRepository, "featureRepository")
-                        .notNull(assignmentRepository, "assignmentRepository")
-                        .notNull(ancestryResolver, "ancestryResolver"))
+                .notNull(featureRepository, "featureRepository")
+                .notNull(assignmentRepository, "assignmentRepository")
+                .notNull(ancestryResolver, "ancestryResolver"))
                 .throwWhenInvalid();
         this.featureRepository = featureRepository;
         this.assignmentRepository = assignmentRepository;
@@ -61,8 +61,8 @@ class InsectFeatureQueryImpl implements InsectQuery.FeatureQuery {
      */
     OrganismFeatureView<InsectRankName, InsectFeature> findByAncestry(InsectRankName subject, Set<InsectRankName> ancestry) {
         observer.arguments("findByAncestry", i -> i
-                        .identifier(subject, "subject")
-                        .observableCollection(ancestry, "ancestry"))
+                .identifier(subject, "subject")
+                .observableCollection(ancestry, "ancestry"))
                 .throwWhenInvalid();
 
         List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> assignments =

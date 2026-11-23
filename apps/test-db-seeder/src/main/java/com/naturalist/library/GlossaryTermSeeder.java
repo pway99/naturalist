@@ -15,7 +15,8 @@ import java.util.List;
  */
 public final class GlossaryTermSeeder {
 
-    private GlossaryTermSeeder() {}
+    private GlossaryTermSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<GlossaryTerm> terms = database.getNamed(GlossaryTermTestEntitySource.class).entityStream().toList();

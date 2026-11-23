@@ -44,7 +44,8 @@ class FglOptimumGoldenMasterTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired SoilProfileQuery query;
+    @Wired
+    SoilProfileQuery query;
 
     /**
      * Converts meq/100g of a cation to lbs/1000 ft². Empirically 0.91872, which is a soil mass of

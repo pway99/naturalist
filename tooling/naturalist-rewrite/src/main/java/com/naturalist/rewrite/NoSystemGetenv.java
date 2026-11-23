@@ -39,8 +39,8 @@ public class NoSystemGetenv extends Recipe {
     @Override
     public String getDescription() {
         return "System.getenv is allowed only in com.naturalist.secrets, where the environment source "
-             + "lives, and in the standing-test-database wiring RdbmsDataSource (a CI contract, not a "
-             + "deployed secret). Everything else resolves secrets through SecretProvider (ADR-028).";
+                + "lives, and in the standing-test-database wiring RdbmsDataSource (a CI contract, not a "
+                + "deployed secret). Everything else resolves secrets through SecretProvider (ADR-028).";
     }
 
     @Override

@@ -33,16 +33,17 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
                             CitationQuery citationQuery,
                             InsectAncestryResolver ancestryResolver) {
         observer.arguments("constructor", i -> i
-                        .notNull(citationAssociationQuery, "citationAssociationQuery")
-                        .notNull(citationQuery, "citationQuery")
-                        .notNull(ancestryResolver, "ancestryResolver"))
+                .notNull(citationAssociationQuery, "citationAssociationQuery")
+                .notNull(citationQuery, "citationQuery")
+                .notNull(ancestryResolver, "ancestryResolver"))
                 .throwWhenInvalid();
         this.citationAssociationQuery = citationAssociationQuery;
         this.citationQuery = citationQuery;
         this.ancestryResolver = ancestryResolver;
     }
 
-    record PendingCitation(CitationName citationName, InsectRankName attachedAt, String note) {}
+    record PendingCitation(CitationName citationName, InsectRankName attachedAt, String note) {
+    }
 
     @Override
     public InsectCitations findByRankName(InsectRankName rankName) {
@@ -59,8 +60,8 @@ class InsectCitationQueryImpl implements InsectQuery.CitationQuery {
      */
     InsectCitations findByAncestry(InsectRankName subject, Set<InsectRankName> ancestry) {
         observer.arguments("findByAncestry", i -> i
-                        .identifier(subject, "subject")
-                        .observableCollection(ancestry, "ancestry"))
+                .identifier(subject, "subject")
+                .observableCollection(ancestry, "ancestry"))
                 .throwWhenInvalid();
 
         // Resolve the whole ancestry's citation associations in ONE batched query rather than

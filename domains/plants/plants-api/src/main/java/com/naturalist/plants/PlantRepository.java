@@ -63,7 +63,7 @@ class PlantRepository {
 
     protected interface FeatureAssignmentRepository
             extends EntityRepository<PlantFeatureAssignmentId,
-                                     OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> {
+            OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> {
 
         List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> getByRankName(PlantRankName rankName);
 

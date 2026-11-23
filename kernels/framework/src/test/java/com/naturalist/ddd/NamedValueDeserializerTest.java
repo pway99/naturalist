@@ -177,7 +177,8 @@ class NamedValueDeserializerTest {
     @Test
     void mapKey_atTheRoot() throws Exception {
         Map<ThingId, Integer> byId = mapper.readValue("{\"%s\":1}".formatted(V7),
-                new com.fasterxml.jackson.core.type.TypeReference<Map<ThingId, Integer>>() { });
+                new com.fasterxml.jackson.core.type.TypeReference<Map<ThingId, Integer>>() {
+                });
 
         assertThat(byId).containsEntry(ThingId.of(UUID.fromString(V7)), 1);
     }

@@ -20,7 +20,7 @@ class DepictionQueryImpl
     @Override
     public DepictionCollection findByNameSet(Set<DepictionId> names) {
         observer().arguments("findByNameSet", i -> i
-                        .identifierSet(names, "names"))
+                .identifierSet(names, "names"))
                 .throwWhenInvalid();
 
         return DepictionCollection.of(repository().getByEntityNameSet(names));
@@ -29,7 +29,7 @@ class DepictionQueryImpl
     @Override
     public Optional<CompoundDepiction> getByCompoundName(CompoundName compoundName) {
         observer().arguments("getByCompoundName", i -> i
-                        .identifier(compoundName, "compoundName"))
+                .identifier(compoundName, "compoundName"))
                 .throwWhenInvalid();
 
         return repository().getByCompoundName(compoundName);

@@ -22,7 +22,8 @@ import javax.sql.DataSource;
  */
 final class InsectsSeeding {
 
-    private InsectsSeeding() {}
+    private InsectsSeeding() {
+    }
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/insects.sql");

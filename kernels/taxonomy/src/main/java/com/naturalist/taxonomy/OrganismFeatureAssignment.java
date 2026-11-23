@@ -29,7 +29,7 @@ public record OrganismFeatureAssignment<ID extends EntityId, FID extends EntityI
 ) implements Entity<ID> {
 
     public static <ID extends EntityId, FID extends EntityId, RANK extends RankName>
-    OrganismFeatureAssignment<ID, FID, RANK> of(ID id, FID featureId, RANK rankName, int ordinal) {
+            OrganismFeatureAssignment<ID, FID, RANK> of(ID id, FID featureId, RANK rankName, int ordinal) {
         return new OrganismFeatureAssignment<>(id, featureId, rankName, ordinal);
     }
 

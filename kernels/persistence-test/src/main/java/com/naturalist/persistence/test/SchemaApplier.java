@@ -10,7 +10,8 @@ import java.sql.Statement;
 /** Runs a `.sql` classpath resource. The seam a DDL generator or Flyway swaps in later. */
 public final class SchemaApplier {
 
-    private SchemaApplier() {}
+    private SchemaApplier() {
+    }
 
     public static void applyResource(Connection connection, String classpathResource) {
         String sql = read(classpathResource);

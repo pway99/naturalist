@@ -113,7 +113,7 @@ class CitationAssociationEntityRepositoryRdbms
         getBySubject.arguments(i -> i.valueObject(subject, "subject"))
                 .throwWhenInvalid();
         List<CitationAssociation> result = mapper.selectBySubject(
-                        subject.domain().value(), resolver.rankOf(subject), subject.name().value()).stream()
+                subject.domain().value(), resolver.rankOf(subject), subject.name().value()).stream()
                 .map(d -> d.toEntity(resolver)).toList();
         getBySubject.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

@@ -19,49 +19,49 @@ import java.util.List;
 interface ConceptMapper {
 
     String COLUMNS = """
-        id, name, title,
-        description_preschool, description_elementary, description_secondary, description_university
-        """;
+            id, name, title,
+            description_preschool, description_elementary, description_secondary, description_university
+            """;
 
     @Select("SELECT " + COLUMNS + " FROM concept WHERE name = #{name}")
     ConceptDbo selectByName(String name);
 
     @Select("""
-        <script>
-        SELECT id, name, title,
-               description_preschool, description_elementary, description_secondary, description_university
-        FROM concept WHERE name IN
-        <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
-        </script>
-        """)
+            <script>
+            SELECT id, name, title,
+                   description_preschool, description_elementary, description_secondary, description_university
+            FROM concept WHERE name IN
+            <foreach item='n' collection='names' open='(' separator=',' close=')'>#{n}</foreach>
+            </script>
+            """)
     List<ConceptDbo> selectByNameSet(@Param("names") Collection<String> names);
 
     @Select("SELECT " + COLUMNS + " FROM concept ORDER BY name LIMIT #{limit} OFFSET #{offset}")
     List<ConceptDbo> selectPage(@Param("limit") int limit, @Param("offset") int offset);
 
     @Select("""
-        SELECT count(*) FROM (
-            SELECT 1 FROM concept ORDER BY name OFFSET #{skip} LIMIT #{window}
-        ) t
-        """)
+            SELECT count(*) FROM (
+                SELECT 1 FROM concept ORDER BY name OFFSET #{skip} LIMIT #{window}
+            ) t
+            """)
     int countInWindow(@Param("skip") int skip, @Param("window") int window);
 
     @Insert("""
-        INSERT INTO concept (name, title,
-            description_preschool, description_elementary, description_secondary, description_university)
-        VALUES (#{name}, #{title},
-            #{descriptionPreschool}, #{descriptionElementary}, #{descriptionSecondary}, #{descriptionUniversity})
-        """)
+            INSERT INTO concept (name, title,
+                description_preschool, description_elementary, description_secondary, description_university)
+            VALUES (#{name}, #{title},
+                #{descriptionPreschool}, #{descriptionElementary}, #{descriptionSecondary}, #{descriptionUniversity})
+            """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(ConceptDbo dbo);
 
     @Update("""
-        UPDATE concept SET title = #{title},
-            description_preschool = #{descriptionPreschool},
-            description_elementary = #{descriptionElementary},
-            description_secondary = #{descriptionSecondary},
-            description_university = #{descriptionUniversity}
-        WHERE name = #{name}
-        """)
+            UPDATE concept SET title = #{title},
+                description_preschool = #{descriptionPreschool},
+                description_elementary = #{descriptionElementary},
+                description_secondary = #{descriptionSecondary},
+                description_university = #{descriptionUniversity}
+            WHERE name = #{name}
+            """)
     int updateByName(ConceptDbo dbo);
 }

@@ -36,10 +36,15 @@ public sealed interface PlantTaxonView extends ReadModel {
             return new SpeciesView(species, ImageCollection.empty());
         }
 
-        @Override public PlantSpeciesName name() { return species.name(); }
+        @Override
+        public PlantSpeciesName name() {
+            return species.name();
+        }
 
         /** The genus this species belongs to, exposed as a typed FK delegate. */
-        public PlantGenusName genusName() { return species.genusName(); }
+        public PlantGenusName genusName() {
+            return species.genusName();
+        }
 
         /** True iff this species's genus FK equals the given genus's name, OR the genus is null. */
         public boolean belongsToGenus(@Nullable GenusView genus) {
@@ -63,10 +68,15 @@ public sealed interface PlantTaxonView extends ReadModel {
             return new GenusView(genus, ImageCollection.empty());
         }
 
-        @Override public PlantGenusName name() { return genus.name(); }
+        @Override
+        public PlantGenusName name() {
+            return genus.name();
+        }
 
         /** The family this genus belongs to, exposed as a typed FK delegate. */
-        public PlantFamilyName familyName() { return genus.familyName(); }
+        public PlantFamilyName familyName() {
+            return genus.familyName();
+        }
 
         /** True iff this genus's family FK equals the given family's name, OR the family is null. */
         public boolean belongsToFamily(@Nullable FamilyView family) {
@@ -90,10 +100,15 @@ public sealed interface PlantTaxonView extends ReadModel {
             return new FamilyView(family, ImageCollection.empty());
         }
 
-        @Override public PlantFamilyName name() { return family.name(); }
+        @Override
+        public PlantFamilyName name() {
+            return family.name();
+        }
 
         /** The order this family belongs to, exposed as a typed FK delegate. */
-        public PlantOrderName orderName() { return family.orderName(); }
+        public PlantOrderName orderName() {
+            return family.orderName();
+        }
 
         /** True iff this family's order FK equals the given order's name, OR the order is null. */
         public boolean belongsToOrder(@Nullable OrderView order) {
@@ -117,7 +132,10 @@ public sealed interface PlantTaxonView extends ReadModel {
             return new OrderView(order, ImageCollection.empty());
         }
 
-        @Override public PlantOrderName name() { return order.name(); }
+        @Override
+        public PlantOrderName name() {
+            return order.name();
+        }
 
         @Override
         public Consumer<? extends Constraints> invariants() {

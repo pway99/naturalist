@@ -93,7 +93,7 @@ class PlantGenusCatalogDataTest {
         assertThat(genera())
                 .allSatisfy(g -> assertThat(g.family().value())
                         .as("genus '%s' carries family epithet '%s' but its parent "
-                                        + "'%s' says '%s'",
+                                + "'%s' says '%s'",
                                 g.name().value(), g.family().value(),
                                 g.familyName().value(), epithetBySlug.get(g.familyName().value()))
                         .isEqualTo(epithetBySlug.get(g.familyName().value())));

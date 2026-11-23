@@ -16,8 +16,10 @@ class ProductQueryImplTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired ProductRepository repository;
-    @Wired ProductQuery productQuery;
+    @Wired
+    ProductRepository repository;
+    @Wired
+    ProductQuery productQuery;
 
     @Test
     void findByNameSet_happyPath() {

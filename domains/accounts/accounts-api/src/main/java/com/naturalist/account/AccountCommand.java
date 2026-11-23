@@ -10,7 +10,8 @@ import java.util.Optional;
 public interface AccountCommand {
 
     /** The outcome of {@link #register}: the minted account handle, and the raw token to email. */
-    record Registration(AccountName account, String rawToken) {}
+    record Registration(AccountName account, String rawToken) {
+    }
 
     /**
      * Creates an unverified {@code BROWSE_ONLY}, {@code ACTIVE} account and mints its

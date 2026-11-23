@@ -17,7 +17,8 @@ class PlantsEntityRefResolverTest {
     @RegisterExtension
     NaturalistTestExtension nte = NaturalistTestExtension.create();
 
-    @Wired PlantsEntityRefResolver resolver;
+    @Wired
+    PlantsEntityRefResolver resolver;
 
     @Test
     void domainIsPlants() {

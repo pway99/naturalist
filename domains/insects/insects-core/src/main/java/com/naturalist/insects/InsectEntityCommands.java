@@ -29,14 +29,14 @@ final class InsectEntityCommands {
                          InsectCommand.FeatureCommand featureCommand,
                          InsectCommand.FeatureAssignmentCommand featureAssignmentCommand) {
         Observer.forClass(InsectEntityCommands.class).arguments("constructor", i -> i
-                        .notNull(speciesCommand, "speciesCommand")
-                        .notNull(imageCommand, "imageCommand")
-                        .notNull(observationCommand, "observationCommand")
-                        .notNull(orderCommand, "orderCommand")
-                        .notNull(familyCommand, "familyCommand")
-                        .notNull(genusCommand, "genusCommand")
-                        .notNull(featureCommand, "featureCommand")
-                        .notNull(featureAssignmentCommand, "featureAssignmentCommand"))
+                .notNull(speciesCommand, "speciesCommand")
+                .notNull(imageCommand, "imageCommand")
+                .notNull(observationCommand, "observationCommand")
+                .notNull(orderCommand, "orderCommand")
+                .notNull(familyCommand, "familyCommand")
+                .notNull(genusCommand, "genusCommand")
+                .notNull(featureCommand, "featureCommand")
+                .notNull(featureAssignmentCommand, "featureAssignmentCommand"))
                 .throwWhenInvalid();
         this.speciesCommand = speciesCommand;
         this.imageCommand = imageCommand;

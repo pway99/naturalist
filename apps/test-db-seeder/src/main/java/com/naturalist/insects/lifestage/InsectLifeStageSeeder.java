@@ -12,7 +12,8 @@ import java.util.List;
 /** Seeds insect life stages through the real RDBMS adapter (split-package with the rdbms module). */
 public final class InsectLifeStageSeeder {
 
-    private InsectLifeStageSeeder() {}
+    private InsectLifeStageSeeder() {
+    }
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
         List<LifeStage> entities = database.getNamed(InsectLifeStageTestEntitySource.class).entityStream().toList();

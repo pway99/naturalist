@@ -18,8 +18,8 @@ import java.util.function.Consumer;
  * characterised), distinct from the required non-empty {@code zones}.
  */
 @DboSchema(table = "insect_species_habitat_layer", primaryKey = "species_id,layer",
-           foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
-           entity = InsectSpeciesInfo.class)
+        foreignKeys = @Fk(columns = "species_id", references = "insect_species(id)"),
+        entity = InsectSpeciesInfo.class)
 final class InsectSpeciesHabitatLayerDbo implements Dbo {
     String speciesName;  // JOIN projection (read) / nested-select key (write); not a stored column
     String layer;

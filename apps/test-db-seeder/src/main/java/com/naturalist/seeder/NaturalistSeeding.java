@@ -11,7 +11,8 @@ import java.util.List;
 /** Seeds the naturalists domain: its schema, then naturalists. */
 final class NaturalistSeeding {
 
-    private NaturalistSeeding() {}
+    private NaturalistSeeding() {
+    }
 
     static void seed(DataSource dataSource, NaturalistDatabase database) {
         Seeding.applySchema(dataSource, "schema/naturalists.sql");

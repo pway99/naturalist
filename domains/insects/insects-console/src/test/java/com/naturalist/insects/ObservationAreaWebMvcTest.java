@@ -69,10 +69,10 @@ class ObservationAreaWebMvcTest {
     @Test
     void addImage_postedCell_reachesTheObservation() throws Exception {
         mockMvc.perform(multipart("/insects/battus-philenor/images")
-                        .file(photo(PLAIN_JPEG))
-                        .param("areaLat", "1092")
-                        .param("areaLon", "-2945")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo(PLAIN_JPEG))
+                .param("areaLat", "1092")
+                .param("areaLon", "-2945")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
 
@@ -84,8 +84,8 @@ class ObservationAreaWebMvcTest {
         Set<Path> before = storedFiles();
 
         mockMvc.perform(multipart("/insects/battus-philenor/images")
-                        .file(photo(PORTLAND_JPEG))
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo(PORTLAND_JPEG))
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
 
@@ -109,8 +109,8 @@ class ObservationAreaWebMvcTest {
     @Test
     void addImage_noGps_noCell_areaIsNull() throws Exception {
         mockMvc.perform(multipart("/insects/battus-philenor/images")
-                        .file(photo(PLAIN_JPEG))
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo(PLAIN_JPEG))
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
 
@@ -137,10 +137,10 @@ class ObservationAreaWebMvcTest {
         ObservationAreaWebMvcTest.RecordingIdentification identification = new RecordingIdentification();
 
         standalone(commandOver(identification)).perform(multipart("/insects/identify")
-                        .file(photo(PLAIN_JPEG))
-                        .param("areaLat", "1092")
-                        .param("areaLon", "-2945")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo(PLAIN_JPEG))
+                .param("areaLat", "1092")
+                .param("areaLon", "-2945")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/battus-philenor"));
 
@@ -152,8 +152,8 @@ class ObservationAreaWebMvcTest {
         ObservationAreaWebMvcTest.RecordingIdentification identification = new RecordingIdentification();
 
         standalone(commandOver(identification)).perform(multipart("/insects/identify")
-                        .file(photo(PORTLAND_JPEG))
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo(PORTLAND_JPEG))
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection());
 
         // The controller never reads the photo's EXIF: with nothing posted it claims no area, and the
@@ -167,10 +167,10 @@ class ObservationAreaWebMvcTest {
         ObservationAreaWebMvcTest.RecordingIdentification identification = new RecordingIdentification();
 
         standalone(commandOver(identification)).perform(multipart("/insects/identify")
-                        .file(photo(PLAIN_JPEG))
-                        .param("areaLat", "0")
-                        .param("areaLon", "4320")
-                        .requestAttr(CURRENT_NATURALIST, ME.value()))
+                .file(photo(PLAIN_JPEG))
+                .param("areaLat", "0")
+                .param("areaLon", "4320")
+                .requestAttr(CURRENT_NATURALIST, ME.value()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/insects/identify?error=area"));
 
@@ -239,12 +239,12 @@ class ObservationAreaWebMvcTest {
     private static MockMvc standalone(InsectCommand command) {
         LibraryTestContext library = LibraryTestContext.create(InsectsControllerTestConfig.DATABASE);
         return MockMvcBuilders.standaloneSetup(new InsectsController(
-                        InsectsControllerTestConfig.INSECTS.insectQuery(),
-                        InsectsControllerTestConfig.INSECTS.insectViewQuery(),
-                        command,
-                        library.cladeQuery(),
-                        library.glossaryTermQuery(),
-                        InsectsControllerTestConfig.IMAGE_STORE))
+                InsectsControllerTestConfig.INSECTS.insectQuery(),
+                InsectsControllerTestConfig.INSECTS.insectViewQuery(),
+                command,
+                library.cladeQuery(),
+                library.glossaryTermQuery(),
+                InsectsControllerTestConfig.IMAGE_STORE))
                 .build();
     }
 
