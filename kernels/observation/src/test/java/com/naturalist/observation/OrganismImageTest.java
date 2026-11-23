@@ -2,6 +2,7 @@ package com.naturalist.observation;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.naturalist.data.FileName;
@@ -45,7 +46,7 @@ class OrganismImageTest {
 
     @Test
     void serializesParentNameAsSelfDescribingObjectAndRoundtrips() throws Exception {
-        var img = new OrganismImage<FakeImageId, FakeObsId, FakeGenusName>(
+        OrganismImage<OrganismImageTest.FakeImageId, OrganismImageTest.FakeObsId, OrganismImageTest.FakeGenusName> img = new OrganismImage<FakeImageId, FakeObsId, FakeGenusName>(
                 FakeImageId.create(), new FakeGenusName("empoasca"),
                 Instant.parse("2026-04-16T00:00:00Z"), FileName.of("IMG_9047.HEIC"), null);
 
@@ -53,7 +54,7 @@ class OrganismImageTest {
         String json = mapper.writeValueAsString(img);
         assertThat(json).contains("\"rank\":\"GENUS\"").contains("\"value\":\"empoasca\"");
 
-        var type = mapper.getTypeFactory().constructParametricType(
+        JavaType type = mapper.getTypeFactory().constructParametricType(
                 OrganismImage.class, FakeImageId.class, FakeObsId.class, FakeGenusName.class);
         OrganismImage<FakeImageId, FakeObsId, FakeGenusName> decoded = mapper.readValue(json, type);
         assertThat(decoded.id()).isEqualTo(img.id());
@@ -63,7 +64,7 @@ class OrganismImageTest {
 
     @Test
     void nullObservationIdIsAllowed() {
-        var img = new OrganismImage<FakeImageId, FakeObsId, FakeGenusName>(
+        OrganismImage<OrganismImageTest.FakeImageId, OrganismImageTest.FakeObsId, OrganismImageTest.FakeGenusName> img = new OrganismImage<FakeImageId, FakeObsId, FakeGenusName>(
                 FakeImageId.create(), new FakeGenusName("empoasca"),
                 Instant.now(), FileName.of("a.heic"), null);
         assertThat(img.observationId()).isNull();

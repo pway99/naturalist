@@ -7,7 +7,12 @@ import com.naturalist.data.Pages;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Observer;
-import com.naturalist.plants.*;
+import com.naturalist.plants.PlantFamily;
+import com.naturalist.plants.PlantGenus;
+import com.naturalist.plants.PlantOrder;
+import com.naturalist.plants.PlantQuery;
+import com.naturalist.plants.PlantSpecies;
+import com.naturalist.plants.PlantsDomain;
 
 import java.util.List;
 import java.util.Map;
@@ -88,7 +93,7 @@ public class PlantsCatalogContribution implements CatalogContribution {
 
     @Override
     public Stream<SearchableEntity> searchableEntities() {
-        var allGenera = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage).toList();
+        List<PlantGenus> allGenera = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage).toList();
         return Stream.of(plantEntities(allGenera), orderEntities(), familyEntities(), genusEntities(allGenera))
                 .flatMap(s -> s);
     }

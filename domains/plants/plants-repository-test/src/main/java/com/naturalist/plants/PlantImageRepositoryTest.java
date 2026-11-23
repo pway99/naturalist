@@ -81,7 +81,7 @@ interface PlantImageRepositoryTest
 
     @Test
     default void getByParentName_returnsAllImagesForThatParent() {
-        var results = repository().getByParentName(
+        List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> results = repository().getByParentName(
                 TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
 
         assertThat(results).hasSizeGreaterThanOrEqualTo(2);
@@ -97,7 +97,7 @@ interface PlantImageRepositoryTest
     @Test
     default void getByParentName_parentWithNoImages_returnsEmpty() {
         // borago-officinalis is catalogued but carries no photographs.
-        var results = repository().getByParentName(
+        List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> results = repository().getByParentName(
                 TestPlantsIdentifiers.Plants.Borage.name);
 
         assertThat(results).isEmpty();
@@ -105,7 +105,7 @@ interface PlantImageRepositoryTest
 
     @Test
     default void getByParentName_unknownParent_returnsEmpty() {
-        var results = repository().getByParentName(TestPlantsIdentifiers.PlantGenera.NotFound.name);
+        List<OrganismImage<PlantImageId, PlantObservationId, PlantRankName>> results = repository().getByParentName(TestPlantsIdentifiers.PlantGenera.NotFound.name);
 
         assertThat(results).isEmpty();
     }

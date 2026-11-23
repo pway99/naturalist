@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
 
 import static com.naturalist.observation.test.ImageFixtures.app0Jfif;
@@ -57,7 +58,7 @@ class ImageUploadGpsTest {
 
     @Test
     void jpeg_bigEndianExif_readsNorthWest() {
-        var fix = ImageUpload.of(jpeg(app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68))).gps();
+        Optional<Coordinates> fix = ImageUpload.of(jpeg(app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68))).gps();
         assertThat(fix).isPresent();
         assertThat(fix.get().latitude()).isCloseTo(45.52, within(1e-6));
         assertThat(fix.get().longitude()).isCloseTo(-122.68, within(1e-6));
@@ -65,7 +66,7 @@ class ImageUploadGpsTest {
 
     @Test
     void jpeg_littleEndianExif_readsSouthEast() {
-        var fix = ImageUpload.of(jpeg(app1Exif(ByteOrder.LITTLE_ENDIAN, null, -33.87, 151.21))).gps();
+        Optional<Coordinates> fix = ImageUpload.of(jpeg(app1Exif(ByteOrder.LITTLE_ENDIAN, null, -33.87, 151.21))).gps();
         assertThat(fix).isPresent();
         assertThat(fix.get().latitude()).isCloseTo(-33.87, within(1e-6));
         assertThat(fix.get().longitude()).isCloseTo(151.21, within(1e-6));
@@ -114,7 +115,7 @@ class ImageUploadGpsTest {
     @Test
     void png_eXIfChunk_reads() {
         byte[] image = png(ihdr(), exif(tiff(ByteOrder.LITTLE_ENDIAN, 1, 45.52, -122.68)), idat(), iend());
-        var fix = ImageUpload.of(image).gps();
+        Optional<Coordinates> fix = ImageUpload.of(image).gps();
         assertThat(fix).isPresent();
         assertThat(fix.get().latitude()).isCloseTo(45.52, within(1e-6));
         assertThat(fix.get().longitude()).isCloseTo(-122.68, within(1e-6));
@@ -125,7 +126,7 @@ class ImageUploadGpsTest {
         // Against the PNG spec, some writers keep the JPEG Exif header in front of the TIFF block.
         byte[] headed = concat("Exif\0\0".getBytes(StandardCharsets.US_ASCII),
                 tiff(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68));
-        var fix = ImageUpload.of(png(ihdr(), exif(headed), idat(), iend())).gps();
+        Optional<Coordinates> fix = ImageUpload.of(png(ihdr(), exif(headed), idat(), iend())).gps();
         assertThat(fix).isPresent();
         assertThat(fix.get().latitude()).isCloseTo(45.52, within(1e-6));
         assertThat(fix.get().longitude()).isCloseTo(-122.68, within(1e-6));
@@ -134,7 +135,7 @@ class ImageUploadGpsTest {
 
     @Test
     void webp_exifChunk_reads() {
-        var fix = ImageUpload.of(webp(true, true)).gps();
+        Optional<Coordinates> fix = ImageUpload.of(webp(true, true)).gps();
         assertThat(fix).isPresent();
         assertThat(fix.get().latitude()).isCloseTo(ImageFixtures.PORTLAND.latitude(), within(1e-6));
         assertThat(fix.get().longitude()).isCloseTo(ImageFixtures.PORTLAND.longitude(), within(1e-6));
@@ -178,7 +179,7 @@ class ImageUploadGpsTest {
     @Test
     void jpeg_fillBytesBeforeExif_reads() {
         byte[] fill = {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-        var fix = ImageUpload.of(jpeg(app0Jfif(), fill, app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68))).gps();
+        Optional<Coordinates> fix = ImageUpload.of(jpeg(app0Jfif(), fill, app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68))).gps();
         assertThat(fix).isPresent();
         assertThat(fix.get().latitude()).isCloseTo(45.52, within(1e-6));
         assertThat(totalViolations()).isZero();
@@ -186,7 +187,7 @@ class ImageUploadGpsTest {
 
     @Test
     void jpeg_junkByteBeforeExif_reads_andObserved() {
-        var fix = ImageUpload.of(jpeg(app0Jfif(), new byte[]{0x00},
+        Optional<Coordinates> fix = ImageUpload.of(jpeg(app0Jfif(), new byte[]{0x00},
                 app1Exif(ByteOrder.BIG_ENDIAN, null, 45.52, -122.68))).gps();
         assertThat(fix).isPresent();
         assertThat(fix.get().longitude()).isCloseTo(-122.68, within(1e-6));
@@ -235,8 +236,8 @@ class ImageUploadGpsTest {
 
     @Test
     void orientation_readsTheExifTag() {
-        var tagged = ImageUpload.of(jpeg(app0Jfif(), app1Exif(ByteOrder.BIG_ENDIAN, 6, null, null)));
-        var plain = ImageUpload.of(jpeg(app0Jfif()));
+        ImageUpload tagged = ImageUpload.of(jpeg(app0Jfif(), app1Exif(ByteOrder.BIG_ENDIAN, 6, null, null)));
+        ImageUpload plain = ImageUpload.of(jpeg(app0Jfif()));
 
         assertThat(tagged.orientation()).contains(6);
         assertThat(plain.orientation()).isEmpty();

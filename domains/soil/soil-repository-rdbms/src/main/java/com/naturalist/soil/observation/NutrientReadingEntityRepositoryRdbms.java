@@ -91,7 +91,7 @@ class NutrientReadingEntityRepositoryRdbms
         MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
         getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        var result = mapper.selectByLabAnalysisId(labAnalysisId.value().toString()).stream()
+        List<NutrientReading> result = mapper.selectByLabAnalysisId(labAnalysisId.value().toString()).stream()
                 .map(NutrientReadingDbo::toEntity).toList();
         getByLabAnalysisId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
@@ -104,7 +104,7 @@ class NutrientReadingEntityRepositoryRdbms
                 .throwWhenInvalid();
         if (labAnalysisIds.isEmpty()) return List.of();
         List<String> ids = labAnalysisIds.stream().map(id -> id.value().toString()).toList();
-        var result = mapper.selectByLabAnalysisIds(ids).stream().map(NutrientReadingDbo::toEntity).toList();
+        List<NutrientReading> result = mapper.selectByLabAnalysisIds(ids).stream().map(NutrientReadingDbo::toEntity).toList();
         getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -114,7 +114,7 @@ class NutrientReadingEntityRepositoryRdbms
         MethodObserver getByNutrientName = observer().forMethod("getByNutrientName");
         getByNutrientName.arguments(i -> i.entityName(nutrientName, "nutrientName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByNutrientName(nutrientName.value()).stream()
+        List<NutrientReading> result = mapper.selectByNutrientName(nutrientName.value()).stream()
                 .map(NutrientReadingDbo::toEntity).toList();
         getByNutrientName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

@@ -26,7 +26,7 @@ class LabAnalysisInfoEntityRepositoryMock
         MethodObserver getBySoilProfileName = observer().forMethod("getBySoilProfileName");
         getBySoilProfileName.arguments(i -> i.entityName(soilProfileName, "soilProfileName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<LabAnalysisInfo> result = testEntitySource().entityStream()
                 .filter(analysis -> soilProfileName.equals(analysis.soilProfileName()))
                 .toList();
         getBySoilProfileName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

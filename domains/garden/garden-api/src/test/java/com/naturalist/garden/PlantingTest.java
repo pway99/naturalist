@@ -1,6 +1,7 @@
 package com.naturalist.garden;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.plants.PlantSpeciesName;
 import com.naturalist.plants.cultivar.CultivarName;
@@ -27,7 +28,7 @@ class PlantingTest {
 
     @Test
     void aFinishedPlantingHasNoViolations() {
-        var mo = observer.forMethod("aFinishedPlantingHasNoViolations");
+        MethodObserver mo = observer.forMethod("aFinishedPlantingHasNoViolations");
 
         InvariantObservation result = mo.observable(
                 tomato(PULLED, SubZoneName.of("backyard-south"), 12), "planting");
@@ -38,7 +39,7 @@ class PlantingTest {
     /** Still growing, whole bed, uncounted — every nullable at once. */
     @Test
     void aBareActivePlantingHasNoViolations() {
-        var mo = observer.forMethod("aBareActivePlantingHasNoViolations");
+        MethodObserver mo = observer.forMethod("aBareActivePlantingHasNoViolations");
 
         InvariantObservation result = mo.observable(tomato(null, null, null), "planting");
 
@@ -72,8 +73,8 @@ class PlantingTest {
 
     @Test
     void aPlantingRemovedBeforeItWasPlantedIsRejected() {
-        var mo = observer.forMethod("aPlantingRemovedBeforeItWasPlantedIsRejected");
-        var backwards = new Planting(PlantingId.create(), PlantSpeciesName.of("solanum-lycopersicum"),
+        MethodObserver mo = observer.forMethod("aPlantingRemovedBeforeItWasPlantedIsRejected");
+        Planting backwards = new Planting(PlantingId.create(), PlantSpeciesName.of("solanum-lycopersicum"),
                 null, ZoneName.of("backyard"), null, null, PULLED, PLANTED, null);
 
         InvariantObservation result = mo.observable(backwards, "planting");
@@ -84,7 +85,7 @@ class PlantingTest {
 
     @Test
     void aPlantingOfNoPlantsIsRejected() {
-        var mo = observer.forMethod("aPlantingOfNoPlantsIsRejected");
+        MethodObserver mo = observer.forMethod("aPlantingOfNoPlantsIsRejected");
 
         InvariantObservation result = mo.observable(tomato(null, null, 0), "planting");
 
@@ -108,8 +109,8 @@ class PlantingTest {
      */
     @Test
     void aPlantingNamingNeitherPlantNorVarietyIsRejected() {
-        var mo = observer.forMethod("aPlantingNamingNeitherPlantNorVarietyIsRejected");
-        var nothing = new Planting(PlantingId.create(), null, null, ZoneName.of("box-1"),
+        MethodObserver mo = observer.forMethod("aPlantingNamingNeitherPlantNorVarietyIsRejected");
+        Planting nothing = new Planting(PlantingId.create(), null, null, ZoneName.of("box-1"),
                 null, null, PLANTED, null, null);
 
         InvariantObservation result = mo.observable(nothing, "planting");
@@ -121,8 +122,8 @@ class PlantingTest {
     /** Knowing only the variety is enough — plants can resolve its species. */
     @Test
     void aPlantingNamingOnlyTheVarietyIsValid() {
-        var mo = observer.forMethod("aPlantingNamingOnlyTheVarietyIsValid");
-        var varietyOnly = new Planting(PlantingId.create(), null,
+        MethodObserver mo = observer.forMethod("aPlantingNamingOnlyTheVarietyIsValid");
+        Planting varietyOnly = new Planting(PlantingId.create(), null,
                 CultivarName.of("amish-paste"), ZoneName.of("backyard"), null, null,
                 PLANTED, null, null);
 

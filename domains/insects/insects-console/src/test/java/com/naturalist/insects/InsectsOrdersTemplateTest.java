@@ -5,7 +5,6 @@ import com.naturalist.spring.console.ConsoleSliceTemplates;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
-import com.naturalist.insects.*;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

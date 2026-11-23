@@ -78,7 +78,7 @@ class PlantTest {
 
     @Test
     void nullChildren_reportsViolation() {
-        var mo = observer.forMethod("nullChildren");
+        MethodObserver mo = observer.forMethod("nullChildren");
         Plant plant = Plant.empty().withChildren(null);
         assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".plant.children");
@@ -113,7 +113,7 @@ class PlantTest {
 
     @Test
     void nullCultivars_reportsViolation() {
-        var mo = observer.forMethod("nullCultivars");
+        MethodObserver mo = observer.forMethod("nullCultivars");
         Plant plant = Plant.empty().withCultivars(null);
         assertThat(mo.observable(plant, "plant").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".plant.cultivars");

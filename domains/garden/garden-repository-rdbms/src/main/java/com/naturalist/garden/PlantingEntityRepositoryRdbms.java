@@ -94,7 +94,7 @@ class PlantingEntityRepositoryRdbms
         MethodObserver getByZoneName = observer().forMethod("getByZoneName");
         getByZoneName.arguments(i -> i.identifier(zoneName, "zoneName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByZoneName(zoneName.value()).stream().map(PlantingDbo::toEntity).toList();
+        List<Planting> result = mapper.selectByZoneName(zoneName.value()).stream().map(PlantingDbo::toEntity).toList();
         getByZoneName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -104,7 +104,7 @@ class PlantingEntityRepositoryRdbms
         MethodObserver getBySubZoneName = observer().forMethod("getBySubZoneName");
         getBySubZoneName.arguments(i -> i.identifier(subZoneName, "subZoneName"))
                 .throwWhenInvalid();
-        var result = mapper.selectBySubZoneName(subZoneName.value()).stream().map(PlantingDbo::toEntity).toList();
+        List<Planting> result = mapper.selectBySubZoneName(subZoneName.value()).stream().map(PlantingDbo::toEntity).toList();
         getBySubZoneName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -114,7 +114,7 @@ class PlantingEntityRepositoryRdbms
         MethodObserver getByPlantName = observer().forMethod("getByPlantName");
         getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByPlantName(plantName.rank().name(), plantName.value()).stream()
+        List<Planting> result = mapper.selectByPlantName(plantName.rank().name(), plantName.value()).stream()
                 .map(PlantingDbo::toEntity).toList();
         getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

@@ -92,7 +92,7 @@ class LabAnalysisInfoEntityRepositoryRdbms
         MethodObserver getBySoilProfileName = observer().forMethod("getBySoilProfileName");
         getBySoilProfileName.arguments(i -> i.entityName(soilProfileName, "soilProfileName"))
                 .throwWhenInvalid();
-        var result = mapper.selectBySoilProfileName(soilProfileName.value()).stream()
+        List<LabAnalysisInfo> result = mapper.selectBySoilProfileName(soilProfileName.value()).stream()
                 .map(LabAnalysisInfoDbo::toEntity).toList();
         getBySoilProfileName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

@@ -17,8 +17,8 @@ class NoOpIdentificationBudgetTest {
 
     @Test
     void budgetExceededException_accessors_return_what_was_passed() {
-        var resetAt = Instant.parse("2026-08-25T00:00:00Z");
-        var exception = new BudgetExceededException(LimitKind.MONTHLY, resetAt);
+        Instant resetAt = Instant.parse("2026-08-25T00:00:00Z");
+        BudgetExceededException exception = new BudgetExceededException(LimitKind.MONTHLY, resetAt);
 
         assertThat(exception.limitKind()).isEqualTo(LimitKind.MONTHLY);
         assertThat(exception.resetAt()).isEqualTo(resetAt);

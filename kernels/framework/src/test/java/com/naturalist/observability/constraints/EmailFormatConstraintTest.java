@@ -1,5 +1,6 @@
 package com.naturalist.observability.constraints;
 
+import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
@@ -49,7 +50,7 @@ class EmailFormatConstraintTest {
     }
 
     @Test void constraintsBuilder_email_flagsInvalid() {
-        var observer = com.naturalist.observability.Observer.forClass(EmailFormatConstraintTest.class);
+        Observer observer = Observer.forClass(EmailFormatConstraintTest.class);
         assertThat(observer.arguments("t", i -> i.email("delia@example.org", "email")).violations()).isEmpty();
         assertThat(observer.arguments("t", i -> i.email("not-an-email", "email")).violations()).isNotEmpty();
     }

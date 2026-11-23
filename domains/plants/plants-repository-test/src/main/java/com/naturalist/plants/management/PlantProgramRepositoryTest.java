@@ -94,7 +94,7 @@ interface PlantProgramRepositoryTest
 
     @Test
     default void getByPlantName_returnsProgramsWithMatchingPlantName() {
-        var results = repository().getByPlantName(
+        List<PlantProgram> results = repository().getByPlantName(
                 TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
 
         assertThat(results)
@@ -105,7 +105,7 @@ interface PlantProgramRepositoryTest
 
     @Test
     default void getByPlantName_returnsEmptyForUnknownPlant() {
-        var results = repository().getByPlantName(TestPlantsIdentifiers.Plants.NotFound.name);
+        List<PlantProgram> results = repository().getByPlantName(TestPlantsIdentifiers.Plants.NotFound.name);
 
         assertThat(results).isEmpty();
     }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,11 +56,11 @@ public final class GlossaryLinker {
     }
 
     public static GlossaryLinker of(Iterable<GlossaryTerm> terms) {
-        var list = new ArrayList<Entry>();
-        for (var term : terms) {
+        ArrayList<GlossaryLinker.Entry> list = new ArrayList<Entry>();
+        for (GlossaryTerm term : terms) {
             if (StringUtils.isNotBlank(term.term())) {
-                var definition = term.definition() == null ? "" : term.definition();
-                var example = term.example() == null ? "" : term.example();
+                String definition = term.definition() == null ? "" : term.definition();
+                String example = term.example() == null ? "" : term.example();
                 list.add(new Entry(term.term().strip(), term.name().value(), definition, example));
             }
         }
@@ -69,7 +70,7 @@ public final class GlossaryLinker {
     }
 
     private static Pattern buildPattern(List<Entry> entries) {
-        var alternation = new StringBuilder();
+        StringBuilder alternation = new StringBuilder();
         for (int i = 0; i < entries.size(); i++) {
             if (i > 0) {
                 alternation.append('|');
@@ -92,9 +93,9 @@ public final class GlossaryLinker {
         if (pattern == null) {
             return HtmlUtils.htmlEscape(text);
         }
-        var out = new StringBuilder();
-        var linked = new HashSet<String>();
-        var matcher = pattern.matcher(text);
+        StringBuilder out = new StringBuilder();
+        HashSet<String> linked = new HashSet<String>();
+        Matcher matcher = pattern.matcher(text);
         int last = 0;
         while (matcher.find()) {
             Entry entry = lookup(matcher.group());
@@ -130,7 +131,7 @@ public final class GlossaryLinker {
     }
 
     private Entry lookup(String matchedText) {
-        for (var entry : entries) {
+        for (GlossaryLinker.Entry entry : entries) {
             if (entry.term().equalsIgnoreCase(matchedText)) {
                 return entry;
             }

@@ -22,10 +22,10 @@ public final class AccountRdbmsSeed {
                 dataSource, AccountMapper.class, EmailVerificationTokenMapper.class);
 
         try (SqlSession session = factory.openSession(false)) {
-            var accountRepo = new AccountEntityRepositoryRdbms(session.getMapper(AccountMapper.class));
+            AccountEntityRepositoryRdbms accountRepo = new AccountEntityRepositoryRdbms(session.getMapper(AccountMapper.class));
             accounts.forEach(accountRepo::insert);
 
-            var tokenRepo = new EmailVerificationTokenRepositoryRdbms(session.getMapper(EmailVerificationTokenMapper.class));
+            EmailVerificationTokenRepositoryRdbms tokenRepo = new EmailVerificationTokenRepositoryRdbms(session.getMapper(EmailVerificationTokenMapper.class));
             tokens.forEach(tokenRepo::insert);
 
             session.commit();

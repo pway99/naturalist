@@ -26,7 +26,7 @@ class NutrientReadingEntityRepositoryMock
         MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
         getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<NutrientReading> result = testEntitySource().entityStream()
                 .filter(reading -> labAnalysisId.equals(reading.labAnalysisId()))
                 .toList();
         getByLabAnalysisId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -38,7 +38,7 @@ class NutrientReadingEntityRepositoryMock
         MethodObserver getByLabAnalysisIds = observer().forMethod("getByLabAnalysisIds");
         getByLabAnalysisIds.arguments(i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<NutrientReading> result = testEntitySource().entityStream()
                 .filter(reading -> labAnalysisIds.contains(reading.labAnalysisId()))
                 .toList();
         getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -50,7 +50,7 @@ class NutrientReadingEntityRepositoryMock
         MethodObserver getByNutrientName = observer().forMethod("getByNutrientName");
         getByNutrientName.arguments(i -> i.entityName(nutrientName, "nutrientName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<NutrientReading> result = testEntitySource().entityStream()
                 .filter(reading -> nutrientName.equals(reading.nutrientName()))
                 .toList();
         getByNutrientName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

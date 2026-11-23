@@ -73,7 +73,7 @@ class ObservationNotesWebMvcTest {
 
     /** The endpoint counted the refusal once and the command's notes check never ran. */
     private void assertStoppedAtEdge(String endpoint, String commandCheck) {
-        var edge = violated("InsectsController." + endpoint + ".notes");
+        Counter edge = violated("InsectsController." + endpoint + ".notes");
         assertThat(edge).as("edge count").isNotNull();
         assertThat(edge.count()).as("edge count").isEqualTo(1.0);
         assertThat(violated(commandCheck)).as("the command was never called").isNull();
@@ -138,7 +138,7 @@ class ObservationNotesWebMvcTest {
 
     @Test
     void updateNotes_notesOverMaxLength_redirectsWithNotesError_andLeavesNotesUnchanged() throws Exception {
-        var id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
+        InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
                         .param("observationId", id.value().toString())
@@ -154,7 +154,7 @@ class ObservationNotesWebMvcTest {
 
     @Test
     void updateNotes_fromFamilyPage_redirectsBackWithNotesError_andThePageRenders() throws Exception {
-        var id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
+        InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
                         .param("observationId", id.value().toString())
@@ -187,7 +187,7 @@ class ObservationNotesWebMvcTest {
     void addImage_areaOffTheLattice_redirectsWithAreaError_beforeReadingTheImage() throws Exception {
         Set<Path> filesBefore = storedFiles();
         int observationsBefore = observationsOfSpecies();
-        var upload = new CountingPhoto();
+        ObservationNotesWebMvcTest.CountingPhoto upload = new CountingPhoto();
 
         mockMvc.perform(multipart("/insects/battus-philenor/images")
                         .file(upload)
@@ -205,7 +205,7 @@ class ObservationNotesWebMvcTest {
     @Test
     void identify_areaOffTheLattice_redirectsWithAreaError_beforeReadingTheImage() throws Exception {
         Set<Path> filesBefore = storedFiles();
-        var upload = new CountingPhoto();
+        ObservationNotesWebMvcTest.CountingPhoto upload = new CountingPhoto();
 
         mockMvc.perform(multipart("/insects/identify")
                         .file(upload)

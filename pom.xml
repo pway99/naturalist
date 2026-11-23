@@ -110,6 +110,9 @@
                     <activeRecipes>
                         <recipe>com.naturalist.EnforceArchitecture</recipe>
                     </activeRecipes>
+                    <activeStyles>
+                        <style>com.naturalist.Style</style>
+                    </activeStyles>
                     <failOnDryRunResults>true</failOnDryRunResults>
                 </configuration>
                 <dependencies>

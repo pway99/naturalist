@@ -27,7 +27,7 @@ class AccountRepositoryMock
         MethodObserver getByEmail = observer().forMethod("getByEmail");
         getByEmail.arguments(i -> i.email(email, "email"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        Optional<Account> result = testEntitySource().entityStream()
                 .filter(account -> email.equals(account.email()))
                 .findFirst();
         getByEmail.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);

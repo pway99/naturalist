@@ -101,7 +101,7 @@ interface InsectLifeStageEntityRepositoryTest
     default void getByParentName_returnsStagesForKnownParent() {
         InsectFamilyName tachinidae = TestInsectsIdentifiers.InsectFamily.Tachinidae.name;
 
-        var results = repository().getByParentName(tachinidae);
+        List<LifeStage> results = repository().getByParentName(tachinidae);
 
         assertThat(results)
                 .extracting(stage -> stage.name().value())
@@ -112,7 +112,7 @@ interface InsectLifeStageEntityRepositoryTest
     default void getByParentName_returnsEmptyForUnknownParent() {
         InsectFamilyName unknown = TestInsectsIdentifiers.InsectFamily.NotFound.name;
 
-        var results = repository().getByParentName(unknown);
+        List<LifeStage> results = repository().getByParentName(unknown);
 
         assertThat(results).isEmpty();
     }

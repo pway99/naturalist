@@ -107,7 +107,7 @@ interface PlantSpeciesRepositoryTest
     default void getByGenusName_returnsSpeciesWithMatchingGenusName() {
         // Trifolium carries two catalogued species — enough to distinguish a real
         // genus join from a single-entity lookup.
-        var results = repository().getByGenusName(TestPlantsIdentifiers.PlantGenera.Trifolium.name);
+        List<PlantSpecies> results = repository().getByGenusName(TestPlantsIdentifiers.PlantGenera.Trifolium.name);
 
         assertThat(results)
                 .extracting(PlantSpecies::name)
@@ -117,7 +117,7 @@ interface PlantSpeciesRepositoryTest
 
     @Test
     default void getByGenusName_returnsEmptyForUnknownGenus() {
-        var results = repository().getByGenusName(TestPlantsIdentifiers.PlantGenera.NotFound.name);
+        List<PlantSpecies> results = repository().getByGenusName(TestPlantsIdentifiers.PlantGenera.NotFound.name);
 
         assertThat(results).isEmpty();
     }
@@ -131,7 +131,7 @@ interface PlantSpeciesRepositoryTest
 
     @Test
     default void getByGenusNames_partialMatch_returnsOnlyKnownGenera() {
-        var results = repository().getByGenusNames(Set.of(
+        List<PlantSpecies> results = repository().getByGenusNames(Set.of(
                 TestPlantsIdentifiers.PlantGenera.Trifolium.name,
                 TestPlantsIdentifiers.PlantGenera.NotFound.name));
 

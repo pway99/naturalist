@@ -25,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -56,7 +59,7 @@ public class ChemistryController {
     String list(@RequestParam(defaultValue = "0") int page, Model model) {
         Page<Compound> compoundsPage = compoundQuery.compounds()
                 .findPage(PageRequest.console(Math.max(0, page)));
-        var depictableSlugs = compoundQuery.depictions().allDepictedCompounds().stream()
+        Set<String> depictableSlugs = compoundQuery.depictions().allDepictedCompounds().stream()
                 .map(CompoundName::value)
                 .collect(Collectors.toSet());
         model.addAttribute("compoundsPage", compoundsPage);
@@ -66,14 +69,14 @@ public class ChemistryController {
 
     @GetMapping("/{name}")
     String detail(@PathVariable String name, Model model) {
-        var compoundName = CompoundName.of(name);
-        var compound = compoundQuery.compounds().getByName(compoundName);
+        CompoundName compoundName = CompoundName.of(name);
+        Optional<Compound> compound = compoundQuery.compounds().getByName(compoundName);
         if (compound.isEmpty()) {
             return "redirect:/chemistry";
         }
-        var depiction = compoundQuery.depictions().getByCompoundName(compoundName);
-        var backReferences = BackReferencesViewModel.from(catalog.findReferencesTo(compoundName), linker);
-        var linkableElements = elementQuery
+        Optional<CompoundDepiction> depiction = compoundQuery.depictions().getByCompoundName(compoundName);
+        BackReferencesViewModel backReferences = BackReferencesViewModel.from(catalog.findReferencesTo(compoundName), linker);
+        Set<String> linkableElements = elementQuery
                 .findPage(PageRequest.first(PageRequest.MAX_PAGE_SIZE)).content().stream()
                 .map(e -> e.name().value())
                 .collect(Collectors.toSet());
@@ -104,7 +107,7 @@ public class ChemistryController {
 
     @GetMapping("/elements/{name}")
     String elementDetail(@PathVariable String name, Model model) {
-        var element = elementQuery.getByName(ElementName.of(name));
+        Optional<Element> element = elementQuery.getByName(ElementName.of(name));
         if (element.isEmpty()) {
             return "redirect:/chemistry/elements";
         }
@@ -121,12 +124,12 @@ public class ChemistryController {
 
     @GetMapping("/products/{name}")
     String productDetail(@PathVariable String name, Model model) {
-        var productName = ProductName.of(name);
-        var product = productQuery.getByName(productName);
+        ProductName productName = ProductName.of(name);
+        Optional<Product> product = productQuery.getByName(productName);
         if (product.isEmpty()) {
             return "redirect:/chemistry/products";
         }
-        var compounds = compoundQuery.compounds().findByNameSet(product.get().compounds()).stream()
+        List<Compound> compounds = compoundQuery.compounds().findByNameSet(product.get().compounds()).stream()
                 .sorted(Comparator.comparing((Compound c) -> c.name().value()))
                 .toList();
         model.addAttribute("product", product.get());

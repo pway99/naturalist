@@ -2,6 +2,8 @@ package com.naturalist.clades;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CladeCatalogTest {
@@ -31,8 +33,8 @@ class CladeCatalogTest {
 
     @Test
     void childrenAreSortedByDisplayName() {
-        var children = CladeCatalog.childrenOf(new Insecta());
-        var sorted = children.stream().map(Clade::displayName).sorted().toList();
+        List<Clade> children = CladeCatalog.childrenOf(new Insecta());
+        List<String> sorted = children.stream().map(Clade::displayName).sorted().toList();
         assertThat(children.stream().map(Clade::displayName).toList()).isEqualTo(sorted);
     }
 }

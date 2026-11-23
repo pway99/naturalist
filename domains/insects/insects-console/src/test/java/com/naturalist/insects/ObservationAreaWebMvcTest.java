@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
@@ -133,7 +134,7 @@ class ObservationAreaWebMvcTest {
 
     @Test
     void identify_passesThePostedCellToTheCommand() throws Exception {
-        var identification = new RecordingIdentification();
+        ObservationAreaWebMvcTest.RecordingIdentification identification = new RecordingIdentification();
 
         standalone(commandOver(identification)).perform(multipart("/insects/identify")
                         .file(photo(PLAIN_JPEG))
@@ -148,7 +149,7 @@ class ObservationAreaWebMvcTest {
 
     @Test
     void identify_noCellPosted_handsTheCommandNull() throws Exception {
-        var identification = new RecordingIdentification();
+        ObservationAreaWebMvcTest.RecordingIdentification identification = new RecordingIdentification();
 
         standalone(commandOver(identification)).perform(multipart("/insects/identify")
                         .file(photo(PORTLAND_JPEG))
@@ -163,7 +164,7 @@ class ObservationAreaWebMvcTest {
 
     @Test
     void identify_unreadableCell_redirectsWithAreaError_andNeverReachesTheCommand() throws Exception {
-        var identification = new RecordingIdentification();
+        ObservationAreaWebMvcTest.RecordingIdentification identification = new RecordingIdentification();
 
         standalone(commandOver(identification)).perform(multipart("/insects/identify")
                         .file(photo(PLAIN_JPEG))
@@ -187,7 +188,7 @@ class ObservationAreaWebMvcTest {
         Set<Path> filesBefore = storedFiles();
         int observationsBefore = observationsOfSpecies().size();
 
-        var request = multipart("/insects/battus-philenor/images")
+        MockMultipartHttpServletRequestBuilder request = multipart("/insects/battus-philenor/images")
                 .file(photo(PLAIN_JPEG))
                 .requestAttr(CURRENT_NATURALIST, ME.value());
         if (areaLat != null) {

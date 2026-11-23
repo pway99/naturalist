@@ -50,7 +50,7 @@ public final class SmtpEmailSender implements EmailSender {
     public void send(EmailMessage message) {
         MethodObserver send = observer.forMethod("send");
         send.arguments(i -> i.valueObject(message, "message")).throwWhenInvalid();
-        var mail = new SimpleMailMessage();
+        SimpleMailMessage mail = new SimpleMailMessage();
         mail.setFrom(fromAddress);
         mail.setTo(message.to().value());
         mail.setSubject(message.subject());

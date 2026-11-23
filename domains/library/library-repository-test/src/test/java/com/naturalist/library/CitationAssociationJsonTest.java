@@ -6,6 +6,7 @@ import com.naturalist.insects.InsectFamilyName;
 import com.naturalist.insects.InsectsDomain;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,13 +18,13 @@ class CitationAssociationJsonTest {
 
     @Test
     void fromEntityFlattensTheSubjectRef() {
-        var association = new CitationAssociation(
+        CitationAssociation association = new CitationAssociation(
                 CitationAssociationId.of(UUID.fromString("019f0001-a001-7001-8001-a00000000009")),
                 CitationName.of("ref-chrysomelidae"),
                 new EntityRef(new InsectsDomain(), InsectFamilyName.of("chrysomelidae")),
                 "Identified via vision");
 
-        var json = CitationAssociationJson.fromEntity(association, resolver);
+        CitationAssociationJson json = CitationAssociationJson.fromEntity(association, resolver);
 
         assertThat(json.citationName()).isEqualTo("ref-chrysomelidae");
         assertThat(json.subjectDomain()).isEqualTo("insects");
@@ -34,20 +35,20 @@ class CitationAssociationJsonTest {
 
     @Test
     void toEntityRebuildsTheTypedSubjectRef() {
-        var original = new CitationAssociation(
+        CitationAssociation original = new CitationAssociation(
                 CitationAssociationId.of(UUID.fromString("019f0001-a001-7001-8001-a00000000009")),
                 CitationName.of("ref-chrysomelidae"),
                 new EntityRef(new InsectsDomain(), InsectFamilyName.of("chrysomelidae")),
                 "Identified via vision");
 
-        var roundTripped = CitationAssociationJson.fromEntity(original, resolver).toEntity(resolver);
+        CitationAssociation roundTripped = CitationAssociationJson.fromEntity(original, resolver).toEntity(resolver);
 
         assertThat(roundTripped).isEqualTo(original);
     }
 
     @Test
     void parseAllReadsTheCatalogFileShape() {
-        var json = """
+        String json = """
                 [ {
                   "id" : "019f0001-a001-7001-8001-a00000000001",
                   "citationName" : "eol-lepidoptera-747",
@@ -58,7 +59,7 @@ class CitationAssociationJsonTest {
                 } ]
                 """;
 
-        var entities = CitationAssociationJson.parseAll(json, resolver);
+        List<CitationAssociation> entities = CitationAssociationJson.parseAll(json, resolver);
 
         assertThat(entities).hasSize(1);
         assertThat(entities.getFirst().citationName().value()).isEqualTo("eol-lepidoptera-747");
@@ -72,7 +73,7 @@ class CitationAssociationJsonTest {
      */
     @Test
     void parseAllRejectsASubjectDomainTheResolverDoesNotKnow() {
-        var json = """
+        String json = """
                 [ {
                   "id" : "019f0001-a001-7001-8001-a00000000002",
                   "citationName" : "ref-aristolochia",

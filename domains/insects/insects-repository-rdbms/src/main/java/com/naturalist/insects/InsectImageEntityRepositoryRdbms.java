@@ -96,7 +96,7 @@ class InsectImageEntityRepositoryRdbms
         MethodObserver getByParentName = observer().forMethod("getByParentName");
         getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByParentName(parentName.rank().name(), parentName.value()).stream()
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> result = mapper.selectByParentName(parentName.rank().name(), parentName.value()).stream()
                 .map(InsectImageDbo::toEntity).toList();
         getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
@@ -112,7 +112,7 @@ class InsectImageEntityRepositoryRdbms
         List<InsectRankKey> keys = parentNames.stream()
                 .map(p -> new InsectRankKey(p.rank().name(), p.value()))
                 .toList();
-        var result = mapper.selectByParentNames(keys).stream().map(InsectImageDbo::toEntity).toList();
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> result = mapper.selectByParentNames(keys).stream().map(InsectImageDbo::toEntity).toList();
         getByParentNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

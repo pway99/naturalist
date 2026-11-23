@@ -28,7 +28,7 @@ class ReportedRecommendationEntityRepositoryMock
         MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
         getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<ReportedRecommendation> result = testEntitySource().entityStream()
                 .filter(recommendation -> labAnalysisId.equals(recommendation.labAnalysisId()))
                 .toList();
         getByLabAnalysisId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -40,7 +40,7 @@ class ReportedRecommendationEntityRepositoryMock
         MethodObserver getByLabAnalysisIds = observer().forMethod("getByLabAnalysisIds");
         getByLabAnalysisIds.arguments(i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<ReportedRecommendation> result = testEntitySource().entityStream()
                 .filter(recommendation -> labAnalysisIds.contains(recommendation.labAnalysisId()))
                 .toList();
         getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -52,7 +52,7 @@ class ReportedRecommendationEntityRepositoryMock
         MethodObserver getByInputName = observer().forMethod("getByInputName");
         getByInputName.arguments(i -> i.entityName(inputName, "inputName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<ReportedRecommendation> result = testEntitySource().entityStream()
                 .filter(recommendation -> inputName.equals(recommendation.inputName()))
                 .toList();
         getByInputName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

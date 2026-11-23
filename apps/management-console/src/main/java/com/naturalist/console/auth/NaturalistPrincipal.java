@@ -35,7 +35,7 @@ public final class NaturalistPrincipal implements UserDetails {
         this.email = email;
         this.passwordHash = passwordHash;
         this.accountNonLocked = accountNonLocked;
-        var auths = new ArrayList<GrantedAuthority>();
+        ArrayList<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
         auths.add(new SimpleGrantedAuthority("ROLE_NATURALIST"));
         if (hasVision) auths.add(new SimpleGrantedAuthority("VISION"));
         this.authorities = List.copyOf(auths);

@@ -57,7 +57,7 @@ class InsectFeatureAssignmentEntityRepositoryRdbms
         int pageSize = request.pageSize();
         List<InsectFeatureAssignmentDbo> rows = mapper.selectPage(pageSize + 1, request.offset());
         boolean immediateMore = rows.size() > pageSize;
-        var content = rows.stream().limit(pageSize).map(InsectFeatureAssignmentDbo::toEntity).toList();
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> content = rows.stream().limit(pageSize).map(InsectFeatureAssignmentDbo::toEntity).toList();
 
         int pagesAheadKnown = 0;
         boolean moreBeyondLookahead = immediateMore;
@@ -103,7 +103,7 @@ class InsectFeatureAssignmentEntityRepositoryRdbms
         MethodObserver getByRankName = observer().forMethod("getByRankName");
         getByRankName.arguments(i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByRank(rankName.rank().name(), rankName.value()).stream()
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> result = mapper.selectByRank(rankName.rank().name(), rankName.value()).stream()
                 .map(InsectFeatureAssignmentDbo::toEntity).toList();
         getByRankName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
@@ -119,7 +119,7 @@ class InsectFeatureAssignmentEntityRepositoryRdbms
         List<InsectRankKey> keys = rankNames.stream()
                 .map(r -> new InsectRankKey(r.rank().name(), r.value()))
                 .toList();
-        var result = mapper.selectByRankKeys(keys).stream()
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> result = mapper.selectByRankKeys(keys).stream()
                 .map(InsectFeatureAssignmentDbo::toEntity).toList();
         getByRankNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
@@ -131,7 +131,7 @@ class InsectFeatureAssignmentEntityRepositoryRdbms
         MethodObserver getByFeatureId = observer().forMethod("getByFeatureId");
         getByFeatureId.arguments(i -> i.entityId(featureId, "featureId"))
                 .throwWhenInvalid();
-        var result = mapper.selectByFeatureId(featureId.value().toString()).stream()
+        List<OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName>> result = mapper.selectByFeatureId(featureId.value().toString()).stream()
                 .map(InsectFeatureAssignmentDbo::toEntity).toList();
         getByFeatureId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

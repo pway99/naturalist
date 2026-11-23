@@ -42,14 +42,14 @@ class InsectFamilyInfoTest {
 
     @Test
     void displayName_prefersAlphabeticallyFirstCommonName() {
-        var rank = familyWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
+        InsectFamilyInfo rank = familyWith(Set.of(CommonName.of("Zebra Swallowtail"), CommonName.of("Pipevine Swallowtail")));
 
         assertThat(rank.displayName()).isEqualTo("Pipevine Swallowtail");
     }
 
     @Test
     void displayName_fallsBackToScientificName() {
-        var rank = familyWith(Set.of());
+        InsectFamilyInfo rank = familyWith(Set.of());
 
         assertThat(rank.displayName()).isEqualTo("Papilionidae");
     }

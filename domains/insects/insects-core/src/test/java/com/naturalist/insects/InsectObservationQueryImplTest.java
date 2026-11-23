@@ -17,7 +17,7 @@ class InsectObservationQueryImplTest {
 
     @Test
     void forNaturalist_returnsOnlyThatNaturalistsObservations() {
-        var patrick = query.forNaturalist(NaturalistName.of("patrick-way"));
+        InsectEntityCollections.ObservationCollection patrick = query.forNaturalist(NaturalistName.of("patrick-way"));
         assertThat(patrick.isEmpty()).isFalse();
         assertThat(patrick.stream()).allMatch(o ->
                 o.observedBy().equals(NaturalistName.of("patrick-way")));
@@ -30,8 +30,8 @@ class InsectObservationQueryImplTest {
 
     @Test
     void forNaturalistAndSubjects_restrictsToGivenRanks() {
-        var battus = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
-        var result = query.forNaturalistAndSubjects(NaturalistName.of("patrick-way"), java.util.Set.of(battus));
+        InsectSpeciesName battus = TestInsectsIdentifiers.InsectSpecies.BattusPhilenor.name;
+        InsectEntityCollections.ObservationCollection result = query.forNaturalistAndSubjects(NaturalistName.of("patrick-way"), java.util.Set.of(battus));
         assertThat(result.isEmpty()).isFalse();
         assertThat(result.stream()).allMatch(o -> o.subject().equals(battus)
                 && o.observedBy().equals(NaturalistName.of("patrick-way")));

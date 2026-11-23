@@ -1,6 +1,7 @@
 package com.naturalist.library;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinealRank;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,8 @@ class CladeViewTest {
 
     @Test
     void validViewPassesAllInvariants() {
-        var mo = observer.forMethod("validViewPassesAllInvariants");
-        var view = new CladeView(
+        MethodObserver mo = observer.forMethod("validViewPassesAllInvariants");
+        CladeView view = new CladeView(
                 new CladeStep("lepidoptera", "Lepidoptera", Optional.of(LinealRank.ORDER)),
                 List.of(
                         new CladeStep("eukaryota", "Eukaryota", Optional.empty()),
@@ -32,8 +33,8 @@ class CladeViewTest {
 
     @Test
     void nullComponentsProduceExpectedViolations() {
-        var mo = observer.forMethod("nullComponentsProduceExpectedViolations");
-        var view = new CladeView(null, null, null);
+        MethodObserver mo = observer.forMethod("nullComponentsProduceExpectedViolations");
+        CladeView view = new CladeView(null, null, null);
 
         InvariantObservation result = mo.observable(view, "view");
 

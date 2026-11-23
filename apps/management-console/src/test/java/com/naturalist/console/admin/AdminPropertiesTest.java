@@ -50,7 +50,7 @@ class AdminPropertiesTest {
 
     @Test
     void acceptsValidCredentials() {
-        var props = new AdminProperties("u", "p");
+        AdminProperties props = new AdminProperties("u", "p");
         assertThat(props.username()).isEqualTo("u");
         assertThat(props.password()).isEqualTo("p");
     }

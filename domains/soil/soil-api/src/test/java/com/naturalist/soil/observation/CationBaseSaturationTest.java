@@ -1,6 +1,7 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +16,8 @@ class CationBaseSaturationTest {
     /** Box 1 (CH 2671853-001) — a real, well-formed base-saturation profile. */
     @Test
     void validSaturationHasNoViolations() {
-        var mo = observer.forMethod("validSaturationHasNoViolations");
-        var saturation = box1();
+        MethodObserver mo = observer.forMethod("validSaturationHasNoViolations");
+        CationBaseSaturation saturation = box1();
 
         InvariantObservation result = mo.observable(saturation, "saturation");
 
@@ -30,7 +31,7 @@ class CationBaseSaturationTest {
      */
     @Test
     void censoredHydrogenMakesTheSaturationSumARange() {
-        var saturation = box1();
+        CationBaseSaturation saturation = box1();
 
         assertThat(saturation.hasExactSaturationSum()).isFalse();
         assertThat(saturation.saturationSumUpperBound()).isEqualByComparingTo("100.998");
@@ -40,7 +41,7 @@ class CationBaseSaturationTest {
     /** Measured hydrogen collapses the range to a point — the distinction Phase 3 is about. */
     @Test
     void measuredHydrogenGivesAnExactSaturationSum() {
-        var saturation = new CationBaseSaturation(
+        CationBaseSaturation saturation = new CationBaseSaturation(
                 new BigDecimal("74.6"),
                 new BigDecimal("22.9"),
                 new BigDecimal("2.09"),
@@ -55,8 +56,8 @@ class CationBaseSaturationTest {
 
     @Test
     void nullComponentsProduceOneViolationPerField() {
-        var mo = observer.forMethod("nullComponentsProduceOneViolationPerField");
-        var saturation = new CationBaseSaturation(null, null, null, null, null, false);
+        MethodObserver mo = observer.forMethod("nullComponentsProduceOneViolationPerField");
+        CationBaseSaturation saturation = new CationBaseSaturation(null, null, null, null, null, false);
 
         InvariantObservation result = mo.observable(saturation, "saturation");
 
@@ -71,8 +72,8 @@ class CationBaseSaturationTest {
 
     @Test
     void percentageAboveOneHundredIsRejected() {
-        var mo = observer.forMethod("percentageAboveOneHundredIsRejected");
-        var saturation = new CationBaseSaturation(
+        MethodObserver mo = observer.forMethod("percentageAboveOneHundredIsRejected");
+        CationBaseSaturation saturation = new CationBaseSaturation(
                 new BigDecimal("150.0"),
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,

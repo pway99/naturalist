@@ -5,6 +5,7 @@ import com.naturalist.ddd.Named;
 import com.naturalist.exception.EntityNotFoundException;
 import com.naturalist.exception.InvariantViolationException;
 import com.naturalist.exception.PrimaryKeyConstraintException;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -110,7 +111,7 @@ public interface EntityCommandContractTest<
         E persisted = byName.get();
         assertEntityEquals(persisted, entity);
 
-        var mo = observer.forMethod("insert_newEntity_isRetrievableByName");
+        MethodObserver mo = observer.forMethod("insert_newEntity_isRetrievableByName");
         assertThat(mo.namedEntity(persisted, "persisted").violations()).isEmpty();
     }
 
@@ -141,7 +142,7 @@ public interface EntityCommandContractTest<
         assertThat(persisted.key()).isEqualTo(original.key());
         assertEntityEquals(persisted, modified);
 
-        var mo = observer.forMethod("update_existingEntity_isRetrievableWithNewValues");
+        MethodObserver mo = observer.forMethod("update_existingEntity_isRetrievableWithNewValues");
         assertThat(mo.namedEntity(persisted, "persisted").violations()).isEmpty();
     }
 }

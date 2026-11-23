@@ -1,6 +1,7 @@
 package com.naturalist.insects;
 
 import com.naturalist.observation.test.ImageFixtures;
+import com.naturalist.data.FileName;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.observation.ImageUpload;
@@ -12,6 +13,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.UncheckedIOException;
@@ -100,7 +103,7 @@ class InsectsCatalogWebMvcTest {
 
     @Test
     void addImage_redirectsToDetail() throws Exception {
-        var file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
+        MockMultipartFile file = new MockMultipartFile("image", "test.jpg", "image/jpeg", TINY_JPEG);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
@@ -109,7 +112,7 @@ class InsectsCatalogWebMvcTest {
 
     @Test
     void addImage_rejectsUnsupportedFormat() throws Exception {
-        var file = new MockMultipartFile("image", "photo.heic", "image/heic", TINY_HEIC);
+        MockMultipartFile file = new MockMultipartFile("image", "photo.heic", "image/heic", TINY_HEIC);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
@@ -125,7 +128,7 @@ class InsectsCatalogWebMvcTest {
 
     @Test
     void image_servesStoredUpload() throws Exception {
-        var name = InsectsControllerTestConfig.IMAGE_STORE.store("insects", ImageUpload.of(TINY_JPEG));
+        FileName name = InsectsControllerTestConfig.IMAGE_STORE.store("insects", ImageUpload.of(TINY_JPEG));
         mockMvc.perform(get("/insects/images/" + name.value()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("image/jpeg"))
@@ -142,7 +145,7 @@ class InsectsCatalogWebMvcTest {
 
     @Test
     void identify_rejectsUnsupportedFormat() throws Exception {
-        var file = new MockMultipartFile("image", "photo.heic", "image/heic", TINY_HEIC);
+        MockMultipartFile file = new MockMultipartFile("image", "photo.heic", "image/heic", TINY_HEIC);
         mockMvc.perform(multipart("/insects/identify").file(file)
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
@@ -154,7 +157,7 @@ class InsectsCatalogWebMvcTest {
         mockMvc.perform(post("/insects/battus-philenor/observe").param("notes", "original")
                         .requestAttr(CURRENT_NATURALIST, "pat-way"))
                 .andExpect(status().is3xxRedirection());
-        var id = InsectsControllerTestConfig.INSECTS.insectQuery().observations()
+        InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectQuery().observations()
                 .forNaturalist(NaturalistName.of("pat-way")).stream().findFirst().orElseThrow().id();
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
@@ -173,7 +176,7 @@ class InsectsCatalogWebMvcTest {
         mockMvc.perform(post("/insects/battus-philenor/observe").param("notes", "original")
                         .requestAttr(CURRENT_NATURALIST, "pat-way"))
                 .andExpect(status().is3xxRedirection());
-        var id = InsectsControllerTestConfig.INSECTS.insectQuery().observations()
+        InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectQuery().observations()
                 .forNaturalist(NaturalistName.of("pat-way")).stream().findFirst().orElseThrow().id();
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
@@ -188,11 +191,11 @@ class InsectsCatalogWebMvcTest {
 
     @Test
     void addImage_rejectsOversize() throws Exception {
-        var oversize = new byte[ImageUpload.MAX_BYTES + 1];
+        byte[] oversize = new byte[ImageUpload.MAX_BYTES + 1];
         oversize[0] = (byte) 0xFF;
         oversize[1] = (byte) 0xD8;
         oversize[2] = (byte) 0xFF;
-        var file = new MockMultipartFile("image", "huge.jpg", "image/jpeg", oversize);
+        MockMultipartFile file = new MockMultipartFile("image", "huge.jpg", "image/jpeg", oversize);
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
                 .andExpect(status().is3xxRedirection())
@@ -202,7 +205,7 @@ class InsectsCatalogWebMvcTest {
     @Test
     void identify_redirectsWithErrorImage_whenThePhotoIsUnstorable() throws Exception {
         long storedBefore = storedFiles();
-        var file = new MockMultipartFile("image", "bomb.png", "image/png", pixelBomb());
+        MockMultipartFile file = new MockMultipartFile("image", "bomb.png", "image/png", pixelBomb());
 
         mockMvc.perform(multipart("/insects/identify").file(file)
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
@@ -215,7 +218,7 @@ class InsectsCatalogWebMvcTest {
     @Test
     void addImage_redirectsWithErrorImage_whenThePhotoIsUnstorable() throws Exception {
         long storedBefore = storedFiles();
-        var file = new MockMultipartFile("image", "bomb.png", "image/png", pixelBomb());
+        MockMultipartFile file = new MockMultipartFile("image", "bomb.png", "image/png", pixelBomb());
 
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
@@ -233,7 +236,7 @@ class InsectsCatalogWebMvcTest {
     }
 
     private static long storedFiles() throws IOException {
-        try (var walk = Files.walk(InsectsControllerTestConfig.IMAGE_ROOT)) {
+        try (Stream<Path> walk = Files.walk(InsectsControllerTestConfig.IMAGE_ROOT)) {
             return walk.filter(Files::isRegularFile).count();
         }
     }
@@ -246,8 +249,8 @@ class InsectsCatalogWebMvcTest {
     }
 
     private static byte[] largeJpeg() {
-        var image = new BufferedImage(2000, 1500, BufferedImage.TYPE_INT_RGB);
-        var encoded = new ByteArrayOutputStream();
+        BufferedImage image = new BufferedImage(2000, 1500, BufferedImage.TYPE_INT_RGB);
+        ByteArrayOutputStream encoded = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "jpg", encoded);
         } catch (IOException e) {
@@ -258,13 +261,13 @@ class InsectsCatalogWebMvcTest {
 
     @Test
     void tile_servesTheStoredTile() throws Exception {
-        var name = InsectsControllerTestConfig.IMAGE_STORE.store("insects", ImageUpload.of(largeJpeg()));
+        FileName name = InsectsControllerTestConfig.IMAGE_STORE.store("insects", ImageUpload.of(largeJpeg()));
         byte[] body = mockMvc.perform(get("/insects/images/tile/" + name.value()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("image/jpeg"))
                 .andExpect(header().string("Cache-Control", containsString("immutable")))
                 .andReturn().getResponse().getContentAsByteArray();
-        var tile = ImageIO.read(new ByteArrayInputStream(body));
+        BufferedImage tile = ImageIO.read(new ByteArrayInputStream(body));
         assertThat(tile.getWidth()).isEqualTo(640);
         assertThat(tile.getHeight()).isEqualTo(480);
     }
@@ -300,7 +303,7 @@ class InsectsCatalogWebMvcTest {
     @Test
     void identify_redirectsWithErrorImage_whenThePhotoBodyDoesNotDecode() throws Exception {
         long storedBefore = storedFiles();
-        var file = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
+        MockMultipartFile file = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
 
         mockMvc.perform(multipart("/insects/identify").file(file)
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))
@@ -314,7 +317,7 @@ class InsectsCatalogWebMvcTest {
     @Test
     void addImage_redirectsWithErrorImage_whenThePhotoBodyDoesNotDecode() throws Exception {
         long storedBefore = storedFiles();
-        var file = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
+        MockMultipartFile file = new MockMultipartFile("image", "corrupt.png", "image/png", ImageFixtures.corruptBodyPng());
 
         mockMvc.perform(multipart("/insects/battus-philenor/images").file(file)
                         .requestAttr(CURRENT_NATURALIST, "patrick-way"))

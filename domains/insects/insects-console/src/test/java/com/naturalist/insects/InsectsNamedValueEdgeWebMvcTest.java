@@ -133,7 +133,7 @@ class InsectsNamedValueEdgeWebMvcTest {
 
     @Test
     void updateNotes_validId_updatesTheNotes() throws Exception {
-        var id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
+        InsectObservationId id = InsectsControllerTestConfig.INSECTS.insectCommand().sightings().record(SPECIES, ME, "old");
 
         mockMvc.perform(post("/insects/battus-philenor/notes")
                         .param("observationId", id.value().toString())

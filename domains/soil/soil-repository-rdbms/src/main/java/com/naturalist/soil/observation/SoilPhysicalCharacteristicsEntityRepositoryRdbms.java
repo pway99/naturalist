@@ -94,7 +94,7 @@ class SoilPhysicalCharacteristicsEntityRepositoryRdbms
         MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
         getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        var result = Optional.ofNullable(mapper.selectByLabAnalysisId(labAnalysisId.value().toString()))
+        Optional<SoilPhysicalCharacteristics> result = Optional.ofNullable(mapper.selectByLabAnalysisId(labAnalysisId.value().toString()))
                 .map(SoilPhysicalCharacteristicsDbo::toEntity);
         getByLabAnalysisId.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
@@ -107,7 +107,7 @@ class SoilPhysicalCharacteristicsEntityRepositoryRdbms
                 .throwWhenInvalid();
         if (labAnalysisIds.isEmpty()) return List.of();
         List<String> ids = labAnalysisIds.stream().map(id -> id.value().toString()).toList();
-        var result = mapper.selectByLabAnalysisIds(ids).stream().map(SoilPhysicalCharacteristicsDbo::toEntity).toList();
+        List<SoilPhysicalCharacteristics> result = mapper.selectByLabAnalysisIds(ids).stream().map(SoilPhysicalCharacteristicsDbo::toEntity).toList();
         getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

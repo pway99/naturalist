@@ -95,7 +95,7 @@ class UsageAlertEntityRepositoryRdbms
                         .notNull(kind, "kind")
                         .notBlank(period, "period"))
                 .throwWhenInvalid();
-        var result = Optional.ofNullable(mapper.selectDedupKey(counter.value(), scope.name(), kind.name(), period))
+        Optional<UsageAlert> result = Optional.ofNullable(mapper.selectDedupKey(counter.value(), scope.name(), kind.name(), period))
                 .map(UsageAlertDbo::toEntity);
         findDedupKey.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
@@ -104,7 +104,7 @@ class UsageAlertEntityRepositoryRdbms
     @Override
     public List<UsageAlert> getUnacknowledged() {
         MethodObserver getUnacknowledged = observer().forMethod("getUnacknowledged");
-        var result = mapper.selectUnacknowledged().stream().map(UsageAlertDbo::toEntity).toList();
+        List<UsageAlert> result = mapper.selectUnacknowledged().stream().map(UsageAlertDbo::toEntity).toList();
         getUnacknowledged.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -112,7 +112,7 @@ class UsageAlertEntityRepositoryRdbms
     @Override
     public List<UsageAlert> getUnsent() {
         MethodObserver getUnsent = observer().forMethod("getUnsent");
-        var result = mapper.selectUnsent().stream().map(UsageAlertDbo::toEntity).toList();
+        List<UsageAlert> result = mapper.selectUnsent().stream().map(UsageAlertDbo::toEntity).toList();
         getUnsent.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

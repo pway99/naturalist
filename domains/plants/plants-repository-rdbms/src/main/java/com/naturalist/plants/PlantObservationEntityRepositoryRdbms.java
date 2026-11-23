@@ -98,7 +98,7 @@ class PlantObservationEntityRepositoryRdbms
         MethodObserver getByNaturalist = observer().forMethod("getByNaturalist");
         getByNaturalist.arguments(i -> i.identifier(observedBy, "observedBy"))
                 .throwWhenInvalid();
-        var result = assemble(mapper.selectByNaturalist(observedBy.value()));
+        List<OrganismObservation<PlantObservationId, PlantRankName>> result = assemble(mapper.selectByNaturalist(observedBy.value()));
         getByNaturalist.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -113,7 +113,7 @@ class PlantObservationEntityRepositoryRdbms
         List<ObservationSubjectKey> keys = subjects.stream()
                 .map(s -> new ObservationSubjectKey(s.rank().name(), s.value()))
                 .toList();
-        var result = assemble(mapper.selectByNaturalistAndSubjects(observedBy.value(), keys));
+        List<OrganismObservation<PlantObservationId, PlantRankName>> result = assemble(mapper.selectByNaturalistAndSubjects(observedBy.value(), keys));
         getByNaturalistAndSubjects.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

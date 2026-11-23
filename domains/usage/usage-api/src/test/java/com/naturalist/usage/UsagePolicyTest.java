@@ -16,7 +16,7 @@ class UsagePolicyTest {
 
     @Test
     void message_names_scope_and_numbers() {
-        var m = UsagePolicy.alertMessage(AlertScope.MONTHLY, AlertKind.HARD_STOP, 520, 650);
+        String m = UsagePolicy.alertMessage(AlertScope.MONTHLY, AlertKind.HARD_STOP, 520, 650);
         assertThat(m).contains("monthly").contains("520").contains("650");
     }
 

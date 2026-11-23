@@ -35,7 +35,7 @@ class ResilienceNameValidatorTest {
 
     @Test
     void passesWhenEveryDeclaredNameResolves() {
-        try (var context = new AnnotationConfigApplicationContext(WellConfigured.class)) {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(WellConfigured.class)) {
             assertThatCode(() -> new ResilienceNameValidator(context, RESILIENCE).run(null))
                     .doesNotThrowAnyException();
         }
@@ -43,7 +43,7 @@ class ResilienceNameValidatorTest {
 
     @Test
     void failsWhenAClassLevelDeclarationResolvesToNothing() {
-        try (var context = new AnnotationConfigApplicationContext(UnregisteredOnClass.class)) {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(UnregisteredOnClass.class)) {
             assertThatThrownBy(() -> new ResilienceNameValidator(context, RESILIENCE).run(null))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("ghost.strategy")
@@ -54,7 +54,7 @@ class ResilienceNameValidatorTest {
 
     @Test
     void failsWhenAMethodLevelDeclarationResolvesToNothing() {
-        try (var context = new AnnotationConfigApplicationContext(UnregisteredOnMethod.class)) {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(UnregisteredOnMethod.class)) {
             assertThatThrownBy(() -> new ResilienceNameValidator(context, RESILIENCE).run(null))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("ghost.strategy")

@@ -1,6 +1,7 @@
 package com.naturalist.observation;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ class ImageUploadTest {
 
     @Test
     void jpeg_isValidWithMediaTypeAndExtension() {
-        var mo = observer.forMethod("jpeg_isValidWithMediaTypeAndExtension");
+        MethodObserver mo = observer.forMethod("jpeg_isValidWithMediaTypeAndExtension");
         ImageUpload upload = ImageUpload.of(JPEG);
         InvariantObservation result = mo.observable(upload, "upload");
         assertThat(result.violations()).isEmpty();
@@ -29,7 +30,7 @@ class ImageUploadTest {
 
     @Test
     void png_isValid() {
-        var mo = observer.forMethod("png_isValid");
+        MethodObserver mo = observer.forMethod("png_isValid");
         ImageUpload upload = ImageUpload.of(PNG);
         InvariantObservation result = mo.observable(upload, "upload");
         assertThat(result.violations()).isEmpty();
@@ -39,7 +40,7 @@ class ImageUploadTest {
 
     @Test
     void webp_isValid() {
-        var mo = observer.forMethod("webp_isValid");
+        MethodObserver mo = observer.forMethod("webp_isValid");
         ImageUpload upload = ImageUpload.of(WEBP);
         InvariantObservation result = mo.observable(upload, "upload");
         assertThat(result.violations()).isEmpty();
@@ -49,14 +50,14 @@ class ImageUploadTest {
 
     @Test
     void heic_isInvalid_format() {
-        var mo = observer.forMethod("heic_isInvalid_format");
+        MethodObserver mo = observer.forMethod("heic_isInvalid_format");
         InvariantObservation result = mo.observable(ImageUpload.of(HEIC), "upload");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint())).containsExactlyInAnyOrder(".upload.format");
     }
 
     @Test
     void oversize_isInvalid_size() {
-        var mo = observer.forMethod("oversize_isInvalid_size");
+        MethodObserver mo = observer.forMethod("oversize_isInvalid_size");
         byte[] big = new byte[ImageUpload.MAX_BYTES + 1];
         System.arraycopy(JPEG, 0, big, 0, JPEG.length);
         InvariantObservation result = mo.observable(ImageUpload.of(big), "upload");
@@ -65,7 +66,7 @@ class ImageUploadTest {
 
     @Test
     void tooShort_isInvalid_format() {
-        var mo = observer.forMethod("tooShort_isInvalid_format");
+        MethodObserver mo = observer.forMethod("tooShort_isInvalid_format");
         byte[] shortBytes = {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF};
         InvariantObservation result = mo.observable(ImageUpload.of(shortBytes), "upload");
         assertThat(result.violationNamesRemovingPrefix(mo.observationPoint())).containsExactlyInAnyOrder(".upload.format");
@@ -84,7 +85,7 @@ class ImageUploadTest {
 
     @Test
     void of_nullNeverThrows() {
-        var mo = observer.forMethod("of_nullNeverThrows");
+        MethodObserver mo = observer.forMethod("of_nullNeverThrows");
         ImageUpload upload = ImageUpload.of(null);
         assertThat(upload.mediaType()).isNull();
         InvariantObservation result = mo.observable(upload, "upload");

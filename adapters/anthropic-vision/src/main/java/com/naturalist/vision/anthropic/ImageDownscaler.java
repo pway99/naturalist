@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Bounds the image one identification ships to the vendor (ADR-028, spend layer 5). The
@@ -60,9 +61,9 @@ final class ImageDownscaler {
      * nothing to do, or a newly encoded JPEG when the image was larger.
      */
     static Sized fit(byte[] bytes, String mediaType) {
-        var unchanged = new Sized(bytes, mediaType);
+        ImageDownscaler.Sized unchanged = new Sized(bytes, mediaType);
         try (ImageInputStream in = new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes))) {
-            var readers = ImageIO.getImageReaders(in);
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
             if (!readers.hasNext()) {
                 return unchanged;
             }
@@ -96,7 +97,7 @@ final class ImageDownscaler {
         int scaledWidth = width >= height ? MAX_EDGE : Math.max(1, (int) Math.round(width * factor));
         int scaledHeight = height > width ? MAX_EDGE : Math.max(1, (int) Math.round(height * factor));
 
-        var scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+        BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = scaled.createGraphics();
         try {
             g.setColor(Color.WHITE);
@@ -110,12 +111,12 @@ final class ImageDownscaler {
     }
 
     private static byte[] encodeJpeg(BufferedImage image) throws IOException {
-        var writers = ImageIO.getImageWritersByFormatName("jpeg");
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpeg");
         if (!writers.hasNext()) {
             throw new IOException("no JPEG ImageWriter available");
         }
         ImageWriter writer = writers.next();
-        var out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (ImageOutputStream stream = ImageIO.createImageOutputStream(out)) {
             writer.setOutput(stream);
             ImageWriteParam param = writer.getDefaultWriteParam();

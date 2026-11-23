@@ -96,7 +96,7 @@ class SeedLineageEntityRepositoryRdbms
         MethodObserver getByCultivarName = observer().forMethod("getByCultivarName");
         getByCultivarName.arguments(i -> i.entityName(cultivarName, "cultivarName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByCultivarName(cultivarName.value()).stream().map(SeedLineageDbo::toEntity).toList();
+        List<SeedLineage> result = mapper.selectByCultivarName(cultivarName.value()).stream().map(SeedLineageDbo::toEntity).toList();
         getByCultivarName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

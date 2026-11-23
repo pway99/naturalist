@@ -5,6 +5,8 @@ import com.naturalist.data.PageRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SoilTestContextTest {
@@ -16,7 +18,7 @@ class SoilTestContextTest {
     void assemblesBox1WithItsAnalysis() {
         SoilTestContext context = SoilTestContext.create(nte);
 
-        var profile = context.soilProfileQuery().getBySoilProfileName(SoilProfileName.of("box1"));
+        Optional<SoilProfile> profile = context.soilProfileQuery().getBySoilProfileName(SoilProfileName.of("box1"));
 
         assertThat(profile).isPresent();
         assertThat(profile.get().labAnalyses()).isNotEmpty();

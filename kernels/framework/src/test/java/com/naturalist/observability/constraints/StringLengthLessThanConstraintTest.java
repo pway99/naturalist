@@ -1,5 +1,6 @@
 package com.naturalist.observability.constraints;
 
+import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 import java.util.function.Function;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +24,7 @@ class StringLengthLessThanConstraintTest {
     }
 
     @Test void constraintsBuilder_maxLength_flagsOverLimit() {
-        var observer = com.naturalist.observability.Observer.forClass(StringLengthLessThanConstraintTest.class);
+        Observer observer = Observer.forClass(StringLengthLessThanConstraintTest.class);
         assertThat(observer.arguments("t", i -> i.maxLength("abcdef", 5, "field")).violations()).isNotEmpty();
         assertThat(observer.arguments("t", i -> i.maxLength("abc", 5, "field")).violations()).isEmpty();
     }

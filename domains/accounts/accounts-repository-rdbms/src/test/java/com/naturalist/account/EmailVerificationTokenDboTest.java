@@ -1,9 +1,11 @@
 package com.naturalist.account;
 
+import com.naturalist.observability.Constraint;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +36,7 @@ class EmailVerificationTokenDboTest {
     @Test void invariants_flagOverLongTokenHash() {
         EmailVerificationTokenDbo dbo = EmailVerificationTokenDbo.from(sample(null));
         dbo.tokenHash = "x".repeat(129); // exceeds VARCHAR(128)
-        var violations = Observer.forClass(EmailVerificationTokenDboTest.class)
+        Set<Constraint<?>> violations = Observer.forClass(EmailVerificationTokenDboTest.class)
                 .arguments("t", i -> i.observable(dbo, "dbo")).violations();
         assertThat(violations).isNotEmpty();
     }

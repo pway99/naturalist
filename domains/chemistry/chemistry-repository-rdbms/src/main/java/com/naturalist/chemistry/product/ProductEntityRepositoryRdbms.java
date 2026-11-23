@@ -95,7 +95,7 @@ class ProductEntityRepositoryRdbms
                 .throwWhenInvalid();
         List<String> productNames = mapper.selectProductNamesByCompoundName(compoundName.value());
         if (productNames.isEmpty()) return List.of();
-        var result = assemble(mapper.selectByNameSet(productNames), Set.copyOf(productNames));
+        List<Product> result = assemble(mapper.selectByNameSet(productNames), Set.copyOf(productNames));
         getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

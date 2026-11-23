@@ -2,7 +2,13 @@ package com.naturalist.resilience.resilience4j;
 
 import com.naturalist.exception.UnconfiguredResilienceException;
 import com.naturalist.observability.Observer;
-import com.naturalist.resilience.*;
+import com.naturalist.resilience.Bulkhead;
+import com.naturalist.resilience.CircuitBreaker;
+import com.naturalist.resilience.RateLimiter;
+import com.naturalist.resilience.Resilience;
+import com.naturalist.resilience.ResilienceConfig;
+import com.naturalist.resilience.Retry;
+import com.naturalist.resilience.Timeout;
 import com.naturalist.resilience.ResilienceConfig.BulkheadConfig;
 import com.naturalist.resilience.ResilienceConfig.CircuitBreakerConfig;
 import com.naturalist.resilience.ResilienceConfig.RateLimiterConfig;

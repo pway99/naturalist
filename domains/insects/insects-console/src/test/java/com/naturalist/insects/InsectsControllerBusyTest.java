@@ -14,6 +14,7 @@ import com.naturalist.resilience.Retry;
 import com.naturalist.resilience.Timeout;
 import com.naturalist.usage.IdentificationBudget;
 import com.naturalist.vision.NoOpVisionService;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -30,6 +33,7 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,7 +79,7 @@ class InsectsControllerBusyTest {
 
     /** The endpoint counted the full bulkhead once, as a failure it answered rather than threw. */
     private void assertBusyCounted() {
-        var busy = meters.find("naturalist.invariant.check")
+        Counter busy = meters.find("naturalist.invariant.check")
                 .tag("name", "InsectsController.serve.read")
                 .tag("kind", "caught")
                 .tag("handling", "swallowed")
@@ -159,8 +163,8 @@ class InsectsControllerBusyTest {
     }
 
     private InsectsController controller() {
-        var imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
-        var context = InsectsTestContext.create(nte, imageStore,
+        FilesystemImageStore imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
+        InsectsTestContext context = InsectsTestContext.create(nte, imageStore,
                 new RejectingBulkheadResilience(),
                 IdentificationBudget.noOp(),
                 new NoOpVisionService(),      // never called; the bulkhead throws first
@@ -176,9 +180,9 @@ class InsectsControllerBusyTest {
 
     @Test
     void identify_redirectsWithLimitBusy_whenTheBulkheadRejects() throws IOException {
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
-        var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
+        MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
         assertThat(controller().identify(image, null, null, null, null, null, request))
                 .isEqualTo("redirect:/insects/identify?limit=BUSY");
@@ -190,13 +194,13 @@ class InsectsControllerBusyTest {
      */
     @Test
     void image_isServiceUnavailable_whenTheBulkheadRejects() {
-        var busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
-        var context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
+        FilesystemImageStore busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
+        InsectsTestContext context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
                 new NoOpVisionService(), InsectsTestContext.noOpAuthority());
-        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+        InsectsController controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
                 context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
 
-        var response = controller.image(FileName.of("anything.jpg"));
+        ResponseEntity<Resource> response = controller.image(FileName.of("anything.jpg"));
 
         assertThat(response.getStatusCode().value()).isEqualTo(503);
         assertThat(response.getHeaders().getFirst("Retry-After")).isEqualTo("1");
@@ -211,13 +215,13 @@ class InsectsControllerBusyTest {
      */
     @Test
     void tile_isServiceUnavailable_whenTheBulkheadRejects() {
-        var busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
-        var context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
+        FilesystemImageStore busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
+        InsectsTestContext context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
                 new NoOpVisionService(), InsectsTestContext.noOpAuthority());
-        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+        InsectsController controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
                 context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
 
-        var response = controller.tile(FileName.of("anything.jpg"));
+        ResponseEntity<Resource> response = controller.tile(FileName.of("anything.jpg"));
 
         assertThat(response.getStatusCode().value()).isEqualTo(503);
         assertThat(response.getHeaders().getFirst("Retry-After")).isEqualTo("1");
@@ -232,18 +236,18 @@ class InsectsControllerBusyTest {
      */
     @Test
     void addImage_redirectsWithErrorBusy_whenTheStoreHasNoWritePermit() throws IOException {
-        var busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
-        var context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
+        FilesystemImageStore busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
+        InsectsTestContext context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), IdentificationBudget.noOp(),
                 new NoOpVisionService(), InsectsTestContext.noOpAuthority());
-        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+        InsectsController controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
                 context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
-        var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
+        MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
         assertThat(controller.addImage(InsectSpeciesName.of("battus-philenor"), image, null, null, null, null, request))
                 .isEqualTo("redirect:/insects/battus-philenor?error=busy");
-        try (var files = Files.walk(imageRoot)) {
+        try (Stream<Path> files = Files.walk(imageRoot)) {
             assertThat(files.filter(Files::isRegularFile).toList()).as("nothing is stored").isEmpty();
         }
     }
@@ -254,16 +258,16 @@ class InsectsControllerBusyTest {
      */
     @Test
     void identify_redirectsWithLimitBusy_whenTheStoreHasNoWritePermit() throws IOException {
-        var busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
-        var reservations = new AtomicInteger();
+        FilesystemImageStore busyStore = new FilesystemImageStore(imageRoot, new RejectingBulkheadResilience());
+        AtomicInteger reservations = new AtomicInteger();
         IdentificationBudget counting = naturalist -> reservations.incrementAndGet();
-        var context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), counting,
+        InsectsTestContext context = InsectsTestContext.create(nte, busyStore, Resilience.noOp(), counting,
                 new NoOpVisionService(), InsectsTestContext.noOpAuthority());
-        var controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
+        InsectsController controller = new InsectsController(context.insectQuery(), context.insectViewQuery(),
                 context.insectCommand(), libraryContext.cladeQuery(), libraryContext.glossaryTermQuery(), busyStore);
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
-        var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
+        MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
         assertThat(controller.identify(image, null, null, null, null, null, request))
                 .isEqualTo("redirect:/insects/identify?limit=BUSY");

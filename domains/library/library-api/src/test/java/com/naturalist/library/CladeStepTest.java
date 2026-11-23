@@ -1,6 +1,7 @@
 package com.naturalist.library;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.LinealRank;
 import org.junit.jupiter.api.Test;
@@ -15,8 +16,8 @@ class CladeStepTest {
 
     @Test
     void validStepWithRank() {
-        var mo = observer.forMethod("validStepWithRank");
-        var step = new CladeStep("animalia", "Animalia", Optional.of(LinealRank.KINGDOM));
+        MethodObserver mo = observer.forMethod("validStepWithRank");
+        CladeStep step = new CladeStep("animalia", "Animalia", Optional.of(LinealRank.KINGDOM));
 
         InvariantObservation result = mo.observable(step, "step");
 
@@ -25,8 +26,8 @@ class CladeStepTest {
 
     @Test
     void validStepWithoutRank() {
-        var mo = observer.forMethod("validStepWithoutRank");
-        var step = new CladeStep("holometabola", "Holometabola", Optional.empty());
+        MethodObserver mo = observer.forMethod("validStepWithoutRank");
+        CladeStep step = new CladeStep("holometabola", "Holometabola", Optional.empty());
 
         InvariantObservation result = mo.observable(step, "step");
 
@@ -35,8 +36,8 @@ class CladeStepTest {
 
     @Test
     void nullComponentsProduceExpectedViolations() {
-        var mo = observer.forMethod("nullComponentsProduceExpectedViolations");
-        var step = new CladeStep(null, null, null);
+        MethodObserver mo = observer.forMethod("nullComponentsProduceExpectedViolations");
+        CladeStep step = new CladeStep(null, null, null);
 
         InvariantObservation result = mo.observable(step, "step");
 

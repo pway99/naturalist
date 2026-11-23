@@ -25,7 +25,7 @@ public record BackReferencesViewModel(List<Group> groups) {
 
     public static BackReferencesViewModel from(Map<DomainId, List<EntityRef>> grouped, EntityRefLinker linker) {
         List<Group> built = new ArrayList<>(grouped.size());
-        for (var entry : grouped.entrySet()) {
+        for (Map.Entry<DomainId, List<EntityRef>> entry : grouped.entrySet()) {
             List<Link> links = new ArrayList<>();
             for (EntityRef ref : entry.getValue()) {
                 String url = linker.linkFor(ref);

@@ -46,7 +46,7 @@ class InsectsRdbmsTransactionProxyTest {
     private static final List<String> WRITES = List.of("insert", "update", "save");
 
     static Set<String> transactions() {
-        var scanner = new ClassPathScanningCandidateComponentProvider(false);
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(DomainService.class));
         Set<String> found = new TreeSet<>();
         scanner.findCandidateComponents("com.naturalist.insects").stream()
@@ -75,7 +75,7 @@ class InsectsRdbmsTransactionProxyTest {
         EventLog log = new EventLog();
         Object target = construct(type, log);
 
-        try (var context = new AnnotationConfigApplicationContext()) {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
             context.register(ProxiedTransactionConfiguration.class);
             context.registerBean(RecordingTransactionManager.class, () -> new RecordingTransactionManager(log));
             registerTarget(context, type, target);

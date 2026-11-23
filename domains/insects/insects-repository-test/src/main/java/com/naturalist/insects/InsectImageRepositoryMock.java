@@ -25,7 +25,7 @@ class InsectImageRepositoryMock
         MethodObserver getByParentName = observer().forMethod("getByParentName");
         getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> result = testEntitySource().entityStream()
                 .filter(image -> image.parentName().equals(parentName))
                 .toList();
         getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -37,7 +37,7 @@ class InsectImageRepositoryMock
         MethodObserver getByParentNames = observer().forMethod("getByParentNames");
         getByParentNames.arguments(i -> i.observableCollection(parentNames, "parentNames"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> result = testEntitySource().entityStream()
                 .filter(image -> parentNames.contains(image.parentName()))
                 .toList();
         getByParentNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

@@ -1,7 +1,5 @@
 package com.naturalist.insects;
 
-import com.naturalist.insects.InsectRankName;
-
 import java.util.Locale;
 
 /** Presentation helper: the human label for a rank ("Order", "Family"). */

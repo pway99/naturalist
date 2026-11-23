@@ -97,7 +97,7 @@ class InsectLifeStageEntityRepositoryRdbms
         MethodObserver getByParentName = observer().forMethod("getByParentName");
         getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        var result = assemble(mapper.selectByParentName(parentName.rank().name(), parentName.value()));
+        List<LifeStage> result = assemble(mapper.selectByParentName(parentName.rank().name(), parentName.value()));
         getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

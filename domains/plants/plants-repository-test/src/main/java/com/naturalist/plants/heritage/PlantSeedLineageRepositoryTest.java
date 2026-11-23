@@ -114,7 +114,7 @@ interface PlantSeedLineageRepositoryTest
 
     @Test
     default void getByCultivarName_returnsLineagesWithMatchingCultivarName() {
-        var results = repository().getByCultivarName(
+        List<SeedLineage> results = repository().getByCultivarName(
                 TestPlantsIdentifiers.Plants.Tomato.Cultivars.AmishPaste.name);
 
         assertThat(results)
@@ -125,7 +125,7 @@ interface PlantSeedLineageRepositoryTest
 
     @Test
     default void getByCultivarName_returnsEmptyForUnknownCultivar() {
-        var results = repository().getByCultivarName(
+        List<SeedLineage> results = repository().getByCultivarName(
                 TestPlantsIdentifiers.Plants.NotFound.cultivarName);
 
         assertThat(results).isEmpty();

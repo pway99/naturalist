@@ -131,7 +131,7 @@ interface PlantPhytochemicalConstituentRepositoryTest
 
     @Test
     default void getByPlantName_returnsConstituentsWithMatchingPlantName() {
-        var results = repository().getByPlantName(
+        List<PhytochemicalConstituent> results = repository().getByPlantName(
                 TestPlantsIdentifiers.Plants.CaliforniaPipevine.name);
 
         assertThat(results)
@@ -144,7 +144,7 @@ interface PlantPhytochemicalConstituentRepositoryTest
 
     @Test
     default void getByPlantName_returnsEmptyForUnknownPlant() {
-        var results = repository().getByPlantName(TestPlantsIdentifiers.Plants.NotFound.name);
+        List<PhytochemicalConstituent> results = repository().getByPlantName(TestPlantsIdentifiers.Plants.NotFound.name);
 
         assertThat(results).isEmpty();
     }
@@ -160,7 +160,7 @@ interface PlantPhytochemicalConstituentRepositoryTest
     default void getByCompoundName_returnsConstituentsAcrossPlants() {
         // The cross-domain reverse lookup that PlantsCompoundReferences depends on:
         // "which plants are known to produce this compound?"
-        var results = repository().getByCompoundName(
+        List<PhytochemicalConstituent> results = repository().getByCompoundName(
                 TestChemistryIdentifiers.Compounds.Thymol.name);
 
         // The thymol constituent was re-keyed to the genus thymus in the 2026-08-16
@@ -173,7 +173,7 @@ interface PlantPhytochemicalConstituentRepositoryTest
 
     @Test
     default void getByCompoundName_returnsEmptyForUnknownCompound() {
-        var results = repository().getByCompoundName(CompoundName.of("unobtainium-oxide"));
+        List<PhytochemicalConstituent> results = repository().getByCompoundName(CompoundName.of("unobtainium-oxide"));
 
         assertThat(results).isEmpty();
     }

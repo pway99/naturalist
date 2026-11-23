@@ -7,16 +7,18 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
 /** Seeds reported recommendations through the real RDBMS adapter (split-package with the rdbms module). */
 public final class ReportedRecommendationSeeder {
 
     private ReportedRecommendationSeeder() {}
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
-        var entities = database.getNamed(ReportedRecommendationTestEntitySource.class).entityStream().toList();
+        List<ReportedRecommendation> entities = database.getNamed(ReportedRecommendationTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, ReportedRecommendationMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new ReportedRecommendationEntityRepositoryRdbms(session.getMapper(ReportedRecommendationMapper.class));
+            ReportedRecommendationEntityRepositoryRdbms repo = new ReportedRecommendationEntityRepositoryRdbms(session.getMapper(ReportedRecommendationMapper.class));
             entities.forEach(repo::insert);
             session.commit();
         }

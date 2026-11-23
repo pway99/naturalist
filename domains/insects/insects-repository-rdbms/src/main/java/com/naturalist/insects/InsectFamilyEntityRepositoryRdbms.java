@@ -4,11 +4,13 @@ import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import com.naturalist.exception.EntityNotFoundException;
+import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 import com.naturalist.observability.Level;
 import com.naturalist.observability.MethodObserver;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -98,7 +100,7 @@ class InsectFamilyEntityRepositoryRdbms
                 .throwWhenInvalid();
         List<InsectFamilyDbo> parents = mapper.selectByOrderName(orderName.value());
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        var result = assemble(parents, names);
+        List<InsectFamilyInfo> result = assemble(parents, names);
         getByOrderName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -112,7 +114,7 @@ class InsectFamilyEntityRepositoryRdbms
         Set<String> orderSlugs = orderNames.stream().map(InsectOrderName::value).collect(Collectors.toSet());
         List<InsectFamilyDbo> parents = mapper.selectByOrderNameSet(orderSlugs);
         Set<String> names = parents.stream().map(p -> p.name).collect(Collectors.toSet());
-        var result = assemble(parents, names);
+        List<InsectFamilyInfo> result = assemble(parents, names);
         getByOrderNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -120,7 +122,7 @@ class InsectFamilyEntityRepositoryRdbms
     /** Assemble records from parent rows + one batched common-name load. */
     private List<InsectFamilyInfo> assemble(List<InsectFamilyDbo> parents, Set<String> names) {
         if (parents.isEmpty()) return List.of();
-        var commonNames = mapper.selectCommonNames(names).stream()
+        Map<String, Set<CommonName>> commonNames = mapper.selectCommonNames(names).stream()
                 .collect(Collectors.groupingBy(cn -> cn.familyName,
                         Collectors.mapping(InsectFamilyCommonNameDbo::toCommonName, Collectors.toSet())));
         return parents.stream()

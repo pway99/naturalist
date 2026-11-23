@@ -16,7 +16,7 @@ class IdentificationTest {
 
     @Test
     void validWhenConfidenceInRangeAndEvidencePresent() {
-        var id = new Identification(0.9, "wing venation",
+        Identification id = new Identification(0.9, "wing venation",
                 List.of(new Identification.Candidate("Danaus plexippus", null, 0.1)));
 
         assertThat(id.confidence()).isEqualTo(0.9);
@@ -27,7 +27,7 @@ class IdentificationTest {
     @Test
     void outOfRangeConfidenceViolatesInvariant() {
         MethodObserver mo = observer.forMethod("outOfRangeConfidenceViolatesInvariant");
-        var id = new Identification(1.5, "wing venation", List.of());
+        Identification id = new Identification(1.5, "wing venation", List.of());
 
         assertThatThrownBy(() -> mo.observable(id, "id").throwWhenInvalid())
                 .isInstanceOf(InvariantViolationException.class);

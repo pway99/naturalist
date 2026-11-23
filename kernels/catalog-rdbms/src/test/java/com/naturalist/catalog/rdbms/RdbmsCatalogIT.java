@@ -1,6 +1,9 @@
 package com.naturalist.catalog.rdbms;
 
-import com.naturalist.catalog.*;
+import com.naturalist.catalog.Catalog;
+import com.naturalist.catalog.DomainId;
+import com.naturalist.catalog.EntityRef;
+import com.naturalist.catalog.SearchResults;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.insects.InsectRankName;
 import com.naturalist.insects.InsectSpeciesName;
@@ -13,9 +16,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RdbmsCatalogIT {
 
@@ -43,7 +49,7 @@ class RdbmsCatalogIT {
 
     @Test
     void findBySlugResolvesToTypedRef() {
-        var ref = catalog().findBySlug("apis-mellifera");
+        Optional<EntityRef> ref = catalog().findBySlug("apis-mellifera");
         assertTrue(ref.isPresent());
         assertTrue(ref.get().name() instanceof InsectSpeciesName);
     }

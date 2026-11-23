@@ -100,7 +100,7 @@ class PhytochemicalConstituentEntityRepositoryRdbms
         getByPlantName.arguments(i -> i.identifier(plantName, "plantName")).throwWhenInvalid();
         List<String> names = mapper.selectNamesByPlant(plantName.rank().name(), plantName.value());
         if (names.isEmpty()) return List.of();
-        var result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
+        List<PhytochemicalConstituent> result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
         getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -111,7 +111,7 @@ class PhytochemicalConstituentEntityRepositoryRdbms
         getByCompoundName.arguments(i -> i.entityName(compoundName, "compoundName")).throwWhenInvalid();
         List<String> names = mapper.selectNamesByCompound(compoundName.value());
         if (names.isEmpty()) return List.of();
-        var result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
+        List<PhytochemicalConstituent> result = assemble(mapper.selectByNameSet(names), Set.copyOf(names));
         getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

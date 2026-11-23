@@ -1,5 +1,6 @@
 package com.naturalist.console.usage;
 
+import com.naturalist.usage.UsageAlert;
 import com.naturalist.usage.UsageCommand;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ class AlertDispatchJob {
 
     @Scheduled(fixedDelayString = "${naturalist.usage.dispatch-interval-ms:60000}")
     void dispatch() {
-        for (var alert : command.claimUnsentAlerts()) {
+        for (UsageAlert alert : command.claimUnsentAlerts()) {
             emailer.send(alert);
         }
     }

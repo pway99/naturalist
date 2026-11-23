@@ -28,7 +28,7 @@ class SoilPhysicalCharacteristicsEntityRepositoryMock
         MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
         getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        Optional<SoilPhysicalCharacteristics> result = testEntitySource().entityStream()
                 .filter(characteristics -> labAnalysisId.equals(characteristics.labAnalysisId()))
                 .findFirst();
         getByLabAnalysisId.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
@@ -40,7 +40,7 @@ class SoilPhysicalCharacteristicsEntityRepositoryMock
         MethodObserver getByLabAnalysisIds = observer().forMethod("getByLabAnalysisIds");
         getByLabAnalysisIds.arguments(i -> i.identifierSet(labAnalysisIds, "labAnalysisIds"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<SoilPhysicalCharacteristics> result = testEntitySource().entityStream()
                 .filter(characteristics -> labAnalysisIds.contains(characteristics.labAnalysisId()))
                 .toList();
         getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

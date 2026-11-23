@@ -60,7 +60,7 @@ class CitationAttributionTransaction extends Transaction<CitationAttribution> {
             citationCommand.insert(attribution.citation());
         }
 
-        var association = new CitationAssociation(
+        CitationAssociation association = new CitationAssociation(
                 CitationAssociationId.create(),
                 attribution.citation().name(),
                 attribution.subject(),

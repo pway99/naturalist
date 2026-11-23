@@ -4,6 +4,8 @@ import com.naturalist.data.EntityQuery;
 import com.naturalist.data.EntityQueryContractTest;
 import com.naturalist.data.NaturalistTestExtension;
 import com.naturalist.exception.InvariantViolationException;
+import com.naturalist.insects.InsectFamilyName;
+import com.naturalist.insects.InsectGenusName;
 import com.naturalist.insects.InsectSpeciesName;
 import com.naturalist.insects.LifeStageName;
 import com.naturalist.insects.TestInsectsIdentifiers;
@@ -60,7 +62,7 @@ class InsectLifeStageEntityQueryImplTest
 
     @Test
     void forParentName_acceptsGenusName() {
-        var genus = TestInsectsIdentifiers.InsectGenus.Chrysoperla.name;
+        InsectGenusName genus = TestInsectsIdentifiers.InsectGenus.Chrysoperla.name;
 
         LifeStageCollection collection = query.forParentName(genus);
 
@@ -71,7 +73,7 @@ class InsectLifeStageEntityQueryImplTest
 
     @Test
     void forParentName_acceptsFamilyName() {
-        var family = TestInsectsIdentifiers.InsectFamily.Syrphidae.name;
+        InsectFamilyName family = TestInsectsIdentifiers.InsectFamily.Syrphidae.name;
 
         LifeStageCollection collection = query.forParentName(family);
 

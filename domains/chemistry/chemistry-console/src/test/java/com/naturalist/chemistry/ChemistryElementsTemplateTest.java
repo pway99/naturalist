@@ -2,10 +2,10 @@ package com.naturalist.chemistry;
 
 import com.naturalist.spring.console.ConsoleSliceTemplates;
 
-import com.naturalist.chemistry.ChemistryTestContext;
 import com.naturalist.chemistry.element.Element;
 import com.naturalist.chemistry.element.ElementName;
 import com.naturalist.data.NaturalistTestExtension;
+import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class ChemistryElementsTemplateTest {
 
     @Test
     void list_rendersEveryElementLinkedToItsDetailPage() {
-        var page = context.elementQuery().findPage(PageRequest.console(0));
+        Page<Element> page = context.elementQuery().findPage(PageRequest.console(0));
         StringOutput output = new StringOutput();
 
         ConsoleSliceTemplates.create().render("chemistry/elements/list.jte",

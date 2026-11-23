@@ -82,7 +82,7 @@ interface InsectImageRepositoryTest
 
     @Test
     default void getByParentName_returnsAllImagesForThatParent() {
-        var results = repository().getByParentName(
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> results = repository().getByParentName(
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name);
 
         assertThat(results).hasSizeGreaterThanOrEqualTo(2);
@@ -98,7 +98,7 @@ interface InsectImageRepositoryTest
     @Test
     default void getByParentName_parentWithNoImages_returnsEmpty() {
         // apis-mellifera is catalogued but carries no photographs.
-        var results = repository().getByParentName(
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> results = repository().getByParentName(
                 TestInsectsIdentifiers.InsectSpecies.ApisMellifera.name);
 
         assertThat(results).isEmpty();
@@ -106,7 +106,7 @@ interface InsectImageRepositoryTest
 
     @Test
     default void getByParentName_unknownParent_returnsEmpty() {
-        var results = repository().getByParentName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> results = repository().getByParentName(TestInsectsIdentifiers.InsectSpecies.NotFound.name);
 
         assertThat(results).isEmpty();
     }
@@ -120,7 +120,7 @@ interface InsectImageRepositoryTest
 
     @Test
     default void getByParentNames_returnsImagesAcrossTheGivenParents() {
-        var results = repository().getByParentNames(Set.of(
+        List<OrganismImage<InsectImageId, InsectObservationId, InsectRankName>> results = repository().getByParentNames(Set.of(
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name,
                 TestInsectsIdentifiers.InsectSpecies.ColiasEurytheme.name));
 

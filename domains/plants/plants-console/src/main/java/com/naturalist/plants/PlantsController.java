@@ -50,7 +50,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -114,19 +113,19 @@ public class PlantsController {
 
     @GetMapping("/{name}")
     String detail(@PathVariable String name, Model model) {
-        var plantName = PlantSpeciesName.of(name);
-        var plant = plantQuery.getByName(plantName);
+        PlantSpeciesName plantName = PlantSpeciesName.of(name);
+        Optional<Plant> plant = plantQuery.getByName(plantName);
         if (plant.isEmpty() || plant.get().species() == null) {
             return "redirect:/plants";
         }
         PlantSpecies species = plant.get().species().species();
-        var cultivars = plant.get().cultivars().stream()
+        List<Cultivar> cultivars = plant.get().cultivars().stream()
                 .sorted(Comparator.comparing((Cultivar c) -> c.name().value()))
                 .toList();
-        var programs = plant.get().programs().stream()
+        List<PlantProgram> programs = plant.get().programs().stream()
                 .sorted(Comparator.comparing((PlantProgram p) -> p.name().value()))
                 .toList();
-        var constituents = plant.get().constituents().stream()
+        List<PhytochemicalConstituent> constituents = plant.get().constituents().stream()
                 .sorted(Comparator.comparing((PhytochemicalConstituent c) -> c.name().value()))
                 .toList();
         model.addAttribute("plant", species);
@@ -153,7 +152,7 @@ public class PlantsController {
     private static final String CATALOG_ROOT = "/plants/orders";
 
     private static List<BreadcrumbSegment> plantaeRoot() {
-        var segments = new ArrayList<BreadcrumbSegment>();
+        ArrayList<BreadcrumbSegment> segments = new ArrayList<BreadcrumbSegment>();
         segments.add(BreadcrumbSegment.link("Plantae", CATALOG_ROOT, "Kingdom"));
         return segments;
     }
@@ -181,7 +180,7 @@ public class PlantsController {
     private List<CladeStep> stepsFor(Clade clade) {
         CladeView view = cladeQuery.getBySlug(clade.slug()).orElseThrow(
                 () -> new IllegalStateException("no clade view for slug " + clade.slug()));
-        var steps = new ArrayList<CladeStep>(view.ancestry());
+        ArrayList<CladeStep> steps = new ArrayList<CladeStep>(view.ancestry());
         steps.add(view.subject());
         return steps;
     }
@@ -228,7 +227,7 @@ public class PlantsController {
      * ancestry. A missing ancestor (null view) shortens the trail rather than failing.
      */
     static List<BreadcrumbSegment> breadcrumbFor(Plant plant) {
-        var segments = plantaeRoot();
+        List<BreadcrumbSegment> segments = plantaeRoot();
         boolean speciesSubject = plant.species() != null;
         boolean genusSubject = !speciesSubject && plant.genus() != null;
         boolean familySubject = !speciesSubject && !genusSubject && plant.family() != null;
@@ -288,8 +287,8 @@ public class PlantsController {
 
     @GetMapping("/orders/{name}")
     String orderDetail(@PathVariable String name, Model model) {
-        var orderName = PlantOrderName.of(name);
-        var plant = plantQuery.getByName(orderName);
+        PlantOrderName orderName = PlantOrderName.of(name);
+        Optional<Plant> plant = plantQuery.getByName(orderName);
         if (plant.isEmpty() || plant.get().order() == null) {
             return "redirect:/plants";
         }
@@ -358,8 +357,8 @@ public class PlantsController {
 
     @GetMapping("/families/{name}")
     String familyDetail(@PathVariable String name, Model model) {
-        var familyName = PlantFamilyName.of(name);
-        var plant = plantQuery.getByName(familyName);
+        PlantFamilyName familyName = PlantFamilyName.of(name);
+        Optional<Plant> plant = plantQuery.getByName(familyName);
         if (plant.isEmpty() || plant.get().family() == null) {
             return "redirect:/plants";
         }
@@ -376,8 +375,8 @@ public class PlantsController {
 
     @GetMapping("/genera/{name}")
     String genusDetail(@PathVariable String name, Model model) {
-        var genusName = PlantGenusName.of(name);
-        var plant = plantQuery.getByName(genusName);
+        PlantGenusName genusName = PlantGenusName.of(name);
+        Optional<Plant> plant = plantQuery.getByName(genusName);
         if (plant.isEmpty() || plant.get().genus() == null) {
             return "redirect:/plants";
         }
@@ -398,12 +397,12 @@ public class PlantsController {
 
     @GetMapping("/cultivars/{name}")
     String cultivarDetail(@PathVariable String name, Model model) {
-        var cultivarName = CultivarName.of(name);
-        var cultivar = cultivarQuery.getByName(cultivarName);
+        CultivarName cultivarName = CultivarName.of(name);
+        Optional<Cultivar> cultivar = cultivarQuery.getByName(cultivarName);
         if (cultivar.isEmpty()) {
             return "redirect:/plants";
         }
-        var lineages = seedLineageQuery.forCultivarName(cultivarName).stream()
+        List<SeedLineage> lineages = seedLineageQuery.forCultivarName(cultivarName).stream()
                 .sorted(Comparator.comparing((SeedLineage s) -> s.name().value()))
                 .toList();
         model.addAttribute("cultivar", cultivar.get());
@@ -415,8 +414,8 @@ public class PlantsController {
 
     @GetMapping("/lineages/{name}")
     String lineageDetail(@PathVariable String name, Model model) {
-        var lineageName = SeedLineageName.of(name);
-        var lineage = seedLineageQuery.getByName(lineageName);
+        SeedLineageName lineageName = SeedLineageName.of(name);
+        Optional<SeedLineage> lineage = seedLineageQuery.getByName(lineageName);
         if (lineage.isEmpty()) {
             return "redirect:/plants";
         }
@@ -428,8 +427,8 @@ public class PlantsController {
 
     @GetMapping("/programs/{name}")
     String programDetail(@PathVariable String name, Model model) {
-        var programName = PlantProgramName.of(name);
-        var program = plantProgramQuery.getByName(programName);
+        PlantProgramName programName = PlantProgramName.of(name);
+        Optional<PlantProgram> program = plantProgramQuery.getByName(programName);
         if (program.isEmpty()) {
             return "redirect:/plants";
         }
@@ -449,8 +448,8 @@ public class PlantsController {
 
     @GetMapping("/phytochemistry/{name}")
     String constituentDetail(@PathVariable String name, Model model) {
-        var constituentName = PhytochemicalConstituentName.of(name);
-        var constituent = phytochemicalConstituentQuery.getByName(constituentName);
+        PhytochemicalConstituentName constituentName = PhytochemicalConstituentName.of(name);
+        Optional<PhytochemicalConstituent> constituent = phytochemicalConstituentQuery.getByName(constituentName);
         if (constituent.isEmpty()) {
             return "redirect:/plants/phytochemistry";
         }

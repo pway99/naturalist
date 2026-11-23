@@ -94,7 +94,7 @@ class AccountEntityRepositoryRdbms
         MethodObserver getByEmail = observer().forMethod("getByEmail");
         getByEmail.arguments(i -> i.email(email, "email"))
                 .throwWhenInvalid();
-        var result = Optional.ofNullable(mapper.selectByEmail(email)).map(AccountDbo::toEntity);
+        Optional<Account> result = Optional.ofNullable(mapper.selectByEmail(email)).map(AccountDbo::toEntity);
         getByEmail.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);
         return result;
     }

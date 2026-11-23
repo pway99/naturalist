@@ -38,10 +38,10 @@ class HeaderWebMvcTest {
 
     @Test
     void home_asNaturalist_showsNameAndLogout() throws Exception {
-        var principal = new NaturalistPrincipal(
+        NaturalistPrincipal principal = new NaturalistPrincipal(
                 NaturalistName.of("patrick-way"), "Patrick", "gerald.durrell@oakvista.example",
                 "{bcrypt}x", false, true);
-        var auth = new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 principal, "n/a", principal.getAuthorities());
 
         mockMvc.perform(get("/").with(authentication(auth)))

@@ -3,9 +3,11 @@ package com.naturalist.plants;
 import com.naturalist.data.AbstractEntityRepository;
 import com.naturalist.data.Page;
 import com.naturalist.data.PageRequest;
+import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,7 +90,7 @@ class PlantOrderEntityRepositoryRdbms
     /** Assemble records from parent rows + one batched common-name load. */
     private List<PlantOrder> assemble(List<PlantOrderDbo> parents, Set<String> names) {
         if (parents.isEmpty()) return List.of();
-        var commonNames = mapper.selectCommonNames(names).stream()
+        Map<String, Set<CommonName>> commonNames = mapper.selectCommonNames(names).stream()
                 .collect(Collectors.groupingBy(cn -> cn.orderName,
                         Collectors.mapping(PlantOrderCommonNameDbo::toCommonName, Collectors.toSet())));
         return parents.stream()

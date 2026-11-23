@@ -90,7 +90,7 @@ class UsageCounterEntityRepositoryRdbms
         MethodObserver findByCounterName = observer().forMethod("findByCounterName");
         findByCounterName.arguments(i -> i.identifier(counterName, "counterName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByCounterName(counterName.value()).stream().map(UsageCounterDbo::toEntity).toList();
+        List<UsageCounter> result = mapper.selectByCounterName(counterName.value()).stream().map(UsageCounterDbo::toEntity).toList();
         findByCounterName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

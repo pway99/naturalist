@@ -7,7 +7,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InsectCatalogTokenViewIT {
 

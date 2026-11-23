@@ -3,6 +3,7 @@ package com.naturalist.insects;
 import com.naturalist.RandomValue;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
@@ -19,7 +20,7 @@ class InsectTaxonTest {
 
     @Test
     void speciesIsValid() {
-        var mo = observer.forMethod("speciesIsValid");
+        MethodObserver mo = observer.forMethod("speciesIsValid");
         InsectSpecies taxon = InsectSpecies.of(validSpecies());
 
         InvariantObservation result = mo.observable(taxon, "agg");
@@ -30,7 +31,7 @@ class InsectTaxonTest {
 
     @Test
     void speciesIsNotValid() {
-        var mo = observer.forMethod("speciesIsNotValid");
+        MethodObserver mo = observer.forMethod("speciesIsNotValid");
         InsectSpecies taxon = new InsectSpecies(null, null);
 
         InvariantObservation result = mo.observable(taxon, "agg");
@@ -41,7 +42,7 @@ class InsectTaxonTest {
 
     @Test
     void genusIsValid() {
-        var mo = observer.forMethod("genusIsValid");
+        MethodObserver mo = observer.forMethod("genusIsValid");
         InsectGenus taxon = InsectGenus.of(validGenus());
 
         InvariantObservation result = mo.observable(taxon, "agg");
@@ -52,7 +53,7 @@ class InsectTaxonTest {
 
     @Test
     void genusIsNotValid() {
-        var mo = observer.forMethod("genusIsNotValid");
+        MethodObserver mo = observer.forMethod("genusIsNotValid");
         InsectGenus taxon = new InsectGenus(null, null);
 
         InvariantObservation result = mo.observable(taxon, "agg");
@@ -63,7 +64,7 @@ class InsectTaxonTest {
 
     @Test
     void familyIsValid() {
-        var mo = observer.forMethod("familyIsValid");
+        MethodObserver mo = observer.forMethod("familyIsValid");
         InsectFamily taxon = InsectFamily.of(validFamily());
 
         InvariantObservation result = mo.observable(taxon, "agg");
@@ -74,7 +75,7 @@ class InsectTaxonTest {
 
     @Test
     void familyIsNotValid() {
-        var mo = observer.forMethod("familyIsNotValid");
+        MethodObserver mo = observer.forMethod("familyIsNotValid");
         InsectFamily taxon = new InsectFamily(null, null);
 
         InvariantObservation result = mo.observable(taxon, "agg");
@@ -85,7 +86,7 @@ class InsectTaxonTest {
 
     @Test
     void orderIsValid() {
-        var mo = observer.forMethod("orderIsValid");
+        MethodObserver mo = observer.forMethod("orderIsValid");
         InsectOrder taxon = InsectOrder.of(validOrder());
 
         InvariantObservation result = mo.observable(taxon, "agg");
@@ -95,7 +96,7 @@ class InsectTaxonTest {
 
     @Test
     void orderIsNotValid() {
-        var mo = observer.forMethod("orderIsNotValid");
+        MethodObserver mo = observer.forMethod("orderIsNotValid");
         InsectOrder taxon = new InsectOrder(null, null);
 
         InvariantObservation result = mo.observable(taxon, "agg");

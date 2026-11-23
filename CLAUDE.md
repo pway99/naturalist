@@ -186,6 +186,14 @@ boundary. Per-domain `CLAUDE.md` files show each domain's sub-context layout.
   git ls-files -co --exclude-standard | xargs grep -nIiE '[a-z0-9]+[-_]api[-_]?key|sk-ant[-]'
   ```
 
+- **No `var`, no star imports.** Every Java variable spells its type out, main and test alike, and
+  every import is explicit: the declarations and the import block say what a class uses.
+  `EnforceArchitecture` carries both. `NoVar` rewrites a `var` to its inferred type and marks one
+  it cannot name (an anonymous class); declare that as the supertype it is used as. OpenRewrite's
+  `RemoveUnusedImports` expands a `.*` into the names used, under the project style
+  `com.naturalist.Style` (in `naturalist.yml`, active in the root pom), whose fold counts are out
+  of reach so nothing folds imports back. JTE templates are not parsed by OpenRewrite and are not
+  covered.
 - **Never weaken a test, gate, or enforcement to make code pass — fix the code.** The
   build-time invariants exist to be *satisfied*, not silenced: the N+1 no-fan-out gate
   (`kernels/framework-test` → `com.naturalist.test.query.nofanout`, surfaced as

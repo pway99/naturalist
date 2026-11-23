@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,7 +91,7 @@ interface EmailVerificationTokenRepositoryTest
 
     @Test
     default void getByTokenHash_returnsMatchingToken() {
-        var result = repository().getByTokenHash("sha256:1a2b3c4d5e6f70819a2b3c4d5e6f7081");
+        Optional<EmailVerificationToken> result = repository().getByTokenHash("sha256:1a2b3c4d5e6f70819a2b3c4d5e6f7081");
 
         assertThat(result).isPresent();
         assertThat(result.get().id()).isEqualTo(TOKEN_ONE);

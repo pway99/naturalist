@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,25 +40,25 @@ class InsectsControllerPipelineInvariantTest {
 
     @Test
     void identify_pipelineInvariantViolation_isNotMappedToImageError() throws IOException {
-        var imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
-        var context = InsectsTestContext.create(nte, imageStore, Resilience.noOp(),
+        FilesystemImageStore imageStore = new FilesystemImageStore(imageRoot, Resilience.noOp());
+        InsectsTestContext context = InsectsTestContext.create(nte, imageStore, Resilience.noOp(),
                 IdentificationBudget.noOp(),
                 (image, tool, prompt) -> {
                     throw new InvariantViolationException("vision.pipeline", Set.of());
                 },
                 InsectsTestContext.noOpAuthority());
-        var library = LibraryTestContext.create(nte);
-        var controller = new InsectsController(
+        LibraryTestContext library = LibraryTestContext.create(nte);
+        InsectsController controller = new InsectsController(
                 context.insectQuery(), context.insectViewQuery(), context.insectCommand(),
                 library.cladeQuery(), library.glossaryTermQuery(), imageStore);
-        var request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute("naturalist.currentNaturalistName", "pat-way");
-        var image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
+        MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", JPEG_BYTES);
 
         assertThatThrownBy(() -> controller.identify(image, null, null, null, null, null, request))
                 .isInstanceOf(InvariantViolationException.class);
 
-        try (var walk = Files.walk(imageRoot)) {
+        try (Stream<Path> walk = Files.walk(imageRoot)) {
             assertThat(walk.filter(Files::isRegularFile)).isEmpty();
         }
     }

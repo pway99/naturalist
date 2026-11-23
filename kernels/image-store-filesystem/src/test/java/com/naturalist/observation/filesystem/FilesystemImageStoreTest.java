@@ -12,6 +12,7 @@ import com.naturalist.resilience.Bulkhead;
 import com.naturalist.resilience.BulkheadFullException;
 import com.naturalist.resilience.Resilience;
 import com.naturalist.resilience.Timeout;
+import io.micrometer.core.instrument.Counter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -23,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
@@ -117,7 +119,7 @@ class FilesystemImageStoreTest {
         FileName name = store.store("insects", ImageUpload.of(PHOTO));
         StoredImage stored = store.read("insects", name).orElseThrow();
 
-        try (var first = stored.content().open(); var second = stored.content().open()) {
+        try (InputStream first = stored.content().open(); InputStream second = stored.content().open()) {
             byte[] expected = ImageUpload.of(PHOTO).withoutMetadata().bytes();
             assertThat(first.readAllBytes()).isEqualTo(expected);
             assertThat(second.readAllBytes()).isEqualTo(expected);
@@ -239,7 +241,7 @@ class FilesystemImageStoreTest {
     @Test
     void read_propagatesTheBulkheadRefusal() {
         FileName name = store.store("insects", ImageUpload.of(PHOTO));
-        var full = new FilesystemImageStore(root, rejectingBulkhead());
+        FilesystemImageStore full = new FilesystemImageStore(root, rejectingBulkhead());
 
         assertThatThrownBy(() -> full.read("insects", name))
                 .isInstanceOf(BulkheadFullException.class);
@@ -329,7 +331,7 @@ class FilesystemImageStoreTest {
 
     @Test
     void store_runsUnderTheWriteBulkhead() throws IOException {
-        var full = new FilesystemImageStore(root, rejectingBulkhead(FilesystemImageStore.WRITE_STRATEGY));
+        FilesystemImageStore full = new FilesystemImageStore(root, rejectingBulkhead(FilesystemImageStore.WRITE_STRATEGY));
 
         assertThatThrownBy(() -> full.store("insects", ImageUpload.of(image("jpg", 3000, 2000))))
                 .isInstanceOf(BulkheadFullException.class);
@@ -464,7 +466,7 @@ class FilesystemImageStoreTest {
     void store_leavesNothingWhenTheTimeoutAbandonsTheWorker() throws Exception {
         CountDownLatch release = new CountDownLatch(1);
         List<Thread> workers = new CopyOnWriteArrayList<>();
-        var slow = new FilesystemImageStore(root, abandoningTimeout(FilesystemImageStore.WRITE_STRATEGY, release, workers));
+        FilesystemImageStore slow = new FilesystemImageStore(root, abandoningTimeout(FilesystemImageStore.WRITE_STRATEGY, release, workers));
 
         assertThatThrownBy(() -> slow.store("insects", ImageUpload.of(image("jpg", 3000, 2000))))
                 .isInstanceOf(IllegalStateException.class);
@@ -581,7 +583,7 @@ class FilesystemImageStoreTest {
     void conform_skipsAnUndecodableFile() throws IOException {
         Path junk = placed("junk.jpg", JPEG);
         placed("large.jpg", image("jpg", 2048, 1536));
-        var meters = new SimpleMeterRegistry();
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
         Metrics.addRegistry(meters);
         FilesystemImageStore.ConformReport report;
         try {
@@ -594,7 +596,7 @@ class FilesystemImageStoreTest {
         assertThat(Files.readAllBytes(junk)).isEqualTo(JPEG);
         assertThat(Files.exists(root.resolve("insects/tiles/junk.jpg"))).isFalse();
         assertThat(Files.isRegularFile(root.resolve("insects/tiles/large.jpg"))).isTrue();
-        var skipped = meters.find("naturalist.invariant.check")
+        Counter skipped = meters.find("naturalist.invariant.check")
                 .tag("method", "conform")
                 .tag("outcome", "violated")
                 .tag("level", Level.WARN.tagValue())
@@ -662,8 +664,8 @@ class FilesystemImageStoreTest {
     void conform_skipsAPhotoThatVanishesPartWay() throws IOException {
         placed("a-large.jpg", image("jpg", 2048, 1536));
         Path vanishing = placed("b-small.jpg", image("jpg", 800, 600));
-        var racing = new FilesystemImageStore(root, deletingOnEntry(FilesystemImageStore.WRITE_STRATEGY, vanishing));
-        var meters = new SimpleMeterRegistry();
+        FilesystemImageStore racing = new FilesystemImageStore(root, deletingOnEntry(FilesystemImageStore.WRITE_STRATEGY, vanishing));
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
         Metrics.addRegistry(meters);
         FilesystemImageStore.ConformReport report;
         try {
@@ -676,7 +678,7 @@ class FilesystemImageStoreTest {
         assertThat(report.tiled()).isEqualTo(1);
         assertThat(report.unchanged()).isEqualTo(1);
         assertThat(Files.exists(vanishing)).isFalse();
-        var skipped = meters.find("naturalist.invariant.check")
+        Counter skipped = meters.find("naturalist.invariant.check")
                 .tag("name", "FilesystemImageStore.conform.read")
                 .tag("kind", "caught")
                 .tag("handling", "swallowed")
@@ -703,7 +705,7 @@ class FilesystemImageStoreTest {
     @Test
     void store_countsAnUndecodableBodyOnceAsARefusal() {
         ImageUpload corrupt = ImageUpload.of(ImageFixtures.corruptBodyPng());
-        var meters = new SimpleMeterRegistry();
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
         Metrics.addRegistry(meters);
         try {
             assertThatThrownBy(() -> store.store("insects", corrupt)).isInstanceOf(ImageRefusedException.class);
@@ -711,7 +713,7 @@ class FilesystemImageStoreTest {
             Metrics.removeRegistry(meters);
         }
 
-        var refused = meters.find("naturalist.invariant.check")
+        Counter refused = meters.find("naturalist.invariant.check")
                 .tag("name", "FilesystemImageStore.store.decodable")
                 .tag("method", "store")
                 .tag("outcome", "violated")
@@ -761,9 +763,9 @@ class FilesystemImageStoreTest {
      */
     @Test
     void store_countsAnIllegalStateFromTheWriteBulkheadAsAStoreFault() throws IOException {
-        var failure = new IllegalStateException("permit wait interrupted");
-        var failing = new FilesystemImageStore(root, throwingBulkhead(FilesystemImageStore.WRITE_STRATEGY, failure));
-        var meters = new SimpleMeterRegistry();
+        IllegalStateException failure = new IllegalStateException("permit wait interrupted");
+        FilesystemImageStore failing = new FilesystemImageStore(root, throwingBulkhead(FilesystemImageStore.WRITE_STRATEGY, failure));
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
         Metrics.addRegistry(meters);
         try {
             assertThatThrownBy(() -> failing.store("insects", ImageUpload.of(PHOTO))).isSameAs(failure);
@@ -771,7 +773,7 @@ class FilesystemImageStoreTest {
             Metrics.removeRegistry(meters);
         }
 
-        var stored = meters.find("naturalist.invariant.check")
+        Counter stored = meters.find("naturalist.invariant.check")
                 .tag("name", "FilesystemImageStore.store.stored")
                 .tag("kind", "caught")
                 .tag("handling", "rethrown")
@@ -788,9 +790,9 @@ class FilesystemImageStoreTest {
     @Test
     void conform_countsAnIllegalStateFromTheWriteBulkheadAsAConformFault() throws IOException {
         placed("large.jpg", image("jpg", 2048, 1536));
-        var failure = new IllegalStateException("permit wait interrupted");
-        var failing = new FilesystemImageStore(root, throwingBulkhead(FilesystemImageStore.WRITE_STRATEGY, failure));
-        var meters = new SimpleMeterRegistry();
+        IllegalStateException failure = new IllegalStateException("permit wait interrupted");
+        FilesystemImageStore failing = new FilesystemImageStore(root, throwingBulkhead(FilesystemImageStore.WRITE_STRATEGY, failure));
+        SimpleMeterRegistry meters = new SimpleMeterRegistry();
         Metrics.addRegistry(meters);
         try {
             assertThatThrownBy(() -> failing.conform("insects")).isSameAs(failure);
@@ -798,7 +800,7 @@ class FilesystemImageStoreTest {
             Metrics.removeRegistry(meters);
         }
 
-        var conformed = meters.find("naturalist.invariant.check")
+        Counter conformed = meters.find("naturalist.invariant.check")
                 .tag("name", "FilesystemImageStore.conform.conformed")
                 .tag("kind", "caught")
                 .tag("handling", "rethrown")

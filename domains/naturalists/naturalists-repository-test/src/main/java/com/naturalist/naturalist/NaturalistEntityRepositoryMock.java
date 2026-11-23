@@ -23,7 +23,7 @@ class NaturalistEntityRepositoryMock
         MethodObserver getByAccount = observer().forMethod("getByAccount");
         getByAccount.arguments(i -> i.entityName(account, "account"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        Optional<Naturalist> result = testEntitySource().entityStream()
                 .filter(naturalist -> account.equals(naturalist.account()))
                 .findFirst();
         getByAccount.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);

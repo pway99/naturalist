@@ -94,7 +94,7 @@ class ReportedRecommendationEntityRepositoryRdbms
         MethodObserver getByLabAnalysisId = observer().forMethod("getByLabAnalysisId");
         getByLabAnalysisId.arguments(i -> i.identifier(labAnalysisId, "labAnalysisId"))
                 .throwWhenInvalid();
-        var result = mapper.selectByLabAnalysisId(labAnalysisId.value().toString()).stream()
+        List<ReportedRecommendation> result = mapper.selectByLabAnalysisId(labAnalysisId.value().toString()).stream()
                 .map(ReportedRecommendationDbo::toEntity).toList();
         getByLabAnalysisId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
@@ -107,7 +107,7 @@ class ReportedRecommendationEntityRepositoryRdbms
                 .throwWhenInvalid();
         if (labAnalysisIds.isEmpty()) return List.of();
         List<String> ids = labAnalysisIds.stream().map(id -> id.value().toString()).toList();
-        var result = mapper.selectByLabAnalysisIds(ids).stream().map(ReportedRecommendationDbo::toEntity).toList();
+        List<ReportedRecommendation> result = mapper.selectByLabAnalysisIds(ids).stream().map(ReportedRecommendationDbo::toEntity).toList();
         getByLabAnalysisIds.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }
@@ -117,7 +117,7 @@ class ReportedRecommendationEntityRepositoryRdbms
         MethodObserver getByInputName = observer().forMethod("getByInputName");
         getByInputName.arguments(i -> i.entityName(inputName, "inputName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByInputName(inputName.value()).stream()
+        List<ReportedRecommendation> result = mapper.selectByInputName(inputName.value()).stream()
                 .map(ReportedRecommendationDbo::toEntity).toList();
         getByInputName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

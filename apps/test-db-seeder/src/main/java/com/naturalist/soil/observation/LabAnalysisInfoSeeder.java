@@ -7,16 +7,18 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
 /** Seeds lab analyses through the real RDBMS adapter (split-package with the rdbms module). */
 public final class LabAnalysisInfoSeeder {
 
     private LabAnalysisInfoSeeder() {}
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
-        var entities = database.getNamed(LabAnalysisInfoTestEntitySource.class).entityStream().toList();
+        List<LabAnalysisInfo> entities = database.getNamed(LabAnalysisInfoTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, LabAnalysisInfoMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new LabAnalysisInfoEntityRepositoryRdbms(session.getMapper(LabAnalysisInfoMapper.class));
+            LabAnalysisInfoEntityRepositoryRdbms repo = new LabAnalysisInfoEntityRepositoryRdbms(session.getMapper(LabAnalysisInfoMapper.class));
             entities.forEach(repo::insert);
             session.commit();
         }

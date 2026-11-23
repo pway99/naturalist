@@ -93,7 +93,7 @@ class UsageEventEntityRepositoryRdbms
         MethodObserver findByCounterSince = observer().forMethod("findByCounterSince");
         findByCounterSince.arguments(i -> i.identifier(counter, "counter").notNull(since, "since"))
                 .throwWhenInvalid();
-        var result = mapper.findByCounterSince(counter.value(), naturalist == null ? null : naturalist.value(), since)
+        List<UsageEvent> result = mapper.findByCounterSince(counter.value(), naturalist == null ? null : naturalist.value(), since)
                 .stream().map(UsageEventDbo::toEntity).toList();
         findByCounterSince.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

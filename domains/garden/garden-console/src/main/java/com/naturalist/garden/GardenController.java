@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Read-only viewer for what is growing at Oak Vista: the planted zones, and what went into each.
@@ -56,7 +57,7 @@ public class GardenController {
 
     @GetMapping("/planted-zones/{zone}")
     String plantedZone(@PathVariable String zone, Model model) {
-        var planted = plantedZoneQuery.getByZoneName(ZoneName.of(zone));
+        Optional<PlantedZone> planted = plantedZoneQuery.getByZoneName(ZoneName.of(zone));
         if (planted.isEmpty()) {
             return "redirect:/garden/planted-zones";
         }
@@ -68,7 +69,7 @@ public class GardenController {
     /** One row of a zone — the useful grain when a zone holds five boxes. */
     @GetMapping("/planted-zones/{zone}/{row}")
     String row(@PathVariable String zone, @PathVariable String row, Model model) {
-        var planted = plantedZoneQuery.getBySubZoneName(ZoneName.of(zone), SubZoneName.of(row));
+        Optional<PlantedZone> planted = plantedZoneQuery.getBySubZoneName(ZoneName.of(zone), SubZoneName.of(row));
         if (planted.isEmpty()) {
             return "redirect:/garden/planted-zones/" + zone;
         }

@@ -44,7 +44,7 @@ class FileSecretProviderTest {
 
     @Test
     void missingFile_isEmpty_andRequireNamesTheDirectory() {
-        var provider = new FileSecretProvider(dir);
+        FileSecretProvider provider = new FileSecretProvider(dir);
         assertThat(provider.lookup(SECRET)).isEmpty();
         assertThatThrownBy(() -> provider.require(SECRET))
                 .isInstanceOf(MissingSecretException.class)
@@ -80,7 +80,7 @@ class FileSecretProviderTest {
 
     @Test
     void nullName_isRefused() {
-        var provider = new FileSecretProvider(dir);
+        FileSecretProvider provider = new FileSecretProvider(dir);
         assertThatThrownBy(() -> provider.lookup(null))
                 .isInstanceOf(InvariantViolationException.class)
                 .hasMessageContaining("[FileSecretProvider.lookup.name]");

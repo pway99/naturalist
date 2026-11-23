@@ -119,7 +119,7 @@ public record SubZone(
      * @return a new SubZone with the record added at the end of {@code pestPressureHistory}
      */
     public SubZone withAddedPestPressureRecord(PestPressureRecord record) {
-        var updated = new ArrayList<>(pestPressureHistory);
+        ArrayList<PestPressureRecord> updated = new ArrayList<>(pestPressureHistory);
         updated.add(record);
         return withPestPressureHistory(List.copyOf(updated));
     }

@@ -3,9 +3,6 @@ package com.naturalist.insects;
 import com.naturalist.spring.console.ConsoleSliceTemplates;
 
 import com.naturalist.data.NaturalistTestExtension;
-import com.naturalist.insects.FunctionalGuild;
-import com.naturalist.insects.InsectFunctionalRole;
-import com.naturalist.insects.InsectFunctionalRoleTestEntitySource;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

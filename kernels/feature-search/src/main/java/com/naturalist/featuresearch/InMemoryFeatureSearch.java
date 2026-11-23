@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * In-memory feature search: normalized token-set Jaccard over the corpus, returning
@@ -49,8 +50,8 @@ public final class InMemoryFeatureSearch<ID extends EntityId> implements Feature
     }
 
     public Map<String, List<FeatureMatch<ID>>> findSimilarToEach(Collection<String> values, int limit) {
-        var matches = new LinkedHashMap<String, List<FeatureMatch<ID>>>();
-        var queries = new LinkedHashMap<String, Set<String>>();
+        LinkedHashMap<String, List<FeatureSearch.FeatureMatch<ID>>> matches = new LinkedHashMap<String, List<FeatureMatch<ID>>>();
+        LinkedHashMap<String, Set<String>> queries = new LinkedHashMap<String, Set<String>>();
         for (String value : values) {
             matches.put(value, List.of());
             Set<String> tokens = tokenise(value);
@@ -61,7 +62,7 @@ public final class InMemoryFeatureSearch<ID extends EntityId> implements Feature
         if (queries.isEmpty() || limit <= 0) {
             return matches;
         }
-        try (var entries = corpus.load()) {
+        try (Stream<FeatureCorpus.Indexed<ID>> entries = corpus.load()) {
             List<FeatureCorpus.Indexed<ID>> features = entries.toList();
             queries.forEach((value, tokens) -> matches.put(value, closest(features, tokens, limit)));
         }

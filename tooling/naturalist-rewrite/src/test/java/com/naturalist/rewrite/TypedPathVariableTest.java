@@ -13,7 +13,8 @@ class TypedPathVariableTest implements RewriteTest {
 
     private static final String WEB = """
             package org.springframework.web.bind.annotation;
-            import java.lang.annotation.*;
+            import java.lang.annotation.Retention;
+            import java.lang.annotation.RetentionPolicy;
             @Retention(RetentionPolicy.RUNTIME) @interface Marker { }
             """;
     private static final String GET_MAPPING = """
@@ -104,7 +105,8 @@ class TypedPathVariableTest implements RewriteTest {
         rewriteRun(withTypes(srcMainJava(java(
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.GetMapping;
+            import org.springframework.web.bind.annotation.PathVariable;
             class Controller {
                 @GetMapping("/{name}")
                 String detail(@PathVariable String name) {
@@ -114,7 +116,8 @@ class TypedPathVariableTest implements RewriteTest {
             """,
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.GetMapping;
+            import org.springframework.web.bind.annotation.PathVariable;
             class Controller {
                 @GetMapping("/{name}")
                 String detail(/*~~(%s)~~>*/@PathVariable String name) {
@@ -129,7 +132,8 @@ class TypedPathVariableTest implements RewriteTest {
         rewriteRun(withTypes(srcMainJava(java(
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.PostMapping;
+            import org.springframework.web.bind.annotation.RequestParam;
             import java.math.BigDecimal;
             import java.util.UUID;
             class Controller {
@@ -143,7 +147,8 @@ class TypedPathVariableTest implements RewriteTest {
             """,
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.PostMapping;
+            import org.springframework.web.bind.annotation.RequestParam;
             import java.math.BigDecimal;
             import java.util.UUID;
             class Controller {
@@ -162,7 +167,8 @@ class TypedPathVariableTest implements RewriteTest {
         rewriteRun(withTypes(srcMainJava(java(
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.PostMapping;
+            import org.springframework.web.bind.annotation.RequestParam;
             class Controller {
                 @PostMapping("/weigh")
                 String weigh(@RequestParam("id") ThingId id, @RequestParam("grams") Grams grams) {
@@ -172,7 +178,8 @@ class TypedPathVariableTest implements RewriteTest {
             """,
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.PostMapping;
+            import org.springframework.web.bind.annotation.RequestParam;
             class Controller {
                 @PostMapping("/weigh")
                 String weigh(/*~~(%1$s)~~>*/@RequestParam("id") ThingId id, /*~~(%1$s)~~>*/@RequestParam("grams") Grams grams) {
@@ -187,7 +194,9 @@ class TypedPathVariableTest implements RewriteTest {
         rewriteRun(withTypes(srcMainJava(java(
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.GetMapping;
+            import org.springframework.web.bind.annotation.PathVariable;
+            import org.springframework.web.bind.annotation.RequestParam;
             import java.util.Optional;
             class Controller {
                 @GetMapping("/{name}")
@@ -205,7 +214,8 @@ class TypedPathVariableTest implements RewriteTest {
         rewriteRun(withTypes(srcMainJava(java(
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.GetMapping;
+            import org.springframework.web.bind.annotation.RequestParam;
             class Controller {
                 @GetMapping("/search")
                 String search(@RequestParam("q") String q, @RequestParam("name") String name) {
@@ -225,7 +235,8 @@ class TypedPathVariableTest implements RewriteTest {
         rewriteRun(withTypes(srcTestJava(java(
             """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.GetMapping;
+            import org.springframework.web.bind.annotation.PathVariable;
             class FakeController {
                 @GetMapping("/{name}")
                 String detail(@PathVariable String name) {
@@ -239,7 +250,8 @@ class TypedPathVariableTest implements RewriteTest {
     void namedValueEdgesComposite_includesTheRecipe_andEnforceArchitectureDoesNotYet() {
         String controller = """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.GetMapping;
+            import org.springframework.web.bind.annotation.PathVariable;
             class Controller {
                 @GetMapping("/{name}")
                 String detail(@PathVariable String name) {
@@ -250,7 +262,8 @@ class TypedPathVariableTest implements RewriteTest {
         rewriteRun(spec -> spec.recipeFromResources("com.naturalist.NamedValueEdges"),
             withTypes(srcMainJava(java(controller, """
             package com.naturalist.x;
-            import org.springframework.web.bind.annotation.*;
+            import org.springframework.web.bind.annotation.GetMapping;
+            import org.springframework.web.bind.annotation.PathVariable;
             class Controller {
                 @GetMapping("/{name}")
                 String detail(/*~~(%s)~~>*/@PathVariable String name) {

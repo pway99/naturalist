@@ -6,6 +6,7 @@ import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.fieldnotes.Description;
 import com.naturalist.naturalist.NaturalistName;
 import com.naturalist.taxonomy.OrganismFeatureAssignment;
+import com.naturalist.taxonomy.OrganismFeatureView;
 import com.naturalist.taxonomy.TaxonomicClassification;
 import com.naturalist.taxonomy.TaxonomicFamily;
 import com.naturalist.taxonomy.TaxonomicGenus;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +36,7 @@ class InsectCatalogIdentificationTransactionTest {
 
     @Test
     void executePersistsSpeciesAndParentRanksAndImageAndObservation() {
-        var id = catalogIdentification();
+        CatalogIdentification id = catalogIdentification();
 
         transaction.execute(id);
 
@@ -47,7 +49,7 @@ class InsectCatalogIdentificationTransactionTest {
         assertThat(query.species().getByName(SPECIES_NAME)).isPresent();
 
         // Image persisted
-        var images = query.images().forParentName(SPECIES_NAME);
+        InsectEntityCollections.ImageCollection images = query.images().forParentName(SPECIES_NAME);
         assertThat(images.stream().toList()).hasSize(1);
         assertThat(images.stream().toList().getFirst().resourceName())
                 .isEqualTo(FileName.of("IMG_0001.jpg"));
@@ -60,18 +62,18 @@ class InsectCatalogIdentificationTransactionTest {
 
     @Test
     void executeIsIdempotentForExistingSpecies() {
-        var first = catalogIdentification();
+        CatalogIdentification first = catalogIdentification();
         transaction.execute(first);
 
         // Second identification of the same species — different image and observation
-        var secondObsId = InsectObservationId.create();
-        var secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        InsectObservationId secondObsId = InsectObservationId.create();
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), SPECIES_NAME, Instant.now(),
                 FileName.of("IMG_0002.jpg"), secondObsId);
-        var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
                 secondObsId, NaturalistName.of("pat"), SPECIES_NAME,
                 Instant.now(), "second sighting", null, null, null);
-        var second = new CatalogIdentification(
+        CatalogIdentification second = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(species()),
                 taxonomy(), secondImage, secondObs,
                 List.of(), List.of(), Map.of());
@@ -82,7 +84,7 @@ class InsectCatalogIdentificationTransactionTest {
         assertThat(query.species().getByName(SPECIES_NAME)).isPresent();
 
         // Both images persisted
-        var images = query.images().forParentName(SPECIES_NAME);
+        InsectEntityCollections.ImageCollection images = query.images().forParentName(SPECIES_NAME);
         assertThat(images.stream().toList()).hasSize(2);
 
         // Both observations persisted
@@ -96,21 +98,21 @@ class InsectCatalogIdentificationTransactionTest {
         transaction.execute(catalogIdentification());
 
         // Second species in same genus — parent ranks already exist
-        var secondSpeciesName = InsectSpeciesName.of("fabricatus-secundus");
-        var secondObsId = InsectObservationId.create();
-        var secondSpecies = new InsectSpeciesInfo(
+        InsectSpeciesName secondSpeciesName = InsectSpeciesName.of("fabricatus-secundus");
+        InsectObservationId secondObsId = InsectObservationId.create();
+        InsectSpeciesInfo secondSpecies = new InsectSpeciesInfo(
                 secondSpeciesName, GENUS_NAME,
                 TaxonomicSpecies.of("secundus"),
                 description(),
                 Set.of(CommonName.of("Second Test Fly")),
                 null, null, null, null, null, null, null, null, null);
-        var secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), secondSpeciesName, Instant.now(),
                 FileName.of("IMG_0003.jpg"), secondObsId);
-        var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
                 secondObsId, NaturalistName.of("pat"), secondSpeciesName,
                 Instant.now(), null, null, null, null);
-        var second = new CatalogIdentification(
+        CatalogIdentification second = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(secondSpecies),
                 taxonomy(), secondImage, secondObs,
                 List.of(), List.of(), Map.of());
@@ -129,30 +131,30 @@ class InsectCatalogIdentificationTransactionTest {
 
     @Test
     void executePersistsFamilyLevelIdentification() {
-        var familyName = InsectFamilyName.of("bogusidae");
-        var orderName = InsectOrderName.of("neuroptera"); // real seeded order — FK valid
-        var obsId = InsectObservationId.create();
-        var family = new InsectFamilyInfo(
+        InsectFamilyName familyName = InsectFamilyName.of("bogusidae");
+        InsectOrderName orderName = InsectOrderName.of("neuroptera"); // real seeded order — FK valid
+        InsectObservationId obsId = InsectObservationId.create();
+        InsectFamilyInfo family = new InsectFamilyInfo(
                 familyName, orderName,
                 TaxonomicFamily.of("Bogusidae"), description(),
                 Set.of(CommonName.of("Bogus Lacewings")), null);
-        var taxonomy = new TaxonomicClassification(
+        TaxonomicClassification taxonomy = new TaxonomicClassification(
                 TaxonomicOrder.of("Neuroptera"), TaxonomicFamily.of("Bogusidae"),
                 null, null);
-        var image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), familyName, Instant.now(),
                 FileName.of("IMG_0010.jpg"), obsId);
-        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 obsId, NaturalistName.of("pat"), familyName,
                 Instant.now(), null, null, null, null);
-        var id = new CatalogIdentification(
+        CatalogIdentification id = new CatalogIdentification(
                 new IdentifiedRankEntity.Family(family), taxonomy,
                 image, observation, List.of(), List.of(), Map.of());
 
         transaction.execute(id);
 
         assertThat(query.orders().getByName(orderName)).isPresent();
-        var persistedFamily = query.families().getByName(familyName);
+        Optional<InsectFamilyInfo> persistedFamily = query.families().getByName(familyName);
         assertThat(persistedFamily).isPresent();
         assertThat(persistedFamily.get().description()).isEqualTo(description());
         assertThat(query.images().forParentName(familyName).stream().toList()).hasSize(1);
@@ -166,23 +168,23 @@ class InsectCatalogIdentificationTransactionTest {
         // FK unresolved at insert time — rejected by the in-memory source's foreign
         // key constraint and, in Postgres, by the genus insert's nested SELECT on
         // insect_family matching no row (zero rows inserted → EntityNotFoundException).
-        var genusName = InsectGenusName.of("fictus");
-        var familyName = InsectFamilyName.of("nonexistentidae");
-        var orderName = InsectOrderName.of("neuroptera"); // real seeded order
-        var obsId = InsectObservationId.create();
-        var genus = new InsectGenusInfo(
+        InsectGenusName genusName = InsectGenusName.of("fictus");
+        InsectFamilyName familyName = InsectFamilyName.of("nonexistentidae");
+        InsectOrderName orderName = InsectOrderName.of("neuroptera"); // real seeded order
+        InsectObservationId obsId = InsectObservationId.create();
+        InsectGenusInfo genus = new InsectGenusInfo(
                 genusName, familyName, TaxonomicGenus.of("Fictus"), description(),
                 Set.of(CommonName.of("Fictitious Lacewings")), null);
-        var taxonomy = new TaxonomicClassification(
+        TaxonomicClassification taxonomy = new TaxonomicClassification(
                 TaxonomicOrder.of("Neuroptera"), TaxonomicFamily.of("Nonexistentidae"),
                 TaxonomicGenus.of("Fictus"), null);
-        var image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> image = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), genusName, Instant.now(),
                 FileName.of("IMG_0020.jpg"), obsId);
-        var observation = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> observation = new OrganismObservation<InsectObservationId, InsectRankName>(
                 obsId, NaturalistName.of("pat"), genusName,
                 Instant.now(), null, null, null, null);
-        var id = new CatalogIdentification(
+        CatalogIdentification id = new CatalogIdentification(
                 new IdentifiedRankEntity.Genus(genus), taxonomy,
                 image, observation, List.of(), List.of(), Map.of());
 
@@ -190,7 +192,7 @@ class InsectCatalogIdentificationTransactionTest {
 
         assertThat(query.orders().getByName(orderName)).isPresent();
         assertThat(query.families().getByName(familyName)).isPresent();
-        var persistedGenus = query.genera().getByName(genusName);
+        Optional<InsectGenusInfo> persistedGenus = query.genera().getByName(genusName);
         assertThat(persistedGenus).isPresent();
         // The identified genus keeps its real description — parent resolution
         // never reaches the identified rank, so no PLACEHOLDER can shadow it.
@@ -199,20 +201,20 @@ class InsectCatalogIdentificationTransactionTest {
 
     @Test
     void executePersistsFeatures() {
-        var featureId = InsectFeatureId.create();
-        var feature = InsectFeature.of(featureId, "hovering flight");
+        InsectFeatureId featureId = InsectFeatureId.create();
+        InsectFeature feature = InsectFeature.of(featureId, "hovering flight");
         OrganismFeatureAssignment<InsectFeatureAssignmentId, InsectFeatureId, InsectRankName> assignment =
                 OrganismFeatureAssignment.of(
                         InsectFeatureAssignmentId.create(), featureId,
                         SPECIES_NAME, 0);
-        var id = new CatalogIdentification(
+        CatalogIdentification id = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(species()), taxonomy(),
                 image(), observation(),
                 List.of(feature), List.of(assignment), Map.of());
 
         transaction.execute(id);
 
-        var featureView = query.features().findByRankName(SPECIES_NAME);
+        OrganismFeatureView<InsectRankName, InsectFeature> featureView = query.features().findByRankName(SPECIES_NAME);
         assertThat(featureView.groups()).hasSize(1);
         assertThat(featureView.groups().getFirst().features()).hasSize(1);
         assertThat(featureView.groups().getFirst().features().getFirst().value())
@@ -221,21 +223,21 @@ class InsectCatalogIdentificationTransactionTest {
 
     @Test
     void executeUsesPreResolvedDescriptionForNewParentRank() {
-        var resolvedDescription = new Description(
+        Description resolvedDescription = new Description(
                 "Testoptera are imaginary!",
                 "Testoptera have no real wings at all.",
                 "Order Testoptera demonstrates remarkable fictitious diversity.",
                 "Testoptera is a purely synthetic test order.");
-        var parentDescriptions = Map.<InsectRankName, Description>of(
+        Map<InsectRankName, Description> parentDescriptions = Map.<InsectRankName, Description>of(
                 ORDER_NAME, resolvedDescription);
-        var id = new CatalogIdentification(
+        CatalogIdentification id = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(species()), taxonomy(),
                 image(), observation(),
                 List.of(), List.of(), parentDescriptions);
 
         transaction.execute(id);
 
-        var order = query.orders().getByName(ORDER_NAME);
+        Optional<InsectOrderInfo> order = query.orders().getByName(ORDER_NAME);
         assertThat(order).isPresent();
         assertThat(order.get().description().preschool())
                 .isEqualTo("Testoptera are imaginary!");
@@ -300,27 +302,27 @@ class InsectCatalogIdentificationTransactionTest {
      */
     @Test
     void twoCallsFromTheTestAreTwoCounts() {
-        var fromGraph = nte.get(InsectCatalogIdentificationTransaction.class);
-        var secondSpeciesName = InsectSpeciesName.of("fabricatus-tertius");
-        var secondObsId = InsectObservationId.create();
-        var secondSpecies = new InsectSpeciesInfo(
+        InsectCatalogIdentificationTransaction fromGraph = nte.get(InsectCatalogIdentificationTransaction.class);
+        InsectSpeciesName secondSpeciesName = InsectSpeciesName.of("fabricatus-tertius");
+        InsectObservationId secondObsId = InsectObservationId.create();
+        InsectSpeciesInfo secondSpecies = new InsectSpeciesInfo(
                 secondSpeciesName, GENUS_NAME,
                 TaxonomicSpecies.of("tertius"),
                 description(),
                 Set.of(CommonName.of("Third Test Fly")),
                 null, null, null, null, null, null, null, null, null);
-        var secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
+        OrganismImage<InsectImageId, InsectObservationId, InsectRankName> secondImage = new OrganismImage<InsectImageId, InsectObservationId, InsectRankName>(
                 InsectImageId.create(), secondSpeciesName, Instant.now(),
                 FileName.of("IMG_0030.jpg"), secondObsId);
-        var secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
+        OrganismObservation<InsectObservationId, InsectRankName> secondObs = new OrganismObservation<InsectObservationId, InsectRankName>(
                 secondObsId, NaturalistName.of("pat"), secondSpeciesName,
                 Instant.now(), null, null, null, null);
-        var second = new CatalogIdentification(
+        CatalogIdentification second = new CatalogIdentification(
                 new IdentifiedRankEntity.Species(secondSpecies),
                 taxonomy(), secondImage, secondObs,
                 List.of(), List.of(), Map.of());
 
-        for (var identification : List.of(catalogIdentification(), second)) {
+        for (CatalogIdentification identification : List.of(catalogIdentification(), second)) {
             fromGraph.execute(identification);
         }
 

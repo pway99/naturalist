@@ -6,10 +6,17 @@ import com.naturalist.catalog.EntityRef;
 import com.naturalist.data.Pages;
 import com.naturalist.fieldnotes.CommonName;
 import com.naturalist.infrastructure.DomainService;
-import com.naturalist.insects.*;
+import com.naturalist.insects.InsectFamilyInfo;
+import com.naturalist.insects.InsectGenusInfo;
+import com.naturalist.insects.InsectGenusName;
+import com.naturalist.insects.InsectOrderInfo;
+import com.naturalist.insects.InsectQuery;
+import com.naturalist.insects.InsectSpeciesInfo;
+import com.naturalist.insects.InsectsDomain;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.TaxonomicGenus;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -85,7 +92,7 @@ public class InsectsCatalogContribution implements CatalogContribution {
     public Stream<SearchableEntity> searchableEntities() {
         // Build the genus lookup once per stream so species token assembly can resolve
         // the parent genus's TaxonomicGenus epithet without re-querying per species.
-        var allGenera = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage).toList();
+        List<InsectGenusInfo> allGenera = Pages.stream(ASSEMBLY_PAGE_SIZE, genera::findPage).toList();
         Map<InsectGenusName, InsectGenusInfo> genusByName = allGenera.stream()
                 .collect(Collectors.toMap(InsectGenusInfo::name, Function.identity()));
         return Stream.of(

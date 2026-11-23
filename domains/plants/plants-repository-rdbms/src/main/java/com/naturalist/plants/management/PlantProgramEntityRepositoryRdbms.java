@@ -94,7 +94,7 @@ class PlantProgramEntityRepositoryRdbms
         MethodObserver getByPlantName = observer().forMethod("getByPlantName");
         getByPlantName.arguments(i -> i.identifier(plantRankName, "plantName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByPlantName(plantRankName.rank().name(), plantRankName.value())
+        List<PlantProgram> result = mapper.selectByPlantName(plantRankName.rank().name(), plantRankName.value())
                 .stream().map(PlantProgramDbo::toEntity).toList();
         getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

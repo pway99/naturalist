@@ -23,7 +23,7 @@ class PlantEcologicalRoleRepositoryMock
         MethodObserver getByPlantName = observer().forMethod("getByPlantName");
         getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        Optional<PlantEcologicalRole> result = testEntitySource().entityStream()
                 .filter(role -> plantName.equals(role.plantName()))
                 .findFirst();
         getByPlantName.state(s -> s.namedEntityOrNull(result.orElse(null), "result")).observe(Level.WARN);

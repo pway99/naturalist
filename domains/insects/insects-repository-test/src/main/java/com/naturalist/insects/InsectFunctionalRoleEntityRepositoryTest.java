@@ -104,7 +104,7 @@ interface InsectFunctionalRoleEntityRepositoryTest
 
     @Test
     default void getByParentNames_returnsRolesAcrossTheGivenParents() {
-        var results = repository().getByParentNames(Set.of(
+        List<InsectFunctionalRole> results = repository().getByParentNames(Set.of(
                 TestInsectsIdentifiers.InsectFamily.Syrphidae.name,
                 TestInsectsIdentifiers.InsectGenus.Empoasca.name));
 

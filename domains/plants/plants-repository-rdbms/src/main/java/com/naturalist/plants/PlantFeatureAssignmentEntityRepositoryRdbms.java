@@ -57,7 +57,7 @@ class PlantFeatureAssignmentEntityRepositoryRdbms
         int pageSize = request.pageSize();
         List<PlantFeatureAssignmentDbo> rows = mapper.selectPage(pageSize + 1, request.offset());
         boolean immediateMore = rows.size() > pageSize;
-        var content = rows.stream().limit(pageSize).map(PlantFeatureAssignmentDbo::toEntity).toList();
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> content = rows.stream().limit(pageSize).map(PlantFeatureAssignmentDbo::toEntity).toList();
 
         int pagesAheadKnown = 0;
         boolean moreBeyondLookahead = immediateMore;
@@ -103,7 +103,7 @@ class PlantFeatureAssignmentEntityRepositoryRdbms
         MethodObserver getByRankName = observer().forMethod("getByRankName");
         getByRankName.arguments(i -> i.identifier(rankName, "rankName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByRank(rankName.rank().name(), rankName.value()).stream()
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> result = mapper.selectByRank(rankName.rank().name(), rankName.value()).stream()
                 .map(PlantFeatureAssignmentDbo::toEntity).toList();
         getByRankName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
@@ -119,7 +119,7 @@ class PlantFeatureAssignmentEntityRepositoryRdbms
         List<PlantFeatureAssignmentRankKey> keys = rankNames.stream()
                 .map(r -> new PlantFeatureAssignmentRankKey(r.rank().name(), r.value()))
                 .toList();
-        var result = mapper.selectByRankKeys(keys).stream()
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> result = mapper.selectByRankKeys(keys).stream()
                 .map(PlantFeatureAssignmentDbo::toEntity).toList();
         getByRankNames.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
@@ -131,7 +131,7 @@ class PlantFeatureAssignmentEntityRepositoryRdbms
         MethodObserver getByFeatureId = observer().forMethod("getByFeatureId");
         getByFeatureId.arguments(i -> i.entityId(featureId, "featureId"))
                 .throwWhenInvalid();
-        var result = mapper.selectByFeatureId(featureId.value().toString()).stream()
+        List<OrganismFeatureAssignment<PlantFeatureAssignmentId, PlantFeatureId, PlantRankName>> result = mapper.selectByFeatureId(featureId.value().toString()).stream()
                 .map(PlantFeatureAssignmentDbo::toEntity).toList();
         getByFeatureId.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;

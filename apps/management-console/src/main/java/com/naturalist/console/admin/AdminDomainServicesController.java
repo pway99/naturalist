@@ -35,7 +35,7 @@ public class AdminDomainServicesController {
 
     @GetMapping("/admin/domain-services")
     String domainServices(Model model) {
-        var domains = applicationContext.getBeansWithAnnotation(DomainService.class)
+        List<AdminDomainServicesController.Domain> domains = applicationContext.getBeansWithAnnotation(DomainService.class)
                 .values().stream()
                 .map(bean -> Bean.from(bean.getClass()))
                 .collect(Collectors.groupingBy(

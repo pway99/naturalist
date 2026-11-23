@@ -97,7 +97,7 @@ interface InsectGenusRepositoryTest
     default void getByFamilyName_returnsGeneraWithMatchingFamilyName() {
         InsectFamilyName halictidae = InsectFamilyName.of("halictidae");
 
-        var results = repository().getByFamilyName(halictidae);
+        List<InsectGenusInfo> results = repository().getByFamilyName(halictidae);
 
         assertThat(results)
                 .extracting(InsectGenusInfo::name)
@@ -109,7 +109,7 @@ interface InsectGenusRepositoryTest
     default void getByFamilyName_returnsEmptyForUnknownFamily() {
         InsectFamilyName unknown = InsectFamilyName.of("unobtainium-idae");
 
-        var results = repository().getByFamilyName(unknown);
+        List<InsectGenusInfo> results = repository().getByFamilyName(unknown);
 
         assertThat(results).isEmpty();
     }
@@ -123,7 +123,7 @@ interface InsectGenusRepositoryTest
 
     @Test
     default void getByFamilyNames_returnsGeneraAcrossTheGivenFamilies() {
-        var result = repository().getByFamilyNames(Set.of(
+        List<InsectGenusInfo> result = repository().getByFamilyNames(Set.of(
                 TestInsectsIdentifiers.InsectFamily.Papilionidae.name,
                 TestInsectsIdentifiers.InsectFamily.Apidae.name));
 

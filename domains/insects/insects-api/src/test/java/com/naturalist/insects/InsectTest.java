@@ -9,6 +9,7 @@ import com.naturalist.fieldnotes.Description;
 import com.naturalist.insects.InsectEntityCollections.ImageCollection;
 import com.naturalist.insects.lifestage.InsectLifeStageEntityCollections.LifeStageCollection;
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import com.naturalist.taxonomy.OrganismFeatureView;
 import com.naturalist.taxonomy.TaxonomicFamily;
@@ -197,7 +198,7 @@ class InsectTest {
 
     @Test
     void emptyAggregateIsValid() {
-        var mo = observer.forMethod("emptyAggregateIsValid");
+        MethodObserver mo = observer.forMethod("emptyAggregateIsValid");
         Insect insect = Insect.empty();
 
         InvariantObservation result = mo.observable(insect, "insect");
@@ -207,7 +208,7 @@ class InsectTest {
 
     @Test
     void fullyIdentifiedAggregateIsValid() {
-        var mo = observer.forMethod("fullyIdentifiedAggregateIsValid");
+        MethodObserver mo = observer.forMethod("fullyIdentifiedAggregateIsValid");
         Insect insect = Insect.empty()
                 .withOrder(order())
                 .withFamily(family())
@@ -221,7 +222,7 @@ class InsectTest {
 
     @Test
     void familyRootedAggregateIsValid() {
-        var mo = observer.forMethod("familyRootedAggregateIsValid");
+        MethodObserver mo = observer.forMethod("familyRootedAggregateIsValid");
         Insect insect = Insect.empty()
                 .withOrder(order())
                 .withFamily(family());
@@ -235,7 +236,7 @@ class InsectTest {
 
     @Test
     void nullObservationsReportsObservationsViolation() {
-        var mo = observer.forMethod("nullObservationsReportsObservationsViolation");
+        MethodObserver mo = observer.forMethod("nullObservationsReportsObservationsViolation");
         Insect insect = new Insect(
                 null,
                 null, null, null, null,
@@ -253,7 +254,7 @@ class InsectTest {
 
     @Test
     void nullLifeStagesReportsLifeStagesViolation() {
-        var mo = observer.forMethod("nullLifeStagesReportsLifeStagesViolation");
+        MethodObserver mo = observer.forMethod("nullLifeStagesReportsLifeStagesViolation");
         Insect insect = new Insect(
                 ImageCollection.empty(),
                 null, null, null, null,
@@ -271,7 +272,7 @@ class InsectTest {
 
     @Test
     void speciesPresentWithoutGenusReportsSpeciesGenusViolation() {
-        var mo = observer.forMethod("speciesPresentWithoutGenusReportsSpeciesGenusViolation");
+        MethodObserver mo = observer.forMethod("speciesPresentWithoutGenusReportsSpeciesGenusViolation");
         Insect insect = new Insect(
                 ImageCollection.empty(),
                 order(),
@@ -292,7 +293,7 @@ class InsectTest {
 
     @Test
     void genusPresentWithoutFamilyReportsGenusFamilyViolation() {
-        var mo = observer.forMethod("genusPresentWithoutFamilyReportsGenusFamilyViolation");
+        MethodObserver mo = observer.forMethod("genusPresentWithoutFamilyReportsGenusFamilyViolation");
         Insect insect = new Insect(
                 ImageCollection.empty(),
                 order(),
@@ -313,7 +314,7 @@ class InsectTest {
 
     @Test
     void familyPresentWithoutOrderReportsFamilyOrderViolation() {
-        var mo = observer.forMethod("familyPresentWithoutOrderReportsFamilyOrderViolation");
+        MethodObserver mo = observer.forMethod("familyPresentWithoutOrderReportsFamilyOrderViolation");
         Insect insect = new Insect(
                 ImageCollection.empty(),
                 null,
@@ -334,7 +335,7 @@ class InsectTest {
 
     @Test
     void withSpeciesOnOrderOnlyAggregateConstructsButReportsAncestorViolations() {
-        var mo = observer.forMethod("withSpeciesOnOrderOnlyAggregateConstructsButReportsAncestorViolations");
+        MethodObserver mo = observer.forMethod("withSpeciesOnOrderOnlyAggregateConstructsButReportsAncestorViolations");
         Insect orderOnly = Insect.empty().withOrder(order());
 
         Insect attempted = orderOnly.withSpecies(species());
@@ -348,7 +349,7 @@ class InsectTest {
 
     @Test
     void familyWithMismatchedOrderFkReportsFamilyBelongsToOrderViolation() {
-        var mo = observer.forMethod("familyWithMismatchedOrderFkReportsFamilyBelongsToOrderViolation");
+        MethodObserver mo = observer.forMethod("familyWithMismatchedOrderFkReportsFamilyBelongsToOrderViolation");
         InsectFamily mismatched = InsectFamily.of(new InsectFamilyInfo(
                 familyName(),
                 InsectOrderName.of("diptera"),
@@ -368,7 +369,7 @@ class InsectTest {
 
     @Test
     void genusWithMismatchedFamilyFkReportsGenusBelongsToFamilyViolation() {
-        var mo = observer.forMethod("genusWithMismatchedFamilyFkReportsGenusBelongsToFamilyViolation");
+        MethodObserver mo = observer.forMethod("genusWithMismatchedFamilyFkReportsGenusBelongsToFamilyViolation");
         InsectGenus mismatched = InsectGenus.of(new InsectGenusInfo(
                 genusName(),
                 InsectFamilyName.of("syrphidae"),
@@ -389,7 +390,7 @@ class InsectTest {
 
     @Test
     void speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation() {
-        var mo = observer.forMethod("speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation");
+        MethodObserver mo = observer.forMethod("speciesWithMismatchedGenusFkReportsSpeciesBelongsToGenusViolation");
         InsectSpecies mismatched = InsectSpecies.of(new InsectSpeciesInfo(
                 speciesName(),
                 InsectGenusName.of("empoasca"),
@@ -418,7 +419,7 @@ class InsectTest {
         // A structurally invalid features view (null subject) surfaces under ".features".
         OrganismFeatureView<InsectRankName, InsectFeature> badFeatures = new OrganismFeatureView<>(null, List.of());
         Insect insect = Insect.empty().withFeatures(badFeatures);
-        var mo = observer.forMethod("featuresDescent_reportsNestedViolations");
+        MethodObserver mo = observer.forMethod("featuresDescent_reportsNestedViolations");
         assertThat(mo.observable(insect, "insect").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".insect.features.subject");
     }
@@ -428,7 +429,7 @@ class InsectTest {
     @Test
     void childrenNull_reportsInvariantViolation() {
         Insect insect = Insect.empty().withChildren(null);
-        var mo = observer.forMethod("childrenNull_reportsInvariantViolation");
+        MethodObserver mo = observer.forMethod("childrenNull_reportsInvariantViolation");
         assertThat(mo.observable(insect, "insect").violationNamesRemovingPrefix(mo.observationPoint()))
                 .contains(".insect.children");
     }

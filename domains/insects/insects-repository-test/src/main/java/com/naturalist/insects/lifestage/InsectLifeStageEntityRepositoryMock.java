@@ -24,7 +24,7 @@ public class InsectLifeStageEntityRepositoryMock
         MethodObserver getByParentName = observer().forMethod("getByParentName");
         getByParentName.arguments(i -> i.identifier(parentName, "parentName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<LifeStage> result = testEntitySource().entityStream()
                 .filter(stage -> parentName.equals(stage.parentName()))
                 .toList();
         getByParentName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

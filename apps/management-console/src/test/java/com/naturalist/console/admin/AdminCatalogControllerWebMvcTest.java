@@ -63,11 +63,11 @@ class AdminCatalogControllerWebMvcTest {
 
     @Test
     void admin_catalog_groupsByRegisteredDomainSlug() throws Exception {
-        var html = render();
+        String html = render();
 
-        var chemistryAt = html.indexOf(">chemistry</h2>");
-        var insectsAt = html.indexOf(">insects</h2>");
-        var plantsAt = html.indexOf(">plants</h2>");
+        int chemistryAt = html.indexOf(">chemistry</h2>");
+        int insectsAt = html.indexOf(">insects</h2>");
+        int plantsAt = html.indexOf(">plants</h2>");
 
         assertThat(chemistryAt).as("chemistry heading").isGreaterThan(-1);
         assertThat(insectsAt).as("insects heading, ordered after chemistry").isGreaterThan(chemistryAt);
@@ -76,11 +76,11 @@ class AdminCatalogControllerWebMvcTest {
 
     @Test
     void admin_catalog_listsContributionAndProviderUnderPlants() throws Exception {
-        var html = render();
+        String html = render();
 
-        var plantsAt = html.indexOf(">plants</h2>");
+        int plantsAt = html.indexOf(">plants</h2>");
         assertThat(plantsAt).isGreaterThan(-1);
-        var plantsSection = html.substring(plantsAt);
+        String plantsSection = html.substring(plantsAt);
 
         assertThat(plantsSection)
                 .contains("PlantsCatalogContribution")
@@ -93,7 +93,7 @@ class AdminCatalogControllerWebMvcTest {
 
     @Test
     void admin_catalog_navMarksCatalogAsCurrent() throws Exception {
-        var html = render();
+        String html = render();
 
         assertThat(html).contains("href=\"/admin/catalog\" aria-current=\"page\"");
     }

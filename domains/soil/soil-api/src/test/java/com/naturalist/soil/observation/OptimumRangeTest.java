@@ -1,6 +1,7 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +16,8 @@ class OptimumRangeTest {
     /** Nitrate-N on CH 2671853-001: {@code 5.3 - 7.2}. */
     @Test
     void closedRangeHasNoViolations() {
-        var mo = observer.forMethod("closedRangeHasNoViolations");
-        var range = new OptimumRange.Closed(new BigDecimal("5.3"), new BigDecimal("7.2"));
+        MethodObserver mo = observer.forMethod("closedRangeHasNoViolations");
+        OptimumRange.Closed range = new OptimumRange.Closed(new BigDecimal("5.3"), new BigDecimal("7.2"));
 
         InvariantObservation result = mo.observable(range, "range");
 
@@ -26,8 +27,8 @@ class OptimumRangeTest {
     /** Soluble sodium on CH 2671853-001: {@code < 19}, with no floor invented for it. */
     @Test
     void upperBoundedRangeHasNoViolations() {
-        var mo = observer.forMethod("upperBoundedRangeHasNoViolations");
-        var range = new OptimumRange.UpperBounded(new BigDecimal("19"));
+        MethodObserver mo = observer.forMethod("upperBoundedRangeHasNoViolations");
+        OptimumRange.UpperBounded range = new OptimumRange.UpperBounded(new BigDecimal("19"));
 
         InvariantObservation result = mo.observable(range, "range");
 
@@ -37,7 +38,7 @@ class OptimumRangeTest {
     /** {@code ---} on the report. No bounds, nothing to violate. */
     @Test
     void notApplicableHasNoViolations() {
-        var mo = observer.forMethod("notApplicableHasNoViolations");
+        MethodObserver mo = observer.forMethod("notApplicableHasNoViolations");
 
         InvariantObservation result = mo.observable(new OptimumRange.NotApplicable(), "range");
 
@@ -46,8 +47,8 @@ class OptimumRangeTest {
 
     @Test
     void invertedClosedRangeIsRejected() {
-        var mo = observer.forMethod("invertedClosedRangeIsRejected");
-        var range = new OptimumRange.Closed(new BigDecimal("7.2"), new BigDecimal("5.3"));
+        MethodObserver mo = observer.forMethod("invertedClosedRangeIsRejected");
+        OptimumRange.Closed range = new OptimumRange.Closed(new BigDecimal("7.2"), new BigDecimal("5.3"));
 
         InvariantObservation result = mo.observable(range, "range");
 
@@ -57,8 +58,8 @@ class OptimumRangeTest {
 
     @Test
     void closedRangeMissingBothBoundsProducesOneViolationPerField() {
-        var mo = observer.forMethod("closedRangeMissingBothBoundsProducesOneViolationPerField");
-        var range = new OptimumRange.Closed(null, null);
+        MethodObserver mo = observer.forMethod("closedRangeMissingBothBoundsProducesOneViolationPerField");
+        OptimumRange.Closed range = new OptimumRange.Closed(null, null);
 
         InvariantObservation result = mo.observable(range, "range");
 
@@ -68,7 +69,7 @@ class OptimumRangeTest {
 
     @Test
     void upperBoundedWithoutACeilingIsRejected() {
-        var mo = observer.forMethod("upperBoundedWithoutACeilingIsRejected");
+        MethodObserver mo = observer.forMethod("upperBoundedWithoutACeilingIsRejected");
 
         InvariantObservation result =
                 mo.observable(new OptimumRange.UpperBounded(null), "range");

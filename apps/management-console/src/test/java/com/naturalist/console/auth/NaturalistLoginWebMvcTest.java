@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -93,7 +95,7 @@ class NaturalistLoginWebMvcTest {
         mockMvc.perform(formLogin("/login").user(EMAIL).password(PASSWORD))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(authenticated().withAuthentication(auth -> {
-                    var authorityNames = auth.getAuthorities().stream()
+                    List<String> authorityNames = auth.getAuthorities().stream()
                             .map(org.springframework.security.core.GrantedAuthority::getAuthority)
                             .toList();
                     assertThat(authorityNames).contains("ROLE_NATURALIST", "VISION");

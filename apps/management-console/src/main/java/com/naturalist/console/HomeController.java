@@ -41,7 +41,7 @@ class HomeController {
         } else if (challengeFailed != null) {
             model.addAttribute("challengeMessage", "Please complete the verification and try again.");
         }
-        var csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
         if (csrf != null) {
             model.addAttribute("_csrf", csrf);
         }

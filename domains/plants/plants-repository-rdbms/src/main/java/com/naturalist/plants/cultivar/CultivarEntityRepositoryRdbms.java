@@ -96,7 +96,7 @@ class CultivarEntityRepositoryRdbms
         MethodObserver getByPlantName = observer().forMethod("getByPlantName");
         getByPlantName.arguments(i -> i.entityName(plantSpeciesName, "plantName"))
                 .throwWhenInvalid();
-        var result = mapper.selectByPlantName(plantSpeciesName.value()).stream().map(CultivarDbo::toEntity).toList();
+        List<Cultivar> result = mapper.selectByPlantName(plantSpeciesName.value()).stream().map(CultivarDbo::toEntity).toList();
         getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
         return result;
     }

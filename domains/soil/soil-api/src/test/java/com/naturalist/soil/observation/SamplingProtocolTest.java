@@ -1,6 +1,7 @@
 package com.naturalist.soil.observation;
 
 import com.naturalist.observability.InvariantObservation;
+import com.naturalist.observability.MethodObserver;
 import com.naturalist.observability.Observer;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +14,8 @@ class SamplingProtocolTest {
     /** The protocol intended for the August 2026 sampling: eight probe cores, mixed evenly. */
     @Test
     void evenCompositeOfEightCoresHasNoViolations() {
-        var mo = observer.forMethod("evenCompositeOfEightCoresHasNoViolations");
-        var protocol = new SamplingProtocol(8, SamplingProtocol.SamplingTool.SOIL_PROBE,
+        MethodObserver mo = observer.forMethod("evenCompositeOfEightCoresHasNoViolations");
+        SamplingProtocol protocol = new SamplingProtocol(8, SamplingProtocol.SamplingTool.SOIL_PROBE,
                 SamplingProtocol.CompositingMethod.EVEN_COMPOSITE);
 
         InvariantObservation result = mo.observable(protocol, "protocol");
@@ -24,8 +25,8 @@ class SamplingProtocolTest {
 
     @Test
     void singleCoreOfOneSubsampleHasNoViolations() {
-        var mo = observer.forMethod("singleCoreOfOneSubsampleHasNoViolations");
-        var protocol = new SamplingProtocol(1, SamplingProtocol.SamplingTool.AUGER,
+        MethodObserver mo = observer.forMethod("singleCoreOfOneSubsampleHasNoViolations");
+        SamplingProtocol protocol = new SamplingProtocol(1, SamplingProtocol.SamplingTool.AUGER,
                 SamplingProtocol.CompositingMethod.SINGLE_CORE);
 
         InvariantObservation result = mo.observable(protocol, "protocol");
@@ -39,8 +40,8 @@ class SamplingProtocolTest {
      */
     @Test
     void singleCoreWithSeveralSubsamplesIsRejected() {
-        var mo = observer.forMethod("singleCoreWithSeveralSubsamplesIsRejected");
-        var protocol = new SamplingProtocol(8, SamplingProtocol.SamplingTool.AUGER,
+        MethodObserver mo = observer.forMethod("singleCoreWithSeveralSubsamplesIsRejected");
+        SamplingProtocol protocol = new SamplingProtocol(8, SamplingProtocol.SamplingTool.AUGER,
                 SamplingProtocol.CompositingMethod.SINGLE_CORE);
 
         InvariantObservation result = mo.observable(protocol, "protocol");
@@ -51,8 +52,8 @@ class SamplingProtocolTest {
 
     @Test
     void emptyProtocolProducesOneViolationPerField() {
-        var mo = observer.forMethod("emptyProtocolProducesOneViolationPerField");
-        var protocol = new SamplingProtocol(0, null, null);
+        MethodObserver mo = observer.forMethod("emptyProtocolProducesOneViolationPerField");
+        SamplingProtocol protocol = new SamplingProtocol(0, null, null);
 
         InvariantObservation result = mo.observable(protocol, "protocol");
 

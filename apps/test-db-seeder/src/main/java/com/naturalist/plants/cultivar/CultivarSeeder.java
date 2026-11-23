@@ -7,16 +7,18 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
 /** Seeds cultivars through the real RDBMS adapter (split-package with the rdbms module). */
 public final class CultivarSeeder {
 
     private CultivarSeeder() {}
 
     public static void seed(DataSource dataSource, NaturalistDatabase database) {
-        var entities = database.getNamed(PlantCultivarTestEntitySource.class).entityStream().toList();
+        List<Cultivar> entities = database.getNamed(PlantCultivarTestEntitySource.class).entityStream().toList();
         SqlSessionFactory factory = MyBatisSupport.sessionFactory(dataSource, CultivarMapper.class);
         try (SqlSession session = factory.openSession(false)) {
-            var repo = new CultivarEntityRepositoryRdbms(session.getMapper(CultivarMapper.class));
+            CultivarEntityRepositoryRdbms repo = new CultivarEntityRepositoryRdbms(session.getMapper(CultivarMapper.class));
             entities.forEach(repo::insert);
             session.commit();
         }

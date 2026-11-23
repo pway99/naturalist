@@ -1,7 +1,7 @@
 package com.naturalist.plants;
 
 import com.naturalist.spring.console.ConsoleSliceTemplates;
-
+import gg.jte.TemplateEngine;
 import com.naturalist.data.NaturalistTestExtension;
 import gg.jte.output.StringOutput;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class PlantsDetailTemplateTest {
 
     @Test
     void detail_rendersEveryPlantWithoutError() {
-        var template = ConsoleSliceTemplates.create();
+        TemplateEngine template = ConsoleSliceTemplates.create();
         for (PlantSpecies plant : nte.getNamed(PlantSpeciesTestEntitySource.class).entityStream().toList()) {
             StringOutput output = new StringOutput();
             template.render("plants/detail.jte", Map.of("plant", plant), output);

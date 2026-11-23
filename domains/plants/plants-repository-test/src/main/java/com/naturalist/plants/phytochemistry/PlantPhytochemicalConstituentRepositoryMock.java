@@ -24,7 +24,7 @@ class PlantPhytochemicalConstituentRepositoryMock
         MethodObserver getByPlantName = observer().forMethod("getByPlantName");
         getByPlantName.arguments(i -> i.identifier(plantName, "plantName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<PhytochemicalConstituent> result = testEntitySource().entityStream()
                 .filter(c -> plantName.equals(c.plantName()))
                 .toList();
         getByPlantName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
@@ -36,7 +36,7 @@ class PlantPhytochemicalConstituentRepositoryMock
         MethodObserver getByCompoundName = observer().forMethod("getByCompoundName");
         getByCompoundName.arguments(i -> i.entityName(compoundName, "compoundName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<PhytochemicalConstituent> result = testEntitySource().entityStream()
                 .filter(c -> compoundName.equals(c.compoundName()))
                 .toList();
         getByCompoundName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);

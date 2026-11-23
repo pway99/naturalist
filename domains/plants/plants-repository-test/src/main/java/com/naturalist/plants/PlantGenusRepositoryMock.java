@@ -22,7 +22,7 @@ class PlantGenusRepositoryMock
         MethodObserver getByFamilyName = observer().forMethod("getByFamilyName");
         getByFamilyName.arguments(i -> i.entityName(familyName, "familyName"))
                 .throwWhenInvalid();
-        var result = testEntitySource().entityStream()
+        List<PlantGenus> result = testEntitySource().entityStream()
                 .filter(g -> familyName.equals(g.familyName()))
                 .toList();
         getByFamilyName.state(s -> s.observableCollection(result, "result")).observe(Level.WARN);
