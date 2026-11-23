@@ -1,6 +1,5 @@
 package com.naturalist.soil.observation;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NumericNamedValue;
 
 import java.math.BigDecimal;
@@ -19,7 +18,6 @@ import java.math.RoundingMode;
  */
 public record CecMeqPer100g(BigDecimal value) implements NumericNamedValue {
 
-    @JsonCreator
     public static CecMeqPer100g of(BigDecimal value) {
         return new CecMeqPer100g(value);
     }

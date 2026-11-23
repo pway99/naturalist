@@ -1,6 +1,5 @@
 package com.naturalist.plants.management;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -19,7 +18,6 @@ public final class PlantProgramName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static PlantProgramName of(String value) {
         return new PlantProgramName(value);
     }

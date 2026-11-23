@@ -1,6 +1,5 @@
 package com.naturalist.library;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -14,7 +13,6 @@ public final class GlossaryTermName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static GlossaryTermName of(String value) {
         return new GlossaryTermName(value);
     }

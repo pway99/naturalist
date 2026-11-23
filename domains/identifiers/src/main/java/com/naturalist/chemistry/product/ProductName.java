@@ -1,6 +1,5 @@
 package com.naturalist.chemistry.product;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -18,7 +17,6 @@ public final class ProductName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static ProductName of(String value) {
         return new ProductName(value);
     }

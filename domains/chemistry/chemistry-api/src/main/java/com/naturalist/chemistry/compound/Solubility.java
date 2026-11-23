@@ -1,6 +1,5 @@
 package com.naturalist.chemistry.compound;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NumericNamedValue;
 
 import java.math.BigDecimal;
@@ -19,7 +18,6 @@ public record Solubility(BigDecimal value) implements NumericNamedValue {
 
     private static final BigDecimal HIGH_SOLUBILITY_THRESHOLD = new BigDecimal("100.00");
 
-    @JsonCreator
     public static Solubility of(BigDecimal value) {
         return new Solubility(value);
     }

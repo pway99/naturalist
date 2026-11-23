@@ -62,7 +62,7 @@ soil, zone, and sensor domains do not use it.
 | `TaxonomicSpecies`   | Lowercase   | `"convergens"`  | non-null, non-blank, lowercase first |
 | `TaxonomicSubspecies`| Lowercase   | `"orientis"`    | non-null, non-blank, lowercase first |
 
-All have `@JsonCreator static of(String value)` factory and `@JsonValue`
+All have a `static of(String value)` factory and `@JsonValue`
 on `value()`.
 
 ### `TaxonomicClassification` — ValueObject
@@ -273,7 +273,7 @@ Depends on `framework` only. All types implement `NumericNamedValue`
 
 All follow the pattern:
 `record Foo(BigDecimal value) implements NumericNamedValue` with
-`@JsonCreator static Foo of(BigDecimal value)`.
+`static Foo of(BigDecimal value)` (no `@JsonCreator`: the supertype reads it).
 
 ---
 

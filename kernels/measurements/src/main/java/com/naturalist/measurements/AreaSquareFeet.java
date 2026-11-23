@@ -1,6 +1,5 @@
 package com.naturalist.measurements;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NumericNamedValue;
 
 import java.math.BigDecimal;
@@ -17,7 +16,6 @@ import java.math.RoundingMode;
  */
 public record AreaSquareFeet(BigDecimal value) implements NumericNamedValue {
 
-    @JsonCreator
     public static AreaSquareFeet of(BigDecimal value) {
         return new AreaSquareFeet(value);
     }

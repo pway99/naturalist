@@ -1,6 +1,5 @@
 package com.naturalist.library;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -14,7 +13,6 @@ public final class ConceptName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static ConceptName of(String value) {
         return new ConceptName(value);
     }

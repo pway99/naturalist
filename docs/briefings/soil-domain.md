@@ -129,7 +129,7 @@ asks for that refactor.
 | `TillageEventId`                | `com.naturalist.soil.event`      | `EntityId`   | —         |
 | `SoilPrecipitationEventId`      | `com.naturalist.soil.event`      | `EntityId`   | —         |
 
-Every `EntityId` subclass exposes `of(UUID)` (`@JsonCreator`) and
+Every `EntityId` subclass exposes `of(UUID)` (the factory JSON reads through) and
 `create()` (generates a UUIDv7 via `EntityId.newUUID()`).
 
 **Naming trap.** The identity types are named for the *concept*, not the
@@ -370,7 +370,7 @@ Slugs: `nitrate-n`, `phosphorus-p2o5`, `potassium-exchangeable`,
 | `SaturationPct`   | `observation` | 1     | v > 0            | Gravimetric water content at paste saturation |
 | `AmendmentRate`   | `event`       | 2     | v > 0            | lbs/1000 sqft                              |
 
-All use `RoundingMode.HALF_UP`, expose a `@JsonCreator public static of(BigDecimal)`,
+All use `RoundingMode.HALF_UP`, expose a `public static of(BigDecimal)`,
 and override `scale()` / `roundingMode()` / `isValid()`. `LimestonePct`
 adds one behavior method: `isAbove(BigDecimal threshold)` (exclusive,
 compares normalized values).

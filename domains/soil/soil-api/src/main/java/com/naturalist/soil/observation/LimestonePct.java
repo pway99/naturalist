@@ -1,6 +1,5 @@
 package com.naturalist.soil.observation;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NumericNamedValue;
 
 import java.math.BigDecimal;
@@ -20,7 +19,6 @@ import java.math.RoundingMode;
  */
 public record LimestonePct(BigDecimal value) implements NumericNamedValue {
 
-    @JsonCreator
     public static LimestonePct of(BigDecimal value) {
         return new LimestonePct(value);
     }

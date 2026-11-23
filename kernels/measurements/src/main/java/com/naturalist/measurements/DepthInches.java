@@ -1,6 +1,5 @@
 package com.naturalist.measurements;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.NumericNamedValue;
 
 import java.math.BigDecimal;
@@ -18,7 +17,6 @@ import java.math.RoundingMode;
  */
 public record DepthInches(BigDecimal value) implements NumericNamedValue {
 
-    @JsonCreator
     public static DepthInches of(BigDecimal value) {
         return new DepthInches(value);
     }

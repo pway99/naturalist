@@ -1,6 +1,5 @@
 package com.naturalist.microbes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 public final class NematodeName extends EntityName {
@@ -8,7 +7,6 @@ public final class NematodeName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static NematodeName of(String value) {
         return new NematodeName(value);
     }

@@ -1,6 +1,5 @@
 package com.naturalist.insects;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.observability.Observer;
 
@@ -41,7 +40,6 @@ public final class LifeStageName extends EntityName {
         return new LifeStageName(family.value() + "-" + kind.slug());
     }
 
-    @JsonCreator
     public static LifeStageName of(String value) {
         return new LifeStageName(value);
     }

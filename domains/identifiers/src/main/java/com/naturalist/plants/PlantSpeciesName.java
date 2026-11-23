@@ -1,6 +1,5 @@
 package com.naturalist.plants;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.taxonomy.LinealRank;
 
@@ -26,7 +25,6 @@ public final class PlantSpeciesName extends EntityName implements PlantRankName 
         super(value);
     }
 
-    @JsonCreator
     public static PlantSpeciesName of(String value) {
         return new PlantSpeciesName(value);
     }

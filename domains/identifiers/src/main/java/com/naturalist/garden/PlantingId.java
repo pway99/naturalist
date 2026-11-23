@@ -1,6 +1,5 @@
 package com.naturalist.garden;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityId;
 
 import java.util.UUID;
@@ -21,7 +20,6 @@ public final class PlantingId extends EntityId {
         super(value);
     }
 
-    @JsonCreator
     public static PlantingId of(UUID value) {
         return new PlantingId(value);
     }

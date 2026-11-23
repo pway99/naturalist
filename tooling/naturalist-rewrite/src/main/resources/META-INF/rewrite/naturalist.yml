@@ -7,7 +7,7 @@ description: >-
   NaturalistTestExtension, and never cache a TestEntitySource in a field; and the ADR-028
   secrets rules: never read the process environment outside com.naturalist.secrets, and
   never name a credential in source. Every concrete named value declares the factory
-  NamedValues reads it through.
+  NamedValues reads it through, and declares no @JsonCreator of its own.
 recipeList:
   - com.naturalist.rewrite.NoDirectTestEntitySourceConstruction
   - com.naturalist.rewrite.NoCachedTestEntitySourceField
@@ -15,6 +15,7 @@ recipeList:
   - com.naturalist.rewrite.NoSystemGetenv
   - com.naturalist.rewrite.NoNamedCredentials
   - com.naturalist.rewrite.NamedValueHasFactory
+  - com.naturalist.rewrite.NoSubtypeJsonCreator
   - com.naturalist.EnforceQueryHygiene
 ---
 type: specs.openrewrite.org/v1beta/recipe

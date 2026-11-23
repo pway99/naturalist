@@ -137,6 +137,9 @@ Where the body used the String (`"redirect:/insects/" + name`), it uses `name.va
    `EnforceArchitecture`.
 2. `NoSubtypeJsonCreator`, then `mvn rewrite:run`: 92 mechanical deletions and nothing else;
    armed in `EnforceArchitecture`.
+   *Done 2026-11-22:* 86 removals in main (the estimate counted test fixtures and the
+   non-named-value `Clade`, `Bioregion` and `CommonName`, which keep theirs); test sources
+   are out of scope, since a fixture may keep a creator to show the supertype wins.
 3. `TypedPathVariable` lands report-only (its own composite, outside `EnforceArchitecture`),
    then one controller per diff, insects first (7 endpoints), so each diff watches the count
    drop. Armed in `EnforceArchitecture` with the last controller.

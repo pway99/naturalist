@@ -1,6 +1,5 @@
 package com.naturalist.soil.observation;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityId;
 
 import java.util.UUID;
@@ -16,7 +15,6 @@ public final class ReportedRecommendationId extends EntityId {
         super(value);
     }
 
-    @JsonCreator
     public static ReportedRecommendationId of(UUID value) {
         return new ReportedRecommendationId(value);
     }

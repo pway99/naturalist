@@ -1,6 +1,5 @@
 package com.naturalist.ddd;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.naturalist.observability.constraints.EmailFormatConstraint;
 
@@ -27,7 +26,7 @@ import java.util.function.Function;
  * the owning record's {@code invariants()} surfaces it at the boundary.
  *
  * <p>{@code @JsonValue} on {@link #value()} serialises as a plain string and
- * {@code @JsonCreator} on {@link #of(String)} reads one back, so JSON carries
+ * the {@code NamedValue} supertype reads one back through {@link #of(String)}, so JSON carries
  * {@code "to": "ada@example.com"}, never an envelope object.
  */
 public record EmailAddress(String value) implements NamedValue<String> {
@@ -39,7 +38,6 @@ public record EmailAddress(String value) implements NamedValue<String> {
      * capital letter. Lower-casing the local part too is a deliberate, conventional
      * over-approximation (RFC 5321 allows case-sensitive local parts; no real provider does).
      */
-    @JsonCreator
     public static EmailAddress of(String value) {
         return new EmailAddress(value == null ? null : value.strip().toLowerCase(Locale.ROOT));
     }

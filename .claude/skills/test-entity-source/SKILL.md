@@ -42,13 +42,13 @@ Find the entity class. Read it to determine:
 
 Check `domains/identifiers/` for the entity's key class.
 
-- **`NamedEntity`** — an `EntityName` subclass with a `@JsonCreator` factory. If missing,
+- **`NamedEntity`** — an `EntityName` subclass with a `public static of(String)` factory (the
+  `EntityName` supertype reads JSON through it; never add `@JsonCreator`). If missing,
   create it:
 
 ```java
 package com.naturalist.identifiers.<domain>;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 public final class <Entity>Name extends EntityName {
@@ -58,7 +58,6 @@ public final class <Entity>Name extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static <Entity>Name of(String value) {
         return new <Entity>Name(value);
     }
@@ -195,7 +194,7 @@ Before finishing, confirm:
 - [ ] Secondary unique `EntityName` fields carry `@EntityIdentifier`; secondary unique plain
   fields carry `@UniqueValue`; foreign-key `EntityName` fields carry neither
 - [ ] The identifier class exists in `domains/identifiers/` (`EntityName` subclass with
-  `@JsonCreator`, or `EntityId` subclass)
+  a `public static of(String)`, or `EntityId` subclass with `of(UUID)`; no `@JsonCreator`)
 - [ ] JSON file field names match entity constructor parameter names exactly
 - [ ] JSON carries `"name"` for a `NamedEntity` (no `"id"`), or `"id"` for an `Entity`
 - [ ] The constructor is `public <Entity>TestEntitySource(NaturalistDatabase database)` and

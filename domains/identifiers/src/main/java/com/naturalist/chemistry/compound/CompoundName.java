@@ -1,6 +1,5 @@
 package com.naturalist.chemistry.compound;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -18,7 +17,6 @@ public final class CompoundName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static CompoundName of(String value) {
         return new CompoundName(value);
     }

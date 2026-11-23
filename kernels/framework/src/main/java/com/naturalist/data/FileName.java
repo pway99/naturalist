@@ -1,6 +1,5 @@
 package com.naturalist.data;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.naturalist.ddd.NamedValue;
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +31,8 @@ import java.util.regex.Pattern;
  *
  * <h2>JSON round-trip</h2>
  * {@code @JsonValue} on {@link #value()} ensures Jackson serialises this as a plain
- * string. {@code @JsonCreator} on {@link #of(String)} ensures Jackson deserialises a
- * plain string field back into a {@code FileName}. Catalog JSON continues to store
+ * string. The {@code NamedValue} supertype reads a plain string field back into a
+ * {@code FileName} through {@link #of(String)} ({@code NamedValues}). Catalog JSON continues to store
  * filenames as unadorned strings: {@code "resourceName": "IMG_9047.HEIC"}.
  *
  * <h2>Conventions</h2>
@@ -44,7 +43,6 @@ import java.util.regex.Pattern;
  */
 public record FileName(String value) implements NamedValue<String> {
 
-    @JsonCreator
     public static FileName of(String value) {
         return new FileName(value);
     }

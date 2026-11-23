@@ -1,6 +1,5 @@
 package com.naturalist.plants.phytochemistry;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.chemistry.compound.CompoundName;
 import com.naturalist.ddd.EntityName;
 import com.naturalist.plants.PlantRankName;
@@ -43,7 +42,6 @@ public final class PhytochemicalConstituentName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static PhytochemicalConstituentName of(String value) {
         return new PhytochemicalConstituentName(value);
     }

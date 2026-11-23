@@ -1,6 +1,5 @@
 package com.naturalist.usage;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityName;
 
 /**
@@ -14,7 +13,6 @@ public final class UsageCounterName extends EntityName {
         super(value);
     }
 
-    @JsonCreator
     public static UsageCounterName of(String value) {
         return new UsageCounterName(value);
     }

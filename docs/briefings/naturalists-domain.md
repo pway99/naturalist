@@ -52,7 +52,7 @@ com.naturalist.naturalist/
 | `NaturalistName`          | `com.naturalist.naturalist`        | 64         |
 | `ProtectiveEquipmentName` | `com.naturalist.naturalist.safety` | 64         |
 
-Both are `EntityName` subclasses with `@JsonCreator static of(String value)`
+Both are `EntityName` subclasses with a `static of(String value)`
 factory. The *module* is `identifiers`; the *package* mirrors the home domain.
 
 ---

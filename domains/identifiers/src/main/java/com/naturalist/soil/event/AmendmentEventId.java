@@ -1,6 +1,5 @@
 package com.naturalist.soil.event;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.naturalist.ddd.EntityId;
 
 import java.util.UUID;
@@ -11,7 +10,6 @@ public final class AmendmentEventId extends EntityId {
         super(value);
     }
 
-    @JsonCreator
     public static AmendmentEventId of(UUID value) {
         return new AmendmentEventId(value);
     }
